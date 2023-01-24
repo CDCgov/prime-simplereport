@@ -23,11 +23,4 @@ public class DeviceSupportedDisease {
   @Id
   @Column(name = "supported_disease_id", nullable = false)
   private UUID supportedDiseaseId;
-
-  @Column private String testPerformedCode;
-
-  public DeviceSupportedDisease(UUID deviceTypeId, UUID supportedDiseaseId) {
-    this.deviceTypeId = deviceTypeId;
-    this.supportedDiseaseId = supportedDiseaseId;
-  }
 }
