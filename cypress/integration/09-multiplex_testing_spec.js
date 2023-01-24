@@ -164,7 +164,8 @@ describe("Testing with multiplex devices", () => {
       cy.wait('@gqlGetPatientsByFacilityForQueueQuery')
       cy.contains('Begin test').click()
       cy.get('button[id="aoe-form-save-button"]').click()
-      cy.get(".Toastify").contains(`${patient.lastName}, ${patient.firstName} was added to the queue`);
+      cy.get(".Toastify").contains(`${patient.lastName}, ${patient.firstName}`);
+      cy.get(".Toastify").contains(`was added to the queue`);
 
       cy.contains(`${patient.lastName}, ${patient.firstName}`)
       cy.injectAxe();
