@@ -4316,3 +4316,42 @@ databaseChangeLog:
             selectQuery: SELECT device_specimen_type_id, created_at, created_by, updated_at, updated_by, patient_id, organization_id, result, facility_id, survey_data, date_tested_backdate, test_order_id, correction_status, prior_corrected_test_event_id, internal_id, reason_for_correction FROM ${database.defaultSchemaName}.test_event
         - sql:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: create-test-performed-table
+      author: boban@skylight.digital
+      comment: creates a table to store the test performed code between device type and supported disease
+      changes:
+        - tagDatabase:
+            tag: create-test-performed-table
+        - createTable:
+            tableName: test_performed
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: device_type_id
+                  remarks: The reference to the device type.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__device_type
+                    references: device_type
+              - column:
+                  name: supported_disease_id
+                  remarks: The reference to the supported disease.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__supported_disease_type
+                    references: supported_disease
+              - column:
+                  name: test_performed_code
+                  type: text
+                  remarks: The code that identifies which disease was tested.
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.test_performed TO ${noPhiUsername};
