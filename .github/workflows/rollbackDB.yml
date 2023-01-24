@@ -64,6 +64,9 @@ jobs:
       - name: Display logs
         if: always()
         run: |
+          echo "::group::Set resource group, run rollback"
           RESOURCE_GROUP=$DEPLOY_ENV
           if [[ "$DEPLOY_ENV" == *"dev"* ]]; then RESOURCE_GROUP="dev"; fi;
+          echo "Resource Group: $RESOURCE_GROUP"
           az container logs --follow -g prime-simple-report-$RESOURCE_GROUP --name simple-report-$DEPLOY_ENV-db-rollback
+          echo "::endgroup::"

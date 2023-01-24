@@ -24,6 +24,17 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
 
 ReactModal.setAppElement("*"); // suppresses modal-related test warnings.
 
+// Mocking performance API
+Object.defineProperty(global.performance, "mark", { value: jest.fn() });
+Object.defineProperty(global.performance, "measure", { value: jest.fn() });
+Object.defineProperty(global.performance, "clearMarks", { value: jest.fn() });
+Object.defineProperty(global.performance, "clearMeasures", {
+  value: jest.fn(),
+});
+Object.defineProperty(global.performance, "getEntriesByName", {
+  value: jest.fn(),
+});
+
 // Disable moment warnings
 moment.suppressDeprecationWarnings = true;
 

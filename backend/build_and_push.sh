@@ -13,7 +13,7 @@ if docker manifest inspect $ACR_TAG > /dev/null 2>&1; then
 fi
 
 echo "Building backend images"
-docker-compose -f ${DOCKER_COMPOSE_FILE:-docker-compose.prod.yml} build
+docker compose -f ${DOCKER_COMPOSE_FILE:-docker-compose.prod.yml} build
 
 docker tag "simple-report-api-build:latest" $ACR_TAG
 echo "Tagged $ACR_TAG"
