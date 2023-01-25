@@ -4373,7 +4373,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
         - sql:
-            sql: GRANT SELECT ON ${database.defaultSchemaName}.test_performed TO ${noPhiUsername};
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.device_test_performed_loinc_code TO ${noPhiUsername};
       rollback:
         - dropTable:
-            tableName: test_performed
+            tableName: device_test_performed_loinc_code
