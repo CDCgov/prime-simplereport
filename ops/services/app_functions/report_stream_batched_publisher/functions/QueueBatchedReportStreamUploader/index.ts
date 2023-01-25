@@ -3,15 +3,17 @@ import { AzureFunction, Context } from "@azure/functions";
 import { ENV } from "../config";
 import {
   convertToCsv,
-  deleteSuccessfullyParsedMessages,
-  dequeueMessages,
-  getQueueClient,
-  minimumMessagesAvailable,
-  publishToQueue,
-  reportExceptions,
   uploadResult,
 } from "./lib";
-import { ReportStreamResponse } from "./rs-response";
+import {
+  getQueueClient,
+  minimumMessagesAvailable,
+  dequeueMessages,
+  publishToQueue,
+  reportExceptions,
+  deleteSuccessfullyParsedMessages,
+} from '../common/queueHandlers';
+import { ReportStreamResponse } from "../common/rs-response";
 
 const {
   REPORT_STREAM_URL,
@@ -87,7 +89,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     const response: ReportStreamResponse =
       (await postResult.json()) as ReportStreamResponse;
     context.log(`Report Stream response: ${JSON.stringify(response)}`);
-    await reportExceptions(context, exceptionQueue, response);
+    await reportExceptions(context, exceptionQueue, response, publishingQueue.name);
 
     context.log(
       `Upload to ${response.destinationCount} reporting destinations successful; deleting messages`

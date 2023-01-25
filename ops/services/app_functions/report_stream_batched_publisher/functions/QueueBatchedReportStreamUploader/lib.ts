@@ -1,19 +1,26 @@
-import { Context } from "@azure/functions";
+//import { Context } from "@azure/functions";
 import {
   DequeuedMessageItem,
-  QueueClient,
+  /*QueueClient,
   QueueDeleteMessageResponse,
   QueueServiceClient,
-  StorageSharedKeyCredential,
+  StorageSharedKeyCredential,*/
 } from "@azure/storage-queue";
 import csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
+
+const {
+  REPORT_STREAM_TOKEN,
+  REPORT_STREAM_URL,
+} = ENV;
+
+/*
 import {
   ReportStreamError,
   ReportStreamResponse,
   SimpleReportReportStreamResponse,
-} from "./rs-response";
+} from "../../common/rs-response";
 
 const {
   REPORT_STREAM_BATCH_MINIMUM,
@@ -100,7 +107,7 @@ export async function dequeueMessages(
     }
   }
   return messages;
-}
+}*/
 
 export function convertToCsv(messages: DequeuedMessageItem[]) {
   const parseFailure: { [k: string]: boolean } = {};
@@ -138,7 +145,7 @@ export async function uploadResult(body) {
   });
 }
 
-export async function deleteSuccessfullyParsedMessages(
+/*export async function deleteSuccessfullyParsedMessages(
   context: Context,
   queueClient: QueueClient,
   messages: DequeuedMessageItem[],
@@ -231,4 +238,4 @@ const responsesFrom = function (
     );
     return [];
   }
-};
+};*/

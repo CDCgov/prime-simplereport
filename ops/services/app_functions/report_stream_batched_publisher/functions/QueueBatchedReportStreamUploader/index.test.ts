@@ -1,5 +1,6 @@
 import fn from "./index";
 import * as lib from "./lib";
+import * as queueHandlers from "../common/queueHandlers"
 import * as appInsights from "applicationinsights";
 import { Context } from "@azure/functions";
 import {
@@ -49,10 +50,10 @@ describe("main function export", () => {
 
   function prepareQueue(items: Array<{ messageText: string }>): void {
     minimumMessagesAvailableMock = jest
-      .spyOn(lib, "minimumMessagesAvailable")
+      .spyOn(queueHandlers, "minimumMessagesAvailable")
       .mockResolvedValue(items.length > 0);
     dequeueMessagesMock = jest
-      .spyOn(lib, "dequeueMessages")
+      .spyOn(queueHandlers, "dequeueMessages")
       .mockResolvedValue(items as DequeuedMessageItem[]);
     uploadResultMock = jest.spyOn(lib, "uploadResult").mockResolvedValue({
       ok: true,
@@ -62,11 +63,11 @@ describe("main function export", () => {
 
   beforeAll(() => {
     getQueueClientMock = jest
-      .spyOn(lib, "getQueueClient")
+      .spyOn(queueHandlers, "getQueueClient")
       .mockReturnValue({} as QueueClient);
-    deleteMessagesMock = jest.spyOn(lib, "deleteSuccessfullyParsedMessages");
-    reportExceptionsMock = jest.spyOn(lib, "reportExceptions");
-    fileFailureMock = jest.spyOn(lib, "publishToQueue");
+    deleteMessagesMock = jest.spyOn(queueHandlers, "deleteSuccessfullyParsedMessages");
+    reportExceptionsMock = jest.spyOn(queueHandlers, "reportExceptions");
+    fileFailureMock = jest.spyOn(queueHandlers, "publishToQueue");
   });
 
   beforeEach(() => {
