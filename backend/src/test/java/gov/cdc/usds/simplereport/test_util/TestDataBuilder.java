@@ -18,7 +18,6 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -118,14 +117,9 @@ public class TestDataBuilder {
     return new SpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321");
   }
 
-  public static DeviceSpecimenType createDeviceSpecimenType() {
-    return new DeviceSpecimenType(createDeviceType(), createSpecimenType());
-  }
-
   public static Facility createFacility() {
-    var dev = createDeviceSpecimenType();
-    List<DeviceType> configuredDevices = new ArrayList<>();
-    configuredDevices.add(dev.getDeviceType());
+    DeviceType deviceType = createDeviceType();
+    SpecimenType specimenType = createSpecimenType();
     Provider doc = new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212");
 
     return new Facility(
@@ -136,8 +130,9 @@ public class TestDataBuilder {
         "555-867-5309",
         "facility@test.com",
         doc,
-        dev,
-        configuredDevices);
+        deviceType,
+        specimenType,
+        List.of(deviceType));
   }
 
   public static StreetAddress getAddress() {
