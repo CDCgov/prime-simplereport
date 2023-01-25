@@ -4341,7 +4341,7 @@ databaseChangeLog:
         - tagDatabase:
             tag: create-test-performed-table
         - createTable:
-            tableName: test_performed
+            tableName: device_test_performed_loinc_code
             columns:
               - column:
                   name: internal_id
