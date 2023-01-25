@@ -1,10 +1,18 @@
-import { loginHooks } from "../support";
+import {loginHooks} from "../support";
+import {graphqlURL} from "../utils/request-utils";
+import {aliasQuery} from "../utils/graphql-test-utils";
 
 describe("Updating organization settings", () => {
   loginHooks();
+  beforeEach(() => {
+    cy.intercept('POST', graphqlURL, (req) => {
+      aliasQuery(req, 'GetOrganization')
+    });
+  });
+
   it("navigates to the org settings page", () => {
     cy.visit("/settings/organization");
-    cy.get(".prime-container").contains("Welcome");
+    cy.wait("@gqlGetOrganizationQuery");
     cy.get(".prime-container.settings-tab").contains("Manage organization");
 
     // Test a11y on the Manage organization page
