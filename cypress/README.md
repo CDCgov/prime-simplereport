@@ -34,6 +34,8 @@ CYPRESS_OKTA_USERNAME=
 CYPRESS_OKTA_PASSWORD=
 CYPRESS_OKTA_SECRET=
 
+CYPRESS_BACKEND_URL=
+
 # Frontend settings
 REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api
 PUBLIC_URL=/app/
@@ -60,6 +62,8 @@ SMARTY_AUTH_TOKEN=
 CYPRESS_OKTA_USERNAME=
 CYPRESS_OKTA_PASSWORD=
 CYPRESS_OKTA_SECRET=
+
+CYPRESS_BACKEND_URL=
 ```
 
 #### If you're running e2e tests against a set of local apps without Okta enabled, you only need the following.
@@ -69,6 +73,8 @@ CYPRESS_OKTA_SECRET=
 
 SMARTY_AUTH_ID=
 SMARTY_AUTH_TOKEN=
+
+CYPRESS_BACKEND_URL=
 ```
 
 The `.env` file has a template at `.env.cypress.sample` for running cypress against your local setup or `.env.cypress.remote.sample` to run against a remote environment.
