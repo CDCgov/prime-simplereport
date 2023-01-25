@@ -4368,8 +4368,10 @@ databaseChangeLog:
                     references: supported_disease
               - column:
                   name: test_performed_code
-                  type: text
                   remarks: The code that identifies which disease was tested.
+                  type: text
+                  constraints:
+                    nullable: false
         - sql:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.test_performed TO ${noPhiUsername};
       rollback:
