@@ -4367,7 +4367,7 @@ databaseChangeLog:
                     foreignKeyName: fk__device_supported_disease__supported_disease_type
                     references: supported_disease
               - column:
-                  name: test_performed_code
+                  name: test_performed_loinc_code
                   remarks: The code that identifies which disease was tested.
                   type: text
                   constraints:
