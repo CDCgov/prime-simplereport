@@ -3,7 +3,6 @@ import { ReactElement } from "react";
 
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import { phoneNumberIsValid } from "../../patients/personSchema";
-import { liveJurisdictions } from "../../../config/constants";
 import Alert from "../../commonComponents/Alert";
 
 import { OrganizationCreateRequest } from "./OrganizationForm";
@@ -125,10 +124,7 @@ export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
       .mixed()
       .oneOf(Object.keys(OrganizationTypeEnum), "Organization type is required")
       .required(),
-    state: yup
-      .mixed()
-      .oneOf(liveJurisdictions, getStateErrorMessage)
-      .required(),
+    state: yup.string().required(),
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),

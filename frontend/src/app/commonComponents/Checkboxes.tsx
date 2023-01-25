@@ -9,7 +9,7 @@ import Optional from "../commonComponents/Optional";
 // DOM properties such as `disabled`, `readonly`, `aria-xxx` etc.
 export type CheckboxProps = {
   value: string;
-  label: string;
+  label: string | JSX.Element;
 };
 type InputProps = JSX.IntrinsicElements["input"];
 type Checkbox = CheckboxProps & InputProps;

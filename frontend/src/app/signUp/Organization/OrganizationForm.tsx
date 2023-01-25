@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
@@ -19,6 +19,7 @@ import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { PersonalDetailsFormProps } from "../IdentityVerification/PersonalDetailsForm";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import { liveJurisdictions } from "../../../config/constants";
 
 import {
   initOrg,
@@ -30,6 +31,7 @@ import {
 } from "./utils";
 
 import "./OrganizationForm.scss";
+import { UnsupportedStateModal } from "./UnsupportedStateModal";
 
 export interface OrganizationCreateRequest {
   name: string;
@@ -52,6 +54,8 @@ const OrganizationForm = () => {
   const [organization, setOrganization] = useState<OrganizationCreateRequest>(
     initOrg()
   );
+  const [stateModalOpen, setStateModalOpen] = useState(false);
+  const [selectedState, setSelectedState] = useState("");
   const [errors, setErrors] = useState<OrganizationFormErrors>(initOrgErrors());
   const focusOnce = useRef(false);
   const [backendError, setBackendError] = useState<ReactElement>();
@@ -66,6 +70,9 @@ const OrganizationForm = () => {
     (value: OrganizationCreateRequest[typeof field]) => {
       setFormChanged(true);
       setOrganization({ ...organization, [field]: value });
+      if (field === "state") {
+        setSelectedState(value!);
+      }
     };
 
   const validateField = async (field: keyof OrganizationCreateRequest) => {
@@ -131,6 +138,12 @@ const OrganizationForm = () => {
     errors.email,
     errors.workPhoneNumber,
   ]);
+
+  useEffect(() => {
+    if (selectedState! && !liveJurisdictions.includes(selectedState)) {
+      setStateModalOpen(true);
+    }
+  }, [selectedState]);
 
   if (orgExternalId) {
     return (
@@ -314,6 +327,13 @@ const OrganizationForm = () => {
           label={"Continue"}
         />
       </Card>
+      <UnsupportedStateModal
+        showModal={stateModalOpen}
+        onClose={() => {
+          setStateModalOpen(false);
+        }}
+        state={selectedState}
+      />
     </CardBackground>
   );
 };
