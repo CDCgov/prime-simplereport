@@ -99,7 +99,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Archive cypress failures
-      if: failure()
+      if: always()
       uses: actions/upload-artifact@v3
       with:
         name: cypress-results
