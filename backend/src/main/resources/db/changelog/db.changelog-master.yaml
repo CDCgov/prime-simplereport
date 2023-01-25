@@ -4333,3 +4333,12 @@ databaseChangeLog:
               - column:
                   name: test_performed_code
                   type: text
+  - changeSet:
+      id: drop-data_hub_upload-table
+      author: merethe@skylight.digital
+      comment: remove unused table formerly used for tracking uploads to ReportStream via deprecated implementation
+      changes:
+        - tagDatabase:
+            tag: drop-data_hub_upload-table
+        - dropTable:
+            tableName: data_hub_upload
