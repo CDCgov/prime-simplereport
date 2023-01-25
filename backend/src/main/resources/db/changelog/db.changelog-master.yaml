@@ -4373,5 +4373,5 @@ databaseChangeLog:
         - sql:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.test_performed TO ${noPhiUsername};
       rollback:
-        dropTable:
-          tableName: test_performed
+        - dropTable:
+            tableName: test_performed
