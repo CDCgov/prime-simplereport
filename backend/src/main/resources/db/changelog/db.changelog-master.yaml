@@ -4333,7 +4333,6 @@ databaseChangeLog:
               - column:
                   name: test_performed_code
                   type: text
-
   - changeSet:
       id: create-test-performed-table
       author: boban@skylight.digital
