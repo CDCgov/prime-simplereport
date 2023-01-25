@@ -4351,3 +4351,47 @@ databaseChangeLog:
                   name: testkit_name_id
                   type: text
                   remarks: represents the data from "Testkit Name ID" column in the LIVD
+  - changeSet:
+      id: create-test-performed-table
+      author: boban@skylight.digital
+      comment: creates a table to store the test performed code between device type and supported disease
+      changes:
+        - tagDatabase:
+            tag: create-test-performed-table
+        - createTable:
+            tableName: device_test_performed_loinc_code
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: device_type_id
+                  remarks: The reference to the device type.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__device_type
+                    references: device_type
+              - column:
+                  name: supported_disease_id
+                  remarks: The reference to the supported disease.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__supported_disease_type
+                    references: supported_disease
+              - column:
+                  name: test_performed_loinc_code
+                  remarks: The code that identifies which disease was tested.
+                  type: text
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.device_test_performed_loinc_code TO ${noPhiUsername};
+      rollback:
+        - dropTable:
+            tableName: device_test_performed_loinc_code
