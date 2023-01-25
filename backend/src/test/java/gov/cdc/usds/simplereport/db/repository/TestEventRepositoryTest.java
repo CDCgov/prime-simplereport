@@ -1,16 +1,19 @@
 package gov.cdc.usds.simplereport.db.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Facility_;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.Result_;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -264,6 +267,34 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     assertEquals(2L, resultMap.get(TestResult.POSITIVE));
     assertEquals(1L, resultMap.get(TestResult.NEGATIVE));
     assertEquals(1L, resultMap.get(TestResult.UNDETERMINED));
+  }
+
+  @Test
+  void testEventFromTestOrder_copies_deviceAndSpecimen() {
+    // GIVEN
+    DeviceType facilityDevice = _dataFactory.getGenericDevice();
+    SpecimenType facilitySpecimen = _dataFactory.getGenericSpecimen();
+
+    DeviceType newDevice = _dataFactory.createDeviceType("new device", "llc", "t", "123", "swab");
+    SpecimenType newSpecimen =
+        _dataFactory.createSpecimenType("new specimen", "123456", "321", "123456");
+
+    Organization org = _dataFactory.saveValidOrganization();
+    Facility facility = _dataFactory.createValidFacility(org);
+    facility.setDefaultDeviceTypeSpecimenType(facilityDevice, facilitySpecimen);
+    Person patient = _dataFactory.createMinimalPerson(org);
+
+    TestOrder order = _dataFactory.createTestOrder(patient, facility);
+    order.setDeviceTypeAndSpecimenType(newDevice, newSpecimen);
+
+    // WHEN
+    TestEvent testEvent = new TestEvent(order);
+
+    // THEN
+    assertEquals(testEvent.getDeviceType(), newDevice);
+    assertEquals(testEvent.getSpecimenType(), newSpecimen);
+    assertNotEquals(testEvent.getDeviceType(), facilityDevice);
+    assertNotEquals(testEvent.getSpecimenType(), facilitySpecimen);
   }
 
   private Facility createTestEventsForMetricsTests(Organization org) {

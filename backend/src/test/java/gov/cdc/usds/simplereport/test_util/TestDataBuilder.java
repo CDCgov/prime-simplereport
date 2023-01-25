@@ -4,7 +4,6 @@ import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_DEVICE_TYPE;
 import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_SPECIMEN_TYPE;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -19,7 +18,6 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -66,15 +64,7 @@ public class TestDataBuilder {
   public static Facility createEmptyFacility(boolean includeValidDevice) {
     DeviceType device = includeValidDevice ? createEmptyDeviceWithLoinc() : null;
     return new Facility(
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        new DeviceSpecimenType(device, null),
-        Collections.emptyList());
+        null, null, null, null, null, null, null, device, null, Collections.emptyList());
   }
 
   public static DeviceType createEmptyDeviceWithLoinc() {
@@ -127,14 +117,9 @@ public class TestDataBuilder {
     return new SpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321");
   }
 
-  public static DeviceSpecimenType createDeviceSpecimenType() {
-    return new DeviceSpecimenType(createDeviceType(), createSpecimenType());
-  }
-
   public static Facility createFacility() {
-    var dev = createDeviceSpecimenType();
-    List<DeviceType> configuredDevices = new ArrayList<>();
-    configuredDevices.add(dev.getDeviceType());
+    DeviceType deviceType = createDeviceType();
+    SpecimenType specimenType = createSpecimenType();
     Provider doc = new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212");
 
     return new Facility(
@@ -145,8 +130,9 @@ public class TestDataBuilder {
         "555-867-5309",
         "facility@test.com",
         doc,
-        dev,
-        configuredDevices);
+        deviceType,
+        specimenType,
+        List.of(deviceType));
   }
 
   public static StreetAddress getAddress() {

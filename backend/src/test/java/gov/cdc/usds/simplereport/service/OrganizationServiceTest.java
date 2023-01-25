@@ -11,12 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
-import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -82,7 +80,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   void createOrganizationAndFacility_success() {
     // GIVEN
-    DeviceSpecimenType dst = getDeviceConfig();
     PersonName orderingProviderName = new PersonName("Bill", "Foo", "Nye", "");
 
     // WHEN
@@ -96,7 +93,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             getAddress(),
             "123-456-7890",
             "test@foo.com",
-            List.of(dst.getDeviceType().getInternalId()),
+            List.of(getDeviceConfig().getInternalId()),
             orderingProviderName,
             getAddress(),
             "123-456-7890",
@@ -121,17 +118,13 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertEquals(5, facLink.getLink().length());
   }
 
-  private DeviceSpecimenType getDeviceConfig() {
-    DeviceType device =
-        testDataFactory.createDeviceType("Abbott ID Now", "Abbott", "1", "12345-6", "E");
-    SpecimenType specimen = testDataFactory.getGenericSpecimen();
-    return testDataFactory.createDeviceSpecimen(device, specimen);
+  private DeviceType getDeviceConfig() {
+    return testDataFactory.createDeviceType("Abbott ID Now", "Abbott", "1", "12345-6", "E");
   }
 
   @Test
   void createOrganizationAndFacility_orderingProviderRequired_failure() {
     // GIVEN
-    DeviceSpecimenType dst = getDeviceConfig();
     PersonName orderProviderName = new PersonName("Bill", "Foo", "Nye", "");
     // THEN
     assertThrows(
@@ -146,7 +139,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
                 getAddress(),
                 "123-456-7890",
                 "test@foo.com",
-                List.of(dst.getDeviceType().getInternalId()),
+                List.of(getDeviceConfig().getInternalId()),
                 orderProviderName,
                 getAddress(),
                 null,
