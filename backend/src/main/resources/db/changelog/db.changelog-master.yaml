@@ -4334,6 +4334,24 @@ databaseChangeLog:
                   name: test_performed_code
                   type: text
   - changeSet:
+      id: add-equipment_uid-testkit_name_id-to-device_type
+      author: zedd@skylight.digital
+      comment: Add equipment_uid and testkit_name_id columns to device_type table
+      changes:
+        - tagDatabase:
+            tag: add-equipment_uid-testkit_name_id-to-device_type
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: equipment_uid
+                  type: text
+                  remarks: represents the data from "Equipment UID" column in the LIVD
+              - column:
+                  name: testkit_name_id
+                  type: text
+                  remarks: represents the data from "Testkit Name ID" column in the LIVD
+  - changeSet:
       id: create-test-performed-table
       author: boban@skylight.digital
       comment: creates a table to store the test performed code between device type and supported disease
