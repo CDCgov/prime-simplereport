@@ -27,7 +27,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -863,8 +862,7 @@ class FhirConverterTest {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testOrder = TestDataBuilder.createEmptyTestOrder();
     testOrder.markComplete();
-    testOrder.setDeviceSpecimen(
-        new DeviceSpecimenType(TestDataBuilder.createEmptyDeviceWithLoinc(), null));
+    testOrder.setDeviceTypeAndSpecimenType(TestDataBuilder.createEmptyDeviceWithLoinc(), null);
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);
@@ -1064,7 +1062,6 @@ class FhirConverterTest {
     var address = new StreetAddress(List.of("1 Main St"), "Chicago", "IL", "60614", "");
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
     var specimenType = new SpecimenType("name", "typeCode");
-    var deviceSpecimenType = new DeviceSpecimenType(deviceType, specimenType);
     var provider =
         new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
     var organization = new Organization("District", "school", "1", true);
@@ -1077,7 +1074,8 @@ class FhirConverterTest {
             "7735551234",
             "school@example.com",
             provider,
-            deviceSpecimenType,
+            deviceType,
+            specimenType,
             Collections.emptyList());
     var person =
         new Person(

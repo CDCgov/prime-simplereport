@@ -55,7 +55,8 @@ class QueueManagementTest extends BaseGraphqlTest {
   public void init() {
     _org = _orgService.getCurrentOrganizationNoCache();
     _site = _orgService.getFacilities(_org).get(0);
-    _site.addDefaultDeviceSpecimen(_dataFactory.getGenericDeviceSpecimen());
+    _site.setDefaultDeviceTypeSpecimenType(
+        _dataFactory.getGenericDevice(), _dataFactory.getGenericSpecimen());
     positiveCovidResult =
         List.of(new MultiplexResultInput(_diseaseService.covid().getName(), TestResult.POSITIVE));
   }
