@@ -6,20 +6,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import java.util.List;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestPropertySource(
     properties = {
       "hibernate.query.interceptor.error-level=ERROR",
@@ -31,6 +41,21 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
+
+  @Mock private DeviceTypeRepository _deviceTypeRepoMock;
+
+  private DeviceTypeService deviceTypeServiceWithMock;
+
+  @BeforeAll
+  void setup() {
+    this.deviceTypeServiceWithMock =
+        new DeviceTypeService(
+            _deviceTypeRepoMock,
+            mock(DeviceSpecimenTypeRepository.class),
+            mock(SpecimenTypeRepository.class),
+            mock(FacilityRepository.class),
+            mock(SupportedDiseaseRepository.class));
+  }
 
   @Test
   void fetchDeviceTypes() {
@@ -79,6 +104,14 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
         _deviceTypeRepo.save(
             new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
     assertSecurityError(() -> _service.removeDeviceType(deviceType));
+  }
+
+  @Test
+  void getDeviceType_withDeviceName() {
+    String deviceName = "dummyDevice";
+    DeviceType dummyDevice = mock(DeviceType.class);
+    when(this._deviceTypeRepoMock.findDeviceTypeByName(anyString())).thenReturn(dummyDevice);
+    assertEquals(this.deviceTypeServiceWithMock.getDeviceType(deviceName), dummyDevice);
   }
 
   @Test

@@ -67,6 +67,10 @@ public class DeviceTypeService {
         .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device type ID"));
   }
 
+  public DeviceType getDeviceType(String name) {
+    return _repo.findDeviceTypeByName(name);
+  }
+
   public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
     return _deviceSpecimenRepo.findAll();
   }

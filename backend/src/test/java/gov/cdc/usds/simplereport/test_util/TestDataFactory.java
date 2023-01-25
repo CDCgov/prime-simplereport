@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
+
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -563,10 +565,6 @@ public class TestDataFactory {
 
   public DeviceSpecimenType createDeviceSpecimen(DeviceType device, SpecimenType specimen) {
     return deviceSpecimenTypeRepository.save(new DeviceSpecimenType(device, specimen));
-  }
-
-  public StreetAddress getAddress() {
-    return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
   }
 
   public StreetAddress getFullAddress() {

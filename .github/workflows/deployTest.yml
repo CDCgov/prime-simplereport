@@ -120,6 +120,7 @@ jobs:
   #     cypress_okta_redirect_uri: "https%3A%2F%2Ftest.simplereport.gov%2Fapp%2F"
   #     cypress_okta_scope: "simple_report_test"
   #     cypress_okta_client_id: "0oa1khettjHnj3EPT1d7"
+  #     cypress_backend_url: "https://localhost.simplereport.gov/api"
   #     spec_path: "cypress/integration/00*,cypress/integration/01*,cypress/integration/02*,cypress/integration/03*,cypress/integration/04*,cypress/integration/05*,cypress/integration/06*"
   #     test_env: "https://test.simplereport.gov"
   #     deploy_env: test

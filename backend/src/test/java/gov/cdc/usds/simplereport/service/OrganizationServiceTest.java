@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 import static graphql.Assert.assertNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -92,12 +93,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
-            testDataFactory.getAddress(),
+            getAddress(),
             "123-456-7890",
             "test@foo.com",
             List.of(dst.getDeviceType().getInternalId()),
             orderingProviderName,
-            testDataFactory.getAddress(),
+            getAddress(),
             "123-456-7890",
             "547329472");
     // THEN
@@ -135,22 +136,21 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     // THEN
     assertThrows(
         OrderingProviderRequiredException.class,
-        () -> {
-          _service.createOrganizationAndFacility(
-              "Adam's org",
-              "urgent_care",
-              "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
-              "Facility 1",
-              "12345",
-              _dataFactory.getAddress(),
-              "123-456-7890",
-              "test@foo.com",
-              List.of(dst.getDeviceType().getInternalId()),
-              orderProviderName,
-              _dataFactory.getAddress(),
-              null,
-              null);
-        });
+        () ->
+            _service.createOrganizationAndFacility(
+                "Adam's org",
+                "urgent_care",
+                "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
+                "Facility 1",
+                "12345",
+                getAddress(),
+                "123-456-7890",
+                "test@foo.com",
+                List.of(dst.getDeviceType().getInternalId()),
+                orderProviderName,
+                getAddress(),
+                null,
+                null));
   }
 
   @Test
@@ -232,7 +232,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportStandardUser
   void viewArchivedFacilities_standardUser_failure() {
     Organization org = testDataFactory.saveValidOrganization();
-    Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
+    testDataFactory.createArchivedFacility(org, "Delete me");
 
     assertThrows(AccessDeniedException.class, () -> _service.getArchivedFacilities());
   }
@@ -323,7 +323,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @DisplayName("When updating a facility")
   class UpdateFacilityTest {
     private Facility facility;
-    private List<DeviceType> devices;
     private StreetAddress newFacilityAddress;
     private StreetAddress newOrderingProviderAddress;
 
@@ -337,7 +336,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
       facility =
           facilityRepository.findByOrganizationAndFacilityName(disOrg, "Injection Site").get();
       assertThat(facility).isNotNull();
-      devices = deviceTypeRepository.findAll();
+      List<DeviceType> devices = deviceTypeRepository.findAll();
 
       newFacilityAddress = new StreetAddress("0", "1", "2", "3", "4", "5");
       newOrderingProviderAddress = new StreetAddress("6", "7", "8", "9", "10", "11");
