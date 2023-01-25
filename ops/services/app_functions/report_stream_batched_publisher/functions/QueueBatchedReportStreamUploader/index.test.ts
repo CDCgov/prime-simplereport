@@ -64,7 +64,7 @@ describe("main function export", () => {
   beforeAll(() => {
     getQueueClientMock = jest
       .spyOn(queueHandlers, "getQueueClient")
-      .mockReturnValue({} as QueueClient);
+      .mockReturnValue({name: 'dummyQueue'} as QueueClient);
     deleteMessagesMock = jest.spyOn(queueHandlers, "deleteSuccessfullyParsedMessages");
     reportExceptionsMock = jest.spyOn(queueHandlers, "reportExceptions");
     fileFailureMock = jest.spyOn(queueHandlers, "publishToQueue");

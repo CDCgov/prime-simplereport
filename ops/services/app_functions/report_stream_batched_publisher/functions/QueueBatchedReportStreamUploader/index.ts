@@ -89,7 +89,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     const response: ReportStreamResponse =
       (await postResult.json()) as ReportStreamResponse;
     context.log(`Report Stream response: ${JSON.stringify(response)}`);
-    await reportExceptions(context, exceptionQueue, response, publishingQueue.name);
+    await reportExceptions(context, exceptionQueue, response, TEST_EVENT_QUEUE_NAME);
 
     context.log(
       `Upload to ${response.destinationCount} reporting destinations successful; deleting messages`

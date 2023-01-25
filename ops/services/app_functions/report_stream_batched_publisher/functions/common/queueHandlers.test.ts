@@ -13,6 +13,21 @@ import {
 import { ReportStreamError, ReportStreamResponse } from "./rs-response";
 import { Context } from "@azure/functions";
 
+jest.mock("../config", () => ({
+    ENV: {
+        AZ_STORAGE_QUEUE_SVC_URL: "hello",
+        AZ_STORAGE_ACCOUNT_NAME: "hola",
+        AZ_STORAGE_ACCOUNT_KEY: "bonjour",
+        TEST_EVENT_QUEUE_NAME: "ciao",
+        REPORT_STREAM_URL: "https://nope.url/1234",
+        REPORT_STREAM_TOKEN: "merhaba",
+        REPORT_STREAM_BATCH_MINIMUM: "1",
+        REPORT_STREAM_BATCH_MAXIMUM: "5000",
+    },
+}));
+
+jest.mock("@azure/storage-queue");
+
 const queueServiceClientMock = QueueServiceClient as jest.MockedClass<
     typeof QueueServiceClient
     >;
@@ -20,7 +35,6 @@ const storageSharedKeyCredentialMock =
     StorageSharedKeyCredential as jest.MockedClass<
         typeof StorageSharedKeyCredential
         >;
-jest.mock("@azure/storage-queue");
 
 const context = {
     log: jest.fn(),
@@ -157,6 +171,7 @@ describe('Queue Handlers',()=>{
             // GIVEN
             const queueClientMock = {
                 deleteMessage: jest.fn().mockResolvedValue(true),
+                name:'dummyTestEventQueue'
             } as jest.MockedObject<QueueClient>;
             const messages: DequeuedMessageItem[] = [
                 {
@@ -193,6 +208,7 @@ describe('Queue Handlers',()=>{
         it("doesn't call queueClient.deleteMessage for parse failures", async () => {
             // GIVEN
             const queueClientMock = {
+                name:'dummyTestEventQueue',
                 deleteMessage: jest.fn().mockResolvedValue({
                     requestId: "123",
                 } as QueueDeleteMessageResponse),
@@ -216,7 +232,7 @@ describe('Queue Handlers',()=>{
                 },
             ] as jest.Mocked<DequeuedMessageItem>[];
             const parseFailure = {
-                grape: true,
+                "grape": true,
             };
 
             // WHEN
@@ -245,13 +261,13 @@ describe('Queue Handlers',()=>{
             );
 
             expect(context.log).toHaveBeenCalledWith(
-                "Message grape failed to parse; skipping deletion"
+                "Queue: dummyTestEventQueue. Message grape failed to parse; skipping deletion"
             );
             expect(context.log).toHaveBeenCalledWith(
-                "Message apple deleted with request id 123 and has TestEvent id 11"
+                "Queue: dummyTestEventQueue. Message apple deleted with request id 123 and has TestEvent id 11"
             );
             expect(context.log).toHaveBeenCalledWith(
-                "Message banana deleted with request id 123 and has TestEvent id 22"
+                "Queue: dummyTestEventQueue. Message banana deleted with request id 123 and has TestEvent id 22"
             );
         });
     });
@@ -283,11 +299,12 @@ describe('Queue Handlers',()=>{
                 warnings,
             } as jest.Mocked<ReportStreamResponse>;
             const queueClientMock = {
+                name:'dummyTestEventQueue',
                 sendMessage: jest.fn().mockResolvedValue(true),
             } as jest.MockedObject<QueueClient>;
 
             // WHEN
-            await reportExceptions(context, queueClientMock, response, queueClientMock.name,);
+            await reportExceptions(context, queueClientMock, response, 'dummyTestEventQueue');
 
             // THEN
             expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
@@ -333,11 +350,12 @@ describe('Queue Handlers',()=>{
                 warnings,
             } as jest.Mocked<ReportStreamResponse>;
             const queueClientMock = {
+                name:'dummyTestEventQueue',
                 sendMessage: jest.fn().mockResolvedValue(true),
             } as jest.MockedObject<QueueClient>;
 
             // WHEN
-            await reportExceptions(context, queueClientMock, response, queueClientMock.name);
+            await reportExceptions(context, queueClientMock, response, 'dummyTestEventQueue');
 
             // THEN
             expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
@@ -385,11 +403,12 @@ describe('Queue Handlers',()=>{
                 warnings,
             } as jest.Mocked<ReportStreamResponse>;
             const queueClientMock = {
+                name:'dummyTestEventQueue',
                 sendMessage: jest.fn().mockResolvedValue(true),
             } as jest.MockedObject<QueueClient>;
 
             // WHEN
-            await reportExceptions(context, queueClientMock, response, queueClientMock.name,);
+            await reportExceptions(context, queueClientMock, response, 'dummyTestEventQueue');
 
             // THEN
             expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(6);
