@@ -61,13 +61,11 @@ services:
     command: ["./ci-git-fix.sh"]
   nginx:
     logging:
-      driver: local
+      driver: none
     hostname: localhost.simplereport.gov
   mailhog:
-    logging:
-      driver: local
     profiles:
       - donotstart
   db:
     logging:
-      driver: local
+      driver: none
