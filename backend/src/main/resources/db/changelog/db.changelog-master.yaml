@@ -4316,3 +4316,20 @@ databaseChangeLog:
             selectQuery: SELECT device_specimen_type_id, created_at, created_by, updated_at, updated_by, patient_id, organization_id, result, facility_id, survey_data, date_tested_backdate, test_order_id, correction_status, prior_corrected_test_event_id, internal_id, reason_for_correction FROM ${database.defaultSchemaName}.test_event
         - sql:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: remove-test-performed-code-column-in-device-supported-disease-table
+      author: boban@skylight.digital
+      comment: Remove test performed code column to store the specific LOINC code between a device and disease.
+      changes:
+        - tagDatabase:
+            tag: remove-test-performed-code-column-to-device-supported-disease-table
+        - dropColumn:
+            tableName: device_supported_disease
+            columnName: test_performed_code
+      rollback:
+        - addColumn:
+            tableName: device_supported_disease
+            columns:
+              - column:
+                  name: test_performed_code
+                  type: text
