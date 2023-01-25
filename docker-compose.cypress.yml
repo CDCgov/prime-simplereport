@@ -36,7 +36,7 @@ services:
       ["-s", "$SPEC_PATH", "-r", "$TEST_ENV"]
   backend:
     logging:
-      driver: local
+      driver: none
     environment:
       SPRING_PROFILES_ACTIVE: $SPRING_PROFILES_ACTIVE
       OKTA_TESTING_DISABLEHTTPSCHECK: $OKTA_TESTING_DISABLEHTTPSCHECK
@@ -49,7 +49,7 @@ services:
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
   frontend:
     logging:
-      driver: local
+      driver: none
     environment:
       REACT_APP_OKTA_URL: $WIREMOCK_URL
       REACT_APP_BASE_URL: https://localhost.simplereport.gov
@@ -66,6 +66,3 @@ services:
   mailhog:
     profiles:
       - donotstart
-  db:
-    logging:
-      driver: none
