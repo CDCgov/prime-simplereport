@@ -78,7 +78,10 @@ export type CreateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseases: Array<Scalars["ID"]>;
+  supportedDiseaseTestPerformed?: InputMaybe<
+    Array<SupportedDiseaseTestPerformedInput>
+  >;
+  supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
 };
@@ -97,6 +100,7 @@ export type DeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseaseTestPerformed?: Maybe<Array<SupportedDiseaseTestPerformed>>;
   supportedDiseases: Array<SupportedDisease>;
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
@@ -922,6 +926,17 @@ export type SupportedDisease = {
   name: Scalars["String"];
 };
 
+export type SupportedDiseaseTestPerformed = {
+  __typename?: "SupportedDiseaseTestPerformed";
+  supportedDisease: SupportedDisease;
+  testPerformed: Scalars["String"];
+};
+
+export type SupportedDiseaseTestPerformedInput = {
+  supportedDisease: Scalars["ID"];
+  testPerformed: Scalars["String"];
+};
+
 export enum TestCorrectionStatus {
   Corrected = "CORRECTED",
   Original = "ORIGINAL",
@@ -1007,7 +1022,10 @@ export type UpdateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseases: Array<Scalars["ID"]>;
+  supportedDiseaseTestPerformed?: InputMaybe<
+    Array<SupportedDiseaseTestPerformedInput>
+  >;
+  supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
 };
