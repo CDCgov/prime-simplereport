@@ -79,28 +79,28 @@ resource "azurerm_function_app" "functions" {
   }
 
   app_settings = {
-    https_only                     = true
-    FUNCTIONS_WORKER_RUNTIME       = "node"
-    WEBSITE_NODE_DEFAULT_VERSION   = "~14"
-    FUNCTION_APP_EDIT_MODE         = "readonly"
-    HASH                           = azurerm_storage_blob.appcode.content_md5
-    WEBSITE_RUN_FROM_PACKAGE       = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
-    APPINSIGHTS_INSTRUMENTATIONKEY = data.azurerm_application_insights.app.instrumentation_key
-    AZ_STORAGE_QUEUE_SVC_URL       = "https://${data.azurerm_storage_account.app.name}.queue.core.windows.net/"
-    AZ_STORAGE_ACCOUNT_NAME        = data.azurerm_storage_account.app.name
-    AZ_STORAGE_ACCOUNT_KEY         = data.azurerm_storage_account.app.primary_access_key
-    AZ_STORAGE_QUEUE_CXN_STRING    = data.azurerm_storage_account.app.primary_connection_string
-    TEST_EVENT_QUEUE_NAME          = var.test_event_queue_name
-    PUBLISHING_ERROR_QUEUE_NAME    = var.publishing_error_queue_name
-    REPORTING_EXCEPTION_QUEUE_NAME = var.reporting_exception_queue_name
-    TEST_EVENT_QUEUE_NAME_FHIR     = var.test_event_queue_name_fhir
+    https_only                          = true
+    FUNCTIONS_WORKER_RUNTIME            = "node"
+    WEBSITE_NODE_DEFAULT_VERSION        = "~14"
+    FUNCTION_APP_EDIT_MODE              = "readonly"
+    HASH                                = azurerm_storage_blob.appcode.content_md5
+    WEBSITE_RUN_FROM_PACKAGE            = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"
+    APPINSIGHTS_INSTRUMENTATIONKEY      = data.azurerm_application_insights.app.instrumentation_key
+    AZ_STORAGE_QUEUE_SVC_URL            = "https://${data.azurerm_storage_account.app.name}.queue.core.windows.net/"
+    AZ_STORAGE_ACCOUNT_NAME             = data.azurerm_storage_account.app.name
+    AZ_STORAGE_ACCOUNT_KEY              = data.azurerm_storage_account.app.primary_access_key
+    AZ_STORAGE_QUEUE_CXN_STRING         = data.azurerm_storage_account.app.primary_connection_string
+    TEST_EVENT_QUEUE_NAME               = var.test_event_queue_name
+    PUBLISHING_ERROR_QUEUE_NAME         = var.publishing_error_queue_name
+    REPORTING_EXCEPTION_QUEUE_NAME      = var.reporting_exception_queue_name
+    TEST_EVENT_QUEUE_NAME_FHIR          = var.test_event_queue_name_fhir
     REPORTING_EXCEPTION_QUEUE_NAME_FHIR = var.reporting_exception_queue_name_fhir
-    REPORT_STREAM_URL              = local.report_stream_url
-    REPORT_STREAM_TOKEN            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
-    REPORT_STREAM_BATCH_MINIMUM    = var.report_stream_batch_minimum
-    REPORT_STREAM_BATCH_MAXIMUM    = var.report_stream_batch_maximum
-    SIMPLE_REPORT_CB_URL           = local.simple_report_callback_url
-    SIMPLE_REPORT_CB_TOKEN         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
+    REPORT_STREAM_URL                   = local.report_stream_url
+    REPORT_STREAM_TOKEN                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
+    REPORT_STREAM_BATCH_MINIMUM         = var.report_stream_batch_minimum
+    REPORT_STREAM_BATCH_MAXIMUM         = var.report_stream_batch_maximum
+    SIMPLE_REPORT_CB_URL                = local.simple_report_callback_url
+    SIMPLE_REPORT_CB_TOKEN              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.simple_report_callback_token.id})"
   }
 }
 
