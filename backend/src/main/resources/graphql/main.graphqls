@@ -59,13 +59,8 @@ input CreateDeviceType {
   loincCode: String!
   swabTypes: [ID!]!
   supportedDiseases: [ID!]
-  supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]
+  supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
   testLength: Int!
-}
-
-input SupportedDiseaseTestPerformed {
-  supportedDisease: ID!
-  testPerformed: String!
 }
 
 input UpdateDeviceType {
@@ -76,8 +71,13 @@ input UpdateDeviceType {
   loincCode: String!
   swabTypes: [ID!]!
   supportedDiseases: [ID!]
-  supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]
+  supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
   testLength: Int!
+}
+
+input SupportedDiseaseTestPerformedInput {
+  supportedDisease: ID!
+  testPerformed: String!
 }
 
 type DeviceType {
@@ -89,7 +89,13 @@ type DeviceType {
   swabType: String
   swabTypes: [SpecimenType!]!
   supportedDiseases: [SupportedDisease!]!
+  supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]
   testLength: Int!
+}
+
+type SupportedDiseaseTestPerformed {
+  supportedDisease: SupportedDisease!
+  testPerformed: String!
 }
 
 type SupportedDisease {
