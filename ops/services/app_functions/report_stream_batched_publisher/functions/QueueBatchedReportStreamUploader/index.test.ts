@@ -148,7 +148,7 @@ describe("main function export", () => {
     // THEN
     expect(getQueueClientMock).toHaveBeenCalledTimes(3);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Test Event Parse Failure" })
+      expect.objectContaining({ name: "Queue: ciao. Test Event Parse Failure" })
     );
     expect(deleteMessagesMock).toHaveBeenCalled();
   });
@@ -163,7 +163,7 @@ describe("main function export", () => {
     // THEN
     expect(dequeueMessagesMock).toHaveBeenCalled();
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Test Event Parse Failure" })
+      expect.objectContaining({ name: "Queue: ciao. Test Event Parse Failure" })
     );
     expect(uploadResultMock).not.toHaveBeenCalled();
     expect(reportExceptionsMock).not.toHaveBeenCalled();
