@@ -149,7 +149,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(devASwabTypes.get(0).getName()).isEqualTo("Hair");
     assertEquals(1, devA.getTestLength());
 
-    assertThat(devA.getDeviceTestPerformedLoincCodeList()).hasSize(0);
+    assertThat(devA.getDeviceTestPerformedLoincCodeList()).isEmpty();
 
     List<DeviceType> found = _service.fetchDeviceTypes();
     assertThat(found).hasSize(1);
