@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Button from "../../commonComponents/Button/Button";
 import Modal from "../../commonComponents/Modal";
 import Checkboxes from "../../commonComponents/Checkboxes";
+import { getStateNameFromCode } from "../../utils/state";
 
 const noop = () => {
   /**
@@ -30,17 +31,15 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
       onClose={() => onClose(true)}
       showModal={showModal}
       showClose={true}
-      variant="warning"
       contentLabel={"Unsupported State"}
       containerClassName={"unsupported-state-modal"}
     >
       <Modal.Header
         styleClassNames={"margin-0 font-sans-lg line-height-sans-2"}
-      ></Modal.Header>
+      >
+        {getStateNameFromCode(state)} isn't connected to SimpleReport yet.
+      </Modal.Header>
       <p>
-        {state} isn't connected to SimpleReport yet.
-        <br />
-        <br />
         You can join the waitlist to be notified when SimpleReport is available
         in your state, or if your organization is reporting to a SimpleReport
         state, you can continue.
@@ -77,7 +76,7 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
           target={"_blank"}
           rel="noopener noreferrer"
         >
-          <Button>Join waitlist</Button>
+          <Button variant="outline">Join waitlist</Button>
         </a>
         {onClose && (
           <Button
