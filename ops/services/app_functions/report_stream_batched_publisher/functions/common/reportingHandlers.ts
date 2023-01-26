@@ -41,11 +41,11 @@ export async function handleReportStreamResponse(reportingResponse: Response, co
     if (reportingResponse.ok) {
         const response: ReportStreamResponse =
             (await reportingResponse.json()) as ReportStreamResponse;
-        context.log(`Report Stream response: ${JSON.stringify(response)}`);
+        context.log(`Queue: ${testEventQueue.name}. Report Stream response: ${JSON.stringify(response)}`);
         await reportExceptions(context, exceptionQueue, response, testEventQueue.name);
 
         context.log(
-            `Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
+            `Queue: ${testEventQueue.name}. Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
         );
 
         await deleteSuccessfullyParsedMessages(

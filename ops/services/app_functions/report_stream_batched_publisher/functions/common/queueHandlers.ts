@@ -156,7 +156,7 @@ export async function reportExceptions(
     context: Context,
     queueClient: QueueClient,
     response: ReportStreamResponse,
-    eventQueueName: String
+    eventQueueName: string
 ) {
     context.log(`Queue: ${eventQueueName}. ReportStream response errors: ${response.errorCount}`);
     context.log(`Queue: ${eventQueueName}. ReportStream response warnings: ${response.warningCount}`);
@@ -171,7 +171,7 @@ export async function reportExceptions(
 }
 
 const responsesFrom = function (
-    queueName: String,
+    queueName: string,
     context: Context,
     err: ReportStreamError,
     isError: boolean

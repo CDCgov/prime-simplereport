@@ -86,7 +86,7 @@ const FHIRTestEventReporter: AzureFunction = async function (
         tagOverrides,
     });
 
-    await handleReportStreamResponse(postResult, context, messages, parseFailure, publishingQueue, exceptionQueue, publishingErrorQueue)
+    await handleReportStreamResponse(postResult, context, messages, parseFailure, publishingQueue, exceptionQueue, publishingErrorQueue);
 };
 
 export default FHIRTestEventReporter;
