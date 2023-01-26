@@ -60,9 +60,10 @@ services:
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     command: ["./ci-git-fix.sh"]
   nginx:
-    logging:
-      driver: none
     hostname: localhost.simplereport.gov
   mailhog:
     profiles:
       - donotstart
+  db:
+    logging:
+      driver: none
