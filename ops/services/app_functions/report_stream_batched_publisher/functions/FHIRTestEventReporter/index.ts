@@ -15,8 +15,8 @@ import { handleReportStreamResponse, reportTestEvents } from "../common/reportin
 
 const {
     REPORT_STREAM_URL,
-    TEST_EVENT_QUEUE_NAME,
-    REPORTING_EXCEPTION_QUEUE_NAME,
+    TEST_EVENT_QUEUE_NAME_FHIR,
+    REPORTING_EXCEPTION_QUEUE_NAME_FHIR,
     PUBLISHING_ERROR_QUEUE_NAME,
 } = ENV;
 
@@ -27,8 +27,8 @@ const FHIRTestEventReporter: AzureFunction = async function (
     context: Context
 ): Promise<void> {
     const tagOverrides = {"ai.operation.id": context.traceContext.traceparent};
-    const publishingQueue: QueueClient = getQueueClient(TEST_EVENT_QUEUE_NAME);
-    const exceptionQueue: QueueClient = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME);
+    const publishingQueue: QueueClient = getQueueClient(TEST_EVENT_QUEUE_NAME_FHIR);
+    const exceptionQueue: QueueClient = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME_FHIR);
     const publishingErrorQueue: QueueClient = getQueueClient(PUBLISHING_ERROR_QUEUE_NAME);
 
     if (!(await minimumMessagesAvailable(context, publishingQueue))) {

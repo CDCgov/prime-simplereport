@@ -45,6 +45,16 @@ variable "reporting_exception_queue_name" {
   default = "test-event-publishing-exceptions"
 }
 
+variable "test_event_queue_name_fhir" {
+  type    = string
+  default = "fhir_data_queue"
+}
+
+variable "reporting_exception_queue_name_fhir" {
+  type    = string
+  default = "fhir_data_exceptions_queue"
+}
+
 variable "report_stream_batch_minimum" {
   type    = string
   default = "1"
