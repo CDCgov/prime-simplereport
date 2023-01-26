@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,6 +55,11 @@ public class DeviceType extends EternalAuditedEntity {
   /** This relationship is necessary for DeviceTypeRepository.findAllByTestOrdersInternalIdIn */
   @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY)
   List<TestOrder> testOrders;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "deviceType")
+  @Setter
+  List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCodeList = new ArrayList<>();
 
   protected DeviceType() {
     /* no-op for hibernate */
