@@ -16,12 +16,10 @@ import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -160,27 +158,23 @@ public class DeviceTypeService {
         .forEach(deviceSpecimenTypeRepository::save);
 
     if (createDevice.getSupportedDiseaseTestPerformed() != null) {
-      // todo: make this a map
-      List<Pair<SupportedDisease, String>> supportedDiseaseStringList =
-          createDevice.getSupportedDiseaseTestPerformed().stream()
-              .map(
-                  input -> {
-                    var supportedDisease =
-                        supportedDiseaseRepository.findById(input.getSupportedDisease());
-                    return supportedDisease
-                        .map(disease -> Pair.of(disease, input.getTestPerformed()))
-                        .orElse(null);
-                  })
-              .filter(Objects::nonNull)
-              .collect(Collectors.toList());
-
+      var deviceTestPerformedLoincCodeList = new ArrayList<DeviceTestPerformedLoincCode>();
+      createDevice
+          .getSupportedDiseaseTestPerformed()
+          .forEach(
+              input -> {
+                var supportedDisease =
+                    supportedDiseaseRepository.findById(input.getSupportedDisease());
+                supportedDisease.map(
+                    disease ->
+                        deviceTestPerformedLoincCodeList.add(
+                            new DeviceTestPerformedLoincCode(
+                                dt, disease, input.getTestPerformed())));
+              });
       dt.setSupportedDiseases(
-          supportedDiseaseStringList.stream().map(Pair::getFirst).collect(Collectors.toList()));
-
-      var deviceTestPerformedLoincCodeList =
-          supportedDiseaseStringList.stream()
-              .map(pair -> new DeviceTestPerformedLoincCode(dt, pair.getFirst(), pair.getSecond()))
-              .collect(Collectors.toList());
+          deviceTestPerformedLoincCodeList.stream()
+              .map(DeviceTestPerformedLoincCode::getSupportedDisease)
+              .collect(Collectors.toList()));
       testPerformedRepository.saveAll(deviceTestPerformedLoincCodeList);
     } else {
       List<SupportedDisease> supportedDiseases =
