@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -38,7 +37,6 @@ public class DeviceTypeService {
   private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
-  private final DeviceTestPerformedLoincCodeRepository testPerformedRepository;
 
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -175,7 +173,7 @@ public class DeviceTypeService {
           deviceTestPerformedLoincCodeList.stream()
               .map(DeviceTestPerformedLoincCode::getSupportedDisease)
               .collect(Collectors.toList()));
-      testPerformedRepository.saveAll(deviceTestPerformedLoincCodeList);
+      dt.setDeviceTestPerformedLoincCodeList(deviceTestPerformedLoincCodeList);
     } else {
       List<SupportedDisease> supportedDiseases =
           createDevice.getSupportedDiseases().stream()

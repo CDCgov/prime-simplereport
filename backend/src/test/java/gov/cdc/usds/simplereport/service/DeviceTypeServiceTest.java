@@ -17,7 +17,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -54,8 +53,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
             _deviceTypeRepoMock,
             mock(DeviceSpecimenTypeRepository.class),
             mock(SpecimenTypeRepository.class),
-            mock(SupportedDiseaseRepository.class),
-            mock(DeviceTestPerformedLoincCodeRepository.class));
+            mock(SupportedDiseaseRepository.class));
   }
 
   @Test
