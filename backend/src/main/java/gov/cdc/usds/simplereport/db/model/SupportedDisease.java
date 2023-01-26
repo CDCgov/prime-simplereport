@@ -38,7 +38,7 @@ public class SupportedDisease extends IdentifiedEntity {
 
   @JsonIgnore
   @OneToMany(mappedBy = "supportedDisease")
-  private List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCodeList = new ArrayList<>();
+  private List<DeviceTestPerformedLoincCode> supportedDiseaseTestPerformed = new ArrayList<>();
 
   @ConstructorBinding
   public SupportedDisease(String name, String loinc) {

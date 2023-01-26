@@ -122,8 +122,8 @@ public class DeviceTypeService {
           deviceTestPerformedLoincCodeList.stream()
               .map(DeviceTestPerformedLoincCode::getSupportedDisease)
               .collect(Collectors.toList()));
-      device.getDeviceTestPerformedLoincCodeList().clear();
-      device.getDeviceTestPerformedLoincCodeList().addAll(deviceTestPerformedLoincCodeList);
+      device.getSupportedDiseaseTestPerformed().clear();
+      device.getSupportedDiseaseTestPerformed().addAll(deviceTestPerformedLoincCodeList);
     } else if (updateDevice.getSupportedDiseases() != null) {
       List<SupportedDisease> supportedDiseases =
           updateDevice.getSupportedDiseases().stream()
@@ -174,7 +174,7 @@ public class DeviceTypeService {
           deviceTestPerformedLoincCodeList.stream()
               .map(DeviceTestPerformedLoincCode::getSupportedDisease)
               .collect(Collectors.toList()));
-      dt.getDeviceTestPerformedLoincCodeList().addAll(deviceTestPerformedLoincCodeList);
+      dt.getSupportedDiseaseTestPerformed().addAll(deviceTestPerformedLoincCodeList);
     } else {
       List<SupportedDisease> supportedDiseases =
           createDevice.getSupportedDiseases().stream()
@@ -199,7 +199,8 @@ public class DeviceTypeService {
           supportedDisease.map(
               disease ->
                   deviceTestPerformedLoincCodeList.add(
-                      new DeviceTestPerformedLoincCode(device, disease, input.getTestPerformed())));
+                      new DeviceTestPerformedLoincCode(
+                          device, disease, input.getTestPerformedLoincCode())));
         });
     return deviceTestPerformedLoincCodeList;
   }

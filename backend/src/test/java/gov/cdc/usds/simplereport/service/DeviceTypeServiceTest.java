@@ -149,7 +149,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(devASwabTypes.get(0).getName()).isEqualTo("Hair");
     assertEquals(1, devA.getTestLength());
 
-    assertThat(devA.getDeviceTestPerformedLoincCodeList()).isEmpty();
+    assertThat(devA.getSupportedDiseaseTestPerformed()).isEmpty();
 
     List<DeviceType> found = _service.fetchDeviceTypes();
     assertThat(found).hasSize(1);
@@ -177,7 +177,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                     List.of(
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease1.getInternalId())
-                            .testPerformed("loinc1")
+                            .testPerformedLoincCode("loinc1")
                             .build()))
                 .testLength(1)
                 .build());
@@ -193,7 +193,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                     List.of(
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease2.getInternalId())
-                            .testPerformed("loinc2")
+                            .testPerformedLoincCode("loinc2")
                             .build()))
                 .testLength(2)
                 .build());
@@ -214,9 +214,9 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(devASwabTypes.get(0).getName()).isEqualTo("Hair");
     assertEquals(1, devA.getTestLength());
 
-    assertThat(devA.getDeviceTestPerformedLoincCodeList()).hasSize(1);
+    assertThat(devA.getSupportedDiseaseTestPerformed()).hasSize(1);
     var disease1TestPerformed =
-        devA.getDeviceTestPerformedLoincCodeList().stream()
+        devA.getSupportedDiseaseTestPerformed().stream()
             .filter(
                 testPerformed ->
                     testPerformed
@@ -307,7 +307,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                     List.of(
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease1.getInternalId())
-                            .testPerformed("loinc1")
+                            .testPerformedLoincCode("loinc1")
                             .build()))
                 .testLength(10)
                 .build());
@@ -321,11 +321,11 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                     List.of(
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease1.getInternalId())
-                            .testPerformed("loinc2")
+                            .testPerformedLoincCode("loinc2")
                             .build(),
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease2.getInternalId())
-                            .testPerformed("loinc3")
+                            .testPerformedLoincCode("loinc3")
                             .build()))
                 .build());
 
@@ -333,9 +333,9 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals(updatedDevice.getInternalId(), device.getInternalId());
     assertThat(updatedDevice.getSupportedDiseases()).hasSize(2);
     assertThat(updatedDevice.getSupportedDiseases()).contains(disease1, disease2);
-    assertThat(updatedDevice.getDeviceTestPerformedLoincCodeList()).hasSize(2);
+    assertThat(updatedDevice.getSupportedDiseaseTestPerformed()).hasSize(2);
     var disease1TestPerformed =
-        updatedDevice.getDeviceTestPerformedLoincCodeList().stream()
+        updatedDevice.getSupportedDiseaseTestPerformed().stream()
             .filter(
                 testPerformed ->
                     testPerformed
@@ -346,7 +346,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(disease1TestPerformed).isPresent();
     assertThat(disease1TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc2");
     var disease2TestPerformed =
-        updatedDevice.getDeviceTestPerformedLoincCodeList().stream()
+        updatedDevice.getSupportedDiseaseTestPerformed().stream()
             .filter(
                 testPerformed ->
                     testPerformed
@@ -390,7 +390,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                     List.of(
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease1.getInternalId())
-                            .testPerformed("loinc1")
+                            .testPerformedLoincCode("loinc1")
                             .build()))
                 .build());
 
@@ -398,13 +398,12 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(updatedDevice.getInternalId()).isEqualTo(device.getInternalId());
     assertThat(updatedDevice.getSupportedDiseases()).hasSize(1);
     assertThat(updatedDevice.getSupportedDiseases().get(0).getName()).isEqualTo("COVID-19");
-    assertThat(updatedDevice.getDeviceTestPerformedLoincCodeList()).hasSize(1);
-    assertThat(
-            updatedDevice.getDeviceTestPerformedLoincCodeList().get(0).getTestPerformedLoincCode())
+    assertThat(updatedDevice.getSupportedDiseaseTestPerformed()).hasSize(1);
+    assertThat(updatedDevice.getSupportedDiseaseTestPerformed().get(0).getTestPerformedLoincCode())
         .isEqualTo("loinc1");
     assertThat(
             updatedDevice
-                .getDeviceTestPerformedLoincCodeList()
+                .getSupportedDiseaseTestPerformed()
                 .get(0)
                 .getSupportedDisease()
                 .getInternalId())

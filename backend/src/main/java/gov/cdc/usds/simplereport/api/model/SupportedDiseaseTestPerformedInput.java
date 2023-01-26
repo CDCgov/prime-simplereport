@@ -8,5 +8,5 @@ import lombok.Getter;
 @Getter
 public class SupportedDiseaseTestPerformedInput {
   UUID supportedDisease;
-  String testPerformed;
+  String testPerformedLoincCode;
 }

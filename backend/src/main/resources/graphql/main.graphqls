@@ -77,7 +77,7 @@ input UpdateDeviceType {
 
 input SupportedDiseaseTestPerformedInput {
   supportedDisease: ID!
-  testPerformed: String!
+  testPerformedLoincCode: String!
 }
 
 type DeviceType {
@@ -95,7 +95,7 @@ type DeviceType {
 
 type SupportedDiseaseTestPerformed {
   supportedDisease: SupportedDisease!
-  testPerformed: String!
+  testPerformedLoincCode: String!
 }
 
 type SupportedDisease {
