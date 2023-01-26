@@ -39,7 +39,7 @@ public class DeviceTypeService {
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
 
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public void removeDeviceType(DeviceType d) {
     deviceTypeRepository.delete(d);
@@ -59,7 +59,7 @@ public class DeviceTypeService {
     return deviceTypeRepository.findDeviceTypeByName(name);
   }
 
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(UpdateDeviceType updateDevice) {
 
@@ -136,7 +136,7 @@ public class DeviceTypeService {
     return deviceTypeRepository.save(device);
   }
 
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType createDeviceType(CreateDeviceType createDevice) {
 
