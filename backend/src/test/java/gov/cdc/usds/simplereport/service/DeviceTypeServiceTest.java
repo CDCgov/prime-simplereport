@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -41,6 +42,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
+  @Autowired private DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
 
   @Mock private DeviceTypeRepository _deviceTypeRepoMock;
 
@@ -306,6 +308,130 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
     assertThat(updatedSwabTypes.size()).isEqualTo(1);
     assertThat(updatedSwabTypes.get(0).getName()).isEqualTo("Mouth");
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void updateDeviceTypeSupportedDiseaseTestPerformed_adminUser_success() {
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
+    SupportedDisease disease1 = _diseaseService.covid();
+    SupportedDisease disease2 = _diseaseService.fluA();
+
+    DeviceType device =
+        _service.createDeviceType(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .loincCode("D")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease1.getInternalId())
+                            .testPerformed("loinc1")
+                            .build()))
+                .testLength(10)
+                .build());
+
+    // WHEN
+    DeviceType updatedDevice =
+        _service.updateDeviceType(
+            UpdateDeviceType.builder()
+                .internalId(device.getInternalId())
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease1.getInternalId())
+                            .testPerformed("loinc2")
+                            .build(),
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease2.getInternalId())
+                            .testPerformed("loinc3")
+                            .build()))
+                .build());
+
+    // THEN
+    assertEquals(updatedDevice.getInternalId(), device.getInternalId());
+    assertThat(updatedDevice.getSupportedDiseases()).hasSize(2);
+    assertThat(updatedDevice.getSupportedDiseases()).contains(disease1, disease2);
+    assertThat(updatedDevice.getDeviceTestPerformedLoincCodeList()).hasSize(2);
+    var disease1TestPerformed =
+        updatedDevice.getDeviceTestPerformedLoincCodeList().stream()
+            .filter(
+                testPerformed ->
+                    testPerformed
+                        .getSupportedDisease()
+                        .getInternalId()
+                        .equals(disease1.getInternalId()))
+            .findFirst();
+    assertThat(disease1TestPerformed).isPresent();
+    assertThat(disease1TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc2");
+    var disease2TestPerformed =
+        updatedDevice.getDeviceTestPerformedLoincCodeList().stream()
+            .filter(
+                testPerformed ->
+                    testPerformed
+                        .getSupportedDisease()
+                        .getInternalId()
+                        .equals(disease2.getInternalId()))
+            .findFirst();
+    assertThat(disease2TestPerformed).isPresent();
+    assertThat(disease2TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc3");
+
+    var deviceTestPerformedLoincCodeRepositoryAll =
+        deviceTestPerformedLoincCodeRepository.findAll();
+    assertThat(deviceTestPerformedLoincCodeRepositoryAll).hasSize(2);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void updateDeviceTypeSupportedDiseaseToSupportedDiseaseTestPerformed_adminUser_success() {
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
+    SupportedDisease disease1 = _diseaseService.covid();
+
+    DeviceType device =
+        _service.createDeviceType(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .loincCode("D")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseases(List.of(disease1.getInternalId()))
+                .testLength(10)
+                .build());
+
+    // WHEN
+    DeviceType updatedDevice =
+        _service.updateDeviceType(
+            UpdateDeviceType.builder()
+                .internalId(device.getInternalId())
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease1.getInternalId())
+                            .testPerformed("loinc1")
+                            .build()))
+                .build());
+
+    // THEN
+    assertThat(updatedDevice.getInternalId()).isEqualTo(device.getInternalId());
+    assertThat(updatedDevice.getSupportedDiseases()).hasSize(1);
+    assertThat(updatedDevice.getSupportedDiseases().get(0).getName()).isEqualTo("COVID-19");
+    assertThat(updatedDevice.getDeviceTestPerformedLoincCodeList()).hasSize(1);
+    assertThat(
+            updatedDevice.getDeviceTestPerformedLoincCodeList().get(0).getTestPerformedLoincCode())
+        .isEqualTo("loinc1");
+    assertThat(
+            updatedDevice
+                .getDeviceTestPerformedLoincCodeList()
+                .get(0)
+                .getSupportedDisease()
+                .getInternalId())
+        .isEqualTo(disease1.getInternalId());
   }
 
   @Test

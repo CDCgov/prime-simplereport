@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -113,7 +114,17 @@ public class DeviceTypeService {
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
       deviceSpecimenTypeRepository.saveAll(toBeAddedDeviceSpecimenTypes);
     }
-    if (updateDevice.getSupportedDiseases() != null) {
+    if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
+      var deviceTestPerformedLoincCodeList =
+          createDeviceTestPerformedLoincCodeList(
+              updateDevice.getSupportedDiseaseTestPerformed(), device);
+      device.setSupportedDiseases(
+          deviceTestPerformedLoincCodeList.stream()
+              .map(DeviceTestPerformedLoincCode::getSupportedDisease)
+              .collect(Collectors.toList()));
+      device.getDeviceTestPerformedLoincCodeList().clear();
+      device.getDeviceTestPerformedLoincCodeList().addAll(deviceTestPerformedLoincCodeList);
+    } else if (updateDevice.getSupportedDiseases() != null) {
       List<SupportedDisease> supportedDiseases =
           updateDevice.getSupportedDiseases().stream()
               .map(supportedDiseaseRepository::findById)
@@ -156,24 +167,14 @@ public class DeviceTypeService {
         .forEach(deviceSpecimenTypeRepository::save);
 
     if (createDevice.getSupportedDiseaseTestPerformed() != null) {
-      var deviceTestPerformedLoincCodeList = new ArrayList<DeviceTestPerformedLoincCode>();
-      createDevice
-          .getSupportedDiseaseTestPerformed()
-          .forEach(
-              input -> {
-                var supportedDisease =
-                    supportedDiseaseRepository.findById(input.getSupportedDisease());
-                supportedDisease.map(
-                    disease ->
-                        deviceTestPerformedLoincCodeList.add(
-                            new DeviceTestPerformedLoincCode(
-                                dt, disease, input.getTestPerformed())));
-              });
+      var deviceTestPerformedLoincCodeList =
+          createDeviceTestPerformedLoincCodeList(
+              createDevice.getSupportedDiseaseTestPerformed(), dt);
       dt.setSupportedDiseases(
           deviceTestPerformedLoincCodeList.stream()
               .map(DeviceTestPerformedLoincCode::getSupportedDisease)
               .collect(Collectors.toList()));
-      dt.setDeviceTestPerformedLoincCodeList(deviceTestPerformedLoincCodeList);
+      dt.getDeviceTestPerformedLoincCodeList().addAll(deviceTestPerformedLoincCodeList);
     } else {
       List<SupportedDisease> supportedDiseases =
           createDevice.getSupportedDiseases().stream()
@@ -186,5 +187,20 @@ public class DeviceTypeService {
     deviceTypeRepository.save(dt);
 
     return dt;
+  }
+
+  private ArrayList<DeviceTestPerformedLoincCode> createDeviceTestPerformedLoincCodeList(
+      List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
+      DeviceType device) {
+    var deviceTestPerformedLoincCodeList = new ArrayList<DeviceTestPerformedLoincCode>();
+    supportedDiseaseTestPerformedInput.forEach(
+        input -> {
+          var supportedDisease = supportedDiseaseRepository.findById(input.getSupportedDisease());
+          supportedDisease.map(
+              disease ->
+                  deviceTestPerformedLoincCodeList.add(
+                      new DeviceTestPerformedLoincCode(device, disease, input.getTestPerformed())));
+        });
+    return deviceTestPerformedLoincCodeList;
   }
 }
