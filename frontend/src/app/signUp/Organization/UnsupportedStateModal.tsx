@@ -14,7 +14,7 @@ const noop = () => {
 
 export type UnsupportedStateModalProps = {
   showModal: boolean;
-  onClose?: () => void;
+  onClose: (clearField: boolean) => void;
   state: string;
 };
 
@@ -27,11 +27,12 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
 
   return (
     <Modal
-      onClose={onClose || noop}
+      onClose={() => onClose(true)}
       showModal={showModal}
       showClose={true}
       variant="warning"
       contentLabel={"Unsupported State"}
+      containerClassName={"unsupported-state-modal"}
     >
       <Modal.Header
         styleClassNames={"margin-0 font-sans-lg line-height-sans-2"}
@@ -81,7 +82,7 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
         {onClose && (
           <Button
             onClick={() => {
-              onClose();
+              onClose(false);
               setCheckboxState(false);
             }}
             disabled={!checkboxState}

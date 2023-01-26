@@ -55,7 +55,6 @@ const OrganizationForm = () => {
     initOrg()
   );
   const [stateModalOpen, setStateModalOpen] = useState(false);
-  const [selectedState, setSelectedState] = useState("");
   const [errors, setErrors] = useState<OrganizationFormErrors>(initOrgErrors());
   const focusOnce = useRef(false);
   const [backendError, setBackendError] = useState<ReactElement>();
@@ -70,9 +69,6 @@ const OrganizationForm = () => {
     (value: OrganizationCreateRequest[typeof field]) => {
       setFormChanged(true);
       setOrganization({ ...organization, [field]: value });
-      if (field === "state") {
-        setSelectedState(value!);
-      }
     };
 
   const validateField = async (field: keyof OrganizationCreateRequest) => {
@@ -140,10 +136,13 @@ const OrganizationForm = () => {
   ]);
 
   useEffect(() => {
-    if (selectedState! && !liveJurisdictions.includes(selectedState)) {
+    if (
+      organization.state! &&
+      !liveJurisdictions.includes(organization.state)
+    ) {
       setStateModalOpen(true);
     }
-  }, [selectedState]);
+  }, [organization.state]);
 
   if (orgExternalId) {
     return (
@@ -329,10 +328,13 @@ const OrganizationForm = () => {
       </Card>
       <UnsupportedStateModal
         showModal={stateModalOpen}
-        onClose={() => {
+        state={organization.state}
+        onClose={(clearField: boolean) => {
+          if (clearField) {
+            setOrganization({ ...organization, "state": "" });
+          }
           setStateModalOpen(false);
         }}
-        state={selectedState}
       />
     </CardBackground>
   );
