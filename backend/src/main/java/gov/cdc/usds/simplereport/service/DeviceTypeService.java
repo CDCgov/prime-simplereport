@@ -5,19 +5,23 @@ import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +40,7 @@ public class DeviceTypeService {
   private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
+  private final DeviceTestPerformedLoincCodeRepository testPerformedRepository;
 
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -140,13 +145,6 @@ public class DeviceTypeService {
           }
         });
 
-    List<SupportedDisease> supportedDiseases =
-        createDevice.getSupportedDiseases().stream()
-            .map(supportedDiseaseRepository::findById)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
-
     DeviceType dt =
         deviceTypeRepository.save(
             new DeviceType(
@@ -161,7 +159,38 @@ public class DeviceTypeService {
         .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
         .forEach(deviceSpecimenTypeRepository::save);
 
-    dt.setSupportedDiseases(supportedDiseases);
+    if (createDevice.getSupportedDiseaseTestPerformed() != null) {
+      // todo: make this a map
+      List<Pair<SupportedDisease, String>> supportedDiseaseStringList =
+          createDevice.getSupportedDiseaseTestPerformed().stream()
+              .map(
+                  input -> {
+                    var supportedDisease =
+                        supportedDiseaseRepository.findById(input.getSupportedDisease());
+                    return supportedDisease
+                        .map(disease -> Pair.of(disease, input.getTestPerformed()))
+                        .orElse(null);
+                  })
+              .filter(Objects::nonNull)
+              .collect(Collectors.toList());
+
+      dt.setSupportedDiseases(
+          supportedDiseaseStringList.stream().map(Pair::getFirst).collect(Collectors.toList()));
+
+      var deviceTestPerformedLoincCodeList =
+          supportedDiseaseStringList.stream()
+              .map(pair -> new DeviceTestPerformedLoincCode(dt, pair.getFirst(), pair.getSecond()))
+              .collect(Collectors.toList());
+      testPerformedRepository.saveAll(deviceTestPerformedLoincCodeList);
+    } else {
+      List<SupportedDisease> supportedDiseases =
+          createDevice.getSupportedDiseases().stream()
+              .map(supportedDiseaseRepository::findById)
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .collect(Collectors.toList());
+      dt.setSupportedDiseases(supportedDiseases);
+    }
     deviceTypeRepository.save(dt);
 
     return dt;
