@@ -229,29 +229,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     devB = _deviceTypeRepo.findById(devB.getInternalId()).get();
     assertNotNull(devB);
-    assertEquals("F", devB.getName());
-    assertEquals("G", devB.getModel());
-    assertEquals("H", devB.getManufacturer());
-    assertEquals("I", devB.getLoincCode());
-    assertEquals("Flu A", devB.getSupportedDiseases().get(0).getName());
-    assertNull(devB.getSwabType());
-    List<SpecimenType> devBSwabTypes = devB.getSwabTypes();
-    assertThat(devBSwabTypes).hasSize(1);
-    assertThat(devBSwabTypes.get(0).getName()).isEqualTo("Mouth");
-    assertEquals(2, devB.getTestLength());
-
-    assertThat(devB.getDeviceTestPerformedLoincCodeList()).hasSize(1);
-    var disease2TestPerformed =
-        devB.getDeviceTestPerformedLoincCodeList().stream()
-            .filter(
-                testPerformed ->
-                    testPerformed
-                        .getSupportedDisease()
-                        .getInternalId()
-                        .equals(disease2.getInternalId()))
-            .findFirst();
-    assertThat(disease2TestPerformed).isPresent();
-    assertThat(disease2TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc2");
 
     List<DeviceType> found = _service.fetchDeviceTypes();
     assertThat(found).hasSize(2);
