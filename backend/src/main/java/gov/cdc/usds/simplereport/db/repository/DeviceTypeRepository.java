@@ -7,8 +7,6 @@ import java.util.UUID;
 
 /** Specification of EternalAuditedEntityRepository for {@link DeviceType} manipulation. */
 public interface DeviceTypeRepository extends EternalAuditedEntityRepository<DeviceType> {
-  List<DeviceType> findAllByTestOrdersInternalIdIn(Collection<UUID> testOrders);
-
   List<DeviceType> findAllByInternalIdIn(Collection<UUID> ids);
 
   DeviceType findDeviceTypeByName(String name);
