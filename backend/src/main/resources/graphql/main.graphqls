@@ -60,6 +60,8 @@ input CreateDeviceType {
   swabTypes: [ID!]!
   supportedDiseases: [ID!]
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
+  equipmentUid: String
+  testkitNameId: String
   testLength: Int!
 }
 
@@ -72,6 +74,8 @@ input UpdateDeviceType {
   swabTypes: [ID!]!
   supportedDiseases: [ID!]
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
+  equipmentUid: String
+  testkitNameId: String
   testLength: Int!
 }
 
@@ -90,6 +94,8 @@ type DeviceType {
   swabTypes: [SpecimenType!]!
   supportedDiseases: [SupportedDisease!]!
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]
+  equipmentUid: String
+  testkitNameId: String
   testLength: Int!
 }
 

@@ -440,7 +440,8 @@ class FhirConverterTest {
   @Test
   void convertToDevice_DeviceType_valid() {
     var internalId = UUID.randomUUID();
-    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15);
+    var deviceType =
+        new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15, null, null);
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
     var actual = convertToDevice(deviceType);
@@ -462,7 +463,9 @@ class FhirConverterTest {
             "BioFire Respiratory Panel 2.1 (RP2.1)*@",
             "loinc",
             "swab type",
-            15);
+            15,
+            null,
+            null);
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
     var actual = convertToDevice(deviceType);
@@ -1060,7 +1063,8 @@ class FhirConverterTest {
   @Test
   void createFhirBundle_TestEvent_matchesJson() throws IOException {
     var address = new StreetAddress(List.of("1 Main St"), "Chicago", "IL", "60614", "");
-    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
+    var deviceType =
+        new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0, null, null);
     var specimenType = new SpecimenType("name", "typeCode");
     var provider =
         new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");

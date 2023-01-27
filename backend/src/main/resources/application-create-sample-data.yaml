@@ -76,31 +76,43 @@ simple-report-initialization:
       model: ID Now
       loinc-code: "94534-5"
       swab-type: "445297001"
+      equipment-uid: "123"
+      testkit-nameid: "123"
     - name: Abbott BinaxNow
       manufacturer: Abbott
       model: BinaxNOW COVID-19 Ag Card
       loinc-code: "94558-4"
       swab-type: "445297001"
+      equipment-uid: "234"
+      testkit-nameid: "234"
     - name: Quidel Sofia 2
       manufacturer: Quidel
       model: Sofia 2 SARS Antigen FIA
       loinc-code: "95209-3"
       swab-type: "445297001"
+      equipment-uid: "345"
+      testkit-nameid: "345"
     - name: BD Veritor
       manufacturer: Becton, Dickinson and Company (BD)
       model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
       loinc-code: "94558-4"
       swab-type: "445297001"
+      equipment-uid: "456"
+      testkit-nameid: "456"
     - name: LumiraDX
       manufacturer: LumiraDx UK Ltd.
       model: LumiraDx SARS-CoV-2 Ag Test*
       loinc-code: "95209-3"
       swab-type: "445297001"
+      equipment-uid: "567"
+      testkit-nameid: "567"
     - name: Access Bio CareStart
       manufacturer: Access Bio, Inc.
       model: CareStart COVID-19 Antigen test*
       loinc-code: "94558-4"
       swab-type: "258500001"
+      equipment-uid: "678"
+      testkit-nameid: "678"
   patient-registration-links:
     - patient-registration-link: dis-org
       organization-external-id: DIS_ORG

@@ -13,6 +13,8 @@ public class UpdateDeviceType {
   private String manufacturer;
   private String model;
   private String loincCode;
+  private String equipmentUid;
+  private String testkitNameId;
   private List<UUID> swabTypes;
   private List<UUID> supportedDiseases;
   private List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformed;

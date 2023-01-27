@@ -79,6 +79,13 @@ public class DeviceTypeService {
     if (updateDevice.getLoincCode() != null) {
       device.setLoincCode(updateDevice.getLoincCode());
     }
+    if (updateDevice.getEquipmentUid() != null) {
+      device.setEquipmentUid(updateDevice.getEquipmentUid());
+    }
+    if (updateDevice.getTestkitNameId() != null) {
+      device.setTestkitNameId(updateDevice.getTestkitNameId());
+    }
+
     if (updateDevice.getSwabTypes() != null) {
       List<SpecimenType> updatedSpecimenTypes =
           updateDevice.getSwabTypes().stream()
@@ -160,7 +167,9 @@ public class DeviceTypeService {
                 createDevice.getModel(),
                 createDevice.getLoincCode(),
                 null,
-                createDevice.getTestLength()));
+                createDevice.getTestLength(),
+                createDevice.getEquipmentUid(),
+                createDevice.getTestkitNameId()));
 
     specimenTypes.stream()
         .map(specimenType -> new DeviceSpecimenType(dt, specimenType))

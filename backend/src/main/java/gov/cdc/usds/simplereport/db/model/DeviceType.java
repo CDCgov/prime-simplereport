@@ -17,6 +17,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 /** The durable (and non-deletable) representation of a POC test device model. */
 @Entity
 @Getter
+@Setter
 public class DeviceType extends EternalAuditedEntity {
 
   @Column(nullable = false)
@@ -56,6 +57,10 @@ public class DeviceType extends EternalAuditedEntity {
   @OneToMany(mappedBy = "deviceTypeId", cascade = CascadeType.ALL, orphanRemoval = true)
   List<DeviceTestPerformedLoincCode> supportedDiseaseTestPerformed = new ArrayList<>();
 
+  private String equipmentUid;
+
+  private String testkitNameId;
+
   protected DeviceType() {
     /* no-op for hibernate */
   }
@@ -67,7 +72,9 @@ public class DeviceType extends EternalAuditedEntity {
       String model,
       String loincCode,
       String swabType,
-      int testLength) {
+      int testLength,
+      String equipmentUid,
+      String testkitNameId) {
     super();
     this.name = name;
     this.manufacturer = manufacturer;
@@ -75,53 +82,7 @@ public class DeviceType extends EternalAuditedEntity {
     this.loincCode = loincCode;
     this.swabType = swabType;
     this.testLength = testLength;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getManufacturer() {
-    return manufacturer;
-  }
-
-  public void setManufacturer(String manufacturer) {
-    this.manufacturer = manufacturer;
-  }
-
-  public String getModel() {
-    return model;
-  }
-
-  public void setModel(String model) {
-    this.model = model;
-  }
-
-  public String getLoincCode() {
-    return loincCode;
-  }
-
-  public void setLoincCode(String loincCode) {
-    this.loincCode = loincCode;
-  }
-
-  public String getSwabType() {
-    return swabType;
-  }
-
-  public void setSwabType(String swabType) {
-    this.swabType = swabType;
-  }
-
-  public int getTestLength() {
-    return this.testLength;
-  }
-
-  public void setTestLength(int testLength) {
-    this.testLength = testLength;
+    this.equipmentUid = equipmentUid;
+    this.testkitNameId = testkitNameId;
   }
 }
