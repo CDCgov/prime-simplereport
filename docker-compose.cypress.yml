@@ -35,8 +35,6 @@ services:
     command:
       ["-s", "$SPEC_PATH", "-r", "$TEST_ENV"]
   backend:
-    logging:
-      driver: none
     environment:
       SPRING_PROFILES_ACTIVE: $SPRING_PROFILES_ACTIVE
       OKTA_TESTING_DISABLEHTTPSCHECK: $OKTA_TESTING_DISABLEHTTPSCHECK
