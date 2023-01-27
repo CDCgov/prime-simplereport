@@ -929,12 +929,12 @@ export type SupportedDisease = {
 export type SupportedDiseaseTestPerformed = {
   __typename?: "SupportedDiseaseTestPerformed";
   supportedDisease: SupportedDisease;
-  testPerformed: Scalars["String"];
+  testPerformedLoincCode: Scalars["String"];
 };
 
 export type SupportedDiseaseTestPerformedInput = {
   supportedDisease: Scalars["ID"];
-  testPerformed: Scalars["String"];
+  testPerformedLoincCode: Scalars["String"];
 };
 
 export enum TestCorrectionStatus {
@@ -1780,7 +1780,7 @@ export type GetDeviceTypeListQuery = {
     supportedDiseaseTestPerformed?:
       | Array<{
           __typename?: "SupportedDiseaseTestPerformed";
-          testPerformed: string;
+          testPerformedLoincCode: string;
           supportedDisease: {
             __typename?: "SupportedDisease";
             internalId: string;
@@ -5061,7 +5061,7 @@ export const GetDeviceTypeListDocument = gql`
           internalId
           name
         }
-        testPerformed
+        testPerformedLoincCode
       }
       testLength
     }

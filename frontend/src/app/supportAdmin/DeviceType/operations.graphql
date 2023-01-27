@@ -73,7 +73,7 @@ query getDeviceTypeList{
         internalId
         name
       }
-      testPerformed
+      testPerformedLoincCode
     }
     testLength
   }
