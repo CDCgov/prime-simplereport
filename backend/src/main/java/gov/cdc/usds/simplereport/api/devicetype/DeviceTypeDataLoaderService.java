@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceSupportedDiseaseRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ public class DeviceTypeDataLoaderService {
   final DiseaseService diseaseService;
   final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   final SpecimenTypeRepository specimenTypeRepository;
-  final DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
 
   Map<UUID, List<SupportedDisease>> getSupportedDiseases(Set<UUID> deviceTypeIds) {
     // load cached supportedDisease
@@ -98,15 +96,6 @@ public class DeviceTypeDataLoaderService {
           found.put(deviceTypeId, specimenTypes);
         });
 
-    return found;
-  }
-
-  Map<UUID, SupportedDisease> getSupportedDisease(Set<UUID> supportedDiseaseId) {
-    Map<UUID, SupportedDisease> supportedDiseasesMap =
-        diseaseService.getKnownSupportedDiseasesMap();
-
-    var found = new HashMap<UUID, SupportedDisease>();
-    supportedDiseaseId.forEach(uuid -> found.put(uuid, supportedDiseasesMap.get(uuid)));
     return found;
   }
 }
