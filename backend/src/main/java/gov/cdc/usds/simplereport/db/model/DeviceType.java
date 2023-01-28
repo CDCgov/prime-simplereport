@@ -52,11 +52,6 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private int testLength;
 
-  /** This relationship is necessary for DeviceTypeRepository.findAllByTestOrdersInternalIdIn */
-  @JsonIgnore
-  @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY)
-  List<TestOrder> testOrders;
-
   @JsonIgnore
   @OneToMany(mappedBy = "deviceType", cascade = CascadeType.ALL, orphanRemoval = true)
   List<DeviceTestPerformedLoincCode> supportedDiseaseTestPerformed = new ArrayList<>();
