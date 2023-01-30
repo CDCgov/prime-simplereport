@@ -66,7 +66,13 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
       <Modal.Footer styleClassNames={"prime-right-align"}>
         <Button
           variant="outline"
-          onClick={() => window.open("https://simplereport.gov/waitlist")}
+          onClick={() =>
+            window.open(
+              "https://simplereport.gov/waitlist",
+              "Simple Report WaitList",
+              "noopener"
+            )
+          }
         >
           Join waitlist
         </Button>
