@@ -9594,10 +9594,10 @@ find-up@^5.0.0:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
 
-flagged@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/flagged/-/flagged-2.0.6.tgz#48985fa3c89bbf09f221840779a9defefc742a18"
-  integrity sha512-Dfbftp6cpaZMjfXugCdMf4z2XlL11kSTmzr2GPkWa5nFxLbp37YtEZngz4dX+0RXe/OibFwubxIba2ZvIwmEIg==
+flagged@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/flagged/-/flagged-2.0.8.tgz#c403b61bbe45a02b79c973ba3d69f278299d4a8a"
+  integrity sha512-kB3IW4Txjj2qk60f365+Ev2DzvL79yHOcRAQYscR936tw70o/VmYCOqzZf/3Anlo3L0hTKIfCsG90viTzp533A==
 
 flat-cache@^3.0.4:
   version "3.0.4"
@@ -16078,10 +16078,10 @@ redux-mock-store@^1.5.4:
   dependencies:
     lodash.isplainobject "^4.0.6"
 
-redux@^4.0.5, redux@^4.2.0:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/redux/-/redux-4.2.0.tgz#46f10d6e29b6666df758780437651eeb2b969f13"
-  integrity sha512-oSBmcKKIuIR4ME29/AeNUnl5L+hvBq7OaJWzaptTQJAntaPvxIJqfnjbaEiCzzaIz+XmVILfqAM3Ob0aXLPfjA==
+redux@^4.0.5, redux@^4.2.1:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/redux/-/redux-4.2.1.tgz#c08f4306826c49b5e9dc901dee0452ea8fce6197"
+  integrity sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==
   dependencies:
     "@babel/runtime" "^7.9.2"
 
