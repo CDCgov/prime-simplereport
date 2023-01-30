@@ -9594,10 +9594,10 @@ find-up@^5.0.0:
     locate-path "^6.0.0"
     path-exists "^4.0.0"
 
-flagged@^2.0.6:
-  version "2.0.6"
-  resolved "https://registry.yarnpkg.com/flagged/-/flagged-2.0.6.tgz#48985fa3c89bbf09f221840779a9defefc742a18"
-  integrity sha512-Dfbftp6cpaZMjfXugCdMf4z2XlL11kSTmzr2GPkWa5nFxLbp37YtEZngz4dX+0RXe/OibFwubxIba2ZvIwmEIg==
+flagged@^2.0.8:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/flagged/-/flagged-2.0.8.tgz#c403b61bbe45a02b79c973ba3d69f278299d4a8a"
+  integrity sha512-kB3IW4Txjj2qk60f365+Ev2DzvL79yHOcRAQYscR936tw70o/VmYCOqzZf/3Anlo3L0hTKIfCsG90viTzp533A==
 
 flat-cache@^3.0.4:
   version "3.0.4"
