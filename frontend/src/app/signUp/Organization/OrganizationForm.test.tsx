@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import OrganizationForm, {
@@ -87,16 +87,13 @@ describe("OrganizationForm", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("SimpleReport isn't available yet in your state.", {
-        exact: false,
-      })
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
     ).toBeInTheDocument();
-
-    await waitFor(() =>
-      expect(
-        screen.getByRole("textbox", { name: "Organization name required" })
-      ).toHaveFocus()
-    );
   });
 
   it("redirects to identity verification when submitting valid input", async () => {

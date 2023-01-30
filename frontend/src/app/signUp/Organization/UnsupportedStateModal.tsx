@@ -5,14 +5,6 @@ import Modal from "../../commonComponents/Modal";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import { getStateNameFromCode } from "../../utils/state";
 
-const noop = () => {
-  /**
-   * The `onClose` callback is technically optional in this component but not
-   * in the child `Modal` component. Pass a no-op callback to the inner
-   * component to satisfy the prop type requirement
-   */
-};
-
 export type UnsupportedStateModalProps = {
   showModal: boolean;
   onClose: (clearField: boolean) => void;
@@ -47,7 +39,7 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
       <Checkboxes
         name="acknowledge"
         legend=""
-        onChange={(e) => {
+        onChange={() => {
           setCheckboxState(!checkboxState);
         }}
         boxes={[
@@ -67,17 +59,17 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
               </>
             ),
             checked: checkboxState,
+            "aria-label": "acknowledged",
           },
         ]}
       />
       <Modal.Footer styleClassNames={"prime-right-align"}>
-        <a
-          href={"https://simplereport.gov/waitlist"}
-          target={"_blank"}
-          rel="noopener noreferrer"
+        <Button
+          variant="outline"
+          onClick={() => window.open("https://simplereport.gov/waitlist")}
         >
-          <Button variant="outline">Join waitlist</Button>
-        </a>
+          Join waitlist
+        </Button>
         {onClose && (
           <Button
             onClick={() => {
