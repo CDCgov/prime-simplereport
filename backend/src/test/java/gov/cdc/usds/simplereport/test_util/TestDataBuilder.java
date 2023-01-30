@@ -68,7 +68,7 @@ public class TestDataBuilder {
   }
 
   public static DeviceType createEmptyDeviceWithLoinc() {
-    return new DeviceType(null, null, null, "95422-2", null, 0);
+    return new DeviceType(null, null, null, "95422-2", 0);
   }
 
   public static TestOrder createEmptyTestOrder() {
@@ -110,7 +110,7 @@ public class TestDataBuilder {
   }
 
   public static DeviceType createDeviceType() {
-    return new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E", 15);
+    return new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", 15);
   }
 
   public static SpecimenType createSpecimenType() {

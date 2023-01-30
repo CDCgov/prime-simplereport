@@ -551,8 +551,7 @@ public class TestDataFactory {
 
   public DeviceType createDeviceType(
       String name, String manufacturer, String model, String loincCode, String swabType) {
-    return deviceTypeRepository.save(
-        new DeviceType(name, manufacturer, model, loincCode, swabType, 15));
+    return deviceTypeRepository.save(new DeviceType(name, manufacturer, model, loincCode, 15));
   }
 
   public DeviceType getGenericDevice() {

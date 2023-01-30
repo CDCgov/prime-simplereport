@@ -154,7 +154,6 @@ public class DeviceTypeService {
                 createDevice.getManufacturer(),
                 createDevice.getModel(),
                 createDevice.getLoincCode(),
-                null,
                 createDevice.getTestLength()));
 
     specimenTypes.stream()
