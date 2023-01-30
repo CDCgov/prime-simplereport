@@ -1,4 +1,5 @@
 import { Context } from "@azure/functions";
+import fetchMock from "jest-fetch-mock";
 import { DequeuedMessageItem, QueueClient, QueueDeleteMessageResponse } from "@azure/storage-queue";
 
 import * as queueHandlers from './queueHandlers';
@@ -6,7 +7,11 @@ import { handleReportStreamResponse, reportTestEvents } from "./reportingHandler
 import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
 import { uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./rs-response";
-import { deleteSuccessfullyParsedMessages, publishToQueue } from "./queueHandlers";
+
+jest.mock(
+    "node-fetch",
+    jest.fn(() => fetchMock)
+);
 
 jest.mock("../config", () => ({
     ENV: {
@@ -154,7 +159,7 @@ describe('reportingHandlers', () => {
                     errors: []
                 } as jest.MockedObject<ReportStreamResponse>),
             } as jest.MockedObject<Response>;
-            
+
             await expect(handleReportStreamResponse(responseMock as Response, context, messagesMock, parseFailureMock, eventQueueMock,
                 exceptionQueueMock, errorQueueMock
             )).rejects.toThrow();
