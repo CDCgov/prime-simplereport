@@ -15,7 +15,8 @@
     "coding": [
       {
         "system": "http://snomed.info/sct",
-        "code": "260415000"
+        "code": "260415000",
+        "display": "NEGATIVE"
       }
     ]
   },

@@ -3,13 +3,14 @@ import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Dropdown from "../commonComponents/Dropdown";
 import SingleFileInput from "../commonComponents/SingleFileInput";
+import { getAppInsights } from "../TelemetryService";
 import { Facility, FeedbackMessage } from "../../generated/graphql";
 import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
@@ -24,7 +25,7 @@ import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
 
-const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
+const UploadPatients = () => {
   type ErrorMessage = {
     header: string;
     body: string;
@@ -39,6 +40,9 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
+
+  const appInsights = getAppInsights();
+
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
     header: "",
     body: "",
@@ -55,6 +59,16 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
   const facility = selectedFacility ||
     facilities.find((f) => f.id === activeFacilityId) ||
     facilities[0] || { id: "", name: "" };
+
+  useEffect(() => {
+    performance.mark("patientUpload_pageLanding");
+
+    return () => {
+      performance.clearMarks("patientUpload_pageLanding");
+      performance.clearMarks("patientUpload_successfulUpload");
+      performance.clearMeasures("patientUpload_timeToUpload");
+    };
+  }, []);
 
   function onFacilitySelect() {
     return (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -93,6 +107,23 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
           });
         }
       } else {
+        performance.clearMarks("patientUpload_successfulUpload");
+        performance.clearMeasures("patientUpload_timeToUpload");
+        performance.mark("patientUpload_successfulUpload");
+        performance.measure(
+          "patientUpload_timeToUpload",
+          "patientUpload_pageLanding",
+          "patientUpload_successfulUpload"
+        );
+        appInsights?.trackMetric(
+          {
+            name: "patientUpload_timeToUpload",
+            average: performance.getEntriesByName(
+              "patientUpload_timeToUpload"
+            )?.[0]?.duration,
+          },
+          { srFeature: "patientUpload" }
+        );
         setStatus("success");
       }
     }
@@ -174,13 +205,6 @@ const UploadPatients = ({ isAdmin }: { isAdmin: boolean }) => {
       });
     };
   }
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (!isAdmin) {
-      navigate("/queue");
-    }
-  }, [navigate, isAdmin]);
-
   function renderErrorToast() {
     return (
       <div>

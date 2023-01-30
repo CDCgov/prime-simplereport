@@ -22,6 +22,8 @@ public final class BeanProfiles {
   /** Profile that creates sample devices on application startup (for e2e tests). */
   public static final String CREATE_SAMPLE_DEVICES = "create-sample-devices";
 
+  public static final String PROD = "azure-prod";
+
   private BeanProfiles() {
     /* no instances! */
   }

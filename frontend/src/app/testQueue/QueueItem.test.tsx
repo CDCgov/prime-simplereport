@@ -1152,8 +1152,8 @@ describe("QueueItem", () => {
     // Submit test
     await userEvent.click(await screen.findByText("Submit"));
 
-    // 500ms debounce on queue item update operations
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    // 500ms debounce on queue item update operations plus a little extra wait time
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Toast alert should appear
     expect(await screen.findByText("Invalid test date")).toBeInTheDocument();

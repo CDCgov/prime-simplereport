@@ -4289,3 +4289,185 @@ databaseChangeLog:
       rollback:
         dropTable:
           tableName: shedlock
+  - changeSet:
+      id: update-test_event_no_phi_view
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: update-test_event_no_phi_view
+        - dropView:
+            viewName: test_event_no_phi_view
+        - createView:
+            viewName: test_event_no_phi_view
+            remarks: A subset of the test_event table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT internal_id, created_at, created_by, updated_at, updated_by, patient_id, organization_id, result, facility_id, specimen_type_id, device_type_id, survey_data, date_tested_backdate, test_order_id, correction_status, prior_corrected_test_event_id, reason_for_correction FROM ${database.defaultSchemaName}.test_event
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
+      rollback:
+        - dropView:
+            viewName: test_event_no_phi_view
+        - createView:
+            viewName: test_event_no_phi_view
+            remarks: A subset of the test_event table with columns containing PHI removed.
+            replaceIfExists: true
+            fullDefinition: false
+            selectQuery: SELECT device_specimen_type_id, created_at, created_by, updated_at, updated_by, patient_id, organization_id, result, facility_id, survey_data, date_tested_backdate, test_order_id, correction_status, prior_corrected_test_event_id, internal_id, reason_for_correction FROM ${database.defaultSchemaName}.test_event
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.test_event_no_phi_view TO ${noPhiUsername};
+  - changeSet:
+      id: remove-test-performed-code-column-in-device-supported-disease-table
+      author: boban@skylight.digital
+      comment: Remove test performed code column to store the specific LOINC code between a device and disease.
+      changes:
+        - tagDatabase:
+            tag: remove-test-performed-code-column-to-device-supported-disease-table
+        - dropColumn:
+            tableName: device_supported_disease
+            columnName: test_performed_code
+      rollback:
+        - addColumn:
+            tableName: device_supported_disease
+            columns:
+              - column:
+                  name: test_performed_code
+                  type: text
+  - changeSet:
+      id: add-equipment_uid-testkit_name_id-to-device_type
+      author: zedd@skylight.digital
+      comment: Add equipment_uid and testkit_name_id columns to device_type table
+      changes:
+        - tagDatabase:
+            tag: add-equipment_uid-testkit_name_id-to-device_type
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: equipment_uid
+                  type: text
+                  remarks: represents the data from "Equipment UID" column in the LIVD
+              - column:
+                  name: testkit_name_id
+                  type: text
+                  remarks: represents the data from "Testkit Name ID" column in the LIVD
+  - changeSet:
+      id: create-test-performed-table
+      author: boban@skylight.digital
+      comment: creates a table to store the test performed code between device type and supported disease
+      changes:
+        - tagDatabase:
+            tag: create-test-performed-table
+        - createTable:
+            tableName: device_test_performed_loinc_code
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: device_type_id
+                  remarks: The reference to the device type.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__device_type
+                    references: device_type
+              - column:
+                  name: supported_disease_id
+                  remarks: The reference to the supported disease.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__supported_disease_type
+                    references: supported_disease
+              - column:
+                  name: test_performed_loinc_code
+                  remarks: The code that identifies which disease was tested.
+                  type: text
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.device_test_performed_loinc_code TO ${noPhiUsername};
+      rollback:
+        - dropTable:
+            tableName: device_test_performed_loinc_code
+  - changeSet:
+      id: drop-data_hub_upload-table
+      author: merethe@skylight.digital
+      comment: remove unused table formerly used for tracking uploads to ReportStream via deprecated implementation
+      changes:
+        - tagDatabase:
+            tag: drop-data_hub_upload-table
+        - dropTable:
+            tableName: data_hub_upload
+        - sql:
+            sql: |
+              DROP TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS;
+      rollback:
+        - sql:
+            remarks: Create the enumerations needed for DataHubUpload.
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS as ENUM('IN_PROGRESS', 'SUCCESS', 'FAIL');
+        - createTable:
+            tableName: data_hub_upload
+            remarks: Track uploads and results of test_events to the data-hub.
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: job_status
+                  type: ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS
+                  remarks: State of this upload. Enumerated value.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: records_processed
+                  type: int
+                  remarks: Number of rows sent to the server.
+              - column:
+                  name: error_message
+                  type: text
+                  remarks: Set if an exception happens.
+              - column:
+                  name: response_data
+                  type: jsonb
+                  remarks: Response json from data-hub.
+              - column:
+                  name: earliest_recorded_timestamp
+                  type: DATETIME
+                  remarks: Lowerbound timestamp used to collect test_events. Entities with created_by > this value are sent.
+              - column:
+                  name: latest_recorded_timestamp
+                  type: DATETIME
+                  remarks: Upperbounds timestamp used to collect test_event. Entities with created_by <= this value are sent.
+        - createIndex:
+            indexName: uk__data_hub_upload__job_status__latest_recorded_timestamp
+            tableName: data_hub_upload
+            clustered: true
+            columns:
+              - column:
+                  name: job_status
+              - column:
+                  name: latest_recorded_timestamp
+                  descending: true

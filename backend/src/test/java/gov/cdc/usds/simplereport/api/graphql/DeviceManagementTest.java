@@ -2,12 +2,21 @@ package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import gov.cdc.usds.simplereport.api.devicetype.DeviceTypeMutationResolver;
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,6 +25,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
@@ -133,5 +143,40 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .build();
 
     return Map.of("input", input);
+  }
+
+  @Test
+  void markDeviceTypeAsDeleted_uuid_success() {
+    DeviceTypeService deviceTypeServiceMock = mock(DeviceTypeService.class);
+    DeviceType dummyDevice = mock(DeviceType.class);
+    when(deviceTypeServiceMock.getDeviceType(any(UUID.class))).thenReturn(dummyDevice);
+    ArgumentCaptor<DeviceType> deviceCaptor = ArgumentCaptor.forClass(DeviceType.class);
+
+    DeviceTypeMutationResolver deviceTypeMR = new DeviceTypeMutationResolver(deviceTypeServiceMock);
+    assertEquals(dummyDevice, deviceTypeMR.markDeviceTypeAsDeleted(mock(UUID.class), null));
+    verify(deviceTypeServiceMock).removeDeviceType(deviceCaptor.capture());
+    assertEquals(dummyDevice, deviceCaptor.getValue());
+  }
+
+  @Test
+  void markDeviceTypeAsDeleted_deviceName_success() {
+    DeviceTypeService deviceTypeServiceMock = mock(DeviceTypeService.class);
+    DeviceType dummyDevice = mock(DeviceType.class);
+    when(deviceTypeServiceMock.getDeviceType(anyString())).thenReturn(dummyDevice);
+    ArgumentCaptor<DeviceType> deviceCaptor = ArgumentCaptor.forClass(DeviceType.class);
+
+    DeviceTypeMutationResolver deviceTypeMR = new DeviceTypeMutationResolver(deviceTypeServiceMock);
+    assertEquals(dummyDevice, deviceTypeMR.markDeviceTypeAsDeleted(null, "dummyName"));
+    verify(deviceTypeServiceMock).removeDeviceType(deviceCaptor.capture());
+    assertEquals(dummyDevice, deviceCaptor.getValue());
+  }
+
+  @Test
+  void markDeviceTypeAsDeleted_notDeviceFound() {
+    DeviceTypeService deviceTypeServiceMock = mock(DeviceTypeService.class);
+    when(deviceTypeServiceMock.getDeviceType(anyString())).thenReturn(null);
+    DeviceTypeMutationResolver deviceTypeMR = new DeviceTypeMutationResolver(deviceTypeServiceMock);
+    assertEquals(null, deviceTypeMR.markDeviceTypeAsDeleted(null, "dummyName"));
+    verify(deviceTypeServiceMock, never()).removeDeviceType(any(DeviceType.class));
   }
 }

@@ -71,11 +71,13 @@
     },
     {
       "system": "email",
-      "value": "email1"
+      "value": "email1",
+      "use": "home"
     },
     {
       "system": "email",
-      "value": "email2"
+      "value": "email2",
+      "use": "home"
     }
   ],
   "gender": "male",
@@ -89,7 +91,8 @@
       "city": "Charleston",
       "district": "Kanawha",
       "state": "WV",
-      "postalCode": "25301"
+      "postalCode": "25301",
+      "country": "USA"
     }
   ]
 }

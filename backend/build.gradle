@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.7'
+    id 'org.springframework.boot' version '2.7.8'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
@@ -99,6 +99,11 @@ dependencies {
     // RandomStringUtils to generate PatientSelfRegistrationLink
     implementation 'org.apache.commons:commons-lang3:3.12.0'
 
+    // Shedlock for scheduler synchronization
+    implementation 'net.javacrumbs.shedlock:shedlock-core:4.42.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.42.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0'
+
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -123,7 +128,7 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.1'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.4'
 }
 
 dependencyManagement {
@@ -236,5 +241,6 @@ tasks.named('test') {
         dependsOn testDbStart
         finalizedBy testDbStop
     }
+    maxHeapSize = "1024m"
 }
 

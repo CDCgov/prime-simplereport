@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -132,7 +133,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
         "Doe",
         "",
         LocalDate.of(1980, 11, 3),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         List.of(new PhoneNumber(parsePhoneType("mobile"), "410-867-5309")),
         PersonRole.STAFF,
@@ -204,8 +205,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
   }
 
   @Test
-  void invalidData_throwsExceptionAndTriggersErrorEmail()
-      throws IOException, ExecutionException, InterruptedException {
+  void invalidData_throwsExceptionAndTriggersErrorEmail() throws IOException {
     // GIVEN
     InputStream inputStream = loadCsv("patientBulkUpload/missingRequiredFields.csv");
     byte[] content = inputStream.readAllBytes();
@@ -226,8 +226,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
   }
 
   @Test
-  void personSaveAllFailure_triggersErrorEmail()
-      throws IOException, ExecutionException, InterruptedException {
+  void personSaveAllFailure_triggersErrorEmail() throws IOException {
     // GIVEN
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
     byte[] content = inputStream.readAllBytes();
@@ -250,8 +249,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
 
   @Test
   @SliceTestConfiguration.WithSimpleReportStandardUser
-  void requiresPermissionAddPatientsToFacility()
-      throws IOException, ExecutionException, InterruptedException {
+  void requiresPermissionAddPatientsToFacility() throws IOException {
     // GIVEN
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
     byte[] content = inputStream.readAllBytes();

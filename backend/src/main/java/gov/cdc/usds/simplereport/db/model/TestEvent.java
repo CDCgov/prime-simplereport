@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import static gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService.COVID_LOINC;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -68,7 +70,7 @@ public class TestEvent extends BaseTestInfo {
   }
 
   private TestEvent(TestOrder order, Boolean hasPriorTests) {
-    super(order.getPatient(), order.getFacility(), order.getDeviceSpecimen());
+    super(order.getPatient(), order.getFacility(), order.getDeviceType(), order.getSpecimenType());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
     // when serializing `patientData` (phoneNumbers is default lazy-loaded because of `OneToMany`)
@@ -162,12 +164,7 @@ public class TestEvent extends BaseTestInfo {
     return priorCorrectedTestEventId;
   }
 
-  public DeviceSpecimenType getDeviceSpecimenType() {
-    return order.getDeviceSpecimen();
-  }
-
   public Optional<TestResult> getCovidTestResult() {
-    final String COVID_LOINC = "96741-4";
     Optional<Result> resultObject =
         this.results.stream()
             .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))

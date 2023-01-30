@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -34,10 +33,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   private Provider orderingProvider;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
-  @JoinColumn(name = "default_device_specimen_type_id")
-  private DeviceSpecimenType defaultDeviceSpecimen;
-
-  @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_type_id")
   private DeviceType defaultDeviceType;
 
@@ -63,7 +58,8 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
       String phone,
       String email,
       Provider orderingProvider,
-      DeviceSpecimenType defaultDeviceSpecimen,
+      DeviceType defaultDeviceType,
+      SpecimenType defaultSpecimenType,
       List<DeviceType> configuredDevices) {
     this(
         org,
@@ -74,7 +70,7 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
         email,
         orderingProvider,
         configuredDevices);
-    this.addDefaultDeviceSpecimen(defaultDeviceSpecimen);
+    this.setDefaultDeviceTypeSpecimenType(defaultDeviceType, defaultSpecimenType);
   }
 
   public Facility(
@@ -105,7 +101,20 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public DeviceType getDefaultDeviceType() {
-    return this.defaultDeviceSpecimen == null ? null : this.defaultDeviceSpecimen.getDeviceType();
+    return this.defaultDeviceType;
+  }
+
+  public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {
+    if (deviceType != null) {
+      configuredDeviceTypes.add(deviceType);
+    }
+
+    this.defaultDeviceType = deviceType;
+    this.defaultSpecimenType = specimenType;
+  }
+
+  public void removeDefaultDeviceTypeSpecimenType() {
+    this.setDefaultDeviceTypeSpecimenType(null, null);
   }
 
   public SpecimenType getDefaultSpecimenType() {
@@ -120,34 +129,14 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
   }
 
-  public DeviceSpecimenType getDefaultDeviceSpecimen() {
-    return defaultDeviceSpecimen;
-  }
-
-  public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
-    if (newDefault != null) {
-      configuredDeviceTypes.add(newDefault.getDeviceType());
-      this.defaultDeviceType = newDefault.getDeviceType();
-      this.defaultSpecimenType = newDefault.getSpecimenType();
-    }
-
-    defaultDeviceSpecimen = newDefault;
-  }
-
-  public void removeDefaultDeviceSpecimen() {
-    defaultDeviceSpecimen = null;
-  }
-
   public void removeDeviceType(DeviceType deletedDevice) {
     this.configuredDeviceTypes.remove(deletedDevice);
 
     // If the corresponding device to a facility's default device swab type is removed,
     // set default to null
-    if (this.getDefaultDeviceSpecimen() != null) {
-      UUID defaultDeviceTypeId = this.defaultDeviceSpecimen.getDeviceType().getInternalId();
-      if (defaultDeviceTypeId.equals(deletedDevice.getInternalId())) {
-        this.addDefaultDeviceSpecimen(null);
-      }
+    if (this.getDefaultDeviceType() != null
+        && this.getDefaultDeviceType().getInternalId().equals(deletedDevice.getInternalId())) {
+      this.removeDefaultDeviceTypeSpecimenType();
     }
   }
 
