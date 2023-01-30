@@ -35,8 +35,8 @@ class SupportedDiseaseDataLoaderServiceTest {
 
     var actual = dataLoaderService.getSupportedDisease(Set.of(diseaseId1, diseaseId2));
 
-    assertThat(actual).hasSize(2);
     assertThat(actual)
+        .hasSize(2)
         .containsKeys(diseaseId1, diseaseId2)
         .containsValues(supportedDisease1, supportedDisease2);
   }
