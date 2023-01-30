@@ -1,12 +1,9 @@
 import fn from "./index";
 import * as lib from "./lib";
-import * as queueHandlers from "../common/queueHandlers"
+import * as queueHandlers from "../common/queueHandlers";
 import * as appInsights from "applicationinsights";
 import { Context } from "@azure/functions";
-import {
-  DequeuedMessageItem,
-  QueueClient,
-} from "@azure/storage-queue";
+import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import { Response } from "node-fetch";
 
 jest.mock(
@@ -64,8 +61,11 @@ describe("main function export", () => {
   beforeAll(() => {
     getQueueClientMock = jest
       .spyOn(queueHandlers, "getQueueClient")
-      .mockReturnValue({name: 'dummyQueue'} as QueueClient);
-    deleteMessagesMock = jest.spyOn(queueHandlers, "deleteSuccessfullyParsedMessages");
+      .mockReturnValue({ name: "dummyQueue" } as QueueClient);
+    deleteMessagesMock = jest.spyOn(
+      queueHandlers,
+      "deleteSuccessfullyParsedMessages"
+    );
     reportExceptionsMock = jest.spyOn(queueHandlers, "reportExceptions");
     fileFailureMock = jest.spyOn(queueHandlers, "publishToQueue");
   });
@@ -170,7 +170,7 @@ describe("main function export", () => {
     expect(deleteMessagesMock).not.toHaveBeenCalled();
   });
 
-  it("messages to failure queue response is 400", async () =>{
+  it("messages to failure queue response is 400", async () => {
     // GIVEN
     prepareQueue([
       { messageText: JSON.stringify({ a: "b" }) },
@@ -197,5 +197,5 @@ describe("main function export", () => {
     expect(reportExceptionsMock).not.toHaveBeenCalled();
     expect(fileFailureMock).toHaveBeenCalled();
     expect(deleteMessagesMock).toHaveBeenCalled();
-  })
+  });
 });

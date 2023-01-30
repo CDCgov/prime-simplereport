@@ -1,5 +1,6 @@
 import { DequeuedMessageItem } from "@azure/storage-queue";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type SimpleReportTestEvent = Record<any, any>;
 
 export type ProcessedTestEvents = {

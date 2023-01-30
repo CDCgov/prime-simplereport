@@ -1,14 +1,9 @@
-import {
-  DequeuedMessageItem,
-} from "@azure/storage-queue";
+import { DequeuedMessageItem } from "@azure/storage-queue";
 import csvStringify from "csv-stringify/lib/sync";
 import { ENV, uploaderVersion } from "../config";
 import fetch, { Headers } from "node-fetch";
 
-const {
-  REPORT_STREAM_TOKEN,
-  REPORT_STREAM_URL,
-} = ENV;
+const { REPORT_STREAM_TOKEN, REPORT_STREAM_URL } = ENV;
 
 export function convertToCsv(messages: DequeuedMessageItem[]) {
   const parseFailure: { [k: string]: boolean } = {};
@@ -30,7 +25,7 @@ export function convertToCsv(messages: DequeuedMessageItem[]) {
     parseFailureCount,
     parseSuccessCount: messageTexts.length,
   };
-};
+}
 
 export async function uploadResult(body) {
   const headers = new Headers({
@@ -44,4 +39,4 @@ export async function uploadResult(body) {
     headers,
     body,
   });
-};
+}

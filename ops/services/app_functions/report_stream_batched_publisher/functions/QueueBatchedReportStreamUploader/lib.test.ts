@@ -1,11 +1,6 @@
 import { Context } from "@azure/functions";
-import {
-  DequeuedMessageItem,
-} from "@azure/storage-queue";
-import {
-  uploadResult,
-  convertToCsv,
-} from "./lib";
+import { DequeuedMessageItem } from "@azure/storage-queue";
+import { uploadResult, convertToCsv } from "./lib";
 
 import fetch from "node-fetch";
 import fetchMock from "jest-fetch-mock";
