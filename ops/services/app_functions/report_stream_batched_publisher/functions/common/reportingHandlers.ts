@@ -2,7 +2,7 @@ import { Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 
 import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
-import { ENV, uploaderVersion } from "../config";
+// import { ENV, uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./rs-response";
 import {
   deleteSuccessfullyParsedMessages,
@@ -33,8 +33,9 @@ export async function reportTestEvents(results: SimpleReportTestEvent[]) {
     body: JSON.stringify(results),
   });*/
 
+
   const dummyReponseReportStream: ReportStreamResponse ={
-    destinationCount: 0,
+    destinationCount: results.length,
     destinations: [],
     errorCount: 0,
     errors: [],

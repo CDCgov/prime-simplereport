@@ -12,7 +12,7 @@ import {
   reportTestEvents,
 } from "./reportingHandlers";
 import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
-import { uploaderVersion } from "../config";
+// import { uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./rs-response";
 
 jest.mock(
