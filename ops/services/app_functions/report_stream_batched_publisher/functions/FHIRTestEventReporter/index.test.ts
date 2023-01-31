@@ -115,11 +115,11 @@ describe("FHIRTestEventReporter", () => {
     expect(processTestEventsSpy).toHaveBeenCalled();
 
     // The submission to report stream will be done with ticket 5115
-    /*expect(reportTestEventsSpy).toHaveBeenCalledWith(
+    expect(reportTestEventsSpy).toHaveBeenCalledWith(
       processedTestEventsMock.testEvents
     );
     expect(reportTestEventsSpy).toHaveBeenCalledTimes(1);
-    expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);*/
+    expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);
   });
 
   it("receives failed parsed events after processing them", async () => {

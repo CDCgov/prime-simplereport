@@ -63,11 +63,12 @@ describe("reportingHandlers", () => {
         {} as jest.MockedObject<SimpleReportTestEvent>,
       ];
       await reportTestEvents(simpleReportTestEvents);
-      expect(fetchSpy).toHaveBeenCalledWith("https://nope.url/1234", {
+      // to comment out as part of ticket 5115
+      /*expect(fetchSpy).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",
         headers: mockHeaders,
         body: JSON.stringify(simpleReportTestEvents),
-      });
+      });*/
     });
   });
 

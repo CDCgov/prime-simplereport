@@ -24,11 +24,35 @@ export async function reportTestEvents(results: SimpleReportTestEvent[]) {
     client: "simple_report",
   });
 
-  return fetch(REPORT_STREAM_URL, {
+  // Actual call to Report Stream will be implemented with ticket 5115
+  // doing a mock response in the meantime
+  /*return fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers,
     body: JSON.stringify(results),
-  });
+  });*/
+
+  const dummyReponseReportStream: ReportStreamResponse ={
+    destinationCount: 0,
+    destinations: [],
+    errorCount: 0,
+    errors: [],
+    id: "",
+    reportItemCount: 0,
+    routing: [{destinations: [], reportIndex: 0, trackingId: ""}],
+    timestamp: "",
+    topic: "",
+    warningCount: 0,
+    warnings: []
+
+  };
+
+  const dummyResponse = {
+    "ok": true,
+    "json": () => dummyReponseReportStream
+  } as unknown as Response;
+
+  return Promise.resolve(dummyResponse);
 }
 
 export async function handleReportStreamResponse(
