@@ -12,6 +12,7 @@ import Input from "../../commonComponents/Input";
 import {
   organizationCreationSteps,
   stateCodes,
+  liveJurisdictions,
 } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
@@ -19,7 +20,6 @@ import { SignUpApi } from "../SignUpApi";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { PersonalDetailsFormProps } from "../IdentityVerification/PersonalDetailsForm";
 import StepIndicator from "../../commonComponents/StepIndicator";
-import { liveJurisdictions } from "../../../config/constants";
 
 import {
   initOrg,
@@ -29,7 +29,6 @@ import {
   organizationSchema as schema,
   organizationBackendErrors,
 } from "./utils";
-
 import "./OrganizationForm.scss";
 import { UnsupportedStateModal } from "./UnsupportedStateModal";
 
@@ -331,7 +330,7 @@ const OrganizationForm = () => {
         state={organization.state}
         onClose={(clearField: boolean) => {
           if (clearField) {
-            setOrganization({ ...organization, "state": "" });
+            setOrganization({ ...organization, state: "" });
           }
           setStateModalOpen(false);
         }}
