@@ -49,12 +49,12 @@ describe("reportingHandlers", () => {
     });
 
     it("calls fetch with correct parameters", async () => {
-      const mockHeaders = new Headers({
+      /*const mockHeaders = new Headers({
         "x-functions-key": "merhaba",
         "x-api-version": uploaderVersion,
         "content-type": "application/json;charset=UTF-8",
         client: "simple_report",
-      });
+      });*/
 
       const responseMock = {} as jest.MockedObject<Response>;
 

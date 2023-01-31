@@ -11,12 +11,15 @@ import {
 } from "./queueHandlers";
 import * as appInsights from "applicationinsights";
 
-const { REPORT_STREAM_TOKEN, REPORT_STREAM_URL } = ENV;
+//const { REPORT_STREAM_TOKEN, REPORT_STREAM_URL } = ENV;
 
 const telemetry = appInsights.defaultClient;
 
 export async function reportTestEvents(results: SimpleReportTestEvent[]) {
   // ToDo check the size is complying with azure and break up the results if not
+  // Actual call to Report Stream will be implemented with ticket 5115
+  // doing a mock response in the meantime
+  /*
   const headers = new Headers({
     "x-functions-key": REPORT_STREAM_TOKEN,
     "x-api-version": uploaderVersion,
@@ -24,9 +27,7 @@ export async function reportTestEvents(results: SimpleReportTestEvent[]) {
     client: "simple_report",
   });
 
-  // Actual call to Report Stream will be implemented with ticket 5115
-  // doing a mock response in the meantime
-  /*return fetch(REPORT_STREAM_URL, {
+  return fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers,
     body: JSON.stringify(results),
