@@ -45,12 +45,12 @@ variable "reporting_exception_queue_name" {
   default = "test-event-publishing-exceptions"
 }
 
-variable "test_event_queue_name_fhir" {
+variable "fhir_test_event_queue_name" {
   type    = string
   default = "fhir-data-publishing"
 }
 
-variable "reporting_exception_queue_name_fhir" {
+variable "fhir_reporting_exception_queue_name" {
   type    = string
   default = "fhir-data-publishing-exceptions"
 }

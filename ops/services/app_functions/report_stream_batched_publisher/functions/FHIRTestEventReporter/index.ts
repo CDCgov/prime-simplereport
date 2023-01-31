@@ -10,13 +10,13 @@ import {
 import { ProcessedTestEvents, processTestEvents } from "./dataHandlers";
 import {
   handleReportStreamResponse,
-  reportTestEvents,
+  reportToUniversalPipeline,
 } from "../common/reportingHandlers";
 
 const {
   REPORT_STREAM_URL,
-  TEST_EVENT_QUEUE_NAME_FHIR,
-  REPORTING_EXCEPTION_QUEUE_NAME_FHIR,
+  FHIR_TEST_EVENT_QUEUE_NAME,
+  FHIR_REPORTING_EXCEPTION_QUEUE_NAME,
   PUBLISHING_ERROR_QUEUE_NAME,
 } = ENV;
 
@@ -28,10 +28,10 @@ const FHIRTestEventReporter: AzureFunction = async function (
 ): Promise<void> {
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const publishingQueue: QueueClient = getQueueClient(
-    TEST_EVENT_QUEUE_NAME_FHIR
+    FHIR_TEST_EVENT_QUEUE_NAME
   );
   const exceptionQueue: QueueClient = getQueueClient(
-    REPORTING_EXCEPTION_QUEUE_NAME_FHIR
+    FHIR_REPORTING_EXCEPTION_QUEUE_NAME
   );
   const publishingErrorQueue: QueueClient = getQueueClient(
     PUBLISHING_ERROR_QUEUE_NAME
@@ -81,8 +81,7 @@ const FHIRTestEventReporter: AzureFunction = async function (
     `Queue: ${publishingQueue.name}. Starting upload of ${parseSuccessCount} records to ReportStream`
   );
 
-
-  const postResult: Response = await reportTestEvents(testEvents);
+  const postResult: Response = await reportToUniversalPipeline(testEvents);
 
   const uploadStart = new Date().getTime();
   telemetry.trackDependency({

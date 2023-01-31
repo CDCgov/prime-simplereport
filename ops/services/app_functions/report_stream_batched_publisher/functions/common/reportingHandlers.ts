@@ -15,7 +15,9 @@ import * as appInsights from "applicationinsights";
 
 const telemetry = appInsights.defaultClient;
 
-export async function reportTestEvents(results: SimpleReportTestEvent[]) {
+export async function reportToUniversalPipeline(
+  results: SimpleReportTestEvent[]
+) {
   // ToDo check the size is complying with azure and break up the results if not
   // Actual call to Report Stream will be implemented with ticket 5115
   // doing a mock response in the meantime
@@ -33,25 +35,23 @@ export async function reportTestEvents(results: SimpleReportTestEvent[]) {
     body: JSON.stringify(results),
   });*/
 
-
-  const dummyReponseReportStream: ReportStreamResponse ={
+  const dummyReponseReportStream: ReportStreamResponse = {
     destinationCount: results.length,
     destinations: [],
     errorCount: 0,
     errors: [],
     id: "",
     reportItemCount: 0,
-    routing: [{destinations: [], reportIndex: 0, trackingId: ""}],
+    routing: [{ destinations: [], reportIndex: 0, trackingId: "" }],
     timestamp: "",
     topic: "",
     warningCount: 0,
-    warnings: []
-
+    warnings: [],
   };
 
   const dummyResponse = {
-    "ok": true,
-    "json": () => dummyReponseReportStream
+    ok: true,
+    json: () => dummyReponseReportStream,
   } as unknown as Response;
 
   return Promise.resolve(dummyResponse);

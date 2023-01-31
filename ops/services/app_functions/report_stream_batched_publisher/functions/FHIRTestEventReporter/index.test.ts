@@ -14,8 +14,8 @@ jest.mock("../config", () => ({
     AZ_STORAGE_ACCOUNT_NAME: "hola",
     AZ_STORAGE_ACCOUNT_KEY: "bonjour",
     REPORT_STREAM_URL: "https://nope.url/1234",
-    TEST_EVENT_QUEUE_NAME_FHIR: "ciao",
-    REPORTING_EXCEPTION_QUEUE_NAME_FHIR: "ciao_exception",
+    FHIR_TEST_EVENT_QUEUE_NAME: "ciao",
+    FHIR_REPORTING_EXCEPTION_QUEUE_NAME: "ciao_exception",
     PUBLISHING_ERROR_QUEUE_NAME: "ciao_error",
   },
 }));
@@ -51,7 +51,7 @@ describe("FHIRTestEventReporter", () => {
     getQueueClientSpy,
     minimumMessagesAvailableSpy,
     processTestEventsSpy,
-    reportTestEventsSpy,
+    reportToUniversalPipelineSpy,
     handleReportStreamResponseSpy;
 
   beforeEach(() => {
@@ -73,7 +73,10 @@ describe("FHIRTestEventReporter", () => {
       .spyOn(queueHandlers, "minimumMessagesAvailable")
       .mockResolvedValue(true);
     processTestEventsSpy = jest.spyOn(dataHandlers, "processTestEvents");
-    reportTestEventsSpy = jest.spyOn(reportingHandlers, "reportTestEvents");
+    reportToUniversalPipelineSpy = jest.spyOn(
+      reportingHandlers,
+      "reportToUniversalPipeline"
+    );
     handleReportStreamResponseSpy = jest
       .spyOn(reportingHandlers, "handleReportStreamResponse")
       .mockResolvedValue();
@@ -91,7 +94,7 @@ describe("FHIRTestEventReporter", () => {
     expect(minimumMessagesAvailableSpy).toHaveBeenCalled();
     expect(dequeueMessagesSpy).not.toHaveBeenCalled();
     expect(processTestEventsSpy).not.toHaveBeenCalled();
-    expect(reportTestEventsSpy).not.toHaveBeenCalledTimes(1);
+    expect(reportToUniversalPipelineSpy).not.toHaveBeenCalledTimes(1);
     expect(handleReportStreamResponseSpy).not.toHaveBeenCalledTimes(1);
     expect(context.log).not.toHaveBeenCalled();
   });
@@ -105,7 +108,7 @@ describe("FHIRTestEventReporter", () => {
     };
 
     processTestEventsSpy.mockReturnValueOnce(processedTestEventsMock);
-    reportTestEventsSpy.mockResolvedValueOnce(responseMock);
+    reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
 
@@ -115,10 +118,10 @@ describe("FHIRTestEventReporter", () => {
     expect(processTestEventsSpy).toHaveBeenCalled();
 
     // The submission to report stream will be done with ticket 5115
-    expect(reportTestEventsSpy).toHaveBeenCalledWith(
+    expect(reportToUniversalPipelineSpy).toHaveBeenCalledWith(
       processedTestEventsMock.testEvents
     );
-    expect(reportTestEventsSpy).toHaveBeenCalledTimes(1);
+    expect(reportToUniversalPipelineSpy).toHaveBeenCalledTimes(1);
     expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);
   });
 
@@ -131,11 +134,11 @@ describe("FHIRTestEventReporter", () => {
     };
 
     processTestEventsSpy.mockReturnValueOnce(processedTestEventsMock);
-    reportTestEventsSpy.mockResolvedValueOnce(responseMock);
+    reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
 
-    expect(reportTestEventsSpy).not.toHaveBeenCalled();
+    expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
     expect(context.log).toHaveBeenCalledWith(
       "Queue: ciao. Successfully parsed message count of 0 is less than 1; aborting"
     );

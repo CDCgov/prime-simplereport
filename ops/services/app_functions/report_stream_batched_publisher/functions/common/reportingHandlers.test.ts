@@ -9,7 +9,7 @@ import {
 import * as queueHandlers from "./queueHandlers";
 import {
   handleReportStreamResponse,
-  reportTestEvents,
+  reportToUniversalPipeline,
 } from "./reportingHandlers";
 import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
 // import { uploaderVersion } from "../config";
@@ -37,7 +37,7 @@ jest.mock(
 );
 
 describe("reportingHandlers", () => {
-  describe("reportTestEvents", () => {
+  describe("reportToUniversalPipeline", () => {
     let fetchSpy;
 
     beforeEach(() => {
@@ -62,7 +62,7 @@ describe("reportingHandlers", () => {
       const simpleReportTestEvents: SimpleReportTestEvent[] = [
         {} as jest.MockedObject<SimpleReportTestEvent>,
       ];
-      await reportTestEvents(simpleReportTestEvents);
+      await reportToUniversalPipeline(simpleReportTestEvents);
       // to comment out as part of ticket 5115
       /*expect(fetchSpy).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",

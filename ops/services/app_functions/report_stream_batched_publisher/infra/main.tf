@@ -93,8 +93,8 @@ resource "azurerm_function_app" "functions" {
     TEST_EVENT_QUEUE_NAME               = var.test_event_queue_name
     PUBLISHING_ERROR_QUEUE_NAME         = var.publishing_error_queue_name
     REPORTING_EXCEPTION_QUEUE_NAME      = var.reporting_exception_queue_name
-    TEST_EVENT_QUEUE_NAME_FHIR          = var.test_event_queue_name_fhir
-    REPORTING_EXCEPTION_QUEUE_NAME_FHIR = var.reporting_exception_queue_name_fhir
+    FHIR_TEST_EVENT_QUEUE_NAME          = var.fhir_test_event_queue_name
+    FHIR_REPORTING_EXCEPTION_QUEUE_NAME = var.fhir_reporting_exception_queue_name
     REPORT_STREAM_URL                   = local.report_stream_url
     REPORT_STREAM_TOKEN                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     REPORT_STREAM_BATCH_MINIMUM         = var.report_stream_batch_minimum

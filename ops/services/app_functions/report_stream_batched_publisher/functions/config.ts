@@ -24,9 +24,9 @@ export const ENV = (() => {
       "storage queue resource name for exceptions in publishing to ReportStream",
     PUBLISHING_ERROR_QUEUE_NAME:
       "storage queue resource name for HTTP 400 errors in publishing to ReportStream",
-    TEST_EVENT_QUEUE_NAME_FHIR:
+    FHIR_TEST_EVENT_QUEUE_NAME:
       "storage queue resource name for Test Events in the FHIR standard",
-    REPORTING_EXCEPTION_QUEUE_NAME_FHIR:
+    FHIR_REPORTING_EXCEPTION_QUEUE_NAME:
       "storage queue resource name for exceptions in publishing to ReportStream for Test Events in the FHIR standard",
     REPORT_STREAM_URL: "ReportStream URL to which tests should be reported",
     REPORT_STREAM_TOKEN: "ReportStream API key",
