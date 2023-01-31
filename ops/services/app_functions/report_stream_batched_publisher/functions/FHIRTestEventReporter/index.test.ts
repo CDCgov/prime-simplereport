@@ -7,7 +7,6 @@ import * as reportingHandlers from "../common/reportingHandlers";
 import FHIRTestEventReporter from "./index";
 import { ProcessedTestEvents } from "./dataHandlers";
 import { ReportStreamResponse } from "../common/rs-response";
-import { handleReportStreamResponse } from "../common/reportingHandlers";
 
 jest.mock("../config", () => ({
   ENV: {
@@ -114,11 +113,13 @@ describe("FHIRTestEventReporter", () => {
     expect(minimumMessagesAvailableSpy).toHaveBeenCalled();
     expect(dequeueMessagesSpy).toHaveBeenCalled();
     expect(processTestEventsSpy).toHaveBeenCalled();
-    expect(reportTestEventsSpy).toHaveBeenCalledWith(
+
+    // The submission to report stream will be done with ticket 5115
+    /*expect(reportTestEventsSpy).toHaveBeenCalledWith(
       processedTestEventsMock.testEvents
     );
     expect(reportTestEventsSpy).toHaveBeenCalledTimes(1);
-    expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);
+    expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);*/
   });
 
   it("receives failed parsed events after processing them", async () => {

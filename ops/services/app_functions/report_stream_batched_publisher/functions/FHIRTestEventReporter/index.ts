@@ -8,13 +8,13 @@ import {
   minimumMessagesAvailable,
 } from "../common/queueHandlers";
 import { ProcessedTestEvents, processTestEvents } from "./dataHandlers";
-import {
+/*import {
   handleReportStreamResponse,
   reportTestEvents,
-} from "../common/reportingHandlers";
+} from "../common/reportingHandlers";*/
 
 const {
-  REPORT_STREAM_URL,
+ // REPORT_STREAM_URL,
   TEST_EVENT_QUEUE_NAME_FHIR,
   REPORTING_EXCEPTION_QUEUE_NAME_FHIR,
   PUBLISHING_ERROR_QUEUE_NAME,
@@ -81,7 +81,8 @@ const FHIRTestEventReporter: AzureFunction = async function (
     `Queue: ${publishingQueue.name}. Starting upload of ${parseSuccessCount} records to ReportStream`
   );
 
-  const postResult: Response = await reportTestEvents(testEvents);
+  // The submission to report stream will be done with ticket 5115
+  /*const postResult: Response = await reportTestEvents(testEvents);
 
   const uploadStart = new Date().getTime();
   telemetry.trackDependency({
@@ -106,7 +107,7 @@ const FHIRTestEventReporter: AzureFunction = async function (
     publishingQueue,
     exceptionQueue,
     publishingErrorQueue
-  );
+  );*/
 };
 
 export default FHIRTestEventReporter;
