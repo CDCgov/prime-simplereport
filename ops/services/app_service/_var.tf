@@ -43,3 +43,7 @@ variable "instance_count" {
 variable "deploy_info" {
   default = {}
 }
+
+variable "sku_name" {
+  default = "P1v3"
+}

@@ -9,6 +9,8 @@ module "simple_report_api" {
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
+  sku_name = "P3v3"
+
   webapp_subnet_id = data.terraform_remote_state.persistent_prod.outputs.subnet_webapp_id
   lb_subnet_id     = data.terraform_remote_state.persistent_prod.outputs.subnet_lbs_id
 

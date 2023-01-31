@@ -31,7 +31,7 @@ resource "azurerm_service_plan" "service_plan" {
   location            = var.resource_group_location
   os_type             = "Linux"
   resource_group_name = var.resource_group_name
-  sku_name            = "P2v3"
+  sku_name            = var.sku_name
 }
 
 # DO NOT DELETE THIS RESOURCE before migrating it to azurerm_linux_web_app.service
