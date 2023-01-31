@@ -32,7 +32,7 @@ resource "azurerm_service_plan" "asp" {
   resource_group_name = local.resource_group_name
   location            = var.location
   os_type             = "Linux"
-  sku_name            = "B1"
+  sku_name            = "EP1"
 }
 
 resource "azurerm_key_vault_access_policy" "functions" {

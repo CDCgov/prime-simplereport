@@ -3,7 +3,7 @@ terraform {
     resource_group_name  = "prime-simple-report-test"
     storage_account_name = "usdssimplereportglobal"
     container_name       = "sr-tfstate"
-    key                  = "dev/persistent-terraform.tfstate"
+    key                  = "dev7/persistent-terraform.tfstate"
   }
   required_providers {
     azurerm = {
