@@ -131,6 +131,7 @@ export const MultiSelect = ({
         labelClassName
       )}
       htmlFor={id}
+      id={`label-for-${id}`}
       aria-describedby={ariaDescribedBy}
     >
       {required ? <Required label={label} /> : <Optional label={label} />}
