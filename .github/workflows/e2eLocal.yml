@@ -10,7 +10,7 @@ jobs:
   cypress-local-env:
     runs-on: ubuntu-latest
     steps:
-
+            
     - name: Checkout
       uses: actions/checkout@v3
 
@@ -86,10 +86,12 @@ jobs:
       run: |
         echo "::group::Run Cypress locally"
         docker compose pull
-        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml build
+        if [[ $(git diff-tree --no-commit-id --name-only -r main ${{ github.event.pull_request.head.sha }} -- cypress | xargs) ]]; then
+          docker-compose -f docker-compose.yml -f docker-compose.cypress.yml build
+        fi
         docker-compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --exit-code-from cypress
         echo "::endgroup::"
-    
+
     - name: Stop containers
       if: always()
       shell: bash
