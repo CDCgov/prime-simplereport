@@ -3,7 +3,7 @@ services:
     build:
       context: ./
       dockerfile: cypress/Dockerfile
-    image: ghcr.io/cdcgov/prime-simplereport/cypress:latest
+    image: ghcr.io/cdcgov/prime-simplereport/cypress:${DOCKER_CYPRESS_IMAGE_TAG:-latest}
     container_name: cypress
     restart: "no"
     environment:
