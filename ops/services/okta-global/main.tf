@@ -41,7 +41,7 @@ resource "okta_policy_signon" "mfa_require" {
   groups_included = [var.all_users_group_id]
 }
 
-# We recieve and error when attempting to import this resource.
+# We recieve an error when attempting to import this resource.
 resource "okta_policy_rule_signon" "app_mfa" {
   policy_id          = okta_policy_signon.mfa_require.id
   name               = "simple-report-mfa-require"
