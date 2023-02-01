@@ -1,6 +1,6 @@
 {
   "name": "simple-report-client",
-  "version": "1.22.19",
+  "version": "0.1.0",
   "private": true,
   "engines": {
     "node": "18"
