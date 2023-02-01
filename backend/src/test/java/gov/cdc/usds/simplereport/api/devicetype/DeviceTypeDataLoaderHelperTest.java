@@ -6,11 +6,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.DeviceSupportedDisease;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceSupportedDiseaseRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import java.util.List;
@@ -30,6 +33,7 @@ class DeviceTypeDataLoaderHelperTest {
   @Mock DiseaseService diseaseService;
   @Mock DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   @Mock SpecimenTypeRepository specimenTypeRepository;
+  @Mock DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
 
   @InjectMocks private DeviceTypeDataLoaderService deviceTypeDataLoaderService;
 
@@ -110,6 +114,42 @@ class DeviceTypeDataLoaderHelperTest {
         .hasSize(3)
         .containsEntry(device1Id, List.of(specimenType1))
         .containsEntry(device2Id, List.of(specimenType1, specimenType2))
+        .containsEntry(device3Id, emptyList());
+  }
+
+  @Test
+  void getDeviceTestPerformedLoincCode() {
+    var device1Id = UUID.randomUUID();
+    var device2Id = UUID.randomUUID();
+    var device3Id = UUID.randomUUID();
+    var deviceIdSet = Set.of(device1Id, device2Id, device3Id);
+
+    var mockedDevice1 = mock(DeviceType.class);
+    var mockedDevice2 = mock(DeviceType.class);
+    when(mockedDevice1.getInternalId()).thenReturn(device1Id);
+    when(mockedDevice2.getInternalId()).thenReturn(device2Id);
+
+    var deviceTestPerformedLoincCode1 =
+        new DeviceTestPerformedLoincCode(mockedDevice1, new SupportedDisease(), "123");
+    var deviceTestPerformedLoincCode2 =
+        new DeviceTestPerformedLoincCode(mockedDevice1, new SupportedDisease(), "456");
+    var deviceTestPerformedLoincCode3 =
+        new DeviceTestPerformedLoincCode(mockedDevice2, new SupportedDisease(), "123");
+
+    when(deviceTestPerformedLoincCodeRepository.findAllByDeviceTypeInternalIdIn(deviceIdSet))
+        .thenReturn(
+            List.of(
+                deviceTestPerformedLoincCode1,
+                deviceTestPerformedLoincCode2,
+                deviceTestPerformedLoincCode3));
+
+    var actual = deviceTypeDataLoaderService.getDeviceTestPerformedLoincCode(deviceIdSet);
+
+    assertThat(actual)
+        .hasSize(3)
+        .containsEntry(
+            device1Id, List.of(deviceTestPerformedLoincCode1, deviceTestPerformedLoincCode2))
+        .containsEntry(device2Id, List.of(deviceTestPerformedLoincCode3))
         .containsEntry(device3Id, emptyList());
   }
 }
