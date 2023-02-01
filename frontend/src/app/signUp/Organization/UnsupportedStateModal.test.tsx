@@ -21,8 +21,7 @@ describe("UnsupportedStateModal", () => {
   });
 
   it("closes on continue", () => {
-    const continueButton = screen.getByText("Continue sign up");
-    expect(continueButton).toBeDisabled();
+    const continueButton = expect(continueButton).toBeDisabled();
 
     screen.getByLabelText("acknowledged").click();
     expect(continueButton).toBeEnabled();

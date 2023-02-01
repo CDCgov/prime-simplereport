@@ -9,7 +9,8 @@ const getOrgNameInput = () =>
   screen.getByRole("textbox", {
     name: "Organization name required",
   });
-const getOrgStateDropdown = () => screen.getByLabelText("Organization state *");
+const getOrgStateDropdown = () =>
+  screen.getByLabelText("Organization state *") as HTMLSelectElement;
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
 const getFirstNameInput = () => screen.getByLabelText("First name *");
 const getMiddleNameInput = () => screen.getByLabelText("Middle name");
@@ -94,6 +95,40 @@ describe("OrganizationForm", () => {
         }
       )
     ).toBeInTheDocument();
+  });
+
+  it("clears input when escaping out of modal", async () => {
+    await fillInDropDown(getOrgStateDropdown(), "VI");
+    expect(getOrgStateDropdown().value).toEqual("VI");
+    expect(
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+    expect(getOrgStateDropdown().value).toBeFalsy();
+  });
+
+  it("does not clear input when continuing through modal", async () => {
+    await fillInDropDown(getOrgStateDropdown(), "VI");
+    expect(getOrgStateDropdown().value).toEqual("VI");
+    expect(
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
+    ).toBeInTheDocument();
+
+    screen.getByLabelText("acknowledged").click();
+    screen.getByText("Continue sign up").click();
+
+    expect(getOrgStateDropdown().value).toEqual("VI");
   });
 
   it("redirects to identity verification when submitting valid input", async () => {
