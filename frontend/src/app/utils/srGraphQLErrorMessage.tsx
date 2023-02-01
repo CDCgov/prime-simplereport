@@ -23,21 +23,59 @@ export function getHeader(message: string): string {
   return getErrorText(message, "header");
 }
 
+function addEndWhiteSpace(errorArrayLength: number, index: number) {
+  return index !== errorArrayLength - 1;
+}
+
+function createSupportMailToLink(
+  msg: string,
+  index: number,
+  addEndWhiteSpace: boolean
+) {
+  return (
+    <span key={index}>
+      {" "}
+      <a href="mailto:support@simplereport.gov">{msg}</a>
+      {addEndWhiteSpace ? " " : ""}
+    </span>
+  );
+}
+
+function createContactUsLink(
+  msg: string,
+  nextMsg: string,
+  index: number,
+  addEndWhiteSpace: boolean
+) {
+  return (
+    <span key={index}>
+      {" "}
+      <a target="_blank" href="/contact-us">
+        {msg} {nextMsg}
+      </a>
+      {addEndWhiteSpace ? " " : ""}
+    </span>
+  );
+}
+
 export function getBody(message: string): JSX.Element {
   let errorText = getErrorText(message, "body");
   let errorTextArray = errorText.split(" ");
   let errorElementArray: any = [];
   let addNewValue = true;
   errorTextArray.forEach((msg, index) => {
+    let addWhiteSpace = addEndWhiteSpace(errorTextArray.length, index);
+    let nextMsg = errorTextArray[index + 1];
     if (msg.includes("support@simplereport.gov")) {
-      let addEndWhitespace = index !== errorTextArray.length - 1;
       errorElementArray.push(
-        <span key={index}>
-          {" "}
-          <a href="mailto:support@simplereport.gov">{msg}</a>
-          {addEndWhitespace ? " " : ""}
-        </span>
+        createSupportMailToLink(msg, index, addWhiteSpace)
       );
+      addNewValue = true;
+    } else if (msg.includes("SimpleReport") && nextMsg.includes("support")) {
+      errorElementArray.push(
+        createContactUsLink(msg, nextMsg, index, addWhiteSpace)
+      );
+      errorTextArray.splice(index + 1, 1);
       addNewValue = true;
     } else {
       if (addNewValue) {

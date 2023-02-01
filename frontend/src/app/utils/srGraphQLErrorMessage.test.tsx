@@ -34,14 +34,23 @@ describe("getBody", () => {
     render(getBody(message));
     expect(screen.getByText("try again")).toBeInTheDocument();
   });
-  test("adds mailto anchor tag if there is support@simplereport.gov email in the body", () => {
+  test("adds mailto link if there is 'support@simplereport.gov' in the body", () => {
     const message =
       "header: check the logs, body: Contact support@simplereport.gov for more information";
     expect(render(getBody(message))).toMatchSnapshot();
   });
-  test("adds mailto anchor tag if there is support@simplereport.gov email in the body", () => {
+  test("adds mailto link if there is 'support@simplereport.gov' in the body", () => {
     const message =
       "body: Contact support@simplereport.gov; reason: did not work";
+    expect(render(getBody(message))).toMatchSnapshot();
+  });
+  test("adds link to contact us page if there is 'SimpleReport support' in the body", () => {
+    const message = "body: Contact SimpleReport support; reason: did not work";
+    expect(render(getBody(message))).toMatchSnapshot();
+  });
+  test("adds link to contact us page if there is 'SimpleReport support' in the body", () => {
+    const message =
+      "header: Can't add user; body: A user with this email already exists in our system. Please contact SimpleReport support for help.";
     expect(render(getBody(message))).toMatchSnapshot();
   });
 });

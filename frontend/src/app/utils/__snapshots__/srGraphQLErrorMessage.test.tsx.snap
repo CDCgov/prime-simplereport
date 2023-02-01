@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getBody adds mailto anchor tag if there is support@simplereport.gov email in the body 1`] = `
+exports[`getBody adds link to contact us page if there is 'SimpleReport support' in the body 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -10,13 +10,15 @@ Object {
         <span>
            
           <a
-            href="mailto:support@simplereport.gov"
+            href="/contact-us"
+            target="_blank"
           >
-            support@simplereport.gov
+            SimpleReport
+             
+            support
           </a>
            
         </span>
-        for more information
       </span>
     </div>
   </body>,
@@ -26,13 +28,15 @@ Object {
       <span>
          
         <a
-          href="mailto:support@simplereport.gov"
+          href="/contact-us"
+          target="_blank"
         >
-          support@simplereport.gov
+          SimpleReport
+           
+          support
         </a>
          
       </span>
-      for more information
     </span>
   </div>,
   "debug": [Function],
@@ -89,35 +93,45 @@ Object {
 }
 `;
 
-exports[`getBody adds mailto anchor tag if there is support@simplereport.gov email in the body 2`] = `
+exports[`getBody adds link to contact us page if there is 'SimpleReport support' in the body 2`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
     <div>
       <span>
-        Contact
+        A user with this email already exists in our system. Please contact
         <span>
            
           <a
-            href="mailto:support@simplereport.gov"
+            href="/contact-us"
+            target="_blank"
           >
-            support@simplereport.gov
+            SimpleReport
+             
+            support
           </a>
+           
         </span>
+        for help.
       </span>
     </div>
   </body>,
   "container": <div>
     <span>
-      Contact
+      A user with this email already exists in our system. Please contact
       <span>
          
         <a
-          href="mailto:support@simplereport.gov"
+          href="/contact-us"
+          target="_blank"
         >
-          support@simplereport.gov
+          SimpleReport
+           
+          support
         </a>
+         
       </span>
+      for help.
     </span>
   </div>,
   "debug": [Function],
