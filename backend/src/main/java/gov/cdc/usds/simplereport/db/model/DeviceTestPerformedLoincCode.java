@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
@@ -15,11 +14,11 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DeviceTestPerformedLoincCode extends IdentifiedEntity {
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "device_type_id")
   private DeviceType deviceType;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne
   @JoinColumn(name = "supported_disease_id")
   private SupportedDisease supportedDisease;
 
