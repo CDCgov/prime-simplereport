@@ -481,18 +481,11 @@ public class ApiUserService {
   }
 
   private ApiUser getCurrentApiUserFromIdentity(IdentityAttributes userIdentity) {
-    Optional<ApiUser> found =
-        _apiUserRepo.findByLoginEmailIncludeArchived(userIdentity.getUsername());
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
     if (found.isPresent()) {
       log.debug("User has logged in before: retrieving user record.");
       ApiUser user = found.get();
       user.updateLastSeen();
-      if (user.isDeleted()) {
-        log.info("Login for user with deleted account; undeleting user record");
-        // if a user has an active Okta account, their user record should be active as well
-        user.setIsDeleted(false);
-        log.info("User with id={} undeleted", user.getInternalId());
-      }
       user = _apiUserRepo.save(user);
       return user;
     } else {
