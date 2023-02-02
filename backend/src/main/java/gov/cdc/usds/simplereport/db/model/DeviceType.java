@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -48,6 +51,10 @@ public class DeviceType extends EternalAuditedEntity {
 
   @Column(nullable = false)
   private int testLength;
+
+  @JsonIgnore
+  @OneToMany(mappedBy = "deviceType", cascade = CascadeType.ALL, orphanRemoval = true)
+  List<DeviceTestPerformedLoincCode> supportedDiseaseTestPerformed = new ArrayList<>();
 
   protected DeviceType() {
     /* no-op for hibernate */

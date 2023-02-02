@@ -11,11 +11,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -40,6 +42,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
+  @Autowired private DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
 
   @Mock private DeviceTypeRepository _deviceTypeRepoMock;
 
@@ -114,7 +117,47 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void createAndDeleteDeviceTypes_adminUser_success() {
+  void createAndDeleteDeviceTypes_withSupportedDisease_adminUser_success() {
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Hair", "000111222"));
+    SupportedDisease disease1 = _diseaseService.covid();
+
+    // WHEN
+    DeviceType devA =
+        _service.createDeviceType(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .loincCode("D")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseases(List.of(disease1.getInternalId()))
+                .testLength(1)
+                .build());
+
+    // THEN
+    devA = _deviceTypeRepo.findById(devA.getInternalId()).get();
+    assertNotNull(devA);
+    assertEquals("A", devA.getName());
+    assertEquals("B", devA.getModel());
+    assertEquals("C", devA.getManufacturer());
+    assertEquals("D", devA.getLoincCode());
+    assertEquals("COVID-19", devA.getSupportedDiseases().get(0).getName());
+    assertNull(devA.getSwabType());
+    List<SpecimenType> devASwabTypes = devA.getSwabTypes();
+    assertThat(devASwabTypes).hasSize(1);
+    assertThat(devASwabTypes.get(0).getName()).isEqualTo("Hair");
+    assertEquals(1, devA.getTestLength());
+
+    assertThat(devA.getSupportedDiseaseTestPerformed()).isEmpty();
+
+    List<DeviceType> found = _service.fetchDeviceTypes();
+    assertThat(found).hasSize(1);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void createAndDeleteDeviceTypes_withSupportedDiseaseTestPerformed_adminUser_success() {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Hair", "000111222"));
     SpecimenType swab2 = specimenTypeRepository.save(new SpecimenType("Mouth", "112233445"));
@@ -130,7 +173,12 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .manufacturer("C")
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
-                .supportedDiseases(List.of(disease1.getInternalId()))
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease1.getInternalId())
+                            .testPerformedLoincCode("loinc1")
+                            .build()))
                 .testLength(1)
                 .build());
     DeviceType devB =
@@ -141,7 +189,12 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .manufacturer("H")
                 .loincCode("I")
                 .swabTypes(List.of(swab2.getInternalId()))
-                .supportedDiseases(List.of(disease2.getInternalId()))
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease2.getInternalId())
+                            .testPerformedLoincCode("loinc2")
+                            .build()))
                 .testLength(2)
                 .build());
 
@@ -157,28 +210,31 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("COVID-19", devA.getSupportedDiseases().get(0).getName());
     assertNull(devA.getSwabType());
     List<SpecimenType> devASwabTypes = devA.getSwabTypes();
-    assertThat(devASwabTypes.size()).isEqualTo(1);
+    assertThat(devASwabTypes).hasSize(1);
     assertThat(devASwabTypes.get(0).getName()).isEqualTo("Hair");
     assertEquals(1, devA.getTestLength());
 
+    assertThat(devA.getSupportedDiseaseTestPerformed()).hasSize(1);
+    var disease1TestPerformed =
+        devA.getSupportedDiseaseTestPerformed().stream()
+            .filter(
+                testPerformed ->
+                    testPerformed
+                        .getSupportedDisease()
+                        .getInternalId()
+                        .equals(disease1.getInternalId()))
+            .findFirst();
+    assertThat(disease1TestPerformed).isPresent();
+    assertThat(disease1TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc1");
+
     devB = _deviceTypeRepo.findById(devB.getInternalId()).get();
     assertNotNull(devB);
-    assertEquals("F", devB.getName());
-    assertEquals("G", devB.getModel());
-    assertEquals("H", devB.getManufacturer());
-    assertEquals("I", devB.getLoincCode());
-    assertEquals("Flu A", devB.getSupportedDiseases().get(0).getName());
-    assertNull(devB.getSwabType());
-    List<SpecimenType> devBSwabTypes = devB.getSwabTypes();
-    assertThat(devBSwabTypes.size()).isEqualTo(1);
-    assertThat(devBSwabTypes.get(0).getName()).isEqualTo("Mouth");
-    assertEquals(2, devB.getTestLength());
 
     List<DeviceType> found = _service.fetchDeviceTypes();
-    assertEquals(2, found.size());
+    assertThat(found).hasSize(2);
     _service.removeDeviceType(devB);
     found = _service.fetchDeviceTypes();
-    assertEquals(1, found.size());
+    assertThat(found).hasSize(1);
   }
 
   @Test
@@ -229,6 +285,129 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
     assertThat(updatedSwabTypes.size()).isEqualTo(1);
     assertThat(updatedSwabTypes.get(0).getName()).isEqualTo("Mouth");
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void updateDeviceTypeSupportedDiseaseTestPerformed_adminUser_success() {
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
+    SupportedDisease disease1 = _diseaseService.covid();
+    SupportedDisease disease2 = _diseaseService.fluA();
+
+    DeviceType device =
+        _service.createDeviceType(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .loincCode("D")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease1.getInternalId())
+                            .testPerformedLoincCode("loinc1")
+                            .build()))
+                .testLength(10)
+                .build());
+
+    // WHEN
+    DeviceType updatedDevice =
+        _service.updateDeviceType(
+            UpdateDeviceType.builder()
+                .internalId(device.getInternalId())
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease1.getInternalId())
+                            .testPerformedLoincCode("loinc2")
+                            .build(),
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease2.getInternalId())
+                            .testPerformedLoincCode("loinc3")
+                            .build()))
+                .build());
+
+    // THEN
+    assertEquals(updatedDevice.getInternalId(), device.getInternalId());
+    assertThat(updatedDevice.getSupportedDiseases()).hasSize(2);
+    assertThat(updatedDevice.getSupportedDiseases()).contains(disease1, disease2);
+    assertThat(updatedDevice.getSupportedDiseaseTestPerformed()).hasSize(2);
+    var disease1TestPerformed =
+        updatedDevice.getSupportedDiseaseTestPerformed().stream()
+            .filter(
+                testPerformed ->
+                    testPerformed
+                        .getSupportedDisease()
+                        .getInternalId()
+                        .equals(disease1.getInternalId()))
+            .findFirst();
+    assertThat(disease1TestPerformed).isPresent();
+    assertThat(disease1TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc2");
+    var disease2TestPerformed =
+        updatedDevice.getSupportedDiseaseTestPerformed().stream()
+            .filter(
+                testPerformed ->
+                    testPerformed
+                        .getSupportedDisease()
+                        .getInternalId()
+                        .equals(disease2.getInternalId()))
+            .findFirst();
+    assertThat(disease2TestPerformed).isPresent();
+    assertThat(disease2TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc3");
+
+    var deviceTestPerformedLoincCodeRepositoryAll =
+        deviceTestPerformedLoincCodeRepository.findAll();
+    assertThat(deviceTestPerformedLoincCodeRepositoryAll).hasSize(2);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void updateDeviceTypeSupportedDiseaseToSupportedDiseaseTestPerformed_adminUser_success() {
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
+    SupportedDisease disease1 = _diseaseService.covid();
+
+    DeviceType device =
+        _service.createDeviceType(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .loincCode("D")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseases(List.of(disease1.getInternalId()))
+                .testLength(10)
+                .build());
+
+    // WHEN
+    DeviceType updatedDevice =
+        _service.updateDeviceType(
+            UpdateDeviceType.builder()
+                .internalId(device.getInternalId())
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease1.getInternalId())
+                            .testPerformedLoincCode("loinc1")
+                            .build()))
+                .build());
+
+    // THEN
+    assertThat(updatedDevice.getInternalId()).isEqualTo(device.getInternalId());
+    assertThat(updatedDevice.getSupportedDiseases()).hasSize(1);
+    assertThat(updatedDevice.getSupportedDiseases().get(0).getName()).isEqualTo("COVID-19");
+    assertThat(updatedDevice.getSupportedDiseaseTestPerformed()).hasSize(1);
+    assertThat(updatedDevice.getSupportedDiseaseTestPerformed().get(0).getTestPerformedLoincCode())
+        .isEqualTo("loinc1");
+    assertThat(
+            updatedDevice
+                .getSupportedDiseaseTestPerformed()
+                .get(0)
+                .getSupportedDisease()
+                .getInternalId())
+        .isEqualTo(disease1.getInternalId());
   }
 
   @Test
