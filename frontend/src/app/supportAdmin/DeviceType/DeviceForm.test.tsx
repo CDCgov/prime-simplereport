@@ -24,6 +24,7 @@ describe("create new device", () => {
           swabTypes: [],
           supportedDiseases: [],
           testLength: 15,
+          supportedDiseaseTestPerformed: [],
         }}
         swabOptions={[{ label: "Swab (445297001)", value: "445297001" }]}
         supportedDiseaseOptions={[{ label: "COVID-19", value: "3821904728" }]}
@@ -48,6 +49,16 @@ describe("create new device", () => {
       await userEvent.click(
         screen.getByText("Swab (445297001)", { exact: false })
       );
+
+      await userEvent.click(screen.getByText("Add another disease"));
+      await userEvent.selectOptions(
+        screen.getByLabelText("Supported disease *"),
+        "COVID-19"
+      );
+      await userEvent.type(
+        screen.getByLabelText("Test performed code *"),
+        "1920-12"
+      );
     });
 
     it("enables the save button", async () => {
@@ -67,6 +78,12 @@ describe("create new device", () => {
           testLength: "10",
           swabTypes: ["445297001"],
           supportedDiseases: [],
+          supportedDiseaseTestPerformed: [
+            {
+              supportedDisease: "3821904728",
+              testPerformedLoincCode: "1920-12",
+            },
+          ],
         });
         expect(saveDeviceType).toBeCalledTimes(1);
       });
@@ -88,7 +105,11 @@ describe("update existing devices", () => {
           { label: "eye", value: "456" },
           { label: "mouth", value: "789" },
         ]}
-        supportedDiseaseOptions={[{ label: "COVID-19", value: "123" }]}
+        supportedDiseaseOptions={[
+          { label: "COVID-19", value: "123" },
+          { label: "Flu A", value: "456" },
+          { label: "Flu B", value: "789" },
+        ]}
         deviceOptions={[
           {
             internalId: "abc1",
@@ -126,6 +147,44 @@ describe("update existing devices", () => {
               { internalId: "123", name: "COVID-19", loinc: "1234-1" },
             ],
           },
+          {
+            internalId: "abc4",
+            name: "Postal Swab",
+            model: "Post Office",
+            manufacturer: "Local",
+            loincCode: "1234-3",
+            testLength: 15,
+            swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
+            supportedDiseases: [
+              { internalId: "123", name: "COVID-19", loinc: "1234-1" },
+            ],
+            supportedDiseaseTestPerformed: [
+              {
+                supportedDisease: {
+                  internalId: "123",
+                  loinc: "1234-3",
+                  name: "COVID-19",
+                },
+                testPerformedLoincCode: "1234-1",
+              },
+              {
+                supportedDisease: {
+                  internalId: "456",
+                  loinc: "LP123",
+                  name: "Flu A",
+                },
+                testPerformedLoincCode: "Test123",
+              },
+              {
+                supportedDisease: {
+                  internalId: "789",
+                  loinc: "LP456",
+                  name: "Flu B",
+                },
+                testPerformedLoincCode: "Test345",
+              },
+            ],
+          },
         ]}
       />
     );
@@ -154,6 +213,7 @@ describe("update existing devices", () => {
       screen.getByLabelText("Test length", { exact: false })
     ).toBeDisabled();
     expect(screen.getAllByTestId("multi-select-toggle")[0]).toBeDisabled();
+    expect(screen.getByText("Add another disease")).toBeDisabled();
   });
 
   it("shows a list of devices to select from", async () => {
@@ -161,12 +221,13 @@ describe("update existing devices", () => {
     expect(screen.getAllByText("Tesla Emitter")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Fission Energizer")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Covalent Observer")[1]).toBeInTheDocument();
+    expect(screen.getAllByText("Postal Swab")[1]).toBeInTheDocument();
   });
 
   describe("When selecting a device", () => {
     it("enables input fields and prefills them with current values", async () => {
       await userEvent.click(screen.getByTestId("combo-box-select"));
-      await userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
+      await userEvent.click(screen.getAllByText("Postal Swab")[1]);
 
       const manufacturerInput = screen.getByLabelText("Manufacturer", {
         exact: false,
@@ -177,16 +238,28 @@ describe("update existing devices", () => {
       });
       const snomedInput = screen.getAllByTestId("multi-select-toggle")[0];
       const pillContainer = screen.getAllByTestId("pill-container")[0];
+      const supportedDisease = screen.getAllByLabelText("Supported disease *");
+      const testPerformed = screen.getAllByLabelText("Test performed code *");
 
       expect(manufacturerInput).toBeEnabled();
       expect(modelInput).toBeEnabled();
       expect(loincCodeInput).toBeEnabled();
       expect(snomedInput).toBeEnabled();
 
-      expect(manufacturerInput).toHaveValue("Celoxitin");
-      expect(modelInput).toHaveValue("Model A");
-      expect(loincCodeInput).toHaveValue("1234-1");
-      within(pillContainer).getByText("nose");
+      expect(manufacturerInput).toHaveValue("Local");
+      expect(modelInput).toHaveValue("Post Office");
+      expect(loincCodeInput).toHaveValue("1234-3");
+      within(pillContainer).getByText("mouth");
+      expect(supportedDisease).toHaveLength(3);
+      expect(
+        supportedDisease.map(
+          (diseaseInput) => (diseaseInput as HTMLSelectElement).value
+        )
+      ).toEqual(["123", "456", "789"]);
+      expect(testPerformed).toHaveLength(3);
+      expect(
+        testPerformed.map((code) => (code as HTMLInputElement).value)
+      ).toEqual(["1234-1", "Test123", "Test345"]);
     });
 
     it("displays a list of available snomeds", () => {
@@ -233,6 +306,16 @@ describe("update existing devices", () => {
         await addValue("LOINC code", "234");
         await userEvent.click(snomedInput);
         await userEvent.click(within(snomedList).getByText("eye"));
+        await userEvent.click(screen.getByText("Add another disease"));
+        await userEvent.selectOptions(
+          screen.getByLabelText("Supported disease *"),
+          "COVID-19"
+        );
+        await userEvent.type(
+          screen.getByLabelText("Test performed code *"),
+          "1920-12"
+        );
+
         await userEvent.click(screen.getByText("Save changes"));
 
         expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
@@ -244,6 +327,9 @@ describe("update existing devices", () => {
           swabTypes: ["123", "456"],
           supportedDiseases: ["123"],
           testLength: 15,
+          supportedDiseaseTestPerformed: [
+            { supportedDisease: "123", testPerformedLoincCode: "1920-12" },
+          ],
         });
         expect(saveDeviceType).toBeCalledTimes(1);
       });

@@ -91,12 +91,21 @@ describe("DeviceTypeFormContainer", () => {
     await addValue("LOINC code", "95409-9");
 
     await userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
-
     await userEvent.click(screen.getByText("Cotton (5309)"));
 
     await userEvent.click(screen.getAllByTestId("multi-select-input")[1]);
-
     await userEvent.click(screen.getByText("COVID-19"));
+
+    await userEvent.click(screen.getByText("Add another disease"));
+    await userEvent.selectOptions(
+      screen.getByLabelText("Supported disease *"),
+      "COVID-19"
+    );
+    await userEvent.type(
+      screen.getByLabelText("Test performed code *"),
+      "1920-12"
+    );
+    await userEvent.click(screen.getByText("Save changes"));
 
     await userEvent.click(screen.getByText("Save changes"));
 
@@ -113,6 +122,9 @@ describe("DeviceTypeFormContainer", () => {
         swabTypes: ["887799"],
         supportedDiseases: ["294729"],
         testLength: 15,
+        supportedDiseaseTestPerformed: [
+          { supportedDisease: "294729", testPerformedLoincCode: "1920-12" },
+        ],
       },
     });
 

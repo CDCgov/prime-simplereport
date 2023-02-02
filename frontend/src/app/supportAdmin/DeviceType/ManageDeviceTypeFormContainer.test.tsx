@@ -153,9 +153,16 @@ describe("ManageDeviceTypeFormContainer", () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     await addValue("Manufacturer", " LLC");
-
     await addValue("Model", "D");
-
+    await userEvent.click(screen.getByText("Add another disease"));
+    await userEvent.selectOptions(
+      screen.getByLabelText("Supported disease *"),
+      "COVID-19"
+    );
+    await userEvent.type(
+      screen.getByLabelText("Test performed code *"),
+      "1920-12"
+    );
     await userEvent.click(screen.getByText("Save changes"));
 
     expect(mockUpdateDeviceType).toBeCalledTimes(1);
@@ -170,6 +177,9 @@ describe("ManageDeviceTypeFormContainer", () => {
         swabTypes: ["789"],
         supportedDiseases: ["294729"],
         testLength: 15,
+        supportedDiseaseTestPerformed: [
+          { supportedDisease: "294729", testPerformedLoincCode: "1920-12" },
+        ],
       },
     });
 
