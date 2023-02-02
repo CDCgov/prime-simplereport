@@ -12,7 +12,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}/nginx
 
 jobs:
-  build-and-push-backend-image:
+  build-and-push-nginx-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read

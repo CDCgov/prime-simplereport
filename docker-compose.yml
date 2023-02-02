@@ -3,6 +3,7 @@ services:
   db:
     build:
       context: backend/db-setup
+    image: ghcr.io/cdcgov/prime-simplereport/db:latest
     container_name: "${DB_NAME:-db}"
     environment:
       POSTGRES_PASSWORD: admin_password_for_local_dev_is_not_very_secure
