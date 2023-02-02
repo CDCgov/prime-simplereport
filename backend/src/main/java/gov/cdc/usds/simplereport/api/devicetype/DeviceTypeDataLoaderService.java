@@ -105,14 +105,15 @@ public class DeviceTypeDataLoaderService {
 
   Map<UUID, List<DeviceTestPerformedLoincCode>> getDeviceTestPerformedLoincCode(
       Set<UUID> deviceTypeIds) {
-    var map = new HashMap<UUID, List<DeviceTestPerformedLoincCode>>();
-    deviceTypeIds.forEach(id -> map.put(id, new ArrayList<>()));
+    var found = new HashMap<UUID, List<DeviceTestPerformedLoincCode>>();
+    deviceTypeIds.forEach(id -> found.put(id, new ArrayList<>()));
     deviceTestPerformedLoincCodeRepository
         .findAllByDeviceTypeInternalIdIn(deviceTypeIds)
         .forEach(
             deviceTestPerformedLoincCode ->
-                map.get(deviceTestPerformedLoincCode.getDeviceType().getInternalId())
+                found
+                    .get(deviceTestPerformedLoincCode.getDeviceType().getInternalId())
                     .add(deviceTestPerformedLoincCode));
-    return map;
+    return found;
   }
 }
