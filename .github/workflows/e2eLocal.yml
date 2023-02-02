@@ -1,4 +1,3 @@
-
 name: Run end-to-end tests
 
 on:
@@ -8,12 +7,47 @@ on:
 
 jobs:
 
-  build-cypress:
+  check_cypress_directory_for_changes:
+    runs-on: 'ubuntu-20.04'
+    outputs:
+      cypress_changed: ${{ steps.check_directory_changes.outputs.cypress_changed }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - shell: bash
+      id: check_directory_changes
+      run: |
+        echo "::group::Set cypress_changed output"
+        diff=$(git diff-tree --no-commit-id --name-only -r "origin/main" "$GITHUB_REF" -- cypress | xargs)
+        diff_length=$(echo ${#diff})
+        has_diff=$([ $diff_length -gt 0 ] && echo "true" || echo "false")
+        echo "Cypress has changes: ${has_diff}"
+        echo "cypress_changed=${has_diff}" >> $GITHUB_OUTPUT
+        echo "::endgroup::"
+
+  build_cypress:
+    needs: check_cypress_directory_for_changes
+    if: needs.check_cypress_directory_for_changes.outputs.cypress_changed == 'true'
     uses: ./.github/workflows/buildCypressImage.yml
 
+  set_docker_cypress_image_tag:
+    needs: [check_cypress_directory_for_changes, build_cypress]
+    if: needs.check_cypress_directory_for_changes.outputs.cypress_changed == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      docker_cypress_image_tag: ${{ steps.get_current_branch.outputs.docker_cypress_image_tag }}
+    steps:
+    - shell: bash
+      id: get_current_branch
+      run: |
+        echo "::group::Set docker_cypress_image_tag output"
+        echo "docker_cypress_image_tag=${GITHUB_REF##refs/heads/}" | tr / - >> $GITHUB_OUTPUT
+        echo "::endgroup::"
 
-  cypress-local-env:
-    needs: build-cypress
+  cypress_local_env:
+    if: ${{ always() }}
+    needs: set_docker_cypress_image_tag
     runs-on: ubuntu-latest
     steps:
             
@@ -62,7 +96,7 @@ jobs:
         CI: 1
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180
-        DOCKER_CYPRESS_IMAGE_TAG: latest
+        DOCKER_CYPRESS_IMAGE_TAG: ${{ needs.set_docker_cypress_image_tag.outputs.docker_cypress_image_tag }}
         COMPOSE_HTTP_TIMEOUT: 180
         # backend settings
         SPRING_PROFILES_ACTIVE: e2e,db-dockerized
@@ -92,8 +126,9 @@ jobs:
       shell: bash
       run: |
         echo "::group::Run Cypress locally"
-        docker compose pull
-        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --exit-code-from cypress
+        echo "BUILD TAGS: ${{ needs.build_cypress.meta.outputs.tags }}"
+        echo "Cypress tag: ${{ needs.set_docker_cypress_image_tag.outputs.docker_cypress_image_tag }}"
+        docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress
         echo "::endgroup::"
 
     - name: Stop containers
@@ -101,7 +136,7 @@ jobs:
       shell: bash
       run: |
         echo "::group::Stop Docker containers"
-        docker-compose -f docker-compose.yml -f docker-compose.cypress.yml down
+        docker compose -f docker-compose.yml -f docker-compose.cypress.yml down
         echo "::endgroup::"
 
     - name: Archive cypress failures
