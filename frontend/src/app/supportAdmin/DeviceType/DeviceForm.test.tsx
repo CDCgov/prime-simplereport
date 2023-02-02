@@ -274,7 +274,6 @@ describe("update existing devices", () => {
         testPerformed.map((code) => (code as HTMLInputElement).value)
       ).toEqual(["1234-1", "Test123", "Test345"]);
     });
-
     it("maps supported diseases to supported disease and empty test performed", async () => {
       await userEvent.click(screen.getByTestId("combo-box-select"));
       await userEvent.click(screen.getAllByText("Fission Energizer")[1]);
@@ -312,7 +311,22 @@ describe("update existing devices", () => {
       expect(within(snomedList).getByText("mouth")).toBeInTheDocument();
       expect(within(snomedList).getByText("nose")).toBeInTheDocument();
     });
+    it("removes a supported disease when trash button is clicked", async () => {
+      await userEvent.click(screen.getByTestId("combo-box-select"));
+      await userEvent.click(screen.getAllByText("Postal Swab")[1]);
 
+      expect(
+        screen
+          .getAllByLabelText("Supported disease *")
+          .map((disease) => (disease as HTMLInputElement).value)
+      ).toEqual(["123", "456", "789"]);
+      await userEvent.click(screen.getAllByLabelText("Delete disease")[0]);
+      expect(
+        screen
+          .getAllByLabelText("Supported disease *")
+          .map((disease) => (disease as HTMLInputElement).value)
+      ).toEqual(["123", "789"]);
+    });
     describe("selecting another device", () => {
       it("prefills input fields with new values", async () => {
         await userEvent.click(screen.getByTestId("combo-box-select"));
