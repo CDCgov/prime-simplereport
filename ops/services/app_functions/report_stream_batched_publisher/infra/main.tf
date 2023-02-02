@@ -97,6 +97,7 @@ resource "azurerm_function_app" "functions" {
     FHIR_PUBLISHING_ERROR_QUEUE_NAME  = var.fhir_publishing_error_queue_name
     REPORT_STREAM_URL                 = local.report_stream_url
     REPORT_STREAM_TOKEN               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
+    FHIR_REPORT_STREAM_TOKEN          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_api_key.id})"
     REPORT_STREAM_BATCH_MINIMUM       = var.report_stream_batch_minimum
     REPORT_STREAM_BATCH_MAXIMUM       = var.report_stream_batch_maximum
     SIMPLE_REPORT_CB_URL              = local.simple_report_callback_url

@@ -21,8 +21,6 @@ jest.mock("../config", () => ({
     AZ_STORAGE_ACCOUNT_NAME: "hola",
     AZ_STORAGE_ACCOUNT_KEY: "bonjour",
     TEST_EVENT_QUEUE_NAME: "ciao",
-    REPORT_STREAM_URL: "https://nope.url/1234",
-    REPORT_STREAM_TOKEN: "merhaba",
     REPORT_STREAM_BATCH_MINIMUM: "1",
     REPORT_STREAM_BATCH_MAXIMUM: "5000",
   },

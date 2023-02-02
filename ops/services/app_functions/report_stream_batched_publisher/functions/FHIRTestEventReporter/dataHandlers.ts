@@ -31,4 +31,12 @@ export function processTestEvents(
     parseFailureCount,
     parseSuccessCount: testEventsAsJSON.length,
   };
-}
+};
+
+export function serializeTestEventsAsNdjson (testEvents: SimpleReportTestEvent[]): string {
+   const ndjsonFormatReducer = (state: string, value: SimpleReportTestEvent): string => {
+        return state + `${JSON.stringify(value)}\n`
+   };
+
+   return testEvents.reduce(ndjsonFormatReducer, "");
+};

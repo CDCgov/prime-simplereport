@@ -23,7 +23,7 @@ jest.mock(
 jest.mock("../config", () => ({
   ENV: {
     REPORT_STREAM_URL: "https://nope.url/1234",
-    REPORT_STREAM_TOKEN: "merhaba",
+    FHIR_REPORT_STREAM_TOKEN: "merhaba",
   },
 }));
 

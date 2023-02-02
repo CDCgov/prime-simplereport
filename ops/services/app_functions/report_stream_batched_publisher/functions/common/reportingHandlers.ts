@@ -23,10 +23,10 @@ export async function reportToUniversalPipeline(
   // doing a mock response in the meantime
   /*
   const headers = new Headers({
-    "x-functions-key": REPORT_STREAM_TOKEN,
+    "x-functions-key": FHIR_REPORT_STREAM_TOKEN,
     "x-api-version": uploaderVersion,
     "content-type": "application/json;charset=UTF-8",
-    client: "simple_report",
+    client: "simple_report.fullelr",
   });
 
   return fetch(REPORT_STREAM_URL, {
@@ -35,7 +35,7 @@ export async function reportToUniversalPipeline(
     body: JSON.stringify(results),
   });*/
 
-  const dummyReponseReportStream: ReportStreamResponse = {
+  const dummyResponseReportStream: ReportStreamResponse = {
     destinationCount: results.length,
     destinations: [],
     errorCount: 0,
@@ -51,7 +51,7 @@ export async function reportToUniversalPipeline(
 
   const dummyResponse = {
     ok: true,
-    json: () => dummyReponseReportStream,
+    json: () => dummyResponseReportStream,
   } as unknown as Response;
 
   return Promise.resolve(dummyResponse);
