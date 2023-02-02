@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -16,6 +17,7 @@ public class DeviceTestPerformedLoincCode extends IdentifiedEntity {
 
   @ManyToOne
   @JoinColumn(name = "device_type_id")
+  @JsonIgnore
   private DeviceType deviceType;
 
   @ManyToOne
