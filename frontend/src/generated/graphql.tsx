@@ -78,7 +78,10 @@ export type CreateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseases: Array<Scalars["ID"]>;
+  supportedDiseaseTestPerformed?: InputMaybe<
+    Array<SupportedDiseaseTestPerformedInput>
+  >;
+  supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
 };
@@ -97,6 +100,7 @@ export type DeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseaseTestPerformed?: Maybe<Array<SupportedDiseaseTestPerformed>>;
   supportedDiseases: Array<SupportedDisease>;
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
@@ -922,6 +926,17 @@ export type SupportedDisease = {
   name: Scalars["String"];
 };
 
+export type SupportedDiseaseTestPerformed = {
+  __typename?: "SupportedDiseaseTestPerformed";
+  supportedDisease: SupportedDisease;
+  testPerformedLoincCode: Scalars["String"];
+};
+
+export type SupportedDiseaseTestPerformedInput = {
+  supportedDisease: Scalars["ID"];
+  testPerformedLoincCode: Scalars["String"];
+};
+
 export enum TestCorrectionStatus {
   Corrected = "CORRECTED",
   Original = "ORIGINAL",
@@ -1007,7 +1022,10 @@ export type UpdateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseases: Array<Scalars["ID"]>;
+  supportedDiseaseTestPerformed?: InputMaybe<
+    Array<SupportedDiseaseTestPerformedInput>
+  >;
+  supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
 };
@@ -1699,6 +1717,10 @@ export type CreateDeviceTypeMutationVariables = Exact<{
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
+  supportedDiseaseTestPerformed?: InputMaybe<
+    | Array<SupportedDiseaseTestPerformedInput>
+    | SupportedDiseaseTestPerformedInput
+  >;
   testLength: Scalars["Int"];
 }>;
 
@@ -1717,7 +1739,11 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
   model: Scalars["String"];
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
-  supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
+  supportedDiseases?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
+  supportedDiseaseTestPerformed?: InputMaybe<
+    | Array<SupportedDiseaseTestPerformedInput>
+    | SupportedDiseaseTestPerformedInput
+  >;
   testLength: Scalars["Int"];
 }>;
 
@@ -1751,6 +1777,18 @@ export type GetDeviceTypeListQuery = {
       internalId: string;
       name: string;
     }>;
+    supportedDiseaseTestPerformed?:
+      | Array<{
+          __typename?: "SupportedDiseaseTestPerformed";
+          testPerformedLoincCode: string;
+          supportedDisease: {
+            __typename?: "SupportedDisease";
+            internalId: string;
+            name: string;
+          };
+        }>
+      | null
+      | undefined;
   }>;
 };
 
@@ -4852,6 +4890,7 @@ export const CreateDeviceTypeDocument = gql`
     $loincCode: String!
     $swabTypes: [ID!]!
     $supportedDiseases: [ID!]!
+    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
     $testLength: Int!
   ) {
     createDeviceType(
@@ -4862,6 +4901,7 @@ export const CreateDeviceTypeDocument = gql`
         loincCode: $loincCode
         swabTypes: $swabTypes
         supportedDiseases: $supportedDiseases
+        supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
         testLength: $testLength
       }
     ) {
@@ -4893,6 +4933,7 @@ export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
  *      supportedDiseases: // value for 'supportedDiseases'
+ *      supportedDiseaseTestPerformed: // value for 'supportedDiseaseTestPerformed'
  *      testLength: // value for 'testLength'
  *   },
  * });
@@ -4926,7 +4967,8 @@ export const UpdateDeviceTypeDocument = gql`
     $model: String!
     $loincCode: String!
     $swabTypes: [ID!]!
-    $supportedDiseases: [ID!]!
+    $supportedDiseases: [ID!]
+    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
     $testLength: Int!
   ) {
     updateDeviceType(
@@ -4938,6 +4980,7 @@ export const UpdateDeviceTypeDocument = gql`
         loincCode: $loincCode
         swabTypes: $swabTypes
         supportedDiseases: $supportedDiseases
+        supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
         testLength: $testLength
       }
     ) {
@@ -4970,6 +5013,7 @@ export type UpdateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
  *      supportedDiseases: // value for 'supportedDiseases'
+ *      supportedDiseaseTestPerformed: // value for 'supportedDiseaseTestPerformed'
  *      testLength: // value for 'testLength'
  *   },
  * });
@@ -5011,6 +5055,13 @@ export const GetDeviceTypeListDocument = gql`
       supportedDiseases {
         internalId
         name
+      }
+      supportedDiseaseTestPerformed {
+        supportedDisease {
+          internalId
+          name
+        }
+        testPerformedLoincCode
       }
       testLength
     }

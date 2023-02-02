@@ -3,13 +3,16 @@ package gov.cdc.usds.simplereport.api.devicetype;
 import static java.util.Collections.emptyList;
 
 import gov.cdc.usds.simplereport.db.model.DeviceSupportedDisease;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceSupportedDiseaseRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,7 @@ public class DeviceTypeDataLoaderService {
   final DiseaseService diseaseService;
   final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   final SpecimenTypeRepository specimenTypeRepository;
+  final DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
 
   Map<UUID, List<SupportedDisease>> getSupportedDiseases(Set<UUID> deviceTypeIds) {
     // load cached supportedDisease
@@ -96,6 +100,20 @@ public class DeviceTypeDataLoaderService {
           found.put(deviceTypeId, specimenTypes);
         });
 
+    return found;
+  }
+
+  Map<UUID, List<DeviceTestPerformedLoincCode>> getDeviceTestPerformedLoincCode(
+      Set<UUID> deviceTypeIds) {
+    var found = new HashMap<UUID, List<DeviceTestPerformedLoincCode>>();
+    deviceTypeIds.forEach(id -> found.put(id, new ArrayList<>()));
+    deviceTestPerformedLoincCodeRepository
+        .findAllByDeviceTypeInternalIdIn(deviceTypeIds)
+        .forEach(
+            deviceTestPerformedLoincCode ->
+                found
+                    .get(deviceTestPerformedLoincCode.getDeviceType().getInternalId())
+                    .add(deviceTestPerformedLoincCode));
     return found;
   }
 }
