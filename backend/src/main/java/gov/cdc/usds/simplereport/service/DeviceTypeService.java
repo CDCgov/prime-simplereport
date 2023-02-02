@@ -200,7 +200,7 @@ public class DeviceTypeService {
               disease ->
                   deviceTestPerformedLoincCodeList.add(
                       new DeviceTestPerformedLoincCode(
-                          device, disease, input.getTestPerformedLoincCode())));
+                          device.getInternalId(), disease, input.getTestPerformedLoincCode())));
         });
     return deviceTestPerformedLoincCodeList;
   }

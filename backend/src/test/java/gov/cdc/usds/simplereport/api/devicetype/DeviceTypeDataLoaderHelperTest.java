@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.DeviceSupportedDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
@@ -124,19 +123,14 @@ class DeviceTypeDataLoaderHelperTest {
     var device3Id = UUID.randomUUID();
     var deviceIdSet = Set.of(device1Id, device2Id, device3Id);
 
-    var mockedDevice1 = mock(DeviceType.class);
-    var mockedDevice2 = mock(DeviceType.class);
-    when(mockedDevice1.getInternalId()).thenReturn(device1Id);
-    when(mockedDevice2.getInternalId()).thenReturn(device2Id);
-
     var deviceTestPerformedLoincCode1 =
-        new DeviceTestPerformedLoincCode(mockedDevice1, new SupportedDisease(), "123");
+        new DeviceTestPerformedLoincCode(device1Id, new SupportedDisease(), "123");
     var deviceTestPerformedLoincCode2 =
-        new DeviceTestPerformedLoincCode(mockedDevice1, new SupportedDisease(), "456");
+        new DeviceTestPerformedLoincCode(device1Id, new SupportedDisease(), "456");
     var deviceTestPerformedLoincCode3 =
-        new DeviceTestPerformedLoincCode(mockedDevice2, new SupportedDisease(), "123");
+        new DeviceTestPerformedLoincCode(device2Id, new SupportedDisease(), "123");
 
-    when(deviceTestPerformedLoincCodeRepository.findAllByDeviceTypeInternalIdIn(deviceIdSet))
+    when(deviceTestPerformedLoincCodeRepository.findAllByDeviceTypeIdIn(deviceIdSet))
         .thenReturn(
             List.of(
                 deviceTestPerformedLoincCode1,

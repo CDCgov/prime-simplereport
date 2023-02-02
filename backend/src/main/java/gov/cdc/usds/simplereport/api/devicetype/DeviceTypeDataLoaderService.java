@@ -108,11 +108,11 @@ public class DeviceTypeDataLoaderService {
     var found = new HashMap<UUID, List<DeviceTestPerformedLoincCode>>();
     deviceTypeIds.forEach(id -> found.put(id, new ArrayList<>()));
     deviceTestPerformedLoincCodeRepository
-        .findAllByDeviceTypeInternalIdIn(deviceTypeIds)
+        .findAllByDeviceTypeIdIn(deviceTypeIds)
         .forEach(
             deviceTestPerformedLoincCode ->
                 found
-                    .get(deviceTestPerformedLoincCode.getDeviceType().getInternalId())
+                    .get(deviceTestPerformedLoincCode.getDeviceTypeId())
                     .add(deviceTestPerformedLoincCode));
     return found;
   }
