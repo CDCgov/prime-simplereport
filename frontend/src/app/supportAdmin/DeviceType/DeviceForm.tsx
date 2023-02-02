@@ -66,6 +66,23 @@ const DeviceForm = (props: Props) => {
       : [];
 
   const getDeviceFromDeviceType = (device?: DeviceType): Device | undefined => {
+    let supportedDiseaseTestPerformed: SupportedDiseaseTestPerformedInput[] =
+      [];
+    if (device?.supportedDiseaseTestPerformed?.length) {
+      supportedDiseaseTestPerformed = device.supportedDiseaseTestPerformed.map(
+        (diseaseTestPerformed) => ({
+          supportedDisease: diseaseTestPerformed.supportedDisease.internalId,
+          testPerformedLoincCode: diseaseTestPerformed.testPerformedLoincCode,
+        })
+      );
+    } else if (device?.supportedDiseases?.length) {
+      supportedDiseaseTestPerformed = device.supportedDiseases.map(
+        (supportedDisease) => ({
+          supportedDisease: supportedDisease.internalId,
+          testPerformedLoincCode: "",
+        })
+      );
+    }
     return device
       ? {
           internalId: device.internalId,
@@ -78,15 +95,7 @@ const DeviceForm = (props: Props) => {
             [],
           loincCode: device.loincCode,
           testLength: device.testLength ? device.testLength : 15,
-          supportedDiseaseTestPerformed:
-            device.supportedDiseaseTestPerformed?.map(
-              (diseaseTestPerformed) => ({
-                supportedDisease:
-                  diseaseTestPerformed.supportedDisease.internalId,
-                testPerformedLoincCode:
-                  diseaseTestPerformed.testPerformedLoincCode,
-              })
-            ) || [],
+          supportedDiseaseTestPerformed,
         }
       : undefined;
   };

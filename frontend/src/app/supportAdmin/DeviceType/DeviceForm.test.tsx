@@ -133,6 +133,8 @@ describe("update existing devices", () => {
             swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
             supportedDiseases: [
               { internalId: "123", name: "COVID-19", loinc: "1234-1" },
+              { internalId: "456", name: "Flu A", loinc: "LP123" },
+              { internalId: "789", name: "Flu B", loinc: "LP345" },
             ],
           },
           {
@@ -262,6 +264,24 @@ describe("update existing devices", () => {
       ).toEqual(["1234-1", "Test123", "Test345"]);
     });
 
+    it("maps supported diseases to supported disease and empty test performed", async () => {
+      await userEvent.click(screen.getByTestId("combo-box-select"));
+      await userEvent.click(screen.getAllByText("Fission Energizer")[1]);
+
+      const supportedDisease = screen.getAllByLabelText("Supported disease *");
+      const testPerformed = screen.getAllByLabelText("Test performed code *");
+
+      expect(supportedDisease).toHaveLength(3);
+      expect(testPerformed).toHaveLength(3);
+      expect(
+        supportedDisease.map(
+          (diseaseInput) => (diseaseInput as HTMLSelectElement).value
+        )
+      ).toEqual(["123", "456", "789"]);
+      expect(
+        testPerformed.map((code) => (code as HTMLInputElement).value)
+      ).toEqual(["", "", ""]);
+    });
     it("displays a list of available snomeds", () => {
       const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
@@ -308,12 +328,12 @@ describe("update existing devices", () => {
         await userEvent.click(within(snomedList).getByText("eye"));
         await userEvent.click(screen.getByText("Add another disease"));
         await userEvent.selectOptions(
-          screen.getByLabelText("Supported disease *"),
-          "COVID-19"
+          screen.getAllByLabelText("Supported disease *")[1],
+          "Flu A"
         );
         await userEvent.type(
-          screen.getByLabelText("Test performed code *"),
-          "1920-12"
+          screen.getAllByLabelText("Test performed code *")[1],
+          "LP 123"
         );
 
         await userEvent.click(screen.getByText("Save changes"));
@@ -328,7 +348,8 @@ describe("update existing devices", () => {
           supportedDiseases: ["123"],
           testLength: 15,
           supportedDiseaseTestPerformed: [
-            { supportedDisease: "123", testPerformedLoincCode: "1920-12" },
+            { supportedDisease: "123", testPerformedLoincCode: "" },
+            { supportedDisease: "456", testPerformedLoincCode: "LP 123" },
           ],
         });
         expect(saveDeviceType).toBeCalledTimes(1);

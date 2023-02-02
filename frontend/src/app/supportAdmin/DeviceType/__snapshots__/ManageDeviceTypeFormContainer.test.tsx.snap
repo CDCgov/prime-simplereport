@@ -620,6 +620,19 @@ Object {
                           >
                             COVID-19
                           </li>
+                          <li
+                            aria-posinset="2"
+                            aria-selected="false"
+                            aria-setsize="64"
+                            class="usa-combo-box__list-option"
+                            data-testid="multi-select-option-123-456"
+                            id="multi-select-supportedDiseases-list--option-1"
+                            role="option"
+                            tabindex="-1"
+                            value="123-456"
+                          >
+                            Flu A
+                          </li>
                         </ul>
                         <div
                           class="usa-combo-box__status usa-sr-only"
@@ -1296,6 +1309,19 @@ Object {
                           value="294729"
                         >
                           COVID-19
+                        </li>
+                        <li
+                          aria-posinset="2"
+                          aria-selected="false"
+                          aria-setsize="64"
+                          class="usa-combo-box__list-option"
+                          data-testid="multi-select-option-123-456"
+                          id="multi-select-supportedDiseases-list--option-1"
+                          role="option"
+                          tabindex="-1"
+                          value="123-456"
+                        >
+                          Flu A
                         </li>
                       </ul>
                       <div

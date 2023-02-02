@@ -52,6 +52,11 @@ jest.mock("../../../generated/graphql", () => {
               name: "COVID-19",
               loinc: "4829",
             },
+            {
+              internalId: "123-456",
+              name: "Flu A",
+              loinc: "4829",
+            },
           ],
         },
       };
@@ -154,14 +159,13 @@ describe("ManageDeviceTypeFormContainer", () => {
 
     await addValue("Manufacturer", " LLC");
     await addValue("Model", "D");
-    await userEvent.click(screen.getByText("Add another disease"));
     await userEvent.selectOptions(
       screen.getByLabelText("Supported disease *"),
-      "COVID-19"
+      "Flu A"
     );
     await userEvent.type(
       screen.getByLabelText("Test performed code *"),
-      "1920-12"
+      "LP 123"
     );
     await userEvent.click(screen.getByText("Save changes"));
 
@@ -178,7 +182,7 @@ describe("ManageDeviceTypeFormContainer", () => {
         supportedDiseases: ["294729"],
         testLength: 15,
         supportedDiseaseTestPerformed: [
-          { supportedDisease: "294729", testPerformedLoincCode: "1920-12" },
+          { supportedDisease: "123-456", testPerformedLoincCode: "LP 123" },
         ],
       },
     });
