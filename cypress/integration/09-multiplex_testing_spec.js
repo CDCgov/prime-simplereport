@@ -83,6 +83,14 @@ describe("Testing with multiplex devices", () => {
       cy.get('li[id="multi-select-supportedDiseases-list--option-0"]').click()
       cy.get('input[role="combobox"]').eq(1).type('Covid')
       cy.get('li[id="multi-select-supportedDiseases-list--option-0"]').click()
+      cy.get('select[name="selectSupportedDisease0"').select("COVID-19")
+      cy.get('input[name="testPerformedCode0"]').type("123-456")
+      cy.contains('.usa-button', "Add another disease").click()
+      cy.get('select[name="selectSupportedDisease1"').select("Flu A")
+      cy.get('input[name="testPerformedCode1"]').type("456-789")
+      cy.contains('.usa-button', "Add another disease").click()
+      cy.get('select[name="selectSupportedDisease2"').select("Flu B")
+      cy.get('input[name="testPerformedCode2"]').type("789-123")
       cy.contains('Save changes').should('be.enabled').click()
       cy.wait('@gqlcreateDeviceTypeMutation');
       cy.get(".Toastify").contains("Created Device");
@@ -115,9 +123,15 @@ describe("Testing with multiplex devices", () => {
       cy.get('input[name="manufacturer"]').should('have.value', 'acme')
       cy.get('input[name="loincCode"]').should('have.value', '96741-4')
       cy.get('.pill').should('have.length', 4);
-      cy.get('.pill').eq(1).contains('Flu A')
-      cy.get('.pill').eq(2).contains('Flu B')
-      cy.get('.pill').eq(3).contains('COVID-19')
+      cy.get('.pill').eq(1).contains('COVID-19')
+      cy.get('.pill').eq(2).contains('Flu A')
+      cy.get('.pill').eq(3).contains('Flu B')
+      cy.get('select[name="selectSupportedDisease0"').find(":selected").should("have.text", "COVID-19")
+      cy.get('input[name="testPerformedCode0"]').should("have.value","123-456")
+      cy.get('select[name="selectSupportedDisease1"').find(":selected").should("have.text", "Flu A")
+      cy.get('input[name="testPerformedCode1"]').should("have.value","456-789")
+      cy.get('select[name="selectSupportedDisease2"').find(":selected").should("have.text", "Flu B")
+      cy.get('input[name="testPerformedCode2"]').should("have.value","789-123")
     });
 
     it('adds the multiplex device to the testing facility', () => {

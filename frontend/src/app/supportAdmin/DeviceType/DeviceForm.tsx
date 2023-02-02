@@ -136,12 +136,13 @@ const DeviceForm = (props: Props) => {
             disabled={!device}
             defaultOption={""}
             defaultSelect={true}
+            name={`selectSupportedDisease${index}`}
           />
         </div>
         <div className="tablet:grid-col">
           <TextInput
             label="Test performed code"
-            name="testLength"
+            name={`testPerformedCode${index}`}
             value={
               device?.supportedDiseaseTestPerformed?.[index]
                 ?.testPerformedLoincCode
