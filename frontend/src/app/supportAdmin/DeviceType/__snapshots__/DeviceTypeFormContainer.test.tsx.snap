@@ -451,6 +451,84 @@ Object {
                 >
                   <div
                     class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group prime-dropdown "
+                    >
+                      <label
+                        class="usa-label"
+                        for="8"
+                      >
+                        Supported disease
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <select
+                        aria-required="true"
+                        class="usa-select"
+                        id="8"
+                      >
+                        <option
+                          value=""
+                        />
+                        <option
+                          value="294729"
+                        >
+                          COVID-19
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="9"
+                      >
+                        Test performed code
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="false"
+                        aria-required="true"
+                        class="usa-input"
+                        id="9"
+                        name="testLength"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="flex-align-self-end"
+                  >
+                    <div
+                      class="padding-205 height-5"
+                    >
+                       
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
                     style="margin-bottom: 56px;"
                   >
                     <button
@@ -926,6 +1004,84 @@ Object {
                         Selected Supported diseases
                       </legend>
                     </fieldset>
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group prime-dropdown "
+                  >
+                    <label
+                      class="usa-label"
+                      for="8"
+                    >
+                      Supported disease
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <select
+                      aria-required="true"
+                      class="usa-select"
+                      id="8"
+                    >
+                      <option
+                        value=""
+                      />
+                      <option
+                        value="294729"
+                      >
+                        COVID-19
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="9"
+                    >
+                      Test performed code
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <input
+                      aria-disabled="false"
+                      aria-required="true"
+                      class="usa-input"
+                      id="9"
+                      name="testLength"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+                <div
+                  class="flex-align-self-end"
+                >
+                  <div
+                    class="padding-205 height-5"
+                  >
+                     
                   </div>
                 </div>
               </div>
