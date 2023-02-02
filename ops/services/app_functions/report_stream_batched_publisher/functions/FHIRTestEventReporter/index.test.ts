@@ -15,8 +15,8 @@ jest.mock("../config", () => ({
     AZ_STORAGE_ACCOUNT_KEY: "bonjour",
     REPORT_STREAM_URL: "https://nope.url/1234",
     FHIR_TEST_EVENT_QUEUE_NAME: "ciao",
-    FHIR_REPORTING_EXCEPTION_QUEUE_NAME: "ciao_exception",
-    PUBLISHING_ERROR_QUEUE_NAME: "ciao_error",
+    FHIR_PUBLISHING_ERROR_QUEUE_NAME: "ciao_error",
+    REPORTING_EXCEPTION_QUEUE_NAME: "ciao_exception",
   },
 }));
 

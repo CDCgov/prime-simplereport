@@ -16,8 +16,8 @@ import {
 const {
   REPORT_STREAM_URL,
   FHIR_TEST_EVENT_QUEUE_NAME,
-  FHIR_REPORTING_EXCEPTION_QUEUE_NAME,
-  PUBLISHING_ERROR_QUEUE_NAME,
+  FHIR_PUBLISHING_ERROR_QUEUE_NAME,
+  REPORTING_EXCEPTION_QUEUE_NAME
 } = ENV;
 
 appInsights.setup();
@@ -30,11 +30,11 @@ const FHIRTestEventReporter: AzureFunction = async function (
   const publishingQueue: QueueClient = getQueueClient(
     FHIR_TEST_EVENT_QUEUE_NAME
   );
-  const exceptionQueue: QueueClient = getQueueClient(
-    FHIR_REPORTING_EXCEPTION_QUEUE_NAME
-  );
   const publishingErrorQueue: QueueClient = getQueueClient(
-    PUBLISHING_ERROR_QUEUE_NAME
+      FHIR_PUBLISHING_ERROR_QUEUE_NAME
+  );
+  const exceptionQueue: QueueClient = getQueueClient(
+      REPORTING_EXCEPTION_QUEUE_NAME
   );
 
   if (!(await minimumMessagesAvailable(context, publishingQueue))) {

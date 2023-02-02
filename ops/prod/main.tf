@@ -48,8 +48,8 @@ resource "azurerm_storage_queue" "fhir_data_queue" {
   storage_account_name = azurerm_storage_account.app.name
 }
 
-resource "azurerm_storage_queue" "fhir_data_exceptions_queue" {
-  name                 = "fhir-data-publishing-exceptions"
+resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
+  name                 = "fhir-data-publishing-error"
   storage_account_name = azurerm_storage_account.app.name
 }
 
