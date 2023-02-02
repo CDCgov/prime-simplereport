@@ -114,6 +114,11 @@ Object {
                           Covalent Observer
                         </option>
                         <option
+                          value="abc5"
+                        >
+                          Default Device
+                        </option>
+                        <option
                           value="abc2"
                         >
                           Fission Energizer
@@ -189,7 +194,7 @@ Object {
                         <li
                           aria-posinset="1"
                           aria-selected="false"
-                          aria-setsize="4"
+                          aria-setsize="5"
                           class="usa-combo-box__list-option"
                           data-testid="combo-box-option-abc3"
                           data-value="abc3"
@@ -203,11 +208,25 @@ Object {
                         <li
                           aria-posinset="2"
                           aria-selected="false"
-                          aria-setsize="4"
+                          aria-setsize="5"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc5"
+                          data-value="abc5"
+                          id="selectDevice--list--option-1"
+                          role="option"
+                          tabindex="-1"
+                          value="abc5"
+                        >
+                          Default Device
+                        </li>
+                        <li
+                          aria-posinset="3"
+                          aria-selected="false"
+                          aria-setsize="5"
                           class="usa-combo-box__list-option"
                           data-testid="combo-box-option-abc2"
                           data-value="abc2"
-                          id="selectDevice--list--option-1"
+                          id="selectDevice--list--option-2"
                           role="option"
                           tabindex="-1"
                           value="abc2"
@@ -215,13 +234,13 @@ Object {
                           Fission Energizer
                         </li>
                         <li
-                          aria-posinset="3"
+                          aria-posinset="4"
                           aria-selected="false"
-                          aria-setsize="4"
+                          aria-setsize="5"
                           class="usa-combo-box__list-option"
                           data-testid="combo-box-option-abc4"
                           data-value="abc4"
-                          id="selectDevice--list--option-2"
+                          id="selectDevice--list--option-3"
                           role="option"
                           tabindex="-1"
                           value="abc4"
@@ -229,13 +248,13 @@ Object {
                           Postal Swab
                         </li>
                         <li
-                          aria-posinset="4"
+                          aria-posinset="5"
                           aria-selected="false"
-                          aria-setsize="4"
+                          aria-setsize="5"
                           class="usa-combo-box__list-option"
                           data-testid="combo-box-option-abc1"
                           data-value="abc1"
-                          id="selectDevice--list--option-3"
+                          id="selectDevice--list--option-4"
                           role="option"
                           tabindex="-1"
                           value="abc1"
@@ -833,6 +852,11 @@ Object {
                         Covalent Observer
                       </option>
                       <option
+                        value="abc5"
+                      >
+                        Default Device
+                      </option>
+                      <option
                         value="abc2"
                       >
                         Fission Energizer
@@ -908,7 +932,7 @@ Object {
                       <li
                         aria-posinset="1"
                         aria-selected="false"
-                        aria-setsize="4"
+                        aria-setsize="5"
                         class="usa-combo-box__list-option"
                         data-testid="combo-box-option-abc3"
                         data-value="abc3"
@@ -922,11 +946,25 @@ Object {
                       <li
                         aria-posinset="2"
                         aria-selected="false"
-                        aria-setsize="4"
+                        aria-setsize="5"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc5"
+                        data-value="abc5"
+                        id="selectDevice--list--option-1"
+                        role="option"
+                        tabindex="-1"
+                        value="abc5"
+                      >
+                        Default Device
+                      </li>
+                      <li
+                        aria-posinset="3"
+                        aria-selected="false"
+                        aria-setsize="5"
                         class="usa-combo-box__list-option"
                         data-testid="combo-box-option-abc2"
                         data-value="abc2"
-                        id="selectDevice--list--option-1"
+                        id="selectDevice--list--option-2"
                         role="option"
                         tabindex="-1"
                         value="abc2"
@@ -934,13 +972,13 @@ Object {
                         Fission Energizer
                       </li>
                       <li
-                        aria-posinset="3"
+                        aria-posinset="4"
                         aria-selected="false"
-                        aria-setsize="4"
+                        aria-setsize="5"
                         class="usa-combo-box__list-option"
                         data-testid="combo-box-option-abc4"
                         data-value="abc4"
-                        id="selectDevice--list--option-2"
+                        id="selectDevice--list--option-3"
                         role="option"
                         tabindex="-1"
                         value="abc4"
@@ -948,13 +986,13 @@ Object {
                         Postal Swab
                       </li>
                       <li
-                        aria-posinset="4"
+                        aria-posinset="5"
                         aria-selected="false"
-                        aria-setsize="4"
+                        aria-setsize="5"
                         class="usa-combo-box__list-option"
                         data-testid="combo-box-option-abc1"
                         data-value="abc1"
-                        id="selectDevice--list--option-3"
+                        id="selectDevice--list--option-4"
                         role="option"
                         tabindex="-1"
                         value="abc1"

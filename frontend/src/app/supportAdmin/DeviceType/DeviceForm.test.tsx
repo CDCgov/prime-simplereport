@@ -187,6 +187,17 @@ describe("update existing devices", () => {
               },
             ],
           },
+          {
+            internalId: "abc5",
+            name: "Default Device",
+            model: "Generic",
+            manufacturer: "Brand",
+            loincCode: "1234-7",
+            testLength: 15,
+            swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
+            supportedDiseases: [],
+            supportedDiseaseTestPerformed: [],
+          },
         ]}
       />
     );
@@ -281,6 +292,18 @@ describe("update existing devices", () => {
       expect(
         testPerformed.map((code) => (code as HTMLInputElement).value)
       ).toEqual(["", "", ""]);
+    });
+    it("maps covid to supported disease", async () => {
+      await userEvent.click(screen.getByTestId("combo-box-select"));
+      await userEvent.click(screen.getAllByText("Default Device")[1]);
+
+      expect(
+        (screen.getByLabelText("Supported disease *") as HTMLInputElement).value
+      ).toEqual("123");
+      expect(
+        (screen.getByLabelText("Test performed code *") as HTMLInputElement)
+          .value
+      ).toEqual("");
     });
     it("displays a list of available snomeds", () => {
       const snomedList = screen.getAllByTestId("multi-select-option-list")[0];

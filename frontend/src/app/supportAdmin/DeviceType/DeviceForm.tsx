@@ -66,8 +66,7 @@ const DeviceForm = (props: Props) => {
       : [];
 
   const getDeviceFromDeviceType = (device?: DeviceType): Device | undefined => {
-    let supportedDiseaseTestPerformed: SupportedDiseaseTestPerformedInput[] =
-      [];
+    let supportedDiseaseTestPerformed: SupportedDiseaseTestPerformedInput[];
     if (device?.supportedDiseaseTestPerformed?.length) {
       supportedDiseaseTestPerformed = device.supportedDiseaseTestPerformed.map(
         (diseaseTestPerformed) => ({
@@ -82,6 +81,16 @@ const DeviceForm = (props: Props) => {
           testPerformedLoincCode: "",
         })
       );
+    } else {
+      supportedDiseaseTestPerformed = [
+        {
+          supportedDisease:
+            props.supportedDiseaseOptions.find(
+              (option) => option.label === "COVID-19"
+            )?.value || "",
+          testPerformedLoincCode: "",
+        },
+      ];
     }
     return device
       ? {
