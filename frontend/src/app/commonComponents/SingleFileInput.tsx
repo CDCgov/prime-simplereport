@@ -51,7 +51,10 @@ const SingleFileInput = ({
   }
 
   return (
-    <div className={classnames(["sr-single-file-input", fileState])}>
+    <div
+      className={classnames(["sr-single-file-input", fileState])}
+      role={"button"}
+    >
       <input
         type="file"
         id={id}
