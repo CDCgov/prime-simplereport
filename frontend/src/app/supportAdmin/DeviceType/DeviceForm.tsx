@@ -198,9 +198,9 @@ const DeviceForm = (props: Props) => {
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
-              <div>
-                <h2>{props.formTitle}</h2>
-              </div>
+              <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
+                {props.formTitle}
+              </h1>
               <div
                 style={{
                   display: "flex",
@@ -221,7 +221,9 @@ const DeviceForm = (props: Props) => {
               {props.deviceOptions ? (
                 <div className="grid-row grid-gap">
                   <div className="tablet:grid-col">
-                    <Required label={"Select device"} />
+                    <label htmlFor="selectDevice">
+                      <Required label={"Select device"} />
+                    </label>
                     <ComboBox
                       className="usa-combo-box__full-width"
                       id="selectDevice"

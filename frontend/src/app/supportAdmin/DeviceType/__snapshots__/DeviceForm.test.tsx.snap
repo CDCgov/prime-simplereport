@@ -20,11 +20,11 @@ Object {
               <div
                 class="usa-card__header"
               >
-                <div>
-                  <h2>
-                    Manage devices
-                  </h2>
-                </div>
+                <h1
+                  class="font-heading-lg margin-top-0 margin-bottom-0"
+                >
+                  Manage devices
+                </h1>
                 <div
                   style="display: flex; justify-content: center; align-items: center;"
                 >
@@ -48,11 +48,11 @@ Object {
                     <div
                       class="usa-alert__body"
                     >
-                      <h4
+                      <h2
                         class="usa-alert__heading"
                       >
                         Reminder
-                      </h4>
+                      </h2>
                       <p
                         class="usa-alert__text"
                       >
@@ -88,14 +88,18 @@ Object {
                   <div
                     class="tablet:grid-col"
                   >
-                    Select device
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
+                    <label
+                      for="selectDevice"
                     >
-                       
-                      *
-                    </abbr>
+                      Select device
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
                     <div
                       class="usa-combo-box usa-combo-box__full-width"
                       data-enhanced="true"
@@ -463,6 +467,7 @@ Object {
                       <label
                         class="usa-label"
                         for="31"
+                        id="label-for-31"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -481,6 +486,7 @@ Object {
                         <input
                           aria-expanded="false"
                           aria-invalid="false"
+                          aria-labelledby="label-for-31"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -589,6 +595,7 @@ Object {
                       <label
                         class="usa-label"
                         for="32"
+                        id="label-for-32"
                       >
                         Supported diseases
                         <abbr
@@ -607,6 +614,7 @@ Object {
                         <input
                           aria-expanded="false"
                           aria-invalid="false"
+                          aria-labelledby="label-for-32"
                           aria-owns="multi-select-supportedDiseases-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -758,11 +766,11 @@ Object {
             <div
               class="usa-card__header"
             >
-              <div>
-                <h2>
-                  Manage devices
-                </h2>
-              </div>
+              <h1
+                class="font-heading-lg margin-top-0 margin-bottom-0"
+              >
+                Manage devices
+              </h1>
               <div
                 style="display: flex; justify-content: center; align-items: center;"
               >
@@ -786,11 +794,11 @@ Object {
                   <div
                     class="usa-alert__body"
                   >
-                    <h4
+                    <h2
                       class="usa-alert__heading"
                     >
                       Reminder
-                    </h4>
+                    </h2>
                     <p
                       class="usa-alert__text"
                     >
@@ -826,14 +834,18 @@ Object {
                 <div
                   class="tablet:grid-col"
                 >
-                  Select device
-                  <abbr
-                    class="usa-hint usa-hint--required"
-                    title="required"
+                  <label
+                    for="selectDevice"
                   >
-                     
-                    *
-                  </abbr>
+                    Select device
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </label>
                   <div
                     class="usa-combo-box usa-combo-box__full-width"
                     data-enhanced="true"
@@ -1201,6 +1213,7 @@ Object {
                     <label
                       class="usa-label"
                       for="31"
+                      id="label-for-31"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -1219,6 +1232,7 @@ Object {
                       <input
                         aria-expanded="false"
                         aria-invalid="false"
+                        aria-labelledby="label-for-31"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"
@@ -1327,6 +1341,7 @@ Object {
                     <label
                       class="usa-label"
                       for="32"
+                      id="label-for-32"
                     >
                       Supported diseases
                       <abbr
@@ -1345,6 +1360,7 @@ Object {
                       <input
                         aria-expanded="false"
                         aria-invalid="false"
+                        aria-labelledby="label-for-32"
                         aria-owns="multi-select-supportedDiseases-list"
                         autocapitalize="off"
                         autocomplete="off"
