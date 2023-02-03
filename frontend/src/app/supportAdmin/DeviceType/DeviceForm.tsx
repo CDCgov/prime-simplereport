@@ -164,6 +164,15 @@ const DeviceForm = (props: Props) => {
                   "supportedDiseaseTestPerformed",
                   newSupportedDisease
                 );
+                const covidId = props.supportedDiseaseOptions.find(
+                  (d) => d.label === "COVID-19"
+                )?.value;
+                if (
+                  device?.supportedDiseaseTestPerformed?.[index]
+                    ?.supportedDisease === covidId
+                ) {
+                  updateDeviceAttribute("loincCode", event.target.value);
+                }
               }
             }}
             disabled={!device}
@@ -287,16 +296,6 @@ const DeviceForm = (props: Props) => {
                 </div>
               </div>
               <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <TextInput
-                    label="LOINC code"
-                    name="loincCode"
-                    value={device?.loincCode}
-                    onChange={onChange}
-                    disabled={!device}
-                    required
-                  />
-                </div>
                 <div className="tablet:grid-col">
                   <TextInput
                     type={"number"}

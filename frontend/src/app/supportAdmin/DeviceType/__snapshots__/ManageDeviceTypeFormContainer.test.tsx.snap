@@ -362,37 +362,6 @@ Object {
                         class="usa-label"
                         for="4"
                       >
-                        LOINC code
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <input
-                        aria-disabled="true"
-                        aria-required="true"
-                        class="usa-input"
-                        disabled=""
-                        id="4"
-                        name="loincCode"
-                        type="text"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                  <div
-                    class="tablet:grid-col"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <label
-                        class="usa-label"
-                        for="5"
-                      >
                         Test length (minutes)
                         <abbr
                           class="usa-hint usa-hint--required"
@@ -407,7 +376,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="5"
+                        id="4"
                         max="999"
                         min="0"
                         name="testLength"
@@ -428,8 +397,8 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="6"
-                        id="label-for-6"
+                        for="5"
+                        id="label-for-5"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -443,12 +412,12 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="6"
+                        id="5"
                       >
                         <input
                           aria-expanded="false"
                           aria-invalid="false"
-                          aria-labelledby="label-for-6"
+                          aria-labelledby="label-for-5"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -945,37 +914,6 @@ Object {
                       class="usa-label"
                       for="4"
                     >
-                      LOINC code
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <input
-                      aria-disabled="true"
-                      aria-required="true"
-                      class="usa-input"
-                      disabled=""
-                      id="4"
-                      name="loincCode"
-                      type="text"
-                      value=""
-                    />
-                  </div>
-                </div>
-                <div
-                  class="tablet:grid-col"
-                >
-                  <div
-                    class="usa-form-group"
-                  >
-                    <label
-                      class="usa-label"
-                      for="5"
-                    >
                       Test length (minutes)
                       <abbr
                         class="usa-hint usa-hint--required"
@@ -990,7 +928,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="5"
+                      id="4"
                       max="999"
                       min="0"
                       name="testLength"
@@ -1011,8 +949,8 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="6"
-                      id="label-for-6"
+                      for="5"
+                      id="label-for-5"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -1026,12 +964,12 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="6"
+                      id="5"
                     >
                       <input
                         aria-expanded="false"
                         aria-invalid="false"
-                        aria-labelledby="label-for-6"
+                        aria-labelledby="label-for-5"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"

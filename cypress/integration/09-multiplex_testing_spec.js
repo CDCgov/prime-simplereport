@@ -66,7 +66,6 @@ describe("Testing with multiplex devices", () => {
       cy.get('input[name="name"]').type(deviceName);
       cy.get('input[name="model"]').type("1RX");
       cy.get('input[name="manufacturer"]').type("acme");
-      cy.get('input[name="loincCode"]').type("96741-4");
       cy.get('input[role="combobox"]').first().type("Swab");
       cy.get('li[id="multi-select-swabTypes-list--option-1"]').click();
       cy.get('select[name="selectSupportedDisease0"').select("COVID-19")
@@ -97,7 +96,6 @@ describe("Testing with multiplex devices", () => {
       cy.checkA11y();
       cy.get('input[name="model"]').should("have.value", "1RX");
       cy.get('input[name="manufacturer"]').should("have.value", "acme");
-      cy.get('input[name="loincCode"]').should("have.value", "96741-4");
       cy.get(".pill").should("have.length", 1);
       cy.get('select[name="selectSupportedDisease0"').find(":selected").should("have.text", "COVID-19")
       cy.get('input[name="testPerformedCode0"]').should("have.value","123-456")

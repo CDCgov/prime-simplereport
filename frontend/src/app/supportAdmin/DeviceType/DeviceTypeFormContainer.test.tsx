@@ -88,7 +88,6 @@ describe("DeviceTypeFormContainer", () => {
     await addValue("Device name", "Accula");
     await addValue("Manufacturer", "Mesa Biotech");
     await addValue("Model", "Accula SARS-Cov-2 Test*");
-    await addValue("LOINC code", "95409-9");
 
     await userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
     await userEvent.click(screen.getByText("Cotton (5309)"));
@@ -114,7 +113,7 @@ describe("DeviceTypeFormContainer", () => {
     expect(mockCreateDeviceType).toHaveBeenCalledWith({
       fetchPolicy: "no-cache",
       variables: {
-        loincCode: "95409-9",
+        loincCode: "1920-12",
         manufacturer: "Mesa Biotech",
         model: "Accula SARS-Cov-2 Test*",
         name: "Accula",
