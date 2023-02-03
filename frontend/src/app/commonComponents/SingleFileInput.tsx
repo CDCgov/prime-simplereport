@@ -51,10 +51,7 @@ const SingleFileInput = ({
   }
 
   return (
-    <div
-      className={classnames(["sr-single-file-input", fileState])}
-      role={"button"}
-    >
+    <div className={classnames(["sr-single-file-input", fileState])}>
       <input
         type="file"
         id={id}
@@ -66,6 +63,7 @@ const SingleFileInput = ({
         className="usa-file-input"
         aria-describedby="file-input-specific-hint"
         accept={accept}
+        role={"button"}
       />
       <span id="file-input-specific-hint">{getHint(fileState)}</span>
     </div>
