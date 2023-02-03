@@ -212,6 +212,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
               >
                 <div
                   class="sr-single-file-input blank"
+                  role="button"
                 >
                   <input
                     accept="text/csv, .csv"
