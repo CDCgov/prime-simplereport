@@ -119,7 +119,7 @@ describe("DeviceTypeFormContainer", () => {
         model: "Accula SARS-Cov-2 Test*",
         name: "Accula",
         swabTypes: ["887799"],
-        supportedDiseases: ["294729"],
+        supportedDiseases: [],
         testLength: 15,
         supportedDiseaseTestPerformed: [
           { supportedDisease: "294729", testPerformedLoincCode: "1920-12" },

@@ -323,29 +323,6 @@ const DeviceForm = (props: Props) => {
                   />
                 </div>
               </div>
-              <div className="grid-row grid-gap">
-                <div className="tablet:grid-col">
-                  <MultiSelect
-                    key={device?.internalId}
-                    label="Supported diseases"
-                    name="supportedDiseases"
-                    onChange={(supportedDiseases) => {
-                      updateDeviceAttribute(
-                        "supportedDiseases",
-                        supportedDiseases
-                      );
-                    }}
-                    options={props.supportedDiseaseOptions}
-                    initialSelectedValues={
-                      device?.supportedDiseases.length
-                        ? device?.supportedDiseases
-                        : undefined
-                    }
-                    disabled={!device}
-                    required
-                  />
-                </div>
-              </div>
               {device?.supportedDiseaseTestPerformed?.map((disease, index) =>
                 createSupportedDiseaseRow(index)
               )}

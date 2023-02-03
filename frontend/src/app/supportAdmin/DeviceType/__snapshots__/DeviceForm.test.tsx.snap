@@ -293,7 +293,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="26"
+                        for="23"
                       >
                         Device name
                         <abbr
@@ -309,7 +309,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="26"
+                        id="23"
                         name="name"
                         type="text"
                         value=""
@@ -328,7 +328,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="27"
+                        for="24"
                       >
                         Model
                         <abbr
@@ -344,7 +344,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="27"
+                        id="24"
                         name="model"
                         type="text"
                         value=""
@@ -363,7 +363,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="28"
+                        for="25"
                       >
                         Manufacturer
                         <abbr
@@ -379,7 +379,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="28"
+                        id="25"
                         name="manufacturer"
                         type="text"
                         value=""
@@ -398,7 +398,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="29"
+                        for="26"
                       >
                         LOINC code
                         <abbr
@@ -414,7 +414,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="29"
+                        id="26"
                         name="loincCode"
                         type="text"
                         value=""
@@ -429,7 +429,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="30"
+                        for="27"
                       >
                         Test length (minutes)
                         <abbr
@@ -445,7 +445,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="30"
+                        id="27"
                         max="999"
                         min="0"
                         name="testLength"
@@ -466,8 +466,8 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="31"
-                        id="label-for-31"
+                        for="28"
+                        id="label-for-28"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -481,12 +481,12 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="31"
+                        id="28"
                       >
                         <input
                           aria-expanded="false"
                           aria-invalid="false"
-                          aria-labelledby="label-for-31"
+                          aria-labelledby="label-for-28"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -578,134 +578,6 @@ Object {
                           class="usa-sr-only"
                         >
                           Selected SNOMED code for swab type(s)
-                        </legend>
-                      </fieldset>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="grid-row grid-gap"
-                >
-                  <div
-                    class="tablet:grid-col"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <label
-                        class="usa-label"
-                        for="32"
-                        id="label-for-32"
-                      >
-                        Supported diseases
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <div
-                        class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
-                        data-testid="multi-select"
-                        id="32"
-                      >
-                        <input
-                          aria-expanded="false"
-                          aria-invalid="false"
-                          aria-labelledby="label-for-32"
-                          aria-owns="multi-select-supportedDiseases-list"
-                          autocapitalize="off"
-                          autocomplete="off"
-                          class="usa-combo-box__input"
-                          data-testid="multi-select-input"
-                          disabled=""
-                          role="combobox"
-                          type="text"
-                          value=""
-                        />
-                        <span
-                          class="usa-combo-box__input-button-separator"
-                        >
-                           
-                        </span>
-                        <span
-                          class="usa-combo-box__toggle-list__wrapper"
-                          tabindex="-1"
-                        >
-                          <button
-                            aria-hidden="true"
-                            class="usa-combo-box__toggle-list"
-                            data-testid="multi-select-toggle"
-                            disabled=""
-                            tabindex="-1"
-                            type="button"
-                          >
-                             
-                          </button>
-                        </span>
-                        <ul
-                          class="usa-combo-box__list"
-                          data-testid="multi-select-option-list"
-                          hidden=""
-                          id="multi-select-supportedDiseases-list"
-                          role="listbox"
-                          tabindex="-1"
-                        >
-                          <li
-                            aria-posinset="1"
-                            aria-selected="false"
-                            aria-setsize="64"
-                            class="usa-combo-box__list-option"
-                            data-testid="multi-select-option-123"
-                            id="multi-select-supportedDiseases-list--option-0"
-                            role="option"
-                            tabindex="-1"
-                            value="123"
-                          >
-                            COVID-19
-                          </li>
-                          <li
-                            aria-posinset="2"
-                            aria-selected="false"
-                            aria-setsize="64"
-                            class="usa-combo-box__list-option"
-                            data-testid="multi-select-option-456"
-                            id="multi-select-supportedDiseases-list--option-1"
-                            role="option"
-                            tabindex="-1"
-                            value="456"
-                          >
-                            Flu A
-                          </li>
-                          <li
-                            aria-posinset="3"
-                            aria-selected="false"
-                            aria-setsize="64"
-                            class="usa-combo-box__list-option"
-                            data-testid="multi-select-option-789"
-                            id="multi-select-supportedDiseases-list--option-2"
-                            role="option"
-                            tabindex="-1"
-                            value="789"
-                          >
-                            Flu B
-                          </li>
-                        </ul>
-                        <div
-                          class="usa-combo-box__status usa-sr-only"
-                          role="status"
-                        />
-                      </div>
-                      <fieldset
-                        class="fieldset--unstyled pill-container"
-                        data-testid="pill-container"
-                      >
-                        <legend
-                          class="usa-sr-only"
-                        >
-                          Selected Supported diseases
                         </legend>
                       </fieldset>
                     </div>
@@ -1039,7 +911,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="26"
+                      for="23"
                     >
                       Device name
                       <abbr
@@ -1055,7 +927,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="26"
+                      id="23"
                       name="name"
                       type="text"
                       value=""
@@ -1074,7 +946,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="27"
+                      for="24"
                     >
                       Model
                       <abbr
@@ -1090,7 +962,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="27"
+                      id="24"
                       name="model"
                       type="text"
                       value=""
@@ -1109,7 +981,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="28"
+                      for="25"
                     >
                       Manufacturer
                       <abbr
@@ -1125,7 +997,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="28"
+                      id="25"
                       name="manufacturer"
                       type="text"
                       value=""
@@ -1144,7 +1016,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="29"
+                      for="26"
                     >
                       LOINC code
                       <abbr
@@ -1160,7 +1032,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="29"
+                      id="26"
                       name="loincCode"
                       type="text"
                       value=""
@@ -1175,7 +1047,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="30"
+                      for="27"
                     >
                       Test length (minutes)
                       <abbr
@@ -1191,7 +1063,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="30"
+                      id="27"
                       max="999"
                       min="0"
                       name="testLength"
@@ -1212,8 +1084,8 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="31"
-                      id="label-for-31"
+                      for="28"
+                      id="label-for-28"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -1227,12 +1099,12 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="31"
+                      id="28"
                     >
                       <input
                         aria-expanded="false"
                         aria-invalid="false"
-                        aria-labelledby="label-for-31"
+                        aria-labelledby="label-for-28"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"
@@ -1324,134 +1196,6 @@ Object {
                         class="usa-sr-only"
                       >
                         Selected SNOMED code for swab type(s)
-                      </legend>
-                    </fieldset>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="grid-row grid-gap"
-              >
-                <div
-                  class="tablet:grid-col"
-                >
-                  <div
-                    class="usa-form-group"
-                  >
-                    <label
-                      class="usa-label"
-                      for="32"
-                      id="label-for-32"
-                    >
-                      Supported diseases
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <div
-                      class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
-                      data-testid="multi-select"
-                      id="32"
-                    >
-                      <input
-                        aria-expanded="false"
-                        aria-invalid="false"
-                        aria-labelledby="label-for-32"
-                        aria-owns="multi-select-supportedDiseases-list"
-                        autocapitalize="off"
-                        autocomplete="off"
-                        class="usa-combo-box__input"
-                        data-testid="multi-select-input"
-                        disabled=""
-                        role="combobox"
-                        type="text"
-                        value=""
-                      />
-                      <span
-                        class="usa-combo-box__input-button-separator"
-                      >
-                         
-                      </span>
-                      <span
-                        class="usa-combo-box__toggle-list__wrapper"
-                        tabindex="-1"
-                      >
-                        <button
-                          aria-hidden="true"
-                          class="usa-combo-box__toggle-list"
-                          data-testid="multi-select-toggle"
-                          disabled=""
-                          tabindex="-1"
-                          type="button"
-                        >
-                           
-                        </button>
-                      </span>
-                      <ul
-                        class="usa-combo-box__list"
-                        data-testid="multi-select-option-list"
-                        hidden=""
-                        id="multi-select-supportedDiseases-list"
-                        role="listbox"
-                        tabindex="-1"
-                      >
-                        <li
-                          aria-posinset="1"
-                          aria-selected="false"
-                          aria-setsize="64"
-                          class="usa-combo-box__list-option"
-                          data-testid="multi-select-option-123"
-                          id="multi-select-supportedDiseases-list--option-0"
-                          role="option"
-                          tabindex="-1"
-                          value="123"
-                        >
-                          COVID-19
-                        </li>
-                        <li
-                          aria-posinset="2"
-                          aria-selected="false"
-                          aria-setsize="64"
-                          class="usa-combo-box__list-option"
-                          data-testid="multi-select-option-456"
-                          id="multi-select-supportedDiseases-list--option-1"
-                          role="option"
-                          tabindex="-1"
-                          value="456"
-                        >
-                          Flu A
-                        </li>
-                        <li
-                          aria-posinset="3"
-                          aria-selected="false"
-                          aria-setsize="64"
-                          class="usa-combo-box__list-option"
-                          data-testid="multi-select-option-789"
-                          id="multi-select-supportedDiseases-list--option-2"
-                          role="option"
-                          tabindex="-1"
-                          value="789"
-                        >
-                          Flu B
-                        </li>
-                      </ul>
-                      <div
-                        class="usa-combo-box__status usa-sr-only"
-                        role="status"
-                      />
-                    </div>
-                    <fieldset
-                      class="fieldset--unstyled pill-container"
-                      data-testid="pill-container"
-                    >
-                      <legend
-                        class="usa-sr-only"
-                      >
-                        Selected Supported diseases
                       </legend>
                     </fieldset>
                   </div>
