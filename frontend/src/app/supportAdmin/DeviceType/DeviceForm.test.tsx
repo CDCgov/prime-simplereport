@@ -290,7 +290,7 @@ describe("update existing devices", () => {
       ).toEqual(["123", "456", "789"]);
       expect(
         testPerformed.map((code) => (code as HTMLInputElement).value)
-      ).toEqual(["", "", ""]);
+      ).toEqual(["1234-2", "", ""]);
     });
     it("maps covid to supported disease", async () => {
       await userEvent.click(screen.getByTestId("combo-box-select"));
@@ -302,7 +302,7 @@ describe("update existing devices", () => {
       expect(
         (screen.getByLabelText("Test performed code *") as HTMLInputElement)
           .value
-      ).toEqual("");
+      ).toEqual("1234-7");
     });
     it("displays a list of available snomeds", () => {
       const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
@@ -385,7 +385,7 @@ describe("update existing devices", () => {
           supportedDiseases: ["123"],
           testLength: 15,
           supportedDiseaseTestPerformed: [
-            { supportedDisease: "123", testPerformedLoincCode: "" },
+            { supportedDisease: "123", testPerformedLoincCode: "1234-1" },
             { supportedDisease: "456", testPerformedLoincCode: "LP 123" },
           ],
         });

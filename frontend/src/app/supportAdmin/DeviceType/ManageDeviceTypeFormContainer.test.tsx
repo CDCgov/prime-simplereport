@@ -163,6 +163,8 @@ describe("ManageDeviceTypeFormContainer", () => {
       screen.getByLabelText("Supported disease *"),
       "Flu A"
     );
+    await userEvent.clear(screen.getByLabelText("Test performed code *"));
+
     await userEvent.type(
       screen.getByLabelText("Test performed code *"),
       "LP 123"

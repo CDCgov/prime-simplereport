@@ -76,10 +76,16 @@ const DeviceForm = (props: Props) => {
       );
     } else if (device?.supportedDiseases?.length) {
       supportedDiseaseTestPerformed = device.supportedDiseases.map(
-        (supportedDisease) => ({
-          supportedDisease: supportedDisease.internalId,
-          testPerformedLoincCode: "",
-        })
+        (supportedDisease) => {
+          let testPerformedLoincCode = "";
+          if (supportedDisease.name === "COVID-19") {
+            testPerformedLoincCode = device.loincCode;
+          }
+          return {
+            supportedDisease: supportedDisease.internalId,
+            testPerformedLoincCode,
+          };
+        }
       );
     } else {
       supportedDiseaseTestPerformed = [
@@ -88,7 +94,7 @@ const DeviceForm = (props: Props) => {
             props.supportedDiseaseOptions.find(
               (option) => option.label === "COVID-19"
             )?.value || "",
-          testPerformedLoincCode: "",
+          testPerformedLoincCode: device?.loincCode || "",
         },
       ];
     }
