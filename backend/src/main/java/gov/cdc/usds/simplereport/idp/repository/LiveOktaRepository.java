@@ -16,6 +16,7 @@ import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -274,8 +275,7 @@ public class LiveOktaRepository implements OktaRepository {
 
     // any org user "deleted" through our api will be in SUSPENDED state
     if (userStatus != UserStatus.SUSPENDED) {
-      throw new IllegalGraphqlArgumentException(
-          "Cannot reprovision user in unsupported state: " + userStatus);
+      throw new ConflictingUserException();
     }
 
     updateUser(user, userIdentity);

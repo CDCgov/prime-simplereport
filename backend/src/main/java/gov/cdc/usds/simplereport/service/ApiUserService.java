@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.okta.sdk.resource.ResourceException;
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
@@ -108,6 +109,10 @@ public class ApiUserService {
       return apiUser;
     }
   }
+
+  // TODO:
+  // - user is deleted add to org
+  // - user is in a different org
 
   private UserInfo reprovisionUser(ApiUser apiUser, PersonName name, Organization org, Role role) {
     if (!apiUser.isDeleted()) {
@@ -235,8 +240,17 @@ public class ApiUserService {
 
     apiUser.setLoginEmail(email);
     apiUser = _apiUserRepo.save(apiUser);
+    Optional<OrganizationRoleClaims> roleClaims = null;
+    try {
+      roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
 
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
+    } catch (ResourceException e) {
+      if (e.getMessage()
+          .contains(
+              "HTTP 400, Okta E0000001 (Api validation failed: login - login: An object with this field already exists in the current organization)")) {
+        throw new ConflictingUserException();
+      }
+    }
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
 

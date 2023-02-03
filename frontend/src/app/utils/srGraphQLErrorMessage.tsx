@@ -50,7 +50,11 @@ function createContactUsLink(
   return (
     <span key={index}>
       {" "}
-      <a target="_blank" href="/contact-us">
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://www.simplereport.gov/contact-us"
+      >
         {msg} {nextMsg}
       </a>
       {addEndWhiteSpace ? " " : ""}

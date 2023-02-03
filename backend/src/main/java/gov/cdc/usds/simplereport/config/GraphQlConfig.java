@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.config;
 
 import static java.util.Collections.singletonList;
 
-import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.DefaultArgumentValidation;
 import gov.cdc.usds.simplereport.api.directives.RequiredPermissionsDirectiveWiring;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -35,14 +34,6 @@ public class GraphQlConfig {
   public static final String REQUIRED_PERMISSIONS_DIRECTIVE_NAME = "requiredPermissions";
   public static final int MAXIMUM_SIZE = 256;
   private static final String defaultErrorBody = "body: Please check for errors and try again";
-
-  private Mono setOktaDuplicateUserMessage(String errorPath) {
-    String errorBody =
-        "A user with this email already exists in our system. Please contact SimpleReport support for help.";
-    String errorMessage = String.format("header: Can't add user; body: %s", errorBody);
-    return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
-  }
-
   // mask all exception by default
   // to customize errors returned, you have to manually throw it here
   @Bean
@@ -52,12 +43,11 @@ public class GraphQlConfig {
 
       log.error("Will replace the following exception with a GenericGraphqlException: ", exception);
 
-      if (exception instanceof ResourceException) {
-        return setOktaDuplicateUserMessage(errorPath);
-      }
-
       if (exception instanceof ConflictingUserException) {
-        return setOktaDuplicateUserMessage(errorPath);
+        String errorBody =
+            "A user with this email already exists in our system. Please contact SimpleReport support for help.";
+        String errorMessage = String.format("header: Can't add user; body: %s", errorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof AccessDeniedException) {
@@ -71,14 +61,9 @@ public class GraphQlConfig {
       }
 
       if (exception instanceof IllegalGraphqlArgumentException) {
-        if ("addUserToCurrentOrg".equals(errorPath)
-            && exception.getMessage().contains("Cannot reprovision user in unsupported state")) {
-          return setOktaDuplicateUserMessage(errorPath);
-        } else {
-          String errorMessage =
-              String.format("header: %s; %s", exception.getMessage(), defaultErrorBody);
-          return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
-        }
+        String errorMessage =
+            String.format("header: %s; %s", exception.getMessage(), defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof IllegalGraphqlFieldAccessException) {
