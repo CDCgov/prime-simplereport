@@ -196,11 +196,11 @@ public class DeviceTypeService {
     supportedDiseaseTestPerformedInput.forEach(
         input -> {
           var supportedDisease = supportedDiseaseRepository.findById(input.getSupportedDisease());
-          supportedDisease.map(
+          supportedDisease.ifPresent(
               disease ->
                   deviceTestPerformedLoincCodeList.add(
                       new DeviceTestPerformedLoincCode(
-                          device, disease, input.getTestPerformedLoincCode())));
+                          device.getInternalId(), disease, input.getTestPerformedLoincCode())));
         });
     return deviceTestPerformedLoincCodeList;
   }
