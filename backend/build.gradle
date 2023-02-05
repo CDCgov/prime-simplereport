@@ -109,7 +109,7 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
+    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:2.0.0'
 
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
