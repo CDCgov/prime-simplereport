@@ -45,7 +45,7 @@ jobs:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: |
             ~/.gradle/caches
@@ -69,7 +69,7 @@ jobs:
           TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Cache backend coverage results
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: backend/build/**
           key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
@@ -89,7 +89,7 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
@@ -100,7 +100,7 @@ jobs:
         working-directory: ./frontend
         run: yarn test:ci
       - name: Cache frontend coverage results
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: |
             frontend/coverage/**
@@ -116,7 +116,7 @@ jobs:
         working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
         run: yarn coverage
       - name: Cache function coverage results
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
@@ -138,21 +138,21 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
       - name: Restore backend cache
         if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: |
             backend/build/**
           key: ${{ runner.os }}-backend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Restore frontend cache
         if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: |
             frontend/coverage/**
           key: ${{ runner.os }}-frontend-coverage-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Restore functions cache
         if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
@@ -173,7 +173,7 @@ jobs:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java dependencies
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: |
             ~/.gradle/caches
@@ -191,7 +191,7 @@ jobs:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java dependencies
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: |
             ~/.gradle/caches
@@ -208,7 +208,7 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache yarn
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.4
         with:
           path: ~/.cache/yarn
           key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
