@@ -321,8 +321,11 @@ Object {
                   </div>
                 </div>
                 <fieldset
-                  class="usa-fieldset"
+                  class="usa-fieldset margin-top-205"
                 >
+                  <legend>
+                    Disease Information
+                  </legend>
                   <div
                     class="grid-row grid-gap"
                   >
@@ -330,7 +333,7 @@ Object {
                       class="tablet:grid-col"
                     >
                       <div
-                        class="usa-form-group prime-dropdown "
+                        class="usa-form-group prime-dropdown  margin-top-1"
                       >
                         <label
                           class="usa-label"
@@ -366,7 +369,7 @@ Object {
                       class="tablet:grid-col"
                     >
                       <div
-                        class="usa-form-group"
+                        class="usa-form-group margin-top-1"
                       >
                         <label
                           class="usa-label"
@@ -761,8 +764,11 @@ Object {
                 </div>
               </div>
               <fieldset
-                class="usa-fieldset"
+                class="usa-fieldset margin-top-205"
               >
+                <legend>
+                  Disease Information
+                </legend>
                 <div
                   class="grid-row grid-gap"
                 >
@@ -770,7 +776,7 @@ Object {
                     class="tablet:grid-col"
                   >
                     <div
-                      class="usa-form-group prime-dropdown "
+                      class="usa-form-group prime-dropdown  margin-top-1"
                     >
                       <label
                         class="usa-label"
@@ -806,7 +812,7 @@ Object {
                     class="tablet:grid-col"
                   >
                     <div
-                      class="usa-form-group"
+                      class="usa-form-group margin-top-1"
                     >
                       <label
                         class="usa-label"

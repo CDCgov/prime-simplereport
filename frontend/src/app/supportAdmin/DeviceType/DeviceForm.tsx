@@ -117,7 +117,8 @@ const DeviceForm = (props: Props) => {
 
   const createSupportedDiseaseRow = (index: number) => {
     return (
-      <fieldset className={"usa-fieldset"}>
+      <fieldset className={"usa-fieldset margin-top-205"}>
+        <legend>Disease Information</legend>
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <Select
@@ -144,6 +145,7 @@ const DeviceForm = (props: Props) => {
               defaultOption={""}
               defaultSelect={true}
               name={`selectSupportedDisease${index}`}
+              className={"margin-top-1"}
             />
           </div>
           <div className="tablet:grid-col">
@@ -178,6 +180,7 @@ const DeviceForm = (props: Props) => {
               }}
               disabled={!device}
               required
+              className={"margin-top-1"}
             />
           </div>
           <div className="flex-align-self-end">
