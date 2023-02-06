@@ -74,6 +74,7 @@ export type ApiUserWithStatus = {
 };
 
 export type CreateDeviceType = {
+  equipmentUid?: InputMaybe<Scalars["String"]>;
   loincCode: Scalars["String"];
   manufacturer: Scalars["String"];
   model: Scalars["String"];
@@ -84,6 +85,7 @@ export type CreateDeviceType = {
   supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
+  testkitNameId?: InputMaybe<Scalars["String"]>;
 };
 
 export type CreateSpecimenType = {
@@ -95,6 +97,7 @@ export type CreateSpecimenType = {
 
 export type DeviceType = {
   __typename?: "DeviceType";
+  equipmentUid?: Maybe<Scalars["String"]>;
   internalId: Scalars["ID"];
   loincCode: Scalars["String"];
   manufacturer: Scalars["String"];
@@ -105,6 +108,7 @@ export type DeviceType = {
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
   testLength: Scalars["Int"];
+  testkitNameId?: Maybe<Scalars["String"]>;
 };
 
 export type Facility = {
@@ -1017,6 +1021,7 @@ export type TopLevelDashboardMetrics = {
 };
 
 export type UpdateDeviceType = {
+  equipmentUid?: InputMaybe<Scalars["String"]>;
   internalId: Scalars["ID"];
   loincCode: Scalars["String"];
   manufacturer: Scalars["String"];
@@ -1028,6 +1033,7 @@ export type UpdateDeviceType = {
   supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
+  testkitNameId?: InputMaybe<Scalars["String"]>;
 };
 
 export type UploadResponse = {
