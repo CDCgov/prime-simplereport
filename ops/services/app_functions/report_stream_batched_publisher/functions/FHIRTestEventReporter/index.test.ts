@@ -6,7 +6,7 @@ import * as queueHandlers from "../common/queueHandlers";
 import * as reportingHandlers from "../common/reportingHandlers";
 import FHIRTestEventReporter from "./index";
 import { ProcessedTestEvents } from "./dataHandlers";
-import { ReportStreamResponse } from "../common/rs-response";
+import { ReportStreamResponse } from "../common/types";
 
 jest.mock("../config", () => ({
   ENV: {

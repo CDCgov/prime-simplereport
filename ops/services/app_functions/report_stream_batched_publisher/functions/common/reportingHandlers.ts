@@ -3,7 +3,7 @@ import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 
 import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
 // import { ENV, uploaderVersion } from "../config";
-import { ReportStreamResponse } from "./rs-response";
+import { ReportStreamResponse } from "./types";
 import {
   deleteSuccessfullyParsedMessages,
   publishToQueue,

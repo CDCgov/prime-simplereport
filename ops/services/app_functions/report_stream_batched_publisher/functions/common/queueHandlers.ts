@@ -11,7 +11,8 @@ import {
   ReportStreamError,
   ReportStreamResponse,
   SimpleReportReportStreamResponse,
-} from "./rs-response";
+  ReportStreamCallbackRequest,
+} from "./types";
 
 const {
   REPORT_STREAM_BATCH_MINIMUM,
@@ -197,12 +198,13 @@ const responsesFrom = function (
   context: Context,
   err: ReportStreamError,
   isError: boolean
-): SimpleReportReportStreamResponse[] {
+): ReportStreamCallbackRequest[] {
   if (err.trackingIds) {
     return err.trackingIds.map((id) => ({
       testEventInternalId: id,
       isError,
       details: err.message,
+      queueName: queueName
     }));
   } else {
     context.log(

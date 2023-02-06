@@ -12,7 +12,7 @@ import {
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
-import { ReportStreamError, ReportStreamResponse } from "./rs-response";
+import { ReportStreamError, ReportStreamResponse } from "./types";
 import { Context } from "@azure/functions";
 
 jest.mock("../config", () => ({
