@@ -38,7 +38,10 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Start DB
-        run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
+        run: |
+          touch ../.env
+          docker compose -f ../docker-compose.yml build db
+          docker compose -f ../docker-compose.yml up -d db
       - name: Run forward migrations
         run: ./gradlew liquibaseUpdate
       - name: Test rolling back on last 20 migrations

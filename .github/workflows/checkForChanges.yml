@@ -1,0 +1,31 @@
+name: Check for Changes
+on:
+  workflow_call:
+    inputs:
+      # can be a file or a folder
+      what_to_check:
+        required: true
+        type: string
+    outputs:
+      has_changes:
+        description: true or false string
+        value: ${{ jobs.check_for_changes.outputs.has_changes }}
+jobs:
+  check_for_changes:
+    runs-on: 'ubuntu-20.04'
+    outputs:
+      has_changes: ${{ steps.check_for_changes.outputs.has_changes }}
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - shell: bash
+      id: check_for_changes
+      run: |
+        echo "::group::Set has_changes output"
+        diff=$(git diff-tree --no-commit-id --name-only -r "origin/main" "$GITHUB_REF" -- ${{ inputs.what_to_check }})
+        diff_length=$(echo ${#diff})
+        has_diff=$([ $diff_length -gt 0 ] && echo "true" || echo "false")
+        echo "The Changes: ${has_diff}"
+        echo "has_changes=${has_diff}" >> $GITHUB_OUTPUT
+        echo "::endgroup::"

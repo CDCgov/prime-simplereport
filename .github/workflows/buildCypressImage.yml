@@ -1,14 +1,24 @@
 name: Build cypress docker image
 
 on:
-  workflow_call:
+  push:
+    branches:
+      - "**"
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/cypress
 
 jobs:
+
+  check_cypress_directory_for_changes:
+    with:
+      what_to_check: cypress
+    uses: ./.github/workflows/checkForChanges.yml
+
   build-and-push-cypress-image:
+    needs: [check_cypress_directory_for_changes]
+    if: needs.check_cypress_directory_for_changes.outputs.has_changes == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,7 +31,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@v2
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 

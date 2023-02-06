@@ -1,53 +1,36 @@
 name: Run end-to-end tests
 
 on:
-  push:
-    branches:
-      - "**"
+  workflow_run:
+    workflows: ["Build cypress docker image", "Build database docker image"]
+    types:
+      - completed
 
 jobs:
 
   check_cypress_directory_for_changes:
-    runs-on: 'ubuntu-20.04'
-    outputs:
-      cypress_changed: ${{ steps.check_directory_changes.outputs.cypress_changed }}
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - shell: bash
-      id: check_directory_changes
-      run: |
-        echo "::group::Set cypress_changed output"
-        diff=$(git diff-tree --no-commit-id --name-only -r "origin/main" "$GITHUB_REF" -- cypress | xargs)
-        diff_length=$(echo ${#diff})
-        has_diff=$([ $diff_length -gt 0 ] && echo "true" || echo "false")
-        echo "Cypress has changes: ${has_diff}"
-        echo "cypress_changed=${has_diff}" >> $GITHUB_OUTPUT
-        echo "::endgroup::"
+    with:
+      what_to_check: cypress
+    uses: ./.github/workflows/checkForChanges.yml
 
-  build_cypress:
-    needs: check_cypress_directory_for_changes
-    if: needs.check_cypress_directory_for_changes.outputs.cypress_changed == 'true'
-    uses: ./.github/workflows/buildCypressImage.yml
+  check_db_directory_for_changes:
+    with:
+      what_to_check: backend/db-setup
+    uses: ./.github/workflows/checkForChanges.yml
 
-  set_docker_cypress_image_tag:
-    needs: [check_cypress_directory_for_changes, build_cypress]
-    if: needs.check_cypress_directory_for_changes.outputs.cypress_changed == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      docker_cypress_image_tag: ${{ steps.get_current_branch.outputs.docker_cypress_image_tag }}
-    steps:
-    - shell: bash
-      id: get_current_branch
-      run: |
-        echo "::group::Set docker_cypress_image_tag output"
-        echo "docker_cypress_image_tag=${GITHUB_REF##refs/heads/}" | tr / - >> $GITHUB_OUTPUT
-        echo "::endgroup::"
+  cypress_tag:
+    needs: [check_cypress_directory_for_changes]
+    if: needs.check_cypress_directory_for_changes.outputs.has_changes == 'true'
+    uses: ./.github/workflows/getDockerBranchTag.yml
+
+  db_tag:
+    needs: [check_db_directory_for_changes]
+    if: needs.check_db_directory_for_changes.outputs.has_changes == 'true'
+    uses: ./.github/workflows/getDockerBranchTag.yml
 
   cypress_local_env:
     if: ${{ always() }}
-    needs: set_docker_cypress_image_tag
+    needs: [cypress_tag, db_tag]
     runs-on: ubuntu-latest
     steps:
             
@@ -96,7 +79,8 @@ jobs:
         CI: 1
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180
-        DOCKER_CYPRESS_IMAGE_TAG: ${{ needs.set_docker_cypress_image_tag.outputs.docker_cypress_image_tag }}
+        DOCKER_CYPRESS_IMAGE_TAG: ${{ needs.cypress_tag.outputs.tag }}
+        DOCKER_DB_IMAGE_TAG: ${{ needs.db_tag.outputs.tag }}
         COMPOSE_HTTP_TIMEOUT: 180
         # backend settings
         SPRING_PROFILES_ACTIVE: e2e,db-dockerized
@@ -126,8 +110,7 @@ jobs:
       shell: bash
       run: |
         echo "::group::Run Cypress locally"
-        echo "BUILD TAGS: ${{ needs.build_cypress.meta.outputs.tags }}"
-        echo "Cypress tag: ${{ needs.set_docker_cypress_image_tag.outputs.docker_cypress_image_tag }}"
+        echo "Cypress branch tag (or latest): ${{ needs.set_docker_branch_image_tag.outputs.docker_cypress_image_tag }}"
         docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress
         echo "::endgroup::"
 
