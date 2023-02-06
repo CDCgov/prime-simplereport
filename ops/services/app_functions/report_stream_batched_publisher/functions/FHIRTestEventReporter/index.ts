@@ -57,7 +57,10 @@ const FHIRTestEventReporter: AzureFunction = async function (
     parseFailure,
     parseFailureCount,
     parseSuccessCount,
-  }: ProcessedTestEvents = processTestEvents(messages);
+  }: ProcessedTestEvents = processTestEvents(messages);// This method returns ProcessedTestEvents[] <- to make sure we stay under the 100MB
+  // the testEvents will be the bulk of tests in the ndjson format and a field called original messages
+  // will have the bulk of message for that piece
+  // Logic below will be applied to each of the ProcessedTestEvents objects Promise.allSettled
 
   if (parseFailureCount > 0) {
     telemetry.trackEvent({

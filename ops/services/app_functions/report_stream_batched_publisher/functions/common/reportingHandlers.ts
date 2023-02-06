@@ -19,6 +19,7 @@ export async function reportToUniversalPipeline(
   results: SimpleReportTestEvent[]
 ) {
   // ToDo check the size is complying with azure and break up the results if not
+  //Buffer.byteLength(jsonAsString)
   // Actual call to Report Stream will be implemented with ticket 5115
   // doing a mock response in the meantime
   /*
