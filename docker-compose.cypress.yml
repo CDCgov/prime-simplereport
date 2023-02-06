@@ -57,8 +57,8 @@ services:
     command: ["./ci-git-fix.sh"]
   nginx:
     hostname: localhost.simplereport.gov
-    logging:
-      driver: none
+    environment:
+      NGINX_ENTRYPOINT_QUIET_LOGS: 1
   mailhog:
     profiles:
       - donotstart
