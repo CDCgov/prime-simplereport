@@ -46,8 +46,6 @@ services:
       SPRING_LIQUIBASE_ENABLED: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
   frontend:
-    logging:
-      driver: none
     environment:
       REACT_APP_OKTA_URL: $WIREMOCK_URL
       REACT_APP_BASE_URL: https://localhost.simplereport.gov
@@ -63,5 +61,4 @@ services:
     profiles:
       - donotstart
   db:
-    logging:
-      driver: none
+    command: -p ${SR_DB_PORT:-5432}
