@@ -61,4 +61,4 @@ services:
     profiles:
       - donotstart
   db:
-    command: -p ${SR_DB_PORT:-5432}
+    command: -p ${SR_DB_PORT:-5432} -c shared_buffers=512MB -c max_connections=500
