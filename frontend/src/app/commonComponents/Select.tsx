@@ -20,9 +20,9 @@ interface Props<T> {
   required?: boolean;
   validationStatus?: "error" | "success";
   errorMessage?: React.ReactNode;
-  selectClassName?: string | undefined;
+  selectClassName?: string;
   disabled?: boolean;
-  className?: string | undefined;
+  className?: string;
 }
 
 const Select = <T extends string>({
