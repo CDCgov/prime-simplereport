@@ -65,7 +65,7 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alixmx"
+      - "alismx"
       - "rin-skylight"
       - "cdcgov/simplereport-backendreviews"
 
