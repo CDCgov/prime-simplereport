@@ -2,9 +2,6 @@ logging:
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
   level:
-    org.hibernate:
-      type: off
-      SQL: off
     root: info
 spring:
   profiles:
@@ -20,7 +17,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: false # override this in application-local.yaml to get pretty-printed SQL all the time
         default_schema: simple_report
 server:
