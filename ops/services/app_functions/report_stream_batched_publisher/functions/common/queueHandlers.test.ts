@@ -428,12 +428,12 @@ describe("Queue Handlers", () => {
       // THEN
       expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(6);
       const expectedMessages = [
-        `{"testEventInternalId":"1234","isError":false,"details":"goodbye"}`,
-        `{"testEventInternalId":"5678","isError":false,"details":"goodbye"}`,
-        `{"testEventInternalId":"1234","isError":false,"details":"au revoir"}`,
-        `{"testEventInternalId":"1234","isError":true,"details":"adios"}`,
-        `{"testEventInternalId":"1234","isError":true,"details":"auf wiedersehen"}`,
-        `{"testEventInternalId":"91011","isError":true,"details":"auf wiedersehen"}`,
+        `{"testEventInternalId":"1234","isError":false,"details":"goodbye","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"5678","isError":false,"details":"goodbye","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"1234","isError":false,"details":"au revoir","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"1234","isError":true,"details":"adios","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"1234","isError":true,"details":"auf wiedersehen","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"91011","isError":true,"details":"auf wiedersehen","queueName":"dummyTestEventQueue"}`,
       ];
       expectedMessages.forEach((em) => {
         expect(queueClientMock.sendMessage).toHaveBeenCalledWith(
