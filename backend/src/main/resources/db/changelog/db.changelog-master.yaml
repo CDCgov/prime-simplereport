@@ -4472,10 +4472,12 @@ databaseChangeLog:
                   name: latest_recorded_timestamp
                   descending: true
   - changeSet:
-      id: add-queuename-colum-report-stream-response
+      id: add-queuename-column-report-stream-response
       author: tsv7@cdc.gov
       comment: Add column queue name to report stream response table to differentiate the origin of the exception
       changes:
+        - tagDatabase:
+            tag: add-queuename-column-report-stream-response
         - addColumn:
             tableName: report_stream_response
             columns:
