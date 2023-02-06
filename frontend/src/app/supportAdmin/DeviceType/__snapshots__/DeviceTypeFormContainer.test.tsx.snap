@@ -320,85 +320,89 @@ Object {
                     </div>
                   </div>
                 </div>
-                <div
-                  class="grid-row grid-gap"
+                <fieldset
+                  class="usa-fieldset"
                 >
                   <div
-                    class="tablet:grid-col"
+                    class="grid-row grid-gap"
                   >
                     <div
-                      class="usa-form-group prime-dropdown "
+                      class="tablet:grid-col"
                     >
-                      <label
-                        class="usa-label"
-                        for="6"
+                      <div
+                        class="usa-form-group prime-dropdown "
                       >
-                        Supported disease
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
+                        <label
+                          class="usa-label"
+                          for="6"
                         >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <select
-                        aria-required="true"
-                        class="usa-select"
-                        id="6"
-                        name="selectSupportedDisease0"
+                          Supported disease
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
+                          >
+                             
+                            *
+                          </abbr>
+                        </label>
+                        <select
+                          aria-required="true"
+                          class="usa-select"
+                          id="6"
+                          name="selectSupportedDisease0"
+                        >
+                          <option
+                            value=""
+                          />
+                          <option
+                            value="294729"
+                          >
+                            COVID-19
+                          </option>
+                        </select>
+                      </div>
+                    </div>
+                    <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group"
                       >
-                        <option
+                        <label
+                          class="usa-label"
+                          for="7"
+                        >
+                          Test performed code
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
+                          >
+                             
+                            *
+                          </abbr>
+                        </label>
+                        <input
+                          aria-disabled="false"
+                          aria-required="true"
+                          class="usa-input"
+                          id="7"
+                          name="testPerformedCode0"
+                          type="text"
                           value=""
                         />
-                        <option
-                          value="294729"
-                        >
-                          COVID-19
-                        </option>
-                      </select>
+                      </div>
                     </div>
-                  </div>
-                  <div
-                    class="tablet:grid-col"
-                  >
                     <div
-                      class="usa-form-group"
+                      class="flex-align-self-end"
                     >
-                      <label
-                        class="usa-label"
-                        for="7"
+                      <div
+                        class="padding-205 height-5"
                       >
-                        Test performed code
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <input
-                        aria-disabled="false"
-                        aria-required="true"
-                        class="usa-input"
-                        id="7"
-                        name="testPerformedCode0"
-                        type="text"
-                        value=""
-                      />
+                         
+                      </div>
                     </div>
                   </div>
-                  <div
-                    class="flex-align-self-end"
-                  >
-                    <div
-                      class="padding-205 height-5"
-                    >
-                       
-                    </div>
-                  </div>
-                </div>
+                </fieldset>
                 <div
                   class="grid-row grid-gap"
                 >
@@ -756,85 +760,89 @@ Object {
                   </div>
                 </div>
               </div>
-              <div
-                class="grid-row grid-gap"
+              <fieldset
+                class="usa-fieldset"
               >
                 <div
-                  class="tablet:grid-col"
+                  class="grid-row grid-gap"
                 >
                   <div
-                    class="usa-form-group prime-dropdown "
+                    class="tablet:grid-col"
                   >
-                    <label
-                      class="usa-label"
-                      for="6"
+                    <div
+                      class="usa-form-group prime-dropdown "
                     >
-                      Supported disease
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
+                      <label
+                        class="usa-label"
+                        for="6"
                       >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <select
-                      aria-required="true"
-                      class="usa-select"
-                      id="6"
-                      name="selectSupportedDisease0"
+                        Supported disease
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <select
+                        aria-required="true"
+                        class="usa-select"
+                        id="6"
+                        name="selectSupportedDisease0"
+                      >
+                        <option
+                          value=""
+                        />
+                        <option
+                          value="294729"
+                        >
+                          COVID-19
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
                     >
-                      <option
+                      <label
+                        class="usa-label"
+                        for="7"
+                      >
+                        Test performed code
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="false"
+                        aria-required="true"
+                        class="usa-input"
+                        id="7"
+                        name="testPerformedCode0"
+                        type="text"
                         value=""
                       />
-                      <option
-                        value="294729"
-                      >
-                        COVID-19
-                      </option>
-                    </select>
+                    </div>
                   </div>
-                </div>
-                <div
-                  class="tablet:grid-col"
-                >
                   <div
-                    class="usa-form-group"
+                    class="flex-align-self-end"
                   >
-                    <label
-                      class="usa-label"
-                      for="7"
+                    <div
+                      class="padding-205 height-5"
                     >
-                      Test performed code
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <input
-                      aria-disabled="false"
-                      aria-required="true"
-                      class="usa-input"
-                      id="7"
-                      name="testPerformedCode0"
-                      type="text"
-                      value=""
-                    />
+                       
+                    </div>
                   </div>
                 </div>
-                <div
-                  class="flex-align-self-end"
-                >
-                  <div
-                    class="padding-205 height-5"
-                  >
-                     
-                  </div>
-                </div>
-              </div>
+              </fieldset>
               <div
                 class="grid-row grid-gap"
               >

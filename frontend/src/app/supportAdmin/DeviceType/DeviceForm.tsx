@@ -117,93 +117,95 @@ const DeviceForm = (props: Props) => {
 
   const createSupportedDiseaseRow = (index: number) => {
     return (
-      <div className="grid-row grid-gap">
-        <div className="tablet:grid-col">
-          <Select
-            label={"Supported disease"}
-            options={props.supportedDiseaseOptions}
-            value={
-              device?.supportedDiseaseTestPerformed?.[index]
-                ?.supportedDisease || ""
-            }
-            onChange={(val) => {
-              if (device?.supportedDiseaseTestPerformed) {
-                let newSupportedDisease = [
-                  ...device?.supportedDiseaseTestPerformed,
-                ];
-                newSupportedDisease[index].supportedDisease = val;
-                updateDevice({
-                  ...device,
-                  supportedDiseaseTestPerformed: newSupportedDisease,
-                });
+      <fieldset className={"usa-fieldset"}>
+        <div className="grid-row grid-gap">
+          <div className="tablet:grid-col">
+            <Select
+              label={"Supported disease"}
+              options={props.supportedDiseaseOptions}
+              value={
+                device?.supportedDiseaseTestPerformed?.[index]
+                  ?.supportedDisease || ""
               }
-            }}
-            required={true}
-            disabled={!device}
-            defaultOption={""}
-            defaultSelect={true}
-            name={`selectSupportedDisease${index}`}
-          />
-        </div>
-        <div className="tablet:grid-col">
-          <TextInput
-            label="Test performed code"
-            name={`testPerformedCode${index}`}
-            value={
-              device?.supportedDiseaseTestPerformed?.[index]
-                ?.testPerformedLoincCode
-            }
-            onChange={(event) => {
-              if (device?.supportedDiseaseTestPerformed) {
-                let newSupportedDisease = [
-                  ...device?.supportedDiseaseTestPerformed,
-                ];
-                newSupportedDisease[index].testPerformedLoincCode =
-                  event.target.value;
-                updateDeviceAttribute(
-                  "supportedDiseaseTestPerformed",
-                  newSupportedDisease
-                );
-                const covidId = props.supportedDiseaseOptions.find(
-                  (d) => d.label === "COVID-19"
-                )?.value;
-                if (
-                  device?.supportedDiseaseTestPerformed?.[index]
-                    ?.supportedDisease === covidId
-                ) {
-                  updateDeviceAttribute("loincCode", event.target.value);
-                }
-              }
-            }}
-            disabled={!device}
-            required
-          />
-        </div>
-        <div className="flex-align-self-end">
-          {index > 0 ? (
-            <button
-              className="usa-button--unstyled padding-105 height-5 cursor-pointer"
-              onClick={() => {
+              onChange={(val) => {
                 if (device?.supportedDiseaseTestPerformed) {
                   let newSupportedDisease = [
                     ...device?.supportedDiseaseTestPerformed,
                   ];
-                  newSupportedDisease.splice(index, 1);
+                  newSupportedDisease[index].supportedDisease = val;
+                  updateDevice({
+                    ...device,
+                    supportedDiseaseTestPerformed: newSupportedDisease,
+                  });
+                }
+              }}
+              required={true}
+              disabled={!device}
+              defaultOption={""}
+              defaultSelect={true}
+              name={`selectSupportedDisease${index}`}
+            />
+          </div>
+          <div className="tablet:grid-col">
+            <TextInput
+              label="Test performed code"
+              name={`testPerformedCode${index}`}
+              value={
+                device?.supportedDiseaseTestPerformed?.[index]
+                  ?.testPerformedLoincCode
+              }
+              onChange={(event) => {
+                if (device?.supportedDiseaseTestPerformed) {
+                  let newSupportedDisease = [
+                    ...device?.supportedDiseaseTestPerformed,
+                  ];
+                  newSupportedDisease[index].testPerformedLoincCode =
+                    event.target.value;
                   updateDeviceAttribute(
                     "supportedDiseaseTestPerformed",
                     newSupportedDisease
                   );
+                  const covidId = props.supportedDiseaseOptions.find(
+                    (d) => d.label === "COVID-19"
+                  )?.value;
+                  if (
+                    device?.supportedDiseaseTestPerformed?.[index]
+                      ?.supportedDisease === covidId
+                  ) {
+                    updateDeviceAttribute("loincCode", event.target.value);
+                  }
                 }
               }}
-              aria-label={`Delete disease`}
-            >
-              <FontAwesomeIcon icon={"trash"} className={"text-error"} />
-            </button>
-          ) : (
-            <div className={"padding-205 height-5"}> </div>
-          )}
+              disabled={!device}
+              required
+            />
+          </div>
+          <div className="flex-align-self-end">
+            {index > 0 ? (
+              <button
+                className="usa-button--unstyled padding-105 height-5 cursor-pointer"
+                onClick={() => {
+                  if (device?.supportedDiseaseTestPerformed) {
+                    let newSupportedDisease = [
+                      ...device?.supportedDiseaseTestPerformed,
+                    ];
+                    newSupportedDisease.splice(index, 1);
+                    updateDeviceAttribute(
+                      "supportedDiseaseTestPerformed",
+                      newSupportedDisease
+                    );
+                  }
+                }}
+                aria-label={`Delete disease`}
+              >
+                <FontAwesomeIcon icon={"trash"} className={"text-error"} />
+              </button>
+            ) : (
+              <div className={"padding-205 height-5"}> </div>
+            )}
+          </div>
         </div>
-      </div>
+      </fieldset>
     );
   };
 
