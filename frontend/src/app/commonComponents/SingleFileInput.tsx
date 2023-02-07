@@ -63,7 +63,7 @@ const SingleFileInput = ({
         className="usa-file-input"
         aria-describedby="file-input-specific-hint"
         accept={accept}
-        role={"button"}
+        role={"textbox"}
       />
       <span id="file-input-specific-hint">{getHint(fileState)}</span>
     </div>

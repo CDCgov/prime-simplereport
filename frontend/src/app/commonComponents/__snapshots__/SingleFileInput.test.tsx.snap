@@ -4,7 +4,6 @@ exports[`Single File Input checks component with initial state 1`] = `
 <div>
   <div
     class="sr-single-file-input blank"
-    role="button"
   >
     <input
       aria-describedby="file-input-specific-hint"
@@ -13,6 +12,7 @@ exports[`Single File Input checks component with initial state 1`] = `
       data-testid="testId"
       id="testId"
       name="testId"
+      role="textbox"
       type="file"
     />
     <span

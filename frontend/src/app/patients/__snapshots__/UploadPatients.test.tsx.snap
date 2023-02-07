@@ -212,7 +212,6 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
               >
                 <div
                   class="sr-single-file-input blank"
-                  role="button"
                 >
                   <input
                     accept="text/csv, .csv"
@@ -223,6 +222,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                     id="upload-patients-file-input"
                     name="upload-patients-file-input"
                     required=""
+                    role="textbox"
                     type="file"
                   />
                   <span
