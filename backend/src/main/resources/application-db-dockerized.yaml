@@ -17,6 +17,6 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: false # override this in application-local.yaml to get pretty-printed SQL all the time
         default_schema: simple_report

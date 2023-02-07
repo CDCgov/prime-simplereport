@@ -20,7 +20,9 @@ interface Props<T> {
   required?: boolean;
   validationStatus?: "error" | "success";
   errorMessage?: React.ReactNode;
-  selectClassName?: string | undefined;
+  selectClassName?: string;
+  disabled?: boolean;
+  className?: string;
 }
 
 const Select = <T extends string>({
@@ -36,6 +38,8 @@ const Select = <T extends string>({
   defaultSelect,
   required,
   selectClassName,
+  disabled,
+  className,
 }: Props<T>): React.ReactElement => {
   const onChangeWrapper = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onChange(e.target.value as T);
@@ -54,6 +58,8 @@ const Select = <T extends string>({
       defaultOption={defaultOption}
       defaultSelect={defaultSelect}
       selectClassName={selectClassName}
+      disabled={disabled}
+      className={className}
     />
   );
 };

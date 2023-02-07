@@ -57,7 +57,6 @@ updates:
     reviewers:
       - "alismx"
       - "rin-skylight"
-      - "emmastephenson"
 
   - package-ecosystem: "gradle"
     directory: "/backend"
@@ -66,7 +65,7 @@ updates:
       interval: "weekly"
       day: "sunday"
     reviewers:
-      - "alixmx"
+      - "alismx"
       - "rin-skylight"
       - "cdcgov/simplereport-backendreviews"
 
