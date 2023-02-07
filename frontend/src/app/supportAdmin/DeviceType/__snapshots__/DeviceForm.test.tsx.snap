@@ -118,9 +118,19 @@ Object {
                           Covalent Observer
                         </option>
                         <option
+                          value="abc5"
+                        >
+                          Default Device
+                        </option>
+                        <option
                           value="abc2"
                         >
                           Fission Energizer
+                        </option>
+                        <option
+                          value="abc4"
+                        >
+                          Postal Swab
                         </option>
                         <option
                           value="abc1"
@@ -188,7 +198,7 @@ Object {
                         <li
                           aria-posinset="1"
                           aria-selected="false"
-                          aria-setsize="3"
+                          aria-setsize="5"
                           class="usa-combo-box__list-option"
                           data-testid="combo-box-option-abc3"
                           data-value="abc3"
@@ -202,11 +212,25 @@ Object {
                         <li
                           aria-posinset="2"
                           aria-selected="false"
-                          aria-setsize="3"
+                          aria-setsize="5"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc5"
+                          data-value="abc5"
+                          id="selectDevice--list--option-1"
+                          role="option"
+                          tabindex="-1"
+                          value="abc5"
+                        >
+                          Default Device
+                        </li>
+                        <li
+                          aria-posinset="3"
+                          aria-selected="false"
+                          aria-setsize="5"
                           class="usa-combo-box__list-option"
                           data-testid="combo-box-option-abc2"
                           data-value="abc2"
-                          id="selectDevice--list--option-1"
+                          id="selectDevice--list--option-2"
                           role="option"
                           tabindex="-1"
                           value="abc2"
@@ -214,13 +238,27 @@ Object {
                           Fission Energizer
                         </li>
                         <li
-                          aria-posinset="3"
+                          aria-posinset="4"
                           aria-selected="false"
-                          aria-setsize="3"
+                          aria-setsize="5"
+                          class="usa-combo-box__list-option"
+                          data-testid="combo-box-option-abc4"
+                          data-value="abc4"
+                          id="selectDevice--list--option-3"
+                          role="option"
+                          tabindex="-1"
+                          value="abc4"
+                        >
+                          Postal Swab
+                        </li>
+                        <li
+                          aria-posinset="5"
+                          aria-selected="false"
+                          aria-setsize="5"
                           class="usa-combo-box__list-option"
                           data-testid="combo-box-option-abc1"
                           data-value="abc1"
-                          id="selectDevice--list--option-2"
+                          id="selectDevice--list--option-4"
                           role="option"
                           tabindex="-1"
                           value="abc1"
@@ -255,7 +293,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="22"
+                        for="20"
                       >
                         Device name
                         <abbr
@@ -271,8 +309,78 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="22"
+                        id="20"
                         name="name"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="21"
+                      >
+                        Model
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="true"
+                        aria-required="true"
+                        class="usa-input"
+                        disabled=""
+                        id="21"
+                        name="model"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="grid-row grid-gap"
+                >
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group"
+                    >
+                      <label
+                        class="usa-label"
+                        for="22"
+                      >
+                        Manufacturer
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="true"
+                        aria-required="true"
+                        class="usa-input"
+                        disabled=""
+                        id="22"
+                        name="manufacturer"
                         type="text"
                         value=""
                       />
@@ -292,107 +400,6 @@ Object {
                         class="usa-label"
                         for="23"
                       >
-                        Model
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <input
-                        aria-disabled="true"
-                        aria-required="true"
-                        class="usa-input"
-                        disabled=""
-                        id="23"
-                        name="model"
-                        type="text"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="grid-row grid-gap"
-                >
-                  <div
-                    class="tablet:grid-col"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <label
-                        class="usa-label"
-                        for="24"
-                      >
-                        Manufacturer
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <input
-                        aria-disabled="true"
-                        aria-required="true"
-                        class="usa-input"
-                        disabled=""
-                        id="24"
-                        name="manufacturer"
-                        type="text"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="grid-row grid-gap"
-                >
-                  <div
-                    class="tablet:grid-col"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <label
-                        class="usa-label"
-                        for="25"
-                      >
-                        LOINC code
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <input
-                        aria-disabled="true"
-                        aria-required="true"
-                        class="usa-input"
-                        disabled=""
-                        id="25"
-                        name="loincCode"
-                        type="text"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                  <div
-                    class="tablet:grid-col"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <label
-                        class="usa-label"
-                        for="26"
-                      >
                         Test length (minutes)
                         <abbr
                           class="usa-hint usa-hint--required"
@@ -407,7 +414,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="26"
+                        id="23"
                         max="999"
                         min="0"
                         name="testLength"
@@ -428,8 +435,8 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="27"
-                        id="label-for-27"
+                        for="24"
+                        id="label-for-24"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -443,12 +450,12 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="27"
+                        id="24"
                       >
                         <input
                           aria-expanded="false"
                           aria-invalid="false"
-                          aria-labelledby="label-for-27"
+                          aria-labelledby="label-for-24"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -552,100 +559,29 @@ Object {
                     class="tablet:grid-col"
                     style="margin-bottom: 56px;"
                   >
-                    <div
-                      class="usa-form-group"
+                    <button
+                      aria-disabled="true"
+                      class="usa-button usa-button--unstyled usa-button-disabled margin-top-2"
+                      disabled=""
+                      type="button"
                     >
-                      <label
-                        class="usa-label"
-                        for="28"
-                        id="label-for-28"
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-plus margin-right-1"
+                        data-icon="plus"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        Supported diseases
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <div
-                        class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
-                        data-testid="multi-select"
-                        id="28"
-                      >
-                        <input
-                          aria-expanded="false"
-                          aria-invalid="false"
-                          aria-labelledby="label-for-28"
-                          aria-owns="multi-select-supportedDiseases-list"
-                          autocapitalize="off"
-                          autocomplete="off"
-                          class="usa-combo-box__input"
-                          data-testid="multi-select-input"
-                          disabled=""
-                          role="combobox"
-                          type="text"
-                          value=""
+                        <path
+                          d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                          fill="currentColor"
                         />
-                        <span
-                          class="usa-combo-box__input-button-separator"
-                        >
-                           
-                        </span>
-                        <span
-                          class="usa-combo-box__toggle-list__wrapper"
-                          tabindex="-1"
-                        >
-                          <button
-                            aria-hidden="true"
-                            class="usa-combo-box__toggle-list"
-                            data-testid="multi-select-toggle"
-                            disabled=""
-                            tabindex="-1"
-                            type="button"
-                          >
-                             
-                          </button>
-                        </span>
-                        <ul
-                          class="usa-combo-box__list"
-                          data-testid="multi-select-option-list"
-                          hidden=""
-                          id="multi-select-supportedDiseases-list"
-                          role="listbox"
-                          tabindex="-1"
-                        >
-                          <li
-                            aria-posinset="1"
-                            aria-selected="false"
-                            aria-setsize="64"
-                            class="usa-combo-box__list-option"
-                            data-testid="multi-select-option-123"
-                            id="multi-select-supportedDiseases-list--option-0"
-                            role="option"
-                            tabindex="-1"
-                            value="123"
-                          >
-                            COVID-19
-                          </li>
-                        </ul>
-                        <div
-                          class="usa-combo-box__status usa-sr-only"
-                          role="status"
-                        />
-                      </div>
-                      <fieldset
-                        class="fieldset--unstyled pill-container"
-                        data-testid="pill-container"
-                      >
-                        <legend
-                          class="usa-sr-only"
-                        >
-                          Selected Supported diseases
-                        </legend>
-                      </fieldset>
-                    </div>
+                      </svg>
+                      Add another disease
+                    </button>
                   </div>
                 </div>
               </div>
@@ -769,9 +705,19 @@ Object {
                         Covalent Observer
                       </option>
                       <option
+                        value="abc5"
+                      >
+                        Default Device
+                      </option>
+                      <option
                         value="abc2"
                       >
                         Fission Energizer
+                      </option>
+                      <option
+                        value="abc4"
+                      >
+                        Postal Swab
                       </option>
                       <option
                         value="abc1"
@@ -839,7 +785,7 @@ Object {
                       <li
                         aria-posinset="1"
                         aria-selected="false"
-                        aria-setsize="3"
+                        aria-setsize="5"
                         class="usa-combo-box__list-option"
                         data-testid="combo-box-option-abc3"
                         data-value="abc3"
@@ -853,11 +799,25 @@ Object {
                       <li
                         aria-posinset="2"
                         aria-selected="false"
-                        aria-setsize="3"
+                        aria-setsize="5"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc5"
+                        data-value="abc5"
+                        id="selectDevice--list--option-1"
+                        role="option"
+                        tabindex="-1"
+                        value="abc5"
+                      >
+                        Default Device
+                      </li>
+                      <li
+                        aria-posinset="3"
+                        aria-selected="false"
+                        aria-setsize="5"
                         class="usa-combo-box__list-option"
                         data-testid="combo-box-option-abc2"
                         data-value="abc2"
-                        id="selectDevice--list--option-1"
+                        id="selectDevice--list--option-2"
                         role="option"
                         tabindex="-1"
                         value="abc2"
@@ -865,13 +825,27 @@ Object {
                         Fission Energizer
                       </li>
                       <li
-                        aria-posinset="3"
+                        aria-posinset="4"
                         aria-selected="false"
-                        aria-setsize="3"
+                        aria-setsize="5"
+                        class="usa-combo-box__list-option"
+                        data-testid="combo-box-option-abc4"
+                        data-value="abc4"
+                        id="selectDevice--list--option-3"
+                        role="option"
+                        tabindex="-1"
+                        value="abc4"
+                      >
+                        Postal Swab
+                      </li>
+                      <li
+                        aria-posinset="5"
+                        aria-selected="false"
+                        aria-setsize="5"
                         class="usa-combo-box__list-option"
                         data-testid="combo-box-option-abc1"
                         data-value="abc1"
-                        id="selectDevice--list--option-2"
+                        id="selectDevice--list--option-4"
                         role="option"
                         tabindex="-1"
                         value="abc1"
@@ -906,7 +880,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="22"
+                      for="20"
                     >
                       Device name
                       <abbr
@@ -922,8 +896,78 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="22"
+                      id="20"
                       name="name"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="21"
+                    >
+                      Model
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <input
+                      aria-disabled="true"
+                      aria-required="true"
+                      class="usa-input"
+                      disabled=""
+                      id="21"
+                      name="model"
+                      type="text"
+                      value=""
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="grid-row grid-gap"
+              >
+                <div
+                  class="tablet:grid-col"
+                >
+                  <div
+                    class="usa-form-group"
+                  >
+                    <label
+                      class="usa-label"
+                      for="22"
+                    >
+                      Manufacturer
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
+                    <input
+                      aria-disabled="true"
+                      aria-required="true"
+                      class="usa-input"
+                      disabled=""
+                      id="22"
+                      name="manufacturer"
                       type="text"
                       value=""
                     />
@@ -943,107 +987,6 @@ Object {
                       class="usa-label"
                       for="23"
                     >
-                      Model
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <input
-                      aria-disabled="true"
-                      aria-required="true"
-                      class="usa-input"
-                      disabled=""
-                      id="23"
-                      name="model"
-                      type="text"
-                      value=""
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="grid-row grid-gap"
-              >
-                <div
-                  class="tablet:grid-col"
-                >
-                  <div
-                    class="usa-form-group"
-                  >
-                    <label
-                      class="usa-label"
-                      for="24"
-                    >
-                      Manufacturer
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <input
-                      aria-disabled="true"
-                      aria-required="true"
-                      class="usa-input"
-                      disabled=""
-                      id="24"
-                      name="manufacturer"
-                      type="text"
-                      value=""
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="grid-row grid-gap"
-              >
-                <div
-                  class="tablet:grid-col"
-                >
-                  <div
-                    class="usa-form-group"
-                  >
-                    <label
-                      class="usa-label"
-                      for="25"
-                    >
-                      LOINC code
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <input
-                      aria-disabled="true"
-                      aria-required="true"
-                      class="usa-input"
-                      disabled=""
-                      id="25"
-                      name="loincCode"
-                      type="text"
-                      value=""
-                    />
-                  </div>
-                </div>
-                <div
-                  class="tablet:grid-col"
-                >
-                  <div
-                    class="usa-form-group"
-                  >
-                    <label
-                      class="usa-label"
-                      for="26"
-                    >
                       Test length (minutes)
                       <abbr
                         class="usa-hint usa-hint--required"
@@ -1058,7 +1001,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="26"
+                      id="23"
                       max="999"
                       min="0"
                       name="testLength"
@@ -1079,8 +1022,8 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="27"
-                      id="label-for-27"
+                      for="24"
+                      id="label-for-24"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -1094,12 +1037,12 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="27"
+                      id="24"
                     >
                       <input
                         aria-expanded="false"
                         aria-invalid="false"
-                        aria-labelledby="label-for-27"
+                        aria-labelledby="label-for-24"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"
@@ -1203,100 +1146,29 @@ Object {
                   class="tablet:grid-col"
                   style="margin-bottom: 56px;"
                 >
-                  <div
-                    class="usa-form-group"
+                  <button
+                    aria-disabled="true"
+                    class="usa-button usa-button--unstyled usa-button-disabled margin-top-2"
+                    disabled=""
+                    type="button"
                   >
-                    <label
-                      class="usa-label"
-                      for="28"
-                      id="label-for-28"
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus margin-right-1"
+                      data-icon="plus"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 448 512"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      Supported diseases
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <div
-                      class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
-                      data-testid="multi-select"
-                      id="28"
-                    >
-                      <input
-                        aria-expanded="false"
-                        aria-invalid="false"
-                        aria-labelledby="label-for-28"
-                        aria-owns="multi-select-supportedDiseases-list"
-                        autocapitalize="off"
-                        autocomplete="off"
-                        class="usa-combo-box__input"
-                        data-testid="multi-select-input"
-                        disabled=""
-                        role="combobox"
-                        type="text"
-                        value=""
+                      <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                        fill="currentColor"
                       />
-                      <span
-                        class="usa-combo-box__input-button-separator"
-                      >
-                         
-                      </span>
-                      <span
-                        class="usa-combo-box__toggle-list__wrapper"
-                        tabindex="-1"
-                      >
-                        <button
-                          aria-hidden="true"
-                          class="usa-combo-box__toggle-list"
-                          data-testid="multi-select-toggle"
-                          disabled=""
-                          tabindex="-1"
-                          type="button"
-                        >
-                           
-                        </button>
-                      </span>
-                      <ul
-                        class="usa-combo-box__list"
-                        data-testid="multi-select-option-list"
-                        hidden=""
-                        id="multi-select-supportedDiseases-list"
-                        role="listbox"
-                        tabindex="-1"
-                      >
-                        <li
-                          aria-posinset="1"
-                          aria-selected="false"
-                          aria-setsize="64"
-                          class="usa-combo-box__list-option"
-                          data-testid="multi-select-option-123"
-                          id="multi-select-supportedDiseases-list--option-0"
-                          role="option"
-                          tabindex="-1"
-                          value="123"
-                        >
-                          COVID-19
-                        </li>
-                      </ul>
-                      <div
-                        class="usa-combo-box__status usa-sr-only"
-                        role="status"
-                      />
-                    </div>
-                    <fieldset
-                      class="fieldset--unstyled pill-container"
-                      data-testid="pill-container"
-                    >
-                      <legend
-                        class="usa-sr-only"
-                      >
-                        Selected Supported diseases
-                      </legend>
-                    </fieldset>
-                  </div>
+                    </svg>
+                    Add another disease
+                  </button>
                 </div>
               </div>
             </div>

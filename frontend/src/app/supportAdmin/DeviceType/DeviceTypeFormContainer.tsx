@@ -75,6 +75,9 @@ const DeviceTypeFormContainer = () => {
           swabTypes: [],
           supportedDiseases: [],
           testLength: 15,
+          supportedDiseaseTestPerformed: [
+            { supportedDisease: "", testPerformedLoincCode: "" },
+          ],
         }}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
