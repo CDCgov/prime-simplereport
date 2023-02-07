@@ -19,6 +19,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -370,17 +371,33 @@ public class FhirConverter {
   }
 
   public static List<Observation> convertToObservation(
-      Set<Result> results, TestCorrectionStatus correctionStatus, String correctionReason) {
+      Set<Result> results,
+      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCode,
+      TestCorrectionStatus correctionStatus,
+      String correctionReason) {
     return results.stream()
-        .map(result -> convertToObservation(result, correctionStatus, correctionReason))
+        .map(
+            result -> {
+              var testPerformedLoincCode =
+                  deviceTestPerformedLoincCode.stream()
+                      .filter(code -> code.getSupportedDisease() == result.getDisease())
+                      .findFirst()
+                      .map(DeviceTestPerformedLoincCode::getTestPerformedLoincCode)
+                      .orElse(result.getDisease().getLoinc());
+              return convertToObservation(
+                  result, testPerformedLoincCode, correctionStatus, correctionReason);
+            })
         .collect(Collectors.toList());
   }
 
   public static Observation convertToObservation(
-      Result result, TestCorrectionStatus correctionStatus, String correctionReason) {
+      Result result,
+      String testPerformedCode,
+      TestCorrectionStatus correctionStatus,
+      String correctionReason) {
     if (result != null && result.getDisease() != null) {
       return convertToObservation(
-          result.getDisease().getLoinc(),
+          testPerformedCode,
           result.getDisease().getName(),
           result.getResultLOINC(),
           correctionStatus,
@@ -528,6 +545,7 @@ public class FhirConverter {
         convertToSpecimen(testEvent.getSpecimenType()),
         convertToObservation(
             testEvent.getResults(),
+            testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
         convertToServiceRequest(testEvent.getOrder()),
