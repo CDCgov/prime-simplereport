@@ -1,8 +1,7 @@
 import { Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 
-import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
-// import { ENV, uploaderVersion } from "../config";
+import { ENV, uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./types";
 import {
   deleteSuccessfullyParsedMessages,
@@ -11,51 +10,25 @@ import {
 } from "./queueHandlers";
 import * as appInsights from "applicationinsights";
 
-//const { REPORT_STREAM_TOKEN, REPORT_STREAM_URL } = ENV;
+const { FHIR_REPORT_STREAM_TOKEN, REPORT_STREAM_URL } = ENV;
 
 const telemetry = appInsights.defaultClient;
 
 export async function reportToUniversalPipeline(
-  results: SimpleReportTestEvent[]
+  ndjsonTestEvents: string
 ) {
-  // ToDo check the size is complying with azure and break up the results if not
-  //Buffer.byteLength(jsonAsString)
-  // Actual call to Report Stream will be implemented with ticket 5115
-  // doing a mock response in the meantime
-  /*
   const headers = new Headers({
     "x-functions-key": FHIR_REPORT_STREAM_TOKEN,
     "x-api-version": uploaderVersion,
-    "content-type": "application/json;charset=UTF-8",
+    "content-type": "application/fhir+ndjson",
     client: "simple_report.fullelr",
   });
 
   return fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers,
-    body: JSON.stringify(results),
-  });*/
-
-  const dummyResponseReportStream: ReportStreamResponse = {
-    destinationCount: results.length,
-    destinations: [],
-    errorCount: 0,
-    errors: [],
-    id: "",
-    reportItemCount: 0,
-    routing: [{ destinations: [], reportIndex: 0, trackingId: "" }],
-    timestamp: "",
-    topic: "",
-    warningCount: 0,
-    warnings: [],
-  };
-
-  const dummyResponse = {
-    ok: true,
-    json: () => dummyResponseReportStream,
-  } as unknown as Response;
-
-  return Promise.resolve(dummyResponse);
+    body: ndjsonTestEvents,
+  });
 }
 
 export async function handleReportStreamResponse(

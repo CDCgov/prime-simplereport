@@ -33,10 +33,15 @@ export function processTestEvents(
   };
 };
 
+export function validateAndSplitBySizeLimit(): DequeuedMessageItem[]{
+  return [];
+};
+
 export function serializeTestEventsAsNdjson (testEvents: SimpleReportTestEvent[]): string {
+  const lastTestEvent = testEvents.length !==0 ? JSON.stringify(testEvents.pop()) : "";
    const ndjsonFormatReducer = (state: string, value: SimpleReportTestEvent): string => {
         return state + `${JSON.stringify(value)}\n`
    };
 
-   return testEvents.reduce(ndjsonFormatReducer, "");
+   return `${testEvents.reduce(ndjsonFormatReducer, "")}${lastTestEvent}`;
 };

@@ -7,7 +7,7 @@ import {
   getQueueClient,
   minimumMessagesAvailable,
 } from "../common/queueHandlers";
-import { ProcessedTestEvents, processTestEvents } from "./dataHandlers";
+import { ProcessedTestEvents, processTestEvents, serializeTestEventsAsNdjson } from "./dataHandlers";
 import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
@@ -46,6 +46,10 @@ const FHIRTestEventReporter: AzureFunction = async function (
     publishingQueue
   );
 
+  // do we split the messages here???
+  // ToDo check the size is complying with azure and break up the results if not
+  //Buffer.byteLength(jsonAsString)
+
   telemetry.trackEvent({
     name: `Queue:${publishingQueue.name}. Messages Dequeued`,
     properties: { messagesDequeued: messages.length },
@@ -57,10 +61,8 @@ const FHIRTestEventReporter: AzureFunction = async function (
     parseFailure,
     parseFailureCount,
     parseSuccessCount,
-  }: ProcessedTestEvents = processTestEvents(messages);// This method returns ProcessedTestEvents[] <- to make sure we stay under the 100MB
-  // the testEvents will be the bulk of tests in the ndjson format and a field called original messages
-  // will have the bulk of message for that piece
-  // Logic below will be applied to each of the ProcessedTestEvents objects Promise.allSettled
+  }: ProcessedTestEvents = processTestEvents(messages);
+
 
   if (parseFailureCount > 0) {
     telemetry.trackEvent({
@@ -73,18 +75,19 @@ const FHIRTestEventReporter: AzureFunction = async function (
     });
   }
 
+  // maybe this log that is correlation to overall message summary stays but we add a new one on the splitting of the
   if (parseSuccessCount < 1) {
     context.log(
-      `Queue: ${publishingQueue.name}. Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`
+        `Queue: ${publishingQueue.name}. Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`
     );
     return;
   }
 
   context.log(
-    `Queue: ${publishingQueue.name}. Starting upload of ${parseSuccessCount} records to ReportStream`
+      `Queue: ${publishingQueue.name}. Starting upload of ${parseSuccessCount} records to ReportStream`
   );
 
-  const postResult: Response = await reportToUniversalPipeline(testEvents);
+  const postResult: Response = await reportToUniversalPipeline(serializeTestEventsAsNdjson(testEvents));
 
   const uploadStart = new Date().getTime();
   telemetry.trackDependency({
