@@ -1,6 +1,5 @@
 import { Context } from "@azure/functions";
 import { QueueClient } from "@azure/storage-queue";
-import { Response } from "node-fetch";
 
 import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
