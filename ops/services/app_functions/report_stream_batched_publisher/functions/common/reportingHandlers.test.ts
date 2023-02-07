@@ -11,8 +11,8 @@ import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
 } from "./reportingHandlers";
-import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
-// import { uploaderVersion } from "../config";
+import { serializeTestEventsAsNdjson, SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
+ import { uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./types";
 
 jest.mock(
@@ -49,26 +49,24 @@ describe("reportingHandlers", () => {
     });
 
     it("calls fetch with correct parameters", async () => {
-      /*const mockHeaders = new Headers({
+      const mockHeaders = new Headers({
         "x-functions-key": "merhaba",
         "x-api-version": uploaderVersion,
-        "content-type": "application/json;charset=UTF-8",
-        client: "simple_report",
-      });*/
+        "content-type": "application/fhir+ndjson",
+        client: "simple_report.fullelr",
+      });
 
       const responseMock = {} as jest.MockedObject<Response>;
 
       fetchSpy.mockResolvedValueOnce(responseMock);
-      const simpleReportTestEvents: SimpleReportTestEvent[] = [
-        {} as jest.MockedObject<SimpleReportTestEvent>,
-      ];
-      await reportToUniversalPipeline(simpleReportTestEvents);
+      const serializedTestEvents: string = serializeTestEventsAsNdjson([]);
+      await reportToUniversalPipeline("");
       // to comment out as part of ticket 5115
-      /*expect(fetchSpy).toHaveBeenCalledWith("https://nope.url/1234", {
+      expect(fetchSpy).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",
         headers: mockHeaders,
-        body: JSON.stringify(simpleReportTestEvents),
-      });*/
+        body:serializedTestEvents,
+      });
     });
   });
 

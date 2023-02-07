@@ -5,7 +5,7 @@ import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
 import * as reportingHandlers from "../common/reportingHandlers";
 import FHIRTestEventReporter from "./index";
-import { ProcessedTestEvents } from "./dataHandlers";
+import { ProcessedTestEvents, serializeTestEventsAsNdjson } from "./dataHandlers";
 import { ReportStreamResponse } from "../common/types";
 
 jest.mock("../config", () => ({
@@ -117,10 +117,7 @@ describe("FHIRTestEventReporter", () => {
     expect(dequeueMessagesSpy).toHaveBeenCalled();
     expect(processTestEventsSpy).toHaveBeenCalled();
 
-    // The submission to report stream will be done with ticket 5115
-    expect(reportToUniversalPipelineSpy).toHaveBeenCalledWith(
-      processedTestEventsMock.testEvents
-    );
+    expect(reportToUniversalPipelineSpy).toHaveBeenCalledWith("{\"patient\":\"dexter\"}");
     expect(reportToUniversalPipelineSpy).toHaveBeenCalledTimes(1);
     expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);
   });
