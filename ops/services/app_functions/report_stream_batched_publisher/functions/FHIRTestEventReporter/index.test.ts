@@ -1,11 +1,12 @@
 import { Context } from "@azure/functions";
 import { QueueClient } from "@azure/storage-queue";
+import { Response } from "node-fetch";
 
 import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
 import * as reportingHandlers from "../common/reportingHandlers";
 import FHIRTestEventReporter from "./index";
-import { ProcessedTestEvents, serializeTestEventsAsNdjson } from "./dataHandlers";
+import { ProcessedTestEvents } from "./dataHandlers";
 import { ReportStreamResponse } from "../common/types";
 
 jest.mock("../config", () => ({
@@ -37,15 +38,16 @@ describe("FHIRTestEventReporter", () => {
     traceContext: { traceparent: "asdf" },
   } as jest.MockedObject<Context>;
 
-  const responseMock: Response = {
+  const responseMock = {
     ok: true,
     status: 200,
+    formData: jest.fn().mockResolvedValue(""),
     text: jest.fn().mockResolvedValue(""),
     json: jest.fn().mockResolvedValue({
       warnings: [],
       errors: [],
     } as jest.MockedObject<ReportStreamResponse>),
-  } as jest.MockedObject<Response>;
+  };
 
   let dequeueMessagesSpy,
     getQueueClientSpy,

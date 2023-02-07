@@ -1,5 +1,6 @@
 import { Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
+import fetch, { Headers, Response } from "node-fetch";
 
 import { ENV, uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./types";
@@ -16,7 +17,7 @@ const telemetry = appInsights.defaultClient;
 
 export async function reportToUniversalPipeline(
   ndjsonTestEvents: string
-) {
+): Promise<Response> {
   const headers = new Headers({
     "x-functions-key": FHIR_REPORT_STREAM_TOKEN,
     "x-api-version": uploaderVersion,

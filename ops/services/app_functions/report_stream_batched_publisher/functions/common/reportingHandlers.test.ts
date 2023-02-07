@@ -5,13 +5,14 @@ import {
   QueueClient,
   QueueDeleteMessageResponse,
 } from "@azure/storage-queue";
+import { Response } from "node-fetch";
 
 import * as queueHandlers from "./queueHandlers";
 import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
 } from "./reportingHandlers";
-import { serializeTestEventsAsNdjson, SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
+import { serializeTestEventsAsNdjson } from "../FHIRTestEventReporter/dataHandlers";
  import { uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./types";
 
@@ -38,16 +39,6 @@ jest.mock(
 
 describe("reportingHandlers", () => {
   describe("reportToUniversalPipeline", () => {
-    let fetchSpy;
-
-    beforeEach(() => {
-      fetchSpy = jest.spyOn(global, "fetch");
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
     it("calls fetch with correct parameters", async () => {
       const mockHeaders = new Headers({
         "x-functions-key": "merhaba",
@@ -56,13 +47,9 @@ describe("reportingHandlers", () => {
         client: "simple_report.fullelr",
       });
 
-      const responseMock = {} as jest.MockedObject<Response>;
-
-      fetchSpy.mockResolvedValueOnce(responseMock);
       const serializedTestEvents: string = serializeTestEventsAsNdjson([]);
       await reportToUniversalPipeline("");
-      // to comment out as part of ticket 5115
-      expect(fetchSpy).toHaveBeenCalledWith("https://nope.url/1234", {
+      expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",
         headers: mockHeaders,
         body:serializedTestEvents,

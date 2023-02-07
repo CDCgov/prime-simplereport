@@ -1,6 +1,7 @@
 import * as appInsights from "applicationinsights";
 import { AzureFunction, Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
+import { Response } from "node-fetch";
 import { ENV } from "../config";
 import {
   dequeueMessages,
