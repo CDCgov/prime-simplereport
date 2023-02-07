@@ -572,7 +572,7 @@ public class FhirConverter {
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var provenance = createProvenance(organizationFullUrl, deviceFullUrl, dateTested);
+    var provenance = createProvenance(organizationFullUrl, dateTested);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
@@ -629,8 +629,7 @@ public class FhirConverter {
     return bundle;
   }
 
-  public static Provenance createProvenance(
-      String organizationFullUrl, String deviceFullUrl, Date dateTested) {
+  public static Provenance createProvenance(String organizationFullUrl, Date dateTested) {
     var provenance = new Provenance();
     provenance.setId(UUID.randomUUID().toString());
     provenance
@@ -640,7 +639,6 @@ public class FhirConverter {
         .setCode(EVENT_TYPE_CODE)
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
-    provenance.addTarget(new Reference(deviceFullUrl));
     provenance.setRecorded(dateTested);
     return provenance;
   }

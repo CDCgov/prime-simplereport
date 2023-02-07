@@ -939,7 +939,7 @@ class FhirConverterTest {
 
   @Test
   void createProvenance_valid() {
-    var provenance = createProvenance("Organization/org-id", "Device/device-id", new Date());
+    var provenance = createProvenance("Organization/org-id", new Date());
 
     assertThat(provenance.getActivity().getCoding()).hasSize(1);
     assertThat(provenance.getActivity().getCodingFirstRep().getCode()).isEqualTo("R01");
@@ -950,8 +950,6 @@ class FhirConverterTest {
 
     assertThat(provenance.getAgentFirstRep().getWho().getReference())
         .isEqualTo("Organization/org-id");
-
-    assertThat(provenance.getTargetFirstRep().getReference()).isEqualTo("Device/device-id");
   }
 
   @Test
