@@ -383,7 +383,7 @@ public class FhirConverter {
                       .filter(code -> code.getSupportedDisease() == result.getDisease())
                       .findFirst()
                       .map(DeviceTestPerformedLoincCode::getTestPerformedLoincCode)
-                      .orElse(result.getDisease().getLoinc());
+                      .orElse(result.getTestOrder().getDeviceType().getLoincCode());
               return convertToObservation(
                   result, testPerformedLoincCode, correctionStatus, correctionReason);
             })

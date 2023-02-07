@@ -661,8 +661,9 @@ class FhirConverterTest {
   @Test
   void convertToObservation_Result_defaultsToDeviceLoinc() {
     var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var testOrder = TestDataBuilder.createTestOrderWithDevice();
     var covidResult =
-        new Result(null, new SupportedDisease("COVID-19", "96741-4"), TestResult.POSITIVE);
+        new Result(testOrder, new SupportedDisease("COVID-19", "96741-4"), TestResult.POSITIVE);
     ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
 
     var actual =
@@ -670,7 +671,7 @@ class FhirConverterTest {
             Set.of(covidResult), Collections.emptyList(), TestCorrectionStatus.ORIGINAL, null);
 
     assertThat(actual).hasSize(1);
-    assertThat(actual.get(0).getCode().getCodingFirstRep().getCode()).isEqualTo("96741-4");
+    assertThat(actual.get(0).getCode().getCodingFirstRep().getCode()).isEqualTo("54321-BOOM");
   }
 
   @Test
@@ -679,8 +680,9 @@ class FhirConverterTest {
     var fluId = "302a7919-b699-4e0d-95ca-5fd2e3fcaf7a";
     var covidDisease = new SupportedDisease("COVID-19", "96741-4");
     var fluDisease = new SupportedDisease("FLU A", "LP14239-5");
-    var covidResult = new Result(null, covidDisease, TestResult.POSITIVE);
-    var fluResult = new Result(null, fluDisease, TestResult.NEGATIVE);
+    var testOrder = TestDataBuilder.createTestOrderWithDevice();
+    var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
+    var fluResult = new Result(testOrder, fluDisease, TestResult.NEGATIVE);
     ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
     ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
     var covidDiseaseTestPerformedCode =
@@ -729,7 +731,8 @@ class FhirConverterTest {
   void convertToObservation_Result_correctionMatchesJson() throws IOException {
     var covidDisease = new SupportedDisease("COVID-19", "96741-4");
     var id = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var result = new Result(null, covidDisease, TestResult.NEGATIVE);
+    var testOrder = TestDataBuilder.createTestOrderWithDevice();
+    var result = new Result(testOrder, covidDisease, TestResult.NEGATIVE);
     var covidDiseaseTestPerformedCode =
         new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6");
 
@@ -1130,9 +1133,12 @@ class FhirConverterTest {
             "",
             null);
     var testOrder = new TestOrder(person, facility);
-    var covidResult = new Result(testOrder, new SupportedDisease(), TestResult.POSITIVE);
-    var fluAResult = new Result(testOrder, new SupportedDisease(), TestResult.NEGATIVE);
-    var fluBResult = new Result(testOrder, new SupportedDisease(), TestResult.UNDETERMINED);
+    var covidDisease = new SupportedDisease("COVID-19", "987-1");
+    var fluADisease = new SupportedDisease("FLU A", "LP 123");
+    var fluBDisease = new SupportedDisease("FLU B", "LP 456");
+    var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
+    var fluAResult = new Result(testOrder, fluADisease, TestResult.NEGATIVE);
+    var fluBResult = new Result(testOrder, fluBDisease, TestResult.UNDETERMINED);
     var testEvent = new TestEvent(testOrder, false, Set.of(covidResult, fluAResult, fluBResult));
 
     var providerId = UUID.fromString("ffc07f31-f2af-4728-a247-8cb3aa05ccd0");
@@ -1145,12 +1151,18 @@ class FhirConverterTest {
     var fluBResultId = UUID.fromString("6db25889-09cb-4127-9330-cc7e7459c1cd");
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
-
+    var testPerformedCodesList =
+        List.of(
+            new DeviceTestPerformedLoincCode(deviceTypeId, covidDisease, "333-123"),
+            new DeviceTestPerformedLoincCode(deviceTypeId, fluADisease, "444-123"),
+            new DeviceTestPerformedLoincCode(deviceTypeId, fluBDisease, "444-456"));
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
     ReflectionTestUtils.setField(specimenType, "internalId", specimenTypeId);
     ReflectionTestUtils.setField(deviceType, "internalId", deviceTypeId);
+    ReflectionTestUtils.setField(
+        deviceType, "supportedDiseaseTestPerformed", testPerformedCodesList);
     ReflectionTestUtils.setField(covidResult, "internalId", covidResultId);
     ReflectionTestUtils.setField(fluAResult, "internalId", fluAResultId);
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
@@ -1181,7 +1193,6 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
-
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
   }
 }
