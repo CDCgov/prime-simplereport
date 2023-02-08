@@ -1,11 +1,11 @@
 import { Context } from "@azure/functions";
-import { QueueClient } from "@azure/storage-queue";
+//import { QueueClient } from "@azure/storage-queue";
 
 import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
 import * as reportingHandlers from "../common/reportingHandlers";
 import FHIRTestEventReporter from "./index";
-import { ReportStreamResponse } from "../common/types";
+//import { ReportStreamResponse } from "../common/types";
 
 jest.mock("../config", () => ({
   ENV: {
