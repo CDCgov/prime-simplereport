@@ -36,7 +36,7 @@ describe("FHIRTestEventReporter", () => {
     traceContext: { traceparent: "asdf" },
   } as jest.MockedObject<Context>;
 
-  const responseMock = {
+  /*const responseMock = {
     ok: true,
     status: 200,
     formData: jest.fn().mockResolvedValue(""),
@@ -45,10 +45,10 @@ describe("FHIRTestEventReporter", () => {
       warnings: [],
       errors: [],
     } as jest.MockedObject<ReportStreamResponse>),
-  };
+  };*/
 
   let dequeueMessagesSpy,
-    getQueueClientSpy,
+    //getQueueClientSpy,
     minimumMessagesAvailableSpy,
     processTestEventsSpy,
     reportToUniversalPipelineSpy,
@@ -58,7 +58,7 @@ describe("FHIRTestEventReporter", () => {
     dequeueMessagesSpy = jest
       .spyOn(queueHandlers, "dequeueMessages")
       .mockResolvedValue([]);
-    getQueueClientSpy = jest
+    /*getQueueClientSpy = jest
       .spyOn(queueHandlers, "getQueueClient")
       .mockImplementation(
         (queueName: string) =>
@@ -68,7 +68,7 @@ describe("FHIRTestEventReporter", () => {
               approximateMessagesCount: 10,
             }),
           } as jest.MockedObject<QueueClient>)
-      );
+      );*/
     minimumMessagesAvailableSpy = jest
       .spyOn(queueHandlers, "minimumMessagesAvailable")
       .mockResolvedValue(true);
