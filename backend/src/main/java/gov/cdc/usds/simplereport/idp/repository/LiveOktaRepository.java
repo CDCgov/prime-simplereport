@@ -174,6 +174,8 @@ public class LiveOktaRepository implements OktaRepository {
           .contains(
               "HTTP 400, Okta E0000001 (Api validation failed: login - login: An object with this field already exists in the current organization")) {
         throw new ConflictingUserException();
+      } else {
+        throw new IllegalGraphqlArgumentException(e.getMessage());
       }
     }
 
@@ -279,6 +281,8 @@ public class LiveOktaRepository implements OktaRepository {
           .contains(
               "HTTP 400, Okta E0000001 (Api validation failed: login - login: An object with this field already exists in the current organization")) {
         throw new ConflictingUserException();
+      } else {
+        throw new IllegalGraphqlArgumentException(e.getMessage());
       }
     }
 
