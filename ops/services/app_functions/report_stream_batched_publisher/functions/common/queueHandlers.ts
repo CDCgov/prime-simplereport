@@ -78,7 +78,7 @@ export async function dequeueMessages(
     }
   }
   return messages;
-}
+};
 
 export async function minimumMessagesAvailable(
   context: Context,
@@ -100,7 +100,7 @@ export async function minimumMessagesAvailable(
     return false;
   }
   return true;
-}
+};
 
 export async function publishToQueue(
   queueClient: QueueClient,

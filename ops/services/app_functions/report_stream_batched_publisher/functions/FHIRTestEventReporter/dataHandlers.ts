@@ -1,47 +1,70 @@
 import { DequeuedMessageItem } from "@azure/storage-queue";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type SimpleReportTestEvent = Record<any, any>;
+export type FHIRTestEventsBundle = {
+    messages: DequeuedMessageItem[];
+    testEventsNDJSON: string;
+    parseFailure: Record<string, boolean>;
+    parseFailureCount: number;
+    parseSuccessCount: number;
+};
 
-export type ProcessedTestEvents = {
-  testEvents: SimpleReportTestEvent[];
-  parseFailure: Record<string, boolean>;
-  parseFailureCount: number;
-  parseSuccessCount: number;
+function createNewBundle(): FHIRTestEventsBundle {
+    return {
+        messages: [],
+        testEventsNDJSON: "",
+        parseFailure: {},
+        parseFailureCount: 0,
+        parseSuccessCount: 0
+    }
 };
 
 export function processTestEvents(
-  messages: DequeuedMessageItem[]
-): ProcessedTestEvents {
-  const parseFailure: { [k: string]: boolean } = {};
-  let parseFailureCount = 0;
-  const testEventsAsJSON = messages.flatMap((m: DequeuedMessageItem) => {
-    try {
-      return [JSON.parse(m.messageText)];
-    } catch (e) {
-      parseFailure[m.messageId] = true;
-      parseFailureCount++;
-      return [];
+    messages: DequeuedMessageItem[],
+    bundleSizeLimit: number
+): FHIRTestEventsBundle[] {
+    const bundles: FHIRTestEventsBundle[] = [];
+    const delimiterSize = Buffer.byteLength('\n');
+
+    if(messages.length<=0){
+        return bundles;
     }
-  });
 
-  return {
-    testEvents: testEventsAsJSON,
-    parseFailure,
-    parseFailureCount,
-    parseSuccessCount: testEventsAsJSON.length,
-  };
+    let currentBundle = createNewBundle();
+    let bundleSize = 0;
+
+    messages.forEach((message: DequeuedMessageItem) => {
+        const messageSize:number = Buffer.byteLength(message.messageText);
+
+        // check if message can be added to current bundle
+        // or should be added to a new one
+        if((bundleSize + messageSize + delimiterSize)> bundleSizeLimit){
+            // remove enter from last ndjson
+            const cleanedNDJSON = currentBundle.testEventsNDJSON.slice(0,-1);
+            currentBundle.testEventsNDJSON = cleanedNDJSON;
+
+            // push full bundle and create new bundle
+            bundles.push(currentBundle);
+            currentBundle = createNewBundle();
+            bundleSize = 0;
+        }
+
+        currentBundle.messages.push({...message});
+        bundleSize += messageSize;
+
+        try {
+            JSON.parse(message.messageText);
+            currentBundle.parseSuccessCount++;
+            currentBundle.testEventsNDJSON+=`${message.messageText}\n`;
+        } catch (e) {
+            currentBundle.parseFailure[message.messageId] = true;
+            currentBundle.parseFailureCount++;
+        }
+    });
+
+    const cleanedNDJSON = currentBundle.testEventsNDJSON.slice(0,-1);
+    currentBundle.testEventsNDJSON = cleanedNDJSON;
+    bundles.push(currentBundle);
+
+    return bundles;
 };
 
-export function validateAndSplitBySizeLimit(): DequeuedMessageItem[]{
-  return [];
-};
-
-export function serializeTestEventsAsNdjson (testEvents: SimpleReportTestEvent[]): string {
-  const lastTestEvent = testEvents.length !==0 ? JSON.stringify(testEvents.pop()) : "";
-   const ndjsonFormatReducer = (state: string, value: SimpleReportTestEvent): string => {
-        return state + `${JSON.stringify(value)}\n`
-   };
-
-   return `${testEvents.reduce(ndjsonFormatReducer, "")}${lastTestEvent}`;
-};

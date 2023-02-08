@@ -12,7 +12,6 @@ import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
 } from "./reportingHandlers";
-import { serializeTestEventsAsNdjson } from "../FHIRTestEventReporter/dataHandlers";
  import { uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./types";
 
@@ -47,7 +46,7 @@ describe("reportingHandlers", () => {
         client: "simple_report.fullelr",
       });
 
-      const serializedTestEvents: string = serializeTestEventsAsNdjson([]);
+      const serializedTestEvents = "";
       await reportToUniversalPipeline("");
       expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",

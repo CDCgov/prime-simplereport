@@ -100,4 +100,5 @@ export async function handleReportStreamResponse(
 
     throw new Error(errorText);
   }
-}
+};
+

@@ -8,7 +8,7 @@ import {
   getQueueClient,
   minimumMessagesAvailable,
 } from "../common/queueHandlers";
-import { ProcessedTestEvents, processTestEvents, serializeTestEventsAsNdjson } from "./dataHandlers";
+import { FHIRTestEventsBundle, processTestEvents } from "./dataHandlers";
 import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
@@ -20,6 +20,8 @@ const {
   FHIR_PUBLISHING_ERROR_QUEUE_NAME,
   REPORTING_EXCEPTION_QUEUE_NAME
 } = ENV;
+
+const BUNDLE_SIZE_LIMIT = 99050000;// 99.5MB
 
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
@@ -47,73 +49,75 @@ const FHIRTestEventReporter: AzureFunction = async function (
     publishingQueue
   );
 
-  // do we split the messages here???
-  // ToDo check the size is complying with azure and break up the results if not
-  //Buffer.byteLength(jsonAsString)
-
   telemetry.trackEvent({
     name: `Queue:${publishingQueue.name}. Messages Dequeued`,
     properties: { messagesDequeued: messages.length },
     tagOverrides,
   });
 
-  const {
-    testEvents,
-    parseFailure,
-    parseFailureCount,
-    parseSuccessCount,
-  }: ProcessedTestEvents = processTestEvents(messages);
 
-
-  if (parseFailureCount > 0) {
-    telemetry.trackEvent({
-      name: `Queue:${publishingQueue.name}. Test Event Parse Failure`,
-      properties: {
-        count: parseFailureCount,
-        parseFailures: Object.keys(parseFailure),
-      },
-      tagOverrides,
-    });
-  }
-
-  // maybe this log that is correlation to overall message summary stays but we add a new one on the splitting of the
-  if (parseSuccessCount < 1) {
-    context.log(
-        `Queue: ${publishingQueue.name}. Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`
-    );
-    return;
-  }
+  const fhirBundles:FHIRTestEventsBundle[] = processTestEvents(messages, BUNDLE_SIZE_LIMIT);
 
   context.log(
-      `Queue: ${publishingQueue.name}. Starting upload of ${parseSuccessCount} records to ReportStream`
+      `Queue: ${publishingQueue.name}. Processing ${fhirBundles.length} bundles;`
   );
 
-  const postResult: Response = await reportToUniversalPipeline(serializeTestEventsAsNdjson(testEvents));
+  // this needs refactoring
+  const promisesToPublishBundles = fhirBundles.map((bundle: FHIRTestEventsBundle, idx:number)=> {
+    return async () => {
+      if (bundle.parseFailureCount > 0) {
+        telemetry.trackEvent({
+          name: `Queue:${publishingQueue.name}. Test Event Parse Failure`,
+          properties: {
+            count: bundle.parseFailureCount,
+            parseFailures: Object.keys(bundle.parseFailure),
+          },
+          tagOverrides,
+        });
+      }
 
-  const uploadStart = new Date().getTime();
-  telemetry.trackDependency({
-    dependencyTypeName: "HTTP",
-    name: "ReportStream",
-    data: REPORT_STREAM_URL,
-    properties: {
-      recordCount: parseSuccessCount,
-      queue: publishingQueue.name,
-    },
-    duration: new Date().getTime() - uploadStart,
-    resultCode: postResult.status,
-    success: postResult.ok,
-    tagOverrides,
+      if (bundle.parseSuccessCount < 1) {
+        context.log(
+            `Queue: ${publishingQueue.name}. Successfully parsed message count of ${bundle.parseSuccessCount} in bundle ${idx} is less than 1; aborting`
+        );
+        return;
+      }
+
+      context.log(
+          `Queue: ${publishingQueue.name}. Starting upload of ${bundle.parseSuccessCount} records in bundle ${idx} to ReportStream`
+      );
+
+      const postResult: Response = await reportToUniversalPipeline(bundle.testEventsNDJSON);
+
+      const uploadStart = new Date().getTime();
+      telemetry.trackDependency({
+        dependencyTypeName: "HTTP",
+        name: "ReportStream",
+        data: REPORT_STREAM_URL,
+        properties: {
+          recordCount: bundle.parseSuccessCount,
+          queue: publishingQueue.name,
+        },
+        duration: new Date().getTime() - uploadStart,
+        resultCode: postResult.status,
+        success: postResult.ok,
+        tagOverrides,
+      });
+
+      await handleReportStreamResponse(
+          postResult,
+          context,
+          messages,
+          bundle.parseFailure,
+          publishingQueue,
+          exceptionQueue,
+          publishingErrorQueue
+      );
+
+    };
   });
 
-  await handleReportStreamResponse(
-    postResult,
-    context,
-    messages,
-    parseFailure,
-    publishingQueue,
-    exceptionQueue,
-    publishingErrorQueue
-  );
+  await Promise.allSettled(promisesToPublishBundles);
 };
 
 export default FHIRTestEventReporter;
