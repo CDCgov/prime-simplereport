@@ -199,8 +199,13 @@ public class DeviceTypeService {
           supportedDisease.ifPresent(
               disease ->
                   deviceTestPerformedLoincCodeList.add(
-                      new DeviceTestPerformedLoincCode(
-                          device.getInternalId(), disease, input.getTestPerformedLoincCode())));
+                      DeviceTestPerformedLoincCode.builder()
+                          .deviceTypeId(device.getInternalId())
+                          .supportedDisease(disease)
+                          .testPerformedLoincCode(input.getTestPerformedLoincCode())
+                          .equipmentUid(input.getEquipmentUid())
+                          .testkitNameId(input.getTestkitNameId())
+                          .build()));
         });
     return deviceTestPerformedLoincCodeList;
   }

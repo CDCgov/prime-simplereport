@@ -78,6 +78,8 @@ input UpdateDeviceType {
 input SupportedDiseaseTestPerformedInput {
   supportedDisease: ID!
   testPerformedLoincCode: String!
+  equipmentUid: String
+  testkitNameId: String
 }
 
 type DeviceType {
