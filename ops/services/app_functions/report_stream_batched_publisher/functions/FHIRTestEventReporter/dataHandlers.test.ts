@@ -111,7 +111,7 @@ describe("data handlers", () => {
       const mixedMessages = [...validMessages,  {
         messageId: "4",
         messageText: "not_a_json",
-      } as jest.MockedObject<DequeuedMessageItem>,]
+      } as jest.MockedObject<DequeuedMessageItem>];
 
       const processedEvents = processTestEvents(mixedMessages, 50);
       expect(processedEvents).toHaveLength(2);

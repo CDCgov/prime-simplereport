@@ -1,11 +1,12 @@
 import { Context } from "@azure/functions";
-//import { QueueClient } from "@azure/storage-queue";
+import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 
 import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
 import * as reportingHandlers from "../common/reportingHandlers";
 import FHIRTestEventReporter from "./index";
-//import { ReportStreamResponse } from "../common/types";
+import { FHIRTestEventsBundle } from "./dataHandlers";
+import { ReportStreamResponse } from "../common/types";
 
 jest.mock("../config", () => ({
   ENV: {
@@ -36,7 +37,7 @@ describe("FHIRTestEventReporter", () => {
     traceContext: { traceparent: "asdf" },
   } as jest.MockedObject<Context>;
 
-  /*const responseMock = {
+  const responseMock = {
     ok: true,
     status: 200,
     formData: jest.fn().mockResolvedValue(""),
@@ -45,10 +46,10 @@ describe("FHIRTestEventReporter", () => {
       warnings: [],
       errors: [],
     } as jest.MockedObject<ReportStreamResponse>),
-  };*/
+  };
 
   let dequeueMessagesSpy,
-    //getQueueClientSpy,
+    getQueueClientSpy,
     minimumMessagesAvailableSpy,
     processTestEventsSpy,
     reportToUniversalPipelineSpy,
@@ -58,7 +59,7 @@ describe("FHIRTestEventReporter", () => {
     dequeueMessagesSpy = jest
       .spyOn(queueHandlers, "dequeueMessages")
       .mockResolvedValue([]);
-    /*getQueueClientSpy = jest
+    getQueueClientSpy = jest
       .spyOn(queueHandlers, "getQueueClient")
       .mockImplementation(
         (queueName: string) =>
@@ -68,7 +69,7 @@ describe("FHIRTestEventReporter", () => {
               approximateMessagesCount: 10,
             }),
           } as jest.MockedObject<QueueClient>)
-      );*/
+      );
     minimumMessagesAvailableSpy = jest
       .spyOn(queueHandlers, "minimumMessagesAvailable")
       .mockResolvedValue(true);
@@ -99,15 +100,19 @@ describe("FHIRTestEventReporter", () => {
     expect(context.log).not.toHaveBeenCalled();
   });
 
-  /*it("parses and uploads the test events successfully", async () => {
-    const processedTestEventsMock: ProcessedTestEvents = {
-      testEvents: [{ patient: "dexter" }],
+  it("parses and uploads the test events successfully", async () => {
+    const fhirBundles: FHIRTestEventsBundle[] = [{
+      messages: [{
+        messageId: "1",
+        messageText: JSON.stringify({ patientName: "Dexter" }),
+      } as jest.MockedObject<DequeuedMessageItem>],
       parseFailure: {},
       parseFailureCount: 0,
       parseSuccessCount: 1,
-    };
+      testEventsNDJSON: JSON.stringify({ patient: "dexter" })
+    }];
 
-    processTestEventsSpy.mockReturnValueOnce(processedTestEventsMock);
+    processTestEventsSpy.mockReturnValueOnce(fhirBundles);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
@@ -123,21 +128,25 @@ describe("FHIRTestEventReporter", () => {
   });
 
   it("receives failed parsed events after processing them", async () => {
-    const processedTestEventsMock: ProcessedTestEvents = {
-      testEvents: [],
+    const fhirBundles: FHIRTestEventsBundle[] = [{
+      messages: [{
+        messageId: "1",
+        messageText: JSON.stringify({ patientName: "Dexter" }),
+      } as jest.MockedObject<DequeuedMessageItem>],
       parseFailure: { "1": true },
       parseFailureCount: 1,
       parseSuccessCount: 0,
-    };
+      testEventsNDJSON: ""
+    }];
 
-    processTestEventsSpy.mockReturnValueOnce(processedTestEventsMock);
+    processTestEventsSpy.mockReturnValueOnce(fhirBundles);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
 
     expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
     expect(context.log).toHaveBeenCalledWith(
-      "Queue: ciao. Successfully parsed message count of 0 is less than 1; aborting"
+      "Queue: ciao. Successfully parsed message count of 0 in bundle 0 is less than 1; aborting"
     );
-  });*/
+  });
 });

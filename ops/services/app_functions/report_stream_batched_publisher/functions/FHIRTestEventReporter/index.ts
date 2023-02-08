@@ -21,17 +21,17 @@ const {
   REPORTING_EXCEPTION_QUEUE_NAME
 } = ENV;
 
-const BUNDLE_SIZE_LIMIT = 99050000;// 99.5MB
+const BUNDLE_SIZE_LIMIT = 99050000;// HTTP request size limit is 100MB so bundle limit is set to 99.5MB
 
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
 const FHIRTestEventReporter: AzureFunction = async function (
-  context: Context
+    context: Context
 ): Promise<void> {
-  const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
+  const tagOverrides = {"ai.operation.id": context.traceContext.traceparent};
   const publishingQueue: QueueClient = getQueueClient(
-    FHIR_TEST_EVENT_QUEUE_NAME
+      FHIR_TEST_EVENT_QUEUE_NAME
   );
   const publishingErrorQueue: QueueClient = getQueueClient(
       FHIR_PUBLISHING_ERROR_QUEUE_NAME
@@ -64,23 +64,26 @@ const FHIRTestEventReporter: AzureFunction = async function (
 
   // this needs refactoring
   const promisesToPublishBundles = fhirBundles.map((bundle: FHIRTestEventsBundle, idx:number)=> {
-    return async () => {
-      if (bundle.parseFailureCount > 0) {
-        telemetry.trackEvent({
-          name: `Queue:${publishingQueue.name}. Test Event Parse Failure`,
-          properties: {
-            count: bundle.parseFailureCount,
-            parseFailures: Object.keys(bundle.parseFailure),
-          },
-          tagOverrides,
-        });
+    return new Promise<void>(resolve => {
+      (async () => {
+
+        if (bundle.parseFailureCount > 0) {
+          telemetry.trackEvent({
+            name: `Queue:${publishingQueue.name}. Test Event Parse Failure`,
+            properties: {
+              count: bundle.parseFailureCount,
+              parseFailures: Object.keys(bundle.parseFailure),
+            },
+            tagOverrides,
+          });
       }
 
       if (bundle.parseSuccessCount < 1) {
         context.log(
             `Queue: ${publishingQueue.name}. Successfully parsed message count of ${bundle.parseSuccessCount} in bundle ${idx} is less than 1; aborting`
         );
-        return;
+
+        return resolve();
       }
 
       context.log(
@@ -104,20 +107,22 @@ const FHIRTestEventReporter: AzureFunction = async function (
         tagOverrides,
       });
 
-      await handleReportStreamResponse(
-          postResult,
-          context,
-          messages,
-          bundle.parseFailure,
-          publishingQueue,
-          exceptionQueue,
-          publishingErrorQueue
-      );
+        await handleReportStreamResponse(
+            postResult,
+            context,
+            messages,
+            bundle.parseFailure,
+            publishingQueue,
+            exceptionQueue,
+            publishingErrorQueue
+        );
 
-    };
+        return resolve();
+      })()
+    });
   });
 
-  await Promise.allSettled(promisesToPublishBundles);
+  await Promise.allSettled(promisesToPublishBundles).then();
 };
 
 export default FHIRTestEventReporter;
