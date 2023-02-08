@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
@@ -195,7 +194,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void createUserInCurrentOrg_disabledUserWrongOrg_error() {
+  void createUserInCurrentOrg_disabledUser_conflictingUser_error() {
     initSampleData();
 
     // disable a user from another organization
@@ -206,12 +205,12 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     PersonName personName = new PersonName("First", "Middle", "Last", "Jr");
 
-    AccessDeniedException caught =
+    ConflictingUserException caught =
         assertThrows(
-            AccessDeniedException.class,
+            ConflictingUserException.class,
             () -> _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER));
 
-    assertEquals("Unable to add user.", caught.getMessage());
+    assertEquals("A user with this email address already exists.", caught.getMessage());
   }
 
   @Test

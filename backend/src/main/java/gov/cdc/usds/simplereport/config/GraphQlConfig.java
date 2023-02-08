@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
-import graphql.GraphQLError;
 import graphql.validation.rules.OnValidationErrorStrategy;
 import graphql.validation.rules.ValidationRules;
 import graphql.validation.schemawiring.ValidationSchemaWiring;
@@ -47,7 +46,10 @@ public class GraphQlConfig {
       log.error("Will replace the following exception with a GenericGraphqlException: ", exception);
 
       if (exception instanceof ConflictingUserException) {
-        return Mono.just(singletonList((GraphQLError) exception));
+        String errorBody =
+            "A user with this email already exists in our system. Please contact SimpleReport support for help.";
+        String errorMessage = String.format("header: Can't add user; body: %s", errorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
       if (exception instanceof AccessDeniedException) {

@@ -16,6 +16,7 @@ import com.okta.sdk.resource.user.UserProfile;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -111,30 +112,7 @@ public class LiveOktaRepository implements OktaRepository {
       Set<OrganizationRole> roles,
       boolean active) {
     // need to validate fields before adding them because Maps don't like nulls
-    Map<String, Object> userProfileMap = new HashMap<>();
-    if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
-      userProfileMap.put("firstName", userIdentity.getFirstName());
-    }
-    if (userIdentity.getMiddleName() != null && !userIdentity.getMiddleName().isEmpty()) {
-      userProfileMap.put("middleName", userIdentity.getMiddleName());
-    }
-    if (userIdentity.getLastName() != null && !userIdentity.getLastName().isEmpty()) {
-      userProfileMap.put("lastName", userIdentity.getLastName());
-    } else {
-      // last name is required
-      throw new IllegalGraphqlArgumentException("Cannot create Okta user without last name");
-    }
-    if (userIdentity.getSuffix() != null && !userIdentity.getSuffix().isEmpty()) {
-      userProfileMap.put("honorificSuffix", userIdentity.getSuffix());
-    }
-    if (userIdentity.getUsername() != null && !userIdentity.getUsername().isEmpty()) {
-      // we assume login == email
-      userProfileMap.put("email", userIdentity.getUsername());
-      userProfileMap.put("login", userIdentity.getUsername());
-    } else {
-      // username is required
-      throw new IllegalGraphqlArgumentException("Cannot create Okta user without username");
-    }
+    Map<String, Object> userProfileMap = validateAndSetUserProfile(userIdentity);
 
     // By default, when creating a user, we give them privileges of a standard user
     String organizationExternalId = org.getExternalId();
@@ -185,12 +163,19 @@ public class LiveOktaRepository implements OktaRepository {
             .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
             .map(Group::getId)
             .collect(Collectors.toSet());
-
-    UserBuilder.instance()
-        .setProfileProperties(userProfileMap)
-        .setGroups(groupIdsToAdd)
-        .setActive(active)
-        .buildAndCreate(_client);
+    try {
+      UserBuilder.instance()
+          .setProfileProperties(userProfileMap)
+          .setGroups(groupIdsToAdd)
+          .setActive(active)
+          .buildAndCreate(_client);
+    } catch (ResourceException e) {
+      if (e.getMessage()
+          .contains(
+              "HTTP 400, Okta E0000001 (Api validation failed: login - login: An object with this field already exists in the current organization")) {
+        throw new ConflictingUserException();
+      }
+    }
 
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNamesToAdd);
     if (claims.size() != 1) {
@@ -198,6 +183,34 @@ public class LiveOktaRepository implements OktaRepository {
       return Optional.empty();
     }
     return Optional.of(claims.get(0));
+  }
+
+  private Map<String, Object> validateAndSetUserProfile(IdentityAttributes userIdentity) {
+    Map<String, Object> userProfileMap = new HashMap<>();
+    if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
+      userProfileMap.put("firstName", userIdentity.getFirstName());
+    }
+    if (userIdentity.getMiddleName() != null && !userIdentity.getMiddleName().isEmpty()) {
+      userProfileMap.put("middleName", userIdentity.getMiddleName());
+    }
+    if (userIdentity.getLastName() != null && !userIdentity.getLastName().isEmpty()) {
+      userProfileMap.put("lastName", userIdentity.getLastName());
+    } else {
+      // last name is required
+      throw new IllegalGraphqlArgumentException("Cannot create Okta user without last name");
+    }
+    if (userIdentity.getSuffix() != null && !userIdentity.getSuffix().isEmpty()) {
+      userProfileMap.put("honorificSuffix", userIdentity.getSuffix());
+    }
+    if (userIdentity.getUsername() != null && !userIdentity.getUsername().isEmpty()) {
+      // we assume login == email
+      userProfileMap.put("email", userIdentity.getUsername());
+      userProfileMap.put("login", userIdentity.getUsername());
+    } else {
+      // username is required
+      throw new IllegalGraphqlArgumentException("Cannot create Okta user without username");
+    }
+    return userProfileMap;
   }
 
   public Set<String> getAllUsersForOrganization(Organization org) {
@@ -259,7 +272,15 @@ public class LiveOktaRepository implements OktaRepository {
     profile.setLogin(email);
     profile.setEmail(email);
     user.setProfile(profile);
-    user.update();
+    try {
+      user.update();
+    } catch (ResourceException e) {
+      if (e.getMessage()
+          .contains(
+              "HTTP 400, Okta E0000001 (Api validation failed: login - login: An object with this field already exists in the current organization")) {
+        throw new ConflictingUserException();
+      }
+    }
 
     return getOrganizationRoleClaimsForUser(user);
   }
@@ -274,8 +295,7 @@ public class LiveOktaRepository implements OktaRepository {
 
     // any org user "deleted" through our api will be in SUSPENDED state
     if (userStatus != UserStatus.SUSPENDED) {
-      throw new IllegalGraphqlArgumentException(
-          "Cannot reprovision user in unsupported state: " + userStatus);
+      throw new ConflictingUserException();
     }
 
     updateUser(user, userIdentity);
