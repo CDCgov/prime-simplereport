@@ -99,7 +99,7 @@ export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
       .mixed()
       .oneOf(Object.keys(OrganizationTypeEnum), "Organization type is required")
       .required(),
-    state: yup.string().required(),
+    state: yup.string().required("State is required"),
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),
