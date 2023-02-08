@@ -933,8 +933,10 @@ export type SupportedDiseaseTestPerformed = {
 };
 
 export type SupportedDiseaseTestPerformedInput = {
+  equipmentUid?: InputMaybe<Scalars["String"]>;
   supportedDisease: Scalars["ID"];
   testPerformedLoincCode: Scalars["String"];
+  testkitNameId?: InputMaybe<Scalars["String"]>;
 };
 
 export enum TestCorrectionStatus {
