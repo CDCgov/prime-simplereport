@@ -378,16 +378,21 @@ public class FhirConverter {
     return results.stream()
         .map(
             result -> {
-              var testPerformedLoincCode =
-                  deviceTestPerformedLoincCode.stream()
-                      .filter(code -> code.getSupportedDisease() == result.getDisease())
-                      .findFirst()
-                      .map(DeviceTestPerformedLoincCode::getTestPerformedLoincCode)
-                      .orElse(result.getTestOrder().getDeviceType().getLoincCode());
+              String testPerformedLoincCode =
+                  getTestPerformedLoincCode(deviceTestPerformedLoincCode, result);
               return convertToObservation(
                   result, testPerformedLoincCode, correctionStatus, correctionReason);
             })
         .collect(Collectors.toList());
+  }
+
+  private static String getTestPerformedLoincCode(
+      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCode, Result result) {
+    return deviceTestPerformedLoincCode.stream()
+        .filter(code -> code.getSupportedDisease() == result.getDisease())
+        .findFirst()
+        .map(DeviceTestPerformedLoincCode::getTestPerformedLoincCode)
+        .orElse(result.getTestOrder().getDeviceType().getLoincCode());
   }
 
   public static Observation convertToObservation(
