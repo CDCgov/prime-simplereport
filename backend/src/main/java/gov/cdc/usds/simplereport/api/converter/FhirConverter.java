@@ -34,7 +34,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import io.jsonwebtoken.lang.Collections;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -84,6 +83,7 @@ import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.data.util.Pair;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 public class FhirConverter {
@@ -268,7 +268,7 @@ public class FhirConverter {
   }
 
   public static Extension convertToTribalAffiliationExtension(List<String> tribalAffiliations) {
-    return Collections.isEmpty(tribalAffiliations)
+    return CollectionUtils.isEmpty(tribalAffiliations)
         ? null
         : convertToTribalAffiliationExtension(tribalAffiliations.get(0));
   }
