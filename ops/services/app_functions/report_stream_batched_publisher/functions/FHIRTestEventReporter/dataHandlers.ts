@@ -20,50 +20,50 @@ function createNewBatch(): FHIRTestEventsBatch {
 
 export function processTestEvents(
   messages: DequeuedMessageItem[],
-  bundleSizeLimit: number
+  fhirBatchSizeLimit: number
 ): FHIRTestEventsBatch[] {
-  const bundles: FHIRTestEventsBatch[] = [];
+  const fhirTestEventsBatches: FHIRTestEventsBatch[] = [];
   const delimiterSize = Buffer.byteLength("\n");
 
   if (messages.length <= 0) {
-    return bundles;
+    return fhirTestEventsBatches;
   }
 
-  let currentBundle = createNewBatch();
-  let bundleSize = 0;
+  let currentBatch = createNewBatch();
+  let batchSize = 0;
 
   messages.forEach((message: DequeuedMessageItem) => {
     const messageSize: number = Buffer.byteLength(message.messageText);
 
-    // check if message can be added to current bundle
+    // check if message can be added to current batch
     // or should be added to a new one
-    if (bundleSize + messageSize + delimiterSize > bundleSizeLimit) {
-      // remove enter from last ndjson
-      const cleanedNDJSON = currentBundle.testEventsNDJSON.slice(0, -1);
-      currentBundle.testEventsNDJSON = cleanedNDJSON;
+    if (batchSize + messageSize + delimiterSize > fhirBatchSizeLimit) {
+      // remove enter character from last fhir test event
+      const cleanedNDJSON = currentBatch.testEventsNDJSON.slice(0, -1);
+      currentBatch.testEventsNDJSON = cleanedNDJSON;
 
-      // push full bundle and create new bundle
-      bundles.push(currentBundle);
-      currentBundle = createNewBatch();
-      bundleSize = 0;
+      // push full batch and create new batch
+      fhirTestEventsBatches.push(currentBatch);
+      currentBatch = createNewBatch();
+      batchSize = 0;
     }
 
-    currentBundle.messages.push({ ...message });
-    bundleSize += messageSize;
+    currentBatch.messages.push({ ...message });
+    batchSize += messageSize;
 
     try {
       JSON.parse(message.messageText);
-      currentBundle.parseSuccessCount++;
-      currentBundle.testEventsNDJSON += `${message.messageText}\n`;
+      currentBatch.parseSuccessCount++;
+      currentBatch.testEventsNDJSON += `${message.messageText}\n`;
     } catch (e) {
-      currentBundle.parseFailure[message.messageId] = true;
-      currentBundle.parseFailureCount++;
+      currentBatch.parseFailure[message.messageId] = true;
+      currentBatch.parseFailureCount++;
     }
   });
 
-  const cleanedNDJSON = currentBundle.testEventsNDJSON.slice(0, -1);
-  currentBundle.testEventsNDJSON = cleanedNDJSON;
-  bundles.push(currentBundle);
+  const cleanedNDJSON = currentBatch.testEventsNDJSON.slice(0, -1);
+  currentBatch.testEventsNDJSON = cleanedNDJSON;
+  fhirTestEventsBatches.push(currentBatch);
 
-  return bundles;
+  return fhirTestEventsBatches;
 }
