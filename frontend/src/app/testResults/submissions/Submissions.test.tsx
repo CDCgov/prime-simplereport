@@ -132,7 +132,7 @@ const getMocks = () => [
 ];
 
 describe("Submissions", () => {
-  it("should render no results", async () => {
+  it("should render no results and pagination", async () => {
     render(
       <MockedProvider mocks={getNoResultsMocks()}>
         <Provider store={store}>
@@ -144,9 +144,10 @@ describe("Submissions", () => {
     );
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(await screen.findByText("No results"));
+    expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
   });
 
-  it("should render submission results", async () => {
+  it("should render submission results and pagination", async () => {
     render(
       <MockedProvider mocks={getMocks()}>
         <Provider store={store}>
@@ -161,6 +162,10 @@ describe("Submissions", () => {
     expect(await screen.findByText("reportId_1"));
     expect(await screen.findByText("reportId_2"));
     expect(await screen.findByText("reportId_3"));
+    expect(screen.queryByRole("navigation")).toHaveAttribute(
+      "aria-label",
+      "Pagination"
+    );
   });
 
   it("should filter results when start date specified", async () => {
