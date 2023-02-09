@@ -91,7 +91,7 @@ public class FhirConverter {
     throw new IllegalStateException("Utility class");
   }
 
-  private static final String simpleReportOrgId = "07640c5d-87cd-488b-9343-a226c5166539";
+  private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
   public static HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(
@@ -619,8 +619,8 @@ public class FhirConverter {
     entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
     entryList.add(
         Pair.of(
-            ResourceType.Organization + "/" + simpleReportOrgId,
-            new Organization().setName("SimpleReport").setId(simpleReportOrgId)));
+            ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
+            new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
 
     observations.forEach(
         observation -> {
@@ -711,7 +711,7 @@ public class FhirConverter {
         .getSource()
         .addExtension()
         .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org")
-        .setValue(new Reference(ResourceType.Organization + "/" + simpleReportOrgId));
+        .setValue(new Reference(ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID));
     return messageHeader;
   }
 }
