@@ -238,30 +238,33 @@ public class FhirConverter {
     return ext;
   }
 
-  public static Extension convertToEthnicityExtension(@NotNull String ethnicity) {
-    var ext = new Extension();
-    ext.setUrl(ETHNICITY_EXTENSION_URL);
-    var codeableConcept = new CodeableConcept();
-    var coding = codeableConcept.addCoding();
-    if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
-      if ("refused".equalsIgnoreCase(ethnicity)) {
-        coding.setSystem(NULL_CODE_SYSTEM);
+  public static Extension convertToEthnicityExtension(String ethnicity) {
+    if (StringUtils.isNotBlank(ethnicity)) {
+      var ext = new Extension();
+      ext.setUrl(ETHNICITY_EXTENSION_URL);
+      var codeableConcept = new CodeableConcept();
+      var coding = codeableConcept.addCoding();
+      if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
+        if ("refused".equalsIgnoreCase(ethnicity)) {
+          coding.setSystem(NULL_CODE_SYSTEM);
+        } else {
+          coding.setSystem(ETHNICITY_CODE_SYSTEM);
+        }
+        coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
+        coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
+
+        codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
       } else {
-        coding.setSystem(ETHNICITY_CODE_SYSTEM);
+        coding.setSystem(NULL_CODE_SYSTEM);
+        coding.setCode(MappingConstants.U_CODE);
+        coding.setDisplay(MappingConstants.UNKNOWN_STRING);
+
+        codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
       }
-      coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-      coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-
-      codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-    } else {
-      coding.setSystem(NULL_CODE_SYSTEM);
-      coding.setCode(MappingConstants.U_CODE);
-      coding.setDisplay(MappingConstants.UNKNOWN_STRING);
-
-      codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
+      ext.setValue(codeableConcept);
+      return ext;
     }
-    ext.setValue(codeableConcept);
-    return ext;
+    return null;
   }
 
   public static Optional<Extension> convertToTribalAffiliationExtension(

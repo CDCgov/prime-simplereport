@@ -306,6 +306,7 @@ class FhirConverterTest {
       String ethnicity, String system, String ethnicityCode, String ethnicityDisplay) {
 
     var actual = convertToEthnicityExtension(ethnicity);
+    assert actual != null;
     var codeableConcept = actual.castToCodeableConcept(actual.getValue());
     var coding = codeableConcept.getCoding();
     var text = codeableConcept.getText();
@@ -323,6 +324,12 @@ class FhirConverterTest {
         arguments("not_hispanic", ethnicitySystem, "N", "Not Hispanic or Latino"),
         arguments("refused", unknownSystem, "U", "unknown"),
         arguments("shark", unknownSystem, "U", "unknown"));
+  }
+
+  @Test
+  void convertToEthnicityExtension_String_returnsNullIfEmpty() {
+    var actual = convertToEthnicityExtension(null);
+    assertThat(actual).isNull();
   }
 
   @Test
@@ -658,7 +665,7 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_null() {
-    var actual = convertToObservation((Result) null, "", TestCorrectionStatus.ORIGINAL, null);
+    var actual = convertToObservation(null, "", TestCorrectionStatus.ORIGINAL, null);
 
     assertThat(actual).isNull();
   }
