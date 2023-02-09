@@ -98,6 +98,8 @@ type DeviceType {
 type SupportedDiseaseTestPerformed {
   supportedDisease: SupportedDisease!
   testPerformedLoincCode: String!
+  equipmentUid: String
+  testkitNameId: String
 }
 
 type SupportedDisease {

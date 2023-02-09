@@ -928,8 +928,10 @@ export type SupportedDisease = {
 
 export type SupportedDiseaseTestPerformed = {
   __typename?: "SupportedDiseaseTestPerformed";
+  equipmentUid?: Maybe<Scalars["String"]>;
   supportedDisease: SupportedDisease;
   testPerformedLoincCode: Scalars["String"];
+  testkitNameId?: Maybe<Scalars["String"]>;
 };
 
 export type SupportedDiseaseTestPerformedInput = {
