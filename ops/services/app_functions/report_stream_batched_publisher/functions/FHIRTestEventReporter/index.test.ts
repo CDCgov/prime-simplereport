@@ -101,16 +101,20 @@ describe("FHIRTestEventReporter", () => {
   });
 
   it("parses and uploads the test events successfully", async () => {
-    const fhirBundles: FHIRTestEventsBundle[] = [{
-      messages: [{
-        messageId: "1",
-        messageText: JSON.stringify({ patientName: "Dexter" }),
-      } as jest.MockedObject<DequeuedMessageItem>],
-      parseFailure: {},
-      parseFailureCount: 0,
-      parseSuccessCount: 1,
-      testEventsNDJSON: JSON.stringify({ patient: "dexter" })
-    }];
+    const fhirBundles: FHIRTestEventsBundle[] = [
+      {
+        messages: [
+          {
+            messageId: "1",
+            messageText: JSON.stringify({ patientName: "Dexter" }),
+          } as jest.MockedObject<DequeuedMessageItem>,
+        ],
+        parseFailure: {},
+        parseFailureCount: 0,
+        parseSuccessCount: 1,
+        testEventsNDJSON: JSON.stringify({ patient: "dexter" }),
+      },
+    ];
 
     processTestEventsSpy.mockReturnValueOnce(fhirBundles);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
@@ -122,22 +126,28 @@ describe("FHIRTestEventReporter", () => {
     expect(dequeueMessagesSpy).toHaveBeenCalled();
     expect(processTestEventsSpy).toHaveBeenCalled();
 
-    expect(reportToUniversalPipelineSpy).toHaveBeenCalledWith("{\"patient\":\"dexter\"}");
+    expect(reportToUniversalPipelineSpy).toHaveBeenCalledWith(
+      '{"patient":"dexter"}'
+    );
     expect(reportToUniversalPipelineSpy).toHaveBeenCalledTimes(1);
     expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);
   });
 
   it("receives failed parsed events after processing them", async () => {
-    const fhirBundles: FHIRTestEventsBundle[] = [{
-      messages: [{
-        messageId: "1",
-        messageText: JSON.stringify({ patientName: "Dexter" }),
-      } as jest.MockedObject<DequeuedMessageItem>],
-      parseFailure: { "1": true },
-      parseFailureCount: 1,
-      parseSuccessCount: 0,
-      testEventsNDJSON: ""
-    }];
+    const fhirBundles: FHIRTestEventsBundle[] = [
+      {
+        messages: [
+          {
+            messageId: "1",
+            messageText: JSON.stringify({ patientName: "Dexter" }),
+          } as jest.MockedObject<DequeuedMessageItem>,
+        ],
+        parseFailure: { "1": true },
+        parseFailureCount: 1,
+        parseSuccessCount: 0,
+        testEventsNDJSON: "",
+      },
+    ];
 
     processTestEventsSpy.mockReturnValueOnce(fhirBundles);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);

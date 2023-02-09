@@ -12,7 +12,7 @@ import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
 } from "./reportingHandlers";
- import { uploaderVersion } from "../config";
+import { uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./types";
 
 jest.mock(
@@ -51,7 +51,7 @@ describe("reportingHandlers", () => {
       expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",
         headers: mockHeaders,
-        body:serializedTestEvents,
+        body: serializedTestEvents,
       });
     });
   });

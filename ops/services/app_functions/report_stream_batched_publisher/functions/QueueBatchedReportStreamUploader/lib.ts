@@ -25,7 +25,7 @@ export function convertToCsv(messages: DequeuedMessageItem[]) {
     parseFailureCount,
     parseSuccessCount: messageTexts.length,
   };
-};
+}
 
 export async function uploadResult(body) {
   const headers = new Headers({
@@ -39,4 +39,4 @@ export async function uploadResult(body) {
     headers,
     body,
   });
-};
+}

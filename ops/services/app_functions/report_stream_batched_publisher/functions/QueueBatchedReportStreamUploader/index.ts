@@ -10,7 +10,7 @@ import {
   reportExceptions,
   deleteSuccessfullyParsedMessages,
 } from "../common/queueHandlers";
- import { ReportStreamResponse } from "../common/types";
+import { ReportStreamResponse } from "../common/types";
 
 const {
   REPORT_STREAM_URL,

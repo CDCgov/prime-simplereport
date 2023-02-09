@@ -78,7 +78,7 @@ export async function dequeueMessages(
     }
   }
   return messages;
-};
+}
 
 export async function minimumMessagesAvailable(
   context: Context,
@@ -100,7 +100,7 @@ export async function minimumMessagesAvailable(
     return false;
   }
   return true;
-};
+}
 
 export async function publishToQueue(
   queueClient: QueueClient,
@@ -204,7 +204,7 @@ const responsesFrom = function (
       testEventInternalId: id,
       isError,
       details: err.message,
-      queueName: queueName
+      queueName: queueName,
     }));
   } else {
     context.log(
