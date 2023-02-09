@@ -66,6 +66,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
                 {
                   <Button
                     label={"Select"}
+                    ariaLabel={`Select ${d.manufacturer} ${d.model}`}
                     onClick={() => {
                       setSelectedDevice(d);
                     }}
