@@ -34,6 +34,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationStatus;
@@ -80,6 +82,7 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.data.util.Pair;
 
 @Slf4j
@@ -87,6 +90,8 @@ public class FhirConverter {
   private FhirConverter() {
     throw new IllegalStateException("Utility class");
   }
+
+  private static final String simpleReportOrgId = "07640c5d-87cd-488b-9343-a226c5166539";
 
   public static HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(
@@ -541,7 +546,8 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
-  public static Bundle createFhirBundle(@NotNull TestEvent testEvent) {
+  public static Bundle createFhirBundle(
+      @NotNull TestEvent testEvent, GitProperties gitProperties, Instant instant) {
     return createFhirBundle(
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
@@ -555,7 +561,9 @@ public class FhirConverter {
             testEvent.getReasonForCorrection()),
         convertToServiceRequest(testEvent.getOrder()),
         convertToDiagnosticReport(testEvent),
-        testEvent.getDateTested());
+        testEvent.getDateTested(),
+        instant,
+        gitProperties);
   }
 
   public static Bundle createFhirBundle(
@@ -567,7 +575,9 @@ public class FhirConverter {
       List<Observation> observations,
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport,
-      Date dateTested) {
+      Date dateTested,
+      Instant instant,
+      GitProperties gitProperties) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
@@ -580,7 +590,8 @@ public class FhirConverter {
     var provenance = createProvenance(organizationFullUrl, dateTested);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
-        createMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
+        createMessageHeader(
+            organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl, gitProperties);
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
@@ -598,7 +609,6 @@ public class FhirConverter {
     entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
     entryList.add(Pair.of(provenanceFullUrl, provenance));
     entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
-
     entryList.add(Pair.of(patientFullUrl, patient));
     entryList.add(Pair.of(organizationFullUrl, organization));
     entryList.add(Pair.of(practitionerFullUrl, practitioner));
@@ -606,6 +616,10 @@ public class FhirConverter {
     entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
     entryList.add(Pair.of(deviceFullUrl, device));
     entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
+    entryList.add(
+        Pair.of(
+            ResourceType.Organization + "/" + simpleReportOrgId,
+            new Organization().setName("SimpleReport").setId(simpleReportOrgId)));
 
     observations.forEach(
         observation -> {
@@ -623,6 +637,7 @@ public class FhirConverter {
     var bundle =
         new Bundle()
             .setType(BundleType.MESSAGE)
+            .setTimestampElement(new InstantType(instant.toString()))
             .setIdentifier(new Identifier().setValue(diagnosticReport.getId()));
     entryList.forEach(
         pair ->
@@ -659,7 +674,10 @@ public class FhirConverter {
   }
 
   public static MessageHeader createMessageHeader(
-      String organizationUrl, String mainResourceUrl, String provenanceFullUrl) {
+      String organizationUrl,
+      String mainResourceUrl,
+      String provenanceFullUrl,
+      GitProperties gitProperties) {
     var messageHeader = new MessageHeader();
     messageHeader.setId(UUID.randomUUID().toString());
     messageHeader
@@ -678,6 +696,21 @@ public class FhirConverter {
     messageHeader.getSender().setReferenceElement(new StringType(organizationUrl));
     messageHeader.addFocus(new Reference(provenanceFullUrl));
     messageHeader.addFocus(new Reference(mainResourceUrl));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id")
+        .setValue(new StringType(gitProperties.getShortCommitId()));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date")
+        .setValue(new InstantType(gitProperties.getCommitTime().toString()));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org")
+        .setValue(new Reference(ResourceType.Organization + "/" + simpleReportOrgId));
     return messageHeader;
   }
 }

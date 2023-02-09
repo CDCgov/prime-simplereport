@@ -24,6 +24,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createProven
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -48,7 +50,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -79,15 +83,18 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.boot.info.GitProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
+@SpringBootTest
 class FhirConverterTest {
-
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
   private static final String ethnicitySystem = "http://terminology.hl7.org/CodeSystem/v2-0189";
@@ -96,6 +103,16 @@ class FhirConverterTest {
   public static final String snomedCode = "http://snomed.info/sct";
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
+
+  private static final Instant instant = (new Date(1675891986000L)).toInstant();
+  private static GitProperties gitProperties;
+
+  @BeforeAll
+  public static void init() {
+    gitProperties = mock(GitProperties.class);
+    when(gitProperties.getCommitTime()).thenReturn(instant);
+    when(gitProperties.getShortCommitId()).thenReturn("FRIDAY");
+  }
 
   @Test
   void convertToHumanName_String_allFields() {
@@ -925,7 +942,8 @@ class FhirConverterTest {
 
   @Test
   void createMessageHeader_valid() {
-    var messageHeader = createMessageHeader("Organization/org-id", "mainResource", "provenance");
+    var messageHeader =
+        createMessageHeader("Organization/org-id", "mainResource", "provenance", gitProperties);
 
     assertThat(messageHeader.getEventCoding().getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
@@ -938,6 +956,32 @@ class FhirConverterTest {
     assertThat(messageHeader.getFocus()).hasSize(2);
     assertThat(messageHeader.getFocus().stream().map(Reference::getReference))
         .contains("mainResource", "provenance");
+    assertThat(messageHeader.getSource().getExtension()).hasSize(3);
+    assertThat(
+            ((Reference)
+                    messageHeader
+                        .getSource()
+                        .getExtensionByUrl(
+                            "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org")
+                        .getValue())
+                .getReference())
+        .isEqualTo("Organization/07640c5d-87cd-488b-9343-a226c5166539");
+    assertThat(
+            messageHeader
+                .getSource()
+                .getExtensionByUrl(
+                    "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date")
+                .getValueAsPrimitive()
+                .getValue())
+        .isEqualTo(Date.from(instant.truncatedTo(ChronoUnit.MILLIS)));
+    assertThat(
+            messageHeader
+                .getSource()
+                .getExtensionByUrl(
+                    "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id")
+                .getValueAsPrimitive()
+                .getValueAsString())
+        .isEqualTo("FRIDAY");
   }
 
   @Test
@@ -974,6 +1018,7 @@ class FhirConverterTest {
     serviceRequest.setId(UUID.randomUUID().toString());
     diagnosticReport.setId(UUID.randomUUID().toString());
 
+    // todo: add buildproperties mock
     var actual =
         createFhirBundle(
             patient,
@@ -984,7 +1029,9 @@ class FhirConverterTest {
             List.of(observation),
             serviceRequest,
             diagnosticReport,
-            new Date());
+            new Date(),
+            instant,
+            gitProperties);
 
     var resourceUrls =
         actual.getEntry().stream()
@@ -993,9 +1040,9 @@ class FhirConverterTest {
 
     assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
     assertThat(actual.getIdentifier().getValue()).isEqualTo(diagnosticReport.getId());
-    assertThat(actual.getEntry()).hasSize(11);
+    assertThat(actual.getEntry()).hasSize(12);
     assertThat(resourceUrls)
-        .hasSize(11)
+        .hasSize(12)
         .contains(
             "Patient/" + patient.getId(),
             "Organization/" + organization.getId(),
@@ -1004,7 +1051,8 @@ class FhirConverterTest {
             "Observation/" + observation.getId(),
             "ServiceRequest/" + serviceRequest.getId(),
             "DiagnosticReport/" + diagnosticReport.getId(),
-            "Device/" + device.getId());
+            "Device/" + device.getId(),
+            "Organization/07640c5d-87cd-488b-9343-a226c5166539");
 
     var practitionerRoleEntry =
         actual.getEntry().stream()
@@ -1172,7 +1220,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
-    var actual = createFhirBundle(testEvent);
+    var actual = createFhirBundle(testEvent, gitProperties, instant);
 
     String actualSerialized = parser.encodeResourceToString(actual);
 
