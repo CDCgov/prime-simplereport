@@ -4471,3 +4471,67 @@ databaseChangeLog:
               - column:
                   name: latest_recorded_timestamp
                   descending: true
+  - changeSet:
+      id: add-queuename-column-report-stream-response
+      author: tsv7@cdc.gov
+      comment: Add column queue name to report stream response table to differentiate the origin of the exception
+      changes:
+        - tagDatabase:
+            tag: add-queuename-column-report-stream-response
+        - addColumn:
+            tableName: report_stream_response
+            columns:
+              - column:
+                  name: queue_name
+                  type: text
+                  remarks: Tracks the individual's preference for receiving test results
+      rollback:
+        - dropColumn:
+            tableName: report_stream_response
+            columns:
+              - column:
+                  name: queue_name
+  - changeSet:
+      id: add-equipment_uid-testkit_name_id-to-device_test_performed_loinc_code
+      author: zedd@skylight.digital
+      comment: Add equipment_uid and testkit_name_id columns to device_test_performed_loinc_code table
+      changes:
+        - tagDatabase:
+            tag: add-equipment_uid-testkit_name_id-to-device_test_performed_loinc_code
+        - addColumn:
+            tableName: device_test_performed_loinc_code
+            columns:
+              - column:
+                  name: equipment_uid
+                  type: text
+                  remarks: represents the data from "Equipment UID" column in the LIVD
+              - column:
+                  name: testkit_name_id
+                  type: text
+                  remarks: represents the data from "Testkit Name ID" column in the LIVD
+  - changeSet:
+      id: remove-equipment_uid-testkit_name_id-from-device_type
+      author: zedd@skylight.digital
+      comment: remove equipment_uid and testkit_name_id columns from device_type table
+      changes:
+        - tagDatabase:
+            tag: remove-equipment_uid-testkit_name_id-from-device_type
+        - dropColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: equipment_uid
+              - column:
+                  name: testkit_name_id
+      rollback:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: equipment_uid
+                  type: text
+                  remarks: represents the data from "Equipment UID" column in the LIVD
+              - column:
+                  name: testkit_name_id
+                  type: text
+                  remarks: represents the data from "Testkit Name ID" column in the LIVD

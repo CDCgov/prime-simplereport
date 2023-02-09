@@ -1,6 +1,313 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`getBody adds mailto anchor tag if there is support@simplereport.gov email in the body 1`] = `
+exports[`getBody adds link to contact us page if there is 'SimpleReport support' and mailto link if there is 'support@simplerport.gov' in the body 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <span>
+        A user with this email already exists in our system. Please contact
+        <span>
+           
+          <a
+            href="https://www.simplereport.gov/contact-us"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            SimpleReport
+             
+            support
+          </a>
+           
+        </span>
+        or
+        <span>
+           
+          <a
+            href="mailto:support@simplereport.gov"
+          >
+            support@simplereport.gov.
+          </a>
+           
+        </span>
+      </span>
+    </div>
+  </body>,
+  "container": <div>
+    <span>
+      A user with this email already exists in our system. Please contact
+      <span>
+         
+        <a
+          href="https://www.simplereport.gov/contact-us"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          SimpleReport
+           
+          support
+        </a>
+         
+      </span>
+      or
+      <span>
+         
+        <a
+          href="mailto:support@simplereport.gov"
+        >
+          support@simplereport.gov.
+        </a>
+         
+      </span>
+    </span>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`getBody adds link to contact us page if there is 'SimpleReport support' in the body 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <span>
+        Contact
+        <span>
+           
+          <a
+            href="https://www.simplereport.gov/contact-us"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            SimpleReport
+             
+            support
+          </a>
+           
+        </span>
+      </span>
+    </div>
+  </body>,
+  "container": <div>
+    <span>
+      Contact
+      <span>
+         
+        <a
+          href="https://www.simplereport.gov/contact-us"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          SimpleReport
+           
+          support
+        </a>
+         
+      </span>
+    </span>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`getBody adds link to contact us page if there is 'SimpleReport support' in the body 2`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <span>
+        A user with this email already exists in our system. Please contact
+        <span>
+           
+          <a
+            href="https://www.simplereport.gov/contact-us"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            SimpleReport
+             
+            support
+          </a>
+           
+        </span>
+        for help.
+      </span>
+    </div>
+  </body>,
+  "container": <div>
+    <span>
+      A user with this email already exists in our system. Please contact
+      <span>
+         
+        <a
+          href="https://www.simplereport.gov/contact-us"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          SimpleReport
+           
+          support
+        </a>
+         
+      </span>
+      for help.
+    </span>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
+
+exports[`getBody adds mailto link if there is 'support@simplereport.gov' in the body 1`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -89,7 +396,7 @@ Object {
 }
 `;
 
-exports[`getBody adds mailto anchor tag if there is support@simplereport.gov email in the body 2`] = `
+exports[`getBody adds mailto link if there is 'support@simplereport.gov' in the body 2`] = `
 Object {
   "asFragment": [Function],
   "baseElement": <body>
@@ -103,6 +410,7 @@ Object {
           >
             support@simplereport.gov
           </a>
+           
         </span>
       </span>
     </div>
@@ -117,6 +425,7 @@ Object {
         >
           support@simplereport.gov
         </a>
+         
       </span>
     </span>
   </div>,
