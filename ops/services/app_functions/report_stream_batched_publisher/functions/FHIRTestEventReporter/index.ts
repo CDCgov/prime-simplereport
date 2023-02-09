@@ -56,27 +56,27 @@ const FHIRTestEventReporter: AzureFunction = async function (
   });
 
 
-  const fhirBundles:FHIRTestEventsBundle[] = processTestEvents(messages, BUNDLE_SIZE_LIMIT);
+  const fhirBundles: FHIRTestEventsBundle[] = processTestEvents(messages, BUNDLE_SIZE_LIMIT);
 
   context.log(
       `Queue: ${publishingQueue.name}. Processing ${fhirBundles.length} bundles;`
   );
 
-  // this needs refactoring
-  const promisesToPublishBundles = fhirBundles.map((bundle: FHIRTestEventsBundle, idx:number)=> {
+  const fhirPublishingTasks: Promise<void>[] = fhirBundles.map((bundle: FHIRTestEventsBundle, idx: number) => {
+    // returns a publishing task
     return new Promise<void>(resolve => {
       (async () => {
-
-        if (bundle.parseFailureCount > 0) {
-          telemetry.trackEvent({
-            name: `Queue:${publishingQueue.name}. Test Event Parse Failure`,
-            properties: {
-              count: bundle.parseFailureCount,
-              parseFailures: Object.keys(bundle.parseFailure),
-            },
-            tagOverrides,
-          });
-      }
+        try {
+          if (bundle.parseFailureCount > 0) {
+            telemetry.trackEvent({
+              name: `Queue:${publishingQueue.name}. Test Event Parse Failure`,
+              properties: {
+                count: bundle.parseFailureCount,
+                parseFailures: Object.keys(bundle.parseFailure),
+              },
+              tagOverrides,
+            });
+          }
 
       if (bundle.parseSuccessCount < 1) {
         context.log(
@@ -87,7 +87,7 @@ const FHIRTestEventReporter: AzureFunction = async function (
       }
 
       context.log(
-          `Queue: ${publishingQueue.name}. Starting upload of ${bundle.parseSuccessCount} records in bundle ${idx} to ReportStream`
+          `Queue: ${publishingQueue.name}. Starting upload of ${bundle.parseSuccessCount} records in bundle ${idx + 1} to ReportStream`
       );
 
       const postResult: Response = await reportToUniversalPipeline(bundle.testEventsNDJSON);
@@ -107,22 +107,30 @@ const FHIRTestEventReporter: AzureFunction = async function (
         tagOverrides,
       });
 
-        await handleReportStreamResponse(
-            postResult,
-            context,
-            messages,
-            bundle.parseFailure,
-            publishingQueue,
-            exceptionQueue,
-            publishingErrorQueue
-        );
-
+          await handleReportStreamResponse(
+              postResult,
+              context,
+              messages,
+              bundle.parseFailure,
+              publishingQueue,
+              exceptionQueue,
+              publishingErrorQueue
+          );
+        } catch (e) {
+          context.log(
+              `Queue: ${publishingQueue.name}. Publishing tasks for bundle ${idx + 1} failed unexpectedly; ${e}`
+          );
+        }
         return resolve();
       })()
     });
   });
 
-  await Promise.allSettled(promisesToPublishBundles).then();
+  await Promise.allSettled(fhirPublishingTasks);
+
+  context.log(
+      `Queue: ${publishingQueue.name}. All ${fhirBundles.length} bundle(s) published;`
+  );
 };
 
 export default FHIRTestEventReporter;
