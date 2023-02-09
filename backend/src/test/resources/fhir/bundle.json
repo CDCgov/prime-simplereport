@@ -320,12 +320,14 @@
         "resourceType":"Observation",
         "id":"6db25889-09cb-4127-9330-cc7e7459c1cd",
         "status":"final",
-        "code":{
-          "coding":[
+        "code": {
+          "coding": [
             {
-              "system":"http://loinc.org"
+              "system": "http://loinc.org",
+              "code": "444-456"
             }
-          ]
+          ],
+          "text": "FLU B"
         },
         "subject":{
           "reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
@@ -358,12 +360,14 @@
         "resourceType":"Observation",
         "id":"4163abc1-0a54-4aff-badb-87bb96a89470",
         "status":"final",
-        "code":{
-          "coding":[
+        "code": {
+          "coding": [
             {
-              "system":"http://loinc.org"
+              "system": "http://loinc.org",
+              "code": "333-123"
             }
-          ]
+          ],
+          "text": "COVID-19"
         },
         "subject":{
           "reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
@@ -396,12 +400,14 @@
         "resourceType":"Observation",
         "id":"f7184a68-c54e-4209-8cc6-5bf5b253e4bd",
         "status":"final",
-        "code":{
-          "coding":[
+        "code": {
+          "coding": [
             {
-              "system":"http://loinc.org"
+              "system": "http://loinc.org",
+              "code": "444-123"
             }
-          ]
+          ],
+          "text": "FLU A"
         },
         "subject":{
           "reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
