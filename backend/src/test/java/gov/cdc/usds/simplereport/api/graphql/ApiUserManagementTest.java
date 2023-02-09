@@ -469,7 +469,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         "add-user-to-current-org",
         "addUserToCurrentOrgNovel",
         variables,
-        "A user with this email address already exists.");
+        "A user with this email already exists in our system. Please contact SimpleReport support for help.");
   }
 
   @Test
