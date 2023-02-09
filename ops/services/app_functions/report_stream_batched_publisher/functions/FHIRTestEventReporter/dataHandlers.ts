@@ -1,6 +1,6 @@
 import { DequeuedMessageItem } from "@azure/storage-queue";
 
-export type FHIRTestEventsBundle = {
+export type FHIRTestEventsBatch = {
   messages: DequeuedMessageItem[];
   testEventsNDJSON: string;
   parseFailure: Record<string, boolean>;
@@ -8,7 +8,7 @@ export type FHIRTestEventsBundle = {
   parseSuccessCount: number;
 };
 
-function createNewBundle(): FHIRTestEventsBundle {
+function createNewBatch(): FHIRTestEventsBatch {
   return {
     messages: [],
     testEventsNDJSON: "",
@@ -21,15 +21,15 @@ function createNewBundle(): FHIRTestEventsBundle {
 export function processTestEvents(
   messages: DequeuedMessageItem[],
   bundleSizeLimit: number
-): FHIRTestEventsBundle[] {
-  const bundles: FHIRTestEventsBundle[] = [];
+): FHIRTestEventsBatch[] {
+  const bundles: FHIRTestEventsBatch[] = [];
   const delimiterSize = Buffer.byteLength("\n");
 
   if (messages.length <= 0) {
     return bundles;
   }
 
-  let currentBundle = createNewBundle();
+  let currentBundle = createNewBatch();
   let bundleSize = 0;
 
   messages.forEach((message: DequeuedMessageItem) => {
@@ -44,7 +44,7 @@ export function processTestEvents(
 
       // push full bundle and create new bundle
       bundles.push(currentBundle);
-      currentBundle = createNewBundle();
+      currentBundle = createNewBatch();
       bundleSize = 0;
     }
 

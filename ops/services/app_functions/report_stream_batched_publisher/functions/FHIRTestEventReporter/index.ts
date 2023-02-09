@@ -8,7 +8,7 @@ import {
   getQueueClient,
   minimumMessagesAvailable,
 } from "../common/queueHandlers";
-import { FHIRTestEventsBundle, processTestEvents } from "./dataHandlers";
+import { FHIRTestEventsBatch, processTestEvents } from "./dataHandlers";
 import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
@@ -21,7 +21,7 @@ const {
   REPORTING_EXCEPTION_QUEUE_NAME,
 } = ENV;
 
-const BUNDLE_SIZE_LIMIT = 99050000; // HTTP request size limit is 100MB so bundle limit is set to 99.5MB
+const FHIR_BATCH_SIZE_LIMIT = 99050000; // HTTP request size limit is 100MB so batch limit is set to 99.5MB
 
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
@@ -55,39 +55,39 @@ const FHIRTestEventReporter: AzureFunction = async function (
     tagOverrides,
   });
 
-  const fhirBundles: FHIRTestEventsBundle[] = processTestEvents(
+  const fhirTestEventsBatches: FHIRTestEventsBatch[] = processTestEvents(
     messages,
-    BUNDLE_SIZE_LIMIT
+    FHIR_BATCH_SIZE_LIMIT
   );
 
   context.log(
-    `Queue: ${publishingQueue.name}. Processing ${fhirBundles.length} bundles;`
+    `Queue: ${publishingQueue.name}. Processing ${fhirTestEventsBatches.length} batch(s);`
   );
 
-  const fhirPublishingTasks: Promise<void>[] = fhirBundles.map(
-    (bundle: FHIRTestEventsBundle, idx: number) => {
+  const fhirPublishingTasks: Promise<void>[] = fhirTestEventsBatches.map(
+    (testEventBatch: FHIRTestEventsBatch, idx: number) => {
       // creates and returns a publishing task
       return new Promise<void>((resolve) => {
         (async () => {
           try {
-            if (bundle.parseFailureCount > 0) {
+            if (testEventBatch.parseFailureCount > 0) {
               telemetry.trackEvent({
                 name: `Queue:${publishingQueue.name}. Test Event Parse Failure`,
                 properties: {
-                  count: bundle.parseFailureCount,
-                  parseFailures: Object.keys(bundle.parseFailure),
+                  count: testEventBatch.parseFailureCount,
+                  parseFailures: Object.keys(testEventBatch.parseFailure),
                 },
                 tagOverrides,
               });
             }
 
-            if (bundle.parseSuccessCount < 1) {
+            if (testEventBatch.parseSuccessCount < 1) {
               context.log(
                 `Queue: ${
                   publishingQueue.name
                 }. Successfully parsed message count of ${
-                  bundle.parseSuccessCount
-                } in bundle ${idx + 1} is less than 1; aborting`
+                  testEventBatch.parseSuccessCount
+                } in batch ${idx + 1} is less than 1; aborting`
               );
 
               return resolve();
@@ -95,12 +95,12 @@ const FHIRTestEventReporter: AzureFunction = async function (
 
             context.log(
               `Queue: ${publishingQueue.name}. Starting upload of ${
-                bundle.parseSuccessCount
-              } records in bundle ${idx + 1} to ReportStream`
+                testEventBatch.parseSuccessCount
+              } records in batch ${idx + 1} to ReportStream`
             );
 
             const postResult: Response = await reportToUniversalPipeline(
-              bundle.testEventsNDJSON
+              testEventBatch.testEventsNDJSON
             );
 
             const uploadStart = new Date().getTime();
@@ -109,7 +109,7 @@ const FHIRTestEventReporter: AzureFunction = async function (
               name: "ReportStream",
               data: REPORT_STREAM_URL,
               properties: {
-                recordCount: bundle.parseSuccessCount,
+                recordCount: testEventBatch.parseSuccessCount,
                 queue: publishingQueue.name,
               },
               duration: new Date().getTime() - uploadStart,
@@ -122,14 +122,14 @@ const FHIRTestEventReporter: AzureFunction = async function (
               postResult,
               context,
               messages,
-              bundle.parseFailure,
+              testEventBatch.parseFailure,
               publishingQueue,
               exceptionQueue,
               publishingErrorQueue
             );
           } catch (e) {
             context.log(
-              `Queue: ${publishingQueue.name}. Publishing tasks for bundle ${
+              `Queue: ${publishingQueue.name}. Publishing tasks for batch ${
                 idx + 1
               } failed unexpectedly; ${e}`
             );
@@ -144,7 +144,7 @@ const FHIRTestEventReporter: AzureFunction = async function (
   await Promise.allSettled(fhirPublishingTasks);
 
   context.log(
-    `Queue: ${publishingQueue.name}. All ${fhirBundles.length} bundle(s) published;`
+    `Queue: ${publishingQueue.name}. All ${fhirTestEventsBatches.length} batch(es) published;`
   );
 };
 

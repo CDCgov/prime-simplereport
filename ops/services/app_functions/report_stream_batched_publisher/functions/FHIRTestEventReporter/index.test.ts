@@ -5,7 +5,7 @@ import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
 import * as reportingHandlers from "../common/reportingHandlers";
 import FHIRTestEventReporter from "./index";
-import { FHIRTestEventsBundle } from "./dataHandlers";
+import { FHIRTestEventsBatch } from "./dataHandlers";
 import { ReportStreamResponse } from "../common/types";
 
 jest.mock("../config", () => ({
@@ -101,7 +101,7 @@ describe("FHIRTestEventReporter", () => {
   });
 
   it("parses and uploads the test events successfully", async () => {
-    const fhirBundles: FHIRTestEventsBundle[] = [
+    const fhirTestEventsBatches: FHIRTestEventsBatch[] = [
       {
         messages: [
           {
@@ -116,7 +116,7 @@ describe("FHIRTestEventReporter", () => {
       },
     ];
 
-    processTestEventsSpy.mockReturnValueOnce(fhirBundles);
+    processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
@@ -134,7 +134,7 @@ describe("FHIRTestEventReporter", () => {
   });
 
   it("receives failed parsed events after processing them", async () => {
-    const fhirBundles: FHIRTestEventsBundle[] = [
+    const fhirTestEventsBatches: FHIRTestEventsBatch[] = [
       {
         messages: [
           {
@@ -149,14 +149,14 @@ describe("FHIRTestEventReporter", () => {
       },
     ];
 
-    processTestEventsSpy.mockReturnValueOnce(fhirBundles);
+    processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
 
     expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
     expect(context.log).toHaveBeenCalledWith(
-      "Queue: ciao. Successfully parsed message count of 0 in bundle 1 is less than 1; aborting"
+      "Queue: ciao. Successfully parsed message count of 0 in batch 1 is less than 1; aborting"
     );
   });
 });

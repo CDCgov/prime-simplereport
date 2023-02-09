@@ -149,7 +149,9 @@ export async function deleteSuccessfullyParsedMessages(
       const message = validMessages[i];
       if (promise.status == "fulfilled") {
         const deleteResponse = promise.value;
-        const testEventId = JSON.parse(message.messageText)["Result_ID"];
+        const testEventId =
+          JSON.parse(message.messageText)["Result_ID"] ||
+          getTestEventIdFromFHIRBundle(JSON.parse(message.messageText));
         context.log(
           `Queue: ${queueClient.name}. Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
         );
@@ -215,3 +217,10 @@ const responsesFrom = function (
     return [];
   }
 };
+export function getTestEventIdFromFHIRBundle( // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fhirBundle: Record<any, any>
+): string | undefined {
+  return fhirBundle?.entry?.filter((entry) => {
+    return entry.resource?.resourceType === "DiagnosticReport";
+  })?.[0]?.resource.id;
+}

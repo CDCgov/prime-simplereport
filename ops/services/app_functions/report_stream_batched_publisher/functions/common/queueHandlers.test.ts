@@ -2,6 +2,7 @@ import {
   deleteSuccessfullyParsedMessages,
   dequeueMessages,
   getQueueClient,
+  getTestEventIdFromFHIRBundle,
   minimumMessagesAvailable,
   reportExceptions,
 } from "./queueHandlers";
@@ -440,6 +441,37 @@ describe("Queue Handlers", () => {
           Buffer.from(em).toString("base64")
         );
       });
+    });
+  });
+
+  describe("getTestEventIdFromFHIRBundle", () => {
+    it("returns undefined when no bundle is passed", () => {
+      expect(getTestEventIdFromFHIRBundle(undefined)).toBeUndefined();
+    });
+
+    it("returns undefined when invalid bundle is passed", () => {
+      expect(getTestEventIdFromFHIRBundle({ not: "fhir" })).toBeUndefined();
+    });
+
+    it("returns undefined when bundle does not contain test id", () => {
+      expect(
+        getTestEventIdFromFHIRBundle({
+          entry: [
+            { resource: { resourceType: "not_DiagnosticReport", id: "123" } },
+            { resource: { resourceType: "DiagnosticReport" } },
+          ],
+        })
+      ).toBeUndefined();
+    });
+
+    it("returns correct test id", () => {
+      expect(
+        getTestEventIdFromFHIRBundle({
+          entry: [
+            { resource: { resourceType: "DiagnosticReport", id: "123" } },
+          ],
+        })
+      ).toEqual("123");
     });
   });
 });
