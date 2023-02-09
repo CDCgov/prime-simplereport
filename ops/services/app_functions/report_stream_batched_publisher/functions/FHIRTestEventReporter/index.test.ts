@@ -156,7 +156,7 @@ describe("FHIRTestEventReporter", () => {
 
     expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
     expect(context.log).toHaveBeenCalledWith(
-      "Queue: ciao. Successfully parsed message count of 0 in bundle 0 is less than 1; aborting"
+      "Queue: ciao. Successfully parsed message count of 0 in bundle 1 is less than 1; aborting"
     );
   });
 });

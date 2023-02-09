@@ -83,7 +83,11 @@ const FHIRTestEventReporter: AzureFunction = async function (
 
             if (bundle.parseSuccessCount < 1) {
               context.log(
-                `Queue: ${publishingQueue.name}. Successfully parsed message count of ${bundle.parseSuccessCount} in bundle ${idx} is less than 1; aborting`
+                `Queue: ${
+                  publishingQueue.name
+                }. Successfully parsed message count of ${
+                  bundle.parseSuccessCount
+                } in bundle ${idx + 1} is less than 1; aborting`
               );
 
               return resolve();
