@@ -124,6 +124,11 @@
       "resource":{
         "resourceType":"Patient",
         "id":"55c53ed2-add5-47fb-884e-b4542ee64589",
+        "identifier": [
+          {
+            "value": "55c53ed2-add5-47fb-884e-b4542ee64589"
+          }
+        ],
         "extension":[
           {
             "url":"http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",

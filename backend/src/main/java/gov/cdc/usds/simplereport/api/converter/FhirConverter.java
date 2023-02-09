@@ -309,6 +309,7 @@ public class FhirConverter {
   public static Patient convertToPatient(Person person) {
     var patient = new Patient();
     patient.setId(person.getInternalId().toString());
+    patient.addIdentifier().setValue(person.getInternalId().toString());
     patient.addName(convertToHumanName(person.getNameInfo()));
     convertPhoneNumbersToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
     convertEmailsToContactPoint(ContactPointUse.HOME, person.getEmails())
