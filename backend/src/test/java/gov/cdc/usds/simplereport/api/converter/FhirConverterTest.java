@@ -349,7 +349,7 @@ class FhirConverterTest {
   @Test
   void convertToTribalAffiliation_List_empty() {
     var actual = convertToTribalAffiliationExtension(Collections.emptyList());
-    assertThat(actual).isEmpty();
+    assertThat(actual).isNull();
   }
 
   @Test

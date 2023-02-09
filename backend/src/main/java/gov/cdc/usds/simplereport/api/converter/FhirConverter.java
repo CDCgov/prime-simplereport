@@ -34,6 +34,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import io.jsonwebtoken.lang.Collections;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -41,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -267,12 +267,10 @@ public class FhirConverter {
     return null;
   }
 
-  public static Optional<Extension> convertToTribalAffiliationExtension(
-      List<String> tribalAffiliations) {
-    if (tribalAffiliations != null && !tribalAffiliations.isEmpty()) {
-      return Optional.of(convertToTribalAffiliationExtension(tribalAffiliations.get(0)));
-    }
-    return Optional.empty();
+  public static Extension convertToTribalAffiliationExtension(List<String> tribalAffiliations) {
+    return Collections.isEmpty(tribalAffiliations)
+        ? null
+        : convertToTribalAffiliationExtension(tribalAffiliations.get(0));
   }
 
   public static Extension convertToTribalAffiliationExtension(@NotNull String tribalAffiliation) {
@@ -322,8 +320,7 @@ public class FhirConverter {
     patient.addAddress(convertToAddress(person.getAddress(), person.getCountry()));
     patient.addExtension(convertToRaceExtension(person.getRace()));
     patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
-    patient.addExtension(
-        convertToTribalAffiliationExtension(person.getTribalAffiliation()).orElse(null));
+    patient.addExtension(convertToTribalAffiliationExtension(person.getTribalAffiliation()));
     return patient;
   }
 
