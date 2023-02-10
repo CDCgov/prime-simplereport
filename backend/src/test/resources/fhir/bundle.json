@@ -230,6 +230,13 @@
       "resource":{
         "resourceType":"Practitioner",
         "id":"ffc07f31-f2af-4728-a247-8cb3aa05ccd0",
+        "identifier": [
+          {
+            "use": "official",
+            "value": "1234567890",
+            "system": "http://hl7.org/fhir/sid/us-npi"
+          }
+        ],
         "name":[
           {
             "family":"Quinn",

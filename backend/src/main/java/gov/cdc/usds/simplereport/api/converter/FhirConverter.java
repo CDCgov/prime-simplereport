@@ -7,6 +7,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_C
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NPI_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
@@ -64,6 +65,7 @@ import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.Observation;
@@ -291,6 +293,11 @@ public class FhirConverter {
   public static Practitioner convertToPractitioner(Provider provider) {
     var practitioner = new Practitioner();
     practitioner.setId(provider.getInternalId().toString());
+    practitioner
+        .addIdentifier()
+        .setUse(IdentifierUse.OFFICIAL)
+        .setValue(provider.getProviderId())
+        .setSystem(NPI_SYSTEM);
     practitioner.addName(convertToHumanName(provider.getNameInfo()));
     practitioner.addAddress(convertToAddress(provider.getAddress(), DEFAULT_COUNTRY));
     practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, provider.getTelephone()));

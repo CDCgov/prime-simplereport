@@ -358,7 +358,7 @@ class FhirConverterTest {
     var provider =
         new Provider(
             new PersonName("Amelia", "Mary", "Earhart", null),
-            null,
+            "1234567890",
             new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
             "248 555 1234");
     ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
@@ -1152,7 +1152,8 @@ class FhirConverterTest {
     var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
     var specimenType = new SpecimenType("name", "typeCode");
     var provider =
-        new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
+        new Provider(
+            new PersonName("Michaela", null, "Quinn", ""), "1234567890", address, "7735551235");
     var organization = new Organization("District", "school", "1", true);
     var facility =
         new Facility(

@@ -1,6 +1,13 @@
 {
   "resourceType" : "Practitioner",
   "id": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29",
+  "identifier": [
+    {
+      "use": "official",
+      "value": "1234567890",
+      "system": "http://hl7.org/fhir/sid/us-npi"
+    }
+  ],
   "name" : [ {
     "family" : "Earhart",
     "given" : [ "Amelia", "Mary" ]
