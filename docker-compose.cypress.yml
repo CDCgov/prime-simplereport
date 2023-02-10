@@ -57,6 +57,10 @@ services:
     command: ["./ci-git-fix.sh"]
   nginx:
     hostname: localhost.simplereport.gov
+    environment:
+      NGINX_ENTRYPOINT_QUIET_LOGS: 1
   mailhog:
     profiles:
       - donotstart
+  db:
+    command: -p ${SR_DB_PORT:-5432} -c shared_buffers=512MB -c max_connections=500

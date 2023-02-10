@@ -143,6 +143,12 @@ public class TestDataBuilder {
     return new TestOrder(createPerson(), createFacility());
   }
 
+  public static TestOrder createTestOrderWithDevice() {
+    var testOrder = new TestOrder(createPerson(), createFacility());
+    testOrder.setDeviceTypeAndSpecimenType(createDeviceType(), createSpecimenType());
+    return testOrder;
+  }
+
   public static SupportedDisease createCovidSupportedDisease() {
     return new SupportedDisease("COVID-19", "96741-4");
   }

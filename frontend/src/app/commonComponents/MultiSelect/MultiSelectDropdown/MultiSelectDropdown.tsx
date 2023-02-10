@@ -276,6 +276,7 @@ export const MultiSelectDropdown = ({
         focused={state.focusMode === FocusMode.Input}
         role="combobox"
         aria-label={placeholder}
+        aria-labelledby={`label-for-${id}`}
         aria-owns={listID}
         aria-expanded={state.isOpen}
         aria-invalid={ariaInvalid}

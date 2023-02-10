@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
@@ -38,7 +40,7 @@ public class DeviceTypeService {
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
 
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public void removeDeviceType(DeviceType d) {
     deviceTypeRepository.delete(d);
@@ -58,7 +60,7 @@ public class DeviceTypeService {
     return deviceTypeRepository.findDeviceTypeByName(name);
   }
 
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(UpdateDeviceType updateDevice) {
 
@@ -113,7 +115,17 @@ public class DeviceTypeService {
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
       deviceSpecimenTypeRepository.saveAll(toBeAddedDeviceSpecimenTypes);
     }
-    if (updateDevice.getSupportedDiseases() != null) {
+    if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
+      var deviceTestPerformedLoincCodeList =
+          createDeviceTestPerformedLoincCodeList(
+              updateDevice.getSupportedDiseaseTestPerformed(), device);
+      device.setSupportedDiseases(
+          deviceTestPerformedLoincCodeList.stream()
+              .map(DeviceTestPerformedLoincCode::getSupportedDisease)
+              .collect(Collectors.toList()));
+      device.getSupportedDiseaseTestPerformed().clear();
+      device.getSupportedDiseaseTestPerformed().addAll(deviceTestPerformedLoincCodeList);
+    } else if (updateDevice.getSupportedDiseases() != null) {
       List<SupportedDisease> supportedDiseases =
           updateDevice.getSupportedDiseases().stream()
               .map(supportedDiseaseRepository::findById)
@@ -125,7 +137,7 @@ public class DeviceTypeService {
     return deviceTypeRepository.save(device);
   }
 
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType createDeviceType(CreateDeviceType createDevice) {
 
@@ -141,13 +153,6 @@ public class DeviceTypeService {
           }
         });
 
-    List<SupportedDisease> supportedDiseases =
-        createDevice.getSupportedDiseases().stream()
-            .map(supportedDiseaseRepository::findById)
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
-
     DeviceType dt =
         deviceTypeRepository.save(
             new DeviceType(
@@ -162,7 +167,24 @@ public class DeviceTypeService {
         .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
         .forEach(deviceSpecimenTypeRepository::save);
 
-    dt.setSupportedDiseases(supportedDiseases);
+    if (createDevice.getSupportedDiseaseTestPerformed() != null) {
+      var deviceTestPerformedLoincCodeList =
+          createDeviceTestPerformedLoincCodeList(
+              createDevice.getSupportedDiseaseTestPerformed(), dt);
+      dt.setSupportedDiseases(
+          deviceTestPerformedLoincCodeList.stream()
+              .map(DeviceTestPerformedLoincCode::getSupportedDisease)
+              .collect(Collectors.toList()));
+      dt.getSupportedDiseaseTestPerformed().addAll(deviceTestPerformedLoincCodeList);
+    } else {
+      List<SupportedDisease> supportedDiseases =
+          createDevice.getSupportedDiseases().stream()
+              .map(supportedDiseaseRepository::findById)
+              .filter(Optional::isPresent)
+              .map(Optional::get)
+              .collect(Collectors.toList());
+      dt.setSupportedDiseases(supportedDiseases);
+    }
     deviceTypeRepository.save(dt);
 
     return dt;
@@ -190,41 +212,57 @@ public class DeviceTypeService {
     // Dedupe device list selecting first one
     var seen = new HashSet<>();
     var devicesToSync =
-        devices.stream()
-            .filter(d -> seen.add(String.join(d.getManufacturer(), d.getManufacturer(), " ")))
-            .collect(Collectors.toList());
+            devices.stream()
+                    .filter(d -> seen.add(String.join(d.getManufacturer(), d.getManufacturer(), " ")))
+                    .collect(Collectors.toList());
 
     devicesToSync.forEach(
-        device -> {
-          // extract the specimen types from vendorSpecimenDescription
-          List<Optional<SpecimenType>> specimens =
-              device.getVendorSpecimenDescription().stream()
-                  .map(
-                      specimen ->
-                              // if the specimen is deleted in our DB but included in the response - what do?
-                          specimenTypeRepository.findByTypeCodeAndIsDeletedFalse(
-                                  // what if the code can't be extracted?
-                              extractSpecimenTypeCode(specimen))
-                      // TODO:
-                      // create new specimen types if they don't exist
-                      //     - won't have collection_location_name or code - not required per DB but
-                      // check on this
-                      )
-                  .collect(Collectors.toList());
+            device -> {
+              // extract the specimen types from vendorSpecimenDescription
+              List<Optional<SpecimenType>> specimens =
+                      device.getVendorSpecimenDescription().stream()
+                              .map(
+                                      specimen ->
+                                              // if the specimen is deleted in our DB but included in the response - what do?
+                                              specimenTypeRepository.findByTypeCodeAndIsDeletedFalse(
+                                                      // what if the code can't be extracted?
+                                                      extractSpecimenTypeCode(specimen))
+                                      // TODO:
+                                      // create new specimen types if they don't exist
+                                      //     - won't have collection_location_name or code - not required per DB but
+                                      // check on this
+                              )
+                              .collect(Collectors.toList());
 
-          // DON'T remove specimen types on db <-> RS mismatch
+              // DON'T remove specimen types on db <-> RS mismatch
 
-          // unique constraint on (manufacturer, model)
-          //   - are we sure?
-          // apply all to devices
+              // unique constraint on (manufacturer, model)
+              //   - are we sure?
+              // apply all to devices
 
-          // if the device already exists:
-          //    - do nothing(?) with the device but check the specimen types
-          // if the device doesn't exist:
-          //    - new CreateDeviceType from the LIVD response
-          //    - write
-          //    - name?
-        });
+              // if the device already exists:
+              //    - do nothing(?) with the device but check the specimen types
+              // if the device doesn't exist:
+              //    - new CreateDeviceType from the LIVD response
+              //    - write
+              //    - name?
+            });
     return devicesToSync;
+  }
+
+  private ArrayList<DeviceTestPerformedLoincCode> createDeviceTestPerformedLoincCodeList(
+      List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
+      DeviceType device) {
+    var deviceTestPerformedLoincCodeList = new ArrayList<DeviceTestPerformedLoincCode>();
+    supportedDiseaseTestPerformedInput.forEach(
+        input -> {
+          var supportedDisease = supportedDiseaseRepository.findById(input.getSupportedDisease());
+          supportedDisease.ifPresent(
+              disease ->
+                  deviceTestPerformedLoincCodeList.add(
+                      new DeviceTestPerformedLoincCode(
+                          device.getInternalId(), disease, input.getTestPerformedLoincCode())));
+        });
+    return deviceTestPerformedLoincCodeList;
   }
 }
