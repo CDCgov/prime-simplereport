@@ -43,9 +43,9 @@ const TermsOfService: React.FunctionComponent<Props> = ({
       )}
     >
       <form className="grid-container maxw-tablet usa-prose">
-        <h1 className="font-heading-lg margin-top-3">
+        <h2 className="font-heading-lg margin-top-3">
           {t("testResult.tos.header")}
-        </h1>
+        </h2>
         <Trans
           t={t}
           parent="p"
