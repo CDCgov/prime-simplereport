@@ -42,6 +42,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
 
   @Mock private DeviceTypeRepository _deviceTypeRepoMock;
+  @Mock private DataHubClient dataHubMock;
 
   private DeviceTypeService deviceTypeServiceWithMock;
 
@@ -50,6 +51,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     this.deviceTypeServiceWithMock =
         new DeviceTypeService(
             _deviceTypeRepoMock,
+            // dataHubMock,
+            mock(DataHubClient.class),
             mock(DeviceSpecimenTypeRepository.class),
             mock(SpecimenTypeRepository.class),
             mock(SupportedDiseaseRepository.class));

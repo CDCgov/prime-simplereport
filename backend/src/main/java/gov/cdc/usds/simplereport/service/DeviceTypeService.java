@@ -12,10 +12,10 @@ import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import gov.cdc.usds.simplereport.service.model.reportstream.LIVDResponse;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,6 +33,7 @@ public class DeviceTypeService {
   public static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
   private final DeviceTypeRepository deviceTypeRepository;
+  private final DataHubClient client;
   private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
@@ -165,5 +166,65 @@ public class DeviceTypeService {
     deviceTypeRepository.save(dt);
 
     return dt;
+  }
+
+  public String extractSpecimenTypeCode(String specimenDescription) {
+    Pattern pattern = Pattern.compile("\\((.*?)\\^");
+    Matcher matcher = pattern.matcher(specimenDescription);
+
+    if (!matcher.find()) {
+      // wut do if it doesn't match?
+      return "";
+    }
+
+    return matcher.group(1);
+  }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<LIVDResponse> syncDevices() {
+    // TODO: dry mode?
+    // call into DataHubClient method
+    List<LIVDResponse> devices = client.getLIVDTable();
+
+    // Dedupe device list selecting first one
+    var seen = new HashSet<>();
+    var devicesToSync =
+        devices.stream()
+            .filter(d -> seen.add(String.join(d.getManufacturer(), d.getManufacturer(), " ")))
+            .collect(Collectors.toList());
+
+    devicesToSync.forEach(
+        device -> {
+          // extract the specimen types from vendorSpecimenDescription
+          List<Optional<SpecimenType>> specimens =
+              device.getVendorSpecimenDescription().stream()
+                  .map(
+                      specimen ->
+                              // if the specimen is deleted in our DB but included in the response - what do?
+                          specimenTypeRepository.findByTypeCodeAndIsDeletedFalse(
+                                  // what if the code can't be extracted?
+                              extractSpecimenTypeCode(specimen))
+                      // TODO:
+                      // create new specimen types if they don't exist
+                      //     - won't have collection_location_name or code - not required per DB but
+                      // check on this
+                      )
+                  .collect(Collectors.toList());
+
+          // DON'T remove specimen types on db <-> RS mismatch
+
+          // unique constraint on (manufacturer, model)
+          //   - are we sure?
+          // apply all to devices
+
+          // if the device already exists:
+          //    - do nothing(?) with the device but check the specimen types
+          // if the device doesn't exist:
+          //    - new CreateDeviceType from the LIVD response
+          //    - write
+          //    - name?
+        });
+    return devicesToSync;
   }
 }

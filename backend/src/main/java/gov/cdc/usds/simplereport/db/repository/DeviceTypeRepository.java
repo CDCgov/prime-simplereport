@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.repository;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /** Specification of EternalAuditedEntityRepository for {@link DeviceType} manipulation. */
@@ -12,4 +13,6 @@ public interface DeviceTypeRepository extends EternalAuditedEntityRepository<Dev
   List<DeviceType> findAllByInternalIdIn(Collection<UUID> ids);
 
   DeviceType findDeviceTypeByName(String name);
+
+  Optional<DeviceType> findDeviceTypeByManufacturerAndModel(String manufacturer, String model);
 }

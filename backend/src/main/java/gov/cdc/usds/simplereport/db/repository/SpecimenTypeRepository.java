@@ -17,5 +17,7 @@ public interface SpecimenTypeRepository extends EternalAuditedEntityRepository<S
   // backward-compatibility shim code.
   Optional<SpecimenType> findByTypeCode(String swabType);
 
+  Optional<SpecimenType> findByTypeCodeAndIsDeletedFalse(String swabType);
+
   List<SpecimenType> findAllByIsDeletedFalse();
 }
