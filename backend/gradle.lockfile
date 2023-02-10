@@ -2,16 +2,16 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 antlr:antlr:2.7.7=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-base:6.2.4=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.4=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-base:6.2.5=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5=compileClasspath,runtimeClasspath
 ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.68=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:org.hl7.fhir.utilities:5.6.92=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:org.hl7.fhir.utilities:5.6.97=compileClasspath,runtimeClasspath
 ch.qos.logback:logback-classic:1.2.11=compileClasspath,runtimeClasspath
 ch.qos.logback:logback-core:1.2.11=compileClasspath,runtimeClasspath
 com.azure:azure-core-http-netty:1.11.9=compileClasspath,runtimeClasspath
 com.azure:azure-core:1.27.0=compileClasspath,runtimeClasspath
 com.azure:azure-storage-common:12.15.1=compileClasspath,runtimeClasspath
-com.azure:azure-storage-queue:12.15.2=compileClasspath,runtimeClasspath
+com.azure:azure-storage-queue:12.15.3=compileClasspath,runtimeClasspath
 com.fasterxml.jackson.core:jackson-annotations:2.13.4=compileClasspath,runtimeClasspath
 com.fasterxml.jackson.core:jackson-core:2.13.4=compileClasspath,runtimeClasspath
 com.fasterxml.jackson.core:jackson-databind:2.13.4.2=compileClasspath,runtimeClasspath
