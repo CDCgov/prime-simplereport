@@ -73,8 +73,11 @@ const PatientApp = () => {
       children={
         <PatientLinkURL404Wrapper plid={plid}>
           <Routes>
-            <Route path="/" element={<TermsOfService />} />
-            <Route path="terms-of-service" element={<TermsOfService />} />
+            <Route path="/" element={<TermsOfService asPage={true} />} />
+            <Route
+              path="terms-of-service"
+              element={<TermsOfService asPage={true} />}
+            />
             <Route path="birth-date-confirmation" element={<DOB />} />
             <Route
               path="test-result"
