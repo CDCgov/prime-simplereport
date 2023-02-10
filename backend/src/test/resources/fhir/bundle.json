@@ -199,7 +199,21 @@
       "resource":{
         "resourceType":"Organization",
         "id":"1c3d14b9-e222-4a16-9fb2-d9f173034a6a",
-        "name":"School",
+        "identifier": [
+          {
+            "use": "official",
+            "value": "123D456789",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            }
+          }
+        ],
+        "name":"Albuquerque Public Schools",
         "telecom":[
           {
             "system":"phone",

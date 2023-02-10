@@ -2,6 +2,20 @@
   "resourceType": "Organization",
   "id": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29",
   "name": "Elron",
+  "identifier": [
+    {
+      "use": "official",
+      "value": "123D456789",
+      "type": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+            "code": "CLIA"
+          }
+        ]
+      }
+    }
+  ],
   "telecom": [
     {
       "system": "phone",

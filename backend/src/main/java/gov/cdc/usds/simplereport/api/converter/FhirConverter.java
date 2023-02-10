@@ -307,6 +307,13 @@ public class FhirConverter {
   public static Organization convertToOrganization(Facility facility) {
     var org = new Organization();
     org.setId(facility.getInternalId().toString());
+    org.addIdentifier()
+        .setUse(IdentifierUse.OFFICIAL)
+        .setValue(facility.getCliaNumber())
+        .getType()
+        .addCoding()
+        .setSystem("http://terminology.hl7.org/CodeSystem/v2-0301")
+        .setCode("CLIA");
     org.setName(facility.getFacilityName());
     org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
     org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, facility.getEmail()));
