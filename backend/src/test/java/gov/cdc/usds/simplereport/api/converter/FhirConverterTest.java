@@ -27,6 +27,7 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -590,14 +591,14 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
-    var actual = convertToObservation(result, TestCorrectionStatus.ORIGINAL, null);
+    var actual = convertToObservation(result, "loinc", TestCorrectionStatus.ORIGINAL, null);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
     assertThat(actual.getCode().getText()).isEqualTo("covid-19");
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
-    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("96741-4");
+    assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("loinc");
     assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
@@ -613,7 +614,8 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
-    var actual = convertToObservation(result, TestCorrectionStatus.CORRECTED, "Oopsy Daisy");
+    var actual =
+        convertToObservation(result, "loinc", TestCorrectionStatus.CORRECTED, "Oopsy Daisy");
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
@@ -628,7 +630,7 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
-    var actual = convertToObservation(result, TestCorrectionStatus.REMOVED, null);
+    var actual = convertToObservation(result, "loinc", TestCorrectionStatus.REMOVED, null);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay())
@@ -639,7 +641,7 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_null() {
-    var actual = convertToObservation((Result) null, TestCorrectionStatus.ORIGINAL, null);
+    var actual = convertToObservation((Result) null, "", TestCorrectionStatus.ORIGINAL, null);
 
     assertThat(actual).isNull();
   }
@@ -648,24 +650,51 @@ class FhirConverterTest {
   void convertToObservation_Result_nullDisease() {
     var actual =
         convertToObservation(
-            new Result(null, null, null, TestResult.POSITIVE), TestCorrectionStatus.ORIGINAL, null);
+            new Result(null, null, null, TestResult.POSITIVE),
+            "",
+            TestCorrectionStatus.ORIGINAL,
+            null);
 
     assertThat(actual).isNull();
+  }
+
+  @Test
+  void convertToObservation_Result_defaultsToDeviceLoinc() {
+    var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var testOrder = TestDataBuilder.createTestOrderWithDevice();
+    var covidResult =
+        new Result(testOrder, new SupportedDisease("COVID-19", "96741-4"), TestResult.POSITIVE);
+    ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
+
+    var actual =
+        convertToObservation(
+            Set.of(covidResult), Collections.emptyList(), TestCorrectionStatus.ORIGINAL, null);
+
+    assertThat(actual).hasSize(1);
+    assertThat(actual.get(0).getCode().getCodingFirstRep().getCode()).isEqualTo("54321-BOOM");
   }
 
   @Test
   void convertToObservation_Result_matchesJson() throws IOException {
     var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var fluId = "302a7919-b699-4e0d-95ca-5fd2e3fcaf7a";
-    var covidResult =
-        new Result(null, new SupportedDisease("COVID-19", "96741-4"), TestResult.POSITIVE);
-    var fluResult =
-        new Result(null, new SupportedDisease("FLU A", "LP14239-5"), TestResult.NEGATIVE);
+    var covidDisease = new SupportedDisease("COVID-19", "96741-4");
+    var fluDisease = new SupportedDisease("FLU A", "LP14239-5");
+    var testOrder = TestDataBuilder.createTestOrderWithDevice();
+    var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
+    var fluResult = new Result(testOrder, fluDisease, TestResult.NEGATIVE);
     ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
     ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
+    var covidDiseaseTestPerformedCode =
+        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6");
+    var fluDiseaseTestPerformedCode = new DeviceTestPerformedLoincCode(null, fluDisease, "85477-8");
 
     var actual =
-        convertToObservation(Set.of(covidResult, fluResult), TestCorrectionStatus.ORIGINAL, null);
+        convertToObservation(
+            Set.of(covidResult, fluResult),
+            List.of(covidDiseaseTestPerformedCode, fluDiseaseTestPerformedCode),
+            TestCorrectionStatus.ORIGINAL,
+            null);
 
     assertThat(actual).hasSize(2);
     String covidSerialized =
@@ -673,7 +702,7 @@ class FhirConverterTest {
             actual.stream()
                 .filter(
                     observation ->
-                        observation.getCode().getCodingFirstRep().is("http://loinc.org", "96741-4"))
+                        observation.getCode().getCodingFirstRep().is("http://loinc.org", "94500-6"))
                 .findFirst()
                 .orElse(null));
     String fluSerialized =
@@ -681,10 +710,7 @@ class FhirConverterTest {
             actual.stream()
                 .filter(
                     observation ->
-                        observation
-                            .getCode()
-                            .getCodingFirstRep()
-                            .is("http://loinc.org", "LP14239-5"))
+                        observation.getCode().getCodingFirstRep().is("http://loinc.org", "85477-8"))
                 .findFirst()
                 .orElse(null));
     var expectedSerialized1 =
@@ -703,11 +729,21 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_correctionMatchesJson() throws IOException {
+    var covidDisease = new SupportedDisease("COVID-19", "96741-4");
     var id = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var result = new Result(null, new SupportedDisease("COVID-19", "96741-4"), TestResult.NEGATIVE);
+    var testOrder = TestDataBuilder.createTestOrderWithDevice();
+    var result = new Result(testOrder, covidDisease, TestResult.NEGATIVE);
+    var covidDiseaseTestPerformedCode =
+        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6");
+
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
 
-    var actual = convertToObservation(Set.of(result), TestCorrectionStatus.CORRECTED, "woops");
+    var actual =
+        convertToObservation(
+            Set.of(result),
+            List.of(covidDiseaseTestPerformedCode),
+            TestCorrectionStatus.CORRECTED,
+            "woops");
 
     String actualSerialized = parser.encodeResourceToString(actual.get(0));
     var expectedSerialized1 =
@@ -906,7 +942,7 @@ class FhirConverterTest {
 
   @Test
   void createProvenance_valid() {
-    var provenance = createProvenance("Organization/org-id", "Device/device-id", new Date());
+    var provenance = createProvenance("Organization/org-id", new Date());
 
     assertThat(provenance.getActivity().getCoding()).hasSize(1);
     assertThat(provenance.getActivity().getCodingFirstRep().getCode()).isEqualTo("R01");
@@ -917,8 +953,6 @@ class FhirConverterTest {
 
     assertThat(provenance.getAgentFirstRep().getWho().getReference())
         .isEqualTo("Organization/org-id");
-
-    assertThat(provenance.getTargetFirstRep().getReference()).isEqualTo("Device/device-id");
   }
 
   @Test
@@ -1099,9 +1133,12 @@ class FhirConverterTest {
             "",
             null);
     var testOrder = new TestOrder(person, facility);
-    var covidResult = new Result(testOrder, new SupportedDisease(), TestResult.POSITIVE);
-    var fluAResult = new Result(testOrder, new SupportedDisease(), TestResult.NEGATIVE);
-    var fluBResult = new Result(testOrder, new SupportedDisease(), TestResult.UNDETERMINED);
+    var covidDisease = new SupportedDisease("COVID-19", "987-1");
+    var fluADisease = new SupportedDisease("FLU A", "LP 123");
+    var fluBDisease = new SupportedDisease("FLU B", "LP 456");
+    var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
+    var fluAResult = new Result(testOrder, fluADisease, TestResult.NEGATIVE);
+    var fluBResult = new Result(testOrder, fluBDisease, TestResult.UNDETERMINED);
     var testEvent = new TestEvent(testOrder, false, Set.of(covidResult, fluAResult, fluBResult));
 
     var providerId = UUID.fromString("ffc07f31-f2af-4728-a247-8cb3aa05ccd0");
@@ -1114,12 +1151,18 @@ class FhirConverterTest {
     var fluBResultId = UUID.fromString("6db25889-09cb-4127-9330-cc7e7459c1cd");
     var testOrderId = UUID.fromString("cae01b8c-37dc-4c09-a6d4-ae7bcafc9720");
     var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
-
+    var testPerformedCodesList =
+        List.of(
+            new DeviceTestPerformedLoincCode(deviceTypeId, covidDisease, "333-123"),
+            new DeviceTestPerformedLoincCode(deviceTypeId, fluADisease, "444-123"),
+            new DeviceTestPerformedLoincCode(deviceTypeId, fluBDisease, "444-456"));
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
     ReflectionTestUtils.setField(specimenType, "internalId", specimenTypeId);
     ReflectionTestUtils.setField(deviceType, "internalId", deviceTypeId);
+    ReflectionTestUtils.setField(
+        deviceType, "supportedDiseaseTestPerformed", testPerformedCodesList);
     ReflectionTestUtils.setField(covidResult, "internalId", covidResultId);
     ReflectionTestUtils.setField(fluAResult, "internalId", fluAResultId);
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
@@ -1150,7 +1193,6 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
-
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
   }
 }

@@ -1,17 +1,16 @@
 import * as appInsights from "applicationinsights";
 import { AzureFunction, Context } from "@azure/functions";
 import { ENV } from "../config";
+import { convertToCsv, uploadResult } from "./lib";
 import {
-  convertToCsv,
-  deleteSuccessfullyParsedMessages,
-  dequeueMessages,
   getQueueClient,
   minimumMessagesAvailable,
+  dequeueMessages,
   publishToQueue,
   reportExceptions,
-  uploadResult,
-} from "./lib";
-import { ReportStreamResponse } from "./rs-response";
+  deleteSuccessfullyParsedMessages,
+} from "../common/queueHandlers";
+import { ReportStreamResponse } from "../common/rs-response";
 
 const {
   REPORT_STREAM_URL,
@@ -37,7 +36,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   const messages = await dequeueMessages(context, publishingQueue);
   telemetry.trackEvent({
-    name: "Messages Dequeued",
+    name: `Queue: ${TEST_EVENT_QUEUE_NAME}. Messages Dequeued`,
     properties: { messagesDequeued: messages.length },
     tagOverrides,
   });
@@ -47,7 +46,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (parseFailureCount > 0) {
     telemetry.trackEvent({
-      name: "Test Event Parse Failure",
+      name: `Queue: ${TEST_EVENT_QUEUE_NAME}. Test Event Parse Failure`,
       properties: {
         count: parseFailureCount,
         parseFailures: Object.keys(parseFailure),
@@ -58,14 +57,14 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (parseSuccessCount < 1) {
     context.log(
-      `Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`
+      `Queue: ${TEST_EVENT_QUEUE_NAME}. Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`
     );
     return;
   }
 
   const uploadStart = new Date().getTime();
   context.log(
-    `Starting upload of ${parseSuccessCount} records to ReportStream`
+    `Queue: ${TEST_EVENT_QUEUE_NAME}. Starting upload of ${parseSuccessCount} records to ReportStream`
   );
 
   const postResult = await uploadResult(csvPayload);
@@ -76,6 +75,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     data: REPORT_STREAM_URL,
     properties: {
       recordCount: parseSuccessCount,
+      queue: TEST_EVENT_QUEUE_NAME,
     },
     duration: new Date().getTime() - uploadStart,
     resultCode: postResult.status,
@@ -86,11 +86,20 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   if (postResult.ok) {
     const response: ReportStreamResponse =
       (await postResult.json()) as ReportStreamResponse;
-    context.log(`Report Stream response: ${JSON.stringify(response)}`);
-    await reportExceptions(context, exceptionQueue, response);
+    context.log(
+      `Queue: ${TEST_EVENT_QUEUE_NAME}. Report Stream response: ${JSON.stringify(
+        response
+      )}`
+    );
+    await reportExceptions(
+      context,
+      exceptionQueue,
+      response,
+      TEST_EVENT_QUEUE_NAME
+    );
 
     context.log(
-      `Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
+      `Queue: ${TEST_EVENT_QUEUE_NAME}. Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
     );
 
     await deleteSuccessfullyParsedMessages(
@@ -101,13 +110,13 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
     );
   } else {
     const responseBody = await postResult.text();
-    const errorText = `Failed to upload to ReportStream with response code ${postResult.status}`;
+    const errorText = `Queue: ${TEST_EVENT_QUEUE_NAME}. Failed to upload to ReportStream with response code ${postResult.status}`;
     context.log.error(
       `${errorText}. Response body (${responseBody.length} bytes): `,
       responseBody
     );
     telemetry.trackEvent({
-      name: "ReportStream Upload Failed",
+      name: `Queue: ${TEST_EVENT_QUEUE_NAME}. ReportStream Upload Failed`,
       properties: {
         status: postResult.status,
         responseBody,
@@ -115,11 +124,16 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
       tagOverrides,
     });
 
-    if(postResult.status === 400) {
+    if (postResult.status === 400) {
       //publish messages to file failure queue
       await publishToQueue(publishingErrorQueue, messages);
       //delete messages from the main queue
-      await deleteSuccessfullyParsedMessages(context, publishingQueue, messages, parseFailure);
+      await deleteSuccessfullyParsedMessages(
+        context,
+        publishingQueue,
+        messages,
+        parseFailure
+      );
     }
 
     throw new Error(errorText);

@@ -20,11 +20,11 @@ Object {
               <div
                 class="usa-card__header"
               >
-                <div>
-                  <h2>
-                    Manage devices
-                  </h2>
-                </div>
+                <h1
+                  class="font-heading-lg margin-top-0 margin-bottom-0"
+                >
+                  Manage devices
+                </h1>
                 <div
                   style="display: flex; justify-content: center; align-items: center;"
                 >
@@ -48,11 +48,11 @@ Object {
                     <div
                       class="usa-alert__body"
                     >
-                      <h4
+                      <h2
                         class="usa-alert__heading"
                       >
                         Reminder
-                      </h4>
+                      </h2>
                       <p
                         class="usa-alert__text"
                       >
@@ -88,14 +88,18 @@ Object {
                   <div
                     class="tablet:grid-col"
                   >
-                    Select device
-                    <abbr
-                      class="usa-hint usa-hint--required"
-                      title="required"
+                    <label
+                      for="selectDevice"
                     >
-                       
-                      *
-                    </abbr>
+                      Select device
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
+                    </label>
                     <div
                       class="usa-combo-box usa-combo-box__full-width"
                       data-enhanced="true"
@@ -358,37 +362,6 @@ Object {
                         class="usa-label"
                         for="4"
                       >
-                        LOINC code
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <input
-                        aria-disabled="true"
-                        aria-required="true"
-                        class="usa-input"
-                        disabled=""
-                        id="4"
-                        name="loincCode"
-                        type="text"
-                        value=""
-                      />
-                    </div>
-                  </div>
-                  <div
-                    class="tablet:grid-col"
-                  >
-                    <div
-                      class="usa-form-group"
-                    >
-                      <label
-                        class="usa-label"
-                        for="5"
-                      >
                         Test length (minutes)
                         <abbr
                           class="usa-hint usa-hint--required"
@@ -403,7 +376,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="5"
+                        id="4"
                         max="999"
                         min="0"
                         name="testLength"
@@ -424,7 +397,8 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="6"
+                        for="5"
+                        id="label-for-5"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -438,11 +412,12 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="6"
+                        id="5"
                       >
                         <input
                           aria-expanded="false"
                           aria-invalid="false"
+                          aria-labelledby="label-for-5"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -546,98 +521,29 @@ Object {
                     class="tablet:grid-col"
                     style="margin-bottom: 56px;"
                   >
-                    <div
-                      class="usa-form-group"
+                    <button
+                      aria-disabled="true"
+                      class="usa-button usa-button--unstyled usa-button-disabled margin-top-2"
+                      disabled=""
+                      type="button"
                     >
-                      <label
-                        class="usa-label"
-                        for="7"
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-plus margin-right-1"
+                        data-icon="plus"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 448 512"
+                        xmlns="http://www.w3.org/2000/svg"
                       >
-                        Supported diseases
-                        <abbr
-                          class="usa-hint usa-hint--required"
-                          title="required"
-                        >
-                           
-                          *
-                        </abbr>
-                      </label>
-                      <div
-                        class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
-                        data-testid="multi-select"
-                        id="7"
-                      >
-                        <input
-                          aria-expanded="false"
-                          aria-invalid="false"
-                          aria-owns="multi-select-supportedDiseases-list"
-                          autocapitalize="off"
-                          autocomplete="off"
-                          class="usa-combo-box__input"
-                          data-testid="multi-select-input"
-                          disabled=""
-                          role="combobox"
-                          type="text"
-                          value=""
+                        <path
+                          d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                          fill="currentColor"
                         />
-                        <span
-                          class="usa-combo-box__input-button-separator"
-                        >
-                           
-                        </span>
-                        <span
-                          class="usa-combo-box__toggle-list__wrapper"
-                          tabindex="-1"
-                        >
-                          <button
-                            aria-hidden="true"
-                            class="usa-combo-box__toggle-list"
-                            data-testid="multi-select-toggle"
-                            disabled=""
-                            tabindex="-1"
-                            type="button"
-                          >
-                             
-                          </button>
-                        </span>
-                        <ul
-                          class="usa-combo-box__list"
-                          data-testid="multi-select-option-list"
-                          hidden=""
-                          id="multi-select-supportedDiseases-list"
-                          role="listbox"
-                          tabindex="-1"
-                        >
-                          <li
-                            aria-posinset="1"
-                            aria-selected="false"
-                            aria-setsize="64"
-                            class="usa-combo-box__list-option"
-                            data-testid="multi-select-option-294729"
-                            id="multi-select-supportedDiseases-list--option-0"
-                            role="option"
-                            tabindex="-1"
-                            value="294729"
-                          >
-                            COVID-19
-                          </li>
-                        </ul>
-                        <div
-                          class="usa-combo-box__status usa-sr-only"
-                          role="status"
-                        />
-                      </div>
-                      <fieldset
-                        class="fieldset--unstyled pill-container"
-                        data-testid="pill-container"
-                      >
-                        <legend
-                          class="usa-sr-only"
-                        >
-                          Selected Supported diseases
-                        </legend>
-                      </fieldset>
-                    </div>
+                      </svg>
+                      Add another disease
+                    </button>
                   </div>
                 </div>
               </div>
@@ -666,11 +572,11 @@ Object {
             <div
               class="usa-card__header"
             >
-              <div>
-                <h2>
-                  Manage devices
-                </h2>
-              </div>
+              <h1
+                class="font-heading-lg margin-top-0 margin-bottom-0"
+              >
+                Manage devices
+              </h1>
               <div
                 style="display: flex; justify-content: center; align-items: center;"
               >
@@ -694,11 +600,11 @@ Object {
                   <div
                     class="usa-alert__body"
                   >
-                    <h4
+                    <h2
                       class="usa-alert__heading"
                     >
                       Reminder
-                    </h4>
+                    </h2>
                     <p
                       class="usa-alert__text"
                     >
@@ -734,14 +640,18 @@ Object {
                 <div
                   class="tablet:grid-col"
                 >
-                  Select device
-                  <abbr
-                    class="usa-hint usa-hint--required"
-                    title="required"
+                  <label
+                    for="selectDevice"
                   >
-                     
-                    *
-                  </abbr>
+                    Select device
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </label>
                   <div
                     class="usa-combo-box usa-combo-box__full-width"
                     data-enhanced="true"
@@ -1004,37 +914,6 @@ Object {
                       class="usa-label"
                       for="4"
                     >
-                      LOINC code
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <input
-                      aria-disabled="true"
-                      aria-required="true"
-                      class="usa-input"
-                      disabled=""
-                      id="4"
-                      name="loincCode"
-                      type="text"
-                      value=""
-                    />
-                  </div>
-                </div>
-                <div
-                  class="tablet:grid-col"
-                >
-                  <div
-                    class="usa-form-group"
-                  >
-                    <label
-                      class="usa-label"
-                      for="5"
-                    >
                       Test length (minutes)
                       <abbr
                         class="usa-hint usa-hint--required"
@@ -1049,7 +928,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="5"
+                      id="4"
                       max="999"
                       min="0"
                       name="testLength"
@@ -1070,7 +949,8 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="6"
+                      for="5"
+                      id="label-for-5"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -1084,11 +964,12 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="6"
+                      id="5"
                     >
                       <input
                         aria-expanded="false"
                         aria-invalid="false"
+                        aria-labelledby="label-for-5"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"
@@ -1192,98 +1073,29 @@ Object {
                   class="tablet:grid-col"
                   style="margin-bottom: 56px;"
                 >
-                  <div
-                    class="usa-form-group"
+                  <button
+                    aria-disabled="true"
+                    class="usa-button usa-button--unstyled usa-button-disabled margin-top-2"
+                    disabled=""
+                    type="button"
                   >
-                    <label
-                      class="usa-label"
-                      for="7"
+                    <svg
+                      aria-hidden="true"
+                      class="svg-inline--fa fa-plus margin-right-1"
+                      data-icon="plus"
+                      data-prefix="fas"
+                      focusable="false"
+                      role="img"
+                      viewBox="0 0 448 512"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      Supported diseases
-                      <abbr
-                        class="usa-hint usa-hint--required"
-                        title="required"
-                      >
-                         
-                        *
-                      </abbr>
-                    </label>
-                    <div
-                      class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
-                      data-testid="multi-select"
-                      id="7"
-                    >
-                      <input
-                        aria-expanded="false"
-                        aria-invalid="false"
-                        aria-owns="multi-select-supportedDiseases-list"
-                        autocapitalize="off"
-                        autocomplete="off"
-                        class="usa-combo-box__input"
-                        data-testid="multi-select-input"
-                        disabled=""
-                        role="combobox"
-                        type="text"
-                        value=""
+                      <path
+                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                        fill="currentColor"
                       />
-                      <span
-                        class="usa-combo-box__input-button-separator"
-                      >
-                         
-                      </span>
-                      <span
-                        class="usa-combo-box__toggle-list__wrapper"
-                        tabindex="-1"
-                      >
-                        <button
-                          aria-hidden="true"
-                          class="usa-combo-box__toggle-list"
-                          data-testid="multi-select-toggle"
-                          disabled=""
-                          tabindex="-1"
-                          type="button"
-                        >
-                           
-                        </button>
-                      </span>
-                      <ul
-                        class="usa-combo-box__list"
-                        data-testid="multi-select-option-list"
-                        hidden=""
-                        id="multi-select-supportedDiseases-list"
-                        role="listbox"
-                        tabindex="-1"
-                      >
-                        <li
-                          aria-posinset="1"
-                          aria-selected="false"
-                          aria-setsize="64"
-                          class="usa-combo-box__list-option"
-                          data-testid="multi-select-option-294729"
-                          id="multi-select-supportedDiseases-list--option-0"
-                          role="option"
-                          tabindex="-1"
-                          value="294729"
-                        >
-                          COVID-19
-                        </li>
-                      </ul>
-                      <div
-                        class="usa-combo-box__status usa-sr-only"
-                        role="status"
-                      />
-                    </div>
-                    <fieldset
-                      class="fieldset--unstyled pill-container"
-                      data-testid="pill-container"
-                    >
-                      <legend
-                        class="usa-sr-only"
-                      >
-                        Selected Supported diseases
-                      </legend>
-                    </fieldset>
-                  </div>
+                    </svg>
+                    Add another disease
+                  </button>
                 </div>
               </div>
             </div>

@@ -37,7 +37,7 @@ com.graphql-java:graphql-java-extended-validation:18.1-hibernate-validator-6.2.0
 com.graphql-java:graphql-java:18.3=compileClasspath,runtimeClasspath
 com.graphql-java:java-dataloader:3.1.2=compileClasspath,runtimeClasspath
 com.ibm.icu:icu4j:72.1=compileClasspath,runtimeClasspath
-com.microsoft.azure:applicationinsights-core:3.4.4=compileClasspath,runtimeClasspath
+com.microsoft.azure:applicationinsights-core:3.4.9=compileClasspath,runtimeClasspath
 com.nimbusds:content-type:2.2=compileClasspath,runtimeClasspath
 com.nimbusds:lang-tag:1.6=compileClasspath,runtimeClasspath
 com.nimbusds:nimbus-jose-jwt:9.22=compileClasspath,runtimeClasspath

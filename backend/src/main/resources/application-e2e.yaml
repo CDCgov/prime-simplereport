@@ -1,3 +1,10 @@
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  level:
+    root: info
+    org.hibernate: off
+    gov.cdc.usds.simplereport.service.AuditService: off
 spring:
   profiles:
     include: server-debug, create-sample-devices
@@ -12,7 +19,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: false # override this in application-local.yaml to get pretty-printed SQL all the time
         default_schema: simple_report
 server:

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.devicetype;
 
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
@@ -33,6 +34,16 @@ public class DeviceTypeDataResolver {
         .registerMappedBatchLoader(
             (deviceTypeIds, batchLoaderEnvironment) ->
                 Mono.just(deviceTypeDataLoaderService.getSpecimenTypes(deviceTypeIds)));
+
+    Class<List<DeviceTestPerformedLoincCode>> deviceTestPerformedLoincCodeClazz =
+        (Class) List.class;
+    registry
+        .forTypePair(UUID.class, deviceTestPerformedLoincCodeClazz)
+        .withName("deviceTestPerformedLoincDataloader")
+        .registerMappedBatchLoader(
+            (deviceTypeIds, batchLoaderEnvironment) ->
+                Mono.just(
+                    deviceTypeDataLoaderService.getDeviceTestPerformedLoincCode(deviceTypeIds)));
   }
 
   @SchemaMapping(typeName = "DeviceType", field = "supportedDiseases")
@@ -46,5 +57,12 @@ public class DeviceTypeDataResolver {
   public CompletableFuture<List<SpecimenType>> swabTypes(
       DeviceType deviceType, DataLoader<UUID, List<SpecimenType>> deviceTypeSpecimenTypesLoader) {
     return deviceTypeSpecimenTypesLoader.load(deviceType.getInternalId());
+  }
+
+  @SchemaMapping(typeName = "DeviceType", field = "supportedDiseaseTestPerformed")
+  public CompletableFuture<List<DeviceTestPerformedLoincCode>> supportedDiseaseTestPerformed(
+      DeviceType deviceType,
+      DataLoader<UUID, List<DeviceTestPerformedLoincCode>> deviceTestPerformedLoincDataloader) {
+    return deviceTestPerformedLoincDataloader.load(deviceType.getInternalId());
   }
 }

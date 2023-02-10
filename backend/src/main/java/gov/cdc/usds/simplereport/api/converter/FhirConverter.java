@@ -19,6 +19,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -370,17 +371,38 @@ public class FhirConverter {
   }
 
   public static List<Observation> convertToObservation(
-      Set<Result> results, TestCorrectionStatus correctionStatus, String correctionReason) {
+      Set<Result> results,
+      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCode,
+      TestCorrectionStatus correctionStatus,
+      String correctionReason) {
     return results.stream()
-        .map(result -> convertToObservation(result, correctionStatus, correctionReason))
+        .map(
+            result -> {
+              String testPerformedLoincCode =
+                  getTestPerformedLoincCode(deviceTestPerformedLoincCode, result);
+              return convertToObservation(
+                  result, testPerformedLoincCode, correctionStatus, correctionReason);
+            })
         .collect(Collectors.toList());
   }
 
+  private static String getTestPerformedLoincCode(
+      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCode, Result result) {
+    return deviceTestPerformedLoincCode.stream()
+        .filter(code -> code.getSupportedDisease() == result.getDisease())
+        .findFirst()
+        .map(DeviceTestPerformedLoincCode::getTestPerformedLoincCode)
+        .orElse(result.getTestOrder().getDeviceType().getLoincCode());
+  }
+
   public static Observation convertToObservation(
-      Result result, TestCorrectionStatus correctionStatus, String correctionReason) {
+      Result result,
+      String testPerformedCode,
+      TestCorrectionStatus correctionStatus,
+      String correctionReason) {
     if (result != null && result.getDisease() != null) {
       return convertToObservation(
-          result.getDisease().getLoinc(),
+          testPerformedCode,
           result.getDisease().getName(),
           result.getResultLOINC(),
           correctionStatus,
@@ -528,6 +550,7 @@ public class FhirConverter {
         convertToSpecimen(testEvent.getSpecimenType()),
         convertToObservation(
             testEvent.getResults(),
+            testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
         convertToServiceRequest(testEvent.getOrder()),
@@ -554,7 +577,7 @@ public class FhirConverter {
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var provenance = createProvenance(organizationFullUrl, deviceFullUrl, dateTested);
+    var provenance = createProvenance(organizationFullUrl, dateTested);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
@@ -611,8 +634,7 @@ public class FhirConverter {
     return bundle;
   }
 
-  public static Provenance createProvenance(
-      String organizationFullUrl, String deviceFullUrl, Date dateTested) {
+  public static Provenance createProvenance(String organizationFullUrl, Date dateTested) {
     var provenance = new Provenance();
     provenance.setId(UUID.randomUUID().toString());
     provenance
@@ -622,7 +644,6 @@ public class FhirConverter {
         .setCode(EVENT_TYPE_CODE)
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
-    provenance.addTarget(new Reference(deviceFullUrl));
     provenance.setRecorded(dateTested);
     return provenance;
   }

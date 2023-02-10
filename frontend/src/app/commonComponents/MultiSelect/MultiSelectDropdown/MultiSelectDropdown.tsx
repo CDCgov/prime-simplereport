@@ -98,80 +98,75 @@ const focusSibling = (
   }
 };
 
-const handleInputKeyDown =
-  (
-    dispatch: React.Dispatch<Action>,
-    state: State,
-    selectOption: (option: MultiSelectDropdownOption) => void
-  ) =>
-  (event: KeyboardEvent): void => {
-    if (event.key === "Escape") {
-      dispatch({ type: ActionTypes.CLOSE_LIST });
-    } else if (["ArrowDown", "Down"].includes(event.key)) {
-      event.preventDefault();
-      dispatch({
-        type: ActionTypes.FOCUS_OPTION,
-        option: state.filteredOptions[0],
-      });
-    } else if (event.key === "Tab") {
-      // Clear button is not visible in this case so manually handle focus
-      if (state.isOpen) {
-        // If there are filtered options, prevent default
-        // If there are "No Results Found", tab over to prevent a keyboard trap
-        if (state.filteredOptions.length > 0) {
-          event.preventDefault();
-          dispatch({
-            type: ActionTypes.FOCUS_OPTION,
-            option: state.filteredOptions[0],
-          });
-        } else {
-          dispatch({
-            type: ActionTypes.BLUR,
-          });
-        }
-      }
-
-      if (!state.isOpen) {
+const handleInputKeyDown = (
+  dispatch: React.Dispatch<Action>,
+  state: State,
+  selectOption: (option: MultiSelectDropdownOption) => void
+) => (event: KeyboardEvent): void => {
+  if (event.key === "Escape") {
+    dispatch({ type: ActionTypes.CLOSE_LIST });
+  } else if (["ArrowDown", "Down"].includes(event.key)) {
+    event.preventDefault();
+    dispatch({
+      type: ActionTypes.FOCUS_OPTION,
+      option: state.filteredOptions[0],
+    });
+  } else if (event.key === "Tab") {
+    // Clear button is not visible in this case so manually handle focus
+    if (state.isOpen) {
+      // If there are filtered options, prevent default
+      // If there are "No Results Found", tab over to prevent a keyboard trap
+      if (state.filteredOptions.length > 0) {
+        event.preventDefault();
+        dispatch({
+          type: ActionTypes.FOCUS_OPTION,
+          option: state.filteredOptions[0],
+        });
+      } else {
         dispatch({
           type: ActionTypes.BLUR,
         });
       }
-    } else if (event.key === "Enter") {
-      event.preventDefault();
-      const selectedOptions = state.filteredOptions.find(
-        (option) =>
-          option.label.toLowerCase() === state.inputValue.toLowerCase()
-      );
-      if (selectedOptions) {
-        selectOption(selectedOptions);
-      } else {
-        dispatch({ type: ActionTypes.CLEAR });
-      }
     }
-  };
 
-const handleListItemKeyDown =
-  (
-    dispatch: React.Dispatch<Action>,
-    state: State,
-    selectOption: (option: MultiSelectDropdownOption) => void
-  ) =>
-  (event: KeyboardEvent): void => {
-    if (event.key === "Escape") {
-      dispatch({ type: ActionTypes.CLOSE_LIST });
-    } else if (event.key === "Tab" || event.key === "Enter") {
-      event.preventDefault();
-      if (state.focusedOption) {
-        selectOption(state.focusedOption);
-      }
-    } else if (event.key === "ArrowDown" || event.key === "Down") {
-      event.preventDefault();
-      focusSibling(dispatch, state, Direction.Next);
-    } else if (event.key === "ArrowUp" || event.key === "Up") {
-      event.preventDefault();
-      focusSibling(dispatch, state, Direction.Previous);
+    if (!state.isOpen) {
+      dispatch({
+        type: ActionTypes.BLUR,
+      });
     }
-  };
+  } else if (event.key === "Enter") {
+    event.preventDefault();
+    const selectedOptions = state.filteredOptions.find(
+      (option) => option.label.toLowerCase() === state.inputValue.toLowerCase()
+    );
+    if (selectedOptions) {
+      selectOption(selectedOptions);
+    } else {
+      dispatch({ type: ActionTypes.CLEAR });
+    }
+  }
+};
+
+const handleListItemKeyDown = (
+  dispatch: React.Dispatch<Action>,
+  state: State,
+  selectOption: (option: MultiSelectDropdownOption) => void
+) => (event: KeyboardEvent): void => {
+  if (event.key === "Escape") {
+    dispatch({ type: ActionTypes.CLOSE_LIST });
+  } else if (event.key === "Tab" || event.key === "Enter") {
+    event.preventDefault();
+    if (state.focusedOption) {
+      selectOption(state.focusedOption);
+    }
+  } else if (event.key === "ArrowDown" || event.key === "Down") {
+    event.preventDefault();
+    focusSibling(dispatch, state, Direction.Next);
+  } else if (event.key === "ArrowUp" || event.key === "Up") {
+    event.preventDefault();
+    focusSibling(dispatch, state, Direction.Previous);
+  }
+};
 
 export const MultiSelectDropdown = ({
   id,
@@ -276,6 +271,7 @@ export const MultiSelectDropdown = ({
         focused={state.focusMode === FocusMode.Input}
         role="combobox"
         aria-label={placeholder}
+        aria-labelledby={`label-for-${id}`}
         aria-owns={listID}
         aria-expanded={state.isOpen}
         aria-invalid={ariaInvalid}

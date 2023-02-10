@@ -7,6 +7,7 @@ import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
+import "./Uploads.scss";
 import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
 import { RootState } from "../../store";
@@ -178,7 +179,7 @@ const Uploads = () => {
   };
 
   return (
-    <div className="grid-row header-size-fix">
+    <div className="grid-row header-size-fix sr-test-results-uploads">
       <div className="prime-container card-container">
         <div className="usa-card__header">
           <h1>Upload your results</h1>
@@ -217,15 +218,15 @@ const Uploads = () => {
           <section>
             <ol className="usa-process-list">
               <li className="usa-process-list__item margin-bottom-1em">
-                <h2 className="usa-process-list__heading">
+                <p className="usa-process-list__heading">
                   Visit the{" "}
                   <LinkWithQuery to="/results/upload/submit/guide">
                     <strong>spreadsheet upload guide</strong>
                   </LinkWithQuery>
-                </h2>
+                </p>
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
-                <h2 className="usa-process-list__heading">
+                <p className="usa-process-list__heading">
                   Download the{" "}
                   <a
                     href="/assets/resources/test_results_example_10-3-2022.csv"
@@ -237,24 +238,24 @@ const Uploads = () => {
                   >
                     spreadsheet template
                   </a>
-                </h2>
+                </p>
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
-                <h2 className="usa-process-list__heading">
+                <p className="usa-process-list__heading">
                   Following the guide and template, format your data to match
                   SimpleReport requirements
-                </h2>
+                </p>
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
-                <h2 className="usa-process-list__heading">
+                <p className="usa-process-list__heading">
                   Save your spreadsheet in a CSV format (file size limit is 50
                   MB or 10,000 rows)
-                </h2>
+                </p>
               </li>
               <li className="usa-process-list__item margin-bottom-1em">
-                <h2 className="usa-process-list__heading">
+                <p className="usa-process-list__heading">
                   Submit your CSV to the uploader below
-                </h2>
+                </p>
               </li>
             </ol>
           </section>

@@ -1,7 +1,7 @@
 import { AzureFunction, Context } from "@azure/functions";
 import fetch, { Headers } from "node-fetch";
 import { ENV } from "../config";
-import { SimpleReportReportStreamResponse } from "../QueueBatchedReportStreamUploader/rs-response";
+import { SimpleReportReportStreamResponse } from "../common/rs-response";
 
 const { SIMPLE_REPORT_CB_TOKEN, SIMPLE_REPORT_CB_URL } = ENV;
 

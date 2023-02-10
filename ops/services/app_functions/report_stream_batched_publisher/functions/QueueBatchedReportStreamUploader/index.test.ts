@@ -1,11 +1,9 @@
 import fn from "./index";
 import * as lib from "./lib";
+import * as queueHandlers from "../common/queueHandlers";
 import * as appInsights from "applicationinsights";
 import { Context } from "@azure/functions";
-import {
-  DequeuedMessageItem,
-  QueueClient,
-} from "@azure/storage-queue";
+import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import { Response } from "node-fetch";
 
 jest.mock(
@@ -49,10 +47,10 @@ describe("main function export", () => {
 
   function prepareQueue(items: Array<{ messageText: string }>): void {
     minimumMessagesAvailableMock = jest
-      .spyOn(lib, "minimumMessagesAvailable")
+      .spyOn(queueHandlers, "minimumMessagesAvailable")
       .mockResolvedValue(items.length > 0);
     dequeueMessagesMock = jest
-      .spyOn(lib, "dequeueMessages")
+      .spyOn(queueHandlers, "dequeueMessages")
       .mockResolvedValue(items as DequeuedMessageItem[]);
     uploadResultMock = jest.spyOn(lib, "uploadResult").mockResolvedValue({
       ok: true,
@@ -62,11 +60,14 @@ describe("main function export", () => {
 
   beforeAll(() => {
     getQueueClientMock = jest
-      .spyOn(lib, "getQueueClient")
-      .mockReturnValue({} as QueueClient);
-    deleteMessagesMock = jest.spyOn(lib, "deleteSuccessfullyParsedMessages");
-    reportExceptionsMock = jest.spyOn(lib, "reportExceptions");
-    fileFailureMock = jest.spyOn(lib, "publishToQueue");
+      .spyOn(queueHandlers, "getQueueClient")
+      .mockReturnValue({ name: "dummyQueue" } as QueueClient);
+    deleteMessagesMock = jest.spyOn(
+      queueHandlers,
+      "deleteSuccessfullyParsedMessages"
+    );
+    reportExceptionsMock = jest.spyOn(queueHandlers, "reportExceptions");
+    fileFailureMock = jest.spyOn(queueHandlers, "publishToQueue");
   });
 
   beforeEach(() => {
@@ -147,7 +148,7 @@ describe("main function export", () => {
     // THEN
     expect(getQueueClientMock).toHaveBeenCalledTimes(3);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Test Event Parse Failure" })
+      expect.objectContaining({ name: "Queue: ciao. Test Event Parse Failure" })
     );
     expect(deleteMessagesMock).toHaveBeenCalled();
   });
@@ -162,14 +163,14 @@ describe("main function export", () => {
     // THEN
     expect(dequeueMessagesMock).toHaveBeenCalled();
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Test Event Parse Failure" })
+      expect.objectContaining({ name: "Queue: ciao. Test Event Parse Failure" })
     );
     expect(uploadResultMock).not.toHaveBeenCalled();
     expect(reportExceptionsMock).not.toHaveBeenCalled();
     expect(deleteMessagesMock).not.toHaveBeenCalled();
   });
 
-  it("messages to failure queue response is 400", async () =>{
+  it("messages to failure queue response is 400", async () => {
     // GIVEN
     prepareQueue([
       { messageText: JSON.stringify({ a: "b" }) },
@@ -196,5 +197,5 @@ describe("main function export", () => {
     expect(reportExceptionsMock).not.toHaveBeenCalled();
     expect(fileFailureMock).toHaveBeenCalled();
     expect(deleteMessagesMock).toHaveBeenCalled();
-  })
+  });
 });

@@ -4,7 +4,7 @@ const DeviceTypeReminderMessage = () => (
   <div>
     <div className="usa-alert usa-alert--warning">
       <div className="usa-alert__body">
-        <h4 className="usa-alert__heading">Reminder</h4>
+        <h2 className="usa-alert__heading">Reminder</h2>
         <p className="usa-alert__text">
           Notify ReportStream of devices added in{" "}
           <a

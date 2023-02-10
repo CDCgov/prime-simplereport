@@ -51,10 +51,11 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
     });
   };
 
-  const onChange =
-    (field: keyof CreateUser) => (value: CreateUser[typeof field]) => {
-      updateNewUser({ ...newUser, [field]: value });
-    };
+  const onChange = (field: keyof CreateUser) => (
+    value: CreateUser[typeof field]
+  ) => {
+    updateNewUser({ ...newUser, [field]: value });
+  };
 
   const validateField = async (field: keyof CreateUser) => {
     setErrors(await isFieldValid({ data: newUser, schema, errors, field }));
@@ -80,6 +81,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
     if (validation.valid) {
       setErrors(initCreateUserErrors());
       onSubmit(newUser);
+      setSaving(false);
       return;
     }
     setErrors(validation.errors);

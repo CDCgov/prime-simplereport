@@ -6,12 +6,14 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
 };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> &
+  {
+    [SubKey in K]?: Maybe<T[SubKey]>;
+  };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> &
+  {
+    [SubKey in K]: Maybe<T[SubKey]>;
+  };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
@@ -78,7 +80,10 @@ export type CreateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseases: Array<Scalars["ID"]>;
+  supportedDiseaseTestPerformed?: InputMaybe<
+    Array<SupportedDiseaseTestPerformedInput>
+  >;
+  supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
 };
@@ -97,6 +102,7 @@ export type DeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
+  supportedDiseaseTestPerformed?: Maybe<Array<SupportedDiseaseTestPerformed>>;
   supportedDiseases: Array<SupportedDisease>;
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
@@ -922,6 +928,17 @@ export type SupportedDisease = {
   name: Scalars["String"];
 };
 
+export type SupportedDiseaseTestPerformed = {
+  __typename?: "SupportedDiseaseTestPerformed";
+  supportedDisease: SupportedDisease;
+  testPerformedLoincCode: Scalars["String"];
+};
+
+export type SupportedDiseaseTestPerformedInput = {
+  supportedDisease: Scalars["ID"];
+  testPerformedLoincCode: Scalars["String"];
+};
+
 export enum TestCorrectionStatus {
   Corrected = "CORRECTED",
   Original = "ORIGINAL",
@@ -1007,7 +1024,10 @@ export type UpdateDeviceType = {
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseases: Array<Scalars["ID"]>;
+  supportedDiseaseTestPerformed?: InputMaybe<
+    Array<SupportedDiseaseTestPerformedInput>
+  >;
+  supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
 };
@@ -1699,6 +1719,10 @@ export type CreateDeviceTypeMutationVariables = Exact<{
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
+  supportedDiseaseTestPerformed?: InputMaybe<
+    | Array<SupportedDiseaseTestPerformedInput>
+    | SupportedDiseaseTestPerformedInput
+  >;
   testLength: Scalars["Int"];
 }>;
 
@@ -1717,7 +1741,11 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
   model: Scalars["String"];
   loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
-  supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
+  supportedDiseases?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
+  supportedDiseaseTestPerformed?: InputMaybe<
+    | Array<SupportedDiseaseTestPerformedInput>
+    | SupportedDiseaseTestPerformedInput
+  >;
   testLength: Scalars["Int"];
 }>;
 
@@ -1751,6 +1779,18 @@ export type GetDeviceTypeListQuery = {
       internalId: string;
       name: string;
     }>;
+    supportedDiseaseTestPerformed?:
+      | Array<{
+          __typename?: "SupportedDiseaseTestPerformed";
+          testPerformedLoincCode: string;
+          supportedDisease: {
+            __typename?: "SupportedDisease";
+            internalId: string;
+            name: string;
+          };
+        }>
+      | null
+      | undefined;
   }>;
 };
 
@@ -3066,8 +3106,7 @@ export function useUpdateFacilityMutation(
 export type UpdateFacilityMutationHookResult = ReturnType<
   typeof useUpdateFacilityMutation
 >;
-export type UpdateFacilityMutationResult =
-  Apollo.MutationResult<UpdateFacilityMutation>;
+export type UpdateFacilityMutationResult = Apollo.MutationResult<UpdateFacilityMutation>;
 export type UpdateFacilityMutationOptions = Apollo.BaseMutationOptions<
   UpdateFacilityMutation,
   UpdateFacilityMutationVariables
@@ -3180,8 +3219,7 @@ export function useAddFacilityMutation(
 export type AddFacilityMutationHookResult = ReturnType<
   typeof useAddFacilityMutation
 >;
-export type AddFacilityMutationResult =
-  Apollo.MutationResult<AddFacilityMutation>;
+export type AddFacilityMutationResult = Apollo.MutationResult<AddFacilityMutation>;
 export type AddFacilityMutationOptions = Apollo.BaseMutationOptions<
   AddFacilityMutation,
   AddFacilityMutationVariables
@@ -3348,8 +3386,7 @@ export function useAdminSetOrganizationMutation(
 export type AdminSetOrganizationMutationHookResult = ReturnType<
   typeof useAdminSetOrganizationMutation
 >;
-export type AdminSetOrganizationMutationResult =
-  Apollo.MutationResult<AdminSetOrganizationMutation>;
+export type AdminSetOrganizationMutationResult = Apollo.MutationResult<AdminSetOrganizationMutation>;
 export type AdminSetOrganizationMutationOptions = Apollo.BaseMutationOptions<
   AdminSetOrganizationMutation,
   AdminSetOrganizationMutationVariables
@@ -3396,8 +3433,7 @@ export function useSetOrganizationMutation(
 export type SetOrganizationMutationHookResult = ReturnType<
   typeof useSetOrganizationMutation
 >;
-export type SetOrganizationMutationResult =
-  Apollo.MutationResult<SetOrganizationMutation>;
+export type SetOrganizationMutationResult = Apollo.MutationResult<SetOrganizationMutation>;
 export type SetOrganizationMutationOptions = Apollo.BaseMutationOptions<
   SetOrganizationMutation,
   SetOrganizationMutationVariables
@@ -3522,8 +3558,7 @@ export function useUpdateUserPrivilegesMutation(
 export type UpdateUserPrivilegesMutationHookResult = ReturnType<
   typeof useUpdateUserPrivilegesMutation
 >;
-export type UpdateUserPrivilegesMutationResult =
-  Apollo.MutationResult<UpdateUserPrivilegesMutation>;
+export type UpdateUserPrivilegesMutationResult = Apollo.MutationResult<UpdateUserPrivilegesMutation>;
 export type UpdateUserPrivilegesMutationOptions = Apollo.BaseMutationOptions<
   UpdateUserPrivilegesMutation,
   UpdateUserPrivilegesMutationVariables
@@ -3572,8 +3607,7 @@ export function useResetUserPasswordMutation(
 export type ResetUserPasswordMutationHookResult = ReturnType<
   typeof useResetUserPasswordMutation
 >;
-export type ResetUserPasswordMutationResult =
-  Apollo.MutationResult<ResetUserPasswordMutation>;
+export type ResetUserPasswordMutationResult = Apollo.MutationResult<ResetUserPasswordMutation>;
 export type ResetUserPasswordMutationOptions = Apollo.BaseMutationOptions<
   ResetUserPasswordMutation,
   ResetUserPasswordMutationVariables
@@ -3623,8 +3657,7 @@ export function useSetUserIsDeletedMutation(
 export type SetUserIsDeletedMutationHookResult = ReturnType<
   typeof useSetUserIsDeletedMutation
 >;
-export type SetUserIsDeletedMutationResult =
-  Apollo.MutationResult<SetUserIsDeletedMutation>;
+export type SetUserIsDeletedMutationResult = Apollo.MutationResult<SetUserIsDeletedMutation>;
 export type SetUserIsDeletedMutationOptions = Apollo.BaseMutationOptions<
   SetUserIsDeletedMutation,
   SetUserIsDeletedMutationVariables
@@ -3673,8 +3706,7 @@ export function useReactivateUserMutation(
 export type ReactivateUserMutationHookResult = ReturnType<
   typeof useReactivateUserMutation
 >;
-export type ReactivateUserMutationResult =
-  Apollo.MutationResult<ReactivateUserMutation>;
+export type ReactivateUserMutationResult = Apollo.MutationResult<ReactivateUserMutation>;
 export type ReactivateUserMutationOptions = Apollo.BaseMutationOptions<
   ReactivateUserMutation,
   ReactivateUserMutationVariables
@@ -3736,8 +3768,7 @@ export function useAddUserToCurrentOrgMutation(
 export type AddUserToCurrentOrgMutationHookResult = ReturnType<
   typeof useAddUserToCurrentOrgMutation
 >;
-export type AddUserToCurrentOrgMutationResult =
-  Apollo.MutationResult<AddUserToCurrentOrgMutation>;
+export type AddUserToCurrentOrgMutationResult = Apollo.MutationResult<AddUserToCurrentOrgMutation>;
 export type AddUserToCurrentOrgMutationOptions = Apollo.BaseMutationOptions<
   AddUserToCurrentOrgMutation,
   AddUserToCurrentOrgMutationVariables
@@ -3915,8 +3946,7 @@ export function useResendActivationEmailMutation(
 export type ResendActivationEmailMutationHookResult = ReturnType<
   typeof useResendActivationEmailMutation
 >;
-export type ResendActivationEmailMutationResult =
-  Apollo.MutationResult<ResendActivationEmailMutation>;
+export type ResendActivationEmailMutationResult = Apollo.MutationResult<ResendActivationEmailMutation>;
 export type ResendActivationEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendActivationEmailMutation,
   ResendActivationEmailMutationVariables
@@ -3981,8 +4011,7 @@ export function useUpdateUserNameMutation(
 export type UpdateUserNameMutationHookResult = ReturnType<
   typeof useUpdateUserNameMutation
 >;
-export type UpdateUserNameMutationResult =
-  Apollo.MutationResult<UpdateUserNameMutation>;
+export type UpdateUserNameMutationResult = Apollo.MutationResult<UpdateUserNameMutation>;
 export type UpdateUserNameMutationOptions = Apollo.BaseMutationOptions<
   UpdateUserNameMutation,
   UpdateUserNameMutationVariables
@@ -4033,8 +4062,7 @@ export function useEditUserEmailMutation(
 export type EditUserEmailMutationHookResult = ReturnType<
   typeof useEditUserEmailMutation
 >;
-export type EditUserEmailMutationResult =
-  Apollo.MutationResult<EditUserEmailMutation>;
+export type EditUserEmailMutationResult = Apollo.MutationResult<EditUserEmailMutation>;
 export type EditUserEmailMutationOptions = Apollo.BaseMutationOptions<
   EditUserEmailMutation,
   EditUserEmailMutationVariables
@@ -4083,8 +4111,7 @@ export function useResetUserMfaMutation(
 export type ResetUserMfaMutationHookResult = ReturnType<
   typeof useResetUserMfaMutation
 >;
-export type ResetUserMfaMutationResult =
-  Apollo.MutationResult<ResetUserMfaMutation>;
+export type ResetUserMfaMutationResult = Apollo.MutationResult<ResetUserMfaMutation>;
 export type ResetUserMfaMutationOptions = Apollo.BaseMutationOptions<
   ResetUserMfaMutation,
   ResetUserMfaMutationVariables
@@ -4350,8 +4377,7 @@ export function useAddPatientMutation(
 export type AddPatientMutationHookResult = ReturnType<
   typeof useAddPatientMutation
 >;
-export type AddPatientMutationResult =
-  Apollo.MutationResult<AddPatientMutation>;
+export type AddPatientMutationResult = Apollo.MutationResult<AddPatientMutation>;
 export type AddPatientMutationOptions = Apollo.BaseMutationOptions<
   AddPatientMutation,
   AddPatientMutationVariables
@@ -4401,8 +4427,7 @@ export function useArchivePersonMutation(
 export type ArchivePersonMutationHookResult = ReturnType<
   typeof useArchivePersonMutation
 >;
-export type ArchivePersonMutationResult =
-  Apollo.MutationResult<ArchivePersonMutation>;
+export type ArchivePersonMutationResult = Apollo.MutationResult<ArchivePersonMutation>;
 export type ArchivePersonMutationOptions = Apollo.BaseMutationOptions<
   ArchivePersonMutation,
   ArchivePersonMutationVariables
@@ -4618,8 +4643,7 @@ export function useUpdatePatientMutation(
 export type UpdatePatientMutationHookResult = ReturnType<
   typeof useUpdatePatientMutation
 >;
-export type UpdatePatientMutationResult =
-  Apollo.MutationResult<UpdatePatientMutation>;
+export type UpdatePatientMutationResult = Apollo.MutationResult<UpdatePatientMutation>;
 export type UpdatePatientMutationOptions = Apollo.BaseMutationOptions<
   UpdatePatientMutation,
   UpdatePatientMutationVariables
@@ -4852,6 +4876,7 @@ export const CreateDeviceTypeDocument = gql`
     $loincCode: String!
     $swabTypes: [ID!]!
     $supportedDiseases: [ID!]!
+    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
     $testLength: Int!
   ) {
     createDeviceType(
@@ -4862,6 +4887,7 @@ export const CreateDeviceTypeDocument = gql`
         loincCode: $loincCode
         swabTypes: $swabTypes
         supportedDiseases: $supportedDiseases
+        supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
         testLength: $testLength
       }
     ) {
@@ -4893,6 +4919,7 @@ export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
  *      supportedDiseases: // value for 'supportedDiseases'
+ *      supportedDiseaseTestPerformed: // value for 'supportedDiseaseTestPerformed'
  *      testLength: // value for 'testLength'
  *   },
  * });
@@ -4912,8 +4939,7 @@ export function useCreateDeviceTypeMutation(
 export type CreateDeviceTypeMutationHookResult = ReturnType<
   typeof useCreateDeviceTypeMutation
 >;
-export type CreateDeviceTypeMutationResult =
-  Apollo.MutationResult<CreateDeviceTypeMutation>;
+export type CreateDeviceTypeMutationResult = Apollo.MutationResult<CreateDeviceTypeMutation>;
 export type CreateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
   CreateDeviceTypeMutation,
   CreateDeviceTypeMutationVariables
@@ -4926,7 +4952,8 @@ export const UpdateDeviceTypeDocument = gql`
     $model: String!
     $loincCode: String!
     $swabTypes: [ID!]!
-    $supportedDiseases: [ID!]!
+    $supportedDiseases: [ID!]
+    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
     $testLength: Int!
   ) {
     updateDeviceType(
@@ -4938,6 +4965,7 @@ export const UpdateDeviceTypeDocument = gql`
         loincCode: $loincCode
         swabTypes: $swabTypes
         supportedDiseases: $supportedDiseases
+        supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
         testLength: $testLength
       }
     ) {
@@ -4970,6 +4998,7 @@ export type UpdateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
  *      supportedDiseases: // value for 'supportedDiseases'
+ *      supportedDiseaseTestPerformed: // value for 'supportedDiseaseTestPerformed'
  *      testLength: // value for 'testLength'
  *   },
  * });
@@ -4989,8 +5018,7 @@ export function useUpdateDeviceTypeMutation(
 export type UpdateDeviceTypeMutationHookResult = ReturnType<
   typeof useUpdateDeviceTypeMutation
 >;
-export type UpdateDeviceTypeMutationResult =
-  Apollo.MutationResult<UpdateDeviceTypeMutation>;
+export type UpdateDeviceTypeMutationResult = Apollo.MutationResult<UpdateDeviceTypeMutation>;
 export type UpdateDeviceTypeMutationOptions = Apollo.BaseMutationOptions<
   UpdateDeviceTypeMutation,
   UpdateDeviceTypeMutationVariables
@@ -5011,6 +5039,13 @@ export const GetDeviceTypeListDocument = gql`
       supportedDiseases {
         internalId
         name
+      }
+      supportedDiseaseTestPerformed {
+        supportedDisease {
+          internalId
+          name
+        }
+        testPerformedLoincCode
       }
       testLength
     }
@@ -5292,8 +5327,7 @@ export function useSetOrgIdentityVerifiedMutation(
 export type SetOrgIdentityVerifiedMutationHookResult = ReturnType<
   typeof useSetOrgIdentityVerifiedMutation
 >;
-export type SetOrgIdentityVerifiedMutationResult =
-  Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
+export type SetOrgIdentityVerifiedMutationResult = Apollo.MutationResult<SetOrgIdentityVerifiedMutation>;
 export type SetOrgIdentityVerifiedMutationOptions = Apollo.BaseMutationOptions<
   SetOrgIdentityVerifiedMutation,
   SetOrgIdentityVerifiedMutationVariables
@@ -5309,11 +5343,10 @@ export const MarkPendingOrganizationAsDeletedDocument = gql`
     )
   }
 `;
-export type MarkPendingOrganizationAsDeletedMutationFn =
-  Apollo.MutationFunction<
-    MarkPendingOrganizationAsDeletedMutation,
-    MarkPendingOrganizationAsDeletedMutationVariables
-  >;
+export type MarkPendingOrganizationAsDeletedMutationFn = Apollo.MutationFunction<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
 
 /**
  * __useMarkPendingOrganizationAsDeletedMutation__
@@ -5348,13 +5381,11 @@ export function useMarkPendingOrganizationAsDeletedMutation(
 export type MarkPendingOrganizationAsDeletedMutationHookResult = ReturnType<
   typeof useMarkPendingOrganizationAsDeletedMutation
 >;
-export type MarkPendingOrganizationAsDeletedMutationResult =
-  Apollo.MutationResult<MarkPendingOrganizationAsDeletedMutation>;
-export type MarkPendingOrganizationAsDeletedMutationOptions =
-  Apollo.BaseMutationOptions<
-    MarkPendingOrganizationAsDeletedMutation,
-    MarkPendingOrganizationAsDeletedMutationVariables
-  >;
+export type MarkPendingOrganizationAsDeletedMutationResult = Apollo.MutationResult<MarkPendingOrganizationAsDeletedMutation>;
+export type MarkPendingOrganizationAsDeletedMutationOptions = Apollo.BaseMutationOptions<
+  MarkPendingOrganizationAsDeletedMutation,
+  MarkPendingOrganizationAsDeletedMutationVariables
+>;
 export const EditPendingOrganizationDocument = gql`
   mutation EditPendingOrganization(
     $externalId: String!
@@ -5416,8 +5447,7 @@ export function useEditPendingOrganizationMutation(
 export type EditPendingOrganizationMutationHookResult = ReturnType<
   typeof useEditPendingOrganizationMutation
 >;
-export type EditPendingOrganizationMutationResult =
-  Apollo.MutationResult<EditPendingOrganizationMutation>;
+export type EditPendingOrganizationMutationResult = Apollo.MutationResult<EditPendingOrganizationMutation>;
 export type EditPendingOrganizationMutationOptions = Apollo.BaseMutationOptions<
   EditPendingOrganizationMutation,
   EditPendingOrganizationMutationVariables
@@ -5501,11 +5531,10 @@ export const SetCurrentUserTenantDataAccessOpDocument = gql`
     }
   }
 `;
-export type SetCurrentUserTenantDataAccessOpMutationFn =
-  Apollo.MutationFunction<
-    SetCurrentUserTenantDataAccessOpMutation,
-    SetCurrentUserTenantDataAccessOpMutationVariables
-  >;
+export type SetCurrentUserTenantDataAccessOpMutationFn = Apollo.MutationFunction<
+  SetCurrentUserTenantDataAccessOpMutation,
+  SetCurrentUserTenantDataAccessOpMutationVariables
+>;
 
 /**
  * __useSetCurrentUserTenantDataAccessOpMutation__
@@ -5540,13 +5569,11 @@ export function useSetCurrentUserTenantDataAccessOpMutation(
 export type SetCurrentUserTenantDataAccessOpMutationHookResult = ReturnType<
   typeof useSetCurrentUserTenantDataAccessOpMutation
 >;
-export type SetCurrentUserTenantDataAccessOpMutationResult =
-  Apollo.MutationResult<SetCurrentUserTenantDataAccessOpMutation>;
-export type SetCurrentUserTenantDataAccessOpMutationOptions =
-  Apollo.BaseMutationOptions<
-    SetCurrentUserTenantDataAccessOpMutation,
-    SetCurrentUserTenantDataAccessOpMutationVariables
-  >;
+export type SetCurrentUserTenantDataAccessOpMutationResult = Apollo.MutationResult<SetCurrentUserTenantDataAccessOpMutation>;
+export type SetCurrentUserTenantDataAccessOpMutationOptions = Apollo.BaseMutationOptions<
+  SetCurrentUserTenantDataAccessOpMutation,
+  SetCurrentUserTenantDataAccessOpMutationVariables
+>;
 export const GetPatientDocument = gql`
   query GetPatient($internalId: ID!) {
     patient(id: $internalId) {
@@ -5765,8 +5792,7 @@ export function useAddPatientToQueueMutation(
 export type AddPatientToQueueMutationHookResult = ReturnType<
   typeof useAddPatientToQueueMutation
 >;
-export type AddPatientToQueueMutationResult =
-  Apollo.MutationResult<AddPatientToQueueMutation>;
+export type AddPatientToQueueMutationResult = Apollo.MutationResult<AddPatientToQueueMutation>;
 export type AddPatientToQueueMutationOptions = Apollo.BaseMutationOptions<
   AddPatientToQueueMutation,
   AddPatientToQueueMutationVariables
@@ -5879,8 +5905,7 @@ export function useRemovePatientFromQueueMutation(
 export type RemovePatientFromQueueMutationHookResult = ReturnType<
   typeof useRemovePatientFromQueueMutation
 >;
-export type RemovePatientFromQueueMutationResult =
-  Apollo.MutationResult<RemovePatientFromQueueMutation>;
+export type RemovePatientFromQueueMutationResult = Apollo.MutationResult<RemovePatientFromQueueMutation>;
 export type RemovePatientFromQueueMutationOptions = Apollo.BaseMutationOptions<
   RemovePatientFromQueueMutation,
   RemovePatientFromQueueMutationVariables
@@ -5955,8 +5980,7 @@ export function useEditQueueItemMutation(
 export type EditQueueItemMutationHookResult = ReturnType<
   typeof useEditQueueItemMutation
 >;
-export type EditQueueItemMutationResult =
-  Apollo.MutationResult<EditQueueItemMutation>;
+export type EditQueueItemMutationResult = Apollo.MutationResult<EditQueueItemMutation>;
 export type EditQueueItemMutationOptions = Apollo.BaseMutationOptions<
   EditQueueItemMutation,
   EditQueueItemMutationVariables
@@ -6024,8 +6048,7 @@ export function useSubmitQueueItemMutation(
 export type SubmitQueueItemMutationHookResult = ReturnType<
   typeof useSubmitQueueItemMutation
 >;
-export type SubmitQueueItemMutationResult =
-  Apollo.MutationResult<SubmitQueueItemMutation>;
+export type SubmitQueueItemMutationResult = Apollo.MutationResult<SubmitQueueItemMutation>;
 export type SubmitQueueItemMutationOptions = Apollo.BaseMutationOptions<
   SubmitQueueItemMutation,
   SubmitQueueItemMutationVariables
@@ -6268,8 +6291,7 @@ export function useMarkTestAsErrorMutation(
 export type MarkTestAsErrorMutationHookResult = ReturnType<
   typeof useMarkTestAsErrorMutation
 >;
-export type MarkTestAsErrorMutationResult =
-  Apollo.MutationResult<MarkTestAsErrorMutation>;
+export type MarkTestAsErrorMutationResult = Apollo.MutationResult<MarkTestAsErrorMutation>;
 export type MarkTestAsErrorMutationOptions = Apollo.BaseMutationOptions<
   MarkTestAsErrorMutation,
   MarkTestAsErrorMutationVariables
@@ -6319,8 +6341,7 @@ export function useMarkTestAsCorrectionMutation(
 export type MarkTestAsCorrectionMutationHookResult = ReturnType<
   typeof useMarkTestAsCorrectionMutation
 >;
-export type MarkTestAsCorrectionMutationResult =
-  Apollo.MutationResult<MarkTestAsCorrectionMutation>;
+export type MarkTestAsCorrectionMutationResult = Apollo.MutationResult<MarkTestAsCorrectionMutation>;
 export type MarkTestAsCorrectionMutationOptions = Apollo.BaseMutationOptions<
   MarkTestAsCorrectionMutation,
   MarkTestAsCorrectionMutationVariables
@@ -6629,8 +6650,7 @@ export function useResendTestResultsEmailMutation(
 export type ResendTestResultsEmailMutationHookResult = ReturnType<
   typeof useResendTestResultsEmailMutation
 >;
-export type ResendTestResultsEmailMutationResult =
-  Apollo.MutationResult<ResendTestResultsEmailMutation>;
+export type ResendTestResultsEmailMutationResult = Apollo.MutationResult<ResendTestResultsEmailMutation>;
 export type ResendTestResultsEmailMutationOptions = Apollo.BaseMutationOptions<
   ResendTestResultsEmailMutation,
   ResendTestResultsEmailMutationVariables
@@ -6891,13 +6911,13 @@ export function useGetFacilityResultsMultiplexWithCountLazyQuery(
 export type GetFacilityResultsMultiplexWithCountQueryHookResult = ReturnType<
   typeof useGetFacilityResultsMultiplexWithCountQuery
 >;
-export type GetFacilityResultsMultiplexWithCountLazyQueryHookResult =
-  ReturnType<typeof useGetFacilityResultsMultiplexWithCountLazyQuery>;
-export type GetFacilityResultsMultiplexWithCountQueryResult =
-  Apollo.QueryResult<
-    GetFacilityResultsMultiplexWithCountQuery,
-    GetFacilityResultsMultiplexWithCountQueryVariables
-  >;
+export type GetFacilityResultsMultiplexWithCountLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityResultsMultiplexWithCountLazyQuery
+>;
+export type GetFacilityResultsMultiplexWithCountQueryResult = Apollo.QueryResult<
+  GetFacilityResultsMultiplexWithCountQuery,
+  GetFacilityResultsMultiplexWithCountQueryVariables
+>;
 export const GetAllFacilitiesDocument = gql`
   query GetAllFacilities($showArchived: Boolean) {
     facilities(showArchived: $showArchived) {
