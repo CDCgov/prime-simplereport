@@ -52,6 +52,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1002,7 +1004,8 @@ class FhirConverterTest {
 
   @Test
   void createProvenance_valid() {
-    var provenance = createProvenance("Organization/org-id", new Date());
+    var date = new Date();
+    var provenance = createProvenance("Organization/org-id", date);
 
     assertThat(provenance.getActivity().getCoding()).hasSize(1);
     assertThat(provenance.getActivity().getCodingFirstRep().getCode()).isEqualTo("R01");
@@ -1010,9 +1013,9 @@ class FhirConverterTest {
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
     assertThat(provenance.getActivity().getCodingFirstRep().getDisplay())
         .isEqualTo("ORU/ACK - Unsolicited transmission of an observation message");
-
     assertThat(provenance.getAgentFirstRep().getWho().getReference())
         .isEqualTo("Organization/org-id");
+    assertThat(provenance.getRecorded()).isEqualTo(date);
   }
 
   @Test
@@ -1220,6 +1223,7 @@ class FhirConverterTest {
             new DeviceTestPerformedLoincCode(deviceTypeId, covidDisease, "333-123"),
             new DeviceTestPerformedLoincCode(deviceTypeId, fluADisease, "444-123"),
             new DeviceTestPerformedLoincCode(deviceTypeId, fluBDisease, "444-456"));
+    var date = new Date();
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
@@ -1232,6 +1236,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
+    ReflectionTestUtils.setField(testEvent, "createdAt", date);
 
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
@@ -1257,6 +1262,11 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$PROVENANCE_RECORDED_DATE",
+            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString());
+
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
   }
 }

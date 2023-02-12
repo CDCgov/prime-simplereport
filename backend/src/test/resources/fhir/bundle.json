@@ -76,7 +76,8 @@
               "reference": "Organization/1c3d14b9-e222-4a16-9fb2-d9f173034a6a"
             }
           }
-        ]
+        ],
+        "recorded": "$PROVENANCE_RECORDED_DATE"
       }
     },
     {
