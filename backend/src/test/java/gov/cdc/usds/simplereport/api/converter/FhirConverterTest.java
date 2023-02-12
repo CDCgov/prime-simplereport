@@ -53,6 +53,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -334,7 +335,7 @@ class FhirConverterTest {
 
   @Test
   void convertToTribalAffiliation_String() {
-    var actual = convertToTribalAffiliationExtension("1");
+    var actual = convertToTribalAffiliationExtension("1").get();
     var tribalAffiliationExtension = actual.getExtensionByUrl("tribalAffiliation");
     var tribalCodeableConcept = actual.castToCodeableConcept(tribalAffiliationExtension.getValue());
     var tribalCoding = tribalCodeableConcept.getCoding().get(0);
@@ -349,7 +350,15 @@ class FhirConverterTest {
   @Test
   void convertToTribalAffiliation_List_empty() {
     var actual = convertToTribalAffiliationExtension(Collections.emptyList());
-    assertThat(actual).isNull();
+    assertThat(actual).isEmpty();
+  }
+
+  @Test
+  void convertToTribalAffiliation_List_nullElement() {
+    var list = new ArrayList<String>();
+    list.add(null);
+    var actual = convertToTribalAffiliationExtension(list);
+    assertThat(actual).isEmpty();
   }
 
   @Test

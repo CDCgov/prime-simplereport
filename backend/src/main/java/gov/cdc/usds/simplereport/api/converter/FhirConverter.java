@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -267,25 +268,29 @@ public class FhirConverter {
     return null;
   }
 
-  public static Extension convertToTribalAffiliationExtension(List<String> tribalAffiliations) {
+  public static Optional<Extension> convertToTribalAffiliationExtension(
+      List<String> tribalAffiliations) {
     return CollectionUtils.isEmpty(tribalAffiliations)
-        ? null
+        ? Optional.empty()
         : convertToTribalAffiliationExtension(tribalAffiliations.get(0));
   }
 
-  public static Extension convertToTribalAffiliationExtension(@NotNull String tribalAffiliation) {
-    var ext = new Extension();
-    ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
-    var tribeExtension = ext.addExtension();
-    tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
-    var tribeCodeableConcept = new CodeableConcept();
-    var tribeCoding = tribeCodeableConcept.addCoding();
-    tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
-    tribeCoding.setCode(tribalAffiliation);
-    tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
-    tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
-    tribeExtension.setValue(tribeCodeableConcept);
-    return ext;
+  public static Optional<Extension> convertToTribalAffiliationExtension(String tribalAffiliation) {
+    if (StringUtils.isNotBlank(tribalAffiliation)) {
+      var ext = new Extension();
+      ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
+      var tribeExtension = ext.addExtension();
+      tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
+      var tribeCodeableConcept = new CodeableConcept();
+      var tribeCoding = tribeCodeableConcept.addCoding();
+      tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
+      tribeCoding.setCode(tribalAffiliation);
+      tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
+      tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
+      tribeExtension.setValue(tribeCodeableConcept);
+      return Optional.of(ext);
+    }
+    return Optional.empty();
   }
 
   public static Practitioner convertToPractitioner(Provider provider) {
@@ -320,7 +325,8 @@ public class FhirConverter {
     patient.addAddress(convertToAddress(person.getAddress(), person.getCountry()));
     patient.addExtension(convertToRaceExtension(person.getRace()));
     patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
-    patient.addExtension(convertToTribalAffiliationExtension(person.getTribalAffiliation()));
+    patient.addExtension(
+        convertToTribalAffiliationExtension(person.getTribalAffiliation()).orElse(null));
     return patient;
   }
 
