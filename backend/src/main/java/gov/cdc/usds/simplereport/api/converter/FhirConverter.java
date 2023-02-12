@@ -34,7 +34,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -554,7 +553,7 @@ public class FhirConverter {
   }
 
   public static Bundle createFhirBundle(
-      @NotNull TestEvent testEvent, GitProperties gitProperties, Instant instant) {
+      @NotNull TestEvent testEvent, GitProperties gitProperties, Date currentDate) {
     return createFhirBundle(
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
@@ -569,7 +568,7 @@ public class FhirConverter {
         convertToServiceRequest(testEvent.getOrder()),
         convertToDiagnosticReport(testEvent),
         testEvent.getDateTested(),
-        instant,
+        currentDate,
         gitProperties);
   }
 
@@ -583,7 +582,7 @@ public class FhirConverter {
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport,
       Date dateTested,
-      Instant instant,
+      Date currentDate,
       GitProperties gitProperties) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
@@ -644,7 +643,7 @@ public class FhirConverter {
     var bundle =
         new Bundle()
             .setType(BundleType.MESSAGE)
-            .setTimestampElement(new InstantType(instant.toString()))
+            .setTimestamp(currentDate)
             .setIdentifier(new Identifier().setValue(diagnosticReport.getId()));
     entryList.forEach(
         pair ->

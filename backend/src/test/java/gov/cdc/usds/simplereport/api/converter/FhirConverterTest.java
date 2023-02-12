@@ -1028,6 +1028,7 @@ class FhirConverterTest {
     var observation = new Observation();
     var serviceRequest = new ServiceRequest();
     var diagnosticReport = new DiagnosticReport();
+    var date = new Date();
     patient.setId(UUID.randomUUID().toString());
     organization.setId(UUID.randomUUID().toString());
     practitioner.setId(UUID.randomUUID().toString());
@@ -1037,7 +1038,6 @@ class FhirConverterTest {
     serviceRequest.setId(UUID.randomUUID().toString());
     diagnosticReport.setId(UUID.randomUUID().toString());
 
-    // todo: add buildproperties mock
     var actual =
         createFhirBundle(
             patient,
@@ -1049,7 +1049,7 @@ class FhirConverterTest {
             serviceRequest,
             diagnosticReport,
             new Date(),
-            instant,
+            date,
             gitProperties);
 
     var resourceUrls =
@@ -1057,6 +1057,7 @@ class FhirConverterTest {
             .map(BundleEntryComponent::getFullUrl)
             .collect(Collectors.toList());
 
+    assertThat(actual.getTimestamp()).isEqualTo(date);
     assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
     assertThat(actual.getIdentifier().getValue()).isEqualTo(diagnosticReport.getId());
     assertThat(actual.getEntry()).hasSize(12);
@@ -1237,11 +1238,10 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
     ReflectionTestUtils.setField(testEvent, "createdAt", date);
-
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
-    var actual = createFhirBundle(testEvent, gitProperties, instant);
+    var actual = createFhirBundle(testEvent, gitProperties, date);
 
     String actualSerialized = parser.encodeResourceToString(actual);
 
@@ -1265,6 +1265,10 @@ class FhirConverterTest {
     expectedSerialized =
         expectedSerialized.replace(
             "$PROVENANCE_RECORDED_DATE",
+            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString());
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$BUNDLE_TIMESTAMP",
             OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString());
 
     JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);

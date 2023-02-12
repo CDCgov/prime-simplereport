@@ -4,7 +4,7 @@
   "identifier": {
     "value": "45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
   },
-  "timestamp": "2023-02-08T21:33:06Z",
+  "timestamp": "$BUNDLE_TIMESTAMP",
   "entry":[
     {
       "fullUrl":"MessageHeader/$MESSAGE_HEADER_ID",
