@@ -411,7 +411,12 @@ const DeviceForm = (props: Props) => {
                         );
                       } else {
                         updateDeviceAttribute("supportedDiseaseTestPerformed", [
-                          { supportedDisease: "", testPerformedLoincCode: "" },
+                          {
+                            supportedDisease: "",
+                            testPerformedLoincCode: "",
+                            equipmentUid: "",
+                            testkitNameId: "",
+                          },
                         ]);
                       }
                     }}
