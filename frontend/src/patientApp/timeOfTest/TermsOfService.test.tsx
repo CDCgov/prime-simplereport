@@ -10,10 +10,11 @@ import "../../i18n";
 const mockStore = configureStore([]);
 
 describe("TermsOfService", () => {
+  const store = mockStore({
+    plid: "foo",
+  });
+
   it("renders", () => {
-    const store = mockStore({
-      plid: "foo",
-    });
     render(
       <Provider store={store}>
         <MockedProvider mocks={[]} addTypename={false}>
@@ -23,5 +24,19 @@ describe("TermsOfService", () => {
     );
 
     expect(screen.getByText("Terms of service")).toBeInTheDocument();
+  });
+
+  it("renders as page", () => {
+    render(
+      <Provider store={store}>
+        <MockedProvider mocks={[]} addTypename={false}>
+          <TermsOfService asPage={true} />
+        </MockedProvider>
+      </Provider>
+    );
+
+    expect(
+      screen.getByRole("heading", { name: /terms of service/i })
+    ).toBeInTheDocument();
   });
 });
