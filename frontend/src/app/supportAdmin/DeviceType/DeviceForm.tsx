@@ -72,6 +72,8 @@ const DeviceForm = (props: Props) => {
         (diseaseTestPerformed) => ({
           supportedDisease: diseaseTestPerformed.supportedDisease.internalId,
           testPerformedLoincCode: diseaseTestPerformed.testPerformedLoincCode,
+          testkitNameId: diseaseTestPerformed.testkitNameId,
+          equipmentUid: diseaseTestPerformed.equipmentUid,
         })
       );
     } else if (device?.supportedDiseases?.length) {
@@ -117,98 +119,144 @@ const DeviceForm = (props: Props) => {
 
   const createSupportedDiseaseRow = (index: number) => {
     return (
-      <fieldset className={"usa-fieldset margin-top-205"}>
-        <legend>Disease Information</legend>
-        <div className="grid-row grid-gap">
-          <div className="tablet:grid-col">
-            <Select
-              label={"Supported disease"}
-              options={props.supportedDiseaseOptions}
-              value={
-                device?.supportedDiseaseTestPerformed?.[index]
-                  ?.supportedDisease || ""
+      <div className="grid-row grid-gap" key={index}>
+        <div className="tablet:grid-col">
+          <Select
+            label={"Supported disease"}
+            options={props.supportedDiseaseOptions}
+            value={
+              device?.supportedDiseaseTestPerformed?.[index]
+                ?.supportedDisease || ""
+            }
+            onChange={(val) => {
+              if (device?.supportedDiseaseTestPerformed) {
+                let newSupportedDisease = [
+                  ...device?.supportedDiseaseTestPerformed,
+                ];
+                newSupportedDisease[index].supportedDisease = val;
+                updateDevice({
+                  ...device,
+                  supportedDiseaseTestPerformed: newSupportedDisease,
+                });
               }
-              onChange={(val) => {
-                if (device?.supportedDiseaseTestPerformed) {
-                  let newSupportedDisease = [
-                    ...device?.supportedDiseaseTestPerformed,
-                  ];
-                  newSupportedDisease[index].supportedDisease = val;
-                  updateDevice({
-                    ...device,
-                    supportedDiseaseTestPerformed: newSupportedDisease,
-                  });
+            }}
+            required={true}
+            disabled={!device}
+            defaultOption={""}
+            defaultSelect={true}
+            name={`selectSupportedDisease${index}`}
+            className={"margin-top-1"}
+          />
+        </div>
+        <div className="tablet:grid-col">
+          <TextInput
+            label="Test performed code"
+            name={`testPerformedCode${index}`}
+            value={
+              device?.supportedDiseaseTestPerformed?.[index]
+                ?.testPerformedLoincCode
+            }
+            onChange={(event) => {
+              if (device?.supportedDiseaseTestPerformed) {
+                let newSupportedDisease = [
+                  ...device?.supportedDiseaseTestPerformed,
+                ];
+                newSupportedDisease[index].testPerformedLoincCode =
+                  event.target.value;
+                updateDeviceAttribute(
+                  "supportedDiseaseTestPerformed",
+                  newSupportedDisease
+                );
+                const covidId = props.supportedDiseaseOptions.find(
+                  (d) => d.label === "COVID-19"
+                )?.value;
+                if (
+                  device?.supportedDiseaseTestPerformed?.[index]
+                    ?.supportedDisease === covidId
+                ) {
+                  updateDeviceAttribute("loincCode", event.target.value);
                 }
-              }}
-              required={true}
-              disabled={!device}
-              defaultOption={""}
-              defaultSelect={true}
-              name={`selectSupportedDisease${index}`}
-              className={"margin-top-1"}
-            />
-          </div>
-          <div className="tablet:grid-col">
-            <TextInput
-              label="Test performed code"
-              name={`testPerformedCode${index}`}
-              value={
-                device?.supportedDiseaseTestPerformed?.[index]
-                  ?.testPerformedLoincCode
               }
-              onChange={(event) => {
+            }}
+            disabled={!device}
+            required
+            className={"margin-top-1"}
+          />
+        </div>
+        <div className="tablet:grid-col">
+          <TextInput
+            label="Testkit Name Id"
+            name={`testkitNameId${index}`}
+            value={
+              device?.supportedDiseaseTestPerformed?.[index]?.testkitNameId ||
+              ""
+            }
+            onChange={(event) => {
+              if (device?.supportedDiseaseTestPerformed) {
+                let newSupportedDisease = [
+                  ...device?.supportedDiseaseTestPerformed,
+                ];
+                newSupportedDisease[index].testkitNameId = event.target.value;
+                updateDeviceAttribute(
+                  "supportedDiseaseTestPerformed",
+                  newSupportedDisease
+                );
+              }
+            }}
+            disabled={!device}
+            required
+            className={"margin-top-1"}
+          />
+        </div>
+        <div className="tablet:grid-col">
+          <TextInput
+            label="Equipment Uid"
+            name={`equipmentUid${index}`}
+            value={
+              device?.supportedDiseaseTestPerformed?.[index]?.equipmentUid || ""
+            }
+            onChange={(event) => {
+              if (device?.supportedDiseaseTestPerformed) {
+                let newSupportedDisease = [
+                  ...device?.supportedDiseaseTestPerformed,
+                ];
+                newSupportedDisease[index].equipmentUid = event.target.value;
+                updateDeviceAttribute(
+                  "supportedDiseaseTestPerformed",
+                  newSupportedDisease
+                );
+              }
+            }}
+            disabled={!device}
+            required
+            className={"margin-top-1"}
+          />
+        </div>
+        <div className="flex-align-self-end">
+          {index > 0 ? (
+            <button
+              className="usa-button--unstyled padding-105 height-5 cursor-pointer"
+              onClick={() => {
                 if (device?.supportedDiseaseTestPerformed) {
                   let newSupportedDisease = [
                     ...device?.supportedDiseaseTestPerformed,
                   ];
-                  newSupportedDisease[index].testPerformedLoincCode =
-                    event.target.value;
+                  newSupportedDisease.splice(index, 1);
                   updateDeviceAttribute(
                     "supportedDiseaseTestPerformed",
                     newSupportedDisease
                   );
-                  const covidId = props.supportedDiseaseOptions.find(
-                    (d) => d.label === "COVID-19"
-                  )?.value;
-                  if (
-                    device?.supportedDiseaseTestPerformed?.[index]
-                      ?.supportedDisease === covidId
-                  ) {
-                    updateDeviceAttribute("loincCode", event.target.value);
-                  }
                 }
               }}
-              disabled={!device}
-              required
-              className={"margin-top-1"}
-            />
-          </div>
-          <div className="flex-align-self-end">
-            {index > 0 ? (
-              <button
-                className="usa-button--unstyled padding-105 height-5 cursor-pointer"
-                onClick={() => {
-                  if (device?.supportedDiseaseTestPerformed) {
-                    let newSupportedDisease = [
-                      ...device?.supportedDiseaseTestPerformed,
-                    ];
-                    newSupportedDisease.splice(index, 1);
-                    updateDeviceAttribute(
-                      "supportedDiseaseTestPerformed",
-                      newSupportedDisease
-                    );
-                  }
-                }}
-                aria-label={`Delete disease`}
-              >
-                <FontAwesomeIcon icon={"trash"} className={"text-error"} />
-              </button>
-            ) : (
-              <div className={"padding-205 height-5"}> </div>
-            )}
-          </div>
+              aria-label={`Delete disease`}
+            >
+              <FontAwesomeIcon icon={"trash"} className={"text-error"} />
+            </button>
+          ) : (
+            <div className={"padding-205 height-5"}> </div>
+          )}
         </div>
-      </fieldset>
+      </div>
     );
   };
 
@@ -333,9 +381,12 @@ const DeviceForm = (props: Props) => {
                   />
                 </div>
               </div>
-              {device?.supportedDiseaseTestPerformed?.map((disease, index) =>
-                createSupportedDiseaseRow(index)
-              )}
+              <fieldset className={"usa-fieldset margin-top-205"}>
+                <legend>Disease Information</legend>
+                {device?.supportedDiseaseTestPerformed?.map((disease, index) =>
+                  createSupportedDiseaseRow(index)
+                )}
+              </fieldset>
               <div className="grid-row grid-gap">
                 <div
                   className="tablet:grid-col"
@@ -351,6 +402,8 @@ const DeviceForm = (props: Props) => {
                         newSupportedDisease.push({
                           supportedDisease: "",
                           testPerformedLoincCode: "",
+                          equipmentUid: "",
+                          testkitNameId: "",
                         });
                         updateDeviceAttribute(
                           "supportedDiseaseTestPerformed",
