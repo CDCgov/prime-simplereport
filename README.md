@@ -19,3 +19,5 @@ To start developing for SimpleReport, refer to our [Getting Started](https://git
 
 ## Contributing
 To contribute, refer to our [CONTRIBUTING.md](CONTRIBUTING.md)
+
+test
