@@ -54,6 +54,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1267,12 +1268,13 @@ class FhirConverterTest {
     expectedSerialized =
         expectedSerialized.replace(
             "$PROVENANCE_RECORDED_DATE",
-            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString());
+            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
     expectedSerialized =
         expectedSerialized.replace(
             "$BUNDLE_TIMESTAMP",
-            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString());
-
+            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, false);
   }
 }
