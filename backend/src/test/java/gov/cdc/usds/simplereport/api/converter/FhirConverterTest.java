@@ -382,7 +382,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/practitioner.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -408,7 +408,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/organization.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -454,7 +454,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/patient.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -509,7 +509,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/device.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -590,7 +590,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/specimen.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -786,7 +786,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/observationCorrection.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized1, true);
+    JSONAssert.assertEquals(expectedSerialized1, actualSerialized, true);
   }
 
   @Test
@@ -839,7 +839,7 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/diagnosticReport.json")),
             StandardCharsets.UTF_8);
 
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -945,7 +945,7 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/serviceRequest.json")),
             StandardCharsets.UTF_8);
 
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -1271,6 +1271,6 @@ class FhirConverterTest {
             "$BUNDLE_TIMESTAMP",
             OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toString());
 
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, false);
   }
 }

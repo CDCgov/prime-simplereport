@@ -56,11 +56,6 @@
       "resource": {
         "resourceType": "Provenance",
         "id": "$PROVENANCE_ID",
-        "target": [
-          {
-            "reference": "Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
-          }
-        ],
         "activity": {
           "coding": [
             {
