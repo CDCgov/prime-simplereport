@@ -28,6 +28,7 @@
         "source":{
           "software":"PRIME SimpleReport",
           "endpoint":"https://simplereport.gov",
+          "version": "FRIDAY",
           "extension" : [ {
             "url" : "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
             "valueReference" : {

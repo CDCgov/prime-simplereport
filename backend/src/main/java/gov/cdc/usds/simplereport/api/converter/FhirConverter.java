@@ -694,7 +694,8 @@ public class FhirConverter {
     messageHeader
         .getSource()
         .setSoftware("PRIME SimpleReport")
-        .setEndpoint("https://simplereport.gov");
+        .setEndpoint("https://simplereport.gov")
+        .setVersion(gitProperties.getShortCommitId());
     messageHeader
         .addDestination()
         .setName("PRIME ReportStream")
