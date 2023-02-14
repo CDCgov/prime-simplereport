@@ -204,8 +204,6 @@ describe("Uploads", () => {
       jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
         return Promise.resolve(new Response(null, { status: 500 }));
       });
-      const scrollIntoViewMock = jest.fn();
-      HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
       render(<TestContainer />);
 
@@ -226,6 +224,11 @@ describe("Uploads", () => {
           )
         ).toBeInTheDocument();
       });
+      expect(
+        screen.getByText(
+          "There was a server error. Your file has not been accepted."
+        ).parentElement?.parentElement
+      ).toHaveFocus();
       expect(screen.queryByText("Requested Edit")).not.toBeInTheDocument();
       expect(mockTrackEvent).toHaveBeenCalledWith({
         name: "Spreadsheet upload server error",
@@ -234,7 +237,6 @@ describe("Uploads", () => {
           user: "testuser@test.org",
         },
       });
-      expect(scrollIntoViewMock).toBeCalled();
     });
 
     it("response errors are shown to user", async () => {

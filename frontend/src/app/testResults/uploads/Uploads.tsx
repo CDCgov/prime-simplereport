@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup } from "@trussworks/react-uswds";
 
@@ -39,11 +39,12 @@ const Uploads = () => {
     Array<FeedbackMessage | undefined | null>
   >([]);
   const [errorMessageText, setErrorMessageText] = useState<string | null>(null);
-  const errorMessageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (errorMessageText) {
-      errorMessageRef.current?.scrollIntoView();
+      (
+        document.getElementsByClassName("usa-alert--error")[0] as HTMLDivElement
+      ).focus();
     }
   }, [errorMessageText]);
 
@@ -291,7 +292,7 @@ const Uploads = () => {
               <div
                 className="usa-alert usa-alert--error"
                 role="alert"
-                ref={errorMessageRef}
+                tabIndex={0}
               >
                 <div className="usa-alert__body">
                   <h3 className="usa-alert__heading">
