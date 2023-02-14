@@ -204,6 +204,8 @@ describe("Uploads", () => {
       jest.spyOn(FileUploadService, "uploadResults").mockImplementation(() => {
         return Promise.resolve(new Response(null, { status: 500 }));
       });
+      const scrollIntoViewMock = jest.fn();
+      HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
       render(<TestContainer />);
 
@@ -232,6 +234,7 @@ describe("Uploads", () => {
           user: "testuser@test.org",
         },
       });
+      expect(scrollIntoViewMock).toBeCalled();
     });
 
     it("response errors are shown to user", async () => {
