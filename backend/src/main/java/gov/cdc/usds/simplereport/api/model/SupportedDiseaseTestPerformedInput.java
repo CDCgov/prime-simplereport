@@ -9,4 +9,6 @@ import lombok.Getter;
 public class SupportedDiseaseTestPerformedInput {
   UUID supportedDisease;
   String testPerformedLoincCode;
+  String equipmentUid;
+  String testkitNameId;
 }

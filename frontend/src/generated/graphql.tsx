@@ -928,13 +928,17 @@ export type SupportedDisease = {
 
 export type SupportedDiseaseTestPerformed = {
   __typename?: "SupportedDiseaseTestPerformed";
+  equipmentUid?: Maybe<Scalars["String"]>;
   supportedDisease: SupportedDisease;
   testPerformedLoincCode: Scalars["String"];
+  testkitNameId?: Maybe<Scalars["String"]>;
 };
 
 export type SupportedDiseaseTestPerformedInput = {
+  equipmentUid?: InputMaybe<Scalars["String"]>;
   supportedDisease: Scalars["ID"];
   testPerformedLoincCode: Scalars["String"];
+  testkitNameId?: InputMaybe<Scalars["String"]>;
 };
 
 export enum TestCorrectionStatus {

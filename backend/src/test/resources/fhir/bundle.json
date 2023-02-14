@@ -4,7 +4,7 @@
   "identifier": {
     "value": "45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
   },
-  "timestamp": "2023-02-08T21:33:06Z",
+  "timestamp": "$BUNDLE_TIMESTAMP",
   "entry":[
     {
       "fullUrl":"MessageHeader/$MESSAGE_HEADER_ID",
@@ -28,6 +28,7 @@
         "source":{
           "software":"PRIME SimpleReport",
           "endpoint":"https://simplereport.gov",
+          "version": "FRIDAY",
           "extension" : [ {
             "url" : "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
             "valueReference" : {
@@ -56,11 +57,6 @@
       "resource": {
         "resourceType": "Provenance",
         "id": "$PROVENANCE_ID",
-        "target": [
-          {
-            "reference": "Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
-          }
-        ],
         "activity": {
           "coding": [
             {
@@ -76,7 +72,8 @@
               "reference": "Organization/1c3d14b9-e222-4a16-9fb2-d9f173034a6a"
             }
           }
-        ]
+        ],
+        "recorded": "$PROVENANCE_RECORDED_DATE"
       }
     },
     {

@@ -52,7 +52,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -334,7 +338,7 @@ class FhirConverterTest {
 
   @Test
   void convertToTribalAffiliation_String() {
-    var actual = convertToTribalAffiliationExtension("1");
+    var actual = convertToTribalAffiliationExtension("1").get();
     var tribalAffiliationExtension = actual.getExtensionByUrl("tribalAffiliation");
     var tribalCodeableConcept = actual.castToCodeableConcept(tribalAffiliationExtension.getValue());
     var tribalCoding = tribalCodeableConcept.getCoding().get(0);
@@ -349,7 +353,15 @@ class FhirConverterTest {
   @Test
   void convertToTribalAffiliation_List_empty() {
     var actual = convertToTribalAffiliationExtension(Collections.emptyList());
-    assertThat(actual).isNull();
+    assertThat(actual).isEmpty();
+  }
+
+  @Test
+  void convertToTribalAffiliation_List_nullElement() {
+    var list = new ArrayList<String>();
+    list.add(null);
+    var actual = convertToTribalAffiliationExtension(list);
+    assertThat(actual).isEmpty();
   }
 
   @Test
@@ -371,7 +383,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/practitioner.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -397,7 +409,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/organization.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -443,7 +455,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/patient.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -498,7 +510,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/device.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -579,7 +591,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/specimen.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -710,8 +722,9 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
     ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
     var covidDiseaseTestPerformedCode =
-        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6");
-    var fluDiseaseTestPerformedCode = new DeviceTestPerformedLoincCode(null, fluDisease, "85477-8");
+        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6", null, null);
+    var fluDiseaseTestPerformedCode =
+        new DeviceTestPerformedLoincCode(null, fluDisease, "85477-8", null, null);
 
     var actual =
         convertToObservation(
@@ -758,7 +771,7 @@ class FhirConverterTest {
     var testOrder = TestDataBuilder.createTestOrderWithDevice();
     var result = new Result(testOrder, covidDisease, TestResult.NEGATIVE);
     var covidDiseaseTestPerformedCode =
-        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6");
+        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6", null, null);
 
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
 
@@ -775,7 +788,7 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/observationCorrection.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized1, true);
+    JSONAssert.assertEquals(expectedSerialized1, actualSerialized, true);
   }
 
   @Test
@@ -828,7 +841,7 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/diagnosticReport.json")),
             StandardCharsets.UTF_8);
 
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -934,7 +947,7 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/serviceRequest.json")),
             StandardCharsets.UTF_8);
 
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -959,6 +972,7 @@ class FhirConverterTest {
         .isEqualTo("ORU/ACK - Unsolicited transmission of an observation message");
     assertThat(messageHeader.getSource().getSoftware()).isEqualTo("PRIME SimpleReport");
     assertThat(messageHeader.getSource().getEndpoint()).isEqualTo("https://simplereport.gov");
+    assertThat(messageHeader.getSource().getVersion()).isEqualTo("FRIDAY");
     assertThat(messageHeader.getSender().getReference()).isEqualTo("Organization/org-id");
     assertThat(messageHeader.getFocus()).hasSize(2);
     assertThat(messageHeader.getFocus().stream().map(Reference::getReference))
@@ -993,7 +1007,8 @@ class FhirConverterTest {
 
   @Test
   void createProvenance_valid() {
-    var provenance = createProvenance("Organization/org-id", new Date());
+    var date = new Date();
+    var provenance = createProvenance("Organization/org-id", date);
 
     assertThat(provenance.getActivity().getCoding()).hasSize(1);
     assertThat(provenance.getActivity().getCodingFirstRep().getCode()).isEqualTo("R01");
@@ -1001,9 +1016,9 @@ class FhirConverterTest {
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
     assertThat(provenance.getActivity().getCodingFirstRep().getDisplay())
         .isEqualTo("ORU/ACK - Unsolicited transmission of an observation message");
-
     assertThat(provenance.getAgentFirstRep().getWho().getReference())
         .isEqualTo("Organization/org-id");
+    assertThat(provenance.getRecorded()).isEqualTo(date);
   }
 
   @Test
@@ -1016,6 +1031,7 @@ class FhirConverterTest {
     var observation = new Observation();
     var serviceRequest = new ServiceRequest();
     var diagnosticReport = new DiagnosticReport();
+    var date = new Date();
     patient.setId(UUID.randomUUID().toString());
     organization.setId(UUID.randomUUID().toString());
     practitioner.setId(UUID.randomUUID().toString());
@@ -1025,7 +1041,6 @@ class FhirConverterTest {
     serviceRequest.setId(UUID.randomUUID().toString());
     diagnosticReport.setId(UUID.randomUUID().toString());
 
-    // todo: add buildproperties mock
     var actual =
         createFhirBundle(
             patient,
@@ -1037,7 +1052,7 @@ class FhirConverterTest {
             serviceRequest,
             diagnosticReport,
             new Date(),
-            instant,
+            date,
             gitProperties);
 
     var resourceUrls =
@@ -1045,6 +1060,7 @@ class FhirConverterTest {
             .map(BundleEntryComponent::getFullUrl)
             .collect(Collectors.toList());
 
+    assertThat(actual.getTimestamp()).isEqualTo(date);
     assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
     assertThat(actual.getIdentifier().getValue()).isEqualTo(diagnosticReport.getId());
     assertThat(actual.getEntry()).hasSize(12);
@@ -1209,9 +1225,10 @@ class FhirConverterTest {
     var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
     var testPerformedCodesList =
         List.of(
-            new DeviceTestPerformedLoincCode(deviceTypeId, covidDisease, "333-123"),
-            new DeviceTestPerformedLoincCode(deviceTypeId, fluADisease, "444-123"),
-            new DeviceTestPerformedLoincCode(deviceTypeId, fluBDisease, "444-456"));
+            new DeviceTestPerformedLoincCode(deviceTypeId, covidDisease, "333-123", null, null),
+            new DeviceTestPerformedLoincCode(deviceTypeId, fluADisease, "444-123", null, null),
+            new DeviceTestPerformedLoincCode(deviceTypeId, fluBDisease, "444-456", null, null));
+    var date = new Date();
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
@@ -1224,11 +1241,11 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
-
+    ReflectionTestUtils.setField(testEvent, "createdAt", date);
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
-    var actual = createFhirBundle(testEvent, gitProperties, instant);
+    var actual = createFhirBundle(testEvent, gitProperties, date);
 
     String actualSerialized = parser.encodeResourceToString(actual);
 
@@ -1249,6 +1266,16 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
-    JSONAssert.assertEquals(actualSerialized, expectedSerialized, false);
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$PROVENANCE_RECORDED_DATE",
+            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$BUNDLE_TIMESTAMP",
+            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, false);
   }
 }
