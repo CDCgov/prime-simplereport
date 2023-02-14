@@ -1,6 +1,6 @@
 variable "prefix" {
   type    = string
-  default = "reportstream-batched-publisher"
+  default = "rs-batch-publisher"
 }
 
 variable "location" {
