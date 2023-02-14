@@ -7,7 +7,7 @@ const { SIMPLE_REPORT_CB_TOKEN, SIMPLE_REPORT_CB_URL } = ENV;
 
 const queueTrigger: AzureFunction = async function (
   context: Context,
-  message: ReportStreamCallbackRequest // This type needs to be changed because the objects places in here will be a mutation of the SimpleReportReportStreamResponse + queue name
+  message: ReportStreamCallbackRequest
 ): Promise<void> {
   const headers = new Headers({
     Accept: "application/json",
