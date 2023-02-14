@@ -70,6 +70,14 @@ const UploadPatients = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (errorMessage.body) {
+      (
+        document.getElementsByClassName("usa-alert--error")[0] as HTMLDivElement
+      ).focus();
+    }
+  }, [errorMessage]);
+
   function onFacilitySelect() {
     return (e: React.ChangeEvent<HTMLSelectElement>) => {
       const selected = facilities.find((f) => f.id === e.target.value);
@@ -209,7 +217,7 @@ const UploadPatients = () => {
     return (
       <div>
         {errorMessage.body && (
-          <div className="usa-alert usa-alert--error maxw-560">
+          <div className="usa-alert usa-alert--error maxw-560" tabIndex={0}>
             <div className="usa-alert__body">
               <span className="usa-alert__heading text-bold">
                 {errorMessage.header}
