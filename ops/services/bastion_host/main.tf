@@ -12,6 +12,7 @@ resource "azurerm_public_ip" "bastion" {
   allocation_method   = "Static"
   sku                 = "Standard"
   tags                = var.tags
+  zones               = ["1", "2", "3"]
 }
 
 resource "azurerm_bastion_host" "bastion" {

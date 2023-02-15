@@ -6,4 +6,4 @@ export const TestResultDeliveryPreferences = {
 } as const;
 
 export type TestResultDeliveryPreference =
-  typeof TestResultDeliveryPreferences[keyof typeof TestResultDeliveryPreferences];
+  (typeof TestResultDeliveryPreferences)[keyof typeof TestResultDeliveryPreferences];

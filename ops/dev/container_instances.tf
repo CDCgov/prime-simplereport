@@ -7,7 +7,6 @@ module "db_rollback" {
   env                     = local.env
   resource_group_name     = data.azurerm_resource_group.rg.name
   resource_group_location = data.azurerm_resource_group.rg.location
-  network_profile_id      = data.terraform_remote_state.persistent_dev.outputs.network_profile_id
   acr_password            = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
   rollback_tag            = var.liquibase_rollback_tag
   spring_datasource_url   = data.azurerm_key_vault_secret.sr_dev_db_jdbc.value

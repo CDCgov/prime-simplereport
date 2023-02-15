@@ -28,7 +28,7 @@ interface Props {
 }
 
 const searchFields = ["manufacturer", "name", "model"] as const;
-type DeviceSearchFields = typeof searchFields[number];
+type DeviceSearchFields = (typeof searchFields)[number];
 type SearchableDevice = Pick<DeviceType, DeviceSearchFields>;
 
 const searchDevices = (devices: DeviceType[], query: string): DeviceType[] => {

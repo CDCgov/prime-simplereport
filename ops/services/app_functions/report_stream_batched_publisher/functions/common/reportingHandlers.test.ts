@@ -5,15 +5,15 @@ import {
   QueueClient,
   QueueDeleteMessageResponse,
 } from "@azure/storage-queue";
+import { Response } from "node-fetch";
 
 import * as queueHandlers from "./queueHandlers";
 import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
 } from "./reportingHandlers";
-import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
-// import { uploaderVersion } from "../config";
-import { ReportStreamResponse } from "./rs-response";
+import { uploaderVersion } from "../config";
+import { ReportStreamResponse } from "./types";
 
 jest.mock(
   "node-fetch",
@@ -23,7 +23,7 @@ jest.mock(
 jest.mock("../config", () => ({
   ENV: {
     REPORT_STREAM_URL: "https://nope.url/1234",
-    REPORT_STREAM_TOKEN: "merhaba",
+    FHIR_REPORT_STREAM_TOKEN: "merhaba",
   },
 }));
 
@@ -38,37 +38,21 @@ jest.mock(
 
 describe("reportingHandlers", () => {
   describe("reportToUniversalPipeline", () => {
-    let fetchSpy;
-
-    beforeEach(() => {
-      fetchSpy = jest.spyOn(global, "fetch");
-    });
-
-    afterEach(() => {
-      jest.restoreAllMocks();
-    });
-
     it("calls fetch with correct parameters", async () => {
-      /*const mockHeaders = new Headers({
+      const mockHeaders = new Headers({
         "x-functions-key": "merhaba",
         "x-api-version": uploaderVersion,
-        "content-type": "application/json;charset=UTF-8",
-        client: "simple_report",
-      });*/
+        "content-type": "application/fhir+ndjson",
+        client: "simple_report.fullelr",
+      });
 
-      const responseMock = {} as jest.MockedObject<Response>;
-
-      fetchSpy.mockResolvedValueOnce(responseMock);
-      const simpleReportTestEvents: SimpleReportTestEvent[] = [
-        {} as jest.MockedObject<SimpleReportTestEvent>,
-      ];
-      await reportToUniversalPipeline(simpleReportTestEvents);
-      // to comment out as part of ticket 5115
-      /*expect(fetchSpy).toHaveBeenCalledWith("https://nope.url/1234", {
+      const serializedTestEvents = "";
+      await reportToUniversalPipeline("");
+      expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",
         headers: mockHeaders,
-        body: JSON.stringify(simpleReportTestEvents),
-      });*/
+        body: serializedTestEvents,
+      });
     });
   });
 

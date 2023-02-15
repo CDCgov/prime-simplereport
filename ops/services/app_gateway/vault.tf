@@ -13,5 +13,5 @@ resource "azurerm_key_vault_access_policy" "gateway" {
   object_id    = azurerm_user_assigned_identity.gateway.principal_id
   tenant_id    = data.azurerm_client_config.current.tenant_id
 
-  secret_permissions = ["get"]
+  secret_permissions = ["Get"]
 }
