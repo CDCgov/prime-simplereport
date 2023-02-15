@@ -49,6 +49,7 @@ resource "azurerm_public_ip" "www_redirect" {
   sku                 = "Standard"
   sku_tier            = "Regional"
   domain_name_label   = "simple-report-www-redirect"
+  zones               = ["1", "2", "3"]
 }
 
 resource "azurerm_user_assigned_identity" "www_redirect" {
@@ -230,6 +231,7 @@ resource "azurerm_public_ip" "cdc_gov_redirect" {
   sku                 = "Standard"
   sku_tier            = "Regional"
   domain_name_label   = "simplereportgw"
+  zones               = ["1", "2", "3"]
 }
 
 resource "azurerm_user_assigned_identity" "cdc_gov_redirect" {
