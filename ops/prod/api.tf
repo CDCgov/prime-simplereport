@@ -9,13 +9,17 @@ module "simple_report_api" {
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
+  sku_name = "P3v3"
+
   webapp_subnet_id = data.terraform_remote_state.persistent_prod.outputs.subnet_webapp_id
   lb_subnet_id     = data.terraform_remote_state.persistent_prod.outputs.subnet_lbs_id
 
-  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
-  key_vault_id     = data.azurerm_key_vault.global.id
-  tenant_id        = data.azurerm_client_config.current.tenant_id
-  https_only       = true
+  docker_image     = "simplereportacr.azurecr.io/api/simple-report-api-build"
+  docker_image_tag = var.acr_image_tag
+
+  key_vault_id = data.azurerm_key_vault.global.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  https_only   = true
 
   deploy_info = {
     env           = "prod",
