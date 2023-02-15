@@ -1,19 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.*;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -29,56 +16,26 @@ import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.r4.model.Address;
-import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.*;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
-import org.hl7.fhir.r4.model.CodeableConcept;
-import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
-import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
 import org.hl7.fhir.r4.model.Device.DeviceNameType;
-import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.Extension;
-import org.hl7.fhir.r4.model.HumanName;
-import org.hl7.fhir.r4.model.Identifier;
-import org.hl7.fhir.r4.model.MessageHeader;
-import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationStatus;
-import org.hl7.fhir.r4.model.Organization;
-import org.hl7.fhir.r4.model.Patient;
-import org.hl7.fhir.r4.model.Practitioner;
-import org.hl7.fhir.r4.model.PractitionerRole;
-import org.hl7.fhir.r4.model.Provenance;
-import org.hl7.fhir.r4.model.Reference;
-import org.hl7.fhir.r4.model.Resource;
-import org.hl7.fhir.r4.model.ResourceType;
-import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
-import org.hl7.fhir.r4.model.Specimen;
-import org.hl7.fhir.r4.model.StringType;
 import org.springframework.data.util.Pair;
 
 @Slf4j
@@ -402,8 +359,8 @@ public class FhirConverter {
     var observation = new Observation();
     observation.setId(id);
     setStatus(observation, correctionStatus);
-    addCode(diseaseCode, diseaseName, observation);
-    addValue(resultCode, observation, resultDescription);
+    addCodeWithLoinc(diseaseCode, diseaseName, observation);
+    addSNOMEDValue(resultCode, observation, resultDescription);
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
     return observation;
@@ -435,7 +392,73 @@ public class FhirConverter {
     }
   }
 
-  private static void addValue(String resultCode, Observation observation, String resultDisplay) {
+  public static Set<Observation> convertToAOEObservations(AskOnEntrySurvey surveyData) {
+    var observations = new HashSet<Observation>();
+    var symptomaticCode =
+        createCodeWithLoinc("95419-8", "Has symptoms related to condition of interest");
+    if (!surveyData.getNoSymptoms()
+        && surveyData.getSymptoms().values().stream().allMatch(v -> v.equals(Boolean.FALSE))) {
+      // if no responses for no symptoms or any symptoms checked, AoE form not completed
+      observations.add(createAOEObservation(symptomaticCode, createYesNoUnkValue(null)));
+    } else if (surveyData.getNoSymptoms()) {
+      // user reported as not symptomatic
+      observations.add(createAOEObservation(symptomaticCode, createYesNoUnkValue(false)));
+    } else {
+      // user reported as symptomatic
+      observations.add(createAOEObservation(symptomaticCode, createYesNoUnkValue(true)));
+      observations.add(
+          createAOEObservation(
+              createCodeWithLoinc("11368-8", "Illness or injury onset date and time"),
+              new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
+    }
+    // todo: add if pregnant (not required)
+    return observations;
+  }
+
+  public static Observation createAOEObservation(CodeableConcept code, Type value) {
+    var observation = new Observation();
+    observation.setId(UUID.randomUUID().toString());
+    observation.setStatus(ObservationStatus.FINAL);
+
+    var identifier = new Identifier();
+    identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
+    identifier.setType(
+        createCodeWithLoinc("81959-9", "Public health laboratory ask at order entry panel"));
+    observation.setIdentifier(List.of(identifier));
+
+    observation.setCode(code);
+    observation.setValue(value);
+    return observation;
+  }
+
+  // todo: better to create code or pass observation and add?
+  private static CodeableConcept createCodeWithLoinc(String loinc, String displayText) {
+    var code = new CodeableConcept();
+    var codeCoding = code.addCoding();
+    codeCoding.setSystem(LOINC_CODE_SYSTEM);
+    codeCoding.setCode(loinc);
+    codeCoding.setDisplay(displayText);
+    code.setText(displayText);
+    return code;
+  }
+
+  private static CodeableConcept createYesNoUnkValue(Boolean val) {
+    var value = new CodeableConcept();
+    var valueCoding = value.addCoding();
+    if (val == null) {
+      valueCoding.setSystem(NULL_CODE_SYSTEM);
+      valueCoding.setCode(MappingConstants.UNK_CODE);
+      valueCoding.setDisplay(MappingConstants.UNKNOWN_STRING);
+    } else {
+      valueCoding.setSystem(YESNO_CODE_SYSTEM);
+      valueCoding.setCode(val ? "Y" : "N");
+      valueCoding.setDisplay(val ? "Yes" : "No");
+    }
+    return value;
+  }
+
+  private static void addSNOMEDValue(
+      String resultCode, Observation observation, String resultDisplay) {
     var valueCodeableConcept = new CodeableConcept();
     var valueCoding = valueCodeableConcept.addCoding();
     valueCoding.setSystem(SNOMED_CODE_SYSTEM);
@@ -444,12 +467,13 @@ public class FhirConverter {
     observation.setValue(valueCodeableConcept);
   }
 
-  private static void addCode(String diseaseCode, String diseaseName, Observation observation) {
+  private static void addCodeWithLoinc(String code, String displayText, Observation observation) {
     var codeCodeableConcept = observation.getCode();
     var codeCoding = codeCodeableConcept.addCoding();
     codeCoding.setSystem(LOINC_CODE_SYSTEM);
-    codeCoding.setCode(diseaseCode);
-    codeCodeableConcept.setText(diseaseName);
+    codeCoding.setCode(code);
+    codeCoding.setDisplay(displayText);
+    codeCodeableConcept.setText(displayText);
   }
 
   public static ServiceRequest convertToServiceRequest(@NotNull TestOrder order) {
@@ -530,6 +554,7 @@ public class FhirConverter {
             testEvent.getResults(),
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
+        convertToAOEObservations(testEvent.getSurveyData()),
         convertToServiceRequest(testEvent.getOrder()),
         convertToDiagnosticReport(testEvent),
         testEvent.getDateTested());
@@ -541,7 +566,8 @@ public class FhirConverter {
       Practitioner practitioner,
       Device device,
       Specimen specimen,
-      List<Observation> observations,
+      List<Observation> resultObservations,
+      Set<Observation> aoeObservations,
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport,
       Date dateTested) {
@@ -584,7 +610,7 @@ public class FhirConverter {
     entryList.add(Pair.of(deviceFullUrl, device));
     entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
 
-    observations.forEach(
+    resultObservations.forEach(
         observation -> {
           var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
 
@@ -594,6 +620,16 @@ public class FhirConverter {
           observation.setDevice(new Reference(deviceFullUrl));
 
           diagnosticReport.addResult(new Reference(observationFullUrl));
+          entryList.add(Pair.of(observationFullUrl, observation));
+        });
+
+    aoeObservations.forEach(
+        observation -> {
+          var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+
+          observation.setSubject(new Reference(patientFullUrl));
+
+          serviceRequest.addSupportingInfo(new Reference(observationFullUrl));
           entryList.add(Pair.of(observationFullUrl, observation));
         });
 

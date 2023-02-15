@@ -21,6 +21,7 @@ public class FhirConstants {
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String SNOMED_CODE_SYSTEM = "http://snomed.info/sct";
   public static final String LOINC_CODE_SYSTEM = "http://loinc.org";
+  public static final String YESNO_CODE_SYSTEM = "http://terminology.hl7.org/ValueSet/v2-0136";
 
   public static final String EVENT_TYPE_CODE_SYSTEM =
       "http://terminology.hl7.org/CodeSystem/v2-0003";
