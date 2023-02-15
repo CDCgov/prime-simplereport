@@ -2,6 +2,7 @@ import {
   deleteSuccessfullyParsedMessages,
   dequeueMessages,
   getQueueClient,
+  getTestEventIdFromFHIRBundle,
   minimumMessagesAvailable,
   reportExceptions,
 } from "./queueHandlers";
@@ -12,7 +13,7 @@ import {
   QueueServiceClient,
   StorageSharedKeyCredential,
 } from "@azure/storage-queue";
-import { ReportStreamError, ReportStreamResponse } from "./rs-response";
+import { ReportStreamError, ReportStreamResponse } from "./types";
 import { Context } from "@azure/functions";
 
 jest.mock("../config", () => ({
@@ -21,8 +22,6 @@ jest.mock("../config", () => ({
     AZ_STORAGE_ACCOUNT_NAME: "hola",
     AZ_STORAGE_ACCOUNT_KEY: "bonjour",
     TEST_EVENT_QUEUE_NAME: "ciao",
-    REPORT_STREAM_URL: "https://nope.url/1234",
-    REPORT_STREAM_TOKEN: "merhaba",
     REPORT_STREAM_BATCH_MINIMUM: "1",
     REPORT_STREAM_BATCH_MAXIMUM: "5000",
   },
@@ -430,18 +429,49 @@ describe("Queue Handlers", () => {
       // THEN
       expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(6);
       const expectedMessages = [
-        `{"testEventInternalId":"1234","isError":false,"details":"goodbye"}`,
-        `{"testEventInternalId":"5678","isError":false,"details":"goodbye"}`,
-        `{"testEventInternalId":"1234","isError":false,"details":"au revoir"}`,
-        `{"testEventInternalId":"1234","isError":true,"details":"adios"}`,
-        `{"testEventInternalId":"1234","isError":true,"details":"auf wiedersehen"}`,
-        `{"testEventInternalId":"91011","isError":true,"details":"auf wiedersehen"}`,
+        `{"testEventInternalId":"1234","isError":false,"details":"goodbye","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"5678","isError":false,"details":"goodbye","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"1234","isError":false,"details":"au revoir","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"1234","isError":true,"details":"adios","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"1234","isError":true,"details":"auf wiedersehen","queueName":"dummyTestEventQueue"}`,
+        `{"testEventInternalId":"91011","isError":true,"details":"auf wiedersehen","queueName":"dummyTestEventQueue"}`,
       ];
       expectedMessages.forEach((em) => {
         expect(queueClientMock.sendMessage).toHaveBeenCalledWith(
           Buffer.from(em).toString("base64")
         );
       });
+    });
+  });
+
+  describe("getTestEventIdFromFHIRBundle", () => {
+    it("returns undefined when no bundle is passed", () => {
+      expect(getTestEventIdFromFHIRBundle(undefined)).toBeUndefined();
+    });
+
+    it("returns undefined when invalid bundle is passed", () => {
+      expect(getTestEventIdFromFHIRBundle({ not: "fhir" })).toBeUndefined();
+    });
+
+    it("returns undefined when bundle does not contain test id", () => {
+      expect(
+        getTestEventIdFromFHIRBundle({
+          entry: [
+            { resource: { resourceType: "not_DiagnosticReport", id: "123" } },
+            { resource: { resourceType: "DiagnosticReport" } },
+          ],
+        })
+      ).toBeUndefined();
+    });
+
+    it("returns correct test id", () => {
+      expect(
+        getTestEventIdFromFHIRBundle({
+          entry: [
+            { resource: { resourceType: "DiagnosticReport", id: "123" } },
+          ],
+        })
+      ).toEqual("123");
     });
   });
 });
