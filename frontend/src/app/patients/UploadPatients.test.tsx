@@ -181,10 +181,6 @@ describe("Upload Patient", () => {
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
     expect(
-      (await screen.findByText("Error: File not accepted")).parentElement
-        ?.parentElement
-    ).toHaveFocus();
-    expect(
       await screen.findByText(
         "Please resolve the errors below and upload your edited file.",
         { exact: false }

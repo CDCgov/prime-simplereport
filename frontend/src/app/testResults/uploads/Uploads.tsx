@@ -292,7 +292,7 @@ const Uploads = () => {
               <div
                 className="usa-alert usa-alert--error"
                 role="alert"
-                tabIndex={0}
+                tabIndex={-1}
               >
                 <div className="usa-alert__body">
                   <h3 className="usa-alert__heading">
