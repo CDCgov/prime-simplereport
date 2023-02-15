@@ -178,6 +178,7 @@ resource "azurerm_application_gateway" "www_redirect" {
   # ------- Routing -------------------------
   # HTTP -> HTTPS redirect
   request_routing_rule {
+    priority                    = 10020
     name                        = "httpsRedirect"
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-http"
@@ -195,6 +196,7 @@ resource "azurerm_application_gateway" "www_redirect" {
 
   # HTTPS -> www redirect
   request_routing_rule {
+    priority                    = 10010
     name                        = "wwwRedirect"
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-https"
@@ -360,6 +362,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
   # ------- Routing -------------------------
   # HTTP -> HTTPS redirect
   request_routing_rule {
+    priority                    = 10020
     name                        = "httpsRedirect"
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-http"
@@ -377,6 +380,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
 
   # HTTPS -> www redirect
   request_routing_rule {
+    priority                    = 10010
     name                        = "wwwRedirect"
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-https"
