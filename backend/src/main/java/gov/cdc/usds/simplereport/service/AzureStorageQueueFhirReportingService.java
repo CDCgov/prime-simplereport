@@ -5,9 +5,11 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBu
 import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.info.GitProperties;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -16,6 +18,7 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
   public static final String COVID_LOINC = "96741-4";
   private final FhirContext context;
   private final QueueAsyncClient queueClient;
+  private final GitProperties gitProperties;
 
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
@@ -24,7 +27,8 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
       log.trace("Dispatching TestEvent [{}] to Azure storage queue", testEvent.getInternalId());
       var parser = context.newJsonParser();
       return queueClient
-          .sendMessage(parser.encodeResourceToString(createFhirBundle(testEvent)))
+          .sendMessage(
+              parser.encodeResourceToString(createFhirBundle(testEvent, gitProperties, new Date())))
           .toFuture()
           .thenApply(result -> null);
     }

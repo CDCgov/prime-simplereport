@@ -64,6 +64,7 @@ import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationStatus;
@@ -80,13 +81,17 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.StringType;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.data.util.Pair;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 public class FhirConverter {
   private FhirConverter() {
     throw new IllegalStateException("Utility class");
   }
+
+  private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
   public static HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(
@@ -233,53 +238,58 @@ public class FhirConverter {
     return ext;
   }
 
-  public static Extension convertToEthnicityExtension(@NotNull String ethnicity) {
-    var ext = new Extension();
-    ext.setUrl(ETHNICITY_EXTENSION_URL);
-    var codeableConcept = new CodeableConcept();
-    var coding = codeableConcept.addCoding();
-    if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
-      if ("refused".equalsIgnoreCase(ethnicity)) {
-        coding.setSystem(NULL_CODE_SYSTEM);
+  public static Extension convertToEthnicityExtension(String ethnicity) {
+    if (StringUtils.isNotBlank(ethnicity)) {
+      var ext = new Extension();
+      ext.setUrl(ETHNICITY_EXTENSION_URL);
+      var codeableConcept = new CodeableConcept();
+      var coding = codeableConcept.addCoding();
+      if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
+        if ("refused".equalsIgnoreCase(ethnicity)) {
+          coding.setSystem(NULL_CODE_SYSTEM);
+        } else {
+          coding.setSystem(ETHNICITY_CODE_SYSTEM);
+        }
+        coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
+        coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
+
+        codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
       } else {
-        coding.setSystem(ETHNICITY_CODE_SYSTEM);
+        coding.setSystem(NULL_CODE_SYSTEM);
+        coding.setCode(MappingConstants.U_CODE);
+        coding.setDisplay(MappingConstants.UNKNOWN_STRING);
+
+        codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
       }
-      coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-      coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-
-      codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-    } else {
-      coding.setSystem(NULL_CODE_SYSTEM);
-      coding.setCode(MappingConstants.U_CODE);
-      coding.setDisplay(MappingConstants.UNKNOWN_STRING);
-
-      codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
+      ext.setValue(codeableConcept);
+      return ext;
     }
-    ext.setValue(codeableConcept);
-    return ext;
+    return null;
   }
 
   public static Optional<Extension> convertToTribalAffiliationExtension(
       List<String> tribalAffiliations) {
-    if (tribalAffiliations != null && !tribalAffiliations.isEmpty()) {
-      return Optional.of(convertToTribalAffiliationExtension(tribalAffiliations.get(0)));
-    }
-    return Optional.empty();
+    return CollectionUtils.isEmpty(tribalAffiliations)
+        ? Optional.empty()
+        : convertToTribalAffiliationExtension(tribalAffiliations.get(0));
   }
 
-  public static Extension convertToTribalAffiliationExtension(@NotNull String tribalAffiliation) {
-    var ext = new Extension();
-    ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
-    var tribeExtension = ext.addExtension();
-    tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
-    var tribeCodeableConcept = new CodeableConcept();
-    var tribeCoding = tribeCodeableConcept.addCoding();
-    tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
-    tribeCoding.setCode(tribalAffiliation);
-    tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
-    tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
-    tribeExtension.setValue(tribeCodeableConcept);
-    return ext;
+  public static Optional<Extension> convertToTribalAffiliationExtension(String tribalAffiliation) {
+    if (StringUtils.isNotBlank(tribalAffiliation)) {
+      var ext = new Extension();
+      ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
+      var tribeExtension = ext.addExtension();
+      tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
+      var tribeCodeableConcept = new CodeableConcept();
+      var tribeCoding = tribeCodeableConcept.addCoding();
+      tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
+      tribeCoding.setCode(tribalAffiliation);
+      tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
+      tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
+      tribeExtension.setValue(tribeCodeableConcept);
+      return Optional.of(ext);
+    }
+    return Optional.empty();
   }
 
   public static Practitioner convertToPractitioner(Provider provider) {
@@ -304,6 +314,7 @@ public class FhirConverter {
   public static Patient convertToPatient(Person person) {
     var patient = new Patient();
     patient.setId(person.getInternalId().toString());
+    patient.addIdentifier().setValue(person.getInternalId().toString());
     patient.addName(convertToHumanName(person.getNameInfo()));
     convertPhoneNumbersToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
     convertEmailsToContactPoint(ContactPointUse.HOME, person.getEmails())
@@ -541,7 +552,8 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
-  public static Bundle createFhirBundle(@NotNull TestEvent testEvent) {
+  public static Bundle createFhirBundle(
+      @NotNull TestEvent testEvent, GitProperties gitProperties, Date currentDate) {
     return createFhirBundle(
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
@@ -555,7 +567,9 @@ public class FhirConverter {
             testEvent.getReasonForCorrection()),
         convertToServiceRequest(testEvent.getOrder()),
         convertToDiagnosticReport(testEvent),
-        testEvent.getDateTested());
+        testEvent.getDateTested(),
+        currentDate,
+        gitProperties);
   }
 
   public static Bundle createFhirBundle(
@@ -567,7 +581,9 @@ public class FhirConverter {
       List<Observation> observations,
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport,
-      Date dateTested) {
+      Date dateTested,
+      Date currentDate,
+      GitProperties gitProperties) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
@@ -580,7 +596,8 @@ public class FhirConverter {
     var provenance = createProvenance(organizationFullUrl, dateTested);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
-        createMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
+        createMessageHeader(
+            organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl, gitProperties);
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
@@ -598,7 +615,6 @@ public class FhirConverter {
     entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
     entryList.add(Pair.of(provenanceFullUrl, provenance));
     entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
-
     entryList.add(Pair.of(patientFullUrl, patient));
     entryList.add(Pair.of(organizationFullUrl, organization));
     entryList.add(Pair.of(practitionerFullUrl, practitioner));
@@ -606,6 +622,10 @@ public class FhirConverter {
     entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
     entryList.add(Pair.of(deviceFullUrl, device));
     entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
+    entryList.add(
+        Pair.of(
+            ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
+            new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
 
     observations.forEach(
         observation -> {
@@ -623,6 +643,7 @@ public class FhirConverter {
     var bundle =
         new Bundle()
             .setType(BundleType.MESSAGE)
+            .setTimestamp(currentDate)
             .setIdentifier(new Identifier().setValue(diagnosticReport.getId()));
     entryList.forEach(
         pair ->
@@ -659,7 +680,10 @@ public class FhirConverter {
   }
 
   public static MessageHeader createMessageHeader(
-      String organizationUrl, String mainResourceUrl, String provenanceFullUrl) {
+      String organizationUrl,
+      String mainResourceUrl,
+      String provenanceFullUrl,
+      GitProperties gitProperties) {
     var messageHeader = new MessageHeader();
     messageHeader.setId(UUID.randomUUID().toString());
     messageHeader
@@ -670,7 +694,8 @@ public class FhirConverter {
     messageHeader
         .getSource()
         .setSoftware("PRIME SimpleReport")
-        .setEndpoint("https://simplereport.gov");
+        .setEndpoint("https://simplereport.gov")
+        .setVersion(gitProperties.getShortCommitId());
     messageHeader
         .addDestination()
         .setName("PRIME ReportStream")
@@ -678,6 +703,21 @@ public class FhirConverter {
     messageHeader.getSender().setReferenceElement(new StringType(organizationUrl));
     messageHeader.addFocus(new Reference(provenanceFullUrl));
     messageHeader.addFocus(new Reference(mainResourceUrl));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id")
+        .setValue(new StringType(gitProperties.getShortCommitId()));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date")
+        .setValue(new InstantType(gitProperties.getCommitTime().toString()));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org")
+        .setValue(new Reference(ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID));
     return messageHeader;
   }
 }

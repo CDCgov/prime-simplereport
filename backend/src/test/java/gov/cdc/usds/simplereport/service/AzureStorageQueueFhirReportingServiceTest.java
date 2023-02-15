@@ -16,18 +16,23 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.GitProperties;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoSink;
 
+@SpringBootTest
 class AzureStorageQueueFhirReportingServiceTest {
+  @Autowired GitProperties gitProperties;
 
   @Test
   void reportAsync_NonCovidOnly() {
     var context = spy(FhirContext.class);
     var client = mock(QueueAsyncClient.class);
     AzureStorageQueueFhirReportingService service =
-        new AzureStorageQueueFhirReportingService(context, client);
+        new AzureStorageQueueFhirReportingService(context, client, gitProperties);
 
     var multiplexTestEvent = createMultiplexTestEvent();
     ReflectionTestUtils.setField(multiplexTestEvent.getPatient(), "internalId", UUID.randomUUID());
@@ -59,7 +64,7 @@ class AzureStorageQueueFhirReportingServiceTest {
     var context = spy(FhirContext.class);
     var client = mock(QueueAsyncClient.class);
     AzureStorageQueueFhirReportingService service =
-        new AzureStorageQueueFhirReportingService(context, client);
+        new AzureStorageQueueFhirReportingService(context, client, null);
 
     var multiplexTestEvent = createCovidTestEvent();
     ReflectionTestUtils.setField(multiplexTestEvent.getPatient(), "internalId", UUID.randomUUID());

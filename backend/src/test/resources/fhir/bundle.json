@@ -4,6 +4,7 @@
   "identifier": {
     "value": "45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
   },
+  "timestamp": "$BUNDLE_TIMESTAMP",
   "entry":[
     {
       "fullUrl":"MessageHeader/$MESSAGE_HEADER_ID",
@@ -26,7 +27,20 @@
         },
         "source":{
           "software":"PRIME SimpleReport",
-          "endpoint":"https://simplereport.gov"
+          "endpoint":"https://simplereport.gov",
+          "version": "FRIDAY",
+          "extension" : [ {
+            "url" : "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
+            "valueReference" : {
+              "reference" : "Organization/07640c5d-87cd-488b-9343-a226c5166539"
+            }
+          }, {
+            "url" : "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date",
+            "valueInstant" : "2023-02-08T21:33:06Z"
+          }, {
+            "url" : "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id",
+            "valueString" : "FRIDAY"
+          } ]
         },
         "focus":[
           {
@@ -43,11 +57,6 @@
       "resource": {
         "resourceType": "Provenance",
         "id": "$PROVENANCE_ID",
-        "target": [
-          {
-            "reference": "Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
-          }
-        ],
         "activity": {
           "coding": [
             {
@@ -63,7 +72,8 @@
               "reference": "Organization/1c3d14b9-e222-4a16-9fb2-d9f173034a6a"
             }
           }
-        ]
+        ],
+        "recorded": "$PROVENANCE_RECORDED_DATE"
       }
     },
     {
@@ -111,6 +121,11 @@
       "resource":{
         "resourceType":"Patient",
         "id":"55c53ed2-add5-47fb-884e-b4542ee64589",
+        "identifier": [
+          {
+            "value": "55c53ed2-add5-47fb-884e-b4542ee64589"
+          }
+        ],
         "extension":[
           {
             "url":"http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",
@@ -432,6 +447,14 @@
         "device":{
           "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
         }
+      }
+    },
+    {
+      "fullUrl":"Organization/07640c5d-87cd-488b-9343-a226c5166539",
+      "resource":{
+        "resourceType":"Organization",
+        "id":"07640c5d-87cd-488b-9343-a226c5166539",
+        "name":"SimpleReport"
       }
     }
   ]
