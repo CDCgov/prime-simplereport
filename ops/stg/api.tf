@@ -7,6 +7,8 @@ module "simple_report_api" {
   instance_tier  = "PremiumV3"
   instance_size  = "P2v3"
 
+  sku_name = "P2v3"
+
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 

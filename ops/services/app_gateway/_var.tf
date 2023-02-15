@@ -64,3 +64,8 @@ variable "firewall_policy_id" {
   type        = string
   default     = null
 }
+
+variable "zones" {
+  type    = list(string)
+  default = ["1", "2", "3"]
+}

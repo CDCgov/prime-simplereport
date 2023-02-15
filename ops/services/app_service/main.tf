@@ -13,19 +13,6 @@ locals {
   })
 }
 
-# migrate this to azurerm_service_plan.service_plan to enable migration of api service
-# resource "azurerm_app_service_plan" "service_plan" {
-#   name                = "${var.az_account}-appserviceplan-${var.env}"
-#   location            = var.resource_group_location
-#   resource_group_name = var.resource_group_name
-#   kind                = "linux"
-#   reserved            = true
-#   sku {
-#     tier = "PremiumV3"
-#     size = "P1v3"
-#   }
-# }
-
 resource "azurerm_service_plan" "service_plan" {
   name                = "${var.az_account}-appserviceplan-${var.env}"
   location            = var.resource_group_location
@@ -33,51 +20,6 @@ resource "azurerm_service_plan" "service_plan" {
   resource_group_name = var.resource_group_name
   sku_name            = var.sku_name
 }
-
-# DO NOT DELETE THIS RESOURCE before migrating it to azurerm_linux_web_app.service
-# if this resource is deleted during this upgrade it will require additional DNS work
-# resource "azurerm_app_service" "service" {
-#   name                = "${var.name}-${var.env}"
-#   location            = var.resource_group_location
-#   resource_group_name = var.resource_group_name
-#   app_service_plan_id = azurerm_app_service_plan.service_plan.id
-
-#   # Configure Docker Image to load on start
-#   site_config {
-#     linux_fx_version = var.docker_image
-#     always_on        = "true"
-#     min_tls_version  = "1.2"
-#     ftps_state       = "Disabled"
-
-#     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
-#     ip_restriction {
-#       virtual_network_subnet_id = var.lb_subnet_id
-#       action                    = "Allow"
-#     }
-#   }
-
-#   app_settings = local.all_app_settings
-#   https_only   = var.https_only
-
-#   identity {
-#     type = "SystemAssigned"
-#   }
-
-#   logs {
-#     http_logs {
-#       file_system {
-#         retention_in_days = 7
-#         retention_in_mb   = 30
-#       }
-#     }
-#   }
-
-#   lifecycle {
-#     ignore_changes = [
-#       app_settings, site_config[0].linux_fx_version
-#     ]
-#   }
-# }
 
 # The following code snippet creates a Linux App Service and configures it to run a Docker container. 
 # It also creates a firewall rule allowing the load balancer to route traffic to the App Service.
@@ -108,7 +50,7 @@ resource "azurerm_linux_web_app" "service" {
   # Configure Docker Image to load on start
   site_config {
     always_on               = "true"
-    scm_minimum_tls_version = "1.0"
+    scm_minimum_tls_version = "1.2"
     use_32_bit_worker       = false
     ftps_state              = "Disabled"
     vnet_route_all_enabled  = false
@@ -157,7 +99,7 @@ resource "azurerm_linux_web_app_slot" "staging" {
   # Configure Docker Image to load on start
   site_config {
     always_on               = "true"
-    scm_minimum_tls_version = "1.0"
+    scm_minimum_tls_version = "1.2"
     use_32_bit_worker       = false
     ftps_state              = "Disabled"
     vnet_route_all_enabled  = false

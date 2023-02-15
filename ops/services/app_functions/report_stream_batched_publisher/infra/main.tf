@@ -59,9 +59,6 @@ resource "azurerm_linux_function_app" "functions" {
   site_config {
     use_32_bit_worker        = false
     application_insights_key = data.azurerm_application_insights.app.instrumentation_key
-    # scm_minimum_tls_version = "1.0"
-    # always_on               = false
-    # ftps_state              = "AllAllowed"
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
