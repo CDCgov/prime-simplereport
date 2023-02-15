@@ -9,12 +9,17 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 @RequiredArgsConstructor
 public final class AzureStorageQueueTestEventReportingService implements TestEventReportingService {
+
   private final ObjectMapper mapper;
   private final QueueAsyncClient queueClient;
+
+  @Value("${simple-report.processing-mode-code:P}")
+  private String processingModeCode;
 
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
@@ -25,7 +30,7 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
   private String toBuffer(TestEvent testEvent) {
     try {
       return mapper
-          .writeValueAsString(new TestEventExport(testEvent))
+          .writeValueAsString(new TestEventExport(testEvent, processingModeCode))
           .replaceAll("[\u2028\u2029]", "");
     } catch (IOException e) {
       throw new TestEventSerializationFailureException(
