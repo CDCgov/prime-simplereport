@@ -49,6 +49,7 @@ resource "azurerm_public_ip" "www_redirect" {
   sku                 = "Standard"
   sku_tier            = "Regional"
   domain_name_label   = "simple-report-www-redirect"
+  zones               = ["1", "2", "3"]
 }
 
 resource "azurerm_user_assigned_identity" "www_redirect" {
@@ -65,7 +66,7 @@ resource "azurerm_key_vault_access_policy" "www_redirect" {
   object_id    = azurerm_user_assigned_identity.www_redirect.principal_id
   tenant_id    = data.azurerm_client_config.current.tenant_id
 
-  secret_permissions = ["get"]
+  secret_permissions = ["Get"]
 }
 
 resource "azurerm_application_gateway" "www_redirect" {
@@ -177,6 +178,7 @@ resource "azurerm_application_gateway" "www_redirect" {
   # ------- Routing -------------------------
   # HTTP -> HTTPS redirect
   request_routing_rule {
+    priority                    = 10020
     name                        = "httpsRedirect"
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-http"
@@ -194,6 +196,7 @@ resource "azurerm_application_gateway" "www_redirect" {
 
   # HTTPS -> www redirect
   request_routing_rule {
+    priority                    = 10010
     name                        = "wwwRedirect"
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-https"
@@ -230,6 +233,7 @@ resource "azurerm_public_ip" "cdc_gov_redirect" {
   sku                 = "Standard"
   sku_tier            = "Regional"
   domain_name_label   = "simplereportgw"
+  zones               = ["1", "2", "3"]
 }
 
 resource "azurerm_user_assigned_identity" "cdc_gov_redirect" {
@@ -246,7 +250,7 @@ resource "azurerm_key_vault_access_policy" "cdc_gov_redirect" {
   object_id    = azurerm_user_assigned_identity.cdc_gov_redirect.principal_id
   tenant_id    = data.azurerm_client_config.current.tenant_id
 
-  secret_permissions = ["get"]
+  secret_permissions = ["Get"]
 }
 
 resource "azurerm_application_gateway" "cdc_gov_redirect" {
@@ -358,6 +362,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
   # ------- Routing -------------------------
   # HTTP -> HTTPS redirect
   request_routing_rule {
+    priority                    = 10020
     name                        = "httpsRedirect"
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-http"
@@ -375,6 +380,7 @@ resource "azurerm_application_gateway" "cdc_gov_redirect" {
 
   # HTTPS -> www redirect
   request_routing_rule {
+    priority                    = 10010
     name                        = "wwwRedirect"
     rule_type                   = "Basic"
     http_listener_name          = "${local.name}-https"

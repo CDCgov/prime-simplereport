@@ -1,34 +1,69 @@
 import { DequeuedMessageItem } from "@azure/storage-queue";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type SimpleReportTestEvent = Record<any, any>;
-
-export type ProcessedTestEvents = {
-  testEvents: SimpleReportTestEvent[];
+export type FHIRTestEventsBatch = {
+  messages: DequeuedMessageItem[];
+  testEventsNDJSON: string;
   parseFailure: Record<string, boolean>;
   parseFailureCount: number;
   parseSuccessCount: number;
 };
 
+function createNewBatch(): FHIRTestEventsBatch {
+  return {
+    messages: [],
+    testEventsNDJSON: "",
+    parseFailure: {},
+    parseFailureCount: 0,
+    parseSuccessCount: 0,
+  };
+}
+
 export function processTestEvents(
-  messages: DequeuedMessageItem[]
-): ProcessedTestEvents {
-  const parseFailure: { [k: string]: boolean } = {};
-  let parseFailureCount = 0;
-  const testEventsAsJSON = messages.flatMap((m: DequeuedMessageItem) => {
+  messages: DequeuedMessageItem[],
+  fhirBatchSizeLimit: number
+): FHIRTestEventsBatch[] {
+  const fhirTestEventsBatches: FHIRTestEventsBatch[] = [];
+  const delimiterSize = Buffer.byteLength("\n");
+
+  if (messages.length <= 0) {
+    return fhirTestEventsBatches;
+  }
+
+  let currentBatch = createNewBatch();
+  let batchSize = 0;
+
+  messages.forEach((message: DequeuedMessageItem) => {
+    const messageSize: number = Buffer.byteLength(message.messageText);
+
+    // check if message can be added to current batch
+    // or should be added to a new one
+    if (batchSize + messageSize + delimiterSize > fhirBatchSizeLimit) {
+      // remove enter character from last fhir test event
+      const cleanedNDJSON = currentBatch.testEventsNDJSON.slice(0, -1);
+      currentBatch.testEventsNDJSON = cleanedNDJSON;
+
+      // push full batch and create new batch
+      fhirTestEventsBatches.push(currentBatch);
+      currentBatch = createNewBatch();
+      batchSize = 0;
+    }
+
+    currentBatch.messages.push({ ...message });
+    batchSize += messageSize;
+
     try {
-      return [JSON.parse(m.messageText)];
+      JSON.parse(message.messageText);
+      currentBatch.parseSuccessCount++;
+      currentBatch.testEventsNDJSON += `${message.messageText}\n`;
     } catch (e) {
-      parseFailure[m.messageId] = true;
-      parseFailureCount++;
-      return [];
+      currentBatch.parseFailure[message.messageId] = true;
+      currentBatch.parseFailureCount++;
     }
   });
 
-  return {
-    testEvents: testEventsAsJSON,
-    parseFailure,
-    parseFailureCount,
-    parseSuccessCount: testEventsAsJSON.length,
-  };
+  const cleanedNDJSON = currentBatch.testEventsNDJSON.slice(0, -1);
+  currentBatch.testEventsNDJSON = cleanedNDJSON;
+  fhirTestEventsBatches.push(currentBatch);
+
+  return fhirTestEventsBatches;
 }
