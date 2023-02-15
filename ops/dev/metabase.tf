@@ -17,7 +17,7 @@ module "metabase_service" {
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
-  app_service_plan_id    = module.simple_report_api.app_service_plan_id
+  service_plan_id        = module.simple_report_api.service_plan_id
   webapp_subnet_id       = data.terraform_remote_state.persistent_dev.outputs.subnet_webapp_id
   ai_instrumentation_key = data.terraform_remote_state.persistent_dev.outputs.app_insights_instrumentation_key
   key_vault_id           = data.azurerm_key_vault.sr_global.id

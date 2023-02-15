@@ -1,6 +1,6 @@
 variable "env" {}
 variable "app_insights_id" {}
-variable "app_service_plan_id" {}
+variable "service_plan_id" {}
 variable "app_service_id" {}
 variable "action_group_ids" {
   description = "The IDs of the monitor action group resources to send events to"

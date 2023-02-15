@@ -37,3 +37,8 @@ export interface SimpleReportReportStreamResponse {
   isError: boolean;
   details: string;
 }
+
+export interface ReportStreamCallbackRequest
+  extends SimpleReportReportStreamResponse {
+  queueName: string;
+}
