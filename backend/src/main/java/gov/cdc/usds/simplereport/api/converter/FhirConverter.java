@@ -70,7 +70,6 @@ import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.MessageHeader;
-import org.hl7.fhir.r4.model.Meta;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.hl7.fhir.r4.model.Organization;
@@ -669,9 +668,9 @@ public class FhirConverter {
                     .setFullUrl(pair.getFirst())
                     .setResource(pair.getSecond())));
 
-    bundle.setMeta(
-        new Meta()
-            .addTag(PROCESSING_ID_SYSTEM, processingId, PROCESSING_ID_DISPLAY.get(processingId)));
+    bundle
+        .getMeta()
+        .addTag(PROCESSING_ID_SYSTEM, processingId, PROCESSING_ID_DISPLAY.get(processingId));
     return bundle;
   }
 
