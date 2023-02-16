@@ -59,6 +59,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @EnableConfigurationProperties
 @ExtendWith(SpringExtension.class)
@@ -77,6 +78,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @BeforeEach()
   public void init() {
     initSampleData();
+    ReflectionTestUtils.setField(sut, "processingModeCodeValue", "P");
   }
 
   @Test
@@ -290,5 +292,59 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertThat(result.getStatus()).isEqualTo(FAILURE);
     assertThat(result.getErrors()).hasSize(1);
     assertThat(result.getErrors()[0].getMessage()).isEqualTo("my lovely error message");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_getUploadSubmission_processingModeCode_NotSet() {
+    // GIVEN
+    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
+    String[] rows = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8).split("\n");
+    assertThat(rows[0]).doesNotContain(",processing_mode_code");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_getUploadSubmission_processingModeCode_T() {
+    // GIVEN
+    ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
+    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
+    String[] rows = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8).split("\n");
+    assertThat(rows[0]).endsWith(",processing_mode_code");
+    assertThat(rows[1]).endsWith(",T");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_getUploadSubmission_processingModeCode_doesntOverrideFileValue() {
+    // GIVEN
+    ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
+    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
+
+    InputStream input =
+        loadCsv("testResultUpload/test-results-upload-valid-with-processingModeCode-D.csv");
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
+    String[] rows = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8).split("\n");
+    assertThat(rows[0]).endsWith(",processing_mode_code");
+    assertThat(rows[1]).endsWith(",D");
   }
 }

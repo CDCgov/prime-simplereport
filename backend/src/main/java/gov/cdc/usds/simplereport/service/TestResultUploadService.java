@@ -23,11 +23,14 @@ import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +61,11 @@ public class TestResultUploadService {
   @Value("${data-hub.jwt-scope}")
   private String scope;
 
+  @Value("${simple-report.processing-mode-code:P}")
+  private String processingModeCodeValue;
+
   private static final int FIVE_MINUTES_MS = 300 * 1000;
+  public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
@@ -92,6 +99,10 @@ public class TestResultUploadService {
       return result;
     }
 
+    if (!"P".equals(processingModeCodeValue)) {
+      content = attachProcessingModeCode(content);
+    }
+
     UploadResponse response = null;
     if (content.length > 0) {
       try {
@@ -119,6 +130,19 @@ public class TestResultUploadService {
       }
     }
     return result;
+  }
+
+  private byte[] attachProcessingModeCode(byte[] content) {
+    String[] row = new String(content, StandardCharsets.UTF_8).split("\n");
+    String headers = row[0];
+    if (!headers.contains(PROCESSING_MODE_CODE_COLUMN_NAME)) {
+      row[0] = headers + "," + PROCESSING_MODE_CODE_COLUMN_NAME;
+      for (int i = 1; i < row.length; i++) {
+        row[i] = row[i] + "," + processingModeCodeValue;
+      }
+      content = Arrays.stream(row).collect(Collectors.joining("\n")).getBytes();
+    }
+    return content;
   }
 
   private UploadResponse parseFeignException(FeignException e) {
