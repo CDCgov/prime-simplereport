@@ -117,3 +117,22 @@ terraform {
   }
   required_version = "~> 1.3.3"
 }
+
+resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
+  name                = "${var.environment}_function_app_batch_publisher_memory_metric"
+  resource_group_name = local.resource_group_name
+  scopes              = [azurerm_linux_function_app.function.id]
+  description         = "Action will be triggered when memory usage is greater than 1200 mb"
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "AverageMemoryWorkingSet"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = 1200
+  }
+
+  action {
+    action_group_id = var.action_group_ids
+  }
+}

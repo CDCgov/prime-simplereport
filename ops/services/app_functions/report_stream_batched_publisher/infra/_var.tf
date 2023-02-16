@@ -66,3 +66,8 @@ variable "report_stream_batch_maximum" {
 }
 
 variable "lb_subnet_id" {}
+
+variable "action_group_ids" {
+  description = "The IDs of the monitor action group resources to send events to"
+  type        = list(string)
+}
