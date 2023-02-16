@@ -4,50 +4,37 @@ on:
   push:
     branches:
       - "**"
+  # workflow_run:
+  #   workflows: 
+  #     - Build Docker Images
+  #   types:
+  #     - completed
 
 jobs:
 
-  check_cypress_directory_for_changes:
-    runs-on: 'ubuntu-20.04'
-    outputs:
-      cypress_changed: ${{ steps.check_directory_changes.outputs.cypress_changed }}
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    - shell: bash
-      id: check_directory_changes
-      run: |
-        echo "::group::Set cypress_changed output"
-        diff=$(git diff-tree --no-commit-id --name-only -r "origin/main" "$GITHUB_REF" -- cypress | xargs)
-        diff_length=$(echo ${#diff})
-        has_diff=$([ $diff_length -gt 0 ] && echo "true" || echo "false")
-        echo "Cypress has changes: ${has_diff}"
-        echo "cypress_changed=${has_diff}" >> $GITHUB_OUTPUT
-        echo "::endgroup::"
+  cypress_changes:
+    with:
+      what_to_check: cypress
+    uses: ./.github/workflows/checkForChanges.yml
 
-  build_cypress:
-    needs: check_cypress_directory_for_changes
-    if: needs.check_cypress_directory_for_changes.outputs.cypress_changed == 'true'
-    uses: ./.github/workflows/buildCypressImage.yml
+  database_changes:
+    with:
+      what_to_check: backend/db-setup
+    uses: ./.github/workflows/checkForChanges.yml
 
-  set_docker_cypress_image_tag:
-    needs: [check_cypress_directory_for_changes, build_cypress]
-    if: needs.check_cypress_directory_for_changes.outputs.cypress_changed == 'true'
-    runs-on: ubuntu-latest
-    outputs:
-      docker_cypress_image_tag: ${{ steps.get_current_branch.outputs.docker_cypress_image_tag }}
-    steps:
-    - shell: bash
-      id: get_current_branch
-      run: |
-        echo "::group::Set docker_cypress_image_tag output"
-        echo "docker_cypress_image_tag=${GITHUB_REF##refs/heads/}" | tr / - >> $GITHUB_OUTPUT
-        echo "::endgroup::"
+  cypress_tag:
+    needs: [cypress_changes]
+    if: needs.cypress_changes.outputs.has_changes == 'true'
+    uses: ./.github/workflows/getDockerBranchTag.yml
 
-  cypress_local_env:
-    if: ${{ always() }}
-    needs: set_docker_cypress_image_tag
+  database_tag:
+    needs: [database_changes]
+    if: needs.database_changes.outputs.has_changes == 'true'
+    uses: ./.github/workflows/getDockerBranchTag.yml
+
+  cypress-local-env:
+    if: always()
+    needs: [cypress_tag, database_tag]
     runs-on: ubuntu-latest
     steps:
             
@@ -91,12 +78,14 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Run Cypress
+      timeout-minutes: 30
       env:
         # CI settings
         CI: 1
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180
-        DOCKER_CYPRESS_IMAGE_TAG: ${{ needs.set_docker_cypress_image_tag.outputs.docker_cypress_image_tag }}
+        # DOCKER_CYPRESS_IMAGE_TAG: ${{ needs.cypress_tag.outputs.tag }}
+        # DOCKER_DATABASE_IMAGE_TAG: ${{ needs.database_tag.outputs.tag }}
         COMPOSE_HTTP_TIMEOUT: 180
         # backend settings
         SPRING_PROFILES_ACTIVE: e2e,db-dockerized
@@ -126,10 +115,25 @@ jobs:
       shell: bash
       run: |
         echo "::group::Run Cypress locally"
-        echo "BUILD TAGS: ${{ needs.build_cypress.meta.outputs.tags }}"
-        echo "Cypress tag: ${{ needs.set_docker_cypress_image_tag.outputs.docker_cypress_image_tag }}"
+        docker compose pull
+        docker compose -f docker-compose.yml -f docker-compose.cypress.yml build
         docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress
         echo "::endgroup::"
+        
+      # echo "Cypress branch tag (or latest): ${{ needs.set_docker_branch_image_tag.outputs.docker_cypress_image_tag }}"
+      # docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress
+      # echo "::endgroup::"
+
+    - name: Get docker logs
+      if: always()
+      shell: bash
+      run: |
+        CONTAINERS=$(docker ps -a --format '{{.Names}}')
+        for container in $CONTAINERS
+        do
+          echo "Saving $container logs"
+          docker logs $container >& cypress/${container}.log
+        done
 
     - name: Stop containers
       if: always()
@@ -147,3 +151,10 @@ jobs:
         path: |
           cypress/videos/*
           cypress/screenshots/*
+
+    - name: Archive docker logs
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: logs
+        path: cypress/*.log

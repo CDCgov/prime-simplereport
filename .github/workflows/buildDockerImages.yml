@@ -1,0 +1,14 @@
+name: Build Docker Images
+
+on:
+  push:
+    branches:
+      - "**"
+
+jobs:
+
+  build_cypress_image:
+    uses: ./.github/workflows/buildCypressImage.yml
+
+  build_db_image:
+    uses: ./.github/workflows/buildDatabaseImage.yml

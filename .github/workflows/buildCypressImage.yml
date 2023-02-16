@@ -8,7 +8,14 @@ env:
   IMAGE_NAME: ${{ github.repository }}/cypress
 
 jobs:
+
+  cypress_changes:
+    with:
+      what_to_check: cypress
+    uses: ./.github/workflows/checkForChanges.yml
+
   build-and-push-cypress-image:
+    needs: [cypress_changes]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -16,16 +23,19 @@ jobs:
 
     steps:
       - name: Checkout repository
+        if: needs.cypress_changes.outputs.has_changes == 'true'
         uses: actions/checkout@v3
 
       - name: Log in to the Container registry
+        if: needs.cypress_changes.outputs.has_changes == 'true'
         uses: docker/login-action@v2
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
+        if: needs.cypress_changes.outputs.has_changes == 'true'
         id: meta
         uses: docker/metadata-action@v4
         with:
@@ -35,6 +45,7 @@ jobs:
             type=ref,event=branch
 
       - name: Build and push Docker image
+        if: needs.cypress_changes.outputs.has_changes == 'true'
         uses: docker/build-push-action@v4
         with:
           context: ./
@@ -42,3 +53,7 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Skip build
+        if: needs.cypress_changes.outputs.has_changes == 'false'
+        run: echo "No changes in cypress directory, skipping build"

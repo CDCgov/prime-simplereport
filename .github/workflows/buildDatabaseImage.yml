@@ -1,18 +1,21 @@
 name: Build database docker image
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "backend/db-setup/**"
+  workflow_call:
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/db
 
 jobs:
+
+  database_changes:
+    with:
+      what_to_check: backend/db-setup
+    uses: ./.github/workflows/checkForChanges.yml
+
   build-and-push-db-image:
+    needs: database_changes
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -20,9 +23,11 @@ jobs:
 
     steps:
       - name: Checkout repository
+        if: needs.database_changes.outputs.has_changes == 'true'
         uses: actions/checkout@v3
 
       - name: Log in to the Container registry
+        if: needs.database_changes.outputs.has_changes == 'true'
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
@@ -30,17 +35,24 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
+        if: needs.database_changes.outputs.has_changes == 'true'
         id: meta
         uses: docker/metadata-action@v4
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+            type=ref,event=branch
 
       - name: Build and push Docker image
+        if: needs.database_changes.outputs.has_changes == 'true'
         uses: docker/build-push-action@v3
         with:
           context: backend/db-setup
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Skip build
+        if: needs.database_changes.outputs.has_changes == 'false'
+        run: echo "No changes in db directory, skipping build"

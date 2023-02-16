@@ -1,0 +1,21 @@
+name: Get Docker Branch Tag
+
+on:
+  workflow_call:
+    outputs:
+      tag:
+        value: ${{ jobs.get_docker_branch_tag.outputs.tag }}
+
+jobs:
+
+  get_docker_branch_tag:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.get_docker_branch_tag.outputs.tag }}
+    steps:
+    - shell: bash
+      id: get_docker_branch_tag
+      run: |
+        echo "::group::Set tag output"
+        echo "tag=${GITHUB_REF##refs/heads/}" | tr / - >> $GITHUB_OUTPUT
+        echo "::endgroup::"
