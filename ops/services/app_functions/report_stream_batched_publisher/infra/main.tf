@@ -121,7 +121,7 @@ terraform {
 resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
   name                = "${var.environment}_function_app_batch_publisher_memory_metric"
   resource_group_name = local.resource_group_name
-  scopes              = [azurerm_linux_function_app.function.id]
+  scopes              = [azurerm_linux_function_app.functions.id]
   description         = "Action will be triggered when memory usage is greater than 1200 mb"
 
   criteria {
