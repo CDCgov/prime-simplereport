@@ -136,3 +136,22 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
     action_group_id = var.action_group_id
   }
 }
+
+resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
+  name                = "${var.environment}_function_app_batch_publisher_memory_metric"
+  resource_group_name = local.resource_group_name
+  scopes              = [azurerm_linux_function_app.functions.id]
+  description         = "Action will be triggered when a single request is taking over 3 minutes"
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "HttpResponseTime"
+    aggregation      = "Max"
+    operator         = "GreaterThan"
+    threshold        = 180
+  }
+
+  action {
+    action_group_id = var.action_group_id
+  }
+}	
