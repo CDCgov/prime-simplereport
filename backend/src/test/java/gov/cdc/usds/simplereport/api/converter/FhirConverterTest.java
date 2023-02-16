@@ -393,7 +393,7 @@ class FhirConverterTest {
         new Facility(
             null,
             "Elron",
-            null,
+            "123D456789",
             new StreetAddress(List.of("12 Main Street", "Unit 4"), "Lakewood", "FL", "21037", null),
             "248 555 1234",
             "email@example.com",
@@ -1174,7 +1174,7 @@ class FhirConverterTest {
         new Facility(
             organization,
             "School",
-            "1",
+            "123D456789",
             address,
             "7735551234",
             "school@example.com",
