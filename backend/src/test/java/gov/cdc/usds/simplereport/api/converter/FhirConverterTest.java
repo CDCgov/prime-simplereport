@@ -1053,7 +1053,8 @@ class FhirConverterTest {
             diagnosticReport,
             new Date(),
             date,
-            gitProperties);
+            gitProperties,
+            "P");
 
     var resourceUrls =
         actual.getEntry().stream()
@@ -1244,7 +1245,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
-    var actual = createFhirBundle(testEvent, gitProperties, date);
+    var actual = createFhirBundle(testEvent, gitProperties, date, "P");
 
     String actualSerialized = parser.encodeResourceToString(actual);
 
