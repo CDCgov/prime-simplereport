@@ -1,6 +1,7 @@
 spring:
   profiles.include: okta-stg
 simple-report:
+  processing-mode-code: T
   patient-link-url: https://stg.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://stg.simplereport.gov/api/pxp/callback
   cors:
