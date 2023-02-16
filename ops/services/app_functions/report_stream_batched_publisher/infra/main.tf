@@ -154,4 +154,4 @@ resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
   action {
     action_group_id = var.action_group_id
   }
-}	
+}
