@@ -146,7 +146,7 @@ resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
   criteria {
     metric_namespace = "Microsoft.Web/sites"
     metric_name      = "HttpResponseTime"
-    aggregation      = "Max"
+    aggregation      = "Maximum"
     operator         = "GreaterThan"
     threshold        = 180
   }
