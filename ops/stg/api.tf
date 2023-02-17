@@ -4,8 +4,6 @@ module "simple_report_api" {
   env    = local.env
 
   instance_count = 3
-  instance_tier  = "PremiumV3"
-  instance_size  = "P2v3"
 
   sku_name = "P2v3"
 
