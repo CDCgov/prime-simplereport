@@ -93,6 +93,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -1053,7 +1054,8 @@ class FhirConverterTest {
             diagnosticReport,
             new Date(),
             date,
-            gitProperties);
+            gitProperties,
+            "P");
 
     var resourceUrls =
         actual.getEntry().stream()
@@ -1244,7 +1246,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
-    var actual = createFhirBundle(testEvent, gitProperties, date);
+    var actual = createFhirBundle(testEvent, gitProperties, date, "P");
 
     String actualSerialized = parser.encodeResourceToString(actual);
 
@@ -1275,6 +1277,6 @@ class FhirConverterTest {
             "$BUNDLE_TIMESTAMP",
             OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, false);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, JSONCompareMode.NON_EXTENSIBLE);
   }
 }

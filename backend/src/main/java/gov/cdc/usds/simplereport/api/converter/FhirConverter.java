@@ -8,6 +8,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_C
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
@@ -562,7 +564,10 @@ public class FhirConverter {
   }
 
   public static Bundle createFhirBundle(
-      @NotNull TestEvent testEvent, GitProperties gitProperties, Date currentDate) {
+      @NotNull TestEvent testEvent,
+      GitProperties gitProperties,
+      Date currentDate,
+      String processingId) {
     return createFhirBundle(
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
@@ -578,7 +583,8 @@ public class FhirConverter {
         convertToDiagnosticReport(testEvent),
         testEvent.getDateTested(),
         currentDate,
-        gitProperties);
+        gitProperties,
+        processingId);
   }
 
   public static Bundle createFhirBundle(
@@ -592,7 +598,8 @@ public class FhirConverter {
       DiagnosticReport diagnosticReport,
       Date dateTested,
       Date currentDate,
-      GitProperties gitProperties) {
+      GitProperties gitProperties,
+      String processingId) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
@@ -661,6 +668,9 @@ public class FhirConverter {
                     .setFullUrl(pair.getFirst())
                     .setResource(pair.getSecond())));
 
+    bundle
+        .getMeta()
+        .addTag(PROCESSING_ID_SYSTEM, processingId, PROCESSING_ID_DISPLAY.get(processingId));
     return bundle;
   }
 
