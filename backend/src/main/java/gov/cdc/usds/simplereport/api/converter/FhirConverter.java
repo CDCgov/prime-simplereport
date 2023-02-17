@@ -14,6 +14,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -310,7 +311,7 @@ public class FhirConverter {
         .setValue(facility.getCliaNumber())
         .getType()
         .addCoding()
-        .setSystem("http://terminology.hl7.org/CodeSystem/v2-0301")
+        .setSystem(UNIVERSAL_ID_SYSTEM)
         .setCode("CLIA");
     org.setName(facility.getFacilityName());
     org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
