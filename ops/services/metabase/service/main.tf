@@ -34,7 +34,7 @@ resource "azurerm_linux_web_app" "metabase" {
   site_config {
     always_on               = true
     ftps_state              = "Disabled"
-    scm_minimum_tls_version = "1.0"
+    scm_minimum_tls_version = "1.2"
     use_32_bit_worker       = false
     vnet_route_all_enabled  = false
 

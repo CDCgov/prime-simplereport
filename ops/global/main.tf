@@ -31,13 +31,6 @@ resource "azurerm_log_analytics_workspace" "sr" {
   tags = local.management_tags
 }
 
-// Okta preview configuration
-# module "okta_preview" {
-#   source = "../services/okta-global"
-
-#   all_users_group_id = data.okta_group.everyone.id
-# }
-
 // Okta configuration
 module "okta" {
   source = "../services/okta-global"
