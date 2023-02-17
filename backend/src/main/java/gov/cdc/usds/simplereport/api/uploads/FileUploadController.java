@@ -47,11 +47,12 @@ public class FileUploadController {
   }
 
   @PostMapping(RESULT_UPLOAD)
-  public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
+  public TestResultUpload handleResultsUpload(
+      @RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
     assertCsvFileType(file);
 
     try (InputStream resultsUpload = file.getInputStream()) {
-      return testResultUploadService.processResultCSV(resultsUpload);
+      return testResultUploadService.processResultCSV(resultsUpload, parseUUID(rawFacilityId));
     } catch (IOException e) {
       log.error("Test result CSV encountered an unexpected error", e);
       throw new CsvProcessingException("Unable to process test result CSV upload");

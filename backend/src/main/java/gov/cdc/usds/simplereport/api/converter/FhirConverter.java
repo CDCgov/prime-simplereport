@@ -297,11 +297,21 @@ public class FhirConverter {
   }
 
   public static Practitioner convertToPractitioner(Provider provider) {
+    return convertToPractitioner(
+        provider.getInternalId().toString(),
+        provider.getNameInfo(),
+        provider.getTelephone(),
+        provider.getAddress(),
+        DEFAULT_COUNTRY);
+  }
+
+  public static Practitioner convertToPractitioner(
+      String id, PersonName name, String telephone, StreetAddress addr, String country) {
     var practitioner = new Practitioner();
-    practitioner.setId(provider.getInternalId().toString());
-    practitioner.addName(convertToHumanName(provider.getNameInfo()));
-    practitioner.addAddress(convertToAddress(provider.getAddress(), DEFAULT_COUNTRY));
-    practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
+    practitioner.setId(id);
+    practitioner.addName(convertToHumanName(name));
+    practitioner.addAddress(convertToAddress(addr, country));
+    practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
     return practitioner;
   }
 
@@ -322,6 +332,17 @@ public class FhirConverter {
     return org;
   }
 
+  public static Organization convertToOrganization(
+      String id, String name, String telephone, String email, StreetAddress addr, String country) {
+    var org = new Organization();
+    org.setId(id);
+    org.setName(name);
+    org.addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
+    org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, email));
+    org.addAddress(convertToAddress(addr, country));
+    return org;
+  }
+
   public static Patient convertToPatient(Person person) {
     var patient = new Patient();
     patient.setId(person.getInternalId().toString());
@@ -337,6 +358,32 @@ public class FhirConverter {
     patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
     patient.addExtension(
         convertToTribalAffiliationExtension(person.getTribalAffiliation()).orElse(null));
+    return patient;
+  }
+
+  public static Patient convertToPatient(
+      String id,
+      PersonName name,
+      List<PhoneNumber> phoneNumbers,
+      List<String> emails,
+      String gender,
+      LocalDate dob,
+      StreetAddress address,
+      String country,
+      String race,
+      String ethnicity,
+      List<String> tribalAffiliations) {
+    var patient = new Patient();
+    patient.setId(id);
+    patient.addName(convertToHumanName(name));
+    convertPhoneNumbersToContactPoint(phoneNumbers).forEach(patient::addTelecom);
+    convertEmailsToContactPoint(ContactPointUse.HOME, emails).forEach(patient::addTelecom);
+    patient.setGender(convertToAdministrativeGender(gender));
+    patient.setBirthDate(convertToDate(dob));
+    patient.addAddress(convertToAddress(address, country));
+    patient.addExtension(convertToRaceExtension(race));
+    patient.addExtension(convertToEthnicityExtension(ethnicity));
+    patient.addExtension(convertToTribalAffiliationExtension(tribalAffiliations).orElse(null));
     return patient;
   }
 

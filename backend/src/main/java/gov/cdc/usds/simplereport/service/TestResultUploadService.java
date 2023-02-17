@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +20,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
+import gov.cdc.usds.simplereport.utils.FileConverter;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -48,6 +51,9 @@ public class TestResultUploadService {
   private final OrganizationService _orgService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
+  private final FileConverter fileConverter;
+  final FhirContext ctx = FhirContext.forR4();
+  final IParser parser = ctx.newJsonParser();
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -78,7 +84,7 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public TestResultUpload processResultCSV(InputStream csvStream) {
+  public TestResultUpload processResultCSV(InputStream csvStream, UUID facilityId) {
 
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
 
@@ -102,6 +108,9 @@ public class TestResultUploadService {
     if (!"P".equals(processingModeCodeValue)) {
       content = attachProcessingModeCode(content);
     }
+    var bundles = fileConverter.convertToFhirBundles(new ByteArrayInputStream(content));
+    var parsedBundles =
+        bundles.stream().map(parser::encodeResourceToString).collect(Collectors.toList());
 
     UploadResponse response = null;
     if (content.length > 0) {

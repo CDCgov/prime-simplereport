@@ -100,7 +100,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
                     .withBody(mockResponse)));
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
-    var output = this._service.processResultCSV(input);
+    var output = this._service.processResultCSV(input, UUID.randomUUID());
     assertEquals(UploadStatus.PENDING, output.getStatus());
     assertEquals(14, output.getRecordsCount());
     assertNotNull(output.getOrganization());
@@ -125,7 +125,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     assertThrows(
         CsvProcessingException.class,
         () -> {
-          this._service.processResultCSV(input);
+          this._service.processResultCSV(input, UUID.randomUUID());
         });
   }
 
@@ -144,7 +144,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     }
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
-    var response = this._service.processResultCSV(input);
+    var response = this._service.processResultCSV(input, UUID.randomUUID());
 
     assertEquals(6, response.getErrors().length);
     assertEquals(FAILURE, response.getStatus());
@@ -165,14 +165,18 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
-    assertThrows(DependencyFailureException.class, () -> this._service.processResultCSV(input));
+    assertThrows(
+        DependencyFailureException.class,
+        () -> this._service.processResultCSV(input, UUID.randomUUID()));
   }
 
   @Test
   @SliceTestConfiguration.WithSimpleReportEntryOnlyUser
   void unauthorizedUser_NotAuthorizedResponse() throws IOException {
     try (InputStream input = loadCsv("test-upload-test-results.csv")) {
-      assertThrows(AccessDeniedException.class, () -> this._service.processResultCSV(input));
+      assertThrows(
+          AccessDeniedException.class,
+          () -> this._service.processResultCSV(input, UUID.randomUUID()));
     }
   }
 
@@ -191,7 +195,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
 
-    var output = sut.processResultCSV(input);
+    var output = sut.processResultCSV(input, UUID.randomUUID());
     assertNotNull(output.getReportId());
     assertEquals(UploadStatus.PENDING, output.getStatus());
   }
@@ -217,7 +221,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(dataHubMock.uploadCSV(any())).thenThrow(reportStreamResponse);
 
-    assertThrows(DependencyFailureException.class, () -> sut.processResultCSV(input));
+    assertThrows(
+        DependencyFailureException.class, () -> sut.processResultCSV(input, UUID.randomUUID()));
   }
 
   private InputStream loadCsv(String csvFile) {
@@ -286,7 +291,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
 
     // WHEN
-    TestResultUpload result = sut.processResultCSV(invalidInput);
+    TestResultUpload result = sut.processResultCSV(invalidInput, UUID.randomUUID());
 
     // THEN
     assertThat(result.getStatus()).isEqualTo(FAILURE);
