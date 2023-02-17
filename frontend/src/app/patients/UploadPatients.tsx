@@ -217,7 +217,11 @@ const UploadPatients = () => {
     return (
       <div>
         {errorMessage.body && (
-          <div className="usa-alert usa-alert--error maxw-560" tabIndex={-1}>
+          <div
+            className="usa-alert usa-alert--error maxw-560"
+            tabIndex={-1}
+            role={"alert"}
+          >
             <div className="usa-alert__body">
               <span className="usa-alert__heading text-bold">
                 {errorMessage.header}
