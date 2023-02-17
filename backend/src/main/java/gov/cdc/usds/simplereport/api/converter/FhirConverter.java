@@ -14,6 +14,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -64,6 +65,7 @@ import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
 import org.hl7.fhir.r4.model.Extension;
 import org.hl7.fhir.r4.model.HumanName;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
 import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.MessageHeader;
 import org.hl7.fhir.r4.model.Observation;
@@ -304,6 +306,13 @@ public class FhirConverter {
   public static Organization convertToOrganization(Facility facility) {
     var org = new Organization();
     org.setId(facility.getInternalId().toString());
+    org.addIdentifier()
+        .setUse(IdentifierUse.OFFICIAL)
+        .setValue(facility.getCliaNumber())
+        .getType()
+        .addCoding()
+        .setSystem(UNIVERSAL_ID_SYSTEM)
+        .setCode("CLIA");
     org.setName(facility.getFacilityName());
     org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
     org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, facility.getEmail()));
