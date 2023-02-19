@@ -1,7 +1,11 @@
 name: Run end-to-end tests
 
 on:
+  workflow_dispatch:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - "**"
   # workflow_run:
