@@ -1,7 +1,7 @@
 name: coverity-scan
 on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-  push:
+  pull_request:
     branches:
       - "**"
     paths:
