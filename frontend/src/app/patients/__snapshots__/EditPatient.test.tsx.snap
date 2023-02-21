@@ -75,7 +75,7 @@ Object {
                   </div>
                 </div>
               </div>
-              <div
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -302,8 +302,8 @@ Object {
                     </div>
                   </div>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -354,7 +354,7 @@ Object {
                           />
                         </div>
                       </div>
-                      <div
+                      <form
                         class="usa-form-group"
                       >
                         <fieldset
@@ -415,7 +415,7 @@ Object {
                             </div>
                           </div>
                         </fieldset>
-                      </div>
+                      </form>
                     </div>
                     <button
                       class="usa-button usa-button--unstyled margin-top-2"
@@ -438,7 +438,7 @@ Object {
                       </svg>
                       Add another number
                     </button>
-                    <div
+                    <form
                       class="usa-form-group"
                     >
                       <fieldset
@@ -492,7 +492,7 @@ Object {
                           </div>
                         </div>
                       </fieldset>
-                    </div>
+                    </form>
                   </div>
                   <div
                     class="usa-form"
@@ -548,7 +548,7 @@ Object {
                         Add another email address
                       </button>
                     </div>
-                    <div
+                    <form
                       class="usa-form-group"
                     >
                       <fieldset
@@ -602,7 +602,7 @@ Object {
                           </div>
                         </div>
                       </fieldset>
-                    </div>
+                    </form>
                   </div>
                   <div
                     class="usa-form"
@@ -2041,8 +2041,8 @@ Object {
                     </div>
                   </div>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -2058,7 +2058,7 @@ Object {
                   >
                     This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                   </p>
-                  <div
+                  <form
                     class="usa-form-group"
                   >
                     <fieldset
@@ -2208,7 +2208,7 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                  </div>
+                  </form>
                   <div
                     class="usa-form-group"
                   >
@@ -2219,7 +2219,7 @@ Object {
                       Tribal affiliation
                     </label>
                   </div>
-                  <div
+                  <form
                     class="usa-form-group"
                   >
                     <fieldset
@@ -2297,8 +2297,8 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                  </div>
-                  <div
+                  </form>
+                  <form
                     class="usa-form-group"
                   >
                     <fieldset
@@ -2399,10 +2399,10 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                  </div>
+                  </form>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -2413,7 +2413,7 @@ Object {
                   >
                     Housing and work
                   </legend>
-                  <div
+                  <form
                     class="usa-form-group"
                   >
                     <fieldset
@@ -2490,8 +2490,8 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                  </div>
-                  <div
+                  </form>
+                  <form
                     class="usa-form-group"
                   >
                     <fieldset
@@ -2563,9 +2563,9 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                  </div>
+                  </form>
                 </fieldset>
-              </div>
+              </form>
               <div
                 class="prime-edit-patient-heading"
               >
@@ -2659,7 +2659,7 @@ Object {
                 </div>
               </div>
             </div>
-            <div
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -2886,8 +2886,8 @@ Object {
                   </div>
                 </div>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -2938,7 +2938,7 @@ Object {
                         />
                       </div>
                     </div>
-                    <div
+                    <form
                       class="usa-form-group"
                     >
                       <fieldset
@@ -2999,7 +2999,7 @@ Object {
                           </div>
                         </div>
                       </fieldset>
-                    </div>
+                    </form>
                   </div>
                   <button
                     class="usa-button usa-button--unstyled margin-top-2"
@@ -3022,7 +3022,7 @@ Object {
                     </svg>
                     Add another number
                   </button>
-                  <div
+                  <form
                     class="usa-form-group"
                   >
                     <fieldset
@@ -3076,7 +3076,7 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                  </div>
+                  </form>
                 </div>
                 <div
                   class="usa-form"
@@ -3132,7 +3132,7 @@ Object {
                       Add another email address
                     </button>
                   </div>
-                  <div
+                  <form
                     class="usa-form-group"
                   >
                     <fieldset
@@ -3186,7 +3186,7 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                  </div>
+                  </form>
                 </div>
                 <div
                   class="usa-form"
@@ -4625,8 +4625,8 @@ Object {
                   </div>
                 </div>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -4642,7 +4642,7 @@ Object {
                 >
                   This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                 </p>
-                <div
+                <form
                   class="usa-form-group"
                 >
                   <fieldset
@@ -4792,7 +4792,7 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                </div>
+                </form>
                 <div
                   class="usa-form-group"
                 >
@@ -4803,7 +4803,7 @@ Object {
                     Tribal affiliation
                   </label>
                 </div>
-                <div
+                <form
                   class="usa-form-group"
                 >
                   <fieldset
@@ -4881,8 +4881,8 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                </div>
-                <div
+                </form>
+                <form
                   class="usa-form-group"
                 >
                   <fieldset
@@ -4983,10 +4983,10 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                </div>
+                </form>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -4997,7 +4997,7 @@ Object {
                 >
                   Housing and work
                 </legend>
-                <div
+                <form
                   class="usa-form-group"
                 >
                   <fieldset
@@ -5074,8 +5074,8 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                </div>
-                <div
+                </form>
+                <form
                   class="usa-form-group"
                 >
                   <fieldset
@@ -5147,9 +5147,9 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                </div>
+                </form>
               </fieldset>
-            </div>
+            </form>
             <div
               class="prime-edit-patient-heading"
             >
