@@ -185,10 +185,9 @@ describe("Upload Patient", () => {
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        "Please resolve the errors below and upload your edited file.",
-        { exact: false }
-      )
+      await screen.findByText("Please resolve the errors below and", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
     expect(await screen.findByText("Row(s): 0, 1, 2")).toBeInTheDocument();
@@ -221,10 +220,9 @@ describe("Upload Patient", () => {
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(
-        "Please resolve the errors below and upload your edited file.",
-        { exact: false }
-      )
+      await screen.findByText("Please resolve the errors below and", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     expect(
       await screen.findByText("properly formed error")
@@ -386,10 +384,9 @@ describe("Upload Patient", () => {
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        "Please resolve the errors below and upload your edited file.",
-        { exact: false }
-      )
+      await screen.findByText("Please resolve the errors below and", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     expect(
       await screen.findByText(

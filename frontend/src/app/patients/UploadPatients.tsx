@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,7 +28,7 @@ import "./UploadPatients.scss";
 const UploadPatients = () => {
   type ErrorMessage = {
     header: string;
-    body: string;
+    body: ReactElement | null;
     includeGuide: boolean;
   };
 
@@ -46,7 +46,7 @@ const UploadPatients = () => {
 
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
     header: "",
-    body: "",
+    body: null,
     includeGuide: true,
   });
   const [status, setStatus] = useState<
@@ -93,7 +93,7 @@ const UploadPatients = () => {
       setStatus("fail");
       setErrorMessage({
         header: "Error: File not accepted",
-        body: "There was a server error. Your file has not been accepted.",
+        body: <>There was a server error. Your file has not been accepted.</>,
         includeGuide: true,
       });
       setFileValid(false);
@@ -105,7 +105,16 @@ const UploadPatients = () => {
         if (response?.errors?.length) {
           setErrorMessage({
             header: "Error: File not accepted",
-            body: "Please resolve the errors below and upload your edited file.",
+            body: (
+              <>
+                Please resolve the errors below and{" "}
+                <a href="#upload-patients-file-input">
+                  {" "}
+                  upload your edited file{" "}
+                </a>
+                .
+              </>
+            ),
             includeGuide: true,
           });
           setErrors(response.errors);
@@ -113,7 +122,9 @@ const UploadPatients = () => {
         } else {
           setErrorMessage({
             header: "Error: File not accepted",
-            body: "There was a server error. Your file has not been accepted.",
+            body: (
+              <>There was a server error. Your file has not been accepted.</>
+            ),
             includeGuide: true,
           });
         }
@@ -171,7 +182,7 @@ const UploadPatients = () => {
       setErrors([]);
       setErrorMessage({
         header: "",
-        body: "",
+        body: null,
         includeGuide: false,
       });
 
@@ -180,7 +191,7 @@ const UploadPatients = () => {
         setButtonIsDisabled(false);
         setErrorMessage({
           header: "Error: Invalid file",
-          body: "File is missing or empty.",
+          body: <>"File is missing or empty."</>,
           includeGuide: true,
         });
         setFileValid(false);
@@ -192,7 +203,12 @@ const UploadPatients = () => {
         setStatus("fail");
         setErrorMessage({
           header: "Error: File too large",
-          body: `"${file.name}" is too large for SimpleReport to process. Please limit each upload to less than 50 MB.`,
+          body: (
+            <>
+              ${file.name} is too large for SimpleReport to process. Please
+              limit each upload to less than 50 MB.
+            </>
+          ),
           includeGuide: false,
         });
         setFileValid(false);
@@ -204,9 +220,13 @@ const UploadPatients = () => {
         setStatus("fail");
         setErrorMessage({
           header: "Error: File too large",
-          body: `“${
-            file.name
-          }” has too many rows for SimpleReport to process. Please limit each upload to less than ${MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`,
+          body: (
+            <>
+              ${file.name} has too many rows for SimpleReport to process. Please
+              limit each upload to less than $
+              {MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`
+            </>
+          ),
           includeGuide: false,
         });
         setFileValid(false);
@@ -243,7 +263,7 @@ const UploadPatients = () => {
                 onClick={() => {
                   setErrorMessage({
                     header: "",
-                    body: "",
+                    body: null,
                     includeGuide: false,
                   });
                   setErrors([]);

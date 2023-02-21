@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup } from "@trussworks/react-uswds";
 
@@ -38,16 +38,16 @@ const Uploads = () => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
-  const [errorMessageText, setErrorMessageText] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<ReactElement | null>(null);
   const [isFileValid, setFileValid] = useState<boolean>(true);
 
   useEffect(() => {
-    if (errorMessageText) {
+    if (errorMessage) {
       (
         document.getElementsByClassName("usa-alert--error")[0] as HTMLDivElement
       ).focus();
     }
-  }, [errorMessageText]);
+  }, [errorMessage]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -131,12 +131,16 @@ const Uploads = () => {
     setIsSubmitting(true);
     setButtonIsDisabled(true);
     setReportId(null);
-    setErrorMessageText(null);
+    setErrorMessage(null);
     setErrors([]);
 
     if (!file || file.size === 0) {
-      setErrorMessageText(
-        "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+      setErrorMessage(
+        <>
+          Please resolve the errors below and{" "}
+          <a href={"#upload-csv-input"}>upload your edited file</a>. Your file
+          has not been accepted.
+        </>
       );
       const errorMessage = {} as FeedbackMessage;
       errorMessage.message = "Invalid File";
@@ -151,8 +155,8 @@ const Uploads = () => {
       setFile(undefined);
 
       if (res.status !== 200) {
-        setErrorMessageText(
-          "There was a server error. Your file has not been accepted."
+        setErrorMessage(
+          <>There was a server error. Your file has not been accepted.</>
         );
         setFileValid(false);
         appInsights?.trackEvent({
@@ -179,8 +183,12 @@ const Uploads = () => {
         }
 
         if (response?.errors?.length) {
-          setErrorMessageText(
-            "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+          setErrorMessage(
+            <>
+              Please resolve the errors below and{" "}
+              <a href={"upload-csv-input"}>upload your edited file</a>. Your
+              file has not been accepted.
+            </>
           );
           setErrors(response.errors);
           setFileValid(false);
@@ -298,7 +306,7 @@ const Uploads = () => {
               </div>
             </div>
           )}
-          {errorMessageText && (
+          {errorMessage && (
             <div>
               <div
                 className="usa-alert usa-alert--error"
@@ -309,7 +317,7 @@ const Uploads = () => {
                   <h3 className="usa-alert__heading">
                     Error: File not accepted
                   </h3>
-                  <p className="usa-alert__text">{errorMessageText}</p>
+                  <p className="usa-alert__text">{errorMessage}</p>
                 </div>
               </div>
               {errors?.length > 0 && (
