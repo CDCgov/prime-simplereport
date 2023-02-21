@@ -138,6 +138,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
               <form
                 class="usa-form-group margin-top-2"
               >
+                 
                 <fieldset
                   class="usa-fieldset prime-radios"
                   id="facilitySector"
@@ -188,6 +189,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                     </div>
                   </div>
                 </fieldset>
+                 
               </form>
             </div>
           </li>
