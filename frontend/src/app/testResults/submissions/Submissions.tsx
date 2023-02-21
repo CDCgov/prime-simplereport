@@ -56,7 +56,7 @@ const Submissions = () => {
       submissionsResult.uploadSubmissions.totalElements === 0
     ) {
       return (
-        <tr>
+        <tr className="border-bottom">
           <td>No results</td>
         </tr>
       );
@@ -163,14 +163,17 @@ const Submissions = () => {
         </div>
 
         {/*pagination*/}
-        <div className="usa-card__footer">
-          <Pagination
-            baseRoute="/results/upload/submissions"
-            currentPage={pageNumber}
-            entriesPerPage={pageSize}
-            totalEntries={submissions?.uploadSubmissions.totalElements || 0}
-          />
-        </div>
+        {submissions !== undefined &&
+          submissions.uploadSubmissions.totalElements > 0 && (
+            <div className="usa-card__footer">
+              <Pagination
+                baseRoute="/results/upload/submissions"
+                currentPage={pageNumber}
+                entriesPerPage={pageSize}
+                totalEntries={submissions?.uploadSubmissions.totalElements || 0}
+              />
+            </div>
+          )}
       </div>
     </div>
   );
