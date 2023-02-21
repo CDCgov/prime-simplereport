@@ -186,7 +186,7 @@ const Uploads = () => {
           setErrorMessage(
             <>
               Please resolve the errors below and{" "}
-              <a href={"upload-csv-input"}>upload your edited file</a>. Your
+              <a href={"#upload-csv-input"}>upload your edited file</a>. Your
               file has not been accepted.
             </>
           );
