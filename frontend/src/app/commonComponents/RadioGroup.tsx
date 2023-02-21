@@ -64,7 +64,7 @@ const RadioGroup = <T extends string>({
   );
 
   return (
-    <div
+    <form
       className={classnames(
         "usa-form-group",
         wrapperClassName,
@@ -150,7 +150,7 @@ const RadioGroup = <T extends string>({
           )}
         </UIDConsumer>
       </fieldset>
-    </div>
+    </form>
   );
 };
 

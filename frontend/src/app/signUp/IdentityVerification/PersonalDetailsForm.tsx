@@ -212,7 +212,7 @@ const PersonalDetailsForm = ({
 
   return (
     <CardBackground>
-      <Card logo>
+      <Card logo cardIsForm>
         <h1 className="margin-bottom-0 font-ui-xs">Sign up for SimpleReport</h1>
         <StepIndicator
           steps={organizationCreationSteps}

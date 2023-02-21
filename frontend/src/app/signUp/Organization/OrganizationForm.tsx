@@ -241,7 +241,7 @@ const OrganizationForm = () => {
 
   return (
     <CardBackground>
-      <Card logo>
+      <Card logo cardIsForm>
         <div className="margin-bottom-2 organization-form usa-prose">
           <h4 className="margin-top-2 margin-bottom-0">
             Sign up for SimpleReport
