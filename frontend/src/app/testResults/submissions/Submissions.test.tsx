@@ -132,7 +132,7 @@ const getMocks = () => [
 ];
 
 describe("Submissions", () => {
-  it("should render no results and pagination", async () => {
+  it("should render no results and no pagination", async () => {
     render(
       <MockedProvider mocks={getNoResultsMocks()}>
         <Provider store={store}>
