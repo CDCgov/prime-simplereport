@@ -27,15 +27,6 @@ variable "https_only" {
 variable "key_vault_id" {}
 variable "tenant_id" {}
 
-# https://azure.microsoft.com/en-us/pricing/details/app-service/windows/
-variable "instance_tier" {
-  default = "PremiumV3"
-}
-
-variable "instance_size" {
-  default = "P1v3"
-}
-
 variable "instance_count" {
   default = 1
 }
@@ -44,6 +35,7 @@ variable "deploy_info" {
   default = {}
 }
 
+# https://azure.microsoft.com/en-us/pricing/details/app-service/windows/
 variable "sku_name" {
   default = "P1v3"
 }

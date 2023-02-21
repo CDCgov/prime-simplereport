@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
 
 @Slf4j
@@ -20,6 +21,9 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
   private final QueueAsyncClient queueClient;
   private final GitProperties gitProperties;
 
+  @Value("${simple-report.processing-mode-code:P}")
+  private String processingModeCode = "P";
+
   @Override
   public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
     if (testEvent.getResults().stream()
@@ -28,7 +32,8 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
       var parser = context.newJsonParser();
       return queueClient
           .sendMessage(
-              parser.encodeResourceToString(createFhirBundle(testEvent, gitProperties, new Date())))
+              parser.encodeResourceToString(
+                  createFhirBundle(testEvent, gitProperties, new Date(), processingModeCode)))
           .toFuture()
           .thenApply(result -> null);
     }

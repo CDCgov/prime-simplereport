@@ -172,6 +172,9 @@ export const DownloadResultsCsvModal = ({
               className="hidden"
               ref={csvLink}
               target="_blank"
+              rel="noopener noreferrer"
+              tabIndex={-1}
+              aria-hidden={true}
             />
           </div>
         </div>
