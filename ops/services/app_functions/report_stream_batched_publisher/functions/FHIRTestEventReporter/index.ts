@@ -12,7 +12,7 @@ import { FHIRTestEventsBatch, processTestEvents } from "./dataHandlers";
 import {
   getReportStreamAuthToken,
   handleReportStreamResponse,
-  reportToUniversalPipeline,
+  reportToUniversalPipelineTokenBased,
 } from "../common/reportingHandlers";
 
 const {
@@ -102,10 +102,11 @@ const FHIRTestEventReporter: AzureFunction = async function (
               } records in batch ${idx + 1} to ReportStream`
             );
 
-            const postResult: Response = await reportToUniversalPipeline(
-              bearerToken,
-              testEventBatch.testEventsNDJSON
-            );
+            const postResult: Response =
+              await reportToUniversalPipelineTokenBased(
+                bearerToken,
+                testEventBatch.testEventsNDJSON
+              );
 
             const uploadStart = new Date().getTime();
             telemetry.trackDependency({

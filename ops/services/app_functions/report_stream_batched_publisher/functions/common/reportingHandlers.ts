@@ -24,12 +24,12 @@ const telemetry = appInsights.defaultClient;
 
 export const FHIR_CLIENT_ID = "simple_report.fullelr";
 
-export async function reportToUniversalPipeline(
+export async function reportToUniversalPipelineTokenBased(
   token: string,
   ndjsonTestEvents: string
 ): Promise<Response> {
   const headers = new Headers({
-    "x-functions-key": FHIR_REPORT_STREAM_TOKEN,
+    authorization: `Bearer ${token}`,
     "x-api-version": uploaderVersion,
     "content-type": "application/fhir+ndjson",
     client: FHIR_CLIENT_ID,

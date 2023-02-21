@@ -53,7 +53,8 @@ describe("FHIRTestEventReporter", () => {
     minimumMessagesAvailableSpy,
     processTestEventsSpy,
     reportToUniversalPipelineSpy,
-    handleReportStreamResponseSpy;
+    handleReportStreamResponseSpy,
+    getReportStreamAuthTokenSpy;
 
   beforeEach(() => {
     dequeueMessagesSpy = jest
@@ -76,11 +77,14 @@ describe("FHIRTestEventReporter", () => {
     processTestEventsSpy = jest.spyOn(dataHandlers, "processTestEvents");
     reportToUniversalPipelineSpy = jest.spyOn(
       reportingHandlers,
-      "reportToUniversalPipeline"
+      "reportToUniversalPipelineTokenBased"
     );
     handleReportStreamResponseSpy = jest
       .spyOn(reportingHandlers, "handleReportStreamResponse")
       .mockResolvedValue();
+    getReportStreamAuthTokenSpy = jest
+      .spyOn(reportingHandlers, "getReportStreamAuthToken")
+      .mockResolvedValue("123abc");
   });
 
   afterEach(() => {
@@ -126,7 +130,9 @@ describe("FHIRTestEventReporter", () => {
     expect(dequeueMessagesSpy).toHaveBeenCalled();
     expect(processTestEventsSpy).toHaveBeenCalled();
 
+    expect(getReportStreamAuthTokenSpy).toHaveBeenCalledWith(context);
     expect(reportToUniversalPipelineSpy).toHaveBeenCalledWith(
+      "123abc",
       '{"patient":"dexter"}'
     );
     expect(reportToUniversalPipelineSpy).toHaveBeenCalledTimes(1);

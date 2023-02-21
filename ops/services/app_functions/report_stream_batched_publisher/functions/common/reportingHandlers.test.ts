@@ -15,7 +15,7 @@ import { ReportStreamResponse } from "./types";
 import { mockPrivateKey } from "../mocks/mock_key_pair";
 import {
   handleReportStreamResponse,
-  reportToUniversalPipeline,
+  reportToUniversalPipelineSharedKey,
   generateJWT,
   getReportStreamAuthToken,
 } from "./reportingHandlers";
@@ -59,7 +59,7 @@ describe("reportingHandlers", () => {
       });
 
       const serializedTestEvents = "";
-      await reportToUniversalPipeline("");
+      await reportToUniversalPipelineSharedKey("");
       expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",
         headers: mockHeaders,
