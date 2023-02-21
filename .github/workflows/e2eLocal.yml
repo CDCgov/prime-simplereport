@@ -8,40 +8,17 @@ on:
   pull_request:
     branches:
       - "**"
-  # workflow_run:
-  #   workflows: 
-  #     - Build Docker Images
-  #   types:
-  #     - completed
 
 jobs:
 
-  cypress_changes:
-    with:
-      what_to_check: cypress
-    uses: ./.github/workflows/checkForChanges.yml
-
-  database_changes:
-    with:
-      what_to_check: backend/db-setup
-    uses: ./.github/workflows/checkForChanges.yml
-
-  cypress_tag:
-    needs: [cypress_changes]
-    if: needs.cypress_changes.outputs.has_changes == 'true'
-    uses: ./.github/workflows/getDockerBranchTag.yml
-
-  database_tag:
-    needs: [database_changes]
-    if: needs.database_changes.outputs.has_changes == 'true'
-    uses: ./.github/workflows/getDockerBranchTag.yml
+  build_cypress_image:
+    uses: ./.github/workflows/buildCypressImage.yml
 
   cypress-local-env:
-    if: always()
-    needs: [cypress_tag, database_tag]
+    needs: [build_cypress_image]
     runs-on: ubuntu-latest
     steps:
-            
+
     - name: Checkout
       uses: actions/checkout@v3
 
@@ -88,8 +65,8 @@ jobs:
         CI: 1
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180
-        # DOCKER_CYPRESS_IMAGE_TAG: ${{ needs.cypress_tag.outputs.tag }}
-        # DOCKER_DATABASE_IMAGE_TAG: ${{ needs.database_tag.outputs.tag }}
+        DOCKER_CYPRESS_IMAGE_VERSION: ${{ needs.build_cypress_image.outputs.version }}
+        DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
         COMPOSE_HTTP_TIMEOUT: 180
         # backend settings
         SPRING_PROFILES_ACTIVE: e2e,db-dockerized
@@ -119,14 +96,10 @@ jobs:
       shell: bash
       run: |
         echo "::group::Run Cypress locally"
-        docker compose pull
-        docker compose -f docker-compose.yml -f docker-compose.cypress.yml build
+        echo "${{ needs.build_cypress_image.outputs.version }}"
+        echo "Cypress branch tag (or latest): ${{ needs.build_cypress_image.outputs.version }}"
         docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress
         echo "::endgroup::"
-        
-      # echo "Cypress branch tag (or latest): ${{ needs.set_docker_branch_image_tag.outputs.docker_cypress_image_tag }}"
-      # docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress
-      # echo "::endgroup::"
 
     - name: Get docker logs
       if: always()

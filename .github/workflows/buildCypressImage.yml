@@ -1,7 +1,18 @@
 name: Build cypress docker image
 
 on:
+  workflow_dispatch:
   workflow_call:
+    inputs:
+      force_build:
+        description: Force build
+        required: false
+        default: false
+        type: boolean
+    outputs:
+      version:
+        description: docker image version
+        value: ${{ jobs.build_and_push_cypress_image.outputs.version }}
 
 env:
   REGISTRY: ghcr.io
@@ -14,20 +25,21 @@ jobs:
       what_to_check: cypress
     uses: ./.github/workflows/checkForChanges.yml
 
-  build-and-push-cypress-image:
+  build_and_push_cypress_image:
+    if: needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == true
     needs: [cypress_changes]
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    outputs:
+      version: ${{ steps.set.outputs.version }}
 
     steps:
       - name: Checkout repository
-        if: needs.cypress_changes.outputs.has_changes == 'true'
         uses: actions/checkout@v3
 
       - name: Log in to the Container registry
-        if: needs.cypress_changes.outputs.has_changes == 'true'
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
@@ -35,7 +47,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
-        if: needs.cypress_changes.outputs.has_changes == 'true'
         id: meta
         uses: docker/metadata-action@v4
         with:
@@ -43,9 +54,9 @@ jobs:
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
             type=ref,event=branch
+            type=ref,event=pr
 
       - name: Build and push Docker image
-        if: needs.cypress_changes.outputs.has_changes == 'true'
         uses: docker/build-push-action@v4
         with:
           context: ./
@@ -54,6 +65,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Skip build
-        if: needs.cypress_changes.outputs.has_changes == 'false'
-        run: echo "No changes in cypress directory, skipping build"
+      - name: Set version output
+        shell: bash
+        id: set
+        run: echo "version=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}" >> "$GITHUB_OUTPUT"
