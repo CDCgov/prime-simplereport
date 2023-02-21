@@ -32,6 +32,7 @@ interface Props<T> {
   onClick?: (value: T) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   inputClassName?: string;
+  renderAsForm?: boolean;
 }
 
 const RadioGroup = <T extends string>({
@@ -52,6 +53,7 @@ const RadioGroup = <T extends string>({
   onClick,
   disabled,
   inputClassName,
+  renderAsForm,
 }: Props<T>): React.ReactElement => {
   const inputClass = classnames(
     "usa-radio__input",
@@ -63,94 +65,101 @@ const RadioGroup = <T extends string>({
     variant === "horizontal" && "prime-radio--horizontal__container"
   );
 
-  return (
-    <form
-      className={classnames(
-        "usa-form-group",
-        wrapperClassName,
-        validationStatus === "error" && "usa-form-group--error"
-      )}
+  const body = (
+    <fieldset
+      className={classnames("usa-fieldset prime-radios", className)}
+      id={name}
     >
-      <fieldset
-        className={classnames("usa-fieldset prime-radios", className)}
-        id={name}
-      >
-        {legend && (
-          <legend
+      {legend && (
+        <legend
+          className={classnames(
+            "usa-legend",
+            legendSrOnly && "usa-sr-only",
+            validationStatus === "error" && "usa-label--error"
+          )}
+        >
+          {required ? <Required label={legend} /> : <Optional label={legend} />}
+        </legend>
+      )}
+      {hintText && <span className="usa-hint">{hintText}</span>}
+      {validationStatus === "error" && (
+        <div className="usa-error-message" role="alert" id={`error_${name}`}>
+          <span className="usa-sr-only">Error: </span>
+          {errorMessage}
+        </div>
+      )}
+      <UIDConsumer>
+        {(_, uid) => (
+          <div
             className={classnames(
-              "usa-legend",
-              legendSrOnly && "usa-sr-only",
-              validationStatus === "error" && "usa-label--error"
+              variant === "horizontal" && "prime-radio--horizontal"
             )}
+            {...(validationStatus === "error"
+              ? { "aria-describedby": `error_${name}`, "aria-invalid": true }
+              : null)}
           >
-            {required ? (
-              <Required label={legend} />
-            ) : (
-              <Optional label={legend} />
-            )}
-          </legend>
-        )}
-        {hintText && <span className="usa-hint">{hintText}</span>}
-        {validationStatus === "error" && (
-          <div className="usa-error-message" role="alert" id={`error_${name}`}>
-            <span className="usa-sr-only">Error: </span>
-            {errorMessage}
+            {buttons.map((c) => {
+              const labelClasses = classnames(
+                "usa-radio__label",
+                (c.disabled || disabled) && "text-base"
+              );
+              const className = classnames(groupClass, c.className);
+              return (
+                <div className={className} key={uid(c.value)}>
+                  <input
+                    type="radio"
+                    id={uid(c.value)}
+                    name={name}
+                    value={c.value}
+                    data-required={required || "false"}
+                    disabled={disabled || c.disabled || false}
+                    className={inputClass}
+                    checked={c.value === selectedRadio}
+                    onClick={onClick ? () => onClick(c.value) : undefined}
+                    onChange={() => onChange(c.value)}
+                    onBlur={onBlur}
+                  />
+                  <label className={labelClasses} htmlFor={uid(c.value)}>
+                    {c.label}
+                    {c.labelDescription && (
+                      <span className="usa-checkbox__label-description text-base-dark">
+                        {c.labelDescription}
+                      </span>
+                    )}
+                    {c.labelTag && (
+                      <div className="display-block margin-top-1">
+                        <span className="usa-tag bg-primary-darker">
+                          {c.labelTag}
+                        </span>
+                      </div>
+                    )}
+                  </label>
+                </div>
+              );
+            })}
           </div>
         )}
-        <UIDConsumer>
-          {(_, uid) => (
-            <div
-              className={classnames(
-                variant === "horizontal" && "prime-radio--horizontal"
-              )}
-              {...(validationStatus === "error"
-                ? { "aria-describedby": `error_${name}`, "aria-invalid": true }
-                : null)}
-            >
-              {buttons.map((c) => {
-                const labelClasses = classnames(
-                  "usa-radio__label",
-                  (c.disabled || disabled) && "text-base"
-                );
-                const className = classnames(groupClass, c.className);
-                return (
-                  <div className={className} key={uid(c.value)}>
-                    <input
-                      type="radio"
-                      id={uid(c.value)}
-                      name={name}
-                      value={c.value}
-                      data-required={required || "false"}
-                      disabled={disabled || c.disabled || false}
-                      className={inputClass}
-                      checked={c.value === selectedRadio}
-                      onClick={onClick ? () => onClick(c.value) : undefined}
-                      onChange={() => onChange(c.value)}
-                      onBlur={onBlur}
-                    />
-                    <label className={labelClasses} htmlFor={uid(c.value)}>
-                      {c.label}
-                      {c.labelDescription && (
-                        <span className="usa-checkbox__label-description text-base-dark">
-                          {c.labelDescription}
-                        </span>
-                      )}
-                      {c.labelTag && (
-                        <div className="display-block margin-top-1">
-                          <span className="usa-tag bg-primary-darker">
-                            {c.labelTag}
-                          </span>
-                        </div>
-                      )}
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
+      </UIDConsumer>
+    </fieldset>
+  );
+
+  return (
+    <>
+      {renderAsForm ? (
+        <form
+          className={classnames(
+            "usa-form-group",
+            wrapperClassName,
+            validationStatus === "error" && "usa-form-group--error"
           )}
-        </UIDConsumer>
-      </fieldset>
-    </form>
+        >
+          {" "}
+          {body}{" "}
+        </form>
+      ) : (
+        <div> {body} </div>
+      )}
+    </>
   );
 };
 
