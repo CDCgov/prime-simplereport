@@ -39,6 +39,7 @@ const Uploads = () => {
     Array<FeedbackMessage | undefined | null>
   >([]);
   const [errorMessageText, setErrorMessageText] = useState<string | null>(null);
+  const [isFileValid, setFileValid] = useState<boolean>(true);
 
   useEffect(() => {
     if (errorMessageText) {
@@ -71,6 +72,7 @@ const Uploads = () => {
             minimumFractionDigits: 2,
           }
         );
+        setFileValid(false);
         showError(
           `The file '${currentFile.name}' is too large.  The maximum file size is ${maxKBytes}k`,
           "Invalid file"
@@ -81,6 +83,7 @@ const Uploads = () => {
       const fileText = await currentFile.text();
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
       if (lineCount > MAX_CSV_UPLOAD_ROW_COUNT) {
+        setFileValid(false);
         showError(
           `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${MAX_CSV_UPLOAD_ROW_COUNT}.`,
           "Invalid file"
@@ -89,6 +92,7 @@ const Uploads = () => {
       }
 
       if (lineCount <= 1) {
+        setFileValid(false);
         showError(
           `The file '${currentFile.name}' doesn't contain any valid data. File should have a header line and at least one line of data.`,
           "Invalid file"
@@ -105,6 +109,7 @@ const Uploads = () => {
         (firstLine.match(/\t/g) || []).length;
 
       if (columnCount > REPORT_MAX_ITEM_COLUMNS) {
+        setFileValid(false);
         showError(
           `The file '${currentFile.name}' has too many columns. The maximum number of allowed columns is ${REPORT_MAX_ITEM_COLUMNS}.`,
           "Invalid file"
@@ -113,7 +118,9 @@ const Uploads = () => {
       }
       setFile(currentFile);
       setButtonIsDisabled(false);
+      setFileValid(true);
     } catch (err: any) {
+      setFileValid(false);
       showError(err.toString(), "An unexpected error happened");
     }
   };
@@ -134,6 +141,7 @@ const Uploads = () => {
       const errorMessage = {} as FeedbackMessage;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
+      setFileValid(false);
       return;
     }
 
@@ -146,6 +154,7 @@ const Uploads = () => {
         setErrorMessageText(
           "There was a server error. Your file has not been accepted."
         );
+        setFileValid(false);
         appInsights?.trackEvent({
           name: "Spreadsheet upload server error",
           properties: {
@@ -158,6 +167,7 @@ const Uploads = () => {
 
         if (response?.reportId) {
           setReportId(response?.reportId);
+          setFileValid(true);
           appInsights?.trackEvent({
             name: "Spreadsheet upload success",
             properties: {
@@ -173,6 +183,7 @@ const Uploads = () => {
             "Please resolve the errors below and upload your edited file. Your file has not been accepted."
           );
           setErrors(response.errors);
+          setFileValid(false);
           appInsights?.trackEvent({
             name: "Spreadsheet upload validation failure",
             properties: {
@@ -335,6 +346,7 @@ const Uploads = () => {
               accept="text/csv, .csv"
               onChange={(e) => handleFileChange(e)}
               required
+              ariaInvalid={!isFileValid}
             />
           </FormGroup>
           <Button
