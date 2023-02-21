@@ -54,6 +54,7 @@ module "simple_report_api" {
     DATAHUB_URL                                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_url.id})"
     DATAHUB_API_KEY                               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     DATAHUB_FHIR_API_KEY                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_api_key.id})"
+    DATAHUB_FHIR_KEY                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
     DATAHUB_SIGNING_KEY                           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_signing_key.id})"
 
     # true by default: can be disabled quickly here

@@ -5,15 +5,20 @@ import {
   QueueClient,
   QueueDeleteMessageResponse,
 } from "@azure/storage-queue";
-import { Response } from "node-fetch";
+import { Headers, Response } from "node-fetch";
+import jwt from "jsonwebtoken";
 
 import * as queueHandlers from "./queueHandlers";
+
+import { uploaderVersion } from "../config";
+import { ReportStreamResponse } from "./types";
+import { mockPrivateKey } from "../mocks/mock_key_pair";
 import {
   handleReportStreamResponse,
   reportToUniversalPipeline,
+  generateJWT,
+  getReportStreamAuthToken,
 } from "./reportingHandlers";
-import { uploaderVersion } from "../config";
-import { ReportStreamResponse } from "./types";
 
 jest.mock(
   "node-fetch",
@@ -23,6 +28,7 @@ jest.mock(
 jest.mock("../config", () => ({
   ENV: {
     REPORT_STREAM_URL: "https://nope.url/1234",
+    REPORT_STREAM_BASE_URL: "https://nope.url",
     FHIR_REPORT_STREAM_TOKEN: "merhaba",
   },
 }));
@@ -37,6 +43,12 @@ jest.mock(
 );
 
 describe("reportingHandlers", () => {
+  const context = {
+    log: jest.fn(),
+    traceContext: { traceparent: "asdf" },
+  } as jest.MockedObject<Context>;
+  context.log.error = jest.fn();
+
   describe("reportToUniversalPipeline", () => {
     it("calls fetch with correct parameters", async () => {
       const mockHeaders = new Headers({
@@ -57,11 +69,6 @@ describe("reportingHandlers", () => {
   });
 
   describe("handleReportStreamResponse", () => {
-    const context = {
-      log: jest.fn(),
-      traceContext: { traceparent: "asdf" },
-    } as jest.MockedObject<Context>;
-    context.log.error = jest.fn();
     const messagesMock = [] as DequeuedMessageItem[];
     const parseFailureMock = {};
 
@@ -199,6 +206,80 @@ describe("reportingHandlers", () => {
         parseFailureMock
       );
       expect(responseMock.text).toHaveBeenCalled();
+    });
+  });
+
+  describe("generateJWT", () => {
+    const clientId = "FHIR.client";
+    const reportStreamUrl = "reportStream.gov";
+
+    it("generates token according to ReportStream guidelines", () => {
+      const token = generateJWT(clientId, reportStreamUrl, mockPrivateKey);
+      const decoded = jwt.verify(token, mockPrivateKey, {
+        algorithm: "RS256",
+        complete: true,
+      });
+
+      expect(decoded.header).toHaveProperty("kid", clientId);
+      expect(decoded.header).toHaveProperty("typ", "JWT");
+      expect(decoded.header).toHaveProperty("alg", "RS256");
+      expect(decoded.payload).toHaveProperty("iss", clientId);
+      expect(decoded.payload).toHaveProperty("sub", clientId);
+      expect(decoded.payload).toHaveProperty("aud", reportStreamUrl);
+      expect(decoded.payload).toHaveProperty("exp");
+      expect(decoded.payload).toHaveProperty("jti");
+    });
+  });
+
+  describe("getReportStreamAuthToken", () => {
+    let jwtSignSpy;
+
+    beforeEach(() => {
+      jwtSignSpy = jest.spyOn(jwt, "sign");
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
+    it("obtains auth token successfully", async () => {
+      const reportStreamTokenResponse = {
+        access_token: "123",
+        token_type: "bearer",
+        expires_in: 300,
+        expires_at_seconds: 1625260982,
+        scope: "FHIR.client.default.report",
+      };
+
+      fetchMock.mockOnce(JSON.stringify(reportStreamTokenResponse));
+
+      jwtSignSpy.mockReturnValueOnce("123abc");
+
+      await getReportStreamAuthToken(context);
+
+      const headers = new Headers({
+        "Content-Type": "application/x-www-form-urlencoded",
+      });
+
+      expect(fetchMock).toHaveBeenCalledWith("https://nope.url/api/token", {
+        method: "POST",
+        headers,
+        body: "scope=simple_report.fullelr.default.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=123abc",
+      });
+    });
+
+    it("fails to obtain auth token", async () => {
+      jwtSignSpy.mockReturnValueOnce("123abc");
+      fetchMock.mockOnce("error", { status: 400 });
+
+      await expect(async () =>
+        getReportStreamAuthToken(context)
+      ).rejects.toThrow();
+
+      expect(context.log.error).toHaveBeenCalledWith(
+        "Error while trying to get the ReportStream auth token.",
+        new Error(`ReportStream Error Response: error`)
+      );
     });
   });
 });

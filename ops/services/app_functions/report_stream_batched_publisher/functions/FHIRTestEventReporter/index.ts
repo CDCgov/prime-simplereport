@@ -10,6 +10,7 @@ import {
 } from "../common/queueHandlers";
 import { FHIRTestEventsBatch, processTestEvents } from "./dataHandlers";
 import {
+  getReportStreamAuthToken,
   handleReportStreamResponse,
   reportToUniversalPipeline,
 } from "../common/reportingHandlers";
@@ -64,6 +65,8 @@ const FHIRTestEventReporter: AzureFunction = async function (
     `Queue: ${publishingQueue.name}. Processing ${fhirTestEventsBatches.length} batch(s);`
   );
 
+  const bearerToken = await getReportStreamAuthToken(context);
+
   const fhirPublishingTasks: Promise<void>[] = fhirTestEventsBatches.map(
     (testEventBatch: FHIRTestEventsBatch, idx: number) => {
       // creates and returns a publishing task
@@ -100,6 +103,7 @@ const FHIRTestEventReporter: AzureFunction = async function (
             );
 
             const postResult: Response = await reportToUniversalPipeline(
+              bearerToken,
               testEventBatch.testEventsNDJSON
             );
 

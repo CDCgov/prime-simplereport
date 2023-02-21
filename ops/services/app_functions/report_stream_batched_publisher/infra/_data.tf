@@ -20,6 +20,11 @@ data "azurerm_key_vault_secret" "datahub_fhir_api_key" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "datahub_fhir_key" {
+  name         = "datahub-fhir-key-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 data "azurerm_key_vault_secret" "simple_report_callback_token" {
   name         = "simple-report-callback-token-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.sr_global.id
