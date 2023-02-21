@@ -52,7 +52,6 @@ const Uploads = () => {
   }, [errorMessage]);
 
   const activeFacilityId = getFacilityIdFromUrl(useLocation());
-  console.log("fac id : " + activeFacilityId);
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {

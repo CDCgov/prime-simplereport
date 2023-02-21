@@ -148,7 +148,7 @@ describe("Uploads", () => {
       let file: File;
       let uploadResultsSpy: jest.SpyInstance<
         Promise<Response>,
-        [csvFile: File]
+        [csvFile: File, rawFacilityId: string | undefined | null]
       >;
 
       beforeEach(async () => {
