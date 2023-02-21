@@ -23,21 +23,30 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.ServiceRequest;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class FileConverter {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
   private final Function<Map<String, String>, TestResultRow> fileRowConstructor =
       TestResultRow::new;
 
-  public List<Bundle> convertToFhirBundles(InputStream csvStream) {
+  private final GitProperties gitProperties;
+
+  @Value("${simple-report.processing-mode-code:P}")
+  private String processingModeCode = "P";
+
+  public List<Bundle> convertToFhirBundles(InputStream csvStream, UUID facilityId) {
     var testEvents = new ArrayList<Bundle>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     if (!valueIterator.hasNext()) {
@@ -55,13 +64,13 @@ public class FileConverter {
       }
       var fileRow = (TestResultRow) fileRowConstructor.apply(row);
 
-      testEvents.add(convertRowToFhirBundle(fileRow));
+      testEvents.add(convertRowToFhirBundle(fileRow, facilityId));
     }
 
     return testEvents;
   }
 
-  private Bundle convertRowToFhirBundle(TestResultRow row) {
+  private Bundle convertRowToFhirBundle(TestResultRow row, UUID facilityId) {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
     var patientAddr =
@@ -115,7 +124,7 @@ public class FileConverter {
             new ArrayList<>());
     var testingLabOrg =
         FhirConverter.convertToOrganization(
-            "facility-id", // todo
+            facilityId.toString(),
             row.getTestingLabName().value,
             row.getTestingLabPhoneNumber().value,
             "", // todo contact point conversion asserts not null
@@ -184,7 +193,10 @@ public class FileConverter {
         observation,
         serviceRequest,
         diagnosticReport,
-        Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+        new Date(),
+        gitProperties,
+        processingModeCode);
   }
 
   private String getSnomedValue(String input) {

@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup } from "@trussworks/react-uswds";
+import { useLocation } from "react-router-dom";
 
 import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
@@ -16,6 +17,7 @@ import {
   MAX_CSV_UPLOAD_BYTES,
   MAX_CSV_UPLOAD_ROW_COUNT,
 } from "../../../config/constants";
+import { getFacilityIdFromUrl } from "../../utils/url";
 
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
@@ -49,6 +51,8 @@ const Uploads = () => {
     }
   }, [errorMessage]);
 
+  const activeFacilityId = getFacilityIdFromUrl(useLocation());
+  console.log("fac id : " + activeFacilityId);
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -149,60 +153,61 @@ const Uploads = () => {
       return;
     }
 
-    FileUploadService.uploadResults(file).then(async (res) => {
-      setIsSubmitting(false);
-      setFileInputResetValue(fileInputResetValue + 1);
-      setFile(undefined);
+    FileUploadService.uploadResults(file, activeFacilityId).then(
+      async (res) => {
+        setIsSubmitting(false);
+        setFileInputResetValue(fileInputResetValue + 1);
+        setFile(undefined);
 
-      if (res.status !== 200) {
-        setErrorMessage(
-          <>There was a server error. Your file has not been accepted.</>
-        );
-        setFileValid(false);
-        appInsights?.trackEvent({
-          name: "Spreadsheet upload server error",
-          properties: {
-            org: orgName,
-            user: user?.email,
-          },
-        });
-      } else {
-        const response = await res.json();
-
-        if (response?.reportId) {
-          setReportId(response?.reportId);
-          setFileValid(true);
-          appInsights?.trackEvent({
-            name: "Spreadsheet upload success",
-            properties: {
-              "report ID": response.reportId,
-              org: orgName,
-              user: user?.email,
-            },
-          });
-        }
-
-        if (response?.errors?.length) {
+        if (res.status !== 200) {
           setErrorMessage(
-            <>
-              Please resolve the errors below and{" "}
-              <a href={"#upload-csv-input"}>upload your edited file</a>. Your
-              file has not been accepted.
-            </>
+            <>There was a server error. Your file has not been accepted.</>
           );
-          setErrors(response.errors);
           setFileValid(false);
           appInsights?.trackEvent({
-            name: "Spreadsheet upload validation failure",
+            name: "Spreadsheet upload server error",
             properties: {
-              errors: response.errors,
               org: orgName,
               user: user?.email,
             },
           });
+        } else {
+          const response = await res.json();
+
+          if (response?.reportId) {
+            setReportId(response?.reportId);
+            setFileValid(true);
+            appInsights?.trackEvent({
+              name: "Spreadsheet upload success",
+              properties: {
+                "report ID": response.reportId,
+                org: orgName,
+                user: user?.email,
+              },
+            });
+          }
+
+          if (response?.errors?.length) {
+            setErrorMessage(
+              <>
+                Please resolve the errors below and{" "}
+                <a href={"#upload-csv-input"}>upload your edited file</a>. Your
+                file has not been accepted.
+              </>
+            );
+            setErrors(response.errors);
+            setFileValid(false);
+            appInsights?.trackEvent({
+              name: "Spreadsheet upload validation failure",
+              properties: {
+                errors: response.errors,
+                org: orgName,
+                user: user?.email,
+              },
+            });
+          }
         }
-      }
-    });
+      });
   };
 
   return (

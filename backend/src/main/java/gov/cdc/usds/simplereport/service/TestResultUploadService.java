@@ -108,7 +108,7 @@ public class TestResultUploadService {
     if (!"P".equals(processingModeCodeValue)) {
       content = attachProcessingModeCode(content);
     }
-    var bundles = fileConverter.convertToFhirBundles(new ByteArrayInputStream(content));
+    var bundles = fileConverter.convertToFhirBundles(new ByteArrayInputStream(content), facilityId);
     var parsedBundles =
         bundles.stream().map(parser::encodeResourceToString).collect(Collectors.toList());
 
