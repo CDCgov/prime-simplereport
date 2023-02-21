@@ -40,6 +40,7 @@ const UploadPatients = () => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
+  const [isFileValid, setFileValid] = useState<boolean>(true);
 
   const appInsights = getAppInsights();
 
@@ -95,6 +96,7 @@ const UploadPatients = () => {
         body: "There was a server error. Your file has not been accepted.",
         includeGuide: true,
       });
+      setFileValid(false);
     } else {
       const response = await res?.json();
 
@@ -107,6 +109,7 @@ const UploadPatients = () => {
             includeGuide: true,
           });
           setErrors(response.errors);
+          setFileValid(false);
         } else {
           setErrorMessage({
             header: "Error: File not accepted",
@@ -114,6 +117,7 @@ const UploadPatients = () => {
             includeGuide: true,
           });
         }
+        setFileValid(false);
       } else {
         performance.clearMarks("patientUpload_successfulUpload");
         performance.clearMeasures("patientUpload_timeToUpload");
@@ -133,6 +137,7 @@ const UploadPatients = () => {
           { srFeature: "patientUpload" }
         );
         setStatus("success");
+        setFileValid(true);
       }
     }
   };
@@ -149,8 +154,10 @@ const UploadPatients = () => {
         setFile(currentFile);
         setButtonIsDisabled(false);
         setStatus("");
+        setFileValid(true);
       } catch (err: any) {
         showError(`An unexpected error happened: '${err.toString()}'`);
+        setFileValid(false);
       }
     };
   }
@@ -176,6 +183,7 @@ const UploadPatients = () => {
           body: "File is missing or empty.",
           includeGuide: true,
         });
+        setFileValid(false);
         return;
       }
 
@@ -187,6 +195,7 @@ const UploadPatients = () => {
           body: `"${file.name}" is too large for SimpleReport to process. Please limit each upload to less than 50 MB.`,
           includeGuide: false,
         });
+        setFileValid(false);
         return;
       }
 
@@ -200,6 +209,7 @@ const UploadPatients = () => {
           }” has too many rows for SimpleReport to process. Please limit each upload to less than ${MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`,
           includeGuide: false,
         });
+        setFileValid(false);
         return;
       }
 
@@ -459,6 +469,7 @@ const UploadPatients = () => {
                       name="upload-patients-file-input"
                       ariaLabel="Choose CSV file"
                       accept="text/csv, .csv"
+                      ariaInvalid={!isFileValid}
                       required
                       onChange={handleFileChange()}
                     />
