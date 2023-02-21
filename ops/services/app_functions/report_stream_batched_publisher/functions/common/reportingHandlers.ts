@@ -149,7 +149,7 @@ export function generateJWT(
         typ: "JWT",
         alg: "RS256",
       },
-      audience: reportStreamUrl, // ToDo check if this is the url where we are pushing stuff to or what are the values for PROD and STG
+      audience: reportStreamUrl,
     }
   );
 
@@ -160,9 +160,11 @@ export async function getReportStreamAuthToken(
   context: Context
 ): Promise<string> {
   const tokenURL = `${REPORT_STREAM_BASE_URL}/api/token`;
-  // ToDo hookup real value for aud field (check the JAVA PR first)
-  // the report stream url has to be set same way as the report_stream_url variable in locals
-  const jwt = generateJWT(FHIR_CLIENT_ID, "url", FHIR_REPORT_STREAM_KEY);
+  const jwt = generateJWT(
+    FHIR_CLIENT_ID,
+    REPORT_STREAM_BASE_URL,
+    FHIR_REPORT_STREAM_KEY
+  );
 
   const headers = new Headers({
     "Content-Type": "application/x-www-form-urlencoded",
