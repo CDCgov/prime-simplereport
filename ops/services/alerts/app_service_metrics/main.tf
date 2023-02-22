@@ -380,8 +380,8 @@ ${local.skip_on_weekends}
 }
 
 resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
-  name                = "${var.environment}_function_app_batch_publisher_memory_metric"
-  resource_group_name = local.resource_group_name
+  name                = "${var.env}_function_app_batch_publisher_memory_metric"
+  resource_group_name = var.rg_name
   scopes              = [var.function_id]
   description         = "Action will be triggered when memory usage is greater than 1200 mb"
 
@@ -393,14 +393,14 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
     threshold        = 1200
   }
 
-  action {
-    action_group_id = var.action_group_id
+  action_group {
+    ids = var.action_group_ids
   }
 }
 
 resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
-  name                = "${var.environment}_function_app_batch_publisher_memory_metric"
-  resource_group_name = local.resource_group_name
+  name                = "${var.env}_function_app_batch_publisher_memory_metric"
+  resource_group_name = var.rg_name
   scopes              = [var.function_id]
   description         = "Action will be triggered when a single request is taking over 3 minutes"
 
@@ -412,7 +412,7 @@ resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
     threshold        = 180
   }
 
-  action {
-    action_group_id = var.action_group_id
+  action_group {
+    ids = var.action_group_ids
   }
 }
