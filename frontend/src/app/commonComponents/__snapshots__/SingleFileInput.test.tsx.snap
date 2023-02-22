@@ -7,6 +7,7 @@ exports[`Single File Input checks component with initial state 1`] = `
   >
     <input
       aria-describedby="file-input-specific-hint"
+      aria-invalid="false"
       aria-label="upload a file"
       class="usa-file-input"
       data-testid="testId"
