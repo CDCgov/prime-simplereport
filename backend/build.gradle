@@ -158,7 +158,7 @@ checkstyleTest {
 
 jacocoTestReport {
     reports {
-        xml.enabled = true
+        xml.required = true
     }
     dependsOn test // tests are required to run before generating the report
 }
