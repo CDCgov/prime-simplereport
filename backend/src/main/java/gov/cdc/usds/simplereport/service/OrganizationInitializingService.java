@@ -303,7 +303,7 @@ public class OrganizationInitializingService {
       log.info("Creating facility={} in Okta", facility.getFacilityName());
       _oktaRepo.createFacility(facility);
     } catch (ResourceException e) {
-      log.info("Facility={} already exists in Okta", facility.getFacilityName());
+      log.info("Facility {} already exists in Okta", facility.getFacilityName());
     }
   }
 

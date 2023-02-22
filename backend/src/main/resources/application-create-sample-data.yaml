@@ -20,7 +20,7 @@ simple-report-initialization:
     #   address:
     #     street-1: 2797 N Cerrada de Beto
     #   organization-external-id: DIS_ORG
-    - facility-name: Testing Site
+    - name: Testing Site
       clia-number: "999888777-6"
       address:
         street-1: 1001 Rodeo Dr
@@ -30,7 +30,7 @@ simple-report-initialization:
       telephone: 8002324636
       email: testingsite@disorg.com
       organization-external-id: DIS_ORG
-    - facility-name: Uptown Clinic
+    - name: Uptown Clinic
       clia-number: "123456789-0"
       address:
         street-1: 1400 Lexington Ave
@@ -39,7 +39,7 @@ simple-report-initialization:
         postal-code: 10128
       telephone: 8002324636
       organization-external-id: DAT_ORG
-    - facility-name: Downtown Clinic
+    - name: Downtown Clinic
       clia-number: "987654321-0"
       address:
         street-1: 5 Bleecker St
@@ -160,11 +160,11 @@ simple-report-initialization:
       equipment-uid: 123456
       testkit-name-id: 789000
   patient-registration-links:
-    - patient-registration-link: dis-org
+    - link: dis-org
       organization-external-id: DIS_ORG
-    - patient-registration-link: t37ft
+    - link: t37ft
       facility-name: Testing Site
-    - patient-registration-link: dat-org
+    - link: dat-org
       organization-external-id: DAT_ORG
 simple-report:
   demo-users:
