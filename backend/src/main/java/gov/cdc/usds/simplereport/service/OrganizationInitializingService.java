@@ -267,7 +267,7 @@ public class OrganizationInitializingService {
                     .manufacturer(d.getManufacturer())
                     .loincCode("DEPRECATED")
                     .swabTypes(
-                        d.getSpecimenType().stream()
+                        d.getSpecimenTypes().stream()
                             .map(specimenTypesByCode::get)
                             .collect(Collectors.toList()))
                     .build())

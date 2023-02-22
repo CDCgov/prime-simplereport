@@ -24,33 +24,91 @@ simple-report-initialization:
       collection-location-name: Nasopharyngeal structure
       collection-location-code: "71836000"
   device-types:
+    - name: Abbott Alinity M
+      manufacturer: Abbott
+      model: Alinity m
+      loinc-code: "94500-6"
+      specimen-types:
+        - "445297001"
     - name: Abbott IDNow
       manufacturer: Abbott
       model: ID Now
       loinc-code: "94534-5"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
     - name: Abbott BinaxNow
       manufacturer: Abbott
       model: BinaxNOW COVID-19 Ag Card
       loinc-code: "94558-4"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
     - name: Quidel Sofia 2
       manufacturer: Quidel
       model: Sofia 2 SARS Antigen FIA
       loinc-code: "95209-3"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
     - name: BD Veritor
       manufacturer: Becton, Dickinson and Company (BD)
       model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
       loinc-code: "94558-4"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
     - name: LumiraDX
       manufacturer: LumiraDx UK Ltd.
       model: LumiraDx SARS-CoV-2 Ag Test*
       loinc-code: "95209-3"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
     - name: Access Bio CareStart
       manufacturer: Access Bio, Inc.
       model: CareStart COVID-19 Antigen test*
       loinc-code: "94558-4"
-      swab-type: "258500001"
+      specimen-types:
+        - "258500001"
+  supported-disease-test-performed:
+    - device-name: Abbott Alinity M
+      test-performed-loinc-code: "85477-8"
+      supported-disease: Flu A
+      equipment-uid: 123456
+      testkit-name-id: 789000
+    - device-name: Abbott Alinity M
+      test-performed-loinc-code: "94500-6"
+      supported-disease: COVID-19
+      equipment-uid: 123456
+      testkit-name-id: 789000
+    - device-name: Abbott Alinity M
+      test-performed-loinc-code: "85478-6"
+      supported-disease: Flu B
+      equipment-uid: 123456
+      testkit-name-id: 789000
+    - device-name: Abbott IDNow
+      test-performed-loinc-code: "94534-5"
+      supported-disease: COVID-19
+      equipment-uid: 123456
+      testkit-name-id: 789000
+    - device-name: Abbott BinaxNow
+      test-performed-loinc-code: "94558-4"
+      supported-disease: COVID-19
+      equipment-uid: 123456
+      testkit-name-id: 789000
+    - device-name: Quidel Sofia 2
+      test-performed-loinc-code: "95209-3"
+      supported-disease: COVID-19
+      equipment-uid: 123456
+      testkit-name-id: 789000
+    - device-name: BD Veritor
+      test-performed-loinc-code: "94558-4"
+      supported-disease: COVID-19
+      equipment-uid: 123456
+      testkit-name-id: 789000
+    - device-name: LumiraDX
+      test-performed-loinc-code: "95209-3"
+      supported-disease: COVID-19
+      equipment-uid: 123456
+      testkit-name-id: 789000
+    - device-name: Access Bio CareStart
+      test-performed-loinc-code: "94558-4"
+      supported-disease: COVID-19
+      equipment-uid: 123456
+      testkit-name-id: 789000

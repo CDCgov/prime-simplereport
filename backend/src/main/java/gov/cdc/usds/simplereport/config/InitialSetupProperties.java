@@ -115,7 +115,7 @@ public class InitialSetupProperties {
     String name;
     String manufacturer;
     String model;
-    List<String> specimenType;
+    List<String> specimenTypes;
   }
 
   @Value
