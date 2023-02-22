@@ -7,17 +7,18 @@ import {
 } from "@azure/storage-queue";
 import { Headers, Response } from "node-fetch";
 import jwt from "jsonwebtoken";
+import { generateKeyPair } from "crypto";
+import { promisify } from "util";
 
 import * as queueHandlers from "./queueHandlers";
-
 import { uploaderVersion } from "../config";
 import { ReportStreamResponse } from "./types";
-import { mockPrivateKey } from "../mocks/mock_key_pair";
 import {
   handleReportStreamResponse,
   reportToUniversalPipelineSharedKey,
   generateJWT,
   getReportStreamAuthToken,
+  reportToUniversalPipelineTokenBased,
 } from "./reportingHandlers";
 
 jest.mock(
@@ -49,7 +50,7 @@ describe("reportingHandlers", () => {
   } as jest.MockedObject<Context>;
   context.log.error = jest.fn();
 
-  describe("reportToUniversalPipeline", () => {
+  describe("reportToUniversalPipelineSharedKey", () => {
     it("calls fetch with correct parameters", async () => {
       const mockHeaders = new Headers({
         "x-functions-key": "merhaba",
@@ -59,7 +60,26 @@ describe("reportingHandlers", () => {
       });
 
       const serializedTestEvents = "";
-      await reportToUniversalPipelineSharedKey("");
+      await reportToUniversalPipelineSharedKey(serializedTestEvents);
+      expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
+        method: "POST",
+        headers: mockHeaders,
+        body: serializedTestEvents,
+      });
+    });
+  });
+
+  describe("reportToUniversalPipelineTokenBased", () => {
+    it("calls fetch with correct parameters", async () => {
+      const mockHeaders = new Headers({
+        authorization: "Bearer 123abc",
+        "x-api-version": uploaderVersion,
+        "content-type": "application/fhir+ndjson",
+        client: "simple_report.fullelr",
+      });
+
+      const serializedTestEvents = '{"name":"DeeDee"}';
+      await reportToUniversalPipelineTokenBased("123abc", serializedTestEvents);
       expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
         method: "POST",
         headers: mockHeaders,
@@ -213,9 +233,20 @@ describe("reportingHandlers", () => {
     const clientId = "FHIR.client";
     const reportStreamUrl = "reportStream.gov";
 
-    it("generates token according to ReportStream guidelines", () => {
-      const token = generateJWT(clientId, reportStreamUrl, mockPrivateKey);
-      const decoded = jwt.verify(token, mockPrivateKey, {
+    it("generates token according to ReportStream guidelines", async () => {
+      const generateKeyPairAsync = promisify(generateKeyPair);
+
+      const keyPair = await generateKeyPairAsync("rsa", {
+        modulusLength: 4096,
+      });
+
+      const privateKey = keyPair.privateKey.export({
+        format: "pem",
+        type: "pkcs1",
+      }) as string;
+
+      const token = generateJWT(clientId, reportStreamUrl, privateKey);
+      const decoded = jwt.verify(token, privateKey, {
         algorithm: "RS256",
         complete: true,
       });
