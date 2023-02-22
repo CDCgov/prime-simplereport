@@ -27,7 +27,7 @@ module "metric_alerts" {
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
-
+  function_id = module.report_stream_reporting_functions.azurerm_linux_function_app_id
 
   mem_threshold = 85
   cpu_threshold = 85

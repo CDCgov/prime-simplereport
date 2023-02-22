@@ -89,3 +89,7 @@ variable "additional_uptime_test_urls" {
 }
 
 variable "database_id" {}
+
+variable "function_id" {
+  type = string
+}

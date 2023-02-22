@@ -378,3 +378,41 @@ ${local.skip_on_weekends}
     action_group = var.action_group_ids
   }
 }
+
+resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
+  name                = "${var.environment}_function_app_batch_publisher_memory_metric"
+  resource_group_name = local.resource_group_name
+  scopes              = [var.function_id]
+  description         = "Action will be triggered when memory usage is greater than 1200 mb"
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "AverageMemoryWorkingSet"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = 1200
+  }
+
+  action {
+    action_group_id = var.action_group_id
+  }
+}
+
+resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
+  name                = "${var.environment}_function_app_batch_publisher_memory_metric"
+  resource_group_name = local.resource_group_name
+  scopes              = [var.function_id]
+  description         = "Action will be triggered when a single request is taking over 3 minutes"
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "HttpResponseTime"
+    aggregation      = "Maximum"
+    operator         = "GreaterThan"
+    threshold        = 180
+  }
+
+  action {
+    action_group_id = var.action_group_id
+  }
+}
