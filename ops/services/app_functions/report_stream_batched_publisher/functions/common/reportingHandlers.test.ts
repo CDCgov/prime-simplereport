@@ -295,7 +295,7 @@ describe("reportingHandlers", () => {
       expect(fetchMock).toHaveBeenCalledWith("https://nope.url/api/token", {
         method: "POST",
         headers,
-        body: "scope=simple_report.fullelr.default.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=123abc",
+        body: "scope=simple_report.*.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=123abc",
       });
     });
 

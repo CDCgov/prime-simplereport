@@ -171,7 +171,7 @@ export async function getReportStreamAuthToken(
   });
 
   const params = {
-    scope: `${FHIR_CLIENT_ID}.default.report`,
+    scope: `simple_report.*.report`,
     grant_type: "client_credentials",
     client_assertion_type:
       "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
