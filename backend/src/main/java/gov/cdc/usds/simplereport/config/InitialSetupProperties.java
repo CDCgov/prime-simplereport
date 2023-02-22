@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.config;
 
-import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
-
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -12,37 +10,26 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "simple-report-initialization")
 @ConstructorBinding
+@RequiredArgsConstructor
+@Getter
 public class InitialSetupProperties {
 
-  private List<Organization> organizations;
-  private Provider provider;
-  private List<SpecimenType> specimenTypes;
-  private List<? extends DeviceType> deviceTypes;
-  private List<String> configuredDeviceTypes;
-  private List<ConfigFacility> facilities;
-  private List<ConfigPatientRegistrationLink> patientRegistrationLinks;
-
-  public InitialSetupProperties(
-      List<Organization> organizations,
-      List<ConfigFacility> facilities,
-      Provider provider,
-      List<SpecimenType> specimenTypes,
-      List<DeviceType> deviceTypes,
-      List<String> configuredDeviceTypes,
-      List<ConfigPatientRegistrationLink> patientRegistrationLinks) {
-    this.organizations = organizations;
-    this.provider = provider;
-    this.specimenTypes = specimenTypes;
-    this.deviceTypes = deviceTypes;
-    this.configuredDeviceTypes = configuredDeviceTypes;
-    this.facilities = facilities;
-    this.patientRegistrationLinks = patientRegistrationLinks;
-  }
+  private final List<Organization> organizations;
+  private final Provider provider;
+  private final List<SpecimenType> specimenTypes;
+  private final List<ConfigDeviceType> deviceTypes;
+  private final List<ConfigSupportedDiseaseTestPerformed> supportedDiseaseTestPerformed;
+  private final List<String> configuredDeviceTypes;
+  private final List<ConfigFacility> facilities;
+  private final List<ConfigPatientRegistrationLink> patientRegistrationLinks;
 
   public List<ConfigFacility> getFacilities() {
     return facilities;
@@ -88,31 +75,18 @@ public class InitialSetupProperties {
         .collect(Collectors.toList());
   }
 
-  public List<DeviceType> getDeviceTypes() {
-    return deviceTypes.stream()
-        .map(
-            d ->
-                new DeviceType(
-                    d.getName(),
-                    d.getManufacturer(),
-                    d.getModel(),
-                    d.getLoincCode(),
-                    d.getSwabType(),
-                    d.getTestLength() > 0 ? d.getTestLength() : determineTestLength(d.getName())))
-        .collect(Collectors.toList());
-  }
-
   public List<ConfigPatientRegistrationLink> getPatientRegistrationLinks() {
     return patientRegistrationLinks;
   }
 
+  @Getter
   public static final class ConfigFacility {
-    private String name;
-    private String cliaNumber;
-    private StreetAddress address;
-    private String telephone;
-    private String email;
-    private String organizationExternalId;
+    private final String name;
+    private final String cliaNumber;
+    private final StreetAddress address;
+    private final String telephone;
+    private final String email;
+    private final String organizationExternalId;
 
     public ConfigFacility(
         String facilityName,
@@ -148,36 +122,12 @@ public class InitialSetupProperties {
           defaultSpecimenType,
           configured);
     }
-
-    public String getName() {
-      return name;
-    }
-
-    public String getCliaNumber() {
-      return cliaNumber;
-    }
-
-    public StreetAddress getAddress() {
-      return address;
-    }
-
-    public String getTelephone() {
-      return telephone;
-    }
-
-    public String getEmail() {
-      return email;
-    }
-
-    public String getOrganizationExternalId() {
-      return organizationExternalId;
-    }
   }
 
   public static final class ConfigPatientRegistrationLink {
-    private String patientRegistrationLink;
-    private String organizationExternalId;
-    private String facilityName;
+    private final String patientRegistrationLink;
+    private final String organizationExternalId;
+    private final String facilityName;
 
     public ConfigPatientRegistrationLink(
         String patientRegistrationLink, String organizationExternalId, String facilityName) {
@@ -206,5 +156,22 @@ public class InitialSetupProperties {
     public String getFacilityName() {
       return facilityName;
     }
+  }
+
+  @Data
+  public static final class ConfigDeviceType {
+    private final String name;
+    private final String manufacturer;
+    private final String model;
+    private final List<String> specimenType;
+  }
+
+  @Data
+  public static final class ConfigSupportedDiseaseTestPerformed {
+    private final String deviceName;
+    private final String testPerformedLoincCode;
+    private final String supportedDisease;
+    private final String equipmentUid;
+    private final String testkitNameId;
   }
 }
