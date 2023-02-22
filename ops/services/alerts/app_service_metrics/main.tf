@@ -319,3 +319,33 @@ customEvents
     threshold = 0
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_single_failure_detected" {
+  name                = "${var.env}-fhir-batched-uploader-single-failure-detected"
+  description         = "FHIRTestEventReporter failed to successfully complete"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 11
+  enabled             = contains(var.disabled_alerts, "fhir_batched_uploader_single_failure_detected") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where timestamp >= ago(11m) 
+    and operation_Name =~ 'FHIRTestEventReporter' 
+    and success != true
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 4
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
