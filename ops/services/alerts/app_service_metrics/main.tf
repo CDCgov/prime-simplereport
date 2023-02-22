@@ -380,7 +380,7 @@ ${local.skip_on_weekends}
 }
 
 resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
-  count               = var.function_id ? 1 : 0
+  count               = var.function_id != null ? 1 : 0
   name                = "${var.env}_function_app_batch_publisher_memory_metric"
   resource_group_name = var.rg_name
   scopes              = [var.function_id]
@@ -403,7 +403,7 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
 }
 
 resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
-  count               = var.function_id ? 1 : 0
+  count               = var.function_id != null ? 1 : 0
   name                = "${var.env}_function_app_batch_publisher_memory_metric"
   resource_group_name = var.rg_name
   scopes              = [var.function_id]
