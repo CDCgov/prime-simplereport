@@ -393,8 +393,11 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
     threshold        = 1200
   }
 
-  action_group {
-    ids = var.action_group_ids
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 
@@ -412,7 +415,10 @@ resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
     threshold        = 180
   }
 
-  action_group {
-    ids = var.action_group_ids
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
