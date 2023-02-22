@@ -149,12 +149,12 @@ simple-report-initialization:
       external-id: DAT_ORG
       identity-verified: true
   facilities:
-    - facility-name: Injection Site
+    - name: Injection Site
       clia-number: "000111222-3"
       address:
         street-1: 2797 N Cerrada de Beto
       organization-external-id: DIS_ORG
-    - facility-name: Testing Site
+    - name: Testing Site
       clia-number: "999888777-6"
       address:
         street-1: 1001 Rodeo Dr
@@ -163,7 +163,7 @@ simple-report-initialization:
         postal-code: 90000
       email: testingsite@disorg.com
       organization-external-id: DIS_ORG
-    - facility-name: Uptown Clinic
+    - name: Uptown Clinic
       clia-number: "123456789-0"
       address:
         street-1: 1400 Lexington Ave
@@ -171,7 +171,7 @@ simple-report-initialization:
         state: NY
         postal-code: 10128
       organization-external-id: DAT_ORG
-    - facility-name: Downtown Clinic
+    - name: Downtown Clinic
       clia-number: "987654321-0"
       address:
         street-1: 5 Bleecker St
@@ -229,9 +229,9 @@ simple-report-initialization:
       loinc-code: "95209-3"
       swab-type: "445297001"
   patient-registration-links:
-    - patient-registration-link: dis-org
+    - link: dis-org
       organization-external-id: DIS_ORG
-    - patient-registration-link: inj3ct
+    - link: inj3ct
       facility-name: Injection Site
 datahub:
   url: http://localhost:9561
