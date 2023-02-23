@@ -30,7 +30,7 @@ export async function reportToUniversalPipelineTokenBased(
     authorization: `Bearer ${token}`,
     "x-api-version": uploaderVersion,
     "content-type": "application/fhir+ndjson",
-    client: FHIR_CLIENT_ID,
+    client: "simple_report",
   });
 
   return fetch(REPORT_STREAM_URL, {

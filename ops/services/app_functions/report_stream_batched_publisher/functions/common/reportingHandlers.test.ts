@@ -80,7 +80,7 @@ describe("reportingHandlers", () => {
         authorization: "Bearer 123abc",
         "x-api-version": uploaderVersion,
         "content-type": "application/fhir+ndjson",
-        client: "simple_report.fullelr",
+        client: "simple_report",
       });
 
       const serializedTestEvents = '{"name":"DeeDee"}';
