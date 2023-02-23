@@ -27,7 +27,7 @@ export async function reportToUniversalPipelineTokenBased(
   ndjsonTestEvents: string
 ): Promise<Response> {
   const headers = new Headers({
-    authorization: `Bearer ${token}`,
+    authorization: `bearer ${token}`,
     "x-api-version": uploaderVersion,
     "content-type": "application/fhir+ndjson",
     client: "simple_report",

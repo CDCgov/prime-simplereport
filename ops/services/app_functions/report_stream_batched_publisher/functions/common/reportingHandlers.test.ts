@@ -77,7 +77,7 @@ describe("reportingHandlers", () => {
   describe("reportToUniversalPipelineTokenBased", () => {
     it("calls fetch with correct parameters", async () => {
       const mockHeaders = new Headers({
-        authorization: "Bearer 123abc",
+        authorization: "bearer 123abc",
         "x-api-version": uploaderVersion,
         "content-type": "application/fhir+ndjson",
         client: "simple_report",
