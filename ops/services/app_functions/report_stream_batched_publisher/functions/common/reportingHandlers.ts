@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 
 import { ENV, uploaderVersion } from "../config";
-import { ReportStreamResponse } from "./types";
+import { ReportStreamResponse, ReportStreamTokenResponse } from "./types";
 import {
   deleteSuccessfullyParsedMessages,
   publishToQueue,
@@ -192,7 +192,9 @@ export async function getReportStreamAuthToken(
       throw new Error(`ReportStream Error Response: ${responseError}`);
     }
 
-    return response["access_token"];
+    const tokenResponse: ReportStreamTokenResponse =
+      (await response.json()) as ReportStreamTokenResponse;
+    return tokenResponse.access_token;
   } catch (e) {
     context.log.error(
       "Error while trying to get the ReportStream auth token.",

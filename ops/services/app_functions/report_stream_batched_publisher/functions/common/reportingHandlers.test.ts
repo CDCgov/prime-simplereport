@@ -12,7 +12,7 @@ import { promisify } from "util";
 
 import * as queueHandlers from "./queueHandlers";
 import { uploaderVersion } from "../config";
-import { ReportStreamResponse } from "./types";
+import { ReportStreamResponse, ReportStreamTokenResponse } from "./types";
 import {
   handleReportStreamResponse,
   reportToUniversalPipelineSharedKey,
@@ -274,7 +274,7 @@ describe("reportingHandlers", () => {
     });
 
     it("obtains auth token successfully", async () => {
-      const reportStreamTokenResponse = {
+      const reportStreamTokenResponse: ReportStreamTokenResponse = {
         access_token: "123",
         token_type: "bearer",
         expires_in: 300,
@@ -286,7 +286,7 @@ describe("reportingHandlers", () => {
 
       jwtSignSpy.mockReturnValueOnce("123abc");
 
-      await getReportStreamAuthToken(context);
+      const token = await getReportStreamAuthToken(context);
 
       const headers = new Headers({
         "Content-Type": "application/x-www-form-urlencoded",
@@ -297,6 +297,7 @@ describe("reportingHandlers", () => {
         headers,
         body: "scope=simple_report.*.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=123abc",
       });
+      expect(token).toEqual("123");
     });
 
     it("fails to obtain auth token", async () => {
