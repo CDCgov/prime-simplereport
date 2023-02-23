@@ -380,7 +380,7 @@ ${local.skip_on_weekends}
 }
 
 resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
-  enabled             = var.function_id != null
+  enabled             = var.function_id != null && !contains(var.disabled_alerts, "function_app_memory_alert")
   name                = "${var.env}_function_app_batch_publisher_memory_alert"
   resource_group_name = var.rg_name
   scopes              = [var.function_id]
