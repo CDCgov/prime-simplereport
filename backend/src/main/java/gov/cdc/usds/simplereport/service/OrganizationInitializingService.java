@@ -70,7 +70,11 @@ public class OrganizationInitializingService {
 
     List<DeviceType> deviceTypes = initDevices();
 
-    DeviceType defaultDeviceType = deviceTypes.get(0);
+    DeviceType defaultDeviceType =
+        deviceTypes.stream()
+            .filter(deviceType -> "LumiraDX".equals(deviceType.getName()))
+            .findFirst()
+            .get();
     SpecimenType defaultSpecimenType = defaultDeviceType.getSwabTypes().get(0);
 
     List<Organization> emptyOrgs = _props.getOrganizations();
@@ -258,6 +262,16 @@ public class OrganizationInitializingService {
   }
 
   private List<DeviceType> getDeviceTypes(Map<String, SpecimenType> specimenTypesByCode) {
+
+    Map<String, InitialSetupProperties.ConfigSupportedDiseaseTestPerformed>
+        covidSupportedDiseaseTestPerformedByDeviceName =
+            _props.getSupportedDiseaseTestPerformed().stream()
+                .filter(c -> "COVID-19".equals(c.getSupportedDisease()))
+                .collect(
+                    Collectors.toMap(
+                        InitialSetupProperties.ConfigSupportedDiseaseTestPerformed::getDeviceName,
+                        d -> d));
+
     return _props.getDeviceTypes().stream()
         .map(
             d ->
@@ -265,11 +279,15 @@ public class OrganizationInitializingService {
                     .name(d.getName())
                     .model(d.getModel())
                     .manufacturer(d.getManufacturer())
-                    .loincCode("DEPRECATED")
+                    .loincCode(
+                        covidSupportedDiseaseTestPerformedByDeviceName
+                            .get(d.getName())
+                            .getTestPerformedLoincCode())
                     .swabTypes(
                         d.getSpecimenTypes().stream()
                             .map(specimenTypesByCode::get)
                             .collect(Collectors.toList()))
+                    .testLength(Optional.ofNullable(d.getTestLength()).orElse(15))
                     .build())
         .collect(Collectors.toList());
   }
