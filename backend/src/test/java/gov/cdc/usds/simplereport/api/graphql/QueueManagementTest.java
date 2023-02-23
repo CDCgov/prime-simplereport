@@ -97,7 +97,7 @@ class QueueManagementTest extends BaseGraphqlTest {
     // assert on active facility data
     assertNotNull(facilityData.get("id").asText());
     assertEquals("Injection Site", facilityData.get("name").asText());
-    assertEquals(5, facilityData.get("deviceTypes").size());
+    assertEquals(2, facilityData.get("deviceTypes").size());
 
     JsonNode firstDevice = facilityData.get("deviceTypes").get(0);
     JsonNode secondDevice = facilityData.get("deviceTypes").get(1);

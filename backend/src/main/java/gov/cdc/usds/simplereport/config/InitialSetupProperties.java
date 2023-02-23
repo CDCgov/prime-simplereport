@@ -77,18 +77,18 @@ public class InitialSetupProperties {
 
     public Facility makeRealFacility(
         Organization org,
-        Provider p,
+        Provider provider,
         DeviceType defaultDeviceType,
         SpecimenType defaultSpecimenType,
         List<DeviceType> configured) {
       return new Facility(
           org,
-          name,
-          cliaNumber,
-          address,
-          telephone,
-          email,
-          p,
+          getName(),
+          getCliaNumber(),
+          getAddress(),
+          getTelephone(),
+          getEmail(),
+          provider,
           defaultDeviceType,
           defaultSpecimenType,
           configured);

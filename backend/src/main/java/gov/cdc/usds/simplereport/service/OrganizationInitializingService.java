@@ -69,6 +69,10 @@ public class OrganizationInitializingService {
     Provider savedProvider = _providerRepo.save(_props.getProvider());
 
     List<DeviceType> deviceTypes = initDevices();
+    List<DeviceType> facilityDeviceTypes =
+        deviceTypes.stream()
+            .filter(d -> _props.getConfiguredDeviceTypes().contains(d.getName()))
+            .collect(Collectors.toList());
 
     DeviceType defaultDeviceType =
         deviceTypes.stream()
@@ -112,7 +116,7 @@ public class OrganizationInitializingService {
                             savedProvider,
                             defaultDeviceType,
                             defaultSpecimenType,
-                            deviceTypes))
+                            facilityDeviceTypes))
             .collect(Collectors.toList());
     log.info(
         "Creating facilities {} with {} devices configured",
