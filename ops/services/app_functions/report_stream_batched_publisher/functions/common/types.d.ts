@@ -49,4 +49,5 @@ export interface ReportStreamTokenResponse {
   expires_in: number;
   expires_at_seconds: number;
   scope: string;
+  sub: string;
 }

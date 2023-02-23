@@ -288,6 +288,7 @@ describe("reportingHandlers", () => {
         expires_in: 300,
         expires_at_seconds: 1625260982,
         scope: "FHIR.client.default.report",
+        sub: "FHIR.client",
       };
 
       fetchMock.mockOnce(JSON.stringify(reportStreamTokenResponse));

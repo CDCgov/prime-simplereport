@@ -70,7 +70,7 @@ const FHIRTestEventReporter: AzureFunction = async function (
   const fhirPublishingTasks: Promise<void>[] = fhirTestEventsBatches.map(
     (testEventBatch: FHIRTestEventsBatch, idx: number) => {
       // creates and returns a publishing task
-      return new Promise<void>((resolve) => {
+      return new Promise<void>((resolve, reject) => {
         (async () => {
           try {
             if (testEventBatch.parseFailureCount > 0) {
@@ -133,25 +133,51 @@ const FHIRTestEventReporter: AzureFunction = async function (
               publishingErrorQueue,
               telemetry
             );
+            return resolve();
           } catch (e) {
-            context.log(
+            context.log.error(
               `Queue: ${publishingQueue.name}. Publishing tasks for batch ${
                 idx + 1
               } failed unexpectedly; ${e}`
             );
+
+            return reject(e);
           }
-          return resolve();
         })();
       });
     }
   );
 
   // triggers all the publishing tasks
-  await Promise.allSettled(fhirPublishingTasks);
-
-  context.log(
-    `Queue: ${publishingQueue.name}. All ${fhirTestEventsBatches.length} batch(es) published;`
+  const publishingResults = await Promise.allSettled(fhirPublishingTasks);
+  const fulfilledPublishing = publishingResults.filter(
+    (publishingStatus: PromiseSettledResult<any>) =>
+      publishingStatus.status === "fulfilled"
   );
+  const rejectedPublishing = publishingResults.filter(
+    (publishingStatus: PromiseSettledResult<any>) =>
+      publishingStatus.status === "rejected"
+  );
+
+  if (fulfilledPublishing.length > 0) {
+    context.log(
+      `Queue: ${publishingQueue.name}. ${fulfilledPublishing.length} batch(es) out of ${fhirPublishingTasks.length} were published successfully;`
+    );
+  }
+
+  if (rejectedPublishing.length > 0) {
+    context.log.error(
+      `Queue: ${publishingQueue.name}. ${rejectedPublishing.length} batch(es) out of ${fhirPublishingTasks.length} were not published;`
+    );
+
+    throw new Error(
+      `[${rejectedPublishing
+        .map((rejected: PromiseRejectedResult) =>
+          JSON.stringify(rejected.reason)
+        )
+        .join(", ")}]`
+    );
+  }
 };
 
 export default FHIRTestEventReporter;
