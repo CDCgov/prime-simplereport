@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.error.ResourceException;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
@@ -13,6 +12,7 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
+import org.openapitools.client.ApiClient;
 import org.openapitools.client.model.ActivateFactorRequest;
 import org.openapitools.client.model.CallUserFactor;
 import org.openapitools.client.model.EmailUserFactor;
@@ -24,6 +24,7 @@ import org.openapitools.client.model.RecoveryQuestionCredential;
 import org.openapitools.client.model.SmsUserFactor;
 import org.openapitools.client.model.User;
 import org.openapitools.client.model.UserCredentials;
+import org.openapitools.client.model.UserFactor;
 import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -52,7 +53,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
   private static final String ACTIVATION_KEY = "activation";
 
-  private Client _client;
+  private ApiClient _client;
   private String _apiToken;
   private String _orgUrl;
   private RestTemplate _restTemplate;
