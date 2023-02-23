@@ -145,7 +145,7 @@ interface AddPatientResponse {
 }
 
 const AddPatient = () => {
-  useDocumentTitle("Add Patient");
+  useDocumentTitle("Add individual patient");
 
   const { t } = useTranslation();
 
