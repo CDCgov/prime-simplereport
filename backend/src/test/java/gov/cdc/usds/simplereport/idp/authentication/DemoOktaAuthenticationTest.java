@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.okta.sdk.resource.user.factor.FactorStatus;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
@@ -13,6 +12,7 @@ import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoA
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.model.FactorStatus;
 import org.openapitools.client.model.FactorType;
 
 class DemoOktaAuthenticationTest {
