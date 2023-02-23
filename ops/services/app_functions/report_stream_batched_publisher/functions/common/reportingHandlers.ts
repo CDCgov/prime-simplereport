@@ -3,10 +3,13 @@ import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import fetch, { Headers, Response } from "node-fetch";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { TelemetryClient } from "applicationinsights";
 
 import { ENV, uploaderVersion } from "../config";
-import { ReportStreamResponse, ReportStreamTokenResponse } from "./types";
+import {
+  publisherLogging,
+  ReportStreamResponse,
+  ReportStreamTokenResponse,
+} from "./types";
 import {
   deleteSuccessfullyParsedMessages,
   publishToQueue,
@@ -59,35 +62,34 @@ export async function reportToUniversalPipelineSharedKey(
 
 export async function handleReportStreamResponse(
   reportingResponse: Response,
-  context: Context,
   messages: DequeuedMessageItem[],
   parseFailure: Record<string, boolean>,
   testEventQueue: QueueClient,
   exceptionQueue: QueueClient,
   errorQueue: QueueClient,
-  telemetry: TelemetryClient
+  logging: publisherLogging
 ) {
   if (reportingResponse.ok) {
     const response: ReportStreamResponse =
       (await reportingResponse.json()) as ReportStreamResponse;
-    context.log(
+    logging.context.log(
       `Queue: ${testEventQueue.name}. Report Stream response: ${JSON.stringify(
         response
       )}`
     );
     await reportExceptions(
-      context,
+      logging.context,
       exceptionQueue,
       response,
       testEventQueue.name
     );
 
-    context.log(
+    logging.context.log(
       `Queue: ${testEventQueue.name}. Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
     );
 
     await deleteSuccessfullyParsedMessages(
-      context,
+      logging.context,
       testEventQueue,
       messages,
       parseFailure
@@ -95,15 +97,15 @@ export async function handleReportStreamResponse(
   } else {
     const responseBody = await reportingResponse.text();
     const errorText = `Queue: ${testEventQueue.name}. Failed to upload to ReportStream with response code ${reportingResponse.status}`;
-    context.log.error(
+    logging.context.log.error(
       `${errorText}. Response body (${responseBody.length} bytes): `,
       responseBody
     );
 
     const tagOverrides = {
-      "ai.operation.id": context.traceContext.traceparent,
+      "ai.operation.id": logging.context.traceContext.traceparent,
     };
-    telemetry.trackEvent({
+    logging.telemetry.trackEvent({
       name: `Queue: ${testEventQueue.name}. ReportStream Upload Failed`,
       properties: {
         status: reportingResponse.status,
@@ -117,7 +119,7 @@ export async function handleReportStreamResponse(
       await publishToQueue(errorQueue, messages);
       //delete messages from the main queue
       await deleteSuccessfullyParsedMessages(
-        context,
+        logging.context,
         testEventQueue,
         messages,
         parseFailure
@@ -170,7 +172,7 @@ export async function getReportStreamAuthToken(
   });
 
   const params = {
-    scope: `simple_report.*.report`,
+    scope: `simple_report.fullelr.report`,
     grant_type: "client_credentials",
     client_assertion_type:
       "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",

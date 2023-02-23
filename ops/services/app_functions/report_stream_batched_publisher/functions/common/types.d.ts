@@ -1,3 +1,6 @@
+import { TelemetryClient } from "applicationinsights";
+import { Context } from "@azure/functions";
+
 interface ReportingDestination {
   organization: string;
   organization_id: string;
@@ -50,4 +53,9 @@ export interface ReportStreamTokenResponse {
   expires_at_seconds: number;
   scope: string;
   sub: string;
+}
+
+export interface publisherLogging {
+  telemetry: TelemetryClient;
+  context: Context;
 }

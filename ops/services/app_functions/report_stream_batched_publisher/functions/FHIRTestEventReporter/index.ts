@@ -125,13 +125,12 @@ const FHIRTestEventReporter: AzureFunction = async function (
 
             await handleReportStreamResponse(
               postResult,
-              context,
               messages,
               testEventBatch.parseFailure,
               publishingQueue,
               exceptionQueue,
               publishingErrorQueue,
-              telemetry
+              { telemetry, context }
             );
             return resolve();
           } catch (e) {
@@ -151,12 +150,14 @@ const FHIRTestEventReporter: AzureFunction = async function (
   // triggers all the publishing tasks
   const publishingResults = await Promise.allSettled(fhirPublishingTasks);
   const fulfilledPublishing = publishingResults.filter(
-    (publishingStatus: PromiseSettledResult<any>) =>
-      publishingStatus.status === "fulfilled"
+    (
+      publishingStatus: PromiseSettledResult<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+    ) => publishingStatus.status === "fulfilled"
   );
   const rejectedPublishing = publishingResults.filter(
-    (publishingStatus: PromiseSettledResult<any>) =>
-      publishingStatus.status === "rejected"
+    (
+      publishingStatus: PromiseSettledResult<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+    ) => publishingStatus.status === "rejected"
   );
 
   if (fulfilledPublishing.length > 0) {

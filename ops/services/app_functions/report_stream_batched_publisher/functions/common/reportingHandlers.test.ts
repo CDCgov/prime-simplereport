@@ -148,13 +148,13 @@ describe("reportingHandlers", () => {
 
       await handleReportStreamResponse(
         responseMock as Response,
-        context,
+
         messagesMock,
         parseFailureMock,
         eventQueueMock,
         exceptionQueueMock,
         errorQueueMock,
-        telemetry
+        { telemetry, context }
       );
 
       expect(responseMock.json).toHaveBeenCalled();
@@ -183,13 +183,12 @@ describe("reportingHandlers", () => {
       await expect(
         handleReportStreamResponse(
           responseMock as Response,
-          context,
           messagesMock,
           parseFailureMock,
           eventQueueMock,
           exceptionQueueMock,
           errorQueueMock,
-          telemetry
+          { telemetry, context }
         )
       ).rejects.toThrow();
 
@@ -214,13 +213,12 @@ describe("reportingHandlers", () => {
       await expect(
         handleReportStreamResponse(
           responseMock as Response,
-          context,
           messagesMock,
           parseFailureMock,
           eventQueueMock,
           exceptionQueueMock,
           errorQueueMock,
-          telemetry
+          { telemetry, context }
         )
       ).rejects.toThrow();
 
@@ -304,7 +302,7 @@ describe("reportingHandlers", () => {
       expect(fetchMock).toHaveBeenCalledWith("https://nope.url/api/token", {
         method: "POST",
         headers,
-        body: "scope=simple_report.*.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=123abc",
+        body: "scope=simple_report.fullelr.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=123abc",
       });
       expect(token).toEqual("123");
     });
