@@ -379,9 +379,9 @@ ${local.skip_on_weekends}
   }
 }
 
-resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
-  count               = var.function_id != null ? 1 : 0
-  name                = "${var.env}_function_app_batch_publisher_memory_metric"
+resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
+  enabled             = var.function_id != null
+  name                = "${var.env}_function_app_batch_publisher_memory_alert"
   resource_group_name = var.rg_name
   scopes              = [var.function_id]
   description         = "Action will be triggered when memory usage is greater than 1200 mb"
@@ -402,25 +402,30 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_metric" {
   }
 }
 
-resource "azurerm_monitor_metric_alert" "function_app_response_time_metric" {
-  count               = var.function_id != null ? 1 : 0
-  name                = "${var.env}_function_app_batch_publisher_memory_metric"
-  resource_group_name = var.rg_name
-  scopes              = [var.function_id]
+resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_function_app_duration_alert" {
+  name                = "${var.env}-fhir-function-app-batch-publisher-duration-alert"
   description         = "Action will be triggered when a single request is taking over 3 minutes"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 7
+  enabled             = contains(var.disabled_alerts, "fhir_function_app_duration_alert") ? false : true
+  data_source_id      = var.app_insights_id
+  query               = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where operation_Name has "FHIRTestEventReporter" 
+and timestamp >= ago(7m)
+and duration >= 180000
+  QUERY
 
-  criteria {
-    metric_namespace = "Microsoft.Web/sites"
-    metric_name      = "HttpResponseTime"
-    aggregation      = "Maximum"
-    operator         = "GreaterThan"
-    threshold        = 180
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
   }
 
-  dynamic "action" {
-    for_each = var.action_group_ids
-    content {
-      action_group_id = action.value
-    }
+  action {
+    action_group = var.action_group_ids
   }
 }
