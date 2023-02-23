@@ -17,7 +17,7 @@ import static org.mockito.Mockito.when;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.error.Error;
 import com.okta.sdk.error.ErrorCause;
-import com.okta.sdk.resource.ResourceException;
+import com.okta.sdk.error.ResourceException;
 import com.okta.sdk.resource.application.Application;
 import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupBuilder;

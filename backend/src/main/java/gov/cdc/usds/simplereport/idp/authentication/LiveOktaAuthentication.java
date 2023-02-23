@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
-import com.okta.sdk.resource.ResourceException;
+import com.okta.sdk.error.ResourceException;
 import com.okta.sdk.resource.user.PasswordCredential;
 import com.okta.sdk.resource.user.RecoveryQuestionCredential;
 import com.okta.sdk.resource.user.User;

@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.okta.sdk.resource.ResourceException;
+import com.okta.sdk.error.ResourceException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties.ConfigPatientRegistrationLink;

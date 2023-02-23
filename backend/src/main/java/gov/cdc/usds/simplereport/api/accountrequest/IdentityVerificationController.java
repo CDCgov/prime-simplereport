@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.api.accountrequest;
 import static gov.cdc.usds.simplereport.config.AuthorizationConfiguration.AUTHORIZER_BEAN;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.IDENTITY_VERIFICATION;
 
-import com.okta.sdk.resource.ResourceException;
+import com.okta.sdk.error.ResourceException;
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequestOrganizationCreateTemplate;
 import gov.cdc.usds.simplereport.api.model.accountrequest.IdentityVerificationAnswersRequest;
