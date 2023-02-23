@@ -35,35 +35,7 @@ const createTelemetryService = () => {
     });
 
     appInsights.addTelemetryInitializer(function (envelope: ITelemetryItem) {
-      try {
-        const regexPageView = new RegExp(
-          "Microsoft.ApplicationInsights.(.*).Pageview"
-        );
-        const regexRemoteDependency = new RegExp(
-          "Microsoft.ApplicationInsights.(.*).RemoteDependency"
-        );
-
-        const staticFilesToIgnore = [
-          "GET /maintenance.json",
-          "GET /app/static/commit.txt",
-        ];
-
-        if (
-          regexRemoteDependency.test(envelope.name) &&
-          staticFilesToIgnore.includes((envelope as any).baseData.name)
-        ) {
-          return false;
-        } else if (
-          regexPageView.test(envelope.name) ||
-          (envelope as any).baseType === "PageViewData"
-        ) {
-          (
-            envelope as any
-          ).baseData.uri = `${window.location.origin}${window.location.pathname}`;
-        }
-      } catch (e) {
-        /* do nothing and don't disrupt logging*/
-      }
+      filterStaticFiles(envelope);
     });
 
     appInsights.loadAppInsights();
@@ -74,6 +46,27 @@ const createTelemetryService = () => {
 
 export const ai = createTelemetryService();
 export const getAppInsights = () => appInsights;
+
+export function filterStaticFiles(envelope: ITelemetryItem) {
+  try {
+    const regexRemoteDependency =
+      /Microsoft.ApplicationInsights.(.*).RemoteDependency/;
+
+    const staticFilesToIgnore = [
+      "GET /maintenance.json",
+      "GET /app/static/commit.txt",
+    ];
+
+    if (
+      regexRemoteDependency.test(envelope.name) &&
+      staticFilesToIgnore.includes((envelope as any).baseData.name)
+    ) {
+      return false;
+    }
+  } catch (e) {
+    /* do nothing and don't disrupt logging*/
+  }
+}
 
 const logSeverityMap = {
   log: SeverityLevel.Information,
