@@ -13,7 +13,6 @@ import com.okta.sdk.resource.user.factor.CallUserFactor;
 import com.okta.sdk.resource.user.factor.EmailUserFactor;
 import com.okta.sdk.resource.user.factor.FactorProvider;
 import com.okta.sdk.resource.user.factor.FactorStatus;
-import com.okta.sdk.resource.user.factor.FactorType;
 import com.okta.sdk.resource.user.factor.SmsUserFactor;
 import com.okta.sdk.resource.user.factor.UserFactor;
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
@@ -25,6 +24,7 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
+import org.openapitools.client.model.FactorType;
 import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
