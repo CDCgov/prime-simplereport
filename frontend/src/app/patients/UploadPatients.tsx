@@ -32,7 +32,7 @@ const UploadPatients = () => {
     includeGuide: boolean;
   };
 
-  useDocumentTitle("Add Patient");
+  useDocumentTitle("Import patients from spreadsheet");
   const [facilityAmount, setFacilityAmount] = useState<string>();
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
   const [selectedFacility, setSelectedFacility] = useState<Facility>();
