@@ -3,6 +3,7 @@ import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import fetch, { Headers, Response } from "node-fetch";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { TelemetryClient } from "applicationinsights";
 
 import { ENV, uploaderVersion } from "../config";
 import { ReportStreamResponse, ReportStreamTokenResponse } from "./types";
@@ -11,7 +12,6 @@ import {
   publishToQueue,
   reportExceptions,
 } from "./queueHandlers";
-import * as appInsights from "applicationinsights";
 
 const {
   FHIR_REPORT_STREAM_TOKEN,
@@ -19,8 +19,6 @@ const {
   REPORT_STREAM_URL,
   REPORT_STREAM_BASE_URL,
 } = ENV;
-
-const telemetry = appInsights.defaultClient;
 
 export const FHIR_CLIENT_ID = "simple_report.fullelr";
 
@@ -66,7 +64,8 @@ export async function handleReportStreamResponse(
   parseFailure: Record<string, boolean>,
   testEventQueue: QueueClient,
   exceptionQueue: QueueClient,
-  errorQueue: QueueClient
+  errorQueue: QueueClient,
+  telemetry: TelemetryClient
 ) {
   if (reportingResponse.ok) {
     const response: ReportStreamResponse =
@@ -194,6 +193,11 @@ export async function getReportStreamAuthToken(
 
     const tokenResponse: ReportStreamTokenResponse =
       (await response.json()) as ReportStreamTokenResponse;
+
+    const tokenLog = { ...tokenResponse };
+    tokenLog.access_token = "***";
+    context.log(`Token obtained successfully: ${JSON.stringify(tokenLog)}`);
+
     return tokenResponse.access_token;
   } catch (e) {
     context.log.error(

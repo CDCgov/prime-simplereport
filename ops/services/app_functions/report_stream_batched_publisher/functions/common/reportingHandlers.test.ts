@@ -9,6 +9,7 @@ import { Headers, Response } from "node-fetch";
 import jwt from "jsonwebtoken";
 import { generateKeyPair } from "crypto";
 import { promisify } from "util";
+import { TelemetryClient } from "applicationinsights";
 
 import * as queueHandlers from "./queueHandlers";
 import { uploaderVersion } from "../config";
@@ -49,6 +50,10 @@ describe("reportingHandlers", () => {
     traceContext: { traceparent: "asdf" },
   } as jest.MockedObject<Context>;
   context.log.error = jest.fn();
+
+  const telemetry = {
+    trackEvent: jest.fn(),
+  } as jest.MockedObject<TelemetryClient>;
 
   describe("reportToUniversalPipelineSharedKey", () => {
     it("calls fetch with correct parameters", async () => {
@@ -148,7 +153,8 @@ describe("reportingHandlers", () => {
         parseFailureMock,
         eventQueueMock,
         exceptionQueueMock,
-        errorQueueMock
+        errorQueueMock,
+        telemetry
       );
 
       expect(responseMock.json).toHaveBeenCalled();
@@ -182,7 +188,8 @@ describe("reportingHandlers", () => {
           parseFailureMock,
           eventQueueMock,
           exceptionQueueMock,
-          errorQueueMock
+          errorQueueMock,
+          telemetry
         )
       ).rejects.toThrow();
 
@@ -212,7 +219,8 @@ describe("reportingHandlers", () => {
           parseFailureMock,
           eventQueueMock,
           exceptionQueueMock,
-          errorQueueMock
+          errorQueueMock,
+          telemetry
         )
       ).rejects.toThrow();
 

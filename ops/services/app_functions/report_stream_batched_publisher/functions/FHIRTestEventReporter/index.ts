@@ -130,7 +130,8 @@ const FHIRTestEventReporter: AzureFunction = async function (
               testEventBatch.parseFailure,
               publishingQueue,
               exceptionQueue,
-              publishingErrorQueue
+              publishingErrorQueue,
+              telemetry
             );
           } catch (e) {
             context.log(
