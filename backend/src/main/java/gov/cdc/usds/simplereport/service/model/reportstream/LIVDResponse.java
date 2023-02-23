@@ -12,11 +12,8 @@ public class LIVDResponse {
   private String manufacturer;
   private String model;
   private List<String> vendorSpecimenDescription;
+  private String vendorAnalyte;
   private String testPerformedLoincCode;
   private String testKitNameId;
   private String equipmentUid;
-
-  //    public LIVDResponse(String manufacturer_a, String model_a, String specimen_description,
-  // String s, String testKit_a, String equip_a) {
-  //    }
 }

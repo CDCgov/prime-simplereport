@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -39,6 +40,8 @@ public class DeviceTypeService {
   private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
+  private final DiseaseService diseaseService;
+  private final SpecimenTypeService specimenTypeService;
 
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -202,52 +205,132 @@ public class DeviceTypeService {
     return matcher.group(1);
   }
 
-  @Transactional(readOnly = false)
+  /*
+   * 1) Call RS API
+   * 2) Step through response:
+   *    a. Does the device exist (database or HashMap)?
+   *      i. Create it
+   *      ii. if not in HashMap, update swab types
+   *    b. Create DeviceTestPerformedLoincCode from entry and add to device values in HashMap
+   * 3) write it all
+   */
+
+  @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<LIVDResponse> syncDevices() {
+  // TODO: void? List<DeviceType>?
+  public void syncDevices() {
     // TODO: dry mode?
-    // call into DataHubClient method
     List<LIVDResponse> devices = client.getLIVDTable();
 
-    // Dedupe device list selecting first one
-    var seen = new HashSet<>();
-    var devicesToSync =
-            devices.stream()
-                    .filter(d -> seen.add(String.join(d.getManufacturer(), d.getManufacturer(), " ")))
-                    .collect(Collectors.toList());
+    var devicesToSync = new HashMap<DeviceType, ArrayList<SupportedDiseaseTestPerformedInput>>();
+    var deviceSpecimens = new HashMap<String, List<UUID>>();
 
-    devicesToSync.forEach(
-            device -> {
-              // extract the specimen types from vendorSpecimenDescription
-              List<Optional<SpecimenType>> specimens =
-                      device.getVendorSpecimenDescription().stream()
-                              .map(
-                                      specimen ->
-                                              // if the specimen is deleted in our DB but included in the response - what do?
-                                              specimenTypeRepository.findByTypeCodeAndIsDeletedFalse(
-                                                      // what if the code can't be extracted?
-                                                      extractSpecimenTypeCode(specimen))
-                                      // TODO:
-                                      // create new specimen types if they don't exist
-                                      //     - won't have collection_location_name or code - not required per DB but
-                                      // check on this
-                              )
+    devices.forEach(
+        device -> {
+          // Have we already seen this device in the response?
+          // If so, create a DeviceTestPerformedLoincCode from entry and add to HashMap
+          // Does the device exist at all?
+          var foundDevice =
+              deviceTypeRepository.findDeviceTypeByManufacturerAndModel(
+                  device.getManufacturer(), device.getModel());
+
+          DeviceType deviceToSync =
+              foundDevice.orElseGet(
+                  () -> {
+                    // Have we seen this device before? Gets its specimens
+                    if (!deviceSpecimens.containsKey(
+                        device.getModel() + device.getManufacturer())) {
+                      List<UUID> specimens =
+                          device.getVendorSpecimenDescription().stream()
+                              .map(this::parseVendorSpecimenDescription)
+                              .map(SpecimenType::getInternalId)
                               .collect(Collectors.toList());
 
-              // DON'T remove specimen types on db <-> RS mismatch
+                      deviceSpecimens.put(device.getModel() + device.getManufacturer(), specimens);
+                    }
 
-              // unique constraint on (manufacturer, model)
-              //   - are we sure?
-              // apply all to devices
+                    var specimensForDevice =
+                        deviceSpecimens.get(device.getModel() + device.getManufacturer());
 
-              // if the device already exists:
-              //    - do nothing(?) with the device but check the specimen types
-              // if the device doesn't exist:
-              //    - new CreateDeviceType from the LIVD response
-              //    - write
-              //    - name?
-            });
-    return devicesToSync;
+                    // This doesn't return the result of `.save()` - refetch, I guess?
+                    createDeviceType(
+                        CreateDeviceType.builder()
+                            .name(device.getModel()) // TODO
+                            .manufacturer(device.getManufacturer())
+                            .model(device.getModel())
+                            .loincCode(device.getTestPerformedLoincCode())
+                            .swabTypes(specimensForDevice)
+                            .supportedDiseaseTestPerformed(
+                                List.of(
+                                    SupportedDiseaseTestPerformedInput.builder()
+                                        .supportedDisease(
+                                            getSupportedDiseaseFromVendorAnalyte(
+                                                    device.getVendorAnalyte())
+                                                .getInternalId())
+                                        .testPerformedLoincCode(device.getTestPerformedLoincCode())
+                                        .testkitNameId(device.getTestKitNameId())
+                                        .equipmentUid(device.getEquipmentUid())
+                                        .build()))
+                            .build());
+
+                    return deviceTypeRepository
+                        .findDeviceTypeByManufacturerAndModel(
+                            device.getManufacturer(), device.getModel())
+                        .get();
+                  });
+
+          if (!devicesToSync.containsKey(deviceToSync)) {
+            devicesToSync.put(deviceToSync, new ArrayList<>());
+          }
+
+          devicesToSync
+              .get(deviceToSync)
+              .add(
+                  SupportedDiseaseTestPerformedInput.builder()
+                      .supportedDisease(
+                          getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyte())
+                              .getInternalId())
+                      .testPerformedLoincCode(device.getTestPerformedLoincCode())
+                      .equipmentUid(device.getEquipmentUid())
+                      .testkitNameId(device.getTestKitNameId())
+                      .build());
+        });
+
+    devicesToSync.forEach(
+        (device, testPerformed) -> {
+          // RSV?? Other diseases?
+          UpdateDeviceType input =
+              UpdateDeviceType.builder()
+                  .internalId(device.getInternalId())
+                  .name(device.getModel())
+                  .manufacturer(device.getManufacturer())
+                  .model(device.getModel())
+                  .supportedDiseaseTestPerformed(testPerformed)
+                  .swabTypes(deviceSpecimens.get(device.getModel() + device.getManufacturer()))
+                  .build();
+
+          // TODO: this will not preserve existing device specimen types not included in
+          // response
+          updateDeviceType(input);
+        });
+  }
+
+  private SpecimenType parseVendorSpecimenDescription(String specimenDescription) {
+    // TODO: if the specimen is deleted in our DB but included in the response
+    // - what do?
+    // - what if the code can't be extracted?
+    // ^ updateDeviceType method might already account for all of this
+    var specimenCode = extractSpecimenTypeCode(specimenDescription);
+    var specimenType = specimenTypeRepository.findByTypeCode(specimenCode);
+
+    return specimenType.orElseGet(
+        () ->
+            specimenTypeService.createSpecimenType(
+                CreateSpecimenType.builder()
+                    // TODO: more parsing of the specimen description string
+                    .name("Nasal swab")
+                    .typeCode(specimenCode)
+                    .build()));
   }
 
   private ArrayList<DeviceTestPerformedLoincCode> createDeviceTestPerformedLoincCodeList(
@@ -269,5 +352,19 @@ public class DeviceTypeService {
                           .build()));
         });
     return deviceTestPerformedLoincCodeList;
+  }
+
+  private SupportedDisease getSupportedDiseaseFromVendorAnalyte(String vendorAnalyte) {
+    String input = vendorAnalyte.toLowerCase();
+
+    if (input.contains("sars-cov-2") || (input.contains("sc2") || input.contains("covid"))) {
+      return diseaseService.covid();
+    } else if (input.contains("flu a") || input.contains("influenza a")) {
+      return diseaseService.fluA();
+    } else if (input.contains("flu b") || input.contains("influenza b")) {
+      return diseaseService.fluB();
+    } else {
+      throw new IllegalArgumentException("Disease not found");
+    }
   }
 }

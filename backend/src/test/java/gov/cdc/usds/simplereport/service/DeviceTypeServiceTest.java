@@ -58,7 +58,9 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
             mock(DataHubClient.class),
             mock(DeviceSpecimenTypeRepository.class),
             mock(SpecimenTypeRepository.class),
-            mock(SupportedDiseaseRepository.class));
+            mock(SupportedDiseaseRepository.class),
+            mock(DiseaseService.class),
+            mock(SpecimenTypeService.class));
   }
 
   @Test
