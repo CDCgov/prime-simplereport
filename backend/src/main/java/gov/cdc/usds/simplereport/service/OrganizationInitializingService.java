@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @RequiredArgsConstructor
 public class OrganizationInitializingService {
-
+  private static final int STANDARD_TEST_LENGTH = 15;
   private final InitialSetupProperties _props;
   private final OrganizationRepository _orgRepo;
   private final ProviderRepository _providerRepo;
@@ -287,7 +287,7 @@ public class OrganizationInitializingService {
                         d.getSpecimenTypes().stream()
                             .map(specimenTypesByCode::get)
                             .collect(Collectors.toList()))
-                    .testLength(Optional.ofNullable(d.getTestLength()).orElse(15))
+                    .testLength(Optional.ofNullable(d.getTestLength()).orElse(STANDARD_TEST_LENGTH))
                     .build())
         .collect(Collectors.toList());
   }
