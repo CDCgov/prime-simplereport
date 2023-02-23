@@ -74,7 +74,7 @@ public class OrganizationInitializingService {
         deviceTypes.stream()
             .filter(deviceType -> "LumiraDX".equals(deviceType.getName()))
             .findFirst()
-            .get();
+            .orElse(deviceTypes.get(0));
     SpecimenType defaultSpecimenType = defaultDeviceType.getSwabTypes().get(0);
 
     List<Organization> emptyOrgs = _props.getOrganizations();
