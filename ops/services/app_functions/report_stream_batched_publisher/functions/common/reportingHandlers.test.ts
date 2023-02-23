@@ -85,7 +85,7 @@ describe("reportingHandlers", () => {
 
       const serializedTestEvents = '{"name":"DeeDee"}';
       await reportToUniversalPipelineTokenBased("123abc", serializedTestEvents);
-      expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
+      expect(fetchMock).toHaveBeenCalledWith("https://nope.url/api/waters", {
         method: "POST",
         headers: mockHeaders,
         body: serializedTestEvents,

@@ -33,7 +33,7 @@ export async function reportToUniversalPipelineTokenBased(
     client: "simple_report",
   });
 
-  return fetch(REPORT_STREAM_URL, {
+  return fetch(`${REPORT_STREAM_BASE_URL}/api/waters`, {
     method: "POST",
     headers,
     body: ndjsonTestEvents,
