@@ -72,8 +72,6 @@ const PatientApp = () => {
         isPatientApp={true}
       />
     );
-  } else {
-    appInsights?.trackEvent({ name: "PXP page loaded" });
   }
 
   return (
