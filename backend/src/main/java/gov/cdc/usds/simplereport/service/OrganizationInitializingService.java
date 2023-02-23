@@ -266,16 +266,6 @@ public class OrganizationInitializingService {
   }
 
   private List<DeviceType> getDeviceTypes(Map<String, SpecimenType> specimenTypesByCode) {
-
-    Map<String, InitialSetupProperties.ConfigSupportedDiseaseTestPerformed>
-        covidSupportedDiseaseTestPerformedByDeviceName =
-            _props.getSupportedDiseaseTestPerformed().stream()
-                .filter(c -> "COVID-19".equals(c.getSupportedDisease()))
-                .collect(
-                    Collectors.toMap(
-                        InitialSetupProperties.ConfigSupportedDiseaseTestPerformed::getDeviceName,
-                        d -> d));
-
     return _props.getDeviceTypes().stream()
         .map(
             d ->
@@ -284,9 +274,13 @@ public class OrganizationInitializingService {
                     .model(d.getModel())
                     .manufacturer(d.getManufacturer())
                     .loincCode(
-                        covidSupportedDiseaseTestPerformedByDeviceName
-                            .get(d.getName())
-                            .getTestPerformedLoincCode())
+                        d.getTestPerformedLoincs().stream()
+                            .filter(t -> "COVID-19".equals(t.getSupportedDisease()))
+                            .map(
+                                InitialSetupProperties.ConfigSupportedDiseaseTestPerformed
+                                    ::getTestPerformedLoincCode)
+                            .findFirst()
+                            .orElseThrow())
                     .swabTypes(
                         d.getSpecimenTypes().stream()
                             .map(specimenTypesByCode::get)
@@ -298,17 +292,25 @@ public class OrganizationInitializingService {
 
   private List<DeviceTestPerformedLoincCode> getDeviceTestPerformedLoincCode(
       Map<String, DeviceType> deviceTypesByName) {
-    return _props.getSupportedDiseaseTestPerformed().stream()
-        .map(
-            c ->
-                DeviceTestPerformedLoincCode.builder()
-                    .deviceTypeId(deviceTypesByName.get(c.getDeviceName()).getInternalId())
-                    .equipmentUid(c.getEquipmentUid())
-                    .testkitNameId(c.getTestkitNameId())
-                    .testPerformedLoincCode(c.getTestPerformedLoincCode())
-                    .supportedDisease(diseaseService.getDiseaseByName(c.getSupportedDisease()))
-                    .build())
-        .collect(Collectors.toList());
+    List<List<DeviceTestPerformedLoincCode>> collect =
+        _props.getDeviceTypes().stream()
+            .map(
+                device ->
+                    device.getTestPerformedLoincs().stream()
+                        .map(
+                            c ->
+                                DeviceTestPerformedLoincCode.builder()
+                                    .deviceTypeId(
+                                        deviceTypesByName.get(device.getName()).getInternalId())
+                                    .equipmentUid(c.getEquipmentUid())
+                                    .testkitNameId(c.getTestkitNameId())
+                                    .testPerformedLoincCode(c.getTestPerformedLoincCode())
+                                    .supportedDisease(
+                                        diseaseService.getDiseaseByName(c.getSupportedDisease()))
+                                    .build())
+                        .collect(Collectors.toList()))
+            .collect(Collectors.toList());
+    return collect.stream().flatMap(List::stream).collect(Collectors.toList());
   }
 
   private void initOktaOrg(Organization org) {

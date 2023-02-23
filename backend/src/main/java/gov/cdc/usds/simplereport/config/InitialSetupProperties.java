@@ -25,7 +25,6 @@ public class InitialSetupProperties {
   private final Provider provider;
   private final List<SpecimenType> specimenTypes;
   private final List<ConfigDeviceType> deviceTypes;
-  private final List<ConfigSupportedDiseaseTestPerformed> supportedDiseaseTestPerformed;
   private final List<String> configuredDeviceTypes;
   private final List<ConfigFacility> facilities;
   private final List<ConfigPatientRegistrationLink> patientRegistrationLinks;
@@ -117,11 +116,11 @@ public class InitialSetupProperties {
     String model;
     Integer testLength;
     List<String> specimenTypes;
+    List<ConfigSupportedDiseaseTestPerformed> testPerformedLoincs;
   }
 
   @Value
   public static class ConfigSupportedDiseaseTestPerformed {
-    String deviceName;
     String testPerformedLoincCode;
     String supportedDisease;
     String equipmentUid;
