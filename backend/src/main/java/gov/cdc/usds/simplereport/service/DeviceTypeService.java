@@ -63,7 +63,7 @@ public class DeviceTypeService {
     return deviceTypeRepository.findDeviceTypeByName(name);
   }
 
-  @Transactional
+//  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(UpdateDeviceType updateDevice) {
 
@@ -205,17 +205,7 @@ public class DeviceTypeService {
     return matcher.group(1);
   }
 
-  /*
-   * 1) Call RS API
-   * 2) Step through response:
-   *    a. Does the device exist (database or HashMap)?
-   *      i. Create it
-   *      ii. if not in HashMap, update swab types
-   *    b. Create DeviceTestPerformedLoincCode from entry and add to device values in HashMap
-   * 3) write it all
-   */
-
-  @Transactional(readOnly = true)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   // TODO: void? List<DeviceType>?
   public void syncDevices() {

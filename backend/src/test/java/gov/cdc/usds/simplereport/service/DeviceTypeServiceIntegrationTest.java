@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -63,7 +64,15 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
                 .manufacturer("Manufacturer A")
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
-                .supportedDiseases(List.of(disease.getInternalId()))
+//                .supportedDiseases(List.of(disease.getInternalId()))
+                    .supportedDiseaseTestPerformed(
+                            List.of(SupportedDiseaseTestPerformedInput.builder()
+                                    .supportedDisease(disease.getInternalId())
+                                    .testPerformedLoincCode("000000000")
+                                    .equipmentUid("Equipment Uid")
+                                    .testkitNameId("TestKit Uid")
+                                    .build())
+                    )
                 .testLength(1)
                 .build());
     devB =
@@ -77,14 +86,22 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
                 .loincCode("I")
                 .swabTypes(List.of(swab3.getInternalId()))
                 .supportedDiseases(List.of(disease.getInternalId()))
-                .testLength(2)
+                    .supportedDiseaseTestPerformed(
+                            List.of(SupportedDiseaseTestPerformedInput.builder()
+                                    .supportedDisease(disease.getInternalId())
+                                    .testPerformedLoincCode("258500001")
+                                    .equipmentUid("Equipment Uid")
+                                    .testkitNameId("TestKit Uid")
+                                    .build())
+                    )
+
+                    .testLength(2)
                 .build());
   }
 
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_updatesDevices() {
-    // LIVDResponse for new device
     LIVDResponse newDevice =
         new LIVDResponse(
             "Manufacturer A",
