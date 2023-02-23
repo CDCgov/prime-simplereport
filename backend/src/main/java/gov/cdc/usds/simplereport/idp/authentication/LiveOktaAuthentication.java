@@ -5,7 +5,6 @@ import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.error.ResourceException;
 import com.okta.sdk.resource.user.RecoveryQuestionCredential;
-import com.okta.sdk.resource.user.factor.ActivateFactorRequest;
 import com.okta.sdk.resource.user.factor.CallUserFactor;
 import com.okta.sdk.resource.user.factor.EmailUserFactor;
 import com.okta.sdk.resource.user.factor.FactorProvider;
@@ -18,6 +17,7 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
+import org.openapitools.client.model.ActivateFactorRequest;
 import org.openapitools.client.model.FactorStatus;
 import org.openapitools.client.model.FactorType;
 import org.openapitools.client.model.PasswordCredential;
