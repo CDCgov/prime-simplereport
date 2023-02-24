@@ -70,7 +70,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     if (_token == null || _token.isEmpty() || _token.contains("MISSING")) {
       throw new IllegalArgumentException("The Okta token cannot be empty.");
     }
-    _auth = new LiveOktaAuthentication(_orgUrl, _token, userApi, userFactorApi);
+    _auth = new LiveOktaAuthentication(_orgUrl, _token);
 
     // It's not possible to disable caching for _testClient, so instead we reduce timeTolive down to
     // nothing.

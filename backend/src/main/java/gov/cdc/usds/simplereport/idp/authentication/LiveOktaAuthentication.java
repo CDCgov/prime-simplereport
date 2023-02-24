@@ -60,25 +60,19 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private String _apiToken;
   private String _orgUrl;
   private RestTemplate _restTemplate;
-  private final UserApi userApi;
-  private final UserFactorApi userFactorApi;
+  private UserApi userApi;
+  private UserFactorApi userFactorApi;
 
   // todo: should be refactored to provide beans to ApiClient, and other clients in order to be
   // testable.
   // actually, based on how this is being tested we may not need to provide beans here.
   @Autowired
-  public LiveOktaAuthentication(
-      OktaClientProperties oktaClientProperties, UserApi userApi, UserFactorApi userFactorApi) {
+  public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
-    this.userApi = userApi;
-    this.userFactorApi = userFactorApi;
   }
 
-  public LiveOktaAuthentication(
-      String orgUrl, String token, UserApi userApi, UserFactorApi userFactorApi) {
+  public LiveOktaAuthentication(String orgUrl, String token) {
     initialize(orgUrl, token);
-    this.userApi = userApi;
-    this.userFactorApi = userFactorApi;
   }
 
   private void initialize(String orgUrl, String token) {
@@ -90,6 +84,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     _apiToken = token;
     _orgUrl = orgUrl;
     _restTemplate = new RestTemplate();
+    userApi = new UserApi(_client);
   }
 
   /**
