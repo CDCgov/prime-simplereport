@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
 import org.openapitools.client.ApiClient;
+import org.openapitools.client.api.UserApi;
 import org.openapitools.client.model.ActivateFactorRequest;
 import org.openapitools.client.model.CallUserFactor;
 import org.openapitools.client.model.EmailUserFactor;
@@ -58,15 +59,19 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private String _orgUrl;
   private RestTemplate _restTemplate;
 
+  private final UserApi userApi;
+
   // todo: should be refactored to provide beans to ApiClient, and other clients in order to be
   // testable.
   @Autowired
-  public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
+  public LiveOktaAuthentication(OktaClientProperties oktaClientProperties, UserApi userApi) {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
+    this.userApi = userApi;
   }
 
-  public LiveOktaAuthentication(String orgUrl, String token) {
+  public LiveOktaAuthentication(String orgUrl, String token, UserApi userApi) {
     initialize(orgUrl, token);
+    this.userApi = userApi;
   }
 
   private void initialize(String orgUrl, String token) {
@@ -92,7 +97,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       if (userId == null) {
         return UserAccountStatus.UNKNOWN;
       }
-      User user = _client.getUser(userId);
+      User user = userApi.getUser(userId);
       UserStatus status = user.getStatus();
       if (status == UserStatus.PROVISIONED) {
         return UserAccountStatus.PASSWORD_RESET;

@@ -3,11 +3,11 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import static com.okta.sdk.cache.Caches.forResource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.cache.CacheManager;
 import com.okta.sdk.cache.Caches;
-import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
@@ -24,6 +24,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.openapitools.client.ApiClient;
+import org.openapitools.client.api.UserApi;
 import org.openapitools.client.model.CallUserFactor;
 import org.openapitools.client.model.EmailUserFactor;
 import org.openapitools.client.model.FactorProvider;
@@ -57,16 +59,17 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   private String _token;
 
   private LiveOktaAuthentication _auth;
-  private Client _testClient;
+  private ApiClient _testClient;
   private String _userId;
   private String _activationToken;
+  private UserApi userApi = mock(UserApi.class);
 
   @BeforeAll
   void initializeUser() {
     if (_token == null || _token.isEmpty() || _token.contains("MISSING")) {
       throw new IllegalArgumentException("The Okta token cannot be empty.");
     }
-    _auth = new LiveOktaAuthentication(_orgUrl, _token);
+    _auth = new LiveOktaAuthentication(_orgUrl, _token, userApi);
 
     // It's not possible to disable caching for _testClient, so instead we reduce timeTolive down to
     // nothing.
