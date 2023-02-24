@@ -58,6 +58,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private String _orgUrl;
   private RestTemplate _restTemplate;
 
+  // todo: should be refactored to provide beans to ApiClient, and other clients in order to be
+  // testable.
   @Autowired
   public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
