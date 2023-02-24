@@ -223,16 +223,16 @@ public class LiveOktaRepository implements OktaRepository {
 
   public Set<String> getAllUsersForOrganization(Organization org) {
     Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
-
-    return orgDefaultOktaGroup.listUsers().stream()
+    var groupUsers = groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), null, null);
+    return groupUsers.stream()
         .map(u -> u.getProfile().getLogin())
         .collect(Collectors.toUnmodifiableSet());
   }
 
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
     Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
-
-    return orgDefaultOktaGroup.listUsers().stream()
+    var groupUsers = groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), null, null);
+    return groupUsers.stream()
         .collect(Collectors.toMap(u -> u.getProfile().getLogin(), User::getStatus));
   }
 
@@ -513,13 +513,13 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
-  private UserList getOrgAdminUsers(Organization org) {
+  private List<User> getOrgAdminUsers(Organization org) {
     String externalId = org.getExternalId();
     String roleGroupName = generateRoleGroupName(externalId, OrganizationRole.ADMIN);
     var groups = groupApi.listGroups(roleGroupName, null, null, null, null, null);
     throwErrorIfEmpty(groups.stream(), "Cannot activate nonexistent Okta organization");
-    Group group = groups.single();
-    return group.listUsers();
+    Group group = groups.get(0);
+    return groupApi.listGroupUsers(group.getId(), null, null);
   }
 
   private String activateUser(User user) {
@@ -547,7 +547,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public List<String> fetchAdminUserEmail(Organization org) {
-    UserList admins = getOrgAdminUsers(org);
+    var admins = getOrgAdminUsers(org);
     return admins.stream().map(u -> u.getProfile().getLogin()).collect(Collectors.toList());
   }
 
@@ -568,7 +568,7 @@ public class LiveOktaRepository implements OktaRepository {
         GroupBuilder.instance()
             .setName(facilityGroupName)
             .setDescription(generateFacilityGroupDescription(orgName, facility.getFacilityName()))
-            .buildAndCreate(_client);
+            .buildAndCreate(groupApi);
     _app.createApplicationGroupAssignment(g.getId());
 
     log.info("Created Okta group={}", facilityGroupName);

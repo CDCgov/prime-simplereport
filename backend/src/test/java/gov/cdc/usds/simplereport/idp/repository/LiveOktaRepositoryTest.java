@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -641,7 +640,13 @@ class LiveOktaRepositoryTest {
   }
 
   private UserBuilder setupAndMockUserBuilder(
-      String groupProfilePrefix, String groupProfileName, Map<String, Object> profileProperties) {
+      String groupProfilePrefix,
+      String groupProfileName,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      String email) {
     var mockGroup = mock(Group.class);
     var mockGroupListQ = List.of(mockGroup);
     var mockGroupListSearch = List.of(mockGroup);
@@ -657,8 +662,13 @@ class LiveOktaRepositoryTest {
         .thenReturn(mockGroupListSearch);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfileName);
-    when(mockUserBuilder.setProfileProperties(profileProperties)).thenReturn(mockUserBuilder);
-    when(mockUserBuilder.setGroups(anySet())).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setFirstName(firstName)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setMiddleName(middleName)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setLastName(lastName)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setHonorificSuffix(suffix)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setLogin(email)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setEmail(email)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setGroups(anyList())).thenReturn(mockUserBuilder);
     when(mockUserBuilder.setActive(true)).thenReturn(mockUserBuilder);
     return mockUserBuilder;
   }
@@ -680,7 +690,7 @@ class LiveOktaRepositoryTest {
     when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
-    when(mockGroup.listUsers()).thenReturn(mockUserList);
+    when(groupApi.listGroupUsers(anyString(), isNull(), isNull())).thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("email@example.com");
@@ -723,7 +733,7 @@ class LiveOktaRepositoryTest {
     when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
-    when(mockGroup.listUsers()).thenReturn(mockUserList);
+    when(groupApi.listGroupUsers(anyString(), isNull(), isNull())).thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("email@example.com");
@@ -1307,7 +1317,7 @@ class LiveOktaRepositoryTest {
 
     when(mockGroupBuilder.setName(anyString())).thenReturn(mockGroupBuilder);
     when(mockGroupBuilder.setDescription(anyString())).thenReturn(mockGroupBuilder);
-    when(mockGroupBuilder.buildAndCreate(_client)).thenReturn(mockGroup);
+    when(mockGroupBuilder.buildAndCreate(groupApi)).thenReturn(mockGroup);
     when(mockGroup.getId()).thenReturn("id");
     try (var staticMockGroupBuilder = mockStatic(GroupBuilder.class)) {
       staticMockGroupBuilder.when(GroupBuilder::instance).thenReturn(mockGroupBuilder);
