@@ -367,7 +367,9 @@ public class LiveOktaRepository implements OktaRepository {
     if (!currentOrgGroupMapForUser.containsKey(groupOrgDefaultName)) {
       // The user is not a member of the default group for this organization.  If they happen
       // to be in any of this organization's groups, remove the user from those groups.
-      currentOrgGroupMapForUser.values().forEach(g -> g.removeUser(user.getId()));
+      currentOrgGroupMapForUser
+          .values()
+          .forEach(g -> groupApi.unassignUserFromGroup(g.getId(), user.getId()));
       throw new IllegalGraphqlArgumentException(
           "Cannot update privileges of Okta user in organization they do not belong to.");
     }
@@ -408,7 +410,7 @@ public class LiveOktaRepository implements OktaRepository {
       for (String groupName : groupNamesToRemove) {
         Group group = fullOrgGroupMap.get(groupName);
         log.info("Removing {} from Okta group: {}", username, group.getProfile().getName());
-        group.removeUser(user.getId());
+        groupApi.unassignUserFromGroup(group.getId(), user.getId());
       }
 
       for (String groupName : groupNamesToAdd) {
