@@ -19,9 +19,9 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +32,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.api.ApplicationApi;
 import org.openapitools.client.api.GroupApi;
@@ -88,7 +89,8 @@ public class LiveOktaRepository implements OktaRepository {
     _tenantDataContextHolder = tenantDataContextHolder;
   }
 
-  // todo: remove in favor for above.
+  // todo: remove in favor for above. Make bean that takes okta.oauth2.client-id and builds the
+  // ApiClient
   @Autowired
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
@@ -122,9 +124,6 @@ public class LiveOktaRepository implements OktaRepository {
       Set<Facility> facilities,
       Set<OrganizationRole> roles,
       boolean active) {
-    // need to validate fields before adding them because Maps don't like nulls
-    Map<String, Object> userProfileMap = validateAndSetUserProfile(userIdentity);
-
     // By default, when creating a user, we give them privileges of a standard user
     String organizationExternalId = org.getExternalId();
     Set<OrganizationRole> rolesToCreate = EnumSet.of(OrganizationRole.getDefault());
@@ -181,9 +180,21 @@ public class LiveOktaRepository implements OktaRepository {
             .map(Group::getId)
             .collect(Collectors.toSet());
     try {
+      if (StringUtils.isBlank(userIdentity.getLastName())) {
+        throw new IllegalGraphqlArgumentException("Cannot create Okta user without last name");
+      }
+      if (StringUtils.isBlank(userIdentity.getUsername())) {
+        throw new IllegalGraphqlArgumentException("Cannot create Okta user without username");
+      }
+
       UserBuilder.instance()
-          .setProfileProperties(userProfileMap)
-          .setGroups(groupIdsToAdd)
+          .setFirstName(userIdentity.getFirstName())
+          .setMiddleName(userIdentity.getMiddleName())
+          .setLastName(userIdentity.getLastName())
+          .setHonorificSuffix(userIdentity.getSuffix())
+          .setEmail(userIdentity.getUsername())
+          .setLogin(userIdentity.getUsername())
+          .setGroups(new ArrayList<>(groupIdsToAdd))
           .setActive(active)
           .buildAndCreate(_client);
     } catch (ResourceException e) {
@@ -202,34 +213,6 @@ public class LiveOktaRepository implements OktaRepository {
       return Optional.empty();
     }
     return Optional.of(claims.get(0));
-  }
-
-  private Map<String, Object> validateAndSetUserProfile(IdentityAttributes userIdentity) {
-    Map<String, Object> userProfileMap = new HashMap<>();
-    if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
-      userProfileMap.put("firstName", userIdentity.getFirstName());
-    }
-    if (userIdentity.getMiddleName() != null && !userIdentity.getMiddleName().isEmpty()) {
-      userProfileMap.put("middleName", userIdentity.getMiddleName());
-    }
-    if (userIdentity.getLastName() != null && !userIdentity.getLastName().isEmpty()) {
-      userProfileMap.put("lastName", userIdentity.getLastName());
-    } else {
-      // last name is required
-      throw new IllegalGraphqlArgumentException("Cannot create Okta user without last name");
-    }
-    if (userIdentity.getSuffix() != null && !userIdentity.getSuffix().isEmpty()) {
-      userProfileMap.put("honorificSuffix", userIdentity.getSuffix());
-    }
-    if (userIdentity.getUsername() != null && !userIdentity.getUsername().isEmpty()) {
-      // we assume login == email
-      userProfileMap.put("email", userIdentity.getUsername());
-      userProfileMap.put("login", userIdentity.getUsername());
-    } else {
-      // username is required
-      throw new IllegalGraphqlArgumentException("Cannot create Okta user without username");
-    }
-    return userProfileMap;
   }
 
   public Set<String> getAllUsersForOrganization(Organization org) {
