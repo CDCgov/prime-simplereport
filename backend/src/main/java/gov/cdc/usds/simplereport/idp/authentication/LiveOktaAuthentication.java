@@ -116,7 +116,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
         return UserAccountStatus.MFA_SELECT;
       }
       UserFactor factor = userFactorApi.getFactor(userId, factorId);
-      ;
+
       if (factor.getStatus() == FactorStatus.ACTIVE) {
         return UserAccountStatus.ACTIVE;
       }
