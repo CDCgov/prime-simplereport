@@ -54,7 +54,7 @@ export const MfaSelect = () => {
 
   return (
     <CardBackground>
-      <Card logo cardIsForm bodyKicker="Set up your account">
+      <Card logo bodyKicker="Set up your account">
         <StepIndicator
           steps={accountCreationSteps}
           currentStepValue={"2"}
