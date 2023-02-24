@@ -391,7 +391,7 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
     metric_name      = "AverageMemoryWorkingSet"
     aggregation      = "Average"
     operator         = "GreaterThan"
-    threshold        = 1200
+    threshold        = var.function_memory_threshold
   }
 
   dynamic "action" {

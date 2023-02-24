@@ -98,3 +98,7 @@ variable "function_id" {
   type    = string
   default = null
 }
+
+variable "function_memory_threshold" {
+  default = 1200
+}
