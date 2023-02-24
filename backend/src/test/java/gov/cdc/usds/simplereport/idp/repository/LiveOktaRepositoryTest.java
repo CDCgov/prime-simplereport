@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -49,6 +50,7 @@ import org.openapitools.client.model.Application;
 import org.openapitools.client.model.Group;
 import org.openapitools.client.model.GroupProfile;
 import org.openapitools.client.model.GroupType;
+import org.openapitools.client.model.UpdateUserRequest;
 import org.openapitools.client.model.User;
 import org.openapitools.client.model.UserProfile;
 import org.openapitools.client.model.UserStatus;
@@ -169,6 +171,8 @@ class LiveOktaRepositoryTest {
     var groupList = new ArrayList<Group>();
     Group group1 = mock(Group.class);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
+    var updateRequest = new UpdateUserRequest();
+    updateRequest.setProfile(userProfile);
 
     when(userApi.listUsers(
             isNull(),
@@ -192,7 +196,7 @@ class LiveOktaRepositoryTest {
     verify(userProfile).setMiddleName(personName.getMiddleName());
     verify(userProfile).setLastName(personName.getLastName());
     verify(userProfile).setHonorificSuffix(personName.getSuffix());
-    verify(user).update();
+    verify(userApi).updateUser(user.getId(), updateRequest, false);
   }
 
   @Test
@@ -208,6 +212,8 @@ class LiveOktaRepositoryTest {
     var groupList = new ArrayList<Group>();
     Group group1 = mock(Group.class);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
+    var updateRequest = new UpdateUserRequest();
+    updateRequest.setProfile(userProfile);
 
     when(userApi.listUsers(
             isNull(),
@@ -228,7 +234,7 @@ class LiveOktaRepositoryTest {
 
     _repo.updateUserEmail(userAttributes, newUsername);
     verify(userProfile).setEmail(newUsername);
-    verify(user).update();
+    verify(userApi).updateUser(user.getId(), updateRequest, false);
   }
 
   @Test
@@ -292,10 +298,11 @@ class LiveOktaRepositoryTest {
     PersonName secondPersonName = new PersonName("Second", "Middle", "Last", "Suffix");
     new IdentityAttributes(newUsername, secondPersonName);
 
+    User user = mock(User.class);
     var userList = List.of(user);
     UserProfile userProfile = mock(UserProfile.class);
-    var groupList = new ArrayList<Group>();
     Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
 
     when(userApi.listUsers(
@@ -309,12 +316,11 @@ class LiveOktaRepositoryTest {
         .thenReturn(userList);
     when(user.getProfile()).thenReturn(userProfile);
 
-    when(user.listGroups()).thenReturn(groupList);
-    when(groupList.stream()).thenReturn(Stream.of(group1));
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
-    when(user.update()).thenThrow(new ResourceException(new DuplicateUserError()));
+    when(userApi.updateUser(anyString(), any(), isNull()))
+        .thenThrow(new ResourceException(new DuplicateUserError()));
     Throwable caught =
         assertThrows(
             ConflictingUserException.class,
@@ -331,8 +337,8 @@ class LiveOktaRepositoryTest {
     User user = mock(User.class);
     var userList = List.of(user);
     UserProfile userProfile = mock(UserProfile.class);
-    var groupList = new ArrayList<Group>();
     Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
 
     when(userApi.listUsers(
@@ -347,11 +353,11 @@ class LiveOktaRepositoryTest {
     when(user.getProfile()).thenReturn(userProfile);
 
     when(user.listGroups()).thenReturn(groupList);
-    when(groupList.stream()).thenReturn(Stream.of(group1));
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
-    when(user.update()).thenThrow(new ResourceException(new MockOktaResourceError()));
+    when(userApi.updateUser(anyString(), any(), isNull()))
+        .thenThrow(new ResourceException(new MockOktaResourceError()));
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
@@ -385,7 +391,8 @@ class LiveOktaRepositoryTest {
 
     _repo.reprovisionUser(identityAttributes);
 
-    verify(user).update();
+    // todo: assert specifically
+    verify(userApi).updateUser(anyString(), any(), isNull());
     verify(user).deactivate();
     verify(user).activate(true);
   }
@@ -716,20 +723,18 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId() + ":NO_ACCESS";
 
-    var mockGroupList = new ArrayList<Group>();
     var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
-    var mockUserList = new ArrayList<User>();
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
     var mockUserProfile = mock(UserProfile.class);
     when(groupApi.listGroups(
             eq(groupProfilePrefix), isNull(), isNull(), isNull(), isNull(), isNull()))
         .thenReturn(mockGroupList);
-    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
     when(groupApi.listGroupUsers(anyString(), isNull(), isNull())).thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("email@example.com");
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);

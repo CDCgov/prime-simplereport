@@ -40,6 +40,7 @@ import org.openapitools.client.api.UserApi;
 import org.openapitools.client.model.Application;
 import org.openapitools.client.model.Group;
 import org.openapitools.client.model.GroupType;
+import org.openapitools.client.model.UpdateUserRequest;
 import org.openapitools.client.model.User;
 import org.openapitools.client.model.UserProfile;
 import org.openapitools.client.model.UserStatus;
@@ -269,7 +270,9 @@ public class LiveOktaRepository implements OktaRepository {
     // Is it our fault we don't accommodate honorific suffix? Or Okta's fault they
     // don't have regular suffix? You decide.
     user.getProfile().setHonorificSuffix(userIdentity.getSuffix());
-    user.update();
+    var updateRequest = new UpdateUserRequest();
+    updateRequest.setProfile(user.getProfile());
+    userApi.updateUser(user.getId(), updateRequest, false);
   }
 
   public Optional<OrganizationRoleClaims> updateUserEmail(
@@ -290,8 +293,10 @@ public class LiveOktaRepository implements OktaRepository {
     profile.setLogin(email);
     profile.setEmail(email);
     user.setProfile(profile);
+    var updateRequest = new UpdateUserRequest();
+    updateRequest.setProfile(profile);
     try {
-      user.update();
+      userApi.updateUser(user.getId(), updateRequest, false);
     } catch (ResourceException e) {
       if (e.getMessage()
           .contains(
