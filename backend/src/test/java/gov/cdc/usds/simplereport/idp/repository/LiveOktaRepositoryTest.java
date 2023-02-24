@@ -636,22 +636,6 @@ class LiveOktaRepositoryTest {
     }
   }
 
-  private Map<String, Object> createValidProfileProperties(IdentityAttributes identityAttributes) {
-    return Map.of(
-        "firstName",
-        identityAttributes.getFirstName(),
-        "middleName",
-        identityAttributes.getMiddleName(),
-        "lastName",
-        identityAttributes.getLastName(),
-        "honorificSuffix",
-        identityAttributes.getSuffix(),
-        "email",
-        identityAttributes.getUsername(),
-        "login",
-        identityAttributes.getUsername());
-  }
-
   private UserBuilder setupAndMockUserBuilder(
       String groupProfilePrefix,
       String groupProfileName,
@@ -1338,7 +1322,7 @@ class LiveOktaRepositoryTest {
         .thenReturn(mockGroupList);
     when(mockGroupList.iterator()).thenReturn((List.of(mockGroup).iterator()));
     _repo.deleteFacility(mockFacility);
-    verify(mockGroup).delete();
+    verify(groupApi).deleteGroup("1234");
   }
 
   @Test
@@ -1356,9 +1340,10 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(mockGroupList);
     when(mockGroupList.iterator()).thenReturn((List.of(mockGroup).iterator()));
+    when(mockGroup.getId()).thenReturn("1234");
 
     _repo.deleteOrganization(org);
-    verify(mockGroup).delete();
+    verify(groupApi).deleteGroup("1234");
   }
 
   // Dummy error for duplicate users.
