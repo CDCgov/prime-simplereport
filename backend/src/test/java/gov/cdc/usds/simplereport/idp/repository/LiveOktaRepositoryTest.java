@@ -14,7 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.okta.sdk.client.Client;
 import com.okta.sdk.error.Error;
 import com.okta.sdk.error.ErrorCause;
 import com.okta.sdk.error.ResourceException;
@@ -42,6 +41,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.ApiClient;
 import org.openapitools.client.api.GroupApi;
 import org.openapitools.client.model.Application;
 import org.openapitools.client.model.Group;
@@ -62,7 +62,7 @@ class LiveOktaRepositoryTest {
   private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
       new CurrentTenantDataAccessContextHolder();
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
-  private final Client _client = mock(Client.class);
+  private final ApiClient _client = mock(ApiClient.class);
   private final GroupApi groupApi = mock(GroupApi.class);
   private final Application _app = mock(Application.class);
   LiveOktaRepository _repo;

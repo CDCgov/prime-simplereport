@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.error.ResourceException;
 import com.okta.sdk.resource.group.GroupBuilder;
@@ -33,6 +32,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.ApiClient;
 import org.openapitools.client.api.GroupApi;
 import org.openapitools.client.model.Application;
 import org.openapitools.client.model.Group;
@@ -58,7 +58,7 @@ public class LiveOktaRepository implements OktaRepository {
   private static final String OKTA_GROUP_NOT_FOUND = "Okta group not found for this organization";
 
   private final String _rolePrefix;
-  private final Client _client;
+  private final ApiClient _client;
   private final Application _app;
   private final OrganizationExtractor _extractor;
   private final CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
@@ -66,7 +66,7 @@ public class LiveOktaRepository implements OktaRepository {
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
-      Client client,
+      ApiClient client,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
       CurrentTenantDataAccessContextHolder tenantDataContextHolder,
