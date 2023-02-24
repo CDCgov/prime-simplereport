@@ -66,7 +66,6 @@ public class LiveOktaRepository implements OktaRepository {
   private final OrganizationExtractor _extractor;
   private final CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
   private final GroupApi groupApi;
-  private final ApplicationApi applicationApi;
   private final UserApi userApi;
 
   public LiveOktaRepository(
@@ -81,7 +80,6 @@ public class LiveOktaRepository implements OktaRepository {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client = client;
     this.groupApi = groupApi;
-    this.applicationApi = applicationApi;
     this.userApi = userApi;
     try {
       _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
@@ -112,7 +110,6 @@ public class LiveOktaRepository implements OktaRepository {
             .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
             .build();
     this.groupApi = groupApi;
-    this.applicationApi = applicationApi;
     this.userApi = userApi;
     try {
       _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
