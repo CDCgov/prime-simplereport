@@ -256,7 +256,7 @@ public class LiveOktaRepository implements OktaRepository {
             null,
             null);
     throwErrorIfEmpty(users.stream(), "Cannot update Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
     updateUser(user, userIdentity);
 
     return getOrganizationRoleClaimsForUser(user);
@@ -285,7 +285,7 @@ public class LiveOktaRepository implements OktaRepository {
             null);
     throwErrorIfEmpty(
         users.stream(), "Cannot update email of Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
     UserProfile profile = user.getProfile();
     profile.setLogin(email);
     profile.setEmail(email);
@@ -316,7 +316,7 @@ public class LiveOktaRepository implements OktaRepository {
             null,
             null);
     throwErrorIfEmpty(users.stream(), "Cannot reprovision Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
     UserStatus userStatus = user.getStatus();
 
     // any org user "deleted" through our api will be in SUSPENDED state
@@ -342,7 +342,7 @@ public class LiveOktaRepository implements OktaRepository {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot update role of Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
 
     String orgId = org.getExternalId();
 
@@ -425,7 +425,7 @@ public class LiveOktaRepository implements OktaRepository {
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot reset password for Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
     user.resetPassword(true);
   }
 
@@ -433,7 +433,7 @@ public class LiveOktaRepository implements OktaRepository {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reset MFA for Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
     user.resetFactors();
   }
 
@@ -442,7 +442,7 @@ public class LiveOktaRepository implements OktaRepository {
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot update active status of Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
 
     if (active && user.getStatus() == UserStatus.SUSPENDED) {
       user.unsuspend();
@@ -456,7 +456,7 @@ public class LiveOktaRepository implements OktaRepository {
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot retrieve Okta user's status with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
     return user.getStatus();
   }
 
@@ -464,7 +464,7 @@ public class LiveOktaRepository implements OktaRepository {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
     user.unsuspend();
   }
 
@@ -472,7 +472,7 @@ public class LiveOktaRepository implements OktaRepository {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
-    User user = users.single();
+    User user = users.get(0);
     if (user.getStatus() == UserStatus.PROVISIONED) {
       user.reactivate(true);
     } else if (user.getStatus() == UserStatus.STAGED) {
@@ -539,7 +539,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public String activateOrganizationWithSingleUser(Organization org) {
-    User user = getOrgAdminUsers(org).single();
+    User user = getOrgAdminUsers(org).get(0);
     return activateUser(user);
   }
 
@@ -602,7 +602,7 @@ public class LiveOktaRepository implements OktaRepository {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot get org external ID for nonexistent user");
-    User user = users.single();
+    User user = users.get(0);
     return getOrganizationRoleClaimsForUser(user);
   }
 
