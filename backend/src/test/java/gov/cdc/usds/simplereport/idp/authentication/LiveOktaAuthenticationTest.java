@@ -26,6 +26,7 @@ import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.api.UserApi;
+import org.openapitools.client.api.UserFactorApi;
 import org.openapitools.client.model.CallUserFactor;
 import org.openapitools.client.model.EmailUserFactor;
 import org.openapitools.client.model.FactorProvider;
@@ -63,13 +64,14 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   private String _userId;
   private String _activationToken;
   private UserApi userApi = mock(UserApi.class);
+  private UserFactorApi userFactorApi = mock(UserFactorApi.class);
 
   @BeforeAll
   void initializeUser() {
     if (_token == null || _token.isEmpty() || _token.contains("MISSING")) {
       throw new IllegalArgumentException("The Okta token cannot be empty.");
     }
-    _auth = new LiveOktaAuthentication(_orgUrl, _token, userApi);
+    _auth = new LiveOktaAuthentication(_orgUrl, _token, userApi, userFactorApi);
 
     // It's not possible to disable caching for _testClient, so instead we reduce timeTolive down to
     // nothing.

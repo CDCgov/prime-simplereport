@@ -14,6 +14,7 @@ import java.util.List;
 import org.json.JSONObject;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.api.UserApi;
+import org.openapitools.client.api.UserFactorApi;
 import org.openapitools.client.model.ActivateFactorRequest;
 import org.openapitools.client.model.CallUserFactor;
 import org.openapitools.client.model.EmailUserFactor;
@@ -58,20 +59,25 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private String _apiToken;
   private String _orgUrl;
   private RestTemplate _restTemplate;
-
   private final UserApi userApi;
+  private final UserFactorApi userFactorApi;
 
   // todo: should be refactored to provide beans to ApiClient, and other clients in order to be
   // testable.
+  // actually, based on how this is being tested we may not need to provide beans here.
   @Autowired
-  public LiveOktaAuthentication(OktaClientProperties oktaClientProperties, UserApi userApi) {
+  public LiveOktaAuthentication(
+      OktaClientProperties oktaClientProperties, UserApi userApi, UserFactorApi userFactorApi) {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
     this.userApi = userApi;
+    this.userFactorApi = userFactorApi;
   }
 
-  public LiveOktaAuthentication(String orgUrl, String token, UserApi userApi) {
+  public LiveOktaAuthentication(
+      String orgUrl, String token, UserApi userApi, UserFactorApi userFactorApi) {
     initialize(orgUrl, token);
     this.userApi = userApi;
+    this.userFactorApi = userFactorApi;
   }
 
   private void initialize(String orgUrl, String token) {
@@ -108,7 +114,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       if (factorId == null) {
         return UserAccountStatus.MFA_SELECT;
       }
-      UserFactor factor = user.getFactor(factorId);
+      UserFactor factor = userFactorApi.getFactor(userId, factorId);
+      ;
       if (factor.getStatus() == FactorStatus.ACTIVE) {
         return UserAccountStatus.ACTIVE;
       }
@@ -334,8 +341,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException {
     try {
-      User user = _client.getUser(userId);
-      UserFactor factor = user.getFactor(factorId);
+      UserFactor factor = userFactorApi.getFactor(userId, factorId);
       ActivateFactorRequest activationRequest = _client.instantiate(ActivateFactorRequest.class);
       activationRequest.setAttestation(attestation);
       activationRequest.setClientData(clientData);
@@ -354,8 +360,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
     try {
-      User user = _client.getUser(userId);
-      UserFactor factor = user.getFactor(factorId);
+      UserFactor factor = userFactorApi.getFactor(userId, factorId);
       ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
