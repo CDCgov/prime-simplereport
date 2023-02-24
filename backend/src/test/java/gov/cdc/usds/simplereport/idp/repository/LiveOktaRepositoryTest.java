@@ -967,9 +967,10 @@ class LiveOktaRepositoryTest {
             isNull(),
             isNull()))
         .thenReturn(mockUserList);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.resetUserPassword(username);
-    verify(mockUser).resetPassword(true);
+    verify(userApi).resetPassword("1234", true);
   }
 
   @Test
