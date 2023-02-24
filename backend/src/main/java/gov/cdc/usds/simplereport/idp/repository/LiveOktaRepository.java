@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.api.GroupApi;
 import org.openapitools.client.model.Application;
 import org.openapitools.client.model.Group;
 import org.openapitools.client.model.GroupType;
@@ -61,15 +62,18 @@ public class LiveOktaRepository implements OktaRepository {
   private final Application _app;
   private final OrganizationExtractor _extractor;
   private final CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
+  private final GroupApi groupApi;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
       Client client,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
-      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
+      CurrentTenantDataAccessContextHolder tenantDataContextHolder,
+      GroupApi groupApi) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client = client;
+    this.groupApi = groupApi;
     try {
       _app = _client.getApplication(oktaOAuth2ClientId);
     } catch (ResourceException e) {
@@ -86,13 +90,15 @@ public class LiveOktaRepository implements OktaRepository {
       OktaClientProperties oktaClientProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
-      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
+      CurrentTenantDataAccessContextHolder tenantDataContextHolder,
+      GroupApi groupApi) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client =
         Clients.builder()
             .setOrgUrl(oktaClientProperties.getOrgUrl())
             .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
             .build();
+    this.groupApi = groupApi;
     try {
       _app = _client.getApplication(oktaOAuth2ClientId);
     } catch (ResourceException e) {
@@ -134,14 +140,20 @@ public class LiveOktaRepository implements OktaRepository {
     // added groups. There is an open ticket for the okta sdk to investigate this issue
     // https://github.com/okta/okta-sdk-java/issues/750
     var searchResults =
-        _client
+        groupApi
             .listGroups(
                 null,
                 "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
+                null,
+                null,
+                null,
                 null)
             .stream();
     var qResults =
-        _client.listGroups(generateGroupOrgPrefix(organizationExternalId), null, null).stream();
+        groupApi
+            .listGroups(
+                generateGroupOrgPrefix(organizationExternalId), null, null, null, null, null)
+            .stream();
     var orgGroups = Stream.concat(searchResults, qResults).distinct().collect(Collectors.toList());
     throwErrorIfEmpty(
         orgGroups.stream(),
@@ -231,7 +243,8 @@ public class LiveOktaRepository implements OktaRepository {
   private Group getDefaultOktaGroup(Organization org) {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
-    final GroupList oktaGroupList = _client.listGroups(orgDefaultGroupName, null, null);
+    final var oktaGroupList =
+        groupApi.listGroups(orgDefaultGroupName, null, null, null, null, null);
 
     return oktaGroupList.stream()
         .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
@@ -364,7 +377,10 @@ public class LiveOktaRepository implements OktaRepository {
     if (!groupNamesToRemove.isEmpty() || !groupNamesToAdd.isEmpty()) {
 
       Map<String, Group> fullOrgGroupMap =
-          _client.listGroups(null, "profile.name sw \"" + groupOrgPrefix + "\"", null).stream()
+          groupApi
+              .listGroups(
+                  null, "profile.name sw \"" + groupOrgPrefix + "\"", null, null, null, null)
+              .stream()
               .filter(g -> GroupType.OKTA_GROUP == g.getType())
               .collect(Collectors.toMap(g -> g.getProfile().getName(), Function.identity()));
       if (fullOrgGroupMap.size() == 0) {
@@ -479,7 +495,7 @@ public class LiveOktaRepository implements OktaRepository {
   private UserList getOrgAdminUsers(Organization org) {
     String externalId = org.getExternalId();
     String roleGroupName = generateRoleGroupName(externalId, OrganizationRole.ADMIN);
-    GroupList groups = _client.listGroups(roleGroupName, null, null);
+    var groups = groupApi.listGroups(roleGroupName, null, null, null, null, null);
     throwErrorIfEmpty(groups.stream(), "Cannot activate nonexistent Okta organization");
     Group group = groups.single();
     return group.listUsers();
@@ -517,7 +533,8 @@ public class LiveOktaRepository implements OktaRepository {
   public void createFacility(Facility facility) {
     // Only create the facility group if the facility's organization has already been created
     String orgExternalId = facility.getOrganization().getExternalId();
-    GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(orgExternalId), null, null);
+    var orgGroups =
+        groupApi.listGroups(generateGroupOrgPrefix(orgExternalId), null, null, null, null, null);
     throwErrorIfEmpty(
         orgGroups.stream(),
         String.format(
@@ -539,7 +556,7 @@ public class LiveOktaRepository implements OktaRepository {
   public void deleteFacility(Facility facility) {
     String orgExternalId = facility.getOrganization().getExternalId();
     String groupName = generateFacilityGroupName(orgExternalId, facility.getInternalId());
-    GroupList groups = _client.listGroups(groupName, null, null);
+    var groups = groupApi.listGroups(groupName, null, null, null, null, null);
     for (Group group : groups) {
       group.delete();
     }
@@ -547,7 +564,8 @@ public class LiveOktaRepository implements OktaRepository {
 
   public void deleteOrganization(Organization org) {
     String externalId = org.getExternalId();
-    GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(externalId), null, null);
+    var orgGroups =
+        groupApi.listGroups(generateGroupOrgPrefix(externalId), null, null, null, null, null);
     for (Group group : orgGroups) {
       group.delete();
     }
