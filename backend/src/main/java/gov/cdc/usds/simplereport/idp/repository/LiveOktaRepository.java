@@ -357,7 +357,7 @@ public class LiveOktaRepository implements OktaRepository {
     // Map user's current Okta group memberships (Okta group name -> Okta Group).
     // The Okta group name is our friendly role and facility group names
     Map<String, Group> currentOrgGroupMapForUser =
-        user.listGroups().stream()
+        userApi.listUserGroups(user.getId()).stream()
             .filter(
                 g ->
                     GroupType.OKTA_GROUP == g.getType()
@@ -624,7 +624,7 @@ public class LiveOktaRepository implements OktaRepository {
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {
     List<String> groupNames =
-        user.listGroups().stream()
+        userApi.listUserGroups(user.getId()).stream()
             .filter(g -> g.getType() == GroupType.OKTA_GROUP)
             .map(g -> g.getProfile().getName())
             .collect(Collectors.toList());

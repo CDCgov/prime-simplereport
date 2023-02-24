@@ -103,11 +103,12 @@ class LiveOktaRepositoryTest {
     GroupProfile groupProfile3 = mock(GroupProfile.class);
     GroupProfile groupProfile4 = mock(GroupProfile.class);
 
+    when(user.getId()).thenReturn("1234");
     when(userApi.listUsers(
             null, null, null, null, "profile.login eq \"" + username + "\"", null, null))
         .thenReturn(userList);
     when(userList.stream()).thenReturn(Stream.of(user));
-    when(user.listGroups()).thenReturn(groupList);
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(groupList.stream()).thenReturn(Stream.of(group1, group2, group3, group4));
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
@@ -184,8 +185,9 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(userList);
     when(user.getProfile()).thenReturn(userProfile);
+    when(user.getId()).thenReturn("1234");
 
-    when(user.listGroups()).thenReturn(groupList);
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(groupList.stream()).thenReturn(Stream.of(group1));
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
@@ -209,8 +211,8 @@ class LiveOktaRepositoryTest {
     User user = mock(User.class);
     var userList = List.of(user);
     UserProfile userProfile = mock(UserProfile.class);
-    var groupList = new ArrayList<Group>();
     Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
     var updateRequest = new UpdateUserRequest();
     updateRequest.setProfile(userProfile);
@@ -225,9 +227,9 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(userList);
     when(user.getProfile()).thenReturn(userProfile);
+    when(user.getId()).thenReturn("1234");
 
-    when(user.listGroups()).thenReturn(groupList);
-    when(groupList.stream()).thenReturn(Stream.of(group1));
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
@@ -315,7 +317,9 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(userList);
     when(user.getProfile()).thenReturn(userProfile);
+    when(user.getId()).thenReturn("1234");
 
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
@@ -351,8 +355,9 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(userList);
     when(user.getProfile()).thenReturn(userProfile);
+    when(user.getId()).thenReturn("1234");
 
-    when(user.listGroups()).thenReturn(groupList);
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
@@ -773,7 +778,9 @@ class LiveOktaRepositoryTest {
             isNull(),
             isNull()))
         .thenReturn(mockUserList);
-    when(mockUser.listGroups()).thenReturn(mockGroupList);
+    when(mockUser.getId()).thenReturn("1234");
+
+    when(userApi.listUserGroups("1234")).thenReturn(mockGroupList);
     when(mockGroupList.stream())
         .then(i -> Stream.of(mockGroup))
         .then(i -> Stream.of(mockGroup, mockAdminGroup));
@@ -842,7 +849,9 @@ class LiveOktaRepositoryTest {
             isNull(),
             isNull()))
         .thenReturn(mockUserList);
-    when(mockUser.listGroups()).thenReturn(mockGroupList);
+    when(mockUser.getId()).thenReturn("1234");
+
+    when(userApi.listUserGroups("1234")).thenReturn(mockGroupList);
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn("");
@@ -879,7 +888,9 @@ class LiveOktaRepositoryTest {
             isNull(),
             isNull()))
         .thenReturn(mockUserList);
-    when(mockUser.listGroups()).thenReturn(mockGroupList);
+    when(mockUser.getId()).thenReturn("1234");
+
+    when(userApi.listUserGroups("1234")).thenReturn(mockGroupList);
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
@@ -925,7 +936,9 @@ class LiveOktaRepositoryTest {
             isNull(),
             isNull()))
         .thenReturn(mockUserList);
-    when(mockUser.listGroups()).thenReturn(mockGroupList);
+    when(mockUser.getId()).thenReturn("1234");
+
+    when(userApi.listUserGroups("1234")).thenReturn(mockGroupList);
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
