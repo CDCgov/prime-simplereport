@@ -222,8 +222,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     try {
       SmsUserFactor smsFactor = new SmsUserFactor();
       smsFactor.getProfile().setPhoneNumber(phoneNumber);
-      User user = userApi.getUser(userId);
-      user.enrollFactor(smsFactor);
+      userFactorApi.enrollFactor(userId, smsFactor, null, null, null, null);
       return smsFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
@@ -244,8 +243,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     try {
       CallUserFactor callFactor = _client.instantiate(CallUserFactor.class);
       callFactor.getProfile().setPhoneNumber(phoneNumber);
-      User user = userApi.getUser(userId);
-      user.enrollFactor(callFactor);
+      userFactorApi.enrollFactor(userId, callFactor, null, null, null, null);
       return callFactor.getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
@@ -265,7 +263,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       User user = userApi.getUser(userId);
       String userEmail = user.getProfile().getEmail();
       emailFactor.getProfile().setEmail(userEmail);
-      user.enrollFactor(emailFactor);
+      userFactorApi.enrollFactor(userId, emailFactor, null, null, null, null);
       return emailFactor.getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting email MFA", e);
@@ -295,7 +293,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     }
     try {
       User user = userApi.getUser(userId);
-      user.enrollFactor(factor);
+      userFactorApi.enrollFactor(userId, factor, null, null, null, null);
       JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
       String qrCode =
           embeddedJson
