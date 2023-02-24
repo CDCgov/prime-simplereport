@@ -1228,9 +1228,10 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(mockUserList);
     when(mockUser.getStatus()).thenReturn(UserStatus.PROVISIONED);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.resendActivationEmail(username);
-    verify(mockUser).reactivate(true);
+    verify(userApi).reactivateUser("1234", true);
   }
 
   @Test

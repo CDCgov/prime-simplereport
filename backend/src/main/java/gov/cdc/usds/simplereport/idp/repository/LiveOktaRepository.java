@@ -481,7 +481,7 @@ public class LiveOktaRepository implements OktaRepository {
     throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
     User user = users.get(0);
     if (user.getStatus() == UserStatus.PROVISIONED) {
-      user.reactivate(true);
+      userApi.reactivateUser(user.getId(), true);
     } else if (user.getStatus() == UserStatus.STAGED) {
       userApi.activateUser(user.getId(), true);
     } else {
@@ -529,7 +529,7 @@ public class LiveOktaRepository implements OktaRepository {
   private String activateUser(User user) {
     if (user.getStatus() == UserStatus.PROVISIONED) {
       // reactivates user and sends them an Okta email to reactivate their account
-      return user.reactivate(true).getActivationToken();
+      return userApi.reactivateUser(user.getId(), true).getActivationToken();
     } else if (user.getStatus() == UserStatus.STAGED) {
       return userApi.activateUser(user.getId(), true).getActivationToken();
     } else {
