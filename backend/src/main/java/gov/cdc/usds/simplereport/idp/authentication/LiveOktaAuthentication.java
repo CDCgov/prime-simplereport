@@ -179,8 +179,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     try {
       User user = userApi.getUser(userId);
       UserCredentials creds = user.getCredentials();
-      PasswordCredential passwordCred =
-          _client.instantiate(PasswordCredential.class).setValue(password);
+      PasswordCredential passwordCred = new PasswordCredential();
+      passwordCred.setValue(new String(password));
       creds.setPassword(passwordCred);
       user.setCredentials(creds);
       user.update();
