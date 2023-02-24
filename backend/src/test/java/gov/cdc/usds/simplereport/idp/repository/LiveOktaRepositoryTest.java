@@ -1052,10 +1052,11 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(mockUserList);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.setUserIsActive(username, false);
-    verify(mockUser).suspend();
-    verify(mockUser, times(0)).unsuspend();
+    verify(userApi).suspendUser("1234");
+    verify(userApi, times(0)).unsuspendUser(anyString());
   }
 
   @Test
@@ -1074,10 +1075,11 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(mockUserList);
     when(mockUser.getStatus()).thenReturn(UserStatus.SUSPENDED);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.setUserIsActive(username, true);
-    verify(mockUser, times(0)).suspend();
-    verify(mockUser).unsuspend();
+    verify(userApi, times(0)).suspendUser(anyString());
+    verify(userApi).unsuspendUser("1234");
   }
 
   @Test
@@ -1098,8 +1100,8 @@ class LiveOktaRepositoryTest {
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
 
     _repo.setUserIsActive(username, true);
-    verify(mockUser, times(0)).suspend();
-    verify(mockUser, times(0)).unsuspend();
+    verify(userApi, times(0)).suspendUser(anyString());
+    verify(userApi, times(0)).unsuspendUser(anyString());
   }
 
   @Test
@@ -1182,9 +1184,10 @@ class LiveOktaRepositoryTest {
             isNull(),
             isNull()))
         .thenReturn(mockUserList);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.reactivateUser(username);
-    verify(mockUser).unsuspend();
+    verify(userApi).unsuspendUser("1234");
   }
 
   @Test

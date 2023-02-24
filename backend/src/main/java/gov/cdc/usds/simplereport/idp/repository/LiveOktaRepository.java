@@ -452,9 +452,9 @@ public class LiveOktaRepository implements OktaRepository {
     User user = users.get(0);
 
     if (active && user.getStatus() == UserStatus.SUSPENDED) {
-      user.unsuspend();
+      userApi.unsuspendUser(user.getId());
     } else if (!active && user.getStatus() != UserStatus.SUSPENDED) {
-      user.suspend();
+      userApi.suspendUser(user.getId());
     }
   }
 
@@ -472,7 +472,7 @@ public class LiveOktaRepository implements OktaRepository {
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
     User user = users.get(0);
-    user.unsuspend();
+    userApi.unsuspendUser(user.getId());
   }
 
   public void resendActivationEmail(String username) {
@@ -539,7 +539,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public void activateOrganization(Organization org) {
-    UserList users = getOrgAdminUsers(org);
+    var users = getOrgAdminUsers(org);
     for (User u : users) {
       activateUser(u);
     }
