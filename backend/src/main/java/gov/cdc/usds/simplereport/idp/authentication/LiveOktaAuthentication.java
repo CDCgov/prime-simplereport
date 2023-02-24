@@ -241,7 +241,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
-      CallUserFactor callFactor = _client.instantiate(CallUserFactor.class);
+      CallUserFactor callFactor = new CallUserFactor();
       callFactor.getProfile().setPhoneNumber(phoneNumber);
       userFactorApi.enrollFactor(userId, callFactor, null, null, null, null);
       return callFactor.getId();
@@ -259,7 +259,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException {
     try {
-      EmailUserFactor emailFactor = _client.instantiate(EmailUserFactor.class);
+      EmailUserFactor emailFactor = new EmailUserFactor();
       User user = userApi.getUser(userId);
       String userEmail = user.getProfile().getEmail();
       emailFactor.getProfile().setEmail(userEmail);
@@ -279,7 +279,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
-    UserFactor factor = _client.instantiate(UserFactor.class);
+    UserFactor factor = new UserFactor();
     factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);
     switch (appType.toLowerCase()) {
       case "google":
@@ -292,7 +292,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
     try {
-      User user = userApi.getUser(userId);
       userFactorApi.enrollFactor(userId, factor, null, null, null, null);
       JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
       String qrCode =
@@ -338,7 +337,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       throws OktaAuthenticationFailureException {
     try {
       UserFactor factor = userFactorApi.getFactor(userId, factorId);
-      ActivateFactorRequest activationRequest = _client.instantiate(ActivateFactorRequest.class);
+      ActivateFactorRequest activationRequest = new ActivateFactorRequest();
       activationRequest.setAttestation(attestation);
       activationRequest.setClientData(clientData);
       factor.activate(activationRequest);
@@ -357,7 +356,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       throws OktaAuthenticationFailureException {
     try {
       UserFactor factor = userFactorApi.getFactor(userId, factorId);
-      ActivateFactorRequest activateFactor = _client.instantiate(ActivateFactorRequest.class);
+      ActivateFactorRequest activateFactor = new ActivateFactorRequest();
       activateFactor.setPassCode(passcode.strip());
       factor.activate(activateFactor);
     } catch (ResourceException e) {
