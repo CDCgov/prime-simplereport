@@ -420,7 +420,7 @@ public class LiveOktaRepository implements OktaRepository {
         }
         Group group = fullOrgGroupMap.get(groupName);
         log.info("Adding {} to Okta group: {}", username, group.getProfile().getName());
-        user.addToGroup(group.getId());
+        groupApi.assignUserToGroup(user.getId(), user.getId());
       }
     }
 
