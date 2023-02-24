@@ -68,6 +68,7 @@ public class LiveOktaRepository implements OktaRepository {
   private final CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
   private final GroupApi groupApi;
   private final UserApi userApi;
+  private final ApplicationApi applicationApi;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
@@ -82,6 +83,7 @@ public class LiveOktaRepository implements OktaRepository {
     _client = client;
     this.groupApi = groupApi;
     this.userApi = userApi;
+    this.applicationApi = applicationApi;
     try {
       _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ResourceException e) {
@@ -112,6 +114,7 @@ public class LiveOktaRepository implements OktaRepository {
             .build();
     this.groupApi = groupApi;
     this.userApi = userApi;
+    this.applicationApi = applicationApi;
     try {
       _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ResourceException e) {
@@ -510,8 +513,8 @@ public class LiveOktaRepository implements OktaRepository {
           GroupBuilder.instance()
               .setName(roleGroupName)
               .setDescription(roleGroupDescription)
-              .buildAndCreate(_client);
-      _app.createApplicationGroupAssignment(g.getId());
+              .buildAndCreate(groupApi);
+      applicationApi.assignGroupToApplication(_app.getId(), g.getId(), null);
 
       log.info("Created Okta group={}", roleGroupName);
     }
@@ -573,7 +576,7 @@ public class LiveOktaRepository implements OktaRepository {
             .setName(facilityGroupName)
             .setDescription(generateFacilityGroupDescription(orgName, facility.getFacilityName()))
             .buildAndCreate(groupApi);
-    _app.createApplicationGroupAssignment(g.getId());
+    applicationApi.assignGroupToApplication(_app.getId(), g.getId(), null);
 
     log.info("Created Okta group={}", facilityGroupName);
   }

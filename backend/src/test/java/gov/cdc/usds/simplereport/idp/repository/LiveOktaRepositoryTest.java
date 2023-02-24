@@ -1318,8 +1318,9 @@ class LiveOktaRepositoryTest {
       _repo.createOrganization(org);
       verify(mockGroupBuilder, times(OrganizationRole.values().length)).setName(anyString());
       verify(mockGroupBuilder, times(OrganizationRole.values().length)).setDescription(anyString());
-      verify(mockGroupBuilder, times(OrganizationRole.values().length)).buildAndCreate(_client);
-      verify(_app, times(OrganizationRole.values().length)).createApplicationGroupAssignment("id");
+      verify(mockGroupBuilder, times(OrganizationRole.values().length)).buildAndCreate(groupApi);
+      verify(applicationApi, times(OrganizationRole.values().length))
+          .assignGroupToApplication(_app.getId(), anyString(), isNull());
     }
   }
 
