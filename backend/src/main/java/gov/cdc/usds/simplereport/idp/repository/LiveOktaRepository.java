@@ -332,14 +332,14 @@ public class LiveOktaRepository implements OktaRepository {
     updateUser(user, userIdentity);
 
     // reset all MFA factors (this triggers an email to the user, which can be configured in Okta)
-    user.resetFactors();
+    userApi.resetFactors(user.getId());
 
     // transitioning from SUSPENDED -> DEPROVISIONED -> ACTIVE will reset the user's password
     // and password reset question.  `.activate(true)` will send an activation email (just like
     // creating a new account).  This cannot be done with `.reactivate()` because `.reactivate()`
     // requires the user to be in PROVISIONED state
-    user.deactivate();
-    user.activate(true);
+    userApi.deactivateUser(user.getId(), false);
+    userApi.activateUser(user.getId(), true);
   }
 
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
@@ -439,7 +439,7 @@ public class LiveOktaRepository implements OktaRepository {
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(users.stream(), "Cannot reset MFA for Okta user with unrecognized username");
     User user = users.get(0);
-    user.resetFactors();
+    userApi.resetFactors(user.getId());
   }
 
   public void setUserIsActive(String username, Boolean active) {
@@ -481,7 +481,7 @@ public class LiveOktaRepository implements OktaRepository {
     if (user.getStatus() == UserStatus.PROVISIONED) {
       user.reactivate(true);
     } else if (user.getStatus() == UserStatus.STAGED) {
-      user.activate(true);
+      userApi.activateUser(user.getId(), true);
     } else {
       throw new IllegalGraphqlArgumentException(
           "Cannot reactivate user with status: " + user.getStatus());
@@ -529,7 +529,7 @@ public class LiveOktaRepository implements OktaRepository {
       // reactivates user and sends them an Okta email to reactivate their account
       return user.reactivate(true).getActivationToken();
     } else if (user.getStatus() == UserStatus.STAGED) {
-      return user.activate(true).getActivationToken();
+      return userApi.activateUser(user.getId(), true).getActivationToken();
     } else {
       throw new IllegalGraphqlArgumentException(
           "Cannot activate Okta organization whose users have status=" + user.getStatus().name());

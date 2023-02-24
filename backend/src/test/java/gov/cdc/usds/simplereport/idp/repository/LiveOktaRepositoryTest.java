@@ -393,8 +393,8 @@ class LiveOktaRepositoryTest {
 
     // todo: assert specifically
     verify(userApi).updateUser(anyString(), any(), isNull());
-    verify(user).deactivate();
-    verify(user).activate(true);
+    verify(userApi).deactivateUser(user.getId(), false);
+    verify(userApi).activateUser(user.getId(), true);
   }
 
   @Test
@@ -458,9 +458,15 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupProfileName = groupProfilePrefix + ":NO_ACCESS";
-    Map<String, Object> profileProperties = createValidProfileProperties(identityAttributes);
     var mockUserBuilder =
-        setupAndMockUserBuilder(groupProfilePrefix, groupProfileName, profileProperties);
+        setupAndMockUserBuilder(
+            groupProfilePrefix,
+            groupProfileName,
+            personName.getFirstName(),
+            personName.getMiddleName(),
+            personName.getLastName(),
+            personName.getSuffix(),
+            username);
 
     try (var staticMockUserBuilder = mockStatic(UserBuilder.class)) {
       staticMockUserBuilder.when(UserBuilder::instance).thenReturn(mockUserBuilder);
@@ -991,9 +997,9 @@ class LiveOktaRepositoryTest {
             isNull(),
             isNull()))
         .thenReturn(mockUserList);
-
+    when(mockUser.getId()).thenReturn("1234");
     _repo.resetUserMfa(username);
-    verify(mockUser).resetFactors();
+    verify(userApi).resetFactors("1234");
   }
 
   @Test
@@ -1226,9 +1232,10 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(mockUserList);
     when(mockUser.getStatus()).thenReturn(UserStatus.STAGED);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.resendActivationEmail(username);
-    verify(mockUser).activate(true);
+    verify(userApi).activateUser("1234", true);
   }
 
   @Test
