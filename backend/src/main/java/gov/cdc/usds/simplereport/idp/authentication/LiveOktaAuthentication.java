@@ -199,11 +199,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     try {
       User user = userApi.getUser(userId);
       UserCredentials creds = user.getCredentials();
-      RecoveryQuestionCredential recoveryCred =
-          _client
-              .instantiate(RecoveryQuestionCredential.class)
-              .setQuestion(question)
-              .setAnswer(answer);
+      RecoveryQuestionCredential recoveryCred = new RecoveryQuestionCredential();
+      recoveryCred.setQuestion(question);
+      recoveryCred.setAnswer(answer);
       creds.setRecoveryQuestion(recoveryCred);
       user.setCredentials(creds);
       user.update();
