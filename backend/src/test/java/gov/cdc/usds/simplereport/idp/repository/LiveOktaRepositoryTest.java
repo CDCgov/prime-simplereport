@@ -42,6 +42,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiClient;
+import org.openapitools.client.api.ApplicationApi;
 import org.openapitools.client.api.GroupApi;
 import org.openapitools.client.model.Application;
 import org.openapitools.client.model.Group;
@@ -64,12 +65,12 @@ class LiveOktaRepositoryTest {
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
   private final ApiClient _client = mock(ApiClient.class);
   private final GroupApi groupApi = mock(GroupApi.class);
+  private final ApplicationApi applicationApi = mock(ApplicationApi.class);
   private final Application _app = mock(Application.class);
   LiveOktaRepository _repo;
 
   @BeforeEach
   public void setup() {
-    when(_client.getApplication(MOCK_CLIENT_ID)).thenReturn(_app);
     _repo =
         new LiveOktaRepository(
             MOCK_PROPS,
@@ -77,7 +78,8 @@ class LiveOktaRepositoryTest {
             MOCK_CLIENT_ID,
             MOCK_EXTRACTOR,
             tenantDataAccessContextHolder,
-            groupApi);
+            groupApi,
+            applicationApi);
   }
 
   @Test

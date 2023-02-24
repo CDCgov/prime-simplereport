@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.openapitools.client.ApiClient;
+import org.openapitools.client.api.ApplicationApi;
 import org.openapitools.client.api.GroupApi;
 import org.openapitools.client.model.Application;
 import org.openapitools.client.model.Group;
@@ -63,6 +64,7 @@ public class LiveOktaRepository implements OktaRepository {
   private final OrganizationExtractor _extractor;
   private final CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
   private final GroupApi groupApi;
+  private final ApplicationApi applicationApi;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
@@ -70,12 +72,14 @@ public class LiveOktaRepository implements OktaRepository {
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
       CurrentTenantDataAccessContextHolder tenantDataContextHolder,
-      GroupApi groupApi) {
+      GroupApi groupApi,
+      ApplicationApi applicationApi) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client = client;
     this.groupApi = groupApi;
+    this.applicationApi = applicationApi;
     try {
-      _app = _client.getApplication(oktaOAuth2ClientId);
+      _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ResourceException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
@@ -84,6 +88,7 @@ public class LiveOktaRepository implements OktaRepository {
     _tenantDataContextHolder = tenantDataContextHolder;
   }
 
+  // todo: remove in favor for above.
   @Autowired
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
@@ -91,7 +96,8 @@ public class LiveOktaRepository implements OktaRepository {
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
       CurrentTenantDataAccessContextHolder tenantDataContextHolder,
-      GroupApi groupApi) {
+      GroupApi groupApi,
+      ApplicationApi applicationApi) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client =
         Clients.builder()
@@ -99,8 +105,9 @@ public class LiveOktaRepository implements OktaRepository {
             .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
             .build();
     this.groupApi = groupApi;
+    this.applicationApi = applicationApi;
     try {
-      _app = _client.getApplication(oktaOAuth2ClientId);
+      _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ResourceException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
