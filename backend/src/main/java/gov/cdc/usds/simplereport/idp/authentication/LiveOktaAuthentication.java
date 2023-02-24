@@ -177,7 +177,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
     try {
-      User user = _client.getUser(userId);
+      User user = userApi.getUser(userId);
       UserCredentials creds = user.getCredentials();
       PasswordCredential passwordCred =
           _client.instantiate(PasswordCredential.class).setValue(password);
@@ -197,7 +197,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
-      User user = _client.getUser(userId);
+      User user = userApi.getUser(userId);
       UserCredentials creds = user.getCredentials();
       RecoveryQuestionCredential recoveryCred =
           _client
@@ -224,7 +224,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     try {
       SmsUserFactor smsFactor = _client.instantiate(SmsUserFactor.class);
       smsFactor.getProfile().setPhoneNumber(phoneNumber);
-      User user = _client.getUser(userId);
+      User user = userApi.getUser(userId);
       user.enrollFactor(smsFactor);
       return smsFactor.getId();
     } catch (ResourceException e) {
@@ -246,7 +246,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     try {
       CallUserFactor callFactor = _client.instantiate(CallUserFactor.class);
       callFactor.getProfile().setPhoneNumber(phoneNumber);
-      User user = _client.getUser(userId);
+      User user = userApi.getUser(userId);
       user.enrollFactor(callFactor);
       return callFactor.getId();
     } catch (ResourceException e) {
@@ -264,7 +264,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException {
     try {
       EmailUserFactor emailFactor = _client.instantiate(EmailUserFactor.class);
-      User user = _client.getUser(userId);
+      User user = userApi.getUser(userId);
       String userEmail = user.getProfile().getEmail();
       emailFactor.getProfile().setEmail(userEmail);
       user.enrollFactor(emailFactor);
@@ -296,7 +296,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
     try {
-      User user = _client.getUser(userId);
+      User user = userApi.getUser(userId);
       user.enrollFactor(factor);
       JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
       String qrCode =
