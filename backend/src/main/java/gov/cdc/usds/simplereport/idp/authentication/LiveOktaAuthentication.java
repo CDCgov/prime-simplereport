@@ -24,6 +24,7 @@ import org.openapitools.client.model.FactorType;
 import org.openapitools.client.model.PasswordCredential;
 import org.openapitools.client.model.RecoveryQuestionCredential;
 import org.openapitools.client.model.SmsUserFactor;
+import org.openapitools.client.model.UpdateUserRequest;
 import org.openapitools.client.model.User;
 import org.openapitools.client.model.UserCredentials;
 import org.openapitools.client.model.UserFactor;
@@ -183,7 +184,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       passwordCred.setValue(new String(password));
       creds.setPassword(passwordCred);
       user.setCredentials(creds);
-      user.update();
+      var updateUserRequest = new UpdateUserRequest();
+      updateUserRequest.setCredentials(creds);
+      userApi.updateUser(userId, updateUserRequest, null);
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()
           && e.getMessage().toLowerCase().contains("password requirements")) {
@@ -204,7 +207,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       recoveryCred.setAnswer(answer);
       creds.setRecoveryQuestion(recoveryCred);
       user.setCredentials(creds);
-      user.update();
+      var updateUserRequest = new UpdateUserRequest();
+      updateUserRequest.setCredentials(creds);
+      userApi.updateUser(userId, updateUserRequest, null);
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value() && !e.getCauses().isEmpty()) {
         throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
