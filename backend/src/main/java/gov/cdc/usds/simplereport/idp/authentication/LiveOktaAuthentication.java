@@ -341,11 +341,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException {
     try {
-      UserFactor factor = userFactorApi.getFactor(userId, factorId);
       ActivateFactorRequest activationRequest = new ActivateFactorRequest();
       activationRequest.setAttestation(attestation);
       activationRequest.setClientData(clientData);
-      factor.activate(activationRequest);
+      userFactorApi.activateFactor(userId, factorId, activationRequest);
     } catch (NullPointerException | ResourceException e) {
       throw new OktaAuthenticationFailureException("Security key could not be activated", e);
     }
@@ -360,10 +359,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
     try {
-      UserFactor factor = userFactorApi.getFactor(userId, factorId);
       ActivateFactorRequest activateFactor = new ActivateFactorRequest();
       activateFactor.setPassCode(passcode.strip());
-      factor.activate(activateFactor);
+      userFactorApi.activateFactor(userId, factorId, activateFactor);
     } catch (ResourceException e) {
       throw new BadRequestException("Invalid security code.", e);
     } catch (NullPointerException | IllegalArgumentException e) {
