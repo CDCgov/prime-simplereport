@@ -220,7 +220,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
-      SmsUserFactor smsFactor = _client.instantiate(SmsUserFactor.class);
+      SmsUserFactor smsFactor = new SmsUserFactor();
       smsFactor.getProfile().setPhoneNumber(phoneNumber);
       User user = userApi.getUser(userId);
       user.enrollFactor(smsFactor);
