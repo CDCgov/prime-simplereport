@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
-import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
+import static gov.cdc.usds.simplereport.api.Translators.parseYesNoUnk;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertEthnicityToDatabaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertRaceToDatabaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexToDatabaseValue;
@@ -127,8 +127,8 @@ public class PatientBulkUploadServiceAsync {
                 convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
                 null, // tribalAffiliation
                 convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
-                parseYesNo(extractedData.getResidentCongregateSetting().getValue()),
-                parseYesNo(extractedData.getEmployedInHealthcare().getValue()),
+                parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()),
+                parseYesNoUnk(extractedData.getEmployedInHealthcare().getValue()),
                 null, // preferredLanguage
                 null // testResultDeliveryPreference
                 );

@@ -176,7 +176,7 @@ interface RedirectSettings {
 }
 
 const EditPatient = (props: Props) => {
-  useDocumentTitle("Edit Patient");
+  useDocumentTitle("Edit patient");
 
   const { t } = useTranslation();
 

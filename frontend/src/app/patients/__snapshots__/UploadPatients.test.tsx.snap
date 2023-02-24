@@ -216,6 +216,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                   <input
                     accept="text/csv, .csv"
                     aria-describedby="file-input-specific-hint"
+                    aria-invalid="false"
                     aria-label="Choose CSV file"
                     class="usa-file-input"
                     data-testid="upload-patients-file-input"

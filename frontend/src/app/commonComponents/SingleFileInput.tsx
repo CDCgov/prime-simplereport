@@ -10,6 +10,7 @@ type SingleFileInputProps = {
   accept?: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
   required: boolean;
+  ariaInvalid?: boolean;
 };
 
 type FileState = "blank" | "invalid" | "selected";
@@ -21,6 +22,7 @@ const SingleFileInput = ({
   ariaLabel,
   accept,
   required = false,
+  ariaInvalid,
 }: SingleFileInputProps) => {
   const [fileState, setFileState] = useState<FileState>("blank");
 
@@ -63,6 +65,7 @@ const SingleFileInput = ({
         className="usa-file-input"
         aria-describedby="file-input-specific-hint"
         accept={accept}
+        aria-invalid={ariaInvalid || fileState === "invalid"}
       />
       <span id="file-input-specific-hint">{getHint(fileState)}</span>
     </div>

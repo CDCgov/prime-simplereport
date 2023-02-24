@@ -105,8 +105,7 @@ describe("when loading orgs", () => {
 describe("after loading orgs", () => {
   it("displays the form title ", async () => {
     renderView();
-    let title = await waitForOrgLoadReturnTitle();
-    expect(title).toBeInTheDocument();
+    expect(await waitForOrgLoadReturnTitle()).toBeInTheDocument();
   });
 
   it("disables the save button", async () => {

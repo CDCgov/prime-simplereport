@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -28,11 +28,11 @@ import "./UploadPatients.scss";
 const UploadPatients = () => {
   type ErrorMessage = {
     header: string;
-    body: string;
+    body: ReactElement | null;
     includeGuide: boolean;
   };
 
-  useDocumentTitle("Add Patient");
+  useDocumentTitle("Import patients from spreadsheet");
   const [facilityAmount, setFacilityAmount] = useState<string>();
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
   const [selectedFacility, setSelectedFacility] = useState<Facility>();
@@ -40,12 +40,13 @@ const UploadPatients = () => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
+  const [isFileValid, setFileValid] = useState<boolean>(true);
 
   const appInsights = getAppInsights();
 
   const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
     header: "",
-    body: "",
+    body: null,
     includeGuide: true,
   });
   const [status, setStatus] = useState<
@@ -70,6 +71,14 @@ const UploadPatients = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (errorMessage.body) {
+      (
+        document.getElementsByClassName("usa-alert--error")[0] as HTMLDivElement
+      ).focus();
+    }
+  }, [errorMessage]);
+
   function onFacilitySelect() {
     return (e: React.ChangeEvent<HTMLSelectElement>) => {
       const selected = facilities.find((f) => f.id === e.target.value);
@@ -84,9 +93,10 @@ const UploadPatients = () => {
       setStatus("fail");
       setErrorMessage({
         header: "Error: File not accepted",
-        body: "There was a server error. Your file has not been accepted.",
+        body: <>There was a server error. Your file has not been accepted.</>,
         includeGuide: true,
       });
+      setFileValid(false);
     } else {
       const response = await res?.json();
 
@@ -95,17 +105,30 @@ const UploadPatients = () => {
         if (response?.errors?.length) {
           setErrorMessage({
             header: "Error: File not accepted",
-            body: "Please resolve the errors below and upload your edited file.",
+            body: (
+              <>
+                Please resolve the errors below and{" "}
+                <a href="#upload-patients-file-input">
+                  {" "}
+                  upload your edited file{" "}
+                </a>
+                .
+              </>
+            ),
             includeGuide: true,
           });
           setErrors(response.errors);
+          setFileValid(false);
         } else {
           setErrorMessage({
             header: "Error: File not accepted",
-            body: "There was a server error. Your file has not been accepted.",
+            body: (
+              <>There was a server error. Your file has not been accepted.</>
+            ),
             includeGuide: true,
           });
         }
+        setFileValid(false);
       } else {
         performance.clearMarks("patientUpload_successfulUpload");
         performance.clearMeasures("patientUpload_timeToUpload");
@@ -125,6 +148,7 @@ const UploadPatients = () => {
           { srFeature: "patientUpload" }
         );
         setStatus("success");
+        setFileValid(true);
       }
     }
   };
@@ -141,8 +165,10 @@ const UploadPatients = () => {
         setFile(currentFile);
         setButtonIsDisabled(false);
         setStatus("");
+        setFileValid(true);
       } catch (err: any) {
         showError(`An unexpected error happened: '${err.toString()}'`);
+        setFileValid(false);
       }
     };
   }
@@ -156,7 +182,7 @@ const UploadPatients = () => {
       setErrors([]);
       setErrorMessage({
         header: "",
-        body: "",
+        body: null,
         includeGuide: false,
       });
 
@@ -165,9 +191,10 @@ const UploadPatients = () => {
         setButtonIsDisabled(false);
         setErrorMessage({
           header: "Error: Invalid file",
-          body: "File is missing or empty.",
+          body: <>"File is missing or empty."</>,
           includeGuide: true,
         });
+        setFileValid(false);
         return;
       }
 
@@ -176,9 +203,15 @@ const UploadPatients = () => {
         setStatus("fail");
         setErrorMessage({
           header: "Error: File too large",
-          body: `"${file.name}" is too large for SimpleReport to process. Please limit each upload to less than 50 MB.`,
+          body: (
+            <>
+              ${file.name} is too large for SimpleReport to process. Please
+              limit each upload to less than 50 MB.
+            </>
+          ),
           includeGuide: false,
         });
+        setFileValid(false);
         return;
       }
 
@@ -187,11 +220,16 @@ const UploadPatients = () => {
         setStatus("fail");
         setErrorMessage({
           header: "Error: File too large",
-          body: `“${
-            file.name
-          }” has too many rows for SimpleReport to process. Please limit each upload to less than ${MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`,
+          body: (
+            <>
+              ${file.name} has too many rows for SimpleReport to process. Please
+              limit each upload to less than $
+              {MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`
+            </>
+          ),
           includeGuide: false,
         });
+        setFileValid(false);
         return;
       }
 
@@ -209,7 +247,11 @@ const UploadPatients = () => {
     return (
       <div>
         {errorMessage.body && (
-          <div className="usa-alert usa-alert--error maxw-560">
+          <div
+            className="usa-alert usa-alert--error maxw-560"
+            tabIndex={-1}
+            role={"alert"}
+          >
             <div className="usa-alert__body">
               <span className="usa-alert__heading text-bold">
                 {errorMessage.header}
@@ -221,7 +263,7 @@ const UploadPatients = () => {
                 onClick={() => {
                   setErrorMessage({
                     header: "",
-                    body: "",
+                    body: null,
                     includeGuide: false,
                   });
                   setErrors([]);
@@ -447,6 +489,7 @@ const UploadPatients = () => {
                       name="upload-patients-file-input"
                       ariaLabel="Choose CSV file"
                       accept="text/csv, .csv"
+                      ariaInvalid={!isFileValid}
                       required
                       onChange={handleFileChange()}
                     />

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactElement, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup } from "@trussworks/react-uswds";
 
@@ -38,7 +38,16 @@ const Uploads = () => {
   const [errors, setErrors] = useState<
     Array<FeedbackMessage | undefined | null>
   >([]);
-  const [errorMessageText, setErrorMessageText] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<ReactElement | null>(null);
+  const [isFileValid, setFileValid] = useState<boolean>(true);
+
+  useEffect(() => {
+    if (errorMessage) {
+      (
+        document.getElementsByClassName("usa-alert--error")[0] as HTMLDivElement
+      ).focus();
+    }
+  }, [errorMessage]);
 
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -63,6 +72,7 @@ const Uploads = () => {
             minimumFractionDigits: 2,
           }
         );
+        setFileValid(false);
         showError(
           `The file '${currentFile.name}' is too large.  The maximum file size is ${maxKBytes}k`,
           "Invalid file"
@@ -73,6 +83,7 @@ const Uploads = () => {
       const fileText = await currentFile.text();
       const lineCount = (fileText.match(/\n/g) || []).length + 1;
       if (lineCount > MAX_CSV_UPLOAD_ROW_COUNT) {
+        setFileValid(false);
         showError(
           `The file '${currentFile.name}' has too many rows. The maximum number of rows is ${MAX_CSV_UPLOAD_ROW_COUNT}.`,
           "Invalid file"
@@ -81,6 +92,7 @@ const Uploads = () => {
       }
 
       if (lineCount <= 1) {
+        setFileValid(false);
         showError(
           `The file '${currentFile.name}' doesn't contain any valid data. File should have a header line and at least one line of data.`,
           "Invalid file"
@@ -97,6 +109,7 @@ const Uploads = () => {
         (firstLine.match(/\t/g) || []).length;
 
       if (columnCount > REPORT_MAX_ITEM_COLUMNS) {
+        setFileValid(false);
         showError(
           `The file '${currentFile.name}' has too many columns. The maximum number of allowed columns is ${REPORT_MAX_ITEM_COLUMNS}.`,
           "Invalid file"
@@ -105,7 +118,9 @@ const Uploads = () => {
       }
       setFile(currentFile);
       setButtonIsDisabled(false);
+      setFileValid(true);
     } catch (err: any) {
+      setFileValid(false);
       showError(err.toString(), "An unexpected error happened");
     }
   };
@@ -116,16 +131,21 @@ const Uploads = () => {
     setIsSubmitting(true);
     setButtonIsDisabled(true);
     setReportId(null);
-    setErrorMessageText(null);
+    setErrorMessage(null);
     setErrors([]);
 
     if (!file || file.size === 0) {
-      setErrorMessageText(
-        "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+      setErrorMessage(
+        <>
+          Please resolve the errors below and{" "}
+          <a href={"#upload-csv-input"}>upload your edited file</a>. Your file
+          has not been accepted.
+        </>
       );
       const errorMessage = {} as FeedbackMessage;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
+      setFileValid(false);
       return;
     }
 
@@ -135,9 +155,10 @@ const Uploads = () => {
       setFile(undefined);
 
       if (res.status !== 200) {
-        setErrorMessageText(
-          "There was a server error. Your file has not been accepted."
+        setErrorMessage(
+          <>There was a server error. Your file has not been accepted.</>
         );
+        setFileValid(false);
         appInsights?.trackEvent({
           name: "Spreadsheet upload server error",
           properties: {
@@ -150,6 +171,7 @@ const Uploads = () => {
 
         if (response?.reportId) {
           setReportId(response?.reportId);
+          setFileValid(true);
           appInsights?.trackEvent({
             name: "Spreadsheet upload success",
             properties: {
@@ -161,10 +183,15 @@ const Uploads = () => {
         }
 
         if (response?.errors?.length) {
-          setErrorMessageText(
-            "Please resolve the errors below and upload your edited file. Your file has not been accepted."
+          setErrorMessage(
+            <>
+              Please resolve the errors below and{" "}
+              <a href={"#upload-csv-input"}>upload your edited file</a>. Your
+              file has not been accepted.
+            </>
           );
           setErrors(response.errors);
+          setFileValid(false);
           appInsights?.trackEvent({
             name: "Spreadsheet upload validation failure",
             properties: {
@@ -279,14 +306,18 @@ const Uploads = () => {
               </div>
             </div>
           )}
-          {errorMessageText && (
+          {errorMessage && (
             <div>
-              <div className="usa-alert usa-alert--error" role="alert">
+              <div
+                className="usa-alert usa-alert--error"
+                role="alert"
+                tabIndex={-1}
+              >
                 <div className="usa-alert__body">
                   <h3 className="usa-alert__heading">
                     Error: File not accepted
                   </h3>
-                  <p className="usa-alert__text">{errorMessageText}</p>
+                  <p className="usa-alert__text">{errorMessage}</p>
                 </div>
               </div>
               {errors?.length > 0 && (
@@ -323,6 +354,7 @@ const Uploads = () => {
               accept="text/csv, .csv"
               onChange={(e) => handleFileChange(e)}
               required
+              ariaInvalid={!isFileValid}
             />
           </FormGroup>
           <Button

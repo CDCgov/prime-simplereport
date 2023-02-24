@@ -11,7 +11,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseTestResult;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
-import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
+import static gov.cdc.usds.simplereport.api.Translators.parseYesNoUnk;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -260,29 +260,32 @@ class TranslatorTest {
   }
 
   @Test
-  void testEmptyParseYesNo() {
-    assertNull(parseYesNo(""));
+  void testEmptyParseYesNoUnk() {
+    assertNull(parseYesNoUnk(""));
   }
 
   @Test
-  void testNullParseYesNo() {
-    assertNull(parseYesNo(null));
+  void testNullParseYesNoUnk() {
+    assertNull(parseYesNoUnk(null));
   }
 
   @Test
-  void testValidParseYesNo() {
-    assertEquals(true, parseYesNo("y"));
-    assertEquals(true, parseYesNo("yEs"));
-    assertEquals(false, parseYesNo("n"));
-    assertEquals(false, parseYesNo("nO"));
+  void testValidParseYesNoUnk() {
+    assertEquals(true, parseYesNoUnk("y"));
+    assertEquals(true, parseYesNoUnk("yEs"));
+    assertEquals(false, parseYesNoUnk("n"));
+    assertEquals(false, parseYesNoUnk("nO"));
+    assertNull(parseYesNoUnk("unknown"));
+    assertNull(parseYesNoUnk("unk"));
+    assertNull(parseYesNoUnk("Unknown"));
   }
 
   @Test
-  void testInvalidParseYesNo() {
+  void testInvalidParseYesNoUnk() {
     assertThrows(
         IllegalGraphqlArgumentException.class,
         () -> {
-          parseYesNo("positive");
+          parseYesNoUnk("positive");
         });
   }
 
