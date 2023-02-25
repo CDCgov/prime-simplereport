@@ -75,6 +75,9 @@ class LiveOktaRepositoryTest {
 
   @BeforeEach
   public void setup() {
+    when(_app.getId()).thenReturn("1234");
+    when(applicationApi.getApplication(anyString(), isNull())).thenReturn(_app);
+
     _repo =
         new LiveOktaRepository(
             MOCK_PROPS,
@@ -1291,7 +1294,7 @@ class LiveOktaRepositoryTest {
       verify(mockGroupBuilder, times(OrganizationRole.values().length)).setDescription(anyString());
       verify(mockGroupBuilder, times(OrganizationRole.values().length)).buildAndCreate(groupApi);
       verify(applicationApi, times(OrganizationRole.values().length))
-          .assignGroupToApplication(_app.getId(), anyString(), isNull());
+          .assignGroupToApplication(eq("1234"), anyString(), isNull());
     }
   }
 
