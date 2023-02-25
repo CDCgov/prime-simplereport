@@ -552,9 +552,9 @@ class LiveOktaRepositoryTest {
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupProfileName = groupProfilePrefix + ":NO_ACCESS";
 
-    var mockGroupList = new ArrayList<Group>();
     var mockGroup = mock(Group.class);
     var mockGroupProfile = mock(GroupProfile.class);
+    var mockGroupList = List.of(mockGroup);
     when(groupApi.listGroups(anyString(), isNull(), isNull(), isNull(), isNull(), isNull()))
         .thenReturn(mockGroupList);
     when(groupApi.listGroups(isNull(), anyString(), isNull(), isNull(), isNull(), isNull()))
