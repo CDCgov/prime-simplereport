@@ -373,7 +373,7 @@ class LiveOktaRepositoryTest {
 
     User user = mock(User.class);
     var userList = List.of(user);
-    UserProfile userProfile = mock(UserProfile.class);
+    var userProfile = new UserProfile();
 
     when(userApi.listUsers(
             isNull(),
@@ -386,13 +386,19 @@ class LiveOktaRepositoryTest {
         .thenReturn(userList);
     when(user.getStatus()).thenReturn(UserStatus.SUSPENDED);
     when(user.getProfile()).thenReturn(userProfile);
-
+    when(user.getId()).thenReturn("1234");
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
 
     _repo.reprovisionUser(identityAttributes);
 
-    // todo: assert specifically
-    verify(userApi).updateUser(anyString(), any(), isNull());
+    userProfile.setFirstName(personName.getFirstName());
+    userProfile.setMiddleName(personName.getMiddleName());
+    userProfile.setLastName(personName.getLastName());
+    userProfile.setHonorificSuffix(personName.getSuffix());
+    var updateUserRequest = new UpdateUserRequest();
+    updateUserRequest.setProfile(userProfile);
+
+    verify(userApi).updateUser("1234", updateUserRequest, false);
     verify(userApi).deactivateUser(user.getId(), false);
     verify(userApi).activateUser(user.getId(), true);
   }
@@ -1301,7 +1307,10 @@ class LiveOktaRepositoryTest {
     when(mockFacility.getInternalId()).thenReturn(facilityID);
     when(groupApi.listGroups(eq(groupName), isNull(), isNull(), isNull(), isNull(), isNull()))
         .thenReturn(mockGroupList);
+    when(mockGroup.getId()).thenReturn("1234");
+
     _repo.deleteFacility(mockFacility);
+
     verify(groupApi).deleteGroup("1234");
   }
 
