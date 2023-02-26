@@ -1125,8 +1125,8 @@ class LiveOktaRepositoryTest {
   @Test
   void getUserStatus() {
     var username = "fraud@example.com";
-    var mockUserList = new ArrayList<User>();
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
     when(userApi.listUsers(
             isNull(),
@@ -1139,7 +1139,17 @@ class LiveOktaRepositoryTest {
         .thenReturn(mockUserList);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
 
-    assertEquals(UserStatus.ACTIVE, _repo.getUserStatus(username));
+    var actual = _repo.getUserStatus(username);
+    verify(userApi)
+        .listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"fraud@example.com\""),
+            isNull(),
+            isNull());
+    assertEquals(UserStatus.ACTIVE, actual);
   }
 
   @Test
