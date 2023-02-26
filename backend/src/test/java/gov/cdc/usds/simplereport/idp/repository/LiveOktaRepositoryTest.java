@@ -321,7 +321,7 @@ class LiveOktaRepositoryTest {
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
-    when(userApi.updateUser(anyString(), any(), isNull()))
+    when(userApi.updateUser(anyString(), any(), eq(false)))
         .thenThrow(new ResourceException(new DuplicateUserError()));
     Throwable caught =
         assertThrows(
