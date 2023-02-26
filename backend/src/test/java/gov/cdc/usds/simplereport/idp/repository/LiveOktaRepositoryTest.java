@@ -501,6 +501,13 @@ class LiveOktaRepositoryTest {
     var identityAttributes = new IdentityAttributes(username, personName);
     var org = new Organization("orgName", "orgType", "1", true);
 
+    Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
+    var groupProfile1 = mock(GroupProfile.class);
+
+    when(groupApi.listGroups(any(), any(), any(), any(), any(), any())).thenReturn(groupList);
+    when(group1.getProfile()).thenReturn(groupProfile1);
+    when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:1:NO_ACCESS");
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
