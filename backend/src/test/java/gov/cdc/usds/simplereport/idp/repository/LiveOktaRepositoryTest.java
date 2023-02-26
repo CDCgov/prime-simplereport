@@ -687,7 +687,7 @@ class LiveOktaRepositoryTest {
         .thenReturn(mockGroupList);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
-    when(groupApi.listGroupUsers(anyString(), isNull(), isNull())).thenReturn(mockUserList);
+    when(groupApi.listGroupUsers(any(), isNull(), isNull())).thenReturn(mockUserList);
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("email@example.com");
 
