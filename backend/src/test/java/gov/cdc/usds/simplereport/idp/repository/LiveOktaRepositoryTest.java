@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -39,7 +40,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiClient;
@@ -778,11 +778,10 @@ class LiveOktaRepositoryTest {
             isNull()))
         .thenReturn(mockUserList);
     when(mockUser.getId()).thenReturn("1234");
+    when(mockAdminGroup.getId()).thenReturn("adminGID");
 
-    when(userApi.listUserGroups("1234")).thenReturn(mockGroupList);
-    when(mockGroupList.stream())
-        .then(i -> Stream.of(mockGroup))
-        .then(i -> Stream.of(mockGroup, mockAdminGroup));
+    when(userApi.listUserGroups("1234"))
+        .thenReturn(mockGroupList, List.of(mockGroup, mockAdminGroup));
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
@@ -799,10 +798,9 @@ class LiveOktaRepositoryTest {
     when(mockAdminGroupProfile.getName()).thenReturn(groupOrgPrefix + ":" + orgRole);
 
     var actual = _repo.updateUserPrivileges(userName, org, Set.of(), Set.of(orgRole)).orElseThrow();
-    assertTrue(
-        actual
-            .getGrantedRoles()
-            .containsAll(List.of(OrganizationRole.ADMIN, OrganizationRole.NO_ACCESS)));
+    assertThat(actual.getGrantedRoles())
+        .contains(OrganizationRole.ADMIN, OrganizationRole.NO_ACCESS);
+    verify(groupApi).assignUserToGroup("adminGID", "1234");
   }
 
   @Test
