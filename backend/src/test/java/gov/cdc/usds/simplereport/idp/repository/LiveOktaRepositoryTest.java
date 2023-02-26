@@ -42,7 +42,6 @@ import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openapitools.client.ApiClient;
 import org.openapitools.client.api.ApplicationApi;
 import org.openapitools.client.api.GroupApi;
 import org.openapitools.client.api.UserApi;
@@ -66,7 +65,6 @@ class LiveOktaRepositoryTest {
   private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
       new CurrentTenantDataAccessContextHolder();
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
-  private final ApiClient _client = mock(ApiClient.class);
   private final GroupApi groupApi = mock(GroupApi.class);
   private final ApplicationApi applicationApi = mock(ApplicationApi.class);
   private final UserApi userApi = mock(UserApi.class);
@@ -81,7 +79,6 @@ class LiveOktaRepositoryTest {
     _repo =
         new LiveOktaRepository(
             MOCK_PROPS,
-            _client,
             MOCK_CLIENT_ID,
             MOCK_EXTRACTOR,
             tenantDataAccessContextHolder,

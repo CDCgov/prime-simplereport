@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.openapitools.client.ApiClient;
 import org.openapitools.client.api.ApplicationApi;
 import org.openapitools.client.api.GroupApi;
 import org.openapitools.client.api.UserApi;
@@ -62,7 +61,6 @@ public class LiveOktaRepository implements OktaRepository {
   private static final String OKTA_GROUP_NOT_FOUND = "Okta group not found for this organization";
 
   private final String _rolePrefix;
-  private final ApiClient _client;
   private final Application _app;
   private final OrganizationExtractor _extractor;
   private final CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
@@ -72,7 +70,6 @@ public class LiveOktaRepository implements OktaRepository {
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
-      ApiClient client,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
       CurrentTenantDataAccessContextHolder tenantDataContextHolder,
@@ -80,7 +77,6 @@ public class LiveOktaRepository implements OktaRepository {
       ApplicationApi applicationApi,
       UserApi userApi) {
     _rolePrefix = authorizationProperties.getRolePrefix();
-    _client = client;
     this.groupApi = groupApi;
     this.userApi = userApi;
     this.applicationApi = applicationApi;
@@ -94,27 +90,22 @@ public class LiveOktaRepository implements OktaRepository {
     _tenantDataContextHolder = tenantDataContextHolder;
   }
 
-  // todo: remove in favor for above. Make bean that takes okta.oauth2.client-id and builds the
-  // ApiClient
   @Autowired
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
       OktaClientProperties oktaClientProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
-      CurrentTenantDataAccessContextHolder tenantDataContextHolder,
-      GroupApi groupApi,
-      ApplicationApi applicationApi,
-      UserApi userApi) {
+      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
     _rolePrefix = authorizationProperties.getRolePrefix();
-    _client =
+    var client =
         Clients.builder()
             .setOrgUrl(oktaClientProperties.getOrgUrl())
             .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
             .build();
-    this.groupApi = groupApi;
-    this.userApi = userApi;
-    this.applicationApi = applicationApi;
+    this.groupApi = new GroupApi(client);
+    this.userApi = new UserApi(client);
+    this.applicationApi = new ApplicationApi(client);
     try {
       _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ResourceException e) {
