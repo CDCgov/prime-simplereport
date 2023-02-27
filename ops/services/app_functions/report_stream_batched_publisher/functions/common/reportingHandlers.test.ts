@@ -19,6 +19,7 @@ import {
   generateJWT,
   getReportStreamAuthToken,
   reportToUniversalPipelineTokenBased,
+  FHIR_CLIENT_ID,
 } from "./reportingHandlers";
 
 jest.mock(
@@ -58,7 +59,7 @@ describe("reportingHandlers", () => {
         authorization: "bearer 123abc",
         "x-api-version": uploaderVersion,
         "content-type": "application/fhir+ndjson",
-        client: "simple_report",
+        client: FHIR_CLIENT_ID,
       });
 
       const serializedTestEvents = '{"name":"DeeDee"}';
@@ -280,7 +281,7 @@ describe("reportingHandlers", () => {
       expect(fetchMock).toHaveBeenCalledWith("https://nope.url/api/token", {
         method: "POST",
         headers,
-        body: "scope=simple_report.fullelr.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=123abc",
+        body: "scope=simple_report.*.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=123abc",
       });
       expect(token).toEqual("123");
     });

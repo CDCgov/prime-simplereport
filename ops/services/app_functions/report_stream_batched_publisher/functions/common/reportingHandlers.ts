@@ -28,7 +28,7 @@ export async function reportToUniversalPipelineTokenBased(
     authorization: `bearer ${token}`,
     "x-api-version": uploaderVersion,
     "content-type": "application/fhir+ndjson",
-    client: "simple_report",
+    client: FHIR_CLIENT_ID,
   });
 
   return fetch(`${REPORT_STREAM_BASE_URL}/api/waters`, {
@@ -150,7 +150,7 @@ export async function getReportStreamAuthToken(
   });
 
   const params = {
-    scope: `simple_report.fullelr.report`,
+    scope: `simple_report.*.report`,
     grant_type: "client_credentials",
     client_assertion_type:
       "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
