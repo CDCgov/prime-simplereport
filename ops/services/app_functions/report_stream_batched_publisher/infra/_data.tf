@@ -38,8 +38,8 @@ data "azurerm_storage_account" "app" {
 data "azurerm_storage_account_sas" "sas" {
   connection_string = data.azurerm_storage_account.app.primary_connection_string
   https_only        = true
-  start             = "2023-01-01"
-  expiry            = "2023-12-31"
+  start             = formatdate("YYYY-MM-DD", timeadd(timestamp(), "-24"))
+  expiry            = formatdate("YYYY-MM-DD", timeadd(timestamp(), "2880h"))
   resource_types {
     object    = true
     container = false
