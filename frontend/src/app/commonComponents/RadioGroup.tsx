@@ -153,11 +153,19 @@ const RadioGroup = <T extends string>({
             validationStatus === "error" && "usa-form-group--error"
           )}
         >
-          {" "}
-          {body}{" "}
+          {body}
         </form>
       ) : (
-        <div> {body} </div>
+        <div
+          className={classnames(
+            "usa-form-group",
+            wrapperClassName,
+            validationStatus === "error" && "usa-form-group--error"
+          )}
+        >
+          {" "}
+          {body}{" "}
+        </div>
       )}
     </>
   );

@@ -377,7 +377,9 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   COVID-19 results
                 </h3>
-                <div>
+                <div
+                  class="usa-form-group prime-radio__group"
+                >
                    
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -788,7 +790,9 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   COVID-19 results
                 </h3>
-                <div>
+                <div
+                  class="usa-form-group prime-radio__group"
+                >
                    
                   <fieldset
                     class="usa-fieldset prime-radios"

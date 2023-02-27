@@ -354,7 +354,9 @@ Object {
                           />
                         </div>
                       </div>
-                      <div>
+                      <div
+                        class="usa-form-group"
+                      >
                          
                         <fieldset
                           class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
@@ -438,7 +440,9 @@ Object {
                       </svg>
                       Add another number
                     </button>
-                    <div>
+                    <div
+                      class="usa-form-group"
+                    >
                        
                       <fieldset
                         class="usa-fieldset prime-radios"
@@ -548,7 +552,9 @@ Object {
                         Add another email address
                       </button>
                     </div>
-                    <div>
+                    <div
+                      class="usa-form-group"
+                    >
                        
                       <fieldset
                         class="usa-fieldset prime-radios"
@@ -2058,7 +2064,9 @@ Object {
                   >
                     This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                   </p>
-                  <div>
+                  <div
+                    class="usa-form-group"
+                  >
                      
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -2219,7 +2227,9 @@ Object {
                       Tribal affiliation
                     </label>
                   </div>
-                  <div>
+                  <div
+                    class="usa-form-group"
+                  >
                      
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -2298,7 +2308,9 @@ Object {
                     </fieldset>
                      
                   </div>
-                  <div>
+                  <div
+                    class="usa-form-group"
+                  >
                      
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -2413,7 +2425,9 @@ Object {
                   >
                     Housing and work
                   </legend>
-                  <div>
+                  <div
+                    class="usa-form-group"
+                  >
                      
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -2491,7 +2505,9 @@ Object {
                     </fieldset>
                      
                   </div>
-                  <div>
+                  <div
+                    class="usa-form-group"
+                  >
                      
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -2938,7 +2954,9 @@ Object {
                         />
                       </div>
                     </div>
-                    <div>
+                    <div
+                      class="usa-form-group"
+                    >
                        
                       <fieldset
                         class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
@@ -3022,7 +3040,9 @@ Object {
                     </svg>
                     Add another number
                   </button>
-                  <div>
+                  <div
+                    class="usa-form-group"
+                  >
                      
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -3132,7 +3152,9 @@ Object {
                       Add another email address
                     </button>
                   </div>
-                  <div>
+                  <div
+                    class="usa-form-group"
+                  >
                      
                     <fieldset
                       class="usa-fieldset prime-radios"
@@ -4642,7 +4664,9 @@ Object {
                 >
                   This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
                 </p>
-                <div>
+                <div
+                  class="usa-form-group"
+                >
                    
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -4803,7 +4827,9 @@ Object {
                     Tribal affiliation
                   </label>
                 </div>
-                <div>
+                <div
+                  class="usa-form-group"
+                >
                    
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -4882,7 +4908,9 @@ Object {
                   </fieldset>
                    
                 </div>
-                <div>
+                <div
+                  class="usa-form-group"
+                >
                    
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -4997,7 +5025,9 @@ Object {
                 >
                   Housing and work
                 </legend>
-                <div>
+                <div
+                  class="usa-form-group"
+                >
                    
                   <fieldset
                     class="usa-fieldset prime-radios"
@@ -5075,7 +5105,9 @@ Object {
                   </fieldset>
                    
                 </div>
-                <div>
+                <div
+                  class="usa-form-group"
+                >
                    
                   <fieldset
                     class="usa-fieldset prime-radios"
