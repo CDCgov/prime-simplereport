@@ -174,9 +174,7 @@ export async function getReportStreamAuthToken(
     const tokenResponse: ReportStreamTokenResponse =
       (await response.json()) as ReportStreamTokenResponse;
 
-    const tokenLog = { ...tokenResponse };
-    tokenLog.access_token = "***";
-    context.log(`Token obtained successfully: ${JSON.stringify(tokenLog)}`);
+    context.log(`Token obtained successfully.`);
 
     return tokenResponse.access_token;
   } catch (e) {
