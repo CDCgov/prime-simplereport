@@ -54,7 +54,7 @@ export const MfaSelect = () => {
 
   return (
     <CardBackground>
-      <Card cardIsForm logo bodyKicker="Set up your account">
+      <Card logo bodyKicker="Set up your account">
         <StepIndicator
           steps={accountCreationSteps}
           currentStepValue={"2"}
@@ -112,6 +112,7 @@ export const MfaSelect = () => {
           onBlur={validateMfaOption}
           onChange={setMfaOption}
           variant="tile"
+          renderAsForm
         />
         <Button
           className="margin-top-3"
