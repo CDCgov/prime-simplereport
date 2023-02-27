@@ -82,6 +82,8 @@ const App = () => {
   useEffect(() => {
     if (!data) return;
 
+    appInsights?.setAuthenticatedUserContext(data.whoami.id, undefined, false);
+
     dispatch(
       setInitialState({
         dataLoaded: true,
@@ -103,7 +105,7 @@ const App = () => {
         },
       })
     );
-  }, [data, dispatch]);
+  }, [data, dispatch, appInsights]);
 
   if (loading) {
     return <p>Loading account information...</p>;

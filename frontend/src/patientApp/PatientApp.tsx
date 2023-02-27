@@ -9,6 +9,7 @@ import { setInitialState } from "../app/store";
 import PageNotFound from "../app/commonComponents/PageNotFound";
 import Alert from "../app/commonComponents/Alert";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
+import { getAppInsights } from "../app/TelemetryService";
 
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
@@ -35,18 +36,24 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
 
 const PatientApp = () => {
   const { t } = useTranslation();
+  const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
   const testResult = useSelector((state: any) => state.testResult);
   const auth = !!testResult.testEventId;
 
   useEffect(() => {
+    if (typeof plid === "string") {
+      appInsights?.clearAuthenticatedUserContext();
+      appInsights?.setAuthenticatedUserContext(plid, undefined, true);
+    }
+
     dispatch(
       setInitialState({
         plid: getPatientLinkIdFromUrl(),
       })
     );
-  });
+  }, [plid, dispatch, appInsights]);
 
   if (!isValidUUID(plid)) {
     return (
