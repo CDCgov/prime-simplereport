@@ -209,6 +209,7 @@ const PendingOrganizations = ({
         <td className="verify-button-container">
           <Button
             className="sr-pending-org-edit-verify"
+            ariaLabel={`Edit or verify ${o.name}`}
             onClick={() => {
               setOrgToVerify(o);
             }}
@@ -219,7 +220,7 @@ const PendingOrganizations = ({
         <td>
           <button
             className="sr-pending-org-delete-button"
-            aria-label="delete organization"
+            aria-label={`Delete ${o.name}`}
             data-testid="delete-org-button"
             onClick={() => {
               setOrgToDelete(o);

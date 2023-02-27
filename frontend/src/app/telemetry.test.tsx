@@ -1,6 +1,14 @@
-import { SeverityLevel } from "@microsoft/applicationinsights-web";
+import {
+  ITelemetryItem,
+  SeverityLevel,
+} from "@microsoft/applicationinsights-web";
 
-import { ai, getAppInsights, withInsights } from "./TelemetryService";
+import {
+  ai,
+  filterStaticFiles,
+  getAppInsights,
+  withInsights,
+} from "./TelemetryService";
 
 jest.mock("@microsoft/applicationinsights-web", () => {
   return {
@@ -10,6 +18,7 @@ jest.mock("@microsoft/applicationinsights-web", () => {
         loadAppInsights() {},
         trackEvent: jest.fn(),
         trackException: jest.fn(),
+        addTelemetryInitializer: jest.fn(),
       };
     },
   };
@@ -84,5 +93,15 @@ describe("telemetry", () => {
         additionalInformation: undefined,
       },
     });
+  });
+
+  it("ignores static files", () => {
+    const item = {
+      name: "Microsoft.ApplicationInsights.mock.RemoteDependency",
+      baseData: {
+        name: "GET /maintenance.json",
+      },
+    } as ITelemetryItem;
+    expect(filterStaticFiles(item)).toEqual(false);
   });
 });

@@ -1,4 +1,4 @@
-name: Build cypress docker image
+name: Build database docker image
 
 on:
   workflow_dispatch:
@@ -12,22 +12,22 @@ on:
     outputs:
       version:
         description: docker image version
-        value: ${{ jobs.build_and_push_cypress_image.outputs.version }}
+        value: ${{ jobs.build_and_push_database_image.outputs.version }}
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/cypress
+  IMAGE_NAME: ${{ github.repository }}/db
 
 jobs:
 
-  cypress_changes:
+  database_changes:
     with:
-      what_to_check: cypress
+      what_to_check: backend/db-setup
     uses: ./.github/workflows/checkForChanges.yml
 
-  build_and_push_cypress_image:
-    if: needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == true
-    needs: [cypress_changes]
+  build_and_push_database_image:
+    if: needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == true
+    needs: [database_changes]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -60,7 +60,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./
-          file: ./cypress/Dockerfile
+          file: ./backend/db-setup/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
