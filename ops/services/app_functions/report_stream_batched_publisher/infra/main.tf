@@ -96,7 +96,6 @@ resource "azurerm_linux_function_app" "functions" {
     REPORT_STREAM_URL                = local.report_stream_url
     REPORT_STREAM_BASE_URL           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_url.id})"
     REPORT_STREAM_TOKEN              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
-    FHIR_REPORT_STREAM_TOKEN         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_api_key.id})"
     FHIR_REPORT_STREAM_KEY           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
     REPORT_STREAM_BATCH_MINIMUM      = var.report_stream_batch_minimum
     REPORT_STREAM_BATCH_MAXIMUM      = var.report_stream_batch_maximum

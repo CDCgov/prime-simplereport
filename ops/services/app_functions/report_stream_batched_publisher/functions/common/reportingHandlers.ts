@@ -16,12 +16,7 @@ import {
   reportExceptions,
 } from "./queueHandlers";
 
-const {
-  FHIR_REPORT_STREAM_TOKEN,
-  FHIR_REPORT_STREAM_KEY,
-  REPORT_STREAM_URL,
-  REPORT_STREAM_BASE_URL,
-} = ENV;
+const { FHIR_REPORT_STREAM_KEY, REPORT_STREAM_BASE_URL } = ENV;
 
 export const FHIR_CLIENT_ID = "simple_report.fullelr";
 
@@ -37,23 +32,6 @@ export async function reportToUniversalPipelineTokenBased(
   });
 
   return fetch(`${REPORT_STREAM_BASE_URL}/api/waters`, {
-    method: "POST",
-    headers,
-    body: ndjsonTestEvents,
-  });
-}
-
-export async function reportToUniversalPipelineSharedKey(
-  ndjsonTestEvents: string
-): Promise<Response> {
-  const headers = new Headers({
-    "x-functions-key": FHIR_REPORT_STREAM_TOKEN,
-    "x-api-version": uploaderVersion,
-    "content-type": "application/fhir+ndjson",
-    client: FHIR_CLIENT_ID,
-  });
-
-  return fetch(REPORT_STREAM_URL, {
     method: "POST",
     headers,
     body: ndjsonTestEvents,

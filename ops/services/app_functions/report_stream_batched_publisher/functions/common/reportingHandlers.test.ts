@@ -16,7 +16,6 @@ import { uploaderVersion } from "../config";
 import { ReportStreamResponse, ReportStreamTokenResponse } from "./types";
 import {
   handleReportStreamResponse,
-  reportToUniversalPipelineSharedKey,
   generateJWT,
   getReportStreamAuthToken,
   reportToUniversalPipelineTokenBased,
@@ -29,9 +28,7 @@ jest.mock(
 
 jest.mock("../config", () => ({
   ENV: {
-    REPORT_STREAM_URL: "https://nope.url/1234",
     REPORT_STREAM_BASE_URL: "https://nope.url",
-    FHIR_REPORT_STREAM_TOKEN: "merhaba",
   },
 }));
 
@@ -54,25 +51,6 @@ describe("reportingHandlers", () => {
   const telemetry = {
     trackEvent: jest.fn(),
   } as jest.MockedObject<TelemetryClient>;
-
-  describe("reportToUniversalPipelineSharedKey", () => {
-    it("calls fetch with correct parameters", async () => {
-      const mockHeaders = new Headers({
-        "x-functions-key": "merhaba",
-        "x-api-version": uploaderVersion,
-        "content-type": "application/fhir+ndjson",
-        client: "simple_report.fullelr",
-      });
-
-      const serializedTestEvents = "";
-      await reportToUniversalPipelineSharedKey(serializedTestEvents);
-      expect(fetchMock).toHaveBeenCalledWith("https://nope.url/1234", {
-        method: "POST",
-        headers: mockHeaders,
-        body: serializedTestEvents,
-      });
-    });
-  });
 
   describe("reportToUniversalPipelineTokenBased", () => {
     it("calls fetch with correct parameters", async () => {
