@@ -49,6 +49,14 @@ describe("FHIRTestEventReporter", () => {
     } as jest.MockedObject<ReportStreamResponse>),
   };
 
+  const mockDequeuedTestEvents = [
+    {
+      messageId: "1",
+      popReceipt: "abcd",
+      messageText: '{"Result_ID" : 1}',
+    },
+  ] as jest.MockedObject<DequeuedMessageItem[]>;
+
   let dequeueMessagesSpy,
     getQueueClientSpy,
     minimumMessagesAvailableSpy,
@@ -105,6 +113,18 @@ describe("FHIRTestEventReporter", () => {
     expect(context.log).not.toHaveBeenCalled();
   });
 
+  it("checks queue but dequeues 0 messages", async () => {
+    dequeueMessagesSpy.mockResolvedValueOnce([]);
+
+    await FHIRTestEventReporter(context);
+
+    expect(getReportStreamAuthTokenSpy).not.toHaveBeenCalled();
+    expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
+    expect(context.log).toHaveBeenCalledWith(
+      "Queue: ciao. Messages Dequeued: 0; aborting."
+    );
+  });
+
   it("parses and uploads the test events successfully", async () => {
     const fhirTestEventsBatches: FHIRTestEventsBatch[] = [
       {
@@ -121,6 +141,7 @@ describe("FHIRTestEventReporter", () => {
       },
     ];
 
+    dequeueMessagesSpy.mockResolvedValueOnce([mockDequeuedTestEvents]); // to pass the messages check
     processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
@@ -156,6 +177,7 @@ describe("FHIRTestEventReporter", () => {
       },
     ];
 
+    dequeueMessagesSpy.mockResolvedValueOnce([mockDequeuedTestEvents]); // to pass the messages check
     processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
@@ -196,6 +218,7 @@ describe("FHIRTestEventReporter", () => {
       } as jest.MockedObject<ReportStreamResponse>),
     };
 
+    dequeueMessagesSpy.mockResolvedValueOnce([mockDequeuedTestEvents]); // to pass the messages check
     processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockRejectedValueOnce(errorResponseMock);
 

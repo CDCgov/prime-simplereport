@@ -56,6 +56,13 @@ const FHIRTestEventReporter: AzureFunction = async function (
     tagOverrides,
   });
 
+  if (messages.length === 0) {
+    context.log(
+      `Queue: ${publishingQueue.name}. Messages Dequeued: ${messages.length}; aborting.`
+    );
+    return;
+  }
+
   const fhirTestEventsBatches: FHIRTestEventsBatch[] = processTestEvents(
     messages,
     FHIR_BATCH_SIZE_LIMIT
