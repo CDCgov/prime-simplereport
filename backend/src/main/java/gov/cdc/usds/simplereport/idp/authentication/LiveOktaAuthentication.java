@@ -17,13 +17,16 @@ import org.openapitools.client.api.UserApi;
 import org.openapitools.client.api.UserFactorApi;
 import org.openapitools.client.model.ActivateFactorRequest;
 import org.openapitools.client.model.CallUserFactor;
+import org.openapitools.client.model.CallUserFactorProfile;
 import org.openapitools.client.model.EmailUserFactor;
+import org.openapitools.client.model.EmailUserFactorProfile;
 import org.openapitools.client.model.FactorProvider;
 import org.openapitools.client.model.FactorStatus;
 import org.openapitools.client.model.FactorType;
 import org.openapitools.client.model.PasswordCredential;
 import org.openapitools.client.model.RecoveryQuestionCredential;
 import org.openapitools.client.model.SmsUserFactor;
+import org.openapitools.client.model.SmsUserFactorProfile;
 import org.openapitools.client.model.UpdateUserRequest;
 import org.openapitools.client.model.User;
 import org.openapitools.client.model.UserCredentials;
@@ -63,9 +66,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private UserApi userApi;
   private UserFactorApi userFactorApi;
 
-  // todo: should be refactored to provide beans to ApiClient, and other clients in order to be
-  // testable.
-  // actually, based on how this is being tested we may not need to provide beans here.
   @Autowired
   public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
     initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
@@ -85,6 +85,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     _orgUrl = orgUrl;
     _restTemplate = new RestTemplate();
     userApi = new UserApi(_client);
+    userFactorApi = new UserFactorApi(_client);
   }
 
   /**
@@ -220,10 +221,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
-      SmsUserFactor smsFactor = new SmsUserFactor();
-      smsFactor.getProfile().setPhoneNumber(phoneNumber);
-      userFactorApi.enrollFactor(userId, smsFactor, null, null, null, null);
-      return smsFactor.getId();
+      var profile = new SmsUserFactorProfile().phoneNumber(phoneNumber);
+      SmsUserFactor smsFactor = new SmsUserFactor().profile(profile);
+      smsFactor.setFactorType(FactorType.SMS);
+      return userFactorApi.enrollFactor(userId, smsFactor, null, null, null, null).getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
         throw new BadRequestException(
@@ -241,10 +242,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
-      CallUserFactor callFactor = new CallUserFactor();
-      callFactor.getProfile().setPhoneNumber(phoneNumber);
-      userFactorApi.enrollFactor(userId, callFactor, null, null, null, null);
-      return callFactor.getId();
+      var profile = new CallUserFactorProfile().phoneNumber(phoneNumber);
+      CallUserFactor callFactor = new CallUserFactor().profile(profile);
+      callFactor.setFactorType(FactorType.CALL);
+      return userFactorApi.enrollFactor(userId, callFactor, null, null, null, null).getId();
     } catch (ResourceException e) {
       if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
         throw new BadRequestException("Invalid phone number.", e);
@@ -259,12 +260,12 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    */
   public String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException {
     try {
-      EmailUserFactor emailFactor = new EmailUserFactor();
       User user = userApi.getUser(userId);
       String userEmail = user.getProfile().getEmail();
-      emailFactor.getProfile().setEmail(userEmail);
-      userFactorApi.enrollFactor(userId, emailFactor, null, null, null, null);
-      return emailFactor.getId();
+      var profile = new EmailUserFactorProfile().email(userEmail);
+      EmailUserFactor emailFactor = new EmailUserFactor().profile(profile);
+      emailFactor.setFactorType(FactorType.EMAIL);
+      return userFactorApi.enrollFactor(userId, emailFactor, null, null, null, null).getId();
     } catch (ResourceException e) {
       throw new OktaAuthenticationFailureException("Error setting email MFA", e);
     }
@@ -292,15 +293,15 @@ public class LiveOktaAuthentication implements OktaAuthentication {
         throw new OktaAuthenticationFailureException("App type not recognized.");
     }
     try {
-      userFactorApi.enrollFactor(userId, factor, null, null, null, null);
-      JSONObject embeddedJson = new JSONObject(factor.getEmbedded());
+      var enrolledFactor = userFactorApi.enrollFactor(userId, factor, null, null, null, null);
+      JSONObject embeddedJson = new JSONObject(enrolledFactor.getEmbedded());
       String qrCode =
           embeddedJson
               .getJSONObject(ACTIVATION_KEY)
               .getJSONObject("_links")
               .getJSONObject("qrcode")
               .getString("href");
-      return new FactorAndQrCode(factor.getId(), qrCode);
+      return new FactorAndQrCode(enrolledFactor.getId(), qrCode);
     } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
