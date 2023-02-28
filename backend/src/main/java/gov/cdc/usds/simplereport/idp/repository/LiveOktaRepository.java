@@ -5,7 +5,6 @@ import com.okta.sdk.client.Clients;
 import com.okta.sdk.error.ResourceException;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.user.UserBuilder;
-import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -93,15 +92,16 @@ public class LiveOktaRepository implements OktaRepository {
   @Autowired
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
-      OktaClientProperties oktaClientProperties,
+      @Value("${okta.client.org-url}") String orgUrl,
+      @Value("${okta.client.token}") String token,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
       CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     var client =
         Clients.builder()
-            .setOrgUrl(oktaClientProperties.getOrgUrl())
-            .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
+            .setOrgUrl(orgUrl)
+            .setClientCredentials(new TokenClientCredentials(token))
             .build();
     this.groupApi = new GroupApi(client);
     this.userApi = new UserApi(client);

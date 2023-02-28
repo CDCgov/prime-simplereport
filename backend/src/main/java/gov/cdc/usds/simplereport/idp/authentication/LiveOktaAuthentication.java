@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.error.ResourceException;
-import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
@@ -32,7 +31,7 @@ import org.openapitools.client.model.User;
 import org.openapitools.client.model.UserCredentials;
 import org.openapitools.client.model.UserFactor;
 import org.openapitools.client.model.UserStatus;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -66,12 +65,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   private UserApi userApi;
   private UserFactorApi userFactorApi;
 
-  @Autowired
-  public LiveOktaAuthentication(OktaClientProperties oktaClientProperties) {
-    initialize(oktaClientProperties.getOrgUrl(), oktaClientProperties.getToken());
-  }
-
-  public LiveOktaAuthentication(String orgUrl, String token) {
+  public LiveOktaAuthentication(
+      @Value("${okta.client.org-url}") String orgUrl, @Value("${okta.client.token}") String token) {
     initialize(orgUrl, token);
   }
 
