@@ -41,17 +41,7 @@ resource "okta_policy_signon" "mfa_require" {
   groups_included = [var.all_users_group_id]
 }
 
-# We recieve an error when attempting to import this resource.
-# This may get deleted in the future.
-resource "okta_policy_rule_signon" "app_mfa" {
-  policy_id          = okta_policy_signon.mfa_require.id
-  name               = "simple-report-mfa-require"
-  status             = "ACTIVE"
-  mfa_required       = true
-  mfa_prompt         = "SESSION"
-  network_connection = "ANYWHERE"
-  authtype           = "ANY"
-  mfa_lifetime       = 720
-  session_idle       = 720
-  session_lifetime   = 720
-}
+# This unblocks global config sync issues but we need to revisit 
+# and plan future global Okta work
+# https://github.com/CDCgov/prime-simplereport/issues/5362
+# resource "okta_policy_rule_signon" "app_mfa" {}
