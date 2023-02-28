@@ -383,7 +383,7 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
   enabled             = var.function_id != null && !contains(var.disabled_alerts, "function_app_memory_alert")
   name                = "${var.env}_function_app_batch_publisher_memory_alert"
   resource_group_name = var.rg_name
-  scopes              = [var.function_id]
+  scopes              = var.function_id != null ? [var.function_id] : []
   description         = "Action will be triggered when memory usage is greater than 1200 mb"
 
   criteria {
