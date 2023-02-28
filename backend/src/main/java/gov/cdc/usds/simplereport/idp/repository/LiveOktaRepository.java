@@ -178,14 +178,8 @@ public class LiveOktaRepository implements OktaRepository {
             .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
             .map(Group::getId)
             .collect(Collectors.toSet());
+    validateRequiredFields(userIdentity);
     try {
-      if (StringUtils.isBlank(userIdentity.getLastName())) {
-        throw new IllegalGraphqlArgumentException("Cannot create Okta user without last name");
-      }
-      if (StringUtils.isBlank(userIdentity.getUsername())) {
-        throw new IllegalGraphqlArgumentException("Cannot create Okta user without username");
-      }
-
       UserBuilder.instance()
           .setFirstName(userIdentity.getFirstName())
           .setMiddleName(userIdentity.getMiddleName())
@@ -212,6 +206,15 @@ public class LiveOktaRepository implements OktaRepository {
       return Optional.empty();
     }
     return Optional.of(claims.get(0));
+  }
+
+  private static void validateRequiredFields(IdentityAttributes userIdentity) {
+    if (StringUtils.isBlank(userIdentity.getLastName())) {
+      throw new IllegalGraphqlArgumentException("Cannot create Okta user without last name");
+    }
+    if (StringUtils.isBlank(userIdentity.getUsername())) {
+      throw new IllegalGraphqlArgumentException("Cannot create Okta user without username");
+    }
   }
 
   @Override
