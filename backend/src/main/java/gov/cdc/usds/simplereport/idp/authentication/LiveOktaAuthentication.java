@@ -57,8 +57,6 @@ import org.springframework.web.client.RestTemplate;
 public class LiveOktaAuthentication implements OktaAuthentication {
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
   private static final String ACTIVATION_KEY = "activation";
-
-  private ApiClient _client;
   private String _apiToken;
   private String _orgUrl;
   private RestTemplate _restTemplate;
@@ -71,7 +69,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   private void initialize(String orgUrl, String token) {
-    _client =
+    ApiClient _client =
         Clients.builder()
             .setOrgUrl(orgUrl)
             .setClientCredentials(new TokenClientCredentials(token))

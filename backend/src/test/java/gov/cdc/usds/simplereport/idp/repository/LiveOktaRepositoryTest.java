@@ -484,7 +484,7 @@ class LiveOktaRepositoryTest {
       verify(mockUserBuilder).setLastName(personName.getLastName());
       verify(mockUserBuilder).setHonorificSuffix(personName.getSuffix());
       verify(mockUserBuilder).setGroups(anyList());
-      verify(mockUserBuilder).buildAndCreate(eq(userApi));
+      verify(mockUserBuilder).buildAndCreate(userApi);
       verify(mockUserBuilder).setActive(eq(true));
       assertEquals(org.getExternalId(), actual.orElseThrow().getOrganizationExternalId());
       assertEquals(Set.of(OrganizationRole.NO_ACCESS), actual.get().getGrantedRoles());
