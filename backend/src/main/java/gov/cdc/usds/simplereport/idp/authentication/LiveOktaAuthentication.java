@@ -65,7 +65,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
   public LiveOktaAuthentication(
       @Value("${okta.client.org-url}") String orgUrl, @Value("${okta.client.token}") String token) {
-    ApiClient _client =
+    ApiClient client =
         Clients.builder()
             .setOrgUrl(orgUrl)
             .setClientCredentials(new TokenClientCredentials(token))
@@ -73,8 +73,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     _apiToken = token;
     _orgUrl = orgUrl;
     _restTemplate = new RestTemplate();
-    userApi = new UserApi(_client);
-    userFactorApi = new UserFactorApi(_client);
+    userApi = new UserApi(client);
+    userFactorApi = new UserFactorApi(client);
   }
 
   /**
