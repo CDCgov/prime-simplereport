@@ -1,13 +1,66 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import ReactDOM from "react-dom";
+
+import {
+  GetFacilityResultsForCsvWithCountDocument,
+} from "../../generated/graphql";
 
 import { DownloadResultsCsvModal } from "./DownloadResultsCsvModal";
 
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
+const graphqlMocks = [
+  {
+    request: {
+      variables: {
+        facilityId: "b0d2041f-93c9-4192-b19a-dd99c0044a7e",
+        pageNumber: 0,
+        pageSize: 1,
+      },
+      query: GetFacilityResultsForCsvWithCountDocument,
+      fetchPolicy: "no-cache",
+    },
+    result: {
+      data: {
+        testResultsPage: {
+          content: [
+            {
+              facility: {
+                name: "1677594642-Russel - Mann",
+                isDeleted: null,
+                __typename: "Facility",
+              },
+              dateTested: "2023-02-28T14:35:13.975Z",
+              dateUpdated: "2023-02-28T14:35:13.975Z",
+              results: [
+                {
+                  disease: { name: "COVID-19", __typename: "SupportedDisease" },
+                  testResult: "UNDETERMINED",
+                  __typename: "MultiplexResult",
+                },
+              ],
+              correctionStatus: "ORIGINAL",
+              reasonForCorrection: null,
+              deviceType: {
+                name: "Abbott IDNow",
+                manufacturer: "Abbott",
+                model: "ID Now",
+                swabType: "445297001",
+                __typename: "DeviceType",
+              },
+            },
+          ],
+          totalElements: 1,
+        },
+      },
+    },
+  },
+];
 
 describe("DownloadResultsCsvModal with no filters and under 20k results", () => {
   let component: any;
+
+  const closeModalMock = jest.fn();
 
   beforeEach(() => {
     ReactDOM.createPortal = jest.fn((element, _node) => {
@@ -15,11 +68,11 @@ describe("DownloadResultsCsvModal with no filters and under 20k results", () => 
     }) as any;
 
     component = render(
-      <MockedProvider mocks={[]}>
+      <MockedProvider mocks={graphqlMocks}>
         <DownloadResultsCsvModal
           filterParams={{}}
           modalIsOpen={true}
-          closeModal={() => {}}
+          closeModal={closeModalMock}
           totalEntries={1}
           activeFacilityId={mockFacilityID}
         />
@@ -46,6 +99,9 @@ describe("DownloadResultsCsvModal with no filters and under 20k results", () => 
     expect(
       await screen.findByLabelText("Download test results")
     ).toHaveTextContent("The CSV file will include 1 row");
+
+    fireEvent.click(screen.getByRole("button", { name: /download results/i }));
+    expect(closeModalMock).toHaveBeenCalled();
   });
 });
 

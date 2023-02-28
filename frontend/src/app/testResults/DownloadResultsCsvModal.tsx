@@ -32,7 +32,6 @@ export const DownloadResultsCsvModal = ({
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
   const rowsMaxLimit = 20000;
-  const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const csvLink = useRef<
     CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
@@ -60,7 +59,7 @@ export const DownloadResultsCsvModal = ({
     ...filterParams,
   };
 
-  const [downloadTestResultsQuery] =
+  const [downloadTestResultsQuery, { loading }] =
     useGetFacilityResultsForCsvWithCountLazyQuery({
       variables,
       fetchPolicy: "no-cache",
@@ -76,16 +75,13 @@ export const DownloadResultsCsvModal = ({
         multiplexEnabled
       );
       setResults(csvResults);
-      setLoading(false);
     } else {
       showError("Unknown error downloading results");
-      setLoading(false);
     }
   };
 
   const handleError = (error: ApolloError) => {
     showError("Error downloading results", error.message);
-    setLoading(false);
   };
 
   // triggers the download of the file only after the csv data has been properly set
@@ -165,10 +161,7 @@ export const DownloadResultsCsvModal = ({
               label={disableDownload ? "Go back" : "No, go back"}
             />
             <Button
-              onClick={async () => {
-                setLoading(true);
-                await downloadTestResultsQuery();
-              }}
+              onClick={() => downloadTestResultsQuery()}
               disabled={disableDownload}
               icon={faDownload}
               label={loading ? "Loading..." : "Download results"}
