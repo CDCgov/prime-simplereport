@@ -17,6 +17,8 @@ module "metric_alerts" {
     "frontend_error_boundary",
     "batched_uploader_single_failure_detected",
     "batched_uploader_function_not_triggering",
+    "fhir_batched_uploader_function_not_triggering",
+    "fhir_function_app_duration_alert",
     "function_app_memory_alert",
     "mem_util"
   ]
