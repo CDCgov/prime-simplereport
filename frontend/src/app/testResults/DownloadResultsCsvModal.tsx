@@ -92,7 +92,7 @@ export const DownloadResultsCsvModal = ({
   useEffect(() => {
     csvLink?.current?.link.click();
     closeModal();
-  }, [results]);
+  }, [results]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pluralizeRows = (entriesCount: number) => {
     return entriesCount > 1 ? "s" : "";
