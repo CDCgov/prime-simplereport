@@ -2,9 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import ReactDOM from "react-dom";
 
-import {
-  GetFacilityResultsForCsvWithCountDocument,
-} from "../../generated/graphql";
+import { GetFacilityResultsForCsvWithCountDocument } from "../../generated/graphql";
 
 import { DownloadResultsCsvModal } from "./DownloadResultsCsvModal";
 
