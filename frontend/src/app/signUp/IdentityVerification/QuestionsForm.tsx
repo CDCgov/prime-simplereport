@@ -103,7 +103,7 @@ const QuestionsForm: React.FC<Props> = ({
           className="grid-row prime-test-name usa-card__header"
           id="experian-questions-header"
         >
-          <h4 className="margin-left-0">Sign up for SimpleReport</h4>
+          <h1 className="margin-left-0">Sign up for SimpleReport</h1>
           <button className="timer-button timer-running" data-testid="timer">
             <span>{mmss(timeLeft)}</span>{" "}
             <FontAwesomeIcon icon={faStopwatch as IconProp} />
@@ -114,6 +114,7 @@ const QuestionsForm: React.FC<Props> = ({
           currentStepValue={"2"}
           noLabels={true}
           segmentIndicatorOnBottom={true}
+          headingLevel="h2"
         />
         <Alert
           type="warning"
