@@ -319,3 +319,113 @@ customEvents
     threshold = 0
   }
 }
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_single_failure_detected" {
+  name                = "${var.env}-fhir-batched-uploader-single-failure-detected"
+  description         = "FHIRTestEventReporter failed to successfully complete"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 11
+  enabled             = contains(var.disabled_alerts, "fhir_batched_uploader_single_failure_detected") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where timestamp >= ago(11m) 
+    and operation_Name =~ 'FHIRTestEventReporter' 
+    and success != true
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 4
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_function_not_triggering" {
+  name                = "${var.env}-fhir-batched-uploader-function-not-triggering"
+  description         = "FHIRTestEventReporter is not triggering on schedule"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 7
+  enabled             = contains(var.disabled_alerts, "fhir_batched_uploader_function_not_triggering") ? false : true
+
+  data_source_id = var.app_insights_id
+
+  query = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where timestamp >= ago(7m) 
+    and operation_Name =~ 'FHIRTestEventReporter'
+  QUERY
+
+  trigger {
+    operator  = "Equal"
+    threshold = 0
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
+  enabled             = var.function_id != null && !contains(var.disabled_alerts, "function_app_memory_alert")
+  name                = "${var.env}_function_app_batch_publisher_memory_alert"
+  resource_group_name = var.rg_name
+  scopes              = [var.function_id]
+  description         = "Action will be triggered when memory usage is greater than 1200 mb"
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "AverageMemoryWorkingSet"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = var.function_memory_threshold
+  }
+
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_function_app_duration_alert" {
+  name                = "${var.env}-fhir-function-app-batch-publisher-duration-alert"
+  description         = "Action will be triggered when a single request is taking over 3 minutes"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+  severity            = var.severity
+  frequency           = 5
+  time_window         = 7
+  enabled             = contains(var.disabled_alerts, "fhir_function_app_duration_alert") ? false : true
+  data_source_id      = var.app_insights_id
+  query               = <<-QUERY
+requests
+${local.skip_on_weekends}
+| where operation_Name has "FHIRTestEventReporter" 
+and timestamp >= ago(7m)
+and duration >= 180000
+  QUERY
+
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+
+  action {
+    action_group = var.action_group_ids
+  }
+}

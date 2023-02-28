@@ -30,7 +30,11 @@ variable "disabled_alerts" {
       "db_query_duration_over_time_window",
       "db_connection_exhaustion",
       "batched_uploader_single_failure_detected",
-      "batched_uploader_function_not_triggering"
+      "batched_uploader_function_not_triggering",
+      "fhir_batched_uploader_single_failure_detected",
+      "fhir_batched_uploader_function_not_triggering",
+      "function_app_memory_alert",
+      "fhir_function_app_duration_alert"
     ])) == 0
     error_message = "One or more disabled_alert values are invalid."
   }
@@ -89,3 +93,12 @@ variable "additional_uptime_test_urls" {
 }
 
 variable "database_id" {}
+
+variable "function_id" {
+  type    = string
+  default = null
+}
+
+variable "function_memory_threshold" {
+  default = 1200
+}
