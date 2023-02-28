@@ -29,9 +29,10 @@ export const ENV = (() => {
     FHIR_PUBLISHING_ERROR_QUEUE_NAME:
       "storage queue resource name for HTTP 400 errors in publishing to ReportStream for Test Events in the FHIR standard",
     REPORT_STREAM_URL: "ReportStream URL to which tests should be reported",
+    REPORT_STREAM_BASE_URL: "ReportStream base url",
     REPORT_STREAM_TOKEN: "ReportStream API key",
-    FHIR_REPORT_STREAM_TOKEN:
-      "ReportStream API key to publish FHIR test events",
+    FHIR_REPORT_STREAM_KEY:
+      "private key to perform token-based auth with ReportStream and publish FHIR test events",
     REPORT_STREAM_BATCH_MINIMUM: "minimum # of messages to read from the queue",
     REPORT_STREAM_BATCH_MAXIMUM:
       "maximum # of messages to send to ReportStream",
