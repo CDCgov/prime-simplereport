@@ -57,18 +57,14 @@ import org.springframework.web.client.RestTemplate;
 public class LiveOktaAuthentication implements OktaAuthentication {
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
   private static final String ACTIVATION_KEY = "activation";
-  private String _apiToken;
-  private String _orgUrl;
-  private RestTemplate _restTemplate;
-  private UserApi userApi;
-  private UserFactorApi userFactorApi;
+  private final String _apiToken;
+  private final String _orgUrl;
+  private final RestTemplate _restTemplate;
+  private final UserApi userApi;
+  private final UserFactorApi userFactorApi;
 
   public LiveOktaAuthentication(
       @Value("${okta.client.org-url}") String orgUrl, @Value("${okta.client.token}") String token) {
-    initialize(orgUrl, token);
-  }
-
-  private void initialize(String orgUrl, String token) {
     ApiClient _client =
         Clients.builder()
             .setOrgUrl(orgUrl)
@@ -85,6 +81,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * Fetches the user account status. Does NOT correspond to the user's Okta account status, as we
    * also care about things like factor activation status.
    */
+  @Override
   public UserAccountStatus getUserStatus(String activationToken, String userId, String factorId) {
     try {
       if (activationToken != null && !activationToken.isEmpty() && userId == null) {
@@ -141,6 +138,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * https://developer.okta.com/docs/reference/api/authn/#request-example-for-activation-token
    * https://developer.okta.com/docs/reference/api/authn/#response-example-for-activation-token-success-user-without-password
    */
+  @Override
   public String activateUser(String activationToken, String crossForwardedHeader, String userAgent)
       throws InvalidActivationLinkException {
     JSONObject requestBody = new JSONObject();
@@ -164,6 +162,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   /** Using the Okta Management SDK, sets a user's password for the first time. */
+  @Override
   public void setPassword(String userId, char[] password)
       throws OktaAuthenticationFailureException {
     try {
@@ -186,6 +185,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   /** Using the Okta Management SDK, sets a user's recovery questions. */
+  @Override
   public void setRecoveryQuestion(String userId, String question, String answer)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
@@ -211,6 +211,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * Using the Okta management SDK, enroll a user in SMS MFA. If successful, this enrollment
    * triggers a text to the user's phone with an activation passcode.
    */
+  @Override
   public String enrollSmsMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
@@ -232,6 +233,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * Using the Okta management SDK, enroll a user in voice call MFA. If successful, this enrollment
    * triggers a phone call to the user with an activation passcode.
    */
+  @Override
   public String enrollVoiceCallMfa(String userId, String phoneNumber)
       throws OktaAuthenticationFailureException, BadRequestException {
     try {
@@ -251,6 +253,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * Using the Okta Management SDK, enroll a user in email MFA using their attached profile email.
    * If successful, this enrollment triggers an activation email to the user with an TOTP.
    */
+  @Override
   public String enrollEmailMfa(String userId) throws OktaAuthenticationFailureException {
     try {
       User user = userApi.getUser(userId);
@@ -271,6 +274,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#response-example-12
    */
+  @Override
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
     UserFactor factor = new UserFactor();
@@ -306,6 +310,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#enroll-webauthn-request-example
    */
+  @Override
   public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
     JSONObject requestBody = new JSONObject();
     requestBody.put("factorType", "webauthn");
@@ -326,6 +331,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   }
 
   /** Activates a security key using the provided frontend-generated credentials. */
+  @Override
   public void activateSecurityKey(
       String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException {
@@ -345,6 +351,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#activate-sms-factor
    */
+  @Override
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
     try {
@@ -370,6 +377,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#resend-sms-as-part-of-enrollment
    */
+  @Override
   public void resendActivationPasscode(String userId, String factorId)
       throws OktaAuthenticationFailureException {
     HttpEntity<String> headers = new HttpEntity<>(createHeaders());

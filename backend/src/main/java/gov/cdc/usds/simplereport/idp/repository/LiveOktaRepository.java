@@ -116,6 +116,7 @@ public class LiveOktaRepository implements OktaRepository {
     _tenantDataContextHolder = tenantDataContextHolder;
   }
 
+  @Override
   public Optional<OrganizationRoleClaims> createUser(
       IdentityAttributes userIdentity,
       Organization org,
@@ -213,6 +214,7 @@ public class LiveOktaRepository implements OktaRepository {
     return Optional.of(claims.get(0));
   }
 
+  @Override
   public Set<String> getAllUsersForOrganization(Organization org) {
     Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
     var groupUsers = groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), null, null);
@@ -221,6 +223,7 @@ public class LiveOktaRepository implements OktaRepository {
         .collect(Collectors.toUnmodifiableSet());
   }
 
+  @Override
   public Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org) {
     Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
     var groupUsers = groupApi.listGroupUsers(orgDefaultOktaGroup.getId(), null, null);
@@ -240,6 +243,7 @@ public class LiveOktaRepository implements OktaRepository {
         .orElseThrow(() -> new IllegalGraphqlArgumentException(OKTA_GROUP_NOT_FOUND));
   }
 
+  @Override
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
     var users =
         userApi.listUsers(
@@ -269,6 +273,7 @@ public class LiveOktaRepository implements OktaRepository {
     userApi.updateUser(user.getId(), updateRequest, false);
   }
 
+  @Override
   public Optional<OrganizationRoleClaims> updateUserEmail(
       IdentityAttributes userIdentity, String email) {
     var users =
@@ -304,6 +309,7 @@ public class LiveOktaRepository implements OktaRepository {
     return getOrganizationRoleClaimsForUser(user);
   }
 
+  @Override
   public void reprovisionUser(IdentityAttributes userIdentity) {
     var users =
         userApi.listUsers(
@@ -336,6 +342,7 @@ public class LiveOktaRepository implements OktaRepository {
     userApi.activateUser(user.getId(), true);
   }
 
+  @Override
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
     var users =
@@ -421,6 +428,7 @@ public class LiveOktaRepository implements OktaRepository {
     return getOrganizationRoleClaimsForUser(user);
   }
 
+  @Override
   public void resetUserPassword(String username) {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
@@ -430,6 +438,7 @@ public class LiveOktaRepository implements OktaRepository {
     userApi.resetPassword(user.getId(), true);
   }
 
+  @Override
   public void resetUserMfa(String username) {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
@@ -438,6 +447,7 @@ public class LiveOktaRepository implements OktaRepository {
     userApi.resetFactors(user.getId());
   }
 
+  @Override
   public void setUserIsActive(String username, Boolean active) {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
@@ -452,6 +462,7 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
+  @Override
   public UserStatus getUserStatus(String username) {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
@@ -461,6 +472,7 @@ public class LiveOktaRepository implements OktaRepository {
     return user.getStatus();
   }
 
+  @Override
   public void reactivateUser(String username) {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
@@ -469,6 +481,7 @@ public class LiveOktaRepository implements OktaRepository {
     userApi.unsuspendUser(user.getId());
   }
 
+  @Override
   public void resendActivationEmail(String username) {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
@@ -493,6 +506,7 @@ public class LiveOktaRepository implements OktaRepository {
    * new corresponding Okta groups where they do not already exist. Does not perform any migration
    * to these facility groups.
    */
+  @Override
   public void createOrganization(Organization org) {
     String name = org.getOrganizationName();
     String externalId = org.getExternalId();
@@ -532,6 +546,7 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
+  @Override
   public void activateOrganization(Organization org) {
     var users = getOrgAdminUsers(org);
     for (User u : users) {
@@ -539,16 +554,19 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
+  @Override
   public String activateOrganizationWithSingleUser(Organization org) {
     User user = getOrgAdminUsers(org).get(0);
     return activateUser(user);
   }
 
+  @Override
   public List<String> fetchAdminUserEmail(Organization org) {
     var admins = getOrgAdminUsers(org);
     return admins.stream().map(u -> u.getProfile().getLogin()).collect(Collectors.toList());
   }
 
+  @Override
   public void createFacility(Facility facility) {
     // Only create the facility group if the facility's organization has already been created
     String orgExternalId = facility.getOrganization().getExternalId();
@@ -581,6 +599,7 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
+  @Override
   public void deleteOrganization(Organization org) {
     String externalId = org.getExternalId();
     var orgGroups =
@@ -591,6 +610,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   // returns the external ID of the organization the specified user belongs to
+  @Override
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
     // When a site admin is using tenant data access, bypass okta and get org from the altered
     // authorities.  If the site admin is getting the claims for another site admin who also has
