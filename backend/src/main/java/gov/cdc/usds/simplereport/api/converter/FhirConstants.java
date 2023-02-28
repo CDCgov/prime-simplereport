@@ -12,8 +12,7 @@ public class FhirConstants {
   public static final String RACE_EXTENSION_URL =
       "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd";
   public static final String RACE_CODING_SYSTEM = "http://terminology.hl7.org/CodeSystem/v3-Race";
-  public static final String PROCESSING_ID_SYSTEM =
-      "http://terminology.hl7.org/CodeSystem/v3-ProcessingID";
+  public static final String PROCESSING_ID_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0103";
   public static final String ETHNICITY_EXTENSION_URL =
       "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group";
   public static final String ETHNICITY_CODE_SYSTEM =
