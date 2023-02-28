@@ -307,7 +307,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     // WHEN
-    sut.processResultCSV(input);
+    sut.processResultCSV(input, UUID.randomUUID());
 
     // THEN
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
@@ -324,7 +324,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     // WHEN
-    sut.processResultCSV(input);
+    sut.processResultCSV(input, UUID.randomUUID());
 
     // THEN
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
@@ -344,7 +344,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         loadCsv("testResultUpload/test-results-upload-valid-with-processingModeCode-D.csv");
 
     // WHEN
-    sut.processResultCSV(input);
+    sut.processResultCSV(input, UUID.randomUUID());
 
     // THEN
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());

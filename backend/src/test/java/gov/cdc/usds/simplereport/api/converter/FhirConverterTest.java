@@ -1052,6 +1052,7 @@ class FhirConverterTest {
         createFhirBundle(
             patient,
             organization,
+            null,
             practitioner,
             device,
             specimen,

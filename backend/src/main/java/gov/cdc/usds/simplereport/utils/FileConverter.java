@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
@@ -46,7 +47,27 @@ public class FileConverter {
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
 
-  public List<Bundle> convertToFhirBundles(InputStream csvStream, UUID facilityId) {
+  private final Map<String, String> testResultToSnomedMap =
+      Map.of(
+          "Positive".toLowerCase(), "260373001",
+          "Negative".toLowerCase(), "260415000",
+          "Detected".toLowerCase(), "260373001",
+          "Not Detected".toLowerCase(), "260415000",
+          "Invalid Result".toLowerCase(), "455371000124106");
+
+  // todo
+  private final Map<String, String> specimenTypeToSnomedMap =
+      Map.of(
+          "Nasal Swab".toLowerCase(), "445297001",
+          "Nasopharyngeal Swab".toLowerCase(), "258500001",
+          "Anterior Nasal Swab".toLowerCase(), "697989009",
+          "Throat Swab".toLowerCase(), "",
+          "Oropharyngeal Swab".toLowerCase(), "258529004",
+          "Whole Blood".toLowerCase(), "258580003",
+          "Plasma".toLowerCase(), "",
+          "Serum".toLowerCase(), "119364003");
+
+  public List<Bundle> convertToFhirBundles(InputStream csvStream, UUID facilityId, UUID orgId) {
     var testEvents = new ArrayList<Bundle>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     if (!valueIterator.hasNext()) {
@@ -59,18 +80,18 @@ public class FileConverter {
       try {
         row = getNextRow(valueIterator);
       } catch (CsvProcessingException ex) {
-        // error
+        log.error("Exception converting bulk csv to fhir.", ex);
         continue; // throw?
       }
       var fileRow = (TestResultRow) fileRowConstructor.apply(row);
 
-      testEvents.add(convertRowToFhirBundle(fileRow, facilityId));
+      testEvents.add(convertRowToFhirBundle(fileRow, facilityId, orgId));
     }
 
     return testEvents;
   }
 
-  private Bundle convertRowToFhirBundle(TestResultRow row, UUID facilityId) {
+  private Bundle convertRowToFhirBundle(TestResultRow row, UUID facilityId, UUID orgId) {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
     var patientAddr =
@@ -81,14 +102,6 @@ public class FileConverter {
             row.getPatientState().value,
             row.getPatientZipCode().value,
             row.getPatientCounty().value);
-    var orderingFacilityAddr =
-        new StreetAddress(
-            row.getOrderingFacilityStreet().value,
-            row.getOrderingFacilityStreet2().value,
-            row.getOrderingFacilityCity().value,
-            row.getOrderingFacilityState().value,
-            row.getOrderingFacilityZipCode().value,
-            null);
     var testingLabAddr =
         new StreetAddress(
             row.getTestingLabStreet().value,
@@ -127,9 +140,36 @@ public class FileConverter {
             facilityId.toString(),
             row.getTestingLabName().value,
             row.getTestingLabPhoneNumber().value,
-            "", // todo contact point conversion asserts not null
+            null,
             testingLabAddr,
             DEFAULT_COUNTRY);
+
+    Organization orderingFacility = null;
+    if (row.getOrderingFacilityStreet() != null
+        || row.getOrderingFacilityStreet2() != null
+        || row.getOrderingFacilityCity() != null
+        || row.getOrderingFacilityState() != null
+        || row.getOrderingFacilityZipCode() != null
+        || row.getOrderingFacilityName() != null
+        || row.getOrderingFacilityPhoneNumber() != null) {
+      var orderingFacilityAddr =
+          new StreetAddress(
+              row.getOrderingFacilityStreet().value,
+              row.getOrderingFacilityStreet2().value,
+              row.getOrderingFacilityCity().value,
+              row.getOrderingFacilityState().value,
+              row.getOrderingFacilityZipCode().value,
+              null);
+      orderingFacility =
+          FhirConverter.convertToOrganization(
+              orgId.toString(),
+              row.getOrderingFacilityName().value,
+              row.getOrderingFacilityPhoneNumber().value,
+              null,
+              orderingFacilityAddr,
+              DEFAULT_COUNTRY);
+    }
+
     var practitioner =
         FhirConverter.convertToPractitioner(
             row.getOrderingProviderId().value,
@@ -143,39 +183,32 @@ public class FileConverter {
             DEFAULT_COUNTRY);
     var device =
         FhirConverter.convertToDevice(
-            "", // todo
-            row.getEquipmentModelName().value,
-            UUID.randomUUID().toString());
+            null, row.getEquipmentModelName().value, UUID.randomUUID().toString());
 
     var specimen =
         FhirConverter.convertToSpecimen( // is only mapped if the codes are present
-            getSnomedValue(row.getSpecimenType().value),
+            getSpecimenTypeSnomed(row.getSpecimenType().value),
             getDescriptionValue(row.getSpecimenType().value),
-            "",
-            "",
+            null,
+            null,
             UUID.randomUUID().toString());
 
     var observation =
         List.of(
-            FhirConverter
-                .convertToObservation( // assumes that the coding system is loinc for disease &
-                    // snomed for result
-                    getSnomedValue(row.getTestResult().value),
-                    getDescriptionValue(row.getTestResult().value),
-                    "",
-                    mapTestResultStatusToSRValue(row.getTestResultStatus().value),
-                    "",
-                    UUID.randomUUID().toString(),
-                    ""));
+            FhirConverter.convertToObservation(
+                row.getTestPerformedCode().value,
+                null,
+                getTestResultSnomed(row.getTestResult().value),
+                mapTestResultStatusToSRValue(row.getTestResultStatus().value),
+                null,
+                UUID.randomUUID().toString(),
+                getDescriptionValue(row.getTestResult().value)));
 
     var serviceRequest =
         FhirConverter.convertToServiceRequest(
-            ServiceRequest.ServiceRequestStatus
-                .ACTIVE, // what is our equiv of a testorder for the bulk upload?
+            ServiceRequest.ServiceRequestStatus.ACTIVE,
             row.getTestPerformedCode().value,
-            UUID.randomUUID()
-                .toString() // are id's just for reference? do we need to keep track of them?
-            );
+            UUID.randomUUID().toString());
 
     var diagnosticReport =
         FhirConverter.convertToDiagnosticReport(
@@ -187,6 +220,7 @@ public class FileConverter {
     return FhirConverter.createFhirBundle(
         patient,
         testingLabOrg,
+        orderingFacility,
         practitioner,
         device,
         specimen,
@@ -199,9 +233,16 @@ public class FileConverter {
         processingModeCode);
   }
 
-  private String getSnomedValue(String input) {
+  private String getTestResultSnomed(String input) {
     if (input.matches(ALPHABET_REGEX)) {
-      return "";
+      return testResultToSnomedMap.get(input.toLowerCase());
+    }
+    return input;
+  }
+
+  private String getSpecimenTypeSnomed(String input) {
+    if (input.matches(ALPHABET_REGEX)) {
+      return specimenTypeToSnomedMap.get(input.toLowerCase());
     }
     return input;
   }
