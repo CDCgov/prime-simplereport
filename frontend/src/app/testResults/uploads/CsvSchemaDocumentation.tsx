@@ -151,10 +151,11 @@ export function getPageTitle(currentUrl: string) {
 
 /* eslint-disable jsx-a11y/anchor-has-content */
 const CsvSchemaDocumentation = () => {
+  let currentUrl = window.location.href;
+  let pageTitle = getPageTitle(currentUrl);
   useEffect(() => {
-    let currentUrl = window.location.href;
-    document.title = getPageTitle(currentUrl);
-  }, [window.location.href, getPageTitle]);
+    document.title = pageTitle;
+  }, [pageTitle]);
 
   const appInsights = getAppInsights();
 
