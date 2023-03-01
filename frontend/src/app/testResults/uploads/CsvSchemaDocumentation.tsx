@@ -154,7 +154,7 @@ const CsvSchemaDocumentation = () => {
   useEffect(() => {
     let currentUrl = window.location.href;
     document.title = getPageTitle(currentUrl);
-  });
+  }, [window.location.href, getPageTitle]);
 
   const appInsights = getAppInsights();
 
