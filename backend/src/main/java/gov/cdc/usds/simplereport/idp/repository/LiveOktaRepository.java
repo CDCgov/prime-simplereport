@@ -148,11 +148,11 @@ public class LiveOktaRepository implements OktaRepository {
         groupApi
             .listGroups(
                 null,
-                "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
                 null,
                 null,
                 null,
-                null)
+                null,
+                "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"")
             .stream();
     var qResults =
         groupApi
@@ -402,7 +402,7 @@ public class LiveOktaRepository implements OktaRepository {
       Map<String, Group> fullOrgGroupMap =
           groupApi
               .listGroups(
-                  null, "profile.name sw \"" + groupOrgPrefix + "\"", null, null, null, null)
+                  null, null, null, null, null, "profile.name sw \"" + groupOrgPrefix + "\"")
               .stream()
               .filter(g -> GroupType.OKTA_GROUP == g.getType())
               .collect(Collectors.toMap(g -> g.getProfile().getName(), Function.identity()));

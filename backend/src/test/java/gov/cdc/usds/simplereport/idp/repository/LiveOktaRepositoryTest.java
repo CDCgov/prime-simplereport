@@ -544,7 +544,7 @@ class LiveOktaRepositoryTest {
     var mockGroupList = new ArrayList<Group>();
     when(groupApi.listGroups(anyString(), isNull(), isNull(), isNull(), isNull(), isNull()))
         .thenReturn(mockGroupList);
-    when(groupApi.listGroups(isNull(), anyString(), isNull(), isNull(), isNull(), isNull()))
+    when(groupApi.listGroups(isNull(), isNull(), isNull(), isNull(), isNull(), anyString()))
         .thenReturn(mockGroupList);
 
     Throwable caught =
@@ -570,7 +570,7 @@ class LiveOktaRepositoryTest {
     var mockGroupList = List.of(mockGroup);
     when(groupApi.listGroups(anyString(), isNull(), isNull(), isNull(), isNull(), isNull()))
         .thenReturn(mockGroupList);
-    when(groupApi.listGroups(isNull(), anyString(), isNull(), isNull(), isNull(), isNull()))
+    when(groupApi.listGroups(isNull(), isNull(), isNull(), isNull(), isNull(), anyString()))
         .thenReturn(mockGroupList);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn("nonexistent");
@@ -669,7 +669,7 @@ class LiveOktaRepositoryTest {
     when(groupApi.listGroups(
             eq(groupProfilePrefix), isNull(), isNull(), isNull(), isNull(), isNull()))
         .thenReturn(mockGroupListQ);
-    when(groupApi.listGroups(isNull(), anyString(), isNull(), isNull(), isNull(), isNull()))
+    when(groupApi.listGroups(isNull(), isNull(), isNull(), isNull(), isNull(), anyString()))
         .thenReturn(mockGroupListSearch);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfileName);
@@ -784,11 +784,11 @@ class LiveOktaRepositoryTest {
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
     when(groupApi.listGroups(
             isNull(),
-            eq("profile.name sw \"" + groupOrgPrefix + "\""),
             isNull(),
             isNull(),
             isNull(),
-            isNull()))
+            isNull(),
+            eq("profile.name sw \"" + groupOrgPrefix + "\"")))
         .thenReturn(mockFullGroupList);
     when(mockAdminGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockAdminGroup.getProfile()).thenReturn(mockAdminGroupProfile);
@@ -889,11 +889,11 @@ class LiveOktaRepositoryTest {
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
     when(groupApi.listGroups(
             isNull(),
-            eq("profile.name sw \"" + groupOrgPrefix + "\""),
             isNull(),
             isNull(),
             isNull(),
-            isNull()))
+            isNull(),
+            eq("profile.name sw \"" + groupOrgPrefix + "\"")))
         .thenReturn(mockEmptyGroupList);
 
     Throwable caught =
@@ -936,11 +936,11 @@ class LiveOktaRepositoryTest {
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
     when(groupApi.listGroups(
             isNull(),
-            eq("profile.name sw \"" + groupOrgPrefix + "\""),
             isNull(),
             isNull(),
             isNull(),
-            isNull()))
+            isNull(),
+            eq("profile.name sw \"" + groupOrgPrefix + "\"")))
         .thenReturn(mockGroupList);
   }
 
