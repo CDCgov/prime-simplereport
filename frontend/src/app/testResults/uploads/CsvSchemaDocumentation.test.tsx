@@ -180,21 +180,20 @@ describe("CsvSchemaDocumentation tests", () => {
 
   describe("getPageTitle", () => {
     it("returns the default bulk results upload guide page title", () => {
-      const currentUrl = "/app/results/upload/submit/guide";
-      expect(getPageTitle(currentUrl)).toBe(
+      const hash = "";
+      expect(getPageTitle(hash)).toBe(
         "Bulk results upload guide | SimpleReport"
       );
     });
     it("returns 'formatting guidelines' in the page title when on guidelines section", () => {
-      const currentUrl =
-        "/app/results/upload/submit/guide#formatting-guidelines";
-      expect(getPageTitle(currentUrl)).toBe(
+      const hash = "#formatting-guidelines";
+      expect(getPageTitle(hash)).toBe(
         "Bulk results upload guide - formatting guidelines | SimpleReport"
       );
     });
     it("returns 'preparing upload' in the page title when on preparing upload section", () => {
-      const currentUrl = "/app/results/upload/submit/guide#preparing-upload";
-      expect(getPageTitle(currentUrl)).toBe(
+      const hash = "#preparing-upload";
+      expect(getPageTitle(hash)).toBe(
         "Bulk results upload guide - preparing upload | SimpleReport"
       );
     });
