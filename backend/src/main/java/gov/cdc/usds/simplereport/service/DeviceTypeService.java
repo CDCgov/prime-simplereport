@@ -63,7 +63,7 @@ public class DeviceTypeService {
     return deviceTypeRepository.findDeviceTypeByName(name);
   }
 
-//  @Transactional
+  //  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(UpdateDeviceType updateDevice) {
 
@@ -205,6 +205,13 @@ public class DeviceTypeService {
     return matcher.group(1);
   }
 
+  public List<UUID> getSpecimenTypeIdsFromDescription(LIVDResponse device) {
+    return device.getVendorSpecimenDescription().stream()
+        .map(this::parseVendorSpecimenDescription)
+        .map(SpecimenType::getInternalId)
+        .collect(Collectors.toList());
+  }
+
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   // TODO: void? List<DeviceType>?
@@ -230,13 +237,10 @@ public class DeviceTypeService {
                     // Have we seen this device before? Gets its specimens
                     if (!deviceSpecimens.containsKey(
                         device.getModel() + device.getManufacturer())) {
-                      List<UUID> specimens =
-                          device.getVendorSpecimenDescription().stream()
-                              .map(this::parseVendorSpecimenDescription)
-                              .map(SpecimenType::getInternalId)
-                              .collect(Collectors.toList());
 
-                      deviceSpecimens.put(device.getModel() + device.getManufacturer(), specimens);
+                      deviceSpecimens.put(
+                          device.getModel() + device.getManufacturer(),
+                          getSpecimenTypeIdsFromDescription(device));
                     }
 
                     var specimensForDevice =
@@ -273,6 +277,21 @@ public class DeviceTypeService {
             devicesToSync.put(deviceToSync, new ArrayList<>());
           }
 
+          if (!deviceSpecimens.containsKey(device.getModel() + device.getManufacturer())) {
+            Set<UUID> allSpecimenTypes =
+                deviceToSync.getSwabTypes().stream()
+                    .map(SpecimenType::getInternalId)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
+            var incomingSpecimenTypes = getSpecimenTypeIdsFromDescription(device);
+            if (!incomingSpecimenTypes.isEmpty()) {
+              allSpecimenTypes.addAll(incomingSpecimenTypes);
+            }
+
+            List<UUID> specimenTypesToAdd = new ArrayList<>(allSpecimenTypes);
+
+            deviceSpecimens.put(device.getModel() + device.getManufacturer(), specimenTypesToAdd);
+          }
+
           devicesToSync
               .get(deviceToSync)
               .add(
@@ -288,6 +307,19 @@ public class DeviceTypeService {
 
     devicesToSync.forEach(
         (device, testPerformed) -> {
+          // Preserve any existing specimen types for a device, even if it does not appear in the
+          // response
+          // Merge and de-duplicate existing and incoming device specimen types
+          /*
+          Set<UUID> allSpecimenTypes = device.getSwabTypes().stream().map(SpecimenType::getInternalId).collect(Collectors.toCollection(LinkedHashSet::new));
+          var incomingSpecimenTypes =deviceSpecimens.get(device.getModel() + device.getManufacturer());
+          if (!incomingSpecimenTypes.isEmpty()) {
+            allSpecimenTypes.addAll(incomingSpecimenTypes);
+          }
+
+          List<UUID> specimenTypesToAdd = new ArrayList<>(allSpecimenTypes);
+          */
+
           // RSV?? Other diseases?
           UpdateDeviceType input =
               UpdateDeviceType.builder()

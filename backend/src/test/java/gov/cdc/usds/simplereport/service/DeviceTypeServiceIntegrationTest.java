@@ -64,15 +64,14 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
                 .manufacturer("Manufacturer A")
                 .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
-//                .supportedDiseases(List.of(disease.getInternalId()))
-                    .supportedDiseaseTestPerformed(
-                            List.of(SupportedDiseaseTestPerformedInput.builder()
-                                    .supportedDisease(disease.getInternalId())
-                                    .testPerformedLoincCode("000000000")
-                                    .equipmentUid("Equipment Uid")
-                                    .testkitNameId("TestKit Uid")
-                                    .build())
-                    )
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease.getInternalId())
+                            .testPerformedLoincCode("000000000")
+                            .equipmentUid("Equipment Uid")
+                            .testkitNameId("TestKit Uid")
+                            .build()))
                 .testLength(1)
                 .build());
     devB =
@@ -85,17 +84,15 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
                 .manufacturer("Manufacturer B")
                 .loincCode("I")
                 .swabTypes(List.of(swab3.getInternalId()))
-                .supportedDiseases(List.of(disease.getInternalId()))
-                    .supportedDiseaseTestPerformed(
-                            List.of(SupportedDiseaseTestPerformedInput.builder()
-                                    .supportedDisease(disease.getInternalId())
-                                    .testPerformedLoincCode("258500001")
-                                    .equipmentUid("Equipment Uid")
-                                    .testkitNameId("TestKit Uid")
-                                    .build())
-                    )
-
-                    .testLength(2)
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease.getInternalId())
+                            .testPerformedLoincCode("258500001")
+                            .equipmentUid("Equipment Uid")
+                            .testkitNameId("TestKit Uid")
+                            .build()))
+                .testLength(2)
                 .build());
   }
 
