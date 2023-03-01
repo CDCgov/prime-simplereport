@@ -255,16 +255,13 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="usa-label"
                         for="1"
                       >
-                        <span>
-                          Device
-                        </span>
                         <span
                           class="usa-tooltip usa-text-with-tooltip"
                           data-testid="tooltipWrapper"
                         >
                           <button
                             aria-describedby="tooltip-211111"
-                            aria-label="Device tooltip"
+                            aria-label=""
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -272,6 +269,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             title=""
                             wrapperclasses="usa-text-with-tooltip"
                           >
+                            Device
                             <svg
                               alt-text="info"
                               aria-hidden="true"
@@ -672,16 +670,13 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="usa-label"
                         for="4"
                       >
-                        <span>
-                          Device
-                        </span>
                         <span
                           class="usa-tooltip usa-text-with-tooltip"
                           data-testid="tooltipWrapper"
                         >
                           <button
                             aria-describedby="tooltip-211111"
-                            aria-label="Device tooltip"
+                            aria-label=""
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -689,6 +684,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             title=""
                             wrapperclasses="usa-text-with-tooltip"
                           >
+                            Device
                             <svg
                               alt-text="info"
                               aria-hidden="true"
