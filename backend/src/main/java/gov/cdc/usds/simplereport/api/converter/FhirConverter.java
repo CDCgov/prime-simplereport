@@ -613,7 +613,11 @@ public class FhirConverter {
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(
-            organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl, gitProperties);
+            organizationFullUrl,
+            diagnosticReportFullUrl,
+            provenanceFullUrl,
+            gitProperties,
+            processingId);
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
@@ -668,9 +672,6 @@ public class FhirConverter {
                     .setFullUrl(pair.getFirst())
                     .setResource(pair.getSecond())));
 
-    bundle
-        .getMeta()
-        .addTag(PROCESSING_ID_SYSTEM, processingId, PROCESSING_ID_DISPLAY.get(processingId));
     return bundle;
   }
 
@@ -702,7 +703,8 @@ public class FhirConverter {
       String organizationUrl,
       String mainResourceUrl,
       String provenanceFullUrl,
-      GitProperties gitProperties) {
+      GitProperties gitProperties,
+      String processingId) {
     var messageHeader = new MessageHeader();
     messageHeader.setId(UUID.randomUUID().toString());
     messageHeader
@@ -737,6 +739,9 @@ public class FhirConverter {
         .addExtension()
         .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org")
         .setValue(new Reference(ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID));
+    messageHeader
+        .getMeta()
+        .addTag(PROCESSING_ID_SYSTEM, processingId, PROCESSING_ID_DISPLAY.get(processingId));
     return messageHeader;
   }
 }
