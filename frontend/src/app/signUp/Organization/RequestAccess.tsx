@@ -3,7 +3,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import { useDocumentTitle } from "../../utils/hooks";
 
 const RequestAccess = () => {
-  useDocumentTitle("Request access | SimpleReport");
+  useDocumentTitle("Request access");
 
   return (
     <CardBackground>

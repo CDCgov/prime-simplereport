@@ -9,4 +9,6 @@ public interface DeviceSpecimenTypeNewRepository
     extends CrudRepository<DeviceTypeSpecimenTypeMapping, UUID> {
 
   List<DeviceTypeSpecimenTypeMapping> findAllByDeviceTypeIdIn(Iterable<UUID> uuids);
+
+  List<DeviceTypeSpecimenTypeMapping> findAllByDeviceTypeId(UUID uuid);
 }

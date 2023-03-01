@@ -15,7 +15,7 @@ const Consent = () => {
   const { orgExternalId, firstName, middleName, lastName } =
     (useLocation().state as PersonalDetailsFormProps) || {};
   const [submitted, setSubmitted] = useState(false);
-  useDocumentTitle("Sign up - identity verification consent | SimpleReport");
+  useDocumentTitle("Sign up - identity verification consent");
 
   if (!orgExternalId || !firstName || !lastName) {
     return <Navigate to="/sign-up" />;

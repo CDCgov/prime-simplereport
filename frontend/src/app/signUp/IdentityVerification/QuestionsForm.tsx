@@ -38,7 +38,7 @@ const QuestionsForm: React.FC<Props> = ({
   timeToComplete,
   disableTimer,
 }) => {
-  useDocumentTitle("Sign up - identity verification | SimpleReport");
+  useDocumentTitle("Sign up - identity verification");
   const [answers, setAnswers] = useState<Nullable<Answers>>(
     initAnswers(questionSet)
   );

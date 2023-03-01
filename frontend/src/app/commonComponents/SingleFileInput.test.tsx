@@ -5,8 +5,7 @@ import SingleFileInput from "./SingleFileInput";
 
 const file = (text: BlobPart) => {
   const blob = new Blob([text]);
-  const file = new File([blob], "values.csv", { type: "text/csv" });
-  return file;
+  return new File([blob], "values.csv", { type: "text/csv" });
 };
 
 describe("Single File Input", () => {
@@ -35,6 +34,7 @@ describe("Single File Input", () => {
         ariaLabel="upload a file"
         onChange={handleOnChange}
         required={false}
+        ariaInvalid={false}
       />
     );
     expect(container).toMatchSnapshot();
@@ -48,6 +48,7 @@ describe("Single File Input", () => {
         ariaLabel="upload a file"
         onChange={handleOnChange}
         required={false}
+        ariaInvalid={false}
       />
     );
     const fileInput = screen.getByTestId("testId");
@@ -103,6 +104,7 @@ describe("Single File Input", () => {
         onChange={handleOnChange}
         required={true}
         accept=".csv, text/csv"
+        ariaInvalid={false}
       />
     );
     const fileInput = screen.getByTestId("testId");
@@ -113,5 +115,20 @@ describe("Single File Input", () => {
       target: { files: { item: jest.fn().mockReturnValue(file), length: 1 } },
     });
     expect(await screen.findByText(/This is not a valid file type/i));
+    expect(await screen.findByTestId("testId")).toBeInvalid();
+  });
+  it("checks input component when aria invalid is true", async () => {
+    render(
+      <SingleFileInput
+        id="testId"
+        name="testId"
+        ariaLabel="upload a file"
+        onChange={handleOnChange}
+        required={true}
+        accept=".csv, text/csv"
+        ariaInvalid={true}
+      />
+    );
+    expect(await screen.findByTestId("testId")).toBeInvalid();
   });
 });

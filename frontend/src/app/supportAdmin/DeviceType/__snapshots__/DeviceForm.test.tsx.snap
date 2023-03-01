@@ -293,7 +293,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="20"
+                        for="24"
                       >
                         Device name
                         <abbr
@@ -309,7 +309,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="20"
+                        id="24"
                         name="name"
                         type="text"
                         value=""
@@ -328,7 +328,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="21"
+                        for="25"
                       >
                         Model
                         <abbr
@@ -344,7 +344,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="21"
+                        id="25"
                         name="model"
                         type="text"
                         value=""
@@ -363,7 +363,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="22"
+                        for="26"
                       >
                         Manufacturer
                         <abbr
@@ -379,7 +379,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="22"
+                        id="26"
                         name="manufacturer"
                         type="text"
                         value=""
@@ -398,7 +398,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="23"
+                        for="27"
                       >
                         Test length (minutes)
                         <abbr
@@ -414,7 +414,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="23"
+                        id="27"
                         max="999"
                         min="0"
                         name="testLength"
@@ -435,8 +435,8 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="24"
-                        id="label-for-24"
+                        for="28"
+                        id="label-for-28"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -450,12 +450,12 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="24"
+                        id="28"
                       >
                         <input
                           aria-expanded="false"
                           aria-invalid="false"
-                          aria-labelledby="label-for-24"
+                          aria-labelledby="label-for-28"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -552,6 +552,13 @@ Object {
                     </div>
                   </div>
                 </div>
+                <fieldset
+                  class="usa-fieldset margin-top-205"
+                >
+                  <legend>
+                    Disease Information
+                  </legend>
+                </fieldset>
                 <div
                   class="grid-row grid-gap"
                 >
@@ -880,7 +887,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="20"
+                      for="24"
                     >
                       Device name
                       <abbr
@@ -896,7 +903,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="20"
+                      id="24"
                       name="name"
                       type="text"
                       value=""
@@ -915,7 +922,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="21"
+                      for="25"
                     >
                       Model
                       <abbr
@@ -931,7 +938,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="21"
+                      id="25"
                       name="model"
                       type="text"
                       value=""
@@ -950,7 +957,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="22"
+                      for="26"
                     >
                       Manufacturer
                       <abbr
@@ -966,7 +973,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="22"
+                      id="26"
                       name="manufacturer"
                       type="text"
                       value=""
@@ -985,7 +992,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="23"
+                      for="27"
                     >
                       Test length (minutes)
                       <abbr
@@ -1001,7 +1008,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="23"
+                      id="27"
                       max="999"
                       min="0"
                       name="testLength"
@@ -1022,8 +1029,8 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="24"
-                      id="label-for-24"
+                      for="28"
+                      id="label-for-28"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -1037,12 +1044,12 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="24"
+                      id="28"
                     >
                       <input
                         aria-expanded="false"
                         aria-invalid="false"
-                        aria-labelledby="label-for-24"
+                        aria-labelledby="label-for-28"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"
@@ -1139,6 +1146,13 @@ Object {
                   </div>
                 </div>
               </div>
+              <fieldset
+                class="usa-fieldset margin-top-205"
+              >
+                <legend>
+                  Disease Information
+                </legend>
+              </fieldset>
               <div
                 class="grid-row grid-gap"
               >

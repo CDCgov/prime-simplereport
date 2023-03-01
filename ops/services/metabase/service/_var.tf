@@ -18,7 +18,7 @@ variable "resource_group_location" {
   description = "App Service Location"
 }
 
-variable "app_service_plan_id" {
+variable "service_plan_id" {
   type        = string
   description = "App Service Plan ID"
 }

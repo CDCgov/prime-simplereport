@@ -70,8 +70,11 @@ describe("Uploads", () => {
         "The file 'values.csv' doesn't contain any valid data. File should have a header line and at least one line of data."
       )
     ).toBeInTheDocument();
-    const button = screen.getByTestId("button");
-    expect(button).toBeDisabled();
+    expect(screen.getByTestId("button")).toBeDisabled();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
 
   it("max row validation displays error message", async () => {
@@ -86,8 +89,11 @@ describe("Uploads", () => {
         "The file 'values.csv' has too many rows. The maximum number of rows is 10000."
       )
     ).toBeInTheDocument();
-    const button = screen.getByTestId("button");
-    expect(button).toBeDisabled();
+    expect(screen.getByTestId("button")).toBeDisabled();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
 
   it("max bytes validation displays error message", async () => {
@@ -102,8 +108,11 @@ describe("Uploads", () => {
         "The file 'values.csv' is too large. The maximum file size is 48,828.13k"
       )
     ).toBeInTheDocument();
-    const button = screen.getByTestId("button");
-    expect(button).toBeDisabled();
+    expect(screen.getByTestId("button")).toBeDisabled();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
 
   it("max item columns validation displays error message", async () => {
@@ -118,8 +127,11 @@ describe("Uploads", () => {
         "The file 'values.csv' has too many columns. The maximum number of allowed columns is 2000."
       )
     ).toBeInTheDocument();
-    const button = screen.getByTestId("button");
-    expect(button).toBeDisabled();
+    expect(screen.getByTestId("button")).toBeDisabled();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
 
   describe("on file upload", () => {
@@ -198,6 +210,13 @@ describe("Uploads", () => {
           },
         });
       });
+
+      it("input should be valid", () => {
+        expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+          "aria-invalid",
+          "false"
+        );
+      });
     });
 
     it("server upload failure displays error message", async () => {
@@ -224,6 +243,11 @@ describe("Uploads", () => {
           )
         ).toBeInTheDocument();
       });
+      expect(
+        screen.getByText(
+          "There was a server error. Your file has not been accepted."
+        ).parentElement?.parentElement
+      ).toHaveFocus();
       expect(screen.queryByText("Requested Edit")).not.toBeInTheDocument();
       expect(mockTrackEvent).toHaveBeenCalledWith({
         name: "Spreadsheet upload server error",

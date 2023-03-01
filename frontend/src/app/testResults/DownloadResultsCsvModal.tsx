@@ -1,16 +1,16 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Modal from "react-modal";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
 import { useFeature } from "flagged";
+import { ApolloError } from "@apollo/client";
 
 import { showError } from "../utils/srToast";
-import { useImperativeQuery } from "../utils/hooks";
 import { parseDataForCSV } from "../utils/testResultCSV";
 import Button from "../commonComponents/Button/Button";
 import {
-  GetFacilityResultsForCsvWithCountDocument,
+  useGetFacilityResultsForCsvWithCountLazyQuery,
   GetFacilityResultsForCsvWithCountQuery,
 } from "../../generated/graphql";
 
@@ -32,7 +32,6 @@ export const DownloadResultsCsvModal = ({
   activeFacilityId,
 }: DownloadResultsCsvModalProps) => {
   const rowsMaxLimit = 20000;
-  const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const csvLink = useRef<
     CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
@@ -60,32 +59,36 @@ export const DownloadResultsCsvModal = ({
     ...filterParams,
   };
 
-  const getResults = useImperativeQuery<GetFacilityResultsForCsvWithCountQuery>(
-    GetFacilityResultsForCsvWithCountDocument,
-    {
+  const [downloadTestResultsQuery, { loading }] =
+    useGetFacilityResultsForCsvWithCountLazyQuery({
+      variables,
       fetchPolicy: "no-cache",
-    }
-  );
+      onCompleted: (data: GetFacilityResultsForCsvWithCountQuery) =>
+        handleComplete(data),
+      onError: (error: ApolloError) => handleError(error),
+    });
 
-  const downloadResults = async () => {
-    const { data, error } = await getResults(variables);
-    if (error) {
-      showError("Error downloading results", error.message);
-      setLoading(false);
-    } else if (data.testResultsPage && data.testResultsPage.content) {
+  const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
+    if (data.testResultsPage && data.testResultsPage.content) {
       const csvResults = parseDataForCSV(
         data.testResultsPage.content,
         multiplexEnabled
       );
       setResults(csvResults);
-      setLoading(false);
-      csvLink?.current?.link.click();
-      closeModal();
     } else {
       showError("Unknown error downloading results");
-      setLoading(false);
     }
   };
+
+  const handleError = (error: ApolloError) => {
+    showError("Error downloading results", error.message);
+  };
+
+  // triggers the download of the file only after the csv data has been properly set
+  useEffect(() => {
+    csvLink?.current?.link.click();
+    closeModal();
+  }, [results]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const pluralizeRows = (entriesCount: number) => {
     return entriesCount > 1 ? "s" : "";
@@ -158,10 +161,7 @@ export const DownloadResultsCsvModal = ({
               label={disableDownload ? "Go back" : "No, go back"}
             />
             <Button
-              onClick={async () => {
-                setLoading(true);
-                downloadResults();
-              }}
+              onClick={() => downloadTestResultsQuery()}
               disabled={disableDownload}
               icon={faDownload}
               label={loading ? "Loading..." : "Download results"}
@@ -172,6 +172,9 @@ export const DownloadResultsCsvModal = ({
               className="hidden"
               ref={csvLink}
               target="_blank"
+              rel="noopener noreferrer"
+              tabIndex={-1}
+              aria-hidden={true}
             />
           </div>
         </div>

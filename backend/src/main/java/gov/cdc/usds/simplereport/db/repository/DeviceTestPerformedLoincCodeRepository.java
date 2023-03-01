@@ -8,5 +8,8 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface DeviceTestPerformedLoincCodeRepository
     extends CrudRepository<DeviceTestPerformedLoincCode, UUID> {
+  @Override
+  List<DeviceTestPerformedLoincCode> findAll();
+
   List<DeviceTestPerformedLoincCode> findAllByDeviceTypeIdIn(Set<UUID> deviceTypeInternalIds);
 }

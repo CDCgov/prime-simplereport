@@ -83,7 +83,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    implementation 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
+    implementation 'org.hibernate.orm:hibernate-jpamodelgen:6.1.7.Final'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
@@ -114,7 +114,6 @@ dependencies {
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
-    testImplementation 'org.awaitility:awaitility:4.1.0'
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -128,7 +127,8 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.4'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:5.6.97' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://security.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3245104.
 }
 
 dependencyManagement {

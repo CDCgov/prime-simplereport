@@ -514,6 +514,13 @@ Object {
                     </div>
                   </div>
                 </div>
+                <fieldset
+                  class="usa-fieldset margin-top-205"
+                >
+                  <legend>
+                    Disease Information
+                  </legend>
+                </fieldset>
                 <div
                   class="grid-row grid-gap"
                 >
@@ -1066,6 +1073,13 @@ Object {
                   </div>
                 </div>
               </div>
+              <fieldset
+                class="usa-fieldset margin-top-205"
+              >
+                <legend>
+                  Disease Information
+                </legend>
+              </fieldset>
               <div
                 class="grid-row grid-gap"
               >

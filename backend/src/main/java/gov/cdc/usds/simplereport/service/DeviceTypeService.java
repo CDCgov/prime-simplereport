@@ -6,12 +6,12 @@ import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -37,7 +37,7 @@ public class DeviceTypeService {
       "swab type has been deleted and cannot be used";
   private final DeviceTypeRepository deviceTypeRepository;
   private final DataHubClient client;
-  private final DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
+  private final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
   private final DiseaseService diseaseService;
@@ -98,25 +98,28 @@ public class DeviceTypeService {
             }
           });
 
-      List<DeviceSpecimenType> newDeviceSpecimenTypes =
+      List<DeviceTypeSpecimenTypeMapping> newDeviceSpecimenTypes =
           updatedSpecimenTypes.stream()
-              .map(specimenType -> new DeviceSpecimenType(device, specimenType))
+              .map(
+                  specimenType ->
+                      new DeviceTypeSpecimenTypeMapping(
+                          device.getInternalId(), specimenType.getInternalId()))
               .collect(Collectors.toList());
 
-      List<DeviceSpecimenType> exitingDeviceSpecimenTypes =
-          deviceSpecimenTypeRepository.findAllByDeviceType(device);
+      List<DeviceTypeSpecimenTypeMapping> exitingDeviceSpecimenTypes =
+          deviceSpecimenTypeNewRepository.findAllByDeviceTypeId(device.getInternalId());
 
       // delete old ones
-      ArrayList<DeviceSpecimenType> toBeDeletedDeviceSpecimenTypes =
+      ArrayList<DeviceTypeSpecimenTypeMapping> toBeDeletedDeviceSpecimenTypes =
           new ArrayList<>(exitingDeviceSpecimenTypes);
       toBeDeletedDeviceSpecimenTypes.removeAll(newDeviceSpecimenTypes);
-      deviceSpecimenTypeRepository.deleteAll(toBeDeletedDeviceSpecimenTypes);
+      deviceSpecimenTypeNewRepository.deleteAll(toBeDeletedDeviceSpecimenTypes);
 
       // create new ones
-      ArrayList<DeviceSpecimenType> toBeAddedDeviceSpecimenTypes =
+      ArrayList<DeviceTypeSpecimenTypeMapping> toBeAddedDeviceSpecimenTypes =
           new ArrayList<>(newDeviceSpecimenTypes);
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
-      deviceSpecimenTypeRepository.saveAll(toBeAddedDeviceSpecimenTypes);
+      deviceSpecimenTypeNewRepository.saveAll(toBeAddedDeviceSpecimenTypes);
     }
     if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
       var deviceTestPerformedLoincCodeList =
@@ -167,8 +170,10 @@ public class DeviceTypeService {
                 createDevice.getTestLength()));
 
     specimenTypes.stream()
-        .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
-        .forEach(deviceSpecimenTypeRepository::save);
+        .map(
+            specimenType ->
+                new DeviceTypeSpecimenTypeMapping(dt.getInternalId(), specimenType.getInternalId()))
+        .forEach(deviceSpecimenTypeNewRepository::save);
 
     if (createDevice.getSupportedDiseaseTestPerformed() != null) {
       var deviceTestPerformedLoincCodeList =

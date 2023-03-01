@@ -130,9 +130,12 @@ Object {
                   Download results
                 </button>
                 <a
+                  aria-hidden="true"
                   class="hidden"
                   download="simplereport-test-results.csv"
                   href="data:text/csv;charset=utf-8,﻿"
+                  rel="noopener noreferrer"
+                  tabindex="-1"
                   target="_self"
                 />
               </div>
@@ -269,9 +272,12 @@ Object {
                 Download results
               </button>
               <a
+                aria-hidden="true"
                 class="hidden"
                 download="simplereport-test-results.csv"
                 href="data:text/csv;charset=utf-8,﻿"
+                rel="noopener noreferrer"
+                tabindex="-1"
                 target="_self"
               />
             </div>
@@ -463,9 +469,12 @@ Object {
                   Download results
                 </button>
                 <a
+                  aria-hidden="true"
                   class="hidden"
                   download="simplereport-test-results.csv"
                   href="data:text/csv;charset=utf-8,﻿"
+                  rel="noopener noreferrer"
+                  tabindex="-1"
                   target="_self"
                 />
               </div>
@@ -601,9 +610,12 @@ Object {
                 Download results
               </button>
               <a
+                aria-hidden="true"
                 class="hidden"
                 download="simplereport-test-results.csv"
                 href="data:text/csv;charset=utf-8,﻿"
+                rel="noopener noreferrer"
+                tabindex="-1"
                 target="_self"
               />
             </div>
@@ -786,9 +798,12 @@ Object {
                   Download results
                 </button>
                 <a
+                  aria-hidden="true"
                   class="hidden"
                   download="simplereport-test-results.csv"
                   href="data:text/csv;charset=utf-8,﻿"
+                  rel="noopener noreferrer"
+                  tabindex="-1"
                   target="_self"
                 />
               </div>
@@ -915,9 +930,12 @@ Object {
                 Download results
               </button>
               <a
+                aria-hidden="true"
                 class="hidden"
                 download="simplereport-test-results.csv"
                 href="data:text/csv;charset=utf-8,﻿"
+                rel="noopener noreferrer"
+                tabindex="-1"
                 target="_self"
               />
             </div>

@@ -41,6 +41,7 @@ import java.util.UUID;
 public class TestEventExport {
   private static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
   public static final String USA = "USA";
+  private String processingModeCode = "P";
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;
@@ -60,6 +61,11 @@ public class TestEventExport {
 
     this.deviceType = Optional.ofNullable(testEvent.getDeviceType());
     this.specimenType = Optional.ofNullable(testEvent.getSpecimenType());
+  }
+
+  public TestEventExport(TestEvent testEvent, String processingModeCode) {
+    this(testEvent);
+    this.processingModeCode = processingModeCode;
   }
 
   private String genderUnknown = "U";
@@ -482,9 +488,7 @@ public class TestEventExport {
 
   @JsonProperty("Processing_mode_code")
   public String getFacilityProcessingModeCode() {
-    // todo: this should check a facility attribute to see what mode it's in. (or a separate table
-    // of prod-ready fac)
-    return "P"; // D:Debugging P:Production T:Training
+    return processingModeCode; // D:Debugging P:Production T:Training
   }
 
   @JsonProperty("Ordering_facility_city")

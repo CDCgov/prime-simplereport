@@ -19,10 +19,10 @@
   },
   "dependencies": {
     "@azure/functions": "^1.2.3",
-    "@azure/identity": "^1.5.2",
     "@azure/storage-queue": "^12.6.0",
     "applicationinsights": "^2.1.6",
     "csv-stringify": "^5.6.5",
+    "jsonwebtoken": "^9.0.0",
     "node-fetch": "2.6.6"
   },
   "devDependencies": {

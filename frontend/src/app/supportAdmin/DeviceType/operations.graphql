@@ -74,6 +74,8 @@ query getDeviceTypeList{
         name
       }
       testPerformedLoincCode
+      testkitNameId
+      equipmentUid
     }
     testLength
   }

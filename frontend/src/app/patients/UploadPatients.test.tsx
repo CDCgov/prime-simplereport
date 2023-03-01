@@ -168,6 +168,10 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "false"
+    );
   });
   it("should show error message with a link to the patient bulk upload guide and list errors if error occurs", async () => {
     renderUploadPatients();
@@ -181,15 +185,17 @@ describe("Upload Patient", () => {
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        "Please resolve the errors below and upload your edited file.",
-        { exact: false }
-      )
+      await screen.findByText("Please resolve the errors below and", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
     expect(await screen.findByText("Row(s): 0, 1, 2")).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
-
   it("should show error message and list errors even if error info is incomplete", async () => {
     const incompleteResponseBody = {
       status: "FAILURE",
@@ -214,10 +220,9 @@ describe("Upload Patient", () => {
     ).toBeInTheDocument();
 
     expect(
-      await screen.findByText(
-        "Please resolve the errors below and upload your edited file.",
-        { exact: false }
-      )
+      await screen.findByText("Please resolve the errors below and", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     expect(
       await screen.findByText("properly formed error")
@@ -236,6 +241,10 @@ describe("Upload Patient", () => {
     expect(supportLink.href).toContain(
       "/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
     );
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
   it("should show error message if 500 is returned", async () => {
     renderUploadPatients();
@@ -250,6 +259,10 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
   it("should show error message if 200 but is a failure with no message", async () => {
     renderUploadPatients();
@@ -270,6 +283,10 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
   it("should show size error for large files", async () => {
     renderUploadPatients();
@@ -279,6 +296,10 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File too large")
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
   it("should show size error for file with too many rows", async () => {
     renderUploadPatients();
@@ -288,6 +309,10 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File too large")
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
   it("should close success message when close is clicked", async () => {
     renderUploadPatients();
@@ -359,10 +384,9 @@ describe("Upload Patient", () => {
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(
-        "Please resolve the errors below and upload your edited file.",
-        { exact: false }
-      )
+      await screen.findByText("Please resolve the errors below and", {
+        exact: false,
+      })
     ).toBeInTheDocument();
     expect(
       await screen.findByText(
@@ -374,6 +398,10 @@ describe("Upload Patient", () => {
     expect(
       screen.queryByText("Uploading patient information...")
     ).not.toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
   });
   describe("handle file change", () => {
     it("should do nothing if no file was added", async () => {
@@ -401,6 +429,10 @@ describe("Upload Patient", () => {
       expect(
         screen.getByText("Drag file here or choose from folder to change file")
       ).toBeInTheDocument();
+      expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+        "aria-invalid",
+        "false"
+      );
     });
   });
 });

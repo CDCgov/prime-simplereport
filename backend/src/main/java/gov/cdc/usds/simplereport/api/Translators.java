@@ -277,10 +277,11 @@ public class Translators {
 
   private static final Map<String, Boolean> YES_NO =
       Map.of("y", true, "yes", true, "n", false, "no", false, "true", true, "false", false);
+  private static final Set<String> UNK = Set.of("unk", "unknown");
 
-  public static Boolean parseYesNo(String v) {
+  public static Boolean parseYesNoUnk(String v) {
     String stringValue = parseString(v);
-    if (stringValue == null) {
+    if (stringValue == null || UNK.contains(stringValue.toLowerCase())) {
       return null;
     }
     Boolean boolValue = YES_NO.get(stringValue.toLowerCase());
