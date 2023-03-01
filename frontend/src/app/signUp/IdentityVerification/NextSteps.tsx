@@ -3,7 +3,7 @@ import { CardBackground } from "../../commonComponents/CardBackground/CardBackgr
 import { useDocumentTitle } from "../../utils/hooks";
 
 const NextSteps = () => {
-  useDocumentTitle("Sign up - schedule call | SimpleReport");
+  useDocumentTitle("Sign up - schedule call");
 
   return (
     <CardBackground>

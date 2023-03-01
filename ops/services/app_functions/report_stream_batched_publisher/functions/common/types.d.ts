@@ -1,3 +1,6 @@
+import { TelemetryClient } from "applicationinsights";
+import { Context } from "@azure/functions";
+
 interface ReportingDestination {
   organization: string;
   organization_id: string;
@@ -41,4 +44,18 @@ export interface SimpleReportReportStreamResponse {
 export interface ReportStreamCallbackRequest
   extends SimpleReportReportStreamResponse {
   queueName: string;
+}
+
+export interface ReportStreamTokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  expires_at_seconds: number;
+  scope: string;
+  sub: string;
+}
+
+export interface publisherLogging {
+  telemetry: TelemetryClient;
+  context: Context;
 }

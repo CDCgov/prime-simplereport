@@ -15,7 +15,11 @@ module "metric_alerts" {
     "frontend_error_boundary",
     "batched_uploader_single_failure_detected",
     "batched_uploader_function_not_triggering",
-    "mem_util"
+    "mem_util",
+    "fhir_batched_uploader_single_failure_detected",
+    "fhir_batched_uploader_function_not_triggering",
+    "function_app_memory_alert",
+    "fhir_function_app_duration_alert",
   ]
 
   action_group_ids = [

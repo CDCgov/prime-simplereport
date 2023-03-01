@@ -4,7 +4,7 @@
   "meta": {
     "tag": [
       {
-        "system": "http://terminology.hl7.org/CodeSystem/v3-ProcessingID",
+        "system": "http://terminology.hl7.org/CodeSystem/v2-0103",
         "code": "P",
         "display": "Production"
       }
