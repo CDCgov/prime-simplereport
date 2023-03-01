@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConstructorBinding;
@@ -74,6 +75,23 @@ public class DeviceType extends EternalAuditedEntity {
     this.model = model;
     this.loincCode = loincCode;
     this.swabType = swabType;
+    this.testLength = testLength;
+  }
+
+  @Builder
+  public DeviceType(
+      String name,
+      String manufacturer,
+      String model,
+      String loincCode,
+      int testLength,
+      List<SpecimenType> swabTypes) {
+    super();
+    this.name = name;
+    this.manufacturer = manufacturer;
+    this.model = model;
+    this.loincCode = loincCode;
+    this.swabTypes = swabTypes;
     this.testLength = testLength;
   }
 

@@ -59,7 +59,7 @@ const OrganizationForm = () => {
   const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
   const [orgExternalId, setOrgExternalId] = useState("");
-  useDocumentTitle("Sign up - organization information | SimpleReport");
+  useDocumentTitle("Sign up - organization information");
 
   const onDetailChange =
     (field: keyof OrganizationCreateRequest) =>

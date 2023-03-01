@@ -10,8 +10,9 @@ import {
 } from "../common/queueHandlers";
 import { FHIRTestEventsBatch, processTestEvents } from "./dataHandlers";
 import {
+  getReportStreamAuthToken,
   handleReportStreamResponse,
-  reportToUniversalPipeline,
+  reportToUniversalPipelineTokenBased,
 } from "../common/reportingHandlers";
 
 const {
@@ -55,6 +56,13 @@ const FHIRTestEventReporter: AzureFunction = async function (
     tagOverrides,
   });
 
+  if (messages.length === 0) {
+    context.log(
+      `Queue: ${publishingQueue.name}. Messages Dequeued: ${messages.length}; aborting.`
+    );
+    return;
+  }
+
   const fhirTestEventsBatches: FHIRTestEventsBatch[] = processTestEvents(
     messages,
     FHIR_BATCH_SIZE_LIMIT
@@ -64,10 +72,12 @@ const FHIRTestEventReporter: AzureFunction = async function (
     `Queue: ${publishingQueue.name}. Processing ${fhirTestEventsBatches.length} batch(s);`
   );
 
+  const bearerToken = await getReportStreamAuthToken(context);
+
   const fhirPublishingTasks: Promise<void>[] = fhirTestEventsBatches.map(
     (testEventBatch: FHIRTestEventsBatch, idx: number) => {
       // creates and returns a publishing task
-      return new Promise<void>((resolve) => {
+      return new Promise<void>((resolve, reject) => {
         (async () => {
           try {
             if (testEventBatch.parseFailureCount > 0) {
@@ -99,9 +109,11 @@ const FHIRTestEventReporter: AzureFunction = async function (
               } records in batch ${idx + 1} to ReportStream`
             );
 
-            const postResult: Response = await reportToUniversalPipeline(
-              testEventBatch.testEventsNDJSON
-            );
+            const postResult: Response =
+              await reportToUniversalPipelineTokenBased(
+                bearerToken,
+                testEventBatch.testEventsNDJSON
+              );
 
             const uploadStart = new Date().getTime();
             telemetry.trackDependency({
@@ -120,32 +132,60 @@ const FHIRTestEventReporter: AzureFunction = async function (
 
             await handleReportStreamResponse(
               postResult,
-              context,
               messages,
               testEventBatch.parseFailure,
               publishingQueue,
               exceptionQueue,
-              publishingErrorQueue
+              publishingErrorQueue,
+              { telemetry, context }
             );
+            return resolve();
           } catch (e) {
-            context.log(
+            context.log.error(
               `Queue: ${publishingQueue.name}. Publishing tasks for batch ${
                 idx + 1
               } failed unexpectedly; ${e}`
             );
+
+            return reject(e);
           }
-          return resolve();
         })();
       });
     }
   );
 
   // triggers all the publishing tasks
-  await Promise.allSettled(fhirPublishingTasks);
-
-  context.log(
-    `Queue: ${publishingQueue.name}. All ${fhirTestEventsBatches.length} batch(es) published;`
+  const publishingResults = await Promise.allSettled(fhirPublishingTasks);
+  const fulfilledPublishing = publishingResults.filter(
+    (
+      publishingStatus: PromiseSettledResult<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+    ) => publishingStatus.status === "fulfilled"
   );
+  const rejectedPublishing = publishingResults.filter(
+    (
+      publishingStatus: PromiseSettledResult<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+    ) => publishingStatus.status === "rejected"
+  );
+
+  if (fulfilledPublishing.length > 0) {
+    context.log(
+      `Queue: ${publishingQueue.name}. ${fulfilledPublishing.length} batch(es) out of ${fhirPublishingTasks.length} were published successfully;`
+    );
+  }
+
+  if (rejectedPublishing.length > 0) {
+    context.log.error(
+      `Queue: ${publishingQueue.name}. ${rejectedPublishing.length} batch(es) out of ${fhirPublishingTasks.length} were not published;`
+    );
+
+    throw new Error(
+      `[${rejectedPublishing
+        .map((rejected: PromiseRejectedResult) =>
+          JSON.stringify(rejected.reason)
+        )
+        .join(", ")}]`
+    );
+  }
 };
 
 export default FHIRTestEventReporter;

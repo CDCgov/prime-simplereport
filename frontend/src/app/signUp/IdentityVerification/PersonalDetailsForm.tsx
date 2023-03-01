@@ -53,7 +53,7 @@ const PersonalDetailsForm = ({
   const [saving, setSaving] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  useDocumentTitle("Sign up - personal details | SimpleReport");
+  useDocumentTitle("Sign up - personal details");
 
   const onDetailChange =
     (field: keyof IdentityVerificationRequest) =>

@@ -21,12 +21,18 @@ module "metric_alerts" {
     "db_query_duration_over_time_window",
     "db_connection_exhaustion",
     "batched_uploader_single_failure_detected",
-    "batched_uploader_function_not_triggering"
+    "batched_uploader_function_not_triggering",
+    "fhir_batched_uploader_single_failure_detected",
+    "fhir_batched_uploader_function_not_triggering",
+    "function_app_memory_alert",
+    "fhir_function_app_duration_alert"
+
   ]
 
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
+  function_id = module.report_stream_reporting_functions.azurerm_linux_function_app_id
 
   database_id = data.terraform_remote_state.persistent_dev3.outputs.postgres_server_id
 }
