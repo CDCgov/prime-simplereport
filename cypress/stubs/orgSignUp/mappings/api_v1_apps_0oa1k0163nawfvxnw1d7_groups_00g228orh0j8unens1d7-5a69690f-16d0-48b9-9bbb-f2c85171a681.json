@@ -3,11 +3,7 @@
   "name" : "api_v1_apps_0oa1k0163nawfvxnw1d7_groups_00g228orh0j8unens1d7",
   "request" : {
     "url" : "/api/v1/apps/0oa1k0163nAwfVxNW1d7/groups/00g228orh0J8UNens1d7",
-    "method" : "PUT",
-    "bodyPatterns" : [ {
-      "ignoreArrayOrder" : true,
-      "ignoreExtraElements" : true
-    } ]
+    "method" : "PUT"
   },
   "response" : {
     "status" : 200,
