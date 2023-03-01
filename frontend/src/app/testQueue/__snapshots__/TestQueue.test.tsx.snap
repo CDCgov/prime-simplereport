@@ -309,21 +309,25 @@ exports[`TestQueue should render the test queue 1`] = `
                         name="testDevice"
                       >
                         <option
+                          aria-selected="false"
                           value="5c711888-ba37-4b2e-b347-311ca364efdb"
                         >
                           Abbott BinaxNow
                         </option>
                         <option
+                          aria-selected="false"
                           value="32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10"
                         >
                           BD Veritor
                         </option>
                         <option
+                          aria-selected="true"
                           value="ee4f40b7-ac32-4709-be0a-56dd77bb9609"
                         >
                           LumiraDX
                         </option>
                         <option
+                          aria-selected="false"
                           value="67109f6f-eaee-49d3-b8ff-c61b79a9da8e"
                         >
                           Multiplex
@@ -351,11 +355,13 @@ exports[`TestQueue should render the test queue 1`] = `
                         name="swabType"
                       >
                         <option
+                          aria-selected="false"
                           value="f127ef55-4133-4556-9bca-33615d071e8d"
                         >
                           Nasopharyngeal swab
                         </option>
                         <option
+                          aria-selected="true"
                           value="8596682d-6053-4720-8a39-1f5d19ff4ed9"
                         >
                           Swab of internal nose
@@ -720,21 +726,25 @@ exports[`TestQueue should render the test queue 1`] = `
                         name="testDevice"
                       >
                         <option
+                          aria-selected="false"
                           value="5c711888-ba37-4b2e-b347-311ca364efdb"
                         >
                           Abbott BinaxNow
                         </option>
                         <option
+                          aria-selected="false"
                           value="32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10"
                         >
                           BD Veritor
                         </option>
                         <option
+                          aria-selected="true"
                           value="ee4f40b7-ac32-4709-be0a-56dd77bb9609"
                         >
                           LumiraDX
                         </option>
                         <option
+                          aria-selected="false"
                           value="67109f6f-eaee-49d3-b8ff-c61b79a9da8e"
                         >
                           Multiplex
@@ -762,11 +772,13 @@ exports[`TestQueue should render the test queue 1`] = `
                         name="swabType"
                       >
                         <option
+                          aria-selected="false"
                           value="f127ef55-4133-4556-9bca-33615d071e8d"
                         >
                           Nasopharyngeal swab
                         </option>
                         <option
+                          aria-selected="true"
                           value="8596682d-6053-4720-8a39-1f5d19ff4ed9"
                         >
                           Swab of internal nose
