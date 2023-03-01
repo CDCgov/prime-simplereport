@@ -5,7 +5,6 @@
     "url" : "/api/v1/apps/0oa1k0163nAwfVxNW1d7/groups/00g228orh0J8UNens1d7",
     "method" : "PUT",
     "bodyPatterns" : [ {
-      "equalToJson" : "{}",
       "ignoreArrayOrder" : true,
       "ignoreExtraElements" : true
     } ]
