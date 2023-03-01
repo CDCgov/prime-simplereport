@@ -1140,7 +1140,7 @@ class FhirConverterTest {
                 .getReference())
         .isEqualTo("Organization/" + organization.getId());
     assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getRequester().getReference())
-        .contains("Organization/");
+        .contains("PractitionerRole/");
 
     var diagnosticReportEntry =
         actual.getEntry().stream()

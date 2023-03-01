@@ -316,7 +316,7 @@
           "reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
         },
         "requester":{
-          "reference":"Organization/1c3d14b9-e222-4a16-9fb2-d9f173034a6a"
+          "reference":"PractitionerRole/$PRACTITIONER_ROLE_ID"
         },
         "performer":[
           {

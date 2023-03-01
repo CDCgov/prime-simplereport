@@ -626,7 +626,7 @@ public class FhirConverter {
 
     serviceRequest.setSubject(new Reference(patientFullUrl));
     serviceRequest.addPerformer(new Reference(organizationFullUrl));
-    serviceRequest.setRequester(new Reference(organizationFullUrl));
+    serviceRequest.setRequester(new Reference(practitionerRoleFullUrl));
     diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
     diagnosticReport.setSubject(new Reference(patientFullUrl));
     diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
