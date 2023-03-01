@@ -6,8 +6,9 @@ import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
+import { getFacilityIdFromUrl } from "../../utils/url";
 
-import schema from "./schema.json";
+import { schemaBuilder } from "./schemaBuilder";
 
 export type CsvSchemaItem = {
   name: string;
@@ -39,19 +40,19 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
       >
         {item.name}
         {item.required && (
-          <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-ttbottom">
+          <span className="text-normal bg-white border-1px border-secondary font-body-3xs padding-x-1 padding-y-05 text-secondary margin-left-2 text-bottom">
             Required
           </span>
         )}
 
         {!item.required && item.requested && (
-          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom">
+          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
             Requested
           </span>
         )}
 
         {!item.required && !item.requested && (
-          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-ttbottom">
+          <span className="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom">
             Optional
           </span>
         )}
@@ -138,7 +139,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
   );
 };
 
-export function getPageTitle(hash: string) {
+export const getPageTitle = (hash: string) => {
   let srPageTitle = " | SimpleReport";
   let bulkResultsPageTitle = "Bulk results upload guide";
   if (hash === "#preparing-upload") {
@@ -148,7 +149,7 @@ export function getPageTitle(hash: string) {
   } else {
     return bulkResultsPageTitle + srPageTitle;
   }
-}
+};
 
 /* eslint-disable jsx-a11y/anchor-has-content */
 const CsvSchemaDocumentation = () => {
@@ -160,6 +161,8 @@ const CsvSchemaDocumentation = () => {
   }, [location, pageTitle]);
 
   const appInsights = getAppInsights();
+  const activeFacilityId = getFacilityIdFromUrl(location);
+  const schema = schemaBuilder(activeFacilityId);
 
   return (
     <div className="prime-container card-container csv-guide-container">
