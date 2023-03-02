@@ -363,6 +363,7 @@ const CsvSchemaDocumentation = () => {
                       return (
                         <CsvSchemaDocumentationItem
                           item={item}
+                          key={item.name}
                           className="rs-documentation__values margin-top-6"
                         />
                       );

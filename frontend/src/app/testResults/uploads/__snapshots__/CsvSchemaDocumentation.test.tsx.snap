@@ -23,8 +23,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
             />
           </svg>
           <a
-            class="margin-left-05"
-            href="/results/upload/submit"
+            aria-current="page"
+            class="margin-left-05 active"
+            href="/results/upload/submit?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483"
           >
             Upload spreadsheet
           </a>
@@ -115,7 +116,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
           <li>
             <a
               class=""
-              href="/results/upload/submit/code-lookup"
+              href="/results/upload/submit/code-lookup?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483"
             >
               Device code lookup tool
             </a>
@@ -2027,7 +2028,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   Find your device on the 
                   <a
                     class="usa-link"
-                    href="/app/results/upload/submit/code-lookup?facility="
+                    href="/app/results/upload/submit/code-lookup?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2148,7 +2149,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   Find your device on the 
                   <a
                     class="usa-link"
-                    href="/app/results/upload/submit/code-lookup?facility="
+                    href="/app/results/upload/submit/code-lookup?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2291,7 +2292,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   Use one of the common values below, or find your device on the 
                   <a
                     class="usa-link"
-                    href="/app/results/upload/submit/code-lookup?facility="
+                    href="/app/results/upload/submit/code-lookup?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -2958,7 +2959,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   Use one of the common values below, or find your device on the 
                   <a
                     class="usa-link"
-                    href="/app/results/upload/submit/code-lookup?facility="
+                    href="/app/results/upload/submit/code-lookup?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483"
                     rel="noreferrer noopener"
                     target="_blank"
                   >
@@ -3997,7 +3998,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   class=""
                 >
                   <em>
-                    1234 America Ln
+                    1234 America St
                   </em>
                 </li>
               </ul>
@@ -4055,7 +4056,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   class=""
                 >
                   <em>
-                    Unit 3
+                    Unit 4
                   </em>
                 </li>
               </ul>
@@ -4114,7 +4115,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   class="bullet-list"
                 >
                   <em>
-                    Los Angeles
+                    Dallas
                   </em>
                 </li>
                 <li
@@ -4195,7 +4196,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   class="bullet-list"
                 >
                   <em>
-                    TX
+                    FL
                   </em>
                 </li>
                 <li
@@ -4276,7 +4277,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   class="bullet-list"
                 >
                   <em>
-                    12345
+                    54321
                   </em>
                 </li>
                 <li
@@ -4356,7 +4357,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   class=""
                 >
                   <em>
-                    123-456-7890
+                    123-654-7890
                   </em>
                 </li>
               </ul>
@@ -6311,8 +6312,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               Visit the
                
               <a
-                class=""
-                href="/results/upload/submit"
+                aria-current="page"
+                class="active"
+                href="/results/upload/submit?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483"
               >
                 "Upload spreadsheet"
               </a>
