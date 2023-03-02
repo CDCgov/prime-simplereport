@@ -454,10 +454,12 @@ public class FhirConverter {
     } else {
       // user reported as symptomatic
       observations.add(createAOEObservation(symptomaticCode, createYesNoUnkValue(true)));
-      observations.add(
-          createAOEObservation(
-              createCodeWithLoinc("11368-8", "Illness or injury onset date and time"),
-              new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
+      if (surveyData.getSymptomOnsetDate() != null) {
+        observations.add(
+            createAOEObservation(
+                createCodeWithLoinc("11368-8", "Illness or injury onset date and time"),
+                new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
+      }
     }
     // todo: add if pregnant (not required)
     return observations;
