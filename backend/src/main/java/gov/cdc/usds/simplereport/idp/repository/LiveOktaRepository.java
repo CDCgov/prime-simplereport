@@ -166,6 +166,9 @@ public class LiveOktaRepository implements OktaRepository {
             "Cannot add Okta user to nonexistent organization=%s", organizationExternalId));
     Set<String> orgGroupNames =
         orgGroups.stream().map(g -> g.getProfile().getName()).collect(Collectors.toSet());
+    System.out.println("QRESULTS" + qResults);
+    System.out.println("SEARCHRESULTS" + searchResults);
+    System.out.println("GROUP NAMES" + orgGroupNames);
     groupNamesToAdd.stream()
         .filter(n -> !orgGroupNames.contains(n))
         .forEach(
