@@ -396,6 +396,66 @@ Object {
                       </div>
                     </div>
                     <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="8"
+                        >
+                          Testkit Name Id
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
+                          >
+                             
+                            *
+                          </abbr>
+                        </label>
+                        <input
+                          aria-disabled="false"
+                          aria-required="true"
+                          class="usa-input"
+                          id="8"
+                          name="testkitNameId0"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
+                      class="tablet:grid-col"
+                    >
+                      <div
+                        class="usa-form-group margin-top-1"
+                      >
+                        <label
+                          class="usa-label"
+                          for="9"
+                        >
+                          Equipment Uid
+                          <abbr
+                            class="usa-hint usa-hint--required"
+                            title="required"
+                          >
+                             
+                            *
+                          </abbr>
+                        </label>
+                        <input
+                          aria-disabled="false"
+                          aria-required="true"
+                          class="usa-input"
+                          id="9"
+                          name="equipmentUid0"
+                          type="text"
+                          value=""
+                        />
+                      </div>
+                    </div>
+                    <div
                       class="flex-align-self-end"
                     >
                       <div
@@ -833,6 +893,66 @@ Object {
                         class="usa-input"
                         id="7"
                         name="testPerformedCode0"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group margin-top-1"
+                    >
+                      <label
+                        class="usa-label"
+                        for="8"
+                      >
+                        Testkit Name Id
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="false"
+                        aria-required="true"
+                        class="usa-input"
+                        id="8"
+                        name="testkitNameId0"
+                        type="text"
+                        value=""
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="tablet:grid-col"
+                  >
+                    <div
+                      class="usa-form-group margin-top-1"
+                    >
+                      <label
+                        class="usa-label"
+                        for="9"
+                      >
+                        Equipment Uid
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
+                      </label>
+                      <input
+                        aria-disabled="false"
+                        aria-required="true"
+                        class="usa-input"
+                        id="9"
+                        name="equipmentUid0"
                         type="text"
                         value=""
                       />

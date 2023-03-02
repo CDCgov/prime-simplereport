@@ -23,24 +23,46 @@ export function getHeader(message: string): string {
   return getErrorText(message, "header");
 }
 
+function createSupportMailToLink(msg: string, index: number) {
+  return (
+    <span key={index}>
+      {" "}
+      <a href="mailto:support@simplereport.gov">{msg}</a>{" "}
+    </span>
+  );
+}
+
+function createContactUsLink(msg: string, nextMsg: string, index: number) {
+  return (
+    <span key={index}>
+      {" "}
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://www.simplereport.gov/contact-us"
+      >
+        {msg} {nextMsg}
+      </a>{" "}
+    </span>
+  );
+}
+
 export function getBody(message: string): JSX.Element {
   let errorText = getErrorText(message, "body");
   let errorTextArray = errorText.split(" ");
   let errorElementArray: any = [];
-  let addNewValue = true;
+  let addHTMLElement = true;
   errorTextArray.forEach((msg, index) => {
+    let nextMsg = errorTextArray[index + 1];
     if (msg.includes("support@simplereport.gov")) {
-      let addEndWhitespace = index !== errorTextArray.length - 1;
-      errorElementArray.push(
-        <span key={index}>
-          {" "}
-          <a href="mailto:support@simplereport.gov">{msg}</a>
-          {addEndWhitespace ? " " : ""}
-        </span>
-      );
-      addNewValue = true;
+      errorElementArray.push(createSupportMailToLink(msg, index));
+      addHTMLElement = true;
+    } else if (msg.includes("SimpleReport") && nextMsg.includes("support")) {
+      errorElementArray.push(createContactUsLink(msg, nextMsg, index));
+      errorTextArray.splice(index + 1, 1);
+      addHTMLElement = true;
     } else {
-      if (addNewValue) {
+      if (addHTMLElement) {
         errorElementArray.push(msg);
       } else {
         let currentErrorElementArrayIndex = errorElementArray.length - 1;
@@ -48,7 +70,7 @@ export function getBody(message: string): JSX.Element {
           currentErrorElementArrayIndex
         ] = `${errorElementArray[currentErrorElementArrayIndex]} ${msg}`;
       }
-      addNewValue = false;
+      addHTMLElement = false;
     }
   });
   return <span>{errorElementArray}</span>;

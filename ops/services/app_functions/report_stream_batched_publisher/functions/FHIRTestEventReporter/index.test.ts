@@ -1,12 +1,12 @@
 import { Context } from "@azure/functions";
-import { QueueClient } from "@azure/storage-queue";
+import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 
 import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
 import * as reportingHandlers from "../common/reportingHandlers";
 import FHIRTestEventReporter from "./index";
-import { ProcessedTestEvents } from "./dataHandlers";
-import { ReportStreamResponse } from "../common/rs-response";
+import { FHIRTestEventsBatch } from "./dataHandlers";
+import { ReportStreamResponse } from "../common/types";
 
 jest.mock("../config", () => ({
   ENV: {
@@ -15,8 +15,8 @@ jest.mock("../config", () => ({
     AZ_STORAGE_ACCOUNT_KEY: "bonjour",
     REPORT_STREAM_URL: "https://nope.url/1234",
     FHIR_TEST_EVENT_QUEUE_NAME: "ciao",
-    FHIR_REPORTING_EXCEPTION_QUEUE_NAME: "ciao_exception",
-    PUBLISHING_ERROR_QUEUE_NAME: "ciao_error",
+    FHIR_PUBLISHING_ERROR_QUEUE_NAME: "ciao_error",
+    REPORTING_EXCEPTION_QUEUE_NAME: "ciao_exception",
   },
 }));
 
@@ -36,23 +36,34 @@ describe("FHIRTestEventReporter", () => {
     log: jest.fn(),
     traceContext: { traceparent: "asdf" },
   } as jest.MockedObject<Context>;
+  context.log.error = jest.fn();
 
-  const responseMock: Response = {
+  const responseMock = {
     ok: true,
     status: 200,
+    formData: jest.fn().mockResolvedValue(""),
     text: jest.fn().mockResolvedValue(""),
     json: jest.fn().mockResolvedValue({
       warnings: [],
       errors: [],
     } as jest.MockedObject<ReportStreamResponse>),
-  } as jest.MockedObject<Response>;
+  };
+
+  const mockDequeuedTestEvents = [
+    {
+      messageId: "1",
+      popReceipt: "abcd",
+      messageText: '{"Result_ID" : 1}',
+    },
+  ] as jest.MockedObject<DequeuedMessageItem[]>;
 
   let dequeueMessagesSpy,
     getQueueClientSpy,
     minimumMessagesAvailableSpy,
     processTestEventsSpy,
     reportToUniversalPipelineSpy,
-    handleReportStreamResponseSpy;
+    handleReportStreamResponseSpy,
+    getReportStreamAuthTokenSpy;
 
   beforeEach(() => {
     dequeueMessagesSpy = jest
@@ -75,11 +86,14 @@ describe("FHIRTestEventReporter", () => {
     processTestEventsSpy = jest.spyOn(dataHandlers, "processTestEvents");
     reportToUniversalPipelineSpy = jest.spyOn(
       reportingHandlers,
-      "reportToUniversalPipeline"
+      "reportToUniversalPipelineTokenBased"
     );
     handleReportStreamResponseSpy = jest
       .spyOn(reportingHandlers, "handleReportStreamResponse")
       .mockResolvedValue();
+    getReportStreamAuthTokenSpy = jest
+      .spyOn(reportingHandlers, "getReportStreamAuthToken")
+      .mockResolvedValue("123abc");
   });
 
   afterEach(() => {
@@ -99,15 +113,36 @@ describe("FHIRTestEventReporter", () => {
     expect(context.log).not.toHaveBeenCalled();
   });
 
-  it("parses and uploads the test events successfully", async () => {
-    const processedTestEventsMock: ProcessedTestEvents = {
-      testEvents: [{ patient: "dexter" }],
-      parseFailure: {},
-      parseFailureCount: 0,
-      parseSuccessCount: 1,
-    };
+  it("checks queue but dequeues 0 messages", async () => {
+    dequeueMessagesSpy.mockResolvedValueOnce([]);
 
-    processTestEventsSpy.mockReturnValueOnce(processedTestEventsMock);
+    await FHIRTestEventReporter(context);
+
+    expect(getReportStreamAuthTokenSpy).not.toHaveBeenCalled();
+    expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
+    expect(context.log).toHaveBeenCalledWith(
+      "Queue: ciao. Messages Dequeued: 0; aborting."
+    );
+  });
+
+  it("parses and uploads the test events successfully", async () => {
+    const fhirTestEventsBatches: FHIRTestEventsBatch[] = [
+      {
+        messages: [
+          {
+            messageId: "1",
+            messageText: JSON.stringify({ patientName: "Dexter" }),
+          } as jest.MockedObject<DequeuedMessageItem>,
+        ],
+        parseFailure: {},
+        parseFailureCount: 0,
+        parseSuccessCount: 1,
+        testEventsNDJSON: JSON.stringify({ patient: "dexter" }),
+      },
+    ];
+
+    dequeueMessagesSpy.mockResolvedValueOnce([mockDequeuedTestEvents]); // to pass the messages check
+    processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
@@ -117,30 +152,78 @@ describe("FHIRTestEventReporter", () => {
     expect(dequeueMessagesSpy).toHaveBeenCalled();
     expect(processTestEventsSpy).toHaveBeenCalled();
 
-    // The submission to report stream will be done with ticket 5115
+    expect(getReportStreamAuthTokenSpy).toHaveBeenCalledWith(context);
     expect(reportToUniversalPipelineSpy).toHaveBeenCalledWith(
-      processedTestEventsMock.testEvents
+      "123abc",
+      '{"patient":"dexter"}'
     );
     expect(reportToUniversalPipelineSpy).toHaveBeenCalledTimes(1);
     expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);
   });
 
   it("receives failed parsed events after processing them", async () => {
-    const processedTestEventsMock: ProcessedTestEvents = {
-      testEvents: [],
-      parseFailure: { "1": true },
-      parseFailureCount: 1,
-      parseSuccessCount: 0,
-    };
+    const fhirTestEventsBatches: FHIRTestEventsBatch[] = [
+      {
+        messages: [
+          {
+            messageId: "1",
+            messageText: JSON.stringify({ patientName: "Dexter" }),
+          } as jest.MockedObject<DequeuedMessageItem>,
+        ],
+        parseFailure: { "1": true },
+        parseFailureCount: 1,
+        parseSuccessCount: 0,
+        testEventsNDJSON: "",
+      },
+    ];
 
-    processTestEventsSpy.mockReturnValueOnce(processedTestEventsMock);
+    dequeueMessagesSpy.mockResolvedValueOnce([mockDequeuedTestEvents]); // to pass the messages check
+    processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
 
     expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
     expect(context.log).toHaveBeenCalledWith(
-      "Queue: ciao. Successfully parsed message count of 0 is less than 1; aborting"
+      "Queue: ciao. Successfully parsed message count of 0 in batch 1 is less than 1; aborting"
+    );
+  });
+
+  it("throws exception when at least one of the batches is not published successfully", async () => {
+    const fhirTestEventsBatches: FHIRTestEventsBatch[] = [
+      {
+        messages: [
+          {
+            messageId: "1",
+            messageText: JSON.stringify({ patientName: "Dexter" }),
+          } as jest.MockedObject<DequeuedMessageItem>,
+        ],
+        parseFailure: {},
+        parseFailureCount: 0,
+        parseSuccessCount: 1,
+        testEventsNDJSON: JSON.stringify({ patient: "dexter" }),
+      },
+    ];
+
+    const errorResponseMock = {
+      ok: false,
+      status: 400,
+      formData: jest.fn().mockResolvedValue(""),
+      text: jest.fn().mockResolvedValue(""),
+      json: jest.fn().mockResolvedValue({
+        errorCount: 1,
+        warningCount: 0,
+        warnings: [],
+        errors: [{ scope: "report", message: "something is not right" }],
+      } as jest.MockedObject<ReportStreamResponse>),
+    };
+
+    dequeueMessagesSpy.mockResolvedValueOnce([mockDequeuedTestEvents]); // to pass the messages check
+    processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
+    reportToUniversalPipelineSpy.mockRejectedValueOnce(errorResponseMock);
+
+    await expect(() => FHIRTestEventReporter(context)).rejects.toThrow(
+      JSON.stringify([{ ok: false, status: 400 }])
     );
   });
 });

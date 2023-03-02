@@ -2,7 +2,7 @@ module "metric_alerts" {
   source                         = "../services/alerts/app_service_metrics"
   env                            = local.env
   app_insights_id                = data.azurerm_application_insights.app_insights.id
-  app_service_plan_id            = module.simple_report_api.app_service_plan_id
+  service_plan_id                = module.simple_report_api.service_plan_id
   app_service_id                 = module.simple_report_api.app_service_id
   severity                       = 1
   rg_name                        = data.azurerm_resource_group.rg.name
@@ -15,7 +15,11 @@ module "metric_alerts" {
     "frontend_error_boundary",
     "batched_uploader_single_failure_detected",
     "batched_uploader_function_not_triggering",
-    "mem_util"
+    "mem_util",
+    "fhir_batched_uploader_single_failure_detected",
+    "fhir_batched_uploader_function_not_triggering",
+    "function_app_memory_alert",
+    "fhir_function_app_duration_alert"
   ]
 
   action_group_ids = [

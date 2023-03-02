@@ -80,6 +80,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
     if (validation.valid) {
       setErrors(initCreateUserErrors());
       onSubmit(newUser);
+      setSaving(false);
       return;
     }
     setErrors(validation.errors);

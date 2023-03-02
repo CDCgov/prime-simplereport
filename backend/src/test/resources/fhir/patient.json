@@ -1,5 +1,10 @@
 {
   "resourceType": "Patient",
+  "identifier": [
+    {
+      "value": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29"
+    }
+  ],
   "extension": [
     {
       "url": "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",

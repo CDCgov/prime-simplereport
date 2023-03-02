@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 class FacilityRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private DeviceTypeRepository _devices;
-  @Autowired private DeviceSpecimenTypeRepository _deviceSpecimens;
   @Autowired private SpecimenTypeRepository _specimens;
   @Autowired private ProviderRepository _providers;
   @Autowired private OrganizationRepository _orgs;

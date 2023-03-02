@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -42,9 +43,11 @@ class AzureTestEventReportingQueueConfiguration {
       value = "simple-report.azure-reporting-queue.fhir-queue-enabled",
       havingValue = "true")
   TestEventReportingService fhirQueueReportingService(
-      FhirContext context, @Qualifier("fhirQueueClient") QueueAsyncClient queueClient) {
+      FhirContext context,
+      @Qualifier("fhirQueueClient") QueueAsyncClient queueClient,
+      GitProperties gitProperties) {
     log.info("Configured for queue={}", queueClient.getQueueName());
-    return new AzureStorageQueueFhirReportingService(context, queueClient);
+    return new AzureStorageQueueFhirReportingService(context, queueClient, gitProperties);
   }
 
   @Bean

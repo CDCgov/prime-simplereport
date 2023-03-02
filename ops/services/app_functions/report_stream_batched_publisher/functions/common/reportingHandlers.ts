@@ -1,92 +1,73 @@
 import { Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
+import fetch, { Headers, Response } from "node-fetch";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
-import { SimpleReportTestEvent } from "../FHIRTestEventReporter/dataHandlers";
-// import { ENV, uploaderVersion } from "../config";
-import { ReportStreamResponse } from "./rs-response";
+import { ENV, uploaderVersion } from "../config";
+import {
+  publisherLogging,
+  ReportStreamResponse,
+  ReportStreamTokenResponse,
+} from "./types";
 import {
   deleteSuccessfullyParsedMessages,
   publishToQueue,
   reportExceptions,
 } from "./queueHandlers";
-import * as appInsights from "applicationinsights";
 
-//const { REPORT_STREAM_TOKEN, REPORT_STREAM_URL } = ENV;
+const { FHIR_REPORT_STREAM_KEY, REPORT_STREAM_BASE_URL } = ENV;
 
-const telemetry = appInsights.defaultClient;
+export const FHIR_CLIENT_ID = "simple_report.fullelr";
 
-export async function reportToUniversalPipeline(
-  results: SimpleReportTestEvent[]
-) {
-  // ToDo check the size is complying with azure and break up the results if not
-  // Actual call to Report Stream will be implemented with ticket 5115
-  // doing a mock response in the meantime
-  /*
+export async function reportToUniversalPipelineTokenBased(
+  token: string,
+  ndjsonTestEvents: string
+): Promise<Response> {
   const headers = new Headers({
-    "x-functions-key": REPORT_STREAM_TOKEN,
+    authorization: `bearer ${token}`,
     "x-api-version": uploaderVersion,
-    "content-type": "application/json;charset=UTF-8",
-    client: "simple_report",
+    "content-type": "application/fhir+ndjson",
+    client: FHIR_CLIENT_ID,
   });
 
-  return fetch(REPORT_STREAM_URL, {
+  return fetch(`${REPORT_STREAM_BASE_URL}/api/waters`, {
     method: "POST",
     headers,
-    body: JSON.stringify(results),
-  });*/
-
-  const dummyReponseReportStream: ReportStreamResponse = {
-    destinationCount: results.length,
-    destinations: [],
-    errorCount: 0,
-    errors: [],
-    id: "",
-    reportItemCount: 0,
-    routing: [{ destinations: [], reportIndex: 0, trackingId: "" }],
-    timestamp: "",
-    topic: "",
-    warningCount: 0,
-    warnings: [],
-  };
-
-  const dummyResponse = {
-    ok: true,
-    json: () => dummyReponseReportStream,
-  } as unknown as Response;
-
-  return Promise.resolve(dummyResponse);
+    body: ndjsonTestEvents,
+  });
 }
 
 export async function handleReportStreamResponse(
   reportingResponse: Response,
-  context: Context,
   messages: DequeuedMessageItem[],
   parseFailure: Record<string, boolean>,
   testEventQueue: QueueClient,
   exceptionQueue: QueueClient,
-  errorQueue: QueueClient
+  errorQueue: QueueClient,
+  logging: publisherLogging
 ) {
   if (reportingResponse.ok) {
     const response: ReportStreamResponse =
       (await reportingResponse.json()) as ReportStreamResponse;
-    context.log(
+    logging.context.log(
       `Queue: ${testEventQueue.name}. Report Stream response: ${JSON.stringify(
         response
       )}`
     );
     await reportExceptions(
-      context,
+      logging.context,
       exceptionQueue,
       response,
       testEventQueue.name
     );
 
-    context.log(
+    logging.context.log(
       `Queue: ${testEventQueue.name}. Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
     );
 
     await deleteSuccessfullyParsedMessages(
-      context,
+      logging.context,
       testEventQueue,
       messages,
       parseFailure
@@ -94,15 +75,15 @@ export async function handleReportStreamResponse(
   } else {
     const responseBody = await reportingResponse.text();
     const errorText = `Queue: ${testEventQueue.name}. Failed to upload to ReportStream with response code ${reportingResponse.status}`;
-    context.log.error(
+    logging.context.log.error(
       `${errorText}. Response body (${responseBody.length} bytes): `,
       responseBody
     );
 
     const tagOverrides = {
-      "ai.operation.id": context.traceContext.traceparent,
+      "ai.operation.id": logging.context.traceContext.traceparent,
     };
-    telemetry.trackEvent({
+    logging.telemetry.trackEvent({
       name: `Queue: ${testEventQueue.name}. ReportStream Upload Failed`,
       properties: {
         status: reportingResponse.status,
@@ -116,7 +97,7 @@ export async function handleReportStreamResponse(
       await publishToQueue(errorQueue, messages);
       //delete messages from the main queue
       await deleteSuccessfullyParsedMessages(
-        context,
+        logging.context,
         testEventQueue,
         messages,
         parseFailure
@@ -124,5 +105,84 @@ export async function handleReportStreamResponse(
     }
 
     throw new Error(errorText);
+  }
+}
+
+export function generateJWT(
+  reportStreamClient: string,
+  reportStreamUrl: string,
+  secret: string
+): string {
+  const token = jwt.sign(
+    {
+      iss: reportStreamClient,
+      sub: reportStreamClient,
+      jti: crypto.randomUUID(),
+    },
+    secret,
+    {
+      algorithm: "RS256",
+      expiresIn: "5m",
+      header: {
+        kid: reportStreamClient,
+        typ: "JWT",
+        alg: "RS256",
+      },
+      audience: reportStreamUrl,
+    }
+  );
+
+  return token;
+}
+
+export async function getReportStreamAuthToken(
+  context: Context
+): Promise<string> {
+  const tokenURL = `${REPORT_STREAM_BASE_URL}/api/token`;
+  const jwt = generateJWT(
+    FHIR_CLIENT_ID,
+    REPORT_STREAM_BASE_URL,
+    FHIR_REPORT_STREAM_KEY
+  );
+
+  const headers = new Headers({
+    "Content-Type": "application/x-www-form-urlencoded",
+  });
+
+  const params = {
+    scope: `simple_report.*.report`,
+    grant_type: "client_credentials",
+    client_assertion_type:
+      "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+    client_assertion: jwt,
+  };
+
+  try {
+    const response = await fetch(tokenURL, {
+      method: "POST",
+      headers,
+      body: Object.entries(params)
+        .map((entry) => `${entry[0]}=${entry[1]}`)
+        .join("&"),
+    });
+
+    if (!response.ok) {
+      const responseError = await response.text();
+      throw new Error(`ReportStream Error Response: ${responseError}`);
+    }
+
+    const tokenResponse: ReportStreamTokenResponse =
+      (await response.json()) as ReportStreamTokenResponse;
+
+    context.log(`Token obtained successfully.`);
+
+    return tokenResponse.access_token;
+  } catch (e) {
+    context.log.error(
+      "Error while trying to get the ReportStream auth token.",
+      e
+    );
+
+    throw e;
   }
 }

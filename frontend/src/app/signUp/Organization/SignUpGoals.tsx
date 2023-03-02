@@ -16,7 +16,7 @@ const SignUpGoals = () => {
   const [submitted, setSubmitted] = useState(false);
   const [signUpGoal, setSignUpGoal] = useState("");
   const [signUpGoalError, setSignUpGoalError] = useState("");
-  useDocumentTitle("Sign up - select status | SimpleReport");
+  useDocumentTitle("Sign up - select status");
 
   if (submitted) {
     switch (signUpGoal) {

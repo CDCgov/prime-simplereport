@@ -120,4 +120,17 @@ describe("button", () => {
       expect(counter).toEqual(1);
     });
   });
+  describe("ariaLabel", () => {
+    it("should set aria-label", () => {
+      render(<Button ariaLabel={"some aria label"} />);
+      expect(screen.getByRole("button")).toHaveAttribute(
+        "aria-label",
+        "some aria label"
+      );
+    });
+    it("should not have aria-label", () => {
+      render(<Button />);
+      expect(screen.getByRole("button")).not.toHaveAttribute("aria-label");
+    });
+  });
 });

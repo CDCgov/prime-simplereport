@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,7 +119,7 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(apiUser.getLoginEmail())
             .orElseThrow(MisconfiguredUserException::new);
     if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
-      throw new AccessDeniedException("Unable to add user.");
+      throw new ConflictingUserException();
     }
 
     // re-provision the user
@@ -148,7 +147,8 @@ public class ApiUserService {
     return user;
   }
 
-  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role) {
+  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role)
+      throws ConflictingUserException {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     boolean active = org.getIdentityVerified();

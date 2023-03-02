@@ -23,6 +23,7 @@ interface Props {
   id?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   ariaHidden?: boolean;
+  ariaLabel?: string;
 }
 
 const Button = ({
@@ -37,6 +38,7 @@ const Button = ({
   onClick,
   id,
   ariaHidden,
+  ariaLabel,
 }: Props) => (
   <button
     type={type}
@@ -52,6 +54,7 @@ const Button = ({
     id={id}
     onClick={onClick}
     aria-describedby={ariaDescribedBy || undefined}
+    aria-label={ariaLabel}
   >
     {icon && <FontAwesomeIcon icon={icon} className="margin-right-1" />}
     {label || children}

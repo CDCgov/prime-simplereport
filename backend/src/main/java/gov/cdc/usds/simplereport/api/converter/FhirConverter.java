@@ -6,6 +6,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -33,16 +34,29 @@ import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
 import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.HumanName;
+import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Identifier.IdentifierUse;
+import org.hl7.fhir.r4.model.InstantType;
+import org.hl7.fhir.r4.model.MessageHeader;
+import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Observation.ObservationStatus;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
+import org.hl7.fhir.r4.model.Specimen;
+import org.hl7.fhir.r4.model.StringType;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.data.util.Pair;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 public class FhirConverter {
   private FhirConverter() {
     throw new IllegalStateException("Utility class");
   }
+
+  private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
   public static HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(
@@ -189,53 +203,58 @@ public class FhirConverter {
     return ext;
   }
 
-  public static Extension convertToEthnicityExtension(@NotNull String ethnicity) {
-    var ext = new Extension();
-    ext.setUrl(ETHNICITY_EXTENSION_URL);
-    var codeableConcept = new CodeableConcept();
-    var coding = codeableConcept.addCoding();
-    if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
-      if ("refused".equalsIgnoreCase(ethnicity)) {
-        coding.setSystem(NULL_CODE_SYSTEM);
+  public static Extension convertToEthnicityExtension(String ethnicity) {
+    if (StringUtils.isNotBlank(ethnicity)) {
+      var ext = new Extension();
+      ext.setUrl(ETHNICITY_EXTENSION_URL);
+      var codeableConcept = new CodeableConcept();
+      var coding = codeableConcept.addCoding();
+      if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
+        if ("refused".equalsIgnoreCase(ethnicity)) {
+          coding.setSystem(NULL_CODE_SYSTEM);
+        } else {
+          coding.setSystem(ETHNICITY_CODE_SYSTEM);
+        }
+        coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
+        coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
+
+        codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
       } else {
-        coding.setSystem(ETHNICITY_CODE_SYSTEM);
+        coding.setSystem(NULL_CODE_SYSTEM);
+        coding.setCode(MappingConstants.U_CODE);
+        coding.setDisplay(MappingConstants.UNKNOWN_STRING);
+
+        codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
       }
-      coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-      coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-
-      codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-    } else {
-      coding.setSystem(NULL_CODE_SYSTEM);
-      coding.setCode(MappingConstants.U_CODE);
-      coding.setDisplay(MappingConstants.UNKNOWN_STRING);
-
-      codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
+      ext.setValue(codeableConcept);
+      return ext;
     }
-    ext.setValue(codeableConcept);
-    return ext;
+    return null;
   }
 
   public static Optional<Extension> convertToTribalAffiliationExtension(
       List<String> tribalAffiliations) {
-    if (tribalAffiliations != null && !tribalAffiliations.isEmpty()) {
-      return Optional.of(convertToTribalAffiliationExtension(tribalAffiliations.get(0)));
-    }
-    return Optional.empty();
+    return CollectionUtils.isEmpty(tribalAffiliations)
+        ? Optional.empty()
+        : convertToTribalAffiliationExtension(tribalAffiliations.get(0));
   }
 
-  public static Extension convertToTribalAffiliationExtension(@NotNull String tribalAffiliation) {
-    var ext = new Extension();
-    ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
-    var tribeExtension = ext.addExtension();
-    tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
-    var tribeCodeableConcept = new CodeableConcept();
-    var tribeCoding = tribeCodeableConcept.addCoding();
-    tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
-    tribeCoding.setCode(tribalAffiliation);
-    tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
-    tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
-    tribeExtension.setValue(tribeCodeableConcept);
-    return ext;
+  public static Optional<Extension> convertToTribalAffiliationExtension(String tribalAffiliation) {
+    if (StringUtils.isNotBlank(tribalAffiliation)) {
+      var ext = new Extension();
+      ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
+      var tribeExtension = ext.addExtension();
+      tribeExtension.setUrl(TRIBAL_AFFILIATION_STRING);
+      var tribeCodeableConcept = new CodeableConcept();
+      var tribeCoding = tribeCodeableConcept.addCoding();
+      tribeCoding.setSystem(TRIBAL_AFFILIATION_CODE_SYSTEM);
+      tribeCoding.setCode(tribalAffiliation);
+      tribeCoding.setDisplay(PersonUtils.tribalMap().get(tribalAffiliation));
+      tribeCodeableConcept.setText(PersonUtils.tribalMap().get(tribalAffiliation));
+      tribeExtension.setValue(tribeCodeableConcept);
+      return Optional.of(ext);
+    }
+    return Optional.empty();
   }
 
   public static Practitioner convertToPractitioner(Provider provider) {
@@ -250,6 +269,13 @@ public class FhirConverter {
   public static Organization convertToOrganization(Facility facility) {
     var org = new Organization();
     org.setId(facility.getInternalId().toString());
+    org.addIdentifier()
+        .setUse(IdentifierUse.OFFICIAL)
+        .setValue(facility.getCliaNumber())
+        .getType()
+        .addCoding()
+        .setSystem(UNIVERSAL_ID_SYSTEM)
+        .setCode("CLIA");
     org.setName(facility.getFacilityName());
     org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
     org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, facility.getEmail()));
@@ -260,6 +286,7 @@ public class FhirConverter {
   public static Patient convertToPatient(Person person) {
     var patient = new Patient();
     patient.setId(person.getInternalId().toString());
+    patient.addIdentifier().setValue(person.getInternalId().toString());
     patient.addName(convertToHumanName(person.getNameInfo()));
     convertPhoneNumbersToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
     convertEmailsToContactPoint(ContactPointUse.HOME, person.getEmails())
@@ -327,17 +354,38 @@ public class FhirConverter {
   }
 
   public static List<Observation> convertToObservation(
-      Set<Result> results, TestCorrectionStatus correctionStatus, String correctionReason) {
+      Set<Result> results,
+      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCode,
+      TestCorrectionStatus correctionStatus,
+      String correctionReason) {
     return results.stream()
-        .map(result -> convertToObservation(result, correctionStatus, correctionReason))
+        .map(
+            result -> {
+              String testPerformedLoincCode =
+                  getTestPerformedLoincCode(deviceTestPerformedLoincCode, result);
+              return convertToObservation(
+                  result, testPerformedLoincCode, correctionStatus, correctionReason);
+            })
         .collect(Collectors.toList());
   }
 
+  private static String getTestPerformedLoincCode(
+      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCode, Result result) {
+    return deviceTestPerformedLoincCode.stream()
+        .filter(code -> code.getSupportedDisease() == result.getDisease())
+        .findFirst()
+        .map(DeviceTestPerformedLoincCode::getTestPerformedLoincCode)
+        .orElse(result.getTestOrder().getDeviceType().getLoincCode());
+  }
+
   public static Observation convertToObservation(
-      Result result, TestCorrectionStatus correctionStatus, String correctionReason) {
+      Result result,
+      String testPerformedCode,
+      TestCorrectionStatus correctionStatus,
+      String correctionReason) {
     if (result != null && result.getDisease() != null) {
       return convertToObservation(
-          result.getDisease().getLoinc(),
+          testPerformedCode,
           result.getDisease().getName(),
           result.getResultLOINC(),
           correctionStatus,
@@ -543,7 +591,11 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
-  public static Bundle createFhirBundle(@NotNull TestEvent testEvent) {
+  public static Bundle createFhirBundle(
+      @NotNull TestEvent testEvent,
+      GitProperties gitProperties,
+      Date currentDate,
+      String processingId) {
     return createFhirBundle(
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
@@ -552,12 +604,16 @@ public class FhirConverter {
         convertToSpecimen(testEvent.getSpecimenType()),
         convertToObservation(
             testEvent.getResults(),
+            testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
         convertToAOEObservations(testEvent.getSurveyData()),
         convertToServiceRequest(testEvent.getOrder()),
         convertToDiagnosticReport(testEvent),
-        testEvent.getDateTested());
+        testEvent.getDateTested(),
+        currentDate,
+        gitProperties,
+        processingId);
   }
 
   public static Bundle createFhirBundle(
@@ -570,7 +626,10 @@ public class FhirConverter {
       Set<Observation> aoeObservations,
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport,
-      Date dateTested) {
+      Date dateTested,
+      Date currentDate,
+      GitProperties gitProperties,
+      String processingId) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
@@ -580,10 +639,11 @@ public class FhirConverter {
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var provenance = createProvenance(organizationFullUrl, deviceFullUrl, dateTested);
+    var provenance = createProvenance(organizationFullUrl, dateTested);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
-        createMessageHeader(organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl);
+        createMessageHeader(
+            organizationFullUrl, diagnosticReportFullUrl, provenanceFullUrl, gitProperties);
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
@@ -601,7 +661,6 @@ public class FhirConverter {
     entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
     entryList.add(Pair.of(provenanceFullUrl, provenance));
     entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
-
     entryList.add(Pair.of(patientFullUrl, patient));
     entryList.add(Pair.of(organizationFullUrl, organization));
     entryList.add(Pair.of(practitionerFullUrl, practitioner));
@@ -609,6 +668,10 @@ public class FhirConverter {
     entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
     entryList.add(Pair.of(deviceFullUrl, device));
     entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
+    entryList.add(
+        Pair.of(
+            ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
+            new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
 
     resultObservations.forEach(
         observation -> {
@@ -636,6 +699,7 @@ public class FhirConverter {
     var bundle =
         new Bundle()
             .setType(BundleType.MESSAGE)
+            .setTimestamp(currentDate)
             .setIdentifier(new Identifier().setValue(diagnosticReport.getId()));
     entryList.forEach(
         pair ->
@@ -644,11 +708,13 @@ public class FhirConverter {
                     .setFullUrl(pair.getFirst())
                     .setResource(pair.getSecond())));
 
+    bundle
+        .getMeta()
+        .addTag(PROCESSING_ID_SYSTEM, processingId, PROCESSING_ID_DISPLAY.get(processingId));
     return bundle;
   }
 
-  public static Provenance createProvenance(
-      String organizationFullUrl, String deviceFullUrl, Date dateTested) {
+  public static Provenance createProvenance(String organizationFullUrl, Date dateTested) {
     var provenance = new Provenance();
     provenance.setId(UUID.randomUUID().toString());
     provenance
@@ -658,7 +724,6 @@ public class FhirConverter {
         .setCode(EVENT_TYPE_CODE)
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
-    provenance.addTarget(new Reference(deviceFullUrl));
     provenance.setRecorded(dateTested);
     return provenance;
   }
@@ -674,7 +739,10 @@ public class FhirConverter {
   }
 
   public static MessageHeader createMessageHeader(
-      String organizationUrl, String mainResourceUrl, String provenanceFullUrl) {
+      String organizationUrl,
+      String mainResourceUrl,
+      String provenanceFullUrl,
+      GitProperties gitProperties) {
     var messageHeader = new MessageHeader();
     messageHeader.setId(UUID.randomUUID().toString());
     messageHeader
@@ -685,7 +753,8 @@ public class FhirConverter {
     messageHeader
         .getSource()
         .setSoftware("PRIME SimpleReport")
-        .setEndpoint("https://simplereport.gov");
+        .setEndpoint("https://simplereport.gov")
+        .setVersion(gitProperties.getShortCommitId());
     messageHeader
         .addDestination()
         .setName("PRIME ReportStream")
@@ -693,6 +762,21 @@ public class FhirConverter {
     messageHeader.getSender().setReferenceElement(new StringType(organizationUrl));
     messageHeader.addFocus(new Reference(provenanceFullUrl));
     messageHeader.addFocus(new Reference(mainResourceUrl));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id")
+        .setValue(new StringType(gitProperties.getShortCommitId()));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date")
+        .setValue(new InstantType(gitProperties.getCommitTime().toString()));
+    messageHeader
+        .getSource()
+        .addExtension()
+        .setUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org")
+        .setValue(new Reference(ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID));
     return messageHeader;
   }
 }

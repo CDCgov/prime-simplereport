@@ -3,6 +3,11 @@ on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
   push:
     branches:
+      - main
+    paths:
+      - .github/workflows/coverity_scan.yml
+  pull_request:
+    branches:
       - "**"
     paths:
       - .github/workflows/coverity_scan.yml
@@ -28,7 +33,7 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.6
         with:
           path: |
             ./frontend/node_modules
@@ -42,7 +47,7 @@ jobs:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v3.2.3
+        uses: actions/cache@v3.2.6
         with:
           path: |
             ~/.gradle/caches

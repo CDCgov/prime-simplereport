@@ -71,7 +71,7 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:3.4.8'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.4.9'
 
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
@@ -109,12 +109,11 @@ dependencies {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
+    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:2.0.0'
 
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
-    testImplementation 'org.awaitility:awaitility:4.1.0'
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -128,7 +127,8 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.4'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
+    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:5.6.97' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://security.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3245104.
 }
 
 dependencyManagement {

@@ -58,6 +58,16 @@ describe("create new device", () => {
         screen.getByLabelText("Test performed code *"),
         "1920-12"
       );
+
+      await userEvent.type(
+        screen.getByLabelText("Testkit Name Id *"),
+        "testkitNameId123"
+      );
+
+      await userEvent.type(
+        screen.getByLabelText("Equipment Uid *"),
+        "equipmentUid321"
+      );
     });
 
     it("enables the save button", async () => {
@@ -81,6 +91,8 @@ describe("create new device", () => {
             {
               supportedDisease: "3821904728",
               testPerformedLoincCode: "1920-12",
+              testkitNameId: "testkitNameId123",
+              equipmentUid: "equipmentUid321",
             },
           ],
         });
@@ -167,6 +179,8 @@ describe("update existing devices", () => {
                   name: "COVID-19",
                 },
                 testPerformedLoincCode: "1234-1",
+                equipmentUid: "equipmentUid123",
+                testkitNameId: "testkitNameId123",
               },
               {
                 supportedDisease: {
@@ -175,6 +189,8 @@ describe("update existing devices", () => {
                   name: "Flu A",
                 },
                 testPerformedLoincCode: "Test123",
+                equipmentUid: "equipmentUid321",
+                testkitNameId: "testkitNameId321",
               },
               {
                 supportedDisease: {
@@ -183,6 +199,8 @@ describe("update existing devices", () => {
                   name: "Flu B",
                 },
                 testPerformedLoincCode: "Test345",
+                equipmentUid: "equipmentUid345",
+                testkitNameId: "testkitNameId345",
               },
             ],
           },
@@ -246,6 +264,8 @@ describe("update existing devices", () => {
       const pillContainer = screen.getAllByTestId("pill-container")[0];
       const supportedDisease = screen.getAllByLabelText("Supported disease *");
       const testPerformed = screen.getAllByLabelText("Test performed code *");
+      const testkitNameId = screen.getAllByLabelText("Testkit Name Id *");
+      const equipmentUid = screen.getAllByLabelText("Equipment Uid *");
 
       expect(manufacturerInput).toBeEnabled();
       expect(modelInput).toBeEnabled();
@@ -264,6 +284,14 @@ describe("update existing devices", () => {
       expect(
         testPerformed.map((code) => (code as HTMLInputElement).value)
       ).toEqual(["1234-1", "Test123", "Test345"]);
+
+      expect(
+        testkitNameId.map((code) => (code as HTMLInputElement).value)
+      ).toEqual(["testkitNameId123", "testkitNameId321", "testkitNameId345"]);
+
+      expect(
+        equipmentUid.map((code) => (code as HTMLInputElement).value)
+      ).toEqual(["equipmentUid123", "equipmentUid321", "equipmentUid345"]);
     });
     it("maps supported diseases to supported disease and empty test performed", async () => {
       await userEvent.click(screen.getByTestId("combo-box-select"));
@@ -358,6 +386,15 @@ describe("update existing devices", () => {
           screen.getAllByLabelText("Test performed code *")[1],
           "LP 123"
         );
+        await userEvent.type(
+          screen.getAllByLabelText("Testkit Name Id *")[1],
+          "testkitNameId123"
+        );
+
+        await userEvent.type(
+          screen.getAllByLabelText("Equipment Uid *")[1],
+          "equipmentUid321"
+        );
 
         await userEvent.click(screen.getByText("Save changes"));
 
@@ -372,7 +409,12 @@ describe("update existing devices", () => {
           testLength: 15,
           supportedDiseaseTestPerformed: [
             { supportedDisease: "123", testPerformedLoincCode: "1234-1" },
-            { supportedDisease: "456", testPerformedLoincCode: "LP 123" },
+            {
+              supportedDisease: "456",
+              testPerformedLoincCode: "LP 123",
+              equipmentUid: "equipmentUid321",
+              testkitNameId: "testkitNameId123",
+            },
           ],
         });
         expect(saveDeviceType).toBeCalledTimes(1);

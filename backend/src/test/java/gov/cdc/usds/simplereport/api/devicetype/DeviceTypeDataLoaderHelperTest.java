@@ -124,11 +124,29 @@ class DeviceTypeDataLoaderHelperTest {
     var deviceIdSet = Set.of(device1Id, device2Id, device3Id);
 
     var deviceTestPerformedLoincCode1 =
-        new DeviceTestPerformedLoincCode(device1Id, new SupportedDisease(), "123");
+        DeviceTestPerformedLoincCode.builder()
+            .deviceTypeId(device1Id)
+            .testPerformedLoincCode("123")
+            .supportedDisease(new SupportedDisease())
+            .equipmentUid("111")
+            .testkitNameId("222")
+            .build();
     var deviceTestPerformedLoincCode2 =
-        new DeviceTestPerformedLoincCode(device1Id, new SupportedDisease(), "456");
+        DeviceTestPerformedLoincCode.builder()
+            .deviceTypeId(device1Id)
+            .testPerformedLoincCode("456")
+            .supportedDisease(new SupportedDisease())
+            .equipmentUid("333")
+            .testkitNameId("444")
+            .build();
     var deviceTestPerformedLoincCode3 =
-        new DeviceTestPerformedLoincCode(device2Id, new SupportedDisease(), "123");
+        DeviceTestPerformedLoincCode.builder()
+            .deviceTypeId(device2Id)
+            .testPerformedLoincCode("123")
+            .supportedDisease(new SupportedDisease())
+            .equipmentUid("555")
+            .testkitNameId("666")
+            .build();
 
     when(deviceTestPerformedLoincCodeRepository.findAllByDeviceTypeIdIn(deviceIdSet))
         .thenReturn(

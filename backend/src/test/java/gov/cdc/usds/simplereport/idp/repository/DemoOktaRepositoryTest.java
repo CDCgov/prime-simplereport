@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
@@ -57,7 +58,6 @@ class DemoOktaRepositoryTest {
 
   @Test
   void createOrganizationFacilitiesAndUsers() {
-
     OrganizationRoleClaims amos_expected =
         new OrganizationRoleClaims(
             ABC.getExternalId(),
@@ -126,6 +126,21 @@ class DemoOktaRepositoryTest {
     assertTrue(abcUsernames.contains(BRAD.getUsername()));
     assertTrue(abcUsernames.contains(CHARLES.getUsername()));
     assertTrue(abcUsernames.contains(DIANE.getUsername()));
+  }
+
+  @Test
+  void createUser_conflictingUser_error() {
+    createOrgAndFacilities();
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
+
+    Set<Facility> facilities = Set.of(ABC_1);
+    Set<OrganizationRole> orgRoles = Set.of(OrganizationRole.USER);
+
+    assertThrows(
+        ConflictingUserException.class,
+        () -> {
+          _repo.createUser(AMOS, ABC, facilities, orgRoles, true);
+        });
   }
 
   @Test
@@ -209,15 +224,8 @@ class DemoOktaRepositoryTest {
   }
 
   @Test
-  void updateUserEmail() {
+  void updateUserEmail_success() {
     createOrgAndFacilities();
-
-    // Check that updating a non-existent user throws the proper exception
-    assertThrows(
-        IllegalGraphqlArgumentException.class,
-        () -> {
-          _repo.updateUserEmail(AMOS, AMOS.getUsername());
-        });
 
     // Create a user and try updating their email
     Optional<OrganizationRoleClaims> createdAmos =
@@ -227,9 +235,50 @@ class DemoOktaRepositoryTest {
             Set.of(ABC_1),
             Set.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES),
             true);
+
+    Optional<OrganizationRoleClaims> updatedRoleClaims =
+        _repo.updateUserEmail(AMOS, "fake-email@example.com");
     assertTrue(
-        new OrganizationRoleClaimsMatcher(createdAmos.get())
-            .matches(_repo.updateUserEmail(AMOS, AMOS.getUsername()).get()));
+        new OrganizationRoleClaimsMatcher(createdAmos.get()).matches(updatedRoleClaims.get()));
+    Set<String> users = _repo.getAllUsersForOrganization(ABC);
+    assertTrue(users.contains("fake-email@example.com"));
+    assertFalse(users.contains("aquint@gmail.com"));
+  }
+
+  @Test
+  void updateUserEmail_nonExistentUser_error() {
+    createOrgAndFacilities();
+    IdentityAttributes fake = new IdentityAttributes("fake@gmail.com", "Amos", null, "Quint", null);
+
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> {
+          _repo.updateUserEmail(fake, "newemail@example.com");
+        });
+  }
+
+  @Test
+  void updateUserEmail_conflictingUser_error() {
+    createOrgAndFacilities();
+
+    _repo.createUser(
+        AMOS,
+        ABC,
+        Set.of(ABC_1),
+        Set.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES),
+        true);
+    _repo.createUser(
+        BRAD,
+        ABC,
+        Set.of(ABC_1),
+        Set.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES),
+        true);
+
+    assertThrows(
+        ConflictingUserException.class,
+        () -> {
+          _repo.updateUserEmail(AMOS, BRAD.getUsername());
+        });
   }
 
   @Test
