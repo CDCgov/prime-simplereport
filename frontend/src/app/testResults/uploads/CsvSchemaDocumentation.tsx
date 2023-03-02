@@ -1,5 +1,7 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
-import { useDocumentTitle } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
@@ -136,9 +138,26 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
   );
 };
 
+export function getPageTitle(hash: string) {
+  let srPageTitle = " | SimpleReport";
+  let bulkResultsPageTitle = "Bulk results upload guide";
+  if (hash === "#preparing-upload") {
+    return bulkResultsPageTitle + " - preparing upload" + srPageTitle;
+  } else if (hash === "#formatting-guidelines") {
+    return bulkResultsPageTitle + " - formatting guidelines" + srPageTitle;
+  } else {
+    return bulkResultsPageTitle + srPageTitle;
+  }
+}
+
 /* eslint-disable jsx-a11y/anchor-has-content */
 const CsvSchemaDocumentation = () => {
-  useDocumentTitle("Bulk results upload guide");
+  let location = useLocation();
+  let locationHash = location.hash;
+  let pageTitle = getPageTitle(locationHash);
+  useEffect(() => {
+    document.title = pageTitle;
+  }, [location, pageTitle]);
 
   const appInsights = getAppInsights();
 
