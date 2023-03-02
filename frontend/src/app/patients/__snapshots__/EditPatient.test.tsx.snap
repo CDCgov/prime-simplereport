@@ -357,7 +357,6 @@ Object {
                       <div
                         class="usa-form-group"
                       >
-                         
                         <fieldset
                           class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
                           id="phoneType-0"
@@ -416,7 +415,6 @@ Object {
                             </div>
                           </div>
                         </fieldset>
-                         
                       </div>
                     </div>
                     <button
@@ -443,7 +441,6 @@ Object {
                     <div
                       class="usa-form-group"
                     >
-                       
                       <fieldset
                         class="usa-fieldset prime-radios"
                         id="testResultDeliveryText"
@@ -495,7 +492,6 @@ Object {
                           </div>
                         </div>
                       </fieldset>
-                       
                     </div>
                   </div>
                   <div
@@ -555,7 +551,6 @@ Object {
                     <div
                       class="usa-form-group"
                     >
-                       
                       <fieldset
                         class="usa-fieldset prime-radios"
                         id="testResultDeliveryEmail"
@@ -607,7 +602,6 @@ Object {
                           </div>
                         </div>
                       </fieldset>
-                       
                     </div>
                   </div>
                   <div
@@ -2067,7 +2061,6 @@ Object {
                   <div
                     class="usa-form-group"
                   >
-                     
                     <fieldset
                       class="usa-fieldset prime-radios"
                       id="race"
@@ -2215,7 +2208,6 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                     
                   </div>
                   <div
                     class="usa-form-group"
@@ -2230,7 +2222,6 @@ Object {
                   <div
                     class="usa-form-group"
                   >
-                     
                     <fieldset
                       class="usa-fieldset prime-radios"
                       id="ethnicity"
@@ -2306,12 +2297,10 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                     
                   </div>
                   <div
                     class="usa-form-group"
                   >
-                     
                     <fieldset
                       class="usa-fieldset prime-radios"
                       id="gender"
@@ -2410,7 +2399,6 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                     
                   </div>
                 </fieldset>
               </form>
@@ -2428,7 +2416,6 @@ Object {
                   <div
                     class="usa-form-group"
                   >
-                     
                     <fieldset
                       class="usa-fieldset prime-radios"
                       id="residentCongregateSetting"
@@ -2503,12 +2490,10 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                     
                   </div>
                   <div
                     class="usa-form-group"
                   >
-                     
                     <fieldset
                       class="usa-fieldset prime-radios"
                       id="employedInHealthcare"
@@ -2578,7 +2563,6 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                     
                   </div>
                 </fieldset>
               </form>
@@ -2957,7 +2941,6 @@ Object {
                     <div
                       class="usa-form-group"
                     >
-                       
                       <fieldset
                         class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
                         id="phoneType-0"
@@ -3016,7 +2999,6 @@ Object {
                           </div>
                         </div>
                       </fieldset>
-                       
                     </div>
                   </div>
                   <button
@@ -3043,7 +3025,6 @@ Object {
                   <div
                     class="usa-form-group"
                   >
-                     
                     <fieldset
                       class="usa-fieldset prime-radios"
                       id="testResultDeliveryText"
@@ -3095,7 +3076,6 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                     
                   </div>
                 </div>
                 <div
@@ -3155,7 +3135,6 @@ Object {
                   <div
                     class="usa-form-group"
                   >
-                     
                     <fieldset
                       class="usa-fieldset prime-radios"
                       id="testResultDeliveryEmail"
@@ -3207,7 +3186,6 @@ Object {
                         </div>
                       </div>
                     </fieldset>
-                     
                   </div>
                 </div>
                 <div
@@ -4667,7 +4645,6 @@ Object {
                 <div
                   class="usa-form-group"
                 >
-                   
                   <fieldset
                     class="usa-fieldset prime-radios"
                     id="race"
@@ -4815,7 +4792,6 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                   
                 </div>
                 <div
                   class="usa-form-group"
@@ -4830,7 +4806,6 @@ Object {
                 <div
                   class="usa-form-group"
                 >
-                   
                   <fieldset
                     class="usa-fieldset prime-radios"
                     id="ethnicity"
@@ -4906,12 +4881,10 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                   
                 </div>
                 <div
                   class="usa-form-group"
                 >
-                   
                   <fieldset
                     class="usa-fieldset prime-radios"
                     id="gender"
@@ -5010,7 +4983,6 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                   
                 </div>
               </fieldset>
             </form>
@@ -5028,7 +5000,6 @@ Object {
                 <div
                   class="usa-form-group"
                 >
-                   
                   <fieldset
                     class="usa-fieldset prime-radios"
                     id="residentCongregateSetting"
@@ -5103,12 +5074,10 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                   
                 </div>
                 <div
                   class="usa-form-group"
                 >
-                   
                   <fieldset
                     class="usa-fieldset prime-radios"
                     id="employedInHealthcare"
@@ -5178,7 +5147,6 @@ Object {
                       </div>
                     </div>
                   </fieldset>
-                   
                 </div>
               </fieldset>
             </form>

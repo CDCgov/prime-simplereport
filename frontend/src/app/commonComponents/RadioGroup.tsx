@@ -143,31 +143,17 @@ const RadioGroup = <T extends string>({
     </fieldset>
   );
 
+  const ContainerEl = renderAsForm ? "form" : "div";
   return (
-    <>
-      {renderAsForm ? (
-        <form
-          className={classnames(
-            "usa-form-group",
-            wrapperClassName,
-            validationStatus === "error" && "usa-form-group--error"
-          )}
-        >
-          {body}
-        </form>
-      ) : (
-        <div
-          className={classnames(
-            "usa-form-group",
-            wrapperClassName,
-            validationStatus === "error" && "usa-form-group--error"
-          )}
-        >
-          {" "}
-          {body}{" "}
-        </div>
+    <ContainerEl
+      className={classnames(
+        "usa-form-group",
+        wrapperClassName,
+        validationStatus === "error" && "usa-form-group--error"
       )}
-    </>
+    >
+      {body}
+    </ContainerEl>
   );
 };
 

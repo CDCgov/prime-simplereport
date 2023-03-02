@@ -380,7 +380,6 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="usa-form-group prime-radio__group"
                 >
-                   
                   <fieldset
                     class="usa-fieldset prime-radios"
                     id="covid-test-result-abc"
@@ -449,7 +448,6 @@ exports[`TestQueue should render the test queue 1`] = `
                       </div>
                     </div>
                   </fieldset>
-                   
                 </div>
                 <div
                   class="prime-test-result-submit"
@@ -793,7 +791,6 @@ exports[`TestQueue should render the test queue 1`] = `
                 <div
                   class="usa-form-group prime-radio__group"
                 >
-                   
                   <fieldset
                     class="usa-fieldset prime-radios"
                     id="covid-test-result-def"
@@ -862,7 +859,6 @@ exports[`TestQueue should render the test queue 1`] = `
                       </div>
                     </div>
                   </fieldset>
-                   
                 </div>
                 <div
                   class="prime-test-result-submit"

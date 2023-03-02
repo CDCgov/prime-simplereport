@@ -32,15 +32,10 @@ export const Card: React.FC<CardProps> = ({
       {children}
     </>
   );
-  return (
-    <>
-      {cardIsForm ? (
-        <form className="card">{body}</form>
-      ) : (
-        <div className="card"> {body} </div>
-      )}
-    </>
-  );
+
+  const ContainerEl = cardIsForm ? "form" : "div";
+
+  return <ContainerEl className="card">{body}</ContainerEl>;
 };
 
 export default Card;
