@@ -85,7 +85,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    implementation 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
+    implementation 'org.hibernate.orm:hibernate-jpamodelgen:6.1.7.Final'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
