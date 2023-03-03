@@ -1,5 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
@@ -140,8 +140,17 @@ describe("CsvSchemaDocumentation tests", () => {
   describe("CsvSchemaDocumentation", () => {
     it("matches snapshot", () => {
       const { container } = render(
-        <MemoryRouter>
-          <CsvSchemaDocumentation />
+        <MemoryRouter
+          initialEntries={[
+            "/results/upload/submit/guide?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483",
+          ]}
+        >
+          <Routes>
+            <Route
+              path={"/results/upload/submit/guide"}
+              element={<CsvSchemaDocumentation />}
+            />
+          </Routes>
         </MemoryRouter>
       );
 
@@ -154,8 +163,13 @@ describe("CsvSchemaDocumentation tests", () => {
         return Object.assign(ai, { trackEvent: mockTrackEvent });
       });
       render(
-        <MemoryRouter>
-          <CsvSchemaDocumentation />
+        <MemoryRouter initialEntries={["/results/upload/submit/guide"]}>
+          <Routes>
+            <Route
+              path={"/results/upload/submit/guide"}
+              element={<CsvSchemaDocumentation />}
+            />
+          </Routes>
         </MemoryRouter>
       );
 
