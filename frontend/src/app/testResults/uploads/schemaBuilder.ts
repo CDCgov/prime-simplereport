@@ -2,7 +2,7 @@ import { validate } from "uuid";
 
 export const schemaBuilder = (facilityId: string | null) => {
   const validUuid = facilityId && validate(facilityId) ? facilityId : "";
-  const deviceCodeLookupLink = `<a href="/app/results/upload/submit/code-lookup?facility=${validUuid}" class="usa-link" target="_blank" rel="noreferrer noopener">device code lookup tool</a>`;
+  const deviceCodeLookupLink = `<a href="${process.env.PUBLIC_URL}/results/upload/submit/code-lookup?facility=${validUuid}" class="usa-link" target="_blank" rel="noreferrer noopener">device code lookup tool</a>`;
 
   return {
     title: "Example title",
