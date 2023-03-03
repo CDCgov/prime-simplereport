@@ -100,5 +100,6 @@ variable "function_id" {
 }
 
 variable "function_memory_threshold" {
-  default = 1200
+  description = "The threshold for the function app memory alert in bytes"
+  default     = 1200000000
 }
