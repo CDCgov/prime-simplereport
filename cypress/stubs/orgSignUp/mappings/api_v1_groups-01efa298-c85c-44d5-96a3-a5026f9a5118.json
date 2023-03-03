@@ -2,14 +2,8 @@
   "id": "01efa298-c85c-44d5-96a3-a5026f9a5118",
   "name": "api_v1_groups",
   "request": {
-    "urlPattern": "/api/v1/groups",
-    "method": "GET",
-    "queryParameters": {
-      "q": {
-        "matches": "SR-DEV-TENANT:CA.*"
-      }
-    }
-
+    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT:CA.*",
+    "method": "GET"
   },
   "response": {
     "status": 200,
