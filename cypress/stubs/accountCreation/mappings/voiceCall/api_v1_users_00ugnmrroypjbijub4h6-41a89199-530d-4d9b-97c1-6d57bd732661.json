@@ -3,10 +3,10 @@
   "name": "api_v1_users_00ugnmrroypjbijub4h6",
   "request": {
     "url": "/api/v1/users/00ugnmrroYPJBIJUb4h6",
-    "method": "PUT",
+    "method": "POST",
     "bodyPatterns": [
       {
-        "equalToJson": "{\"lastLogin\":null,\"lastUpdated\":\"2021-07-30T19:31:13.000Z\",\"passwordChanged\":\"2021-07-30T19:31:13.000Z\",\"credentials\":{\"password\":{},\"provider\":{\"type\":\"OKTA\",\"name\":\"OKTA\"},\"recovery_question\":{\"question\":\"What’s the first name of your best friend from high school?\",\"answer\":\"Jane Doe\"}},\"_links\":{\"suspend\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnmrroYPJBIJUb4h6/lifecycle/suspend\",\"method\":\"POST\"},\"schema\":{\"href\":\"https://hhs-prime.okta.com/api/v1/meta/schemas/user/osc59yz17WS6hzcM54h6\"},\"resetPassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnmrroYPJBIJUb4h6/lifecycle/reset_password\",\"method\":\"POST\"},\"expirePassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnmrroYPJBIJUb4h6/lifecycle/expire_password\",\"method\":\"POST\"},\"changeRecoveryQuestion\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnmrroYPJBIJUb4h6/credentials/change_recovery_question\",\"method\":\"POST\"},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnmrroYPJBIJUb4h6\"},\"type\":{\"href\":\"https://hhs-prime.okta.com/api/v1/meta/types/user/oty59yz17WS6hzcM54h6\"},\"changePassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnmrroYPJBIJUb4h6/credentials/change_password\",\"method\":\"POST\"},\"deactivate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnmrroYPJBIJUb4h6/lifecycle/deactivate\",\"method\":\"POST\"}},\"created\":\"2021-07-30T19:26:50.000Z\",\"profile\":{\"firstName\":\"ENDTOEND\",\"lastName\":\"TESTER\",\"mobilePhone\":null,\"secondEmail\":null,\"login\":\"tester@test.com\",\"email\":\"tester@test.com\"},\"statusChanged\":\"2021-07-30T19:31:13.000Z\",\"id\":\"00ugnmrroYPJBIJUb4h6\",\"type\":{\"id\":\"oty59yz17WS6hzcM54h6\"},\"status\":\"ACTIVE\",\"activated\":\"2021-07-30T19:26:50.000Z\"}",
+        "equalToJson": "{\"credentials\":{\"password\":{},\"provider\":{\"name\":\"OKTA\",\"type\":\"OKTA\"},\"recovery_question\":{\"answer\":\"Jane Doe\",\"question\":\"What?s the first name of your best friend from high school?\"}}}",
         "ignoreArrayOrder": true,
         "ignoreExtraElements": true
       }
