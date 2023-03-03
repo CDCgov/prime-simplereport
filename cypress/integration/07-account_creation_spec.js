@@ -22,7 +22,7 @@ Cypress.Commands.add("setPassword", () => {
 
 Cypress.Commands.add("setSecurityQuestion", () => {
   cy.get('select[name="security-question"]').select(
-    "What’s the first name of your best friend from high school?"
+    "Who was your third grade teacher?"
   );
   cy.get('input[name="answer"]').type("Jane Doe");
   cy.get(submitButton).click();
