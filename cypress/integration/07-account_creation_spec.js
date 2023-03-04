@@ -22,9 +22,9 @@ Cypress.Commands.add("setPassword", () => {
 
 Cypress.Commands.add("setSecurityQuestion", () => {
   cy.get('select[name="security-question"]').select(
-    "Who was your third grade teacher?"
+    "In what city or town was your first job?"
   );
-  cy.get('input[name="answer"]').type("Jane Doe");
+  cy.get('input[name="answer"]').type("Omaha");
   cy.get(submitButton).click();
   cy.contains("Set up authentication");
   cy.injectAxe();

@@ -6,7 +6,7 @@
     "method": "POST",
     "bodyPatterns": [
       {
-        "equalToJson": "{\"credentials\":{\"password\":{},\"provider\":{\"name\":\"OKTA\",\"type\":\"OKTA\"},\"recovery_question\":{\"answer\":\"Jane Doe\",\"question\":\"Who was your third grade teacher?\"}}}",
+        "equalToJson": "{\"credentials\":{\"password\":{},\"provider\":{\"name\":\"OKTA\",\"type\":\"OKTA\"},\"recovery_question\":{\"answer\":\"Jane Doe\",\"question\":\"In what city or town was your first job?\"}}}",
         "ignoreArrayOrder": true,
         "ignoreExtraElements": true
       }
