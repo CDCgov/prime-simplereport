@@ -1,12 +1,13 @@
 {
   "id": "23650f1d-0db0-4068-be42-f7a85db4f155",
   "name": "api_v1_users_00ugnjag7ekhoymoa4h6",
+  "priority": 2,
   "request": {
     "url": "/api/v1/users/00ugnjag7EKhOyMoA4h6",
     "method": "POST",
     "bodyPatterns": [
       {
-        "equalToJson": "{\"credentials\":{\"password\":{},\"provider\":{\"name\":\"OKTA\",\"type\":\"OKTA\"},\"recovery_question\":{\"answer\":\"Jane Doe\",\"question\":\"In what city or town was your first job?\"}}}",
+        "equalToJson": "{\"credentials\":{\"password\":{},\"provider\":{\"name\":\"OKTA\",\"type\":\"OKTA\"},\"recovery_question\":{\"answer\":\"Omaha\",\"question\":\"In what city or town was your first job?\"}}}",
         "ignoreArrayOrder": true,
         "ignoreExtraElements": true
       }
