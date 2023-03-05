@@ -1,4 +1,4 @@
-FROM gradle:7.6.0-jdk11
+FROM gradle:8.0.2-jdk11
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 WORKDIR /app/backend
