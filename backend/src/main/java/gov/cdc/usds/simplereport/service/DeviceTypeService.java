@@ -400,7 +400,6 @@ public class DeviceTypeService {
           UpdateDeviceType input =
               UpdateDeviceType.builder()
                   .internalId(device.getInternalId())
-                  .name(device.getModel())
                   .manufacturer(device.getManufacturer())
                   .model(device.getModel())
                   .supportedDiseaseTestPerformed(testPerformed)
