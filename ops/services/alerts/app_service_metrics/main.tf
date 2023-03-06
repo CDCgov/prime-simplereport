@@ -379,6 +379,30 @@ ${local.skip_on_weekends}
   }
 }
 
+resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
+  count               = var.function_id == null || contains(var.disabled_alerts, "function_app_memory_alert") ? 0 : 1
+  enabled             = true
+  name                = "${var.env}_function_app_batch_publisher_memory_alert"
+  resource_group_name = var.rg_name
+  scopes              = [var.function_id]
+  description         = "Action will be triggered when memory usage is greater than 1200 mb, threshold is set in bytes"
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "AverageMemoryWorkingSet"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = var.function_memory_threshold
+  }
+
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
+  }
+}
+
 resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_function_app_duration_alert" {
   name                = "${var.env}-fhir-function-app-batch-publisher-duration-alert"
   description         = "Action will be triggered when a single request is taking over 3 minutes"

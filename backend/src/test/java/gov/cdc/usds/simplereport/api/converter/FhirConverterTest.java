@@ -868,7 +868,8 @@ class FhirConverterTest {
   @Test
   void createMessageHeader_valid() {
     var messageHeader =
-        createMessageHeader("Organization/org-id", "mainResource", "provenance", gitProperties);
+        createMessageHeader(
+            "Organization/org-id", "mainResource", "provenance", gitProperties, "P");
 
     assertThat(messageHeader.getEventCoding().getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
@@ -908,6 +909,11 @@ class FhirConverterTest {
                 .getValueAsPrimitive()
                 .getValueAsString())
         .isEqualTo("FRIDAY");
+    assertThat(messageHeader.getMeta().getTag()).hasSize(1);
+    assertThat(messageHeader.getMeta().getTag().get(0).getCode()).isEqualTo("P");
+    assertThat(messageHeader.getMeta().getTag().get(0).getDisplay()).isEqualTo("Production");
+    assertThat(messageHeader.getMeta().getTag().get(0).getSystem())
+        .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0103");
   }
 
   @Test
@@ -1038,7 +1044,7 @@ class FhirConverterTest {
                 .getReference())
         .isEqualTo("Organization/" + organization.getId());
     assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getRequester().getReference())
-        .contains("Organization/");
+        .contains("PractitionerRole/");
 
     var diagnosticReportEntry =
         actual.getEntry().stream()

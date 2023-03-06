@@ -372,6 +372,7 @@ const UploadPatients = () => {
                   selectedRadio={facilityAmount}
                   onChange={setFacilityAmount}
                   variant="horizontal"
+                  renderAsForm
                 />
                 {facilityAmount === "oneFacility" && (
                   <>

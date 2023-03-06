@@ -1,5 +1,5 @@
 import { render, screen, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 
@@ -8,6 +8,7 @@ import { getAppInsights } from "../../TelemetryService";
 import CsvSchemaDocumentation, {
   CsvSchemaDocumentationItem,
   CsvSchemaItem,
+  getPageTitle,
 } from "./CsvSchemaDocumentation";
 
 jest.mock("../../TelemetryService", () => ({
@@ -139,8 +140,17 @@ describe("CsvSchemaDocumentation tests", () => {
   describe("CsvSchemaDocumentation", () => {
     it("matches snapshot", () => {
       const { container } = render(
-        <MemoryRouter>
-          <CsvSchemaDocumentation />
+        <MemoryRouter
+          initialEntries={[
+            "/results/upload/submit/guide?facility=fcf160d6-b83d-4eb7-96e9-f9bb9d4f3483",
+          ]}
+        >
+          <Routes>
+            <Route
+              path={"/results/upload/submit/guide"}
+              element={<CsvSchemaDocumentation />}
+            />
+          </Routes>
         </MemoryRouter>
       );
 
@@ -153,8 +163,13 @@ describe("CsvSchemaDocumentation tests", () => {
         return Object.assign(ai, { trackEvent: mockTrackEvent });
       });
       render(
-        <MemoryRouter>
-          <CsvSchemaDocumentation />
+        <MemoryRouter initialEntries={["/results/upload/submit/guide"]}>
+          <Routes>
+            <Route
+              path={"/results/upload/submit/guide"}
+              element={<CsvSchemaDocumentation />}
+            />
+          </Routes>
         </MemoryRouter>
       );
 
@@ -174,6 +189,27 @@ describe("CsvSchemaDocumentation tests", () => {
       expect(mockTrackEvent).toHaveBeenNthCalledWith(2, {
         name: "Download spreadsheet template",
       });
+    });
+  });
+
+  describe("getPageTitle", () => {
+    it("returns the default bulk results upload guide page title", () => {
+      const hash = "";
+      expect(getPageTitle(hash)).toBe(
+        "Bulk results upload guide | SimpleReport"
+      );
+    });
+    it("returns 'formatting guidelines' in the page title when on guidelines section", () => {
+      const hash = "#formatting-guidelines";
+      expect(getPageTitle(hash)).toBe(
+        "Bulk results upload guide - formatting guidelines | SimpleReport"
+      );
+    });
+    it("returns 'preparing upload' in the page title when on preparing upload section", () => {
+      const hash = "#preparing-upload";
+      expect(getPageTitle(hash)).toBe(
+        "Bulk results upload guide - preparing upload | SimpleReport"
+      );
     });
   });
 });
