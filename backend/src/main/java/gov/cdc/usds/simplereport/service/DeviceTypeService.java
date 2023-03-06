@@ -221,8 +221,6 @@ public class DeviceTypeService {
 
   public String extractSpecimenTypeCode(String specimenDescription) {
     Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
-    //    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)$");
-    //    Pattern specimenCode = Pattern.compile("\\((.*?)\\^");
     Pattern specimenCode = Pattern.compile("^(.*?)\\^");
     Matcher matcher = specimenDetails.matcher(specimenDescription);
 
@@ -242,9 +240,7 @@ public class DeviceTypeService {
   }
 
   public String extractSpecimenTypeName(String specimenDescription) {
-    //    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)$");
     Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
-    //    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)");
     Pattern specimenName = Pattern.compile("\\^(.*?)\\^");
     Matcher matcher = specimenDetails.matcher(specimenDescription);
 
@@ -408,10 +404,6 @@ public class DeviceTypeService {
   }
 
   private SpecimenType parseVendorSpecimenDescription(String specimenDescription) {
-    // TODO: if the specimen is deleted in our DB but included in the response
-    // - what do?
-    // - what if the code can't be extracted?
-    // ^ updateDeviceType method might already account for all of this
     var specimenCode = extractSpecimenTypeCode(specimenDescription);
     var specimenType = specimenTypeRepository.findByTypeCode(specimenCode);
 

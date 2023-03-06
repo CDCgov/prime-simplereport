@@ -117,11 +117,10 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
         deviceTypeRepo.findDeviceTypeByManufacturerAndModel(
             newDevice.getManufacturer(), newDevice.getModel());
     assertTrue(updatedDevice.isPresent());
-    //    assertThat(updatedDevice.get().getLoincCode()).isEqualTo("7777777");
 
     var codes = updatedDevice.get().getSupportedDiseaseTestPerformed();
 
-    assertThat(codes.size()).isEqualTo(1);
+    assertThat(codes).hasSize(1);
     var code = codes.get(0);
     assertThat(code.getTestkitNameId()).isEqualTo("Updated TestKit");
     assertThat(code.getEquipmentUid()).isEqualTo("Updated Equip");
@@ -151,7 +150,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     assertThat(createdDevice.get().getManufacturer()).isEqualTo("New Device Manufacturer");
     assertThat(createdDevice.get().getModel()).isEqualTo("New Device Model");
     var supportedDiseaseTestPerformed = createdDevice.get().getSupportedDiseaseTestPerformed();
-    assertEquals(1, supportedDiseaseTestPerformed.size());
+    assertThat(supportedDiseaseTestPerformed).hasSize(1);
   }
 
   @Test
@@ -159,7 +158,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
   void syncDevices_updatesSpecimenTypes() {
     var deviceSpecimenTypes =
         deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
-    assertThat(deviceSpecimenTypes.size()).isEqualTo(1);
+    assertThat(deviceSpecimenTypes).hasSize(1);
     LIVDResponse deviceOne =
         new LIVDResponse(
             devA.getManufacturer(),
@@ -204,7 +203,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     //     - pre-existing specimen type for device not returned in response - not removed
     var updatedDeviceSpecimenTypesB =
         deviceSpecimenTypeRepository.findAllByDeviceTypeId(devB.getInternalId());
-    assertThat(updatedDeviceSpecimenTypesB.size()).isEqualTo(3);
+    assertThat(updatedDeviceSpecimenTypesB).hasSize(3);
     assertThat(
             updatedDeviceSpecimenTypesB.stream()
                 .map(DeviceTypeSpecimenTypeMapping::getSpecimenTypeId)

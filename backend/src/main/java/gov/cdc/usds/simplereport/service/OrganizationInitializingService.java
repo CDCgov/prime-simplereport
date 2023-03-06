@@ -247,9 +247,6 @@ public class OrganizationInitializingService {
     Map<UUID, DeviceTestPerformedLoincCode> deviceExtraInfoByLoinc =
         deviceTestPerformedLoincCodeRepository.findAll().stream()
             .collect(
-                //
-                // Collectors.toMap(DeviceTestPerformedLoincCode::getTestPerformedLoincCode, d ->
-                // d));
                 Collectors.toMap(DeviceTestPerformedLoincCode::getInternalId, d -> d));
     for (DeviceTestPerformedLoincCode d : getDeviceTestPerformedLoincCode(deviceTypesByName)) {
       if (!deviceExtraInfoByLoinc.containsKey(d.getInternalId())) {
