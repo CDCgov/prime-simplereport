@@ -42,7 +42,7 @@ const SignUpGoals = () => {
 
   return (
     <CardBackground>
-      <Card logo>
+      <Card logo cardIsForm>
         <div className="sign-up-goals-card usa-prose margin-bottom-3">
           <h1 className="margin-top-2 font-ui-lg">Sign up for SimpleReport</h1>
           <p className="subheader margin-bottom-0">

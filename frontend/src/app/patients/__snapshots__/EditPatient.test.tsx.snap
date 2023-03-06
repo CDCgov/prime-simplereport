@@ -75,7 +75,7 @@ Object {
                   </div>
                 </div>
               </div>
-              <div
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -308,8 +308,8 @@ Object {
                     </div>
                   </div>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -2309,8 +2309,8 @@ Object {
                     </div>
                   </div>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -2669,8 +2669,8 @@ Object {
                     </fieldset>
                   </div>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -2833,7 +2833,7 @@ Object {
                     </fieldset>
                   </div>
                 </fieldset>
-              </div>
+              </form>
               <div
                 class="prime-edit-patient-heading"
               >
@@ -2927,7 +2927,7 @@ Object {
                 </div>
               </div>
             </div>
-            <div
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -3160,8 +3160,8 @@ Object {
                   </div>
                 </div>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -5161,8 +5161,8 @@ Object {
                   </div>
                 </div>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -5521,8 +5521,8 @@ Object {
                   </fieldset>
                 </div>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -5685,7 +5685,7 @@ Object {
                   </fieldset>
                 </div>
               </fieldset>
-            </div>
+            </form>
             <div
               class="prime-edit-patient-heading"
             >

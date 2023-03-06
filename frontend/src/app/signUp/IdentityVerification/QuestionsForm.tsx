@@ -98,7 +98,7 @@ const QuestionsForm: React.FC<Props> = ({
 
   return (
     <CardBackground>
-      <Card logo>
+      <Card logo cardIsForm>
         <div
           className="grid-row prime-test-name usa-card__header"
           id="experian-questions-header"
