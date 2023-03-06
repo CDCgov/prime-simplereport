@@ -7,11 +7,11 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.model.reportstream.LIVDResponse;
@@ -33,7 +33,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
   @Autowired private DeviceTypeService deviceTypeService;
   @Autowired private DeviceTypeRepository deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
-  @Autowired private DeviceSpecimenTypeRepository deviceSpecimenTypeRepository;
+  @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeRepository;
   @MockBean private DataHubClient dataHubClient;
 
   private SpecimenType swab1;
@@ -157,7 +157,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_updatesSpecimenTypes() {
-    var deviceSpecimenTypes = deviceSpecimenTypeRepository.findAllByDeviceType(devA);
+    var deviceSpecimenTypes = deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
     assertThat(deviceSpecimenTypes.size()).isEqualTo(1);
     LIVDResponse deviceOne =
         new LIVDResponse(
@@ -188,12 +188,11 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     assertTrue(newSpecimenType.isPresent());
 
     // Second specimen type from response was added to device
-    var updatedDeviceSpecimenTypesA = deviceSpecimenTypeRepository.findAllByDeviceType(devA);
+    var updatedDeviceSpecimenTypesA = deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
     assertThat(updatedDeviceSpecimenTypesA.size()).isEqualTo(2);
     assertThat(
             updatedDeviceSpecimenTypesA.stream()
-                .map(DeviceSpecimenType::getSpecimenType)
-                .map(SpecimenType::getInternalId)
+                .map(DeviceTypeSpecimenTypeMapping::getSpecimenTypeId)
                 .collect(Collectors.toList()))
         .containsOnly(swab1.getInternalId(), swab2.getInternalId());
 
@@ -201,12 +200,11 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     //     - existed in database, added to device
     //     - did NOT exist in database, added to device
     //     - pre-existing specimen type for device not returned in response - not removed
-    var updatedDeviceSpecimenTypesB = deviceSpecimenTypeRepository.findAllByDeviceType(devB);
+    var updatedDeviceSpecimenTypesB = deviceSpecimenTypeRepository.findAllByDeviceTypeId(devB.getInternalId());
     assertThat(updatedDeviceSpecimenTypesB.size()).isEqualTo(3);
     assertThat(
             updatedDeviceSpecimenTypesB.stream()
-                .map(DeviceSpecimenType::getSpecimenType)
-                .map(SpecimenType::getInternalId)
+                .map(DeviceTypeSpecimenTypeMapping::getSpecimenTypeId)
                 .collect(Collectors.toList()))
         .containsOnly(
             swab1.getInternalId(), swab3.getInternalId(), newSpecimenType.get().getInternalId());

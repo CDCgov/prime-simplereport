@@ -27,11 +27,8 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -248,17 +245,18 @@ public class OrganizationInitializingService {
       }
     }
 
-    Map<String, DeviceTestPerformedLoincCode> deviceExtraInfoByLoinc =
+    Map<UUID, DeviceTestPerformedLoincCode> deviceExtraInfoByLoinc =
         deviceTestPerformedLoincCodeRepository.findAll().stream()
             .collect(
-                Collectors.toMap(DeviceTestPerformedLoincCode::getTestPerformedLoincCode, d -> d));
+//                Collectors.toMap(DeviceTestPerformedLoincCode::getTestPerformedLoincCode, d -> d));
+                Collectors.toMap(DeviceTestPerformedLoincCode::getInternalId, d -> d));
     for (DeviceTestPerformedLoincCode d : getDeviceTestPerformedLoincCode(deviceTypesByName)) {
-      if (!deviceExtraInfoByLoinc.containsKey(d.getTestPerformedLoincCode())) {
+      if (!deviceExtraInfoByLoinc.containsKey(d.getInternalId())) {
         log.info("Creating device test performed loinc code {}", d.getTestPerformedLoincCode());
         DeviceTestPerformedLoincCode deviceTestPerformedLoincCode =
             deviceTestPerformedLoincCodeRepository.save(d);
         deviceExtraInfoByLoinc.put(
-            deviceTestPerformedLoincCode.getTestPerformedLoincCode(), deviceTestPerformedLoincCode);
+            deviceTestPerformedLoincCode.getInternalId(), deviceTestPerformedLoincCode);
       }
     }
 

@@ -35,6 +35,12 @@ public class DeviceTypeService {
 
   public static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
+
+  public static final Set<String> COVID_VENDOR_ANALYTE_NAMES = new HashSet<>(Arrays.asList("sars-cov-2", "cov-2", "sarscov2", "sars-cov2", "covid", "sars-2019-ncov", "2019-ncovrna"));
+  public static final Set<String> FLU_A_VENDOR_ANALYTE_NAMES = new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
+  public static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES = new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
+  public static final Set<String> RSV_VENDOR_ANALYTE_NAMES = new HashSet<>(Arrays.asList("rsv", "respiratory syncytial virus"));
+
   private final DeviceTypeRepository deviceTypeRepository;
   private final DataHubClient client;
   private final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
@@ -63,7 +69,7 @@ public class DeviceTypeService {
     return deviceTypeRepository.findDeviceTypeByName(name);
   }
 
-  //  @Transactional
+    @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(UpdateDeviceType updateDevice) {
 
@@ -199,15 +205,47 @@ public class DeviceTypeService {
   }
 
   public String extractSpecimenTypeCode(String specimenDescription) {
-    Pattern pattern = Pattern.compile("\\((.*?)\\^");
-    Matcher matcher = pattern.matcher(specimenDescription);
+    Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
+//    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)$");
+//    Pattern specimenCode = Pattern.compile("\\((.*?)\\^");
+    Pattern specimenCode = Pattern.compile("^(.*?)\\^");
+    Matcher matcher = specimenDetails.matcher(specimenDescription);
 
     if (!matcher.find()) {
       // wut do if it doesn't match?
       return "";
     }
 
-    return matcher.group(1);
+    var result = specimenCode.matcher(matcher.group(1));
+
+    if (!result.find()) {
+      // wut do if it doesn't match?
+      return "";
+    }
+
+    return result.group(1);
+  }
+
+  public String extractSpecimenTypeName(String specimenDescription) {
+//    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)$");
+    Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
+//    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)");
+    Pattern specimenName = Pattern.compile("\\^(.*?)\\^");
+    Matcher matcher = specimenDetails.matcher(specimenDescription);
+
+    if (!matcher.find()) {
+      // wut do if it doesn't match?
+      return "";
+    }
+
+    var result = specimenName.matcher(matcher.group(1));
+
+    if (!result.find()) {
+      // wut do if it doesn't match?
+      return "";
+    }
+
+    return result.group(1);
   }
 
   public List<UUID> getSpecimenTypeIdsFromDescription(LIVDResponse device) {
@@ -229,6 +267,10 @@ public class DeviceTypeService {
 
     devices.forEach(
         device -> {
+          if (device == null || device.getManufacturer() == null || device.getModel() == null || device.getVendorAnalyteName() == null) {
+            return;
+          }
+
           // Have we already seen this device in the response?
           // If so, create a DeviceTestPerformedLoincCode from entry and add to HashMap
           // Does the device exist at all?
@@ -250,11 +292,16 @@ public class DeviceTypeService {
 
                     var specimensForDevice =
                         deviceSpecimens.get(device.getModel() + device.getManufacturer());
+                    var supportedDisease = getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
 
-                    // This doesn't return the result of `.save()` - refetch, I guess?
+                    if (supportedDisease.isEmpty()) {
+                      // Skip this device
+                      return null;
+                    }
+
                     createDeviceType(
                         CreateDeviceType.builder()
-                            .name(device.getModel()) // TODO
+                            .name(device.getModel())
                             .manufacturer(device.getManufacturer())
                             .model(device.getModel())
                             .loincCode(device.getTestPerformedLoincCode())
@@ -262,10 +309,7 @@ public class DeviceTypeService {
                             .supportedDiseaseTestPerformed(
                                 List.of(
                                     SupportedDiseaseTestPerformedInput.builder()
-                                        .supportedDisease(
-                                            getSupportedDiseaseFromVendorAnalyte(
-                                                    device.getVendorAnalyte())
-                                                .getInternalId())
+                                        .supportedDisease(supportedDisease.get().getInternalId())
                                         .testPerformedLoincCode(device.getTestPerformedLoincCode())
                                         .testkitNameId(device.getTestKitNameId())
                                         .equipmentUid(device.getEquipmentUid())
@@ -297,13 +341,18 @@ public class DeviceTypeService {
             deviceSpecimens.put(device.getModel() + device.getManufacturer(), specimenTypesToAdd);
           }
 
+          var supportedDisease = getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
+
+          if (supportedDisease.isEmpty()) {
+            // Skip this device
+            return;
+          }
+
           devicesToSync
               .get(deviceToSync)
               .add(
                   SupportedDiseaseTestPerformedInput.builder()
-                      .supportedDisease(
-                          getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyte())
-                              .getInternalId())
+                      .supportedDisease(supportedDisease.get().getInternalId())
                       .testPerformedLoincCode(device.getTestPerformedLoincCode())
                       .equipmentUid(device.getEquipmentUid())
                       .testkitNameId(device.getTestKitNameId())
@@ -336,8 +385,6 @@ public class DeviceTypeService {
                   .swabTypes(deviceSpecimens.get(device.getModel() + device.getManufacturer()))
                   .build();
 
-          // TODO: this will not preserve existing device specimen types not included in
-          // response
           updateDeviceType(input);
         });
   }
@@ -354,8 +401,7 @@ public class DeviceTypeService {
         () ->
             specimenTypeService.createSpecimenType(
                 CreateSpecimenType.builder()
-                    // TODO: more parsing of the specimen description string
-                    .name("Nasal swab")
+                  .name(extractSpecimenTypeName(specimenDescription))
                     .typeCode(specimenCode)
                     .build()));
   }
@@ -381,17 +427,23 @@ public class DeviceTypeService {
     return deviceTestPerformedLoincCodeList;
   }
 
-  private SupportedDisease getSupportedDiseaseFromVendorAnalyte(String vendorAnalyte) {
+  private Optional<SupportedDisease> getSupportedDiseaseFromVendorAnalyte(String vendorAnalyte) {
+    if (vendorAnalyte == null) {
+      return Optional.empty();
+    }
+
     String input = vendorAnalyte.toLowerCase();
 
-    if (input.contains("sars-cov-2") || (input.contains("sc2") || input.contains("covid"))) {
-      return diseaseService.covid();
-    } else if (input.contains("flu a") || input.contains("influenza a")) {
-      return diseaseService.fluA();
-    } else if (input.contains("flu b") || input.contains("influenza b")) {
-      return diseaseService.fluB();
+    if (COVID_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
+      return Optional.of(diseaseService.covid());
+    } else if (FLU_A_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
+      return Optional.of(diseaseService.fluA());
+    } else if (FLU_B_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
+      return Optional.of(diseaseService.fluB());
+//    } else if (RSV_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
+//      return diseaseService.rsv();
     } else {
-      throw new IllegalArgumentException("Disease not found");
+      return Optional.empty();
     }
   }
 }

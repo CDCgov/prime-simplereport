@@ -12,7 +12,7 @@ public class LIVDResponse {
   private String manufacturer;
   private String model;
   private List<String> vendorSpecimenDescription;
-  private String vendorAnalyte;
+  private String vendorAnalyteName;
   private String testPerformedLoincCode;
   private String testKitNameId;
   private String equipmentUid;
