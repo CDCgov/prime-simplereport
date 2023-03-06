@@ -40,7 +40,8 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
-    // Security Pins (Sept 2022)
+    // Security Pins (Mar 2023)
+    implementation 'com.fasterxml.woodstox:woodstox-core:6.4.0'
     implementation 'org.yaml:snakeyaml:1.31'
 
     // data layer dependencies
