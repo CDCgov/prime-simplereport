@@ -15,8 +15,6 @@ module "metric_alerts" {
     "account_request_failures",
     "experian_auth_failures",
     "frontend_error_boundary",
-    "batched_uploader_single_failure_detected",
-    "batched_uploader_function_not_triggering",
     "fhir_batched_uploader_single_failure_detected",
     "fhir_batched_uploader_function_not_triggering",
     "function_app_memory_alert",

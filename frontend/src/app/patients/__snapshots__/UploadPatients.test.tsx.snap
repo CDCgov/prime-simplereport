@@ -135,7 +135,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
               >
                 If you plan to test patients at more than one facility, we recommend adding them to all facilities. You can't select multiple facilities individually.
               </p>
-              <div
+              <form
                 class="usa-form-group margin-top-2"
               >
                 <fieldset
@@ -188,7 +188,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                     </div>
                   </div>
                 </fieldset>
-              </div>
+              </form>
             </div>
           </li>
           <li>

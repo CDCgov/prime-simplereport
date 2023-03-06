@@ -241,16 +241,17 @@ const OrganizationForm = () => {
 
   return (
     <CardBackground>
-      <Card logo>
+      <Card logo cardIsForm>
         <div className="margin-bottom-2 organization-form usa-prose">
-          <h4 className="margin-top-2 margin-bottom-0">
+          <h1 className="margin-top-2 margin-bottom-0">
             Sign up for SimpleReport
-          </h4>
+          </h1>
           <StepIndicator
             steps={organizationCreationSteps}
             currentStepValue={"0"}
             noLabels={true}
             segmentIndicatorOnBottom={true}
+            headingLevel="h2"
           />
           <div className="gray-background padding-y-05 padding-x-3">
             <p className="font-ui-2xs line-height-sans-5 margin-bottom-1">
