@@ -219,6 +219,7 @@ const PersonalDetailsForm = ({
           currentStepValue={"1"}
           noLabels={true}
           segmentIndicatorOnBottom={true}
+          headingLevel="h2"
         />
         <div className="margin-bottom-2 organization-form">
           <div>
