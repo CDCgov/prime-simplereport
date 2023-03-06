@@ -348,8 +348,10 @@ public class LiveOktaRepository implements OktaRepository {
   @Override
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
-    var users =
+    var searchUsers =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
+    var qUsers = userApi.listUsers(username, null, null, null, null, null, null);
+    var users = Stream.concat(searchUsers.stream(), qUsers.stream()).collect(Collectors.toList());
     throwErrorIfEmpty(users.stream(), "Cannot update role of Okta user with unrecognized username");
     User user = users.get(0);
 
