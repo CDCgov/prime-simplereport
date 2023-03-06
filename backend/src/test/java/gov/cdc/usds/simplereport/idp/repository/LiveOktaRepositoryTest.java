@@ -1188,6 +1188,9 @@ class LiveOktaRepositoryTest {
             eq("profile.login eq \"fraud@example.com\""),
             isNull(),
             isNull());
+    verify(userApi)
+        .listUsers(
+            eq("fraud@example.com"), isNull(), isNull(), isNull(), isNull(), isNull(), isNull());
     assertEquals(UserStatus.ACTIVE, actual);
   }
 
