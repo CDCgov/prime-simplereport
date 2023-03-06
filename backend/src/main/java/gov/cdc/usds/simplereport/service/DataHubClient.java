@@ -32,6 +32,6 @@ public interface DataHubClient {
       @PathVariable("id") UUID id,
       @RequestHeader(value = "Authorization", required = true) String authorizationHeader);
 
-  @GetMapping(value = "/api/metadata/livd?model=Alinity%20m", consumes = "application/text")
+  @GetMapping(value = "/api/metadata/livd", consumes = "application/text")
   List<LIVDResponse> getLIVDTable();
 }
