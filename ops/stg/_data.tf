@@ -234,7 +234,7 @@ data "azurerm_key_vault_secret" "postgres_nophi_password" {
 data "azurerm_storage_account" "app" {
   name                = "simplereport${local.env}app"
   resource_group_name = data.azurerm_resource_group.rg.name
-  depends_on          = [
+  depends_on = [
     azurerm_storage_account.app
   ]
 }
