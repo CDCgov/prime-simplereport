@@ -270,7 +270,7 @@ public class DeviceTypeService {
    * Wrapper method for syncing devices from LIVD table so automation can call the inner method
    * without hitting the lock or conditions.
    */
-  @Scheduled(cron = "0 * * * *", zone = "America/New_York")
+  @Scheduled(cron = "0 * * * * *", zone = "America/New_York")
   @SchedulerLock(
       name = "DeviceTypeService_syncDevices",
       lockAtLeastFor = "PT30S",
