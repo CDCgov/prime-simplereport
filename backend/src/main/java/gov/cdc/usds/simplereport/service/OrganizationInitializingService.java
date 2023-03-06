@@ -27,7 +27,6 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -248,7 +247,9 @@ public class OrganizationInitializingService {
     Map<UUID, DeviceTestPerformedLoincCode> deviceExtraInfoByLoinc =
         deviceTestPerformedLoincCodeRepository.findAll().stream()
             .collect(
-//                Collectors.toMap(DeviceTestPerformedLoincCode::getTestPerformedLoincCode, d -> d));
+                //
+                // Collectors.toMap(DeviceTestPerformedLoincCode::getTestPerformedLoincCode, d ->
+                // d));
                 Collectors.toMap(DeviceTestPerformedLoincCode::getInternalId, d -> d));
     for (DeviceTestPerformedLoincCode d : getDeviceTestPerformedLoincCode(deviceTypesByName)) {
       if (!deviceExtraInfoByLoinc.containsKey(d.getInternalId())) {

@@ -157,7 +157,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_updatesSpecimenTypes() {
-    var deviceSpecimenTypes = deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
+    var deviceSpecimenTypes =
+        deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
     assertThat(deviceSpecimenTypes.size()).isEqualTo(1);
     LIVDResponse deviceOne =
         new LIVDResponse(
@@ -188,7 +189,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     assertTrue(newSpecimenType.isPresent());
 
     // Second specimen type from response was added to device
-    var updatedDeviceSpecimenTypesA = deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
+    var updatedDeviceSpecimenTypesA =
+        deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
     assertThat(updatedDeviceSpecimenTypesA.size()).isEqualTo(2);
     assertThat(
             updatedDeviceSpecimenTypesA.stream()
@@ -200,7 +202,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     //     - existed in database, added to device
     //     - did NOT exist in database, added to device
     //     - pre-existing specimen type for device not returned in response - not removed
-    var updatedDeviceSpecimenTypesB = deviceSpecimenTypeRepository.findAllByDeviceTypeId(devB.getInternalId());
+    var updatedDeviceSpecimenTypesB =
+        deviceSpecimenTypeRepository.findAllByDeviceTypeId(devB.getInternalId());
     assertThat(updatedDeviceSpecimenTypesB.size()).isEqualTo(3);
     assertThat(
             updatedDeviceSpecimenTypesB.stream()

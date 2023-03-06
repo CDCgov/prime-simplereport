@@ -36,10 +36,22 @@ public class DeviceTypeService {
   public static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
 
-  public static final Set<String> COVID_VENDOR_ANALYTE_NAMES = new HashSet<>(Arrays.asList("sars-cov-2", "cov-2", "sarscov2", "sars-cov2", "covid", "sars-2019-ncov", "2019-ncovrna"));
-  public static final Set<String> FLU_A_VENDOR_ANALYTE_NAMES = new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
-  public static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES = new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
-  public static final Set<String> RSV_VENDOR_ANALYTE_NAMES = new HashSet<>(Arrays.asList("rsv", "respiratory syncytial virus"));
+  public static final Set<String> COVID_VENDOR_ANALYTE_NAMES =
+      new HashSet<>(
+          Arrays.asList(
+              "sars-cov-2",
+              "cov-2",
+              "sarscov2",
+              "sars-cov2",
+              "covid",
+              "sars-2019-ncov",
+              "2019-ncovrna"));
+  public static final Set<String> FLU_A_VENDOR_ANALYTE_NAMES =
+      new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
+  public static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
+      new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
+  public static final Set<String> RSV_VENDOR_ANALYTE_NAMES =
+      new HashSet<>(Arrays.asList("rsv", "respiratory syncytial virus"));
 
   private final DeviceTypeRepository deviceTypeRepository;
   private final DataHubClient client;
@@ -69,7 +81,7 @@ public class DeviceTypeService {
     return deviceTypeRepository.findDeviceTypeByName(name);
   }
 
-    @Transactional
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(UpdateDeviceType updateDevice) {
 
@@ -206,8 +218,8 @@ public class DeviceTypeService {
 
   public String extractSpecimenTypeCode(String specimenDescription) {
     Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
-//    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)$");
-//    Pattern specimenCode = Pattern.compile("\\((.*?)\\^");
+    //    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)$");
+    //    Pattern specimenCode = Pattern.compile("\\((.*?)\\^");
     Pattern specimenCode = Pattern.compile("^(.*?)\\^");
     Matcher matcher = specimenDetails.matcher(specimenDescription);
 
@@ -227,9 +239,9 @@ public class DeviceTypeService {
   }
 
   public String extractSpecimenTypeName(String specimenDescription) {
-//    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)$");
+    //    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)$");
     Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
-//    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)");
+    //    Pattern specimenDetails = Pattern.compile("\\(([^()]*)\\)");
     Pattern specimenName = Pattern.compile("\\^(.*?)\\^");
     Matcher matcher = specimenDetails.matcher(specimenDescription);
 
@@ -267,7 +279,10 @@ public class DeviceTypeService {
 
     devices.forEach(
         device -> {
-          if (device == null || device.getManufacturer() == null || device.getModel() == null || device.getVendorAnalyteName() == null) {
+          if (device == null
+              || device.getManufacturer() == null
+              || device.getModel() == null
+              || device.getVendorAnalyteName() == null) {
             return;
           }
 
@@ -292,7 +307,8 @@ public class DeviceTypeService {
 
                     var specimensForDevice =
                         deviceSpecimens.get(device.getModel() + device.getManufacturer());
-                    var supportedDisease = getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
+                    var supportedDisease =
+                        getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
 
                     if (supportedDisease.isEmpty()) {
                       // Skip this device
@@ -341,7 +357,8 @@ public class DeviceTypeService {
             deviceSpecimens.put(device.getModel() + device.getManufacturer(), specimenTypesToAdd);
           }
 
-          var supportedDisease = getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
+          var supportedDisease =
+              getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
 
           if (supportedDisease.isEmpty()) {
             // Skip this device
@@ -401,7 +418,7 @@ public class DeviceTypeService {
         () ->
             specimenTypeService.createSpecimenType(
                 CreateSpecimenType.builder()
-                  .name(extractSpecimenTypeName(specimenDescription))
+                    .name(extractSpecimenTypeName(specimenDescription))
                     .typeCode(specimenCode)
                     .build()));
   }
@@ -440,8 +457,6 @@ public class DeviceTypeService {
       return Optional.of(diseaseService.fluA());
     } else if (FLU_B_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
       return Optional.of(diseaseService.fluB());
-//    } else if (RSV_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
-//      return diseaseService.rsv();
     } else {
       return Optional.empty();
     }
