@@ -69,3 +69,14 @@ module "simple_report_api" {
     # SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
   }
 }
+
+module "report_stream_reporting_functions" {
+  source       = "../services/app_functions/report_stream_batched_publisher/infra"
+  environment  = local.env
+  env_level    = local.env_level
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  lb_subnet_id = data.terraform_remote_state.persistent_stg.outputs.subnet_lbs_id
+  depends_on = [
+    azurerm_storage_account.app
+  ]
+}
