@@ -21,6 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -267,11 +270,23 @@ public class DeviceTypeService {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Wrapper method for syncing devices from LIVD table so automation can call the inner method
+   * without hitting the lock or conditions.
+   */
+  @Scheduled(cron = "0 * * * *", zone = "America/New_York")
+  @SchedulerLock(
+      name = "DeviceTypeService_syncDevices",
+      lockAtLeastFor = "PT30S",
+      lockAtMostFor = "PT30M")
+  @ConditionalOnProperty("simple-report.device-sync-livd.enabled")
+  public void scheduledSyncDevices() {
+    syncDevices();
+  }
+
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  // TODO: void? List<DeviceType>?
   public void syncDevices() {
-    // TODO: dry mode?
     List<LIVDResponse> devices = client.getLIVDTable();
 
     var devicesToSync = new HashMap<DeviceType, ArrayList<SupportedDiseaseTestPerformedInput>>();
@@ -378,20 +393,6 @@ public class DeviceTypeService {
 
     devicesToSync.forEach(
         (device, testPerformed) -> {
-          // Preserve any existing specimen types for a device, even if it does not appear in the
-          // response
-          // Merge and de-duplicate existing and incoming device specimen types
-          /*
-          Set<UUID> allSpecimenTypes = device.getSwabTypes().stream().map(SpecimenType::getInternalId).collect(Collectors.toCollection(LinkedHashSet::new));
-          var incomingSpecimenTypes =deviceSpecimens.get(device.getModel() + device.getManufacturer());
-          if (!incomingSpecimenTypes.isEmpty()) {
-            allSpecimenTypes.addAll(incomingSpecimenTypes);
-          }
-
-          List<UUID> specimenTypesToAdd = new ArrayList<>(allSpecimenTypes);
-          */
-
-          // RSV?? Other diseases?
           UpdateDeviceType input =
               UpdateDeviceType.builder()
                   .internalId(device.getInternalId())
