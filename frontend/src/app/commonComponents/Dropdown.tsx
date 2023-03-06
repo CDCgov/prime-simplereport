@@ -99,7 +99,12 @@ const Dropdown: React.FC<Props & SelectProps> = ({
           >
             {defaultSelect && <option value="">{defaultOption}</option>}
             {options.map(({ value, label, disabled }) => (
-              <option key={value} value={value} disabled={disabled}>
+              <option
+                key={value}
+                value={value}
+                disabled={disabled}
+                aria-selected={selectedValue === value}
+              >
                 {label}
               </option>
             ))}

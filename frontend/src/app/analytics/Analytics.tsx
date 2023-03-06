@@ -138,7 +138,7 @@ export const Analytics = (props: Props) => {
           <div id="analytics-page">
             <div className="prime-container padding-3">
               <div className="grid-row grid-gap">
-                <div className="grid-col-4">
+                <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
                   <Dropdown
                     label="Testing facility"
                     options={[
@@ -156,7 +156,7 @@ export const Analytics = (props: Props) => {
                   />
                 </div>
                 {/* TODO: filter by patient role */}
-                <div className="grid-col-4">
+                <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
                   <Dropdown
                     label="Date range"
                     options={[
@@ -184,7 +184,7 @@ export const Analytics = (props: Props) => {
               </div>
               {dateRange === "custom" && (
                 <div className="grid-row grid-gap margin-top-2">
-                  <div className="grid-col-4">
+                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
                     <label className={classNames("usa-label")}>Begin</label>
                     <input
                       id={"startDate"}
@@ -205,7 +205,7 @@ export const Analytics = (props: Props) => {
                       defaultValue={formatDate(new Date(startDate))}
                     />{" "}
                   </div>
-                  <div className="grid-col-4">
+                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
                     <label className={classNames("usa-label")}>End</label>
                     <input
                       id={"endDate"}
@@ -239,7 +239,7 @@ export const Analytics = (props: Props) => {
                   </p>
                   <p className="padding-top-1">{`${startDate} \u2013 ${endDate}`}</p>
                   <div className="grid-row grid-gap">
-                    <div className="grid-col-3">
+                    <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-row">
                         <h2>Tests conducted</h2>
                         <span className="font-sans-3xl text-bold margin-y-auto">
@@ -248,7 +248,7 @@ export const Analytics = (props: Props) => {
                         <p></p>
                       </div>
                     </div>
-                    <div className="grid-col-3">
+                    <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-align-center">
                         <h2>Positive tests</h2>
                         <span className="font-sans-3xl text-bold margin-y-auto">
@@ -261,7 +261,7 @@ export const Analytics = (props: Props) => {
                         </p>
                       </div>
                     </div>
-                    <div className="grid-col-3">
+                    <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-align-center">
                         <h2>Negative tests</h2>
                         <span className="font-sans-3xl text-bold margin-y-auto">
@@ -270,7 +270,7 @@ export const Analytics = (props: Props) => {
                         <p></p>
                       </div>
                     </div>
-                    <div className="grid-col-3">
+                    <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-align-center">
                         <h2>Positivity rate</h2>
                         <span className="font-sans-3xl text-bold margin-y-auto">

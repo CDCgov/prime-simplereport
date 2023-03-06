@@ -181,16 +181,19 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   - Select -
                 </option>
                 <option
+                  aria-selected="false"
                   value="POSITIVE"
                 >
                   Positive
                 </option>
                 <option
+                  aria-selected="false"
                   value="NEGATIVE"
                 >
                   Negative
                 </option>
                 <option
+                  aria-selected="false"
                   value="UNDETERMINED"
                 >
                   Inconclusive
@@ -218,21 +221,25 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   - Select -
                 </option>
                 <option
+                  aria-selected="false"
                   value="STAFF"
                 >
                   Staff
                 </option>
                 <option
+                  aria-selected="false"
                   value="RESIDENT"
                 >
                   Resident
                 </option>
                 <option
+                  aria-selected="false"
                   value="STUDENT"
                 >
                   Student
                 </option>
                 <option
+                  aria-selected="false"
                   value="VISITOR"
                 >
                   Visitor
@@ -255,21 +262,25 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 name="facility"
               >
                 <option
+                  aria-selected="false"
                   value="all"
                 >
                   All facilities
                 </option>
                 <option
+                  aria-selected="true"
                   value="1"
                 >
                   Facility 1
                 </option>
                 <option
+                  aria-selected="false"
                   value="2"
                 >
                   Facility 2
                 </option>
                 <option
+                  aria-selected="false"
                   value="3"
                 >
                   Facility 3 (Archived)

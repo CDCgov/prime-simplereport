@@ -358,6 +358,7 @@ Object {
                             value=""
                           />
                           <option
+                            aria-selected="false"
                             value="294729"
                           >
                             COVID-19
@@ -861,6 +862,7 @@ Object {
                           value=""
                         />
                         <option
+                          aria-selected="false"
                           value="294729"
                         >
                           COVID-19

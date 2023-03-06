@@ -46,21 +46,25 @@ Object {
               name="correctionReason"
             >
               <option
+                aria-selected="true"
                 value="DUPLICATE_TEST"
               >
                 Duplicate test
               </option>
               <option
+                aria-selected="false"
                 value="INCORRECT_RESULT"
               >
                 Incorrect test result
               </option>
               <option
+                aria-selected="false"
                 value="INCORRECT_TEST_DATE"
               >
                 Incorrect test date
               </option>
               <option
+                aria-selected="false"
                 value="OTHER"
               >
                 Reason not listed
@@ -131,21 +135,25 @@ Object {
             name="correctionReason"
           >
             <option
+              aria-selected="true"
               value="DUPLICATE_TEST"
             >
               Duplicate test
             </option>
             <option
+              aria-selected="false"
               value="INCORRECT_RESULT"
             >
               Incorrect test result
             </option>
             <option
+              aria-selected="false"
               value="INCORRECT_TEST_DATE"
             >
               Incorrect test date
             </option>
             <option
+              aria-selected="false"
               value="OTHER"
             >
               Reason not listed
