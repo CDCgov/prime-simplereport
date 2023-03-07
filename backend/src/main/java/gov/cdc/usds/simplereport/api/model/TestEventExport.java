@@ -4,6 +4,7 @@ import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -173,6 +175,13 @@ public class TestEventExport {
           .put("Singhalese", "sin")
           .put("Taiwanese", "oan")
           .build();
+
+  private static Optional<? extends DeviceTestPerformedLoincCode> getCovidDiseaseInfo(
+      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCodes) {
+    return deviceTestPerformedLoincCodes.stream()
+        .filter(s -> "COVID-19".equals(s.getSupportedDisease().getName()))
+        .findFirst();
+  }
 
   private String boolToYesNoUnk(Boolean value) {
     if (value == null) {
@@ -609,6 +618,24 @@ public class TestEventExport {
   @JsonProperty("Device_ID")
   public String getDeviceID() {
     return deviceType.map(DeviceType::getModel).orElse(null);
+  }
+
+  @JsonProperty("Test_Kit_Name_ID")
+  public String getTestKitNameId() {
+    return deviceType
+        .map(DeviceType::getSupportedDiseaseTestPerformed)
+        .flatMap(TestEventExport::getCovidDiseaseInfo)
+        .map(DeviceTestPerformedLoincCode::getTestkitNameId)
+        .orElse(null);
+  }
+
+  @JsonProperty("Equipment_Model_ID")
+  public String getEquipmentModelId() {
+    return deviceType
+        .map(DeviceType::getSupportedDiseaseTestPerformed)
+        .flatMap(TestEventExport::getCovidDiseaseInfo)
+        .map(DeviceTestPerformedLoincCode::getEquipmentUid)
+        .orElse(null);
   }
 
   @JsonProperty("Test_date")
