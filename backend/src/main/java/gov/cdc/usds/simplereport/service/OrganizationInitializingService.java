@@ -18,7 +18,7 @@ import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
@@ -50,7 +50,7 @@ public class OrganizationInitializingService {
   private final ProviderRepository _providerRepo;
   private final DeviceTypeRepository _deviceTypeRepo;
   private final SpecimenTypeRepository _specimenTypeRepo;
-  private final DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
+  private final DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
   private final FacilityRepository _facilityRepo;
   private final ApiUserRepository _apiUserRepo;
   private final OktaRepository _oktaRepo;
@@ -249,12 +249,12 @@ public class OrganizationInitializingService {
     }
 
     Map<String, DeviceTypeDisease> deviceExtraInfoByLoincTestkitEquipmentId =
-        deviceTestPerformedLoincCodeRepository.findAll().stream()
+        deviceTypeDiseaseRepository.findAll().stream()
             .collect(Collectors.toMap(d -> deviceExtraInfoKey(d), d -> d));
     for (DeviceTypeDisease d : getDeviceTestPerformedLoincCode(deviceTypesByName)) {
       if (!deviceExtraInfoByLoincTestkitEquipmentId.containsKey(deviceExtraInfoKey(d))) {
         log.info("Creating device test performed loinc code {}", d.getTestPerformedLoincCode());
-        DeviceTypeDisease deviceTypeDisease = deviceTestPerformedLoincCodeRepository.save(d);
+        DeviceTypeDisease deviceTypeDisease = deviceTypeDiseaseRepository.save(d);
         deviceExtraInfoByLoincTestkitEquipmentId.put(
             deviceTypeDisease.getTestPerformedLoincCode(), deviceTypeDisease);
       }

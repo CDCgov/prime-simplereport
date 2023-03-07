@@ -17,7 +17,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -42,7 +42,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
-  @Autowired private DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
+  @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
   @Mock private DeviceTypeRepository _deviceTypeRepoMock;
 
@@ -374,9 +374,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(disease2TestPerformed.get().getEquipmentUid()).isEqualTo("equipmentUid3");
     assertThat(disease2TestPerformed.get().getTestkitNameId()).isEqualTo("testkitNameId3");
 
-    var deviceTestPerformedLoincCodeRepositoryAll =
-        deviceTestPerformedLoincCodeRepository.findAll();
-    assertThat(deviceTestPerformedLoincCodeRepositoryAll).hasSize(2);
+    var deviceTypeDiseaseRepositoryAll = deviceTypeDiseaseRepository.findAll();
+    assertThat(deviceTypeDiseaseRepositoryAll).hasSize(2);
   }
 
   @Test

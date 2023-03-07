@@ -6,8 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 
-public interface DeviceTestPerformedLoincCodeRepository
-    extends CrudRepository<DeviceTypeDisease, UUID> {
+public interface DeviceTypeDiseaseRepository extends CrudRepository<DeviceTypeDisease, UUID> {
   @Override
   List<DeviceTypeDisease> findAll();
 

@@ -12,7 +12,7 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceSupportedDiseaseRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import java.util.List;
@@ -32,7 +32,7 @@ class DeviceTypeDataLoaderHelperTest {
   @Mock DiseaseService diseaseService;
   @Mock DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   @Mock SpecimenTypeRepository specimenTypeRepository;
-  @Mock DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
+  @Mock DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
   @InjectMocks private DeviceTypeDataLoaderService deviceTypeDataLoaderService;
 
@@ -148,7 +148,7 @@ class DeviceTypeDataLoaderHelperTest {
             .testkitNameId("666")
             .build();
 
-    when(deviceTestPerformedLoincCodeRepository.findAllByDeviceTypeIdIn(deviceIdSet))
+    when(deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(deviceIdSet))
         .thenReturn(
             List.of(
                 deviceTestPerformedLoincCode1,
