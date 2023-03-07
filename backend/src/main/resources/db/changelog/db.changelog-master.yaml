@@ -4590,3 +4590,6 @@ databaseChangeLog:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.device_disease_loinc_code TO ${noPhiUsername};
         - sql:
             sql: INSERT INTO ${database.defaultSchemaName}.device_disease_loinc_code SELECT * FROM ${database.defaultSchemaName}.device_test_performed_loinc_code
+      rollback:
+        - dropTable:
+            tableName: device_disease_loinc_code
