@@ -14,7 +14,7 @@ Object {
           <div
             class="grid-row"
           >
-            <div
+            <form
               class="prime-container card-container"
             >
               <div
@@ -32,7 +32,7 @@ Object {
                     aria-disabled="true"
                     class="usa-button usa-button-disabled"
                     disabled=""
-                    type="button"
+                    type="submit"
                   >
                     Save changes
                   </button>
@@ -44,6 +44,7 @@ Object {
                 <div>
                   <div
                     class="usa-alert usa-alert--warning"
+                    role="note"
                   >
                     <div
                       class="usa-alert__body"
@@ -83,7 +84,7 @@ Object {
                   </div>
                 </div>
                 <div
-                  class="grid-row grid-gap"
+                  class="grid-row grid-gap margin-top-2"
                 >
                   <div
                     class="tablet:grid-col"
@@ -293,9 +294,9 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="24"
+                        for="28"
                       >
-                        Device name
+                        Device Name
                         <abbr
                           class="usa-hint usa-hint--required"
                           title="required"
@@ -309,7 +310,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="24"
+                        id="28"
                         name="name"
                         type="text"
                         value=""
@@ -328,7 +329,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="25"
+                        for="29"
                       >
                         Model
                         <abbr
@@ -344,7 +345,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="25"
+                        id="29"
                         name="model"
                         type="text"
                         value=""
@@ -363,7 +364,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="26"
+                        for="30"
                       >
                         Manufacturer
                         <abbr
@@ -379,7 +380,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="26"
+                        id="30"
                         name="manufacturer"
                         type="text"
                         value=""
@@ -398,7 +399,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="27"
+                        for="31"
                       >
                         Test length (minutes)
                         <abbr
@@ -414,9 +415,7 @@ Object {
                         aria-required="true"
                         class="usa-input"
                         disabled=""
-                        id="27"
-                        max="999"
-                        min="0"
+                        id="31"
                         name="testLength"
                         type="number"
                         value=""
@@ -435,8 +434,8 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="28"
-                        id="label-for-28"
+                        for="32"
+                        id="label-for-32"
                       >
                         SNOMED code for swab type(s)
                         <abbr
@@ -450,12 +449,12 @@ Object {
                       <div
                         class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                         data-testid="multi-select"
-                        id="28"
+                        id="32"
                       >
                         <input
                           aria-expanded="false"
                           aria-invalid="false"
-                          aria-labelledby="label-for-28"
+                          aria-labelledby="label-for-32"
                           aria-owns="multi-select-swabTypes-list"
                           autocapitalize="off"
                           autocomplete="off"
@@ -550,49 +549,186 @@ Object {
                         </legend>
                       </fieldset>
                     </div>
-                  </div>
-                </div>
-                <fieldset
-                  class="usa-fieldset margin-top-205"
-                >
-                  <legend>
-                    Disease Information
-                  </legend>
-                </fieldset>
-                <div
-                  class="grid-row grid-gap"
-                >
-                  <div
-                    class="tablet:grid-col"
-                    style="margin-bottom: 56px;"
-                  >
-                    <button
-                      aria-disabled="true"
-                      class="usa-button usa-button--unstyled usa-button-disabled margin-top-2"
-                      disabled=""
-                      type="button"
+                    <fieldset
+                      class="usa-fieldset margin-top-205"
                     >
-                      <svg
-                        aria-hidden="true"
-                        class="svg-inline--fa fa-plus margin-right-1"
-                        data-icon="plus"
-                        data-prefix="fas"
-                        focusable="false"
-                        role="img"
-                        viewBox="0 0 448 512"
-                        xmlns="http://www.w3.org/2000/svg"
+                      <legend>
+                        Disease Information
+                      </legend>
+                      <div
+                        class="grid-row grid-gap"
                       >
-                        <path
-                          d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                      Add another disease
-                    </button>
+                        <div
+                          class="tablet:grid-col"
+                        >
+                          <div
+                            class="usa-form-group prime-dropdown  margin-top-1"
+                          >
+                            <label
+                              class="usa-label"
+                              for="33"
+                            >
+                              Supported disease
+                              <abbr
+                                class="usa-hint usa-hint--required"
+                                title="required"
+                              >
+                                 
+                                *
+                              </abbr>
+                            </label>
+                            <select
+                              aria-required="true"
+                              class="usa-select"
+                              disabled=""
+                              id="33"
+                              name="supportedDiseases.0.supportedDisease"
+                            >
+                              <option
+                                value=""
+                              />
+                              <option
+                                value="123"
+                              >
+                                COVID-19
+                              </option>
+                              <option
+                                value="456"
+                              >
+                                Flu A
+                              </option>
+                              <option
+                                value="789"
+                              >
+                                Flu B
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        <div
+                          class="tablet:grid-col"
+                        >
+                          <div
+                            class="usa-form-group margin-top-1"
+                          >
+                            <label
+                              class="usa-label"
+                              for="34"
+                            >
+                              Test performed code
+                              <abbr
+                                class="usa-hint usa-hint--required"
+                                title="required"
+                              >
+                                 
+                                *
+                              </abbr>
+                            </label>
+                            <input
+                              aria-disabled="true"
+                              aria-required="true"
+                              class="usa-input"
+                              disabled=""
+                              id="34"
+                              name="supportedDiseases.0.testPerformedLoincCode"
+                              type="text"
+                              value=""
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="tablet:grid-col"
+                        >
+                          <div
+                            class="usa-form-group margin-top-1"
+                          >
+                            <label
+                              class="usa-label"
+                              for="35"
+                            >
+                              Testkit Name Id
+                            </label>
+                            <input
+                              aria-disabled="true"
+                              aria-required="false"
+                              class="usa-input"
+                              disabled=""
+                              id="35"
+                              name="supportedDiseases.0.testkitNameId"
+                              type="text"
+                              value=""
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="tablet:grid-col"
+                        >
+                          <div
+                            class="usa-form-group margin-top-1"
+                          >
+                            <label
+                              class="usa-label"
+                              for="36"
+                            >
+                              Equipment Uid
+                            </label>
+                            <input
+                              aria-disabled="true"
+                              aria-required="false"
+                              class="usa-input"
+                              disabled=""
+                              id="36"
+                              name="supportedDiseases.0.equipmentUid"
+                              type="text"
+                              value=""
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="flex-align-self-end"
+                        >
+                          <div
+                            class="padding-205 height-5"
+                          />
+                        </div>
+                      </div>
+                    </fieldset>
+                    <div
+                      class="grid-row grid-gap"
+                    >
+                      <div
+                        class="tablet:grid-col"
+                        style="margin-bottom: 56px;"
+                      >
+                        <button
+                          aria-disabled="true"
+                          class="usa-button usa-button--unstyled usa-button-disabled margin-top-2"
+                          disabled=""
+                          type="button"
+                        >
+                          <svg
+                            aria-hidden="true"
+                            class="svg-inline--fa fa-plus margin-right-1"
+                            data-icon="plus"
+                            data-prefix="fas"
+                            focusable="false"
+                            role="img"
+                            viewBox="0 0 448 512"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                              fill="currentColor"
+                            />
+                          </svg>
+                          Add another disease
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
@@ -608,7 +744,7 @@ Object {
         <div
           class="grid-row"
         >
-          <div
+          <form
             class="prime-container card-container"
           >
             <div
@@ -626,7 +762,7 @@ Object {
                   aria-disabled="true"
                   class="usa-button usa-button-disabled"
                   disabled=""
-                  type="button"
+                  type="submit"
                 >
                   Save changes
                 </button>
@@ -638,6 +774,7 @@ Object {
               <div>
                 <div
                   class="usa-alert usa-alert--warning"
+                  role="note"
                 >
                   <div
                     class="usa-alert__body"
@@ -677,7 +814,7 @@ Object {
                 </div>
               </div>
               <div
-                class="grid-row grid-gap"
+                class="grid-row grid-gap margin-top-2"
               >
                 <div
                   class="tablet:grid-col"
@@ -887,9 +1024,9 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="24"
+                      for="28"
                     >
-                      Device name
+                      Device Name
                       <abbr
                         class="usa-hint usa-hint--required"
                         title="required"
@@ -903,7 +1040,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="24"
+                      id="28"
                       name="name"
                       type="text"
                       value=""
@@ -922,7 +1059,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="25"
+                      for="29"
                     >
                       Model
                       <abbr
@@ -938,7 +1075,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="25"
+                      id="29"
                       name="model"
                       type="text"
                       value=""
@@ -957,7 +1094,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="26"
+                      for="30"
                     >
                       Manufacturer
                       <abbr
@@ -973,7 +1110,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="26"
+                      id="30"
                       name="manufacturer"
                       type="text"
                       value=""
@@ -992,7 +1129,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="27"
+                      for="31"
                     >
                       Test length (minutes)
                       <abbr
@@ -1008,9 +1145,7 @@ Object {
                       aria-required="true"
                       class="usa-input"
                       disabled=""
-                      id="27"
-                      max="999"
-                      min="0"
+                      id="31"
                       name="testLength"
                       type="number"
                       value=""
@@ -1029,8 +1164,8 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="28"
-                      id="label-for-28"
+                      for="32"
+                      id="label-for-32"
                     >
                       SNOMED code for swab type(s)
                       <abbr
@@ -1044,12 +1179,12 @@ Object {
                     <div
                       class="usa-combo-box usa-combo-box--pristine multi-select-dropdown"
                       data-testid="multi-select"
-                      id="28"
+                      id="32"
                     >
                       <input
                         aria-expanded="false"
                         aria-invalid="false"
-                        aria-labelledby="label-for-28"
+                        aria-labelledby="label-for-32"
                         aria-owns="multi-select-swabTypes-list"
                         autocapitalize="off"
                         autocomplete="off"
@@ -1144,49 +1279,186 @@ Object {
                       </legend>
                     </fieldset>
                   </div>
-                </div>
-              </div>
-              <fieldset
-                class="usa-fieldset margin-top-205"
-              >
-                <legend>
-                  Disease Information
-                </legend>
-              </fieldset>
-              <div
-                class="grid-row grid-gap"
-              >
-                <div
-                  class="tablet:grid-col"
-                  style="margin-bottom: 56px;"
-                >
-                  <button
-                    aria-disabled="true"
-                    class="usa-button usa-button--unstyled usa-button-disabled margin-top-2"
-                    disabled=""
-                    type="button"
+                  <fieldset
+                    class="usa-fieldset margin-top-205"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="svg-inline--fa fa-plus margin-right-1"
-                      data-icon="plus"
-                      data-prefix="fas"
-                      focusable="false"
-                      role="img"
-                      viewBox="0 0 448 512"
-                      xmlns="http://www.w3.org/2000/svg"
+                    <legend>
+                      Disease Information
+                    </legend>
+                    <div
+                      class="grid-row grid-gap"
                     >
-                      <path
-                        d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    Add another disease
-                  </button>
+                      <div
+                        class="tablet:grid-col"
+                      >
+                        <div
+                          class="usa-form-group prime-dropdown  margin-top-1"
+                        >
+                          <label
+                            class="usa-label"
+                            for="33"
+                          >
+                            Supported disease
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
+                          </label>
+                          <select
+                            aria-required="true"
+                            class="usa-select"
+                            disabled=""
+                            id="33"
+                            name="supportedDiseases.0.supportedDisease"
+                          >
+                            <option
+                              value=""
+                            />
+                            <option
+                              value="123"
+                            >
+                              COVID-19
+                            </option>
+                            <option
+                              value="456"
+                            >
+                              Flu A
+                            </option>
+                            <option
+                              value="789"
+                            >
+                              Flu B
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div
+                        class="tablet:grid-col"
+                      >
+                        <div
+                          class="usa-form-group margin-top-1"
+                        >
+                          <label
+                            class="usa-label"
+                            for="34"
+                          >
+                            Test performed code
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="true"
+                            class="usa-input"
+                            disabled=""
+                            id="34"
+                            name="supportedDiseases.0.testPerformedLoincCode"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="tablet:grid-col"
+                      >
+                        <div
+                          class="usa-form-group margin-top-1"
+                        >
+                          <label
+                            class="usa-label"
+                            for="35"
+                          >
+                            Testkit Name Id
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="false"
+                            class="usa-input"
+                            disabled=""
+                            id="35"
+                            name="supportedDiseases.0.testkitNameId"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="tablet:grid-col"
+                      >
+                        <div
+                          class="usa-form-group margin-top-1"
+                        >
+                          <label
+                            class="usa-label"
+                            for="36"
+                          >
+                            Equipment Uid
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="false"
+                            class="usa-input"
+                            disabled=""
+                            id="36"
+                            name="supportedDiseases.0.equipmentUid"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="flex-align-self-end"
+                      >
+                        <div
+                          class="padding-205 height-5"
+                        />
+                      </div>
+                    </div>
+                  </fieldset>
+                  <div
+                    class="grid-row grid-gap"
+                  >
+                    <div
+                      class="tablet:grid-col"
+                      style="margin-bottom: 56px;"
+                    >
+                      <button
+                        aria-disabled="true"
+                        class="usa-button usa-button--unstyled usa-button-disabled margin-top-2"
+                        disabled=""
+                        type="button"
+                      >
+                        <svg
+                          aria-hidden="true"
+                          class="svg-inline--fa fa-plus margin-right-1"
+                          data-icon="plus"
+                          data-prefix="fas"
+                          focusable="false"
+                          role="img"
+                          viewBox="0 0 448 512"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"
+                            fill="currentColor"
+                          />
+                        </svg>
+                        Add another disease
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
