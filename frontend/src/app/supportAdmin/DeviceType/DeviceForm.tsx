@@ -232,7 +232,13 @@ const DeviceForm = (props: Props) => {
     ) {
       focusOnFirstInputWithError(true);
     }
-  }, [errors.swabTypes]);
+  }, [
+    errors.swabTypes,
+    errors.name,
+    errors.testLength,
+    errors.model,
+    errors.manufacturer,
+  ]);
 
   /**
    * HTML
