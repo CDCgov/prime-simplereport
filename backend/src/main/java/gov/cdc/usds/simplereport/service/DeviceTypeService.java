@@ -118,15 +118,14 @@ public class DeviceTypeService {
       deviceSpecimenTypeNewRepository.saveAll(toBeAddedDeviceSpecimenTypes);
     }
     if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
-      var deviceTestPerformedLoincCodeList =
-          createDeviceTestPerformedLoincCodeList(
-              updateDevice.getSupportedDiseaseTestPerformed(), device);
+      var deviceTypeDiseaseList =
+          createDeviceTypeDiseaseList(updateDevice.getSupportedDiseaseTestPerformed(), device);
       device.setSupportedDiseases(
-          deviceTestPerformedLoincCodeList.stream()
+          deviceTypeDiseaseList.stream()
               .map(DeviceTypeDisease::getSupportedDisease)
               .collect(Collectors.toList()));
       device.getSupportedDiseaseTestPerformed().clear();
-      device.getSupportedDiseaseTestPerformed().addAll(deviceTestPerformedLoincCodeList);
+      device.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
     } else if (updateDevice.getSupportedDiseases() != null) {
       List<SupportedDisease> supportedDiseases =
           updateDevice.getSupportedDiseases().stream()
@@ -172,14 +171,13 @@ public class DeviceTypeService {
         .forEach(deviceSpecimenTypeNewRepository::save);
 
     if (createDevice.getSupportedDiseaseTestPerformed() != null) {
-      var deviceTestPerformedLoincCodeList =
-          createDeviceTestPerformedLoincCodeList(
-              createDevice.getSupportedDiseaseTestPerformed(), dt);
+      var deviceTypeDiseaseList =
+          createDeviceTypeDiseaseList(createDevice.getSupportedDiseaseTestPerformed(), dt);
       dt.setSupportedDiseases(
-          deviceTestPerformedLoincCodeList.stream()
+          deviceTypeDiseaseList.stream()
               .map(DeviceTypeDisease::getSupportedDisease)
               .collect(Collectors.toList()));
-      dt.getSupportedDiseaseTestPerformed().addAll(deviceTestPerformedLoincCodeList);
+      dt.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
     } else {
       List<SupportedDisease> supportedDiseases =
           createDevice.getSupportedDiseases().stream()
@@ -194,16 +192,16 @@ public class DeviceTypeService {
     return dt;
   }
 
-  private ArrayList<DeviceTypeDisease> createDeviceTestPerformedLoincCodeList(
+  private ArrayList<DeviceTypeDisease> createDeviceTypeDiseaseList(
       List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
       DeviceType device) {
-    var deviceTestPerformedLoincCodeList = new ArrayList<DeviceTypeDisease>();
+    var deviceTypeDiseaseList = new ArrayList<DeviceTypeDisease>();
     supportedDiseaseTestPerformedInput.forEach(
         input -> {
           var supportedDisease = supportedDiseaseRepository.findById(input.getSupportedDisease());
           supportedDisease.ifPresent(
               disease ->
-                  deviceTestPerformedLoincCodeList.add(
+                  deviceTypeDiseaseList.add(
                       DeviceTypeDisease.builder()
                           .deviceTypeId(device.getInternalId())
                           .supportedDisease(disease)
@@ -212,6 +210,6 @@ public class DeviceTypeService {
                           .testkitNameId(input.getTestkitNameId())
                           .build()));
         });
-    return deviceTestPerformedLoincCodeList;
+    return deviceTypeDiseaseList;
   }
 }

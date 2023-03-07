@@ -117,13 +117,13 @@ class DeviceTypeDataLoaderHelperTest {
   }
 
   @Test
-  void getDeviceTestPerformedLoincCode() {
+  void getDeviceTypeDisease() {
     var device1Id = UUID.randomUUID();
     var device2Id = UUID.randomUUID();
     var device3Id = UUID.randomUUID();
     var deviceIdSet = Set.of(device1Id, device2Id, device3Id);
 
-    var deviceTestPerformedLoincCode1 =
+    var deviceTypeDisease1 =
         DeviceTypeDisease.builder()
             .deviceTypeId(device1Id)
             .testPerformedLoincCode("123")
@@ -131,7 +131,7 @@ class DeviceTypeDataLoaderHelperTest {
             .equipmentUid("111")
             .testkitNameId("222")
             .build();
-    var deviceTestPerformedLoincCode2 =
+    var deviceTypeDisease2 =
         DeviceTypeDisease.builder()
             .deviceTypeId(device1Id)
             .testPerformedLoincCode("456")
@@ -139,7 +139,7 @@ class DeviceTypeDataLoaderHelperTest {
             .equipmentUid("333")
             .testkitNameId("444")
             .build();
-    var deviceTestPerformedLoincCode3 =
+    var deviceTypeDisease3 =
         DeviceTypeDisease.builder()
             .deviceTypeId(device2Id)
             .testPerformedLoincCode("123")
@@ -149,19 +149,14 @@ class DeviceTypeDataLoaderHelperTest {
             .build();
 
     when(deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(deviceIdSet))
-        .thenReturn(
-            List.of(
-                deviceTestPerformedLoincCode1,
-                deviceTestPerformedLoincCode2,
-                deviceTestPerformedLoincCode3));
+        .thenReturn(List.of(deviceTypeDisease1, deviceTypeDisease2, deviceTypeDisease3));
 
-    var actual = deviceTypeDataLoaderService.getDeviceTestPerformedLoincCode(deviceIdSet);
+    var actual = deviceTypeDataLoaderService.getDeviceTypeDisease(deviceIdSet);
 
     assertThat(actual)
         .hasSize(3)
-        .containsEntry(
-            device1Id, List.of(deviceTestPerformedLoincCode1, deviceTestPerformedLoincCode2))
-        .containsEntry(device2Id, List.of(deviceTestPerformedLoincCode3))
+        .containsEntry(device1Id, List.of(deviceTypeDisease1, deviceTypeDisease2))
+        .containsEntry(device2Id, List.of(deviceTypeDisease3))
         .containsEntry(device3Id, emptyList());
   }
 }

@@ -35,14 +35,13 @@ public class DeviceTypeDataResolver {
             (deviceTypeIds, batchLoaderEnvironment) ->
                 Mono.just(deviceTypeDataLoaderService.getSpecimenTypes(deviceTypeIds)));
 
-    Class<List<DeviceTypeDisease>> deviceTestPerformedLoincCodeClazz = (Class) List.class;
+    Class<List<DeviceTypeDisease>> deviceTypeDiseaseCodeClazz = (Class) List.class;
     registry
-        .forTypePair(UUID.class, deviceTestPerformedLoincCodeClazz)
-        .withName("deviceTestPerformedLoincDataloader")
+        .forTypePair(UUID.class, deviceTypeDiseaseCodeClazz)
+        .withName("deviceTypeDiseaseDataloader")
         .registerMappedBatchLoader(
             (deviceTypeIds, batchLoaderEnvironment) ->
-                Mono.just(
-                    deviceTypeDataLoaderService.getDeviceTestPerformedLoincCode(deviceTypeIds)));
+                Mono.just(deviceTypeDataLoaderService.getDeviceTypeDisease(deviceTypeIds)));
   }
 
   @SchemaMapping(typeName = "DeviceType", field = "supportedDiseases")
@@ -61,7 +60,7 @@ public class DeviceTypeDataResolver {
   @SchemaMapping(typeName = "DeviceType", field = "supportedDiseaseTestPerformed")
   public CompletableFuture<List<DeviceTypeDisease>> supportedDiseaseTestPerformed(
       DeviceType deviceType,
-      DataLoader<UUID, List<DeviceTypeDisease>> deviceTestPerformedLoincDataloader) {
-    return deviceTestPerformedLoincDataloader.load(deviceType.getInternalId());
+      DataLoader<UUID, List<DeviceTypeDisease>> deviceTypeDiseaseDataloader) {
+    return deviceTypeDiseaseDataloader.load(deviceType.getInternalId());
   }
 }

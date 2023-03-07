@@ -103,16 +103,14 @@ public class DeviceTypeDataLoaderService {
     return found;
   }
 
-  Map<UUID, List<DeviceTypeDisease>> getDeviceTestPerformedLoincCode(Set<UUID> deviceTypeIds) {
+  Map<UUID, List<DeviceTypeDisease>> getDeviceTypeDisease(Set<UUID> deviceTypeIds) {
     var found = new HashMap<UUID, List<DeviceTypeDisease>>();
     deviceTypeIds.forEach(id -> found.put(id, new ArrayList<>()));
     deviceTypeDiseaseRepository
         .findAllByDeviceTypeIdIn(deviceTypeIds)
         .forEach(
-            deviceTestPerformedLoincCode ->
-                found
-                    .get(deviceTestPerformedLoincCode.getDeviceTypeId())
-                    .add(deviceTestPerformedLoincCode));
+            deviceTypeDisease ->
+                found.get(deviceTypeDisease.getDeviceTypeId()).add(deviceTypeDisease));
     return found;
   }
 }
