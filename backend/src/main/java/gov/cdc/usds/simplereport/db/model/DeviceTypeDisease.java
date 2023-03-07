@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class DeviceTestPerformedLoincCode extends IdentifiedEntity {
+public class DeviceTypeDisease extends IdentifiedEntity {
 
   @Column(name = "device_type_id")
   private UUID deviceTypeId;

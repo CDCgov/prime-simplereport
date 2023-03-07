@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.api.devicetype;
 import static java.util.Collections.emptyList;
 
 import gov.cdc.usds.simplereport.db.model.DeviceSupportedDisease;
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
@@ -103,9 +103,8 @@ public class DeviceTypeDataLoaderService {
     return found;
   }
 
-  Map<UUID, List<DeviceTestPerformedLoincCode>> getDeviceTestPerformedLoincCode(
-      Set<UUID> deviceTypeIds) {
-    var found = new HashMap<UUID, List<DeviceTestPerformedLoincCode>>();
+  Map<UUID, List<DeviceTypeDisease>> getDeviceTestPerformedLoincCode(Set<UUID> deviceTypeIds) {
+    var found = new HashMap<UUID, List<DeviceTypeDisease>>();
     deviceTypeIds.forEach(id -> found.put(id, new ArrayList<>()));
     deviceTestPerformedLoincCodeRepository
         .findAllByDeviceTypeIdIn(deviceTypeIds)

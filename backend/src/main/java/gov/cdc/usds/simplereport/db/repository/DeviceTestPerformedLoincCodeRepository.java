@@ -1,15 +1,15 @@
 package gov.cdc.usds.simplereport.db.repository;
 
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 
 public interface DeviceTestPerformedLoincCodeRepository
-    extends CrudRepository<DeviceTestPerformedLoincCode, UUID> {
+    extends CrudRepository<DeviceTypeDisease, UUID> {
   @Override
-  List<DeviceTestPerformedLoincCode> findAll();
+  List<DeviceTypeDisease> findAll();
 
-  List<DeviceTestPerformedLoincCode> findAllByDeviceTypeIdIn(Set<UUID> deviceTypeInternalIds);
+  List<DeviceTypeDisease> findAllByDeviceTypeIdIn(Set<UUID> deviceTypeInternalIds);
 }

@@ -4,8 +4,8 @@ import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.api.MappingConstants;
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -176,9 +176,9 @@ public class TestEventExport {
           .put("Taiwanese", "oan")
           .build();
 
-  private static Optional<? extends DeviceTestPerformedLoincCode> getCovidDiseaseInfo(
-      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCodes) {
-    return deviceTestPerformedLoincCodes.stream()
+  private static Optional<? extends DeviceTypeDisease> getCovidDiseaseInfo(
+      List<DeviceTypeDisease> deviceTypeDiseases) {
+    return deviceTypeDiseases.stream()
         .filter(s -> "COVID-19".equals(s.getSupportedDisease().getName()))
         .findFirst();
   }
@@ -625,7 +625,7 @@ public class TestEventExport {
     return deviceType
         .map(DeviceType::getSupportedDiseaseTestPerformed)
         .flatMap(TestEventExport::getCovidDiseaseInfo)
-        .map(DeviceTestPerformedLoincCode::getTestkitNameId)
+        .map(DeviceTypeDisease::getTestkitNameId)
         .orElse(null);
   }
 
@@ -634,7 +634,7 @@ public class TestEventExport {
     return deviceType
         .map(DeviceType::getSupportedDiseaseTestPerformed)
         .flatMap(TestEventExport::getCovidDiseaseInfo)
-        .map(DeviceTestPerformedLoincCode::getEquipmentUid)
+        .map(DeviceTypeDisease::getEquipmentUid)
         .orElse(null);
   }
 

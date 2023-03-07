@@ -5,8 +5,8 @@ import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
@@ -123,7 +123,7 @@ public class DeviceTypeService {
               updateDevice.getSupportedDiseaseTestPerformed(), device);
       device.setSupportedDiseases(
           deviceTestPerformedLoincCodeList.stream()
-              .map(DeviceTestPerformedLoincCode::getSupportedDisease)
+              .map(DeviceTypeDisease::getSupportedDisease)
               .collect(Collectors.toList()));
       device.getSupportedDiseaseTestPerformed().clear();
       device.getSupportedDiseaseTestPerformed().addAll(deviceTestPerformedLoincCodeList);
@@ -177,7 +177,7 @@ public class DeviceTypeService {
               createDevice.getSupportedDiseaseTestPerformed(), dt);
       dt.setSupportedDiseases(
           deviceTestPerformedLoincCodeList.stream()
-              .map(DeviceTestPerformedLoincCode::getSupportedDisease)
+              .map(DeviceTypeDisease::getSupportedDisease)
               .collect(Collectors.toList()));
       dt.getSupportedDiseaseTestPerformed().addAll(deviceTestPerformedLoincCodeList);
     } else {
@@ -194,17 +194,17 @@ public class DeviceTypeService {
     return dt;
   }
 
-  private ArrayList<DeviceTestPerformedLoincCode> createDeviceTestPerformedLoincCodeList(
+  private ArrayList<DeviceTypeDisease> createDeviceTestPerformedLoincCodeList(
       List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
       DeviceType device) {
-    var deviceTestPerformedLoincCodeList = new ArrayList<DeviceTestPerformedLoincCode>();
+    var deviceTestPerformedLoincCodeList = new ArrayList<DeviceTypeDisease>();
     supportedDiseaseTestPerformedInput.forEach(
         input -> {
           var supportedDisease = supportedDiseaseRepository.findById(input.getSupportedDisease());
           supportedDisease.ifPresent(
               disease ->
                   deviceTestPerformedLoincCodeList.add(
-                      DeviceTestPerformedLoincCode.builder()
+                      DeviceTypeDisease.builder()
                           .deviceTypeId(device.getInternalId())
                           .supportedDisease(disease)
                           .testPerformedLoincCode(input.getTestPerformedLoincCode())
