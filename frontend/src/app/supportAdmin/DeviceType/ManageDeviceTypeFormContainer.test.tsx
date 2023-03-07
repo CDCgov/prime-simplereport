@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
@@ -159,7 +159,7 @@ describe("ManageDeviceTypeFormContainer", () => {
     await addValue("Model", "D");
     await userEvent.selectOptions(
       screen.getByLabelText("Supported disease *"),
-      "Flu A"
+      "COVID-19"
     );
     await userEvent.clear(screen.getByLabelText("Test performed code *"));
 
@@ -169,28 +169,29 @@ describe("ManageDeviceTypeFormContainer", () => {
     );
     await userEvent.click(screen.getByText("Save changes"));
 
-    // ToDo Enable after questions on expected behavior are answered
-    /*await waitFor(()=>expect(mockUpdateDeviceType).toHaveBeenCalledWith({
-      fetchPolicy: "no-cache",
-      variables: {
-        internalId: "abc3",
-        name: "Covalent Observer",
-        loincCode: "1234-3",
-        manufacturer: "Vitamin Tox LLC",
-        model: "Model CD",
-        swabTypes: ["789"],
-        supportedDiseases: ["294729"],
-        testLength: 15,
-        supportedDiseaseTestPerformed: [
-          { supportedDisease: "123-456", testPerformedLoincCode: "LP 123" },
-        ],
-      },
-    }));
+    await waitFor(() =>
+      expect(mockUpdateDeviceType).toHaveBeenCalledWith({
+        fetchPolicy: "no-cache",
+        variables: {
+          internalId: "abc3",
+          name: "Covalent Observer",
+          loincCode: "LP 123",
+          manufacturer: "Vitamin Tox LLC",
+          model: "Model CD",
+          swabTypes: ["789"],
+          supportedDiseases: ["294729"],
+          testLength: 15,
+          supportedDiseaseTestPerformed: [
+            { supportedDisease: "294729", testPerformedLoincCode: "LP 123" },
+          ],
+        },
+      })
+    );
 
     expect(mockUpdateDeviceType).toBeCalledTimes(1);
 
     expect(
       await screen.findByText("Redirected to /admin?facility=12345")
-    ).toBeInTheDocument();*/
+    ).toBeInTheDocument();
   });
 });

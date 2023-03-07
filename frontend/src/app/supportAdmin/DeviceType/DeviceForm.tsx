@@ -11,6 +11,7 @@ import {
   SupportedDiseaseTestPerformedInput,
 } from "../../../generated/graphql";
 import Required from "../../commonComponents/Required";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 import DiseaseInformation from "./DiseaseInformation";
@@ -94,6 +95,7 @@ const DeviceForm = (props: Props) => {
 
     return covidDisease?.[0]?.testPerformedLoincCode;
   };
+
   const onSubmit = async (deviceData: DeviceFormData) => {
     const updatedDevice = {
       ...selectedDevice,
@@ -217,9 +219,24 @@ const DeviceForm = (props: Props) => {
   };
 
   /**
+   * Special focus on error for the pill component
+   * workaround due to react-hook-component not being able to pass ref down to it
+   */
+  useEffect(() => {
+    if (
+      !errors.name &&
+      !errors.testLength &&
+      !errors.model &&
+      !errors.manufacturer &&
+      errors.swabTypes
+    ) {
+      focusOnFirstInputWithError(true);
+    }
+  }, [errors.swabTypes]);
+
+  /**
    * HTML
    */
-
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
