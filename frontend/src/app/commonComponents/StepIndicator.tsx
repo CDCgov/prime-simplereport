@@ -11,6 +11,7 @@ interface Props {
   noLabels?: boolean;
   segmentIndicatorOnBottom?: boolean;
   ariaHidden?: boolean;
+  headingLevel?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
 const StepIndicator = ({
@@ -19,11 +20,14 @@ const StepIndicator = ({
   noLabels,
   segmentIndicatorOnBottom = false,
   ariaHidden,
+  headingLevel = "h1",
 }: Props): React.ReactElement => {
   const currentStep = steps.find(({ value }) => value === currentStepValue) || {
     order: 0,
     label: "",
   };
+
+  const HeadingTag = headingLevel;
 
   const SegmentsIndicator = () => (
     <div
@@ -53,7 +57,7 @@ const StepIndicator = ({
 
   const StepNameAndCount = () => (
     <div className="usa-step-indicator__header">
-      <h1 className="usa-step-indicator__heading">
+      <HeadingTag className="usa-step-indicator__heading">
         <span className="usa-step-indicator__heading-counter">
           <span className="usa-sr-only">Step</span>
           <span className="usa-step-indicator__current-step margin-right-05">
@@ -66,7 +70,7 @@ const StepIndicator = ({
         <span className="usa-step-indicator__heading-text">
           {currentStep.label}
         </span>
-      </h1>
+      </HeadingTag>
     </div>
   );
 

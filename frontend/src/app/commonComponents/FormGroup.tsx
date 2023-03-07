@@ -6,14 +6,14 @@ interface Props {
 }
 
 const FormGroup = (props: Props) => (
-  <div className="prime-formgroup">
+  <form className="prime-formgroup">
     <fieldset className="usa-fieldset">
       <legend className="prime-formgroup-heading usa-legend">
         {props.title}
       </legend>
       {props.children}
     </fieldset>
-  </div>
+  </form>
 );
 
 export default FormGroup;

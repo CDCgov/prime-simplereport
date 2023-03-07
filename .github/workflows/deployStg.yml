@@ -53,6 +53,10 @@ jobs:
       - uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_version: 1.3.3
+      - name: Build ReportStream function app
+        uses: ./.github/actions/build-reportstream-functions
+        with:
+          deploy-env: ${{env.DEPLOY_ENV}}
       - name: Terraform Init
         run: make init-${{ env.DEPLOY_ENV }}
       - name: Terraform deploy (infrastructure and staging slot)
