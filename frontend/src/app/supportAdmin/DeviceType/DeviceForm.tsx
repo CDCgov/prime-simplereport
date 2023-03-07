@@ -27,14 +27,14 @@ export interface Device {
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
 }
 
-type SupportedDiseasesFormData = {
+export type SupportedDiseasesFormData = {
   equipmentUid?: string;
   supportedDisease: string;
   testPerformedLoincCode: string;
   testkitNameId?: string;
 };
 
-type DeviceFormData = {
+export type DeviceFormData = {
   internalId?: string;
   loincCode: string;
   name: string;
@@ -149,7 +149,8 @@ const DeviceForm = (props: Props) => {
       manufacturer: selectedDevice?.manufacturer,
       testLength: selectedDevice?.testLength,
       swabTypes: selectedDevice?.swabTypes,
-      supportedDiseases: selectedDevice?.supportedDiseaseTestPerformed as any,
+      supportedDiseases:
+        selectedDevice?.supportedDiseaseTestPerformed as SupportedDiseasesFormData[],
     });
   }, [selectedDevice, reset]);
 

@@ -27,14 +27,36 @@ describe("create new device", () => {
     expect(screen.getByText("Save changes")).toBeDisabled();
   });
 
+  it("validates all form fields and displays error as needed", async () => {
+    await addValue("Equipment Uid", "123");
+    await userEvent.click(screen.getByText("Save changes"));
+    await waitFor(() =>
+      expect(screen.getAllByText("This is a required field")).toHaveLength(7)
+    );
+    await addValue("Device name", "Solvey rx350");
+    await addValue("Manufacturer", "Solvey");
+    await addValue("Model", "rx350");
+    await addValue("Test length", "15");
+    await userEvent.click(
+      screen.getByText("Swab (445297001)", { exact: false })
+    );
+    await userEvent.selectOptions(
+      screen.getByLabelText("Supported disease *"),
+      "COVID-19"
+    );
+    await addValue("Test performed code *", "1920-12");
+    await waitFor(() =>
+      expect(
+        screen.queryByText("This is a required field")
+      ).not.toBeInTheDocument()
+    );
+  });
+
   describe("All fields completed", () => {
     beforeEach(async () => {
       await addValue("Device name", "Accula");
       await addValue("Manufacturer", "Mesa Biotech");
       await addValue("Model", "Accula SARS-Cov-2 Test*");
-      await userEvent.clear(
-        screen.getByLabelText("Test length", { exact: false })
-      );
       await addValue("Test length", "10");
       await userEvent.click(
         screen.getByText("Swab (445297001)", { exact: false })

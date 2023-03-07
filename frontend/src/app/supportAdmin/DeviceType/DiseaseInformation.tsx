@@ -1,18 +1,25 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useFieldArray } from "react-hook-form";
+import {
+  Control,
+  FieldErrors,
+  useFieldArray,
+  UseFormRegister,
+} from "react-hook-form";
 
 import Button from "../../commonComponents/Button/Button";
 import Select from "../../commonComponents/Select";
 import TextInput from "../../commonComponents/TextInput";
 
+import { DeviceFormData, SupportedDiseasesFormData } from "./DeviceForm";
+
 type DiseaseInformationProps = {
   supportedDiseaseOptions: any;
   disabled: boolean;
-  register: any;
-  control: any;
-  errors: any;
-  values: any;
+  register: UseFormRegister<any>;
+  control: Control<DeviceFormData, any>;
+  errors: FieldErrors<DeviceFormData>;
+  values: SupportedDiseasesFormData[];
 };
 
 const DiseaseInformation = ({
