@@ -550,11 +550,13 @@ Object {
                                 value=""
                               />
                               <option
+                                aria-selected="false"
                                 value="294729"
                               >
                                 COVID-19
                               </option>
                               <option
+                                aria-selected="false"
                                 value="123-456"
                               >
                                 Flu A
@@ -1240,11 +1242,13 @@ Object {
                               value=""
                             />
                             <option
+                              aria-selected="false"
                               value="294729"
                             >
                               COVID-19
                             </option>
                             <option
+                              aria-selected="false"
                               value="123-456"
                             >
                               Flu A

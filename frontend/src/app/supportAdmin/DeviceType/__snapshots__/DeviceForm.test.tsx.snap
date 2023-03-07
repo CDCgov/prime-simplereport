@@ -588,16 +588,19 @@ Object {
                                 value=""
                               />
                               <option
+                                aria-selected="false"
                                 value="123"
                               >
                                 COVID-19
                               </option>
                               <option
+                                aria-selected="false"
                                 value="456"
                               >
                                 Flu A
                               </option>
                               <option
+                                aria-selected="false"
                                 value="789"
                               >
                                 Flu B
@@ -1318,16 +1321,19 @@ Object {
                               value=""
                             />
                             <option
+                              aria-selected="false"
                               value="123"
                             >
                               COVID-19
                             </option>
                             <option
+                              aria-selected="false"
                               value="456"
                             >
                               Flu A
                             </option>
                             <option
+                              aria-selected="false"
                               value="789"
                             >
                               Flu B
