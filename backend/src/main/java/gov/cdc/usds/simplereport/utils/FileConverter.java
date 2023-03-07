@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -42,6 +43,8 @@ public class FileConverter {
   private final Function<Map<String, String>, TestResultRow> fileRowConstructor =
       TestResultRow::new;
 
+  private final DeviceTypeRepository deviceTypeRepository;
+
   private final GitProperties gitProperties;
 
   @Value("${simple-report.processing-mode-code:P}")
@@ -55,16 +58,15 @@ public class FileConverter {
           "Not Detected".toLowerCase(), "260415000",
           "Invalid Result".toLowerCase(), "455371000124106");
 
-  // todo
   private final Map<String, String> specimenTypeToSnomedMap =
       Map.of(
           "Nasal Swab".toLowerCase(), "445297001",
           "Nasopharyngeal Swab".toLowerCase(), "258500001",
-          "Anterior Nasal Swab".toLowerCase(), "697989009",
-          "Throat Swab".toLowerCase(), "",
+          "Anterior Nares Swab".toLowerCase(), "697989009", // aka nasal
+          "Throat Swab".toLowerCase(), "258529004", // Oropharyngeal
           "Oropharyngeal Swab".toLowerCase(), "258529004",
           "Whole Blood".toLowerCase(), "258580003",
-          "Plasma".toLowerCase(), "",
+          "Plasma".toLowerCase(), "119361006",
           "Serum".toLowerCase(), "119364003");
 
   public List<Bundle> convertToFhirBundles(InputStream csvStream, UUID facilityId, UUID orgId) {
@@ -137,7 +139,7 @@ public class FileConverter {
             new ArrayList<>());
     var testingLabOrg =
         FhirConverter.convertToOrganization(
-            facilityId.toString(),
+            orgId.toString(),
             row.getTestingLabName().value,
             row.getTestingLabPhoneNumber().value,
             null,
@@ -162,7 +164,7 @@ public class FileConverter {
               null);
       orderingFacility =
           FhirConverter.convertToOrganization(
-              orgId.toString(),
+              facilityId.toString(),
               row.getOrderingFacilityName().value,
               row.getOrderingFacilityPhoneNumber().value,
               null,
@@ -181,12 +183,18 @@ public class FileConverter {
             row.getOrderingProviderPhoneNumber().value,
             providerAddr,
             DEFAULT_COUNTRY);
+
+    var additionalDeviceData =
+        deviceTypeRepository.findDeviceTypeByModelIgnoreCase(row.getEquipmentModelName().value);
+    var manufacturer = additionalDeviceData != null ? additionalDeviceData.getManufacturer() : null;
+    var deviceId =
+        additionalDeviceData != null ? additionalDeviceData.getInternalId() : UUID.randomUUID();
     var device =
         FhirConverter.convertToDevice(
-            null, row.getEquipmentModelName().value, UUID.randomUUID().toString());
+            manufacturer, row.getEquipmentModelName().value, deviceId.toString());
 
     var specimen =
-        FhirConverter.convertToSpecimen( // is only mapped if the codes are present
+        FhirConverter.convertToSpecimen(
             getSpecimenTypeSnomed(row.getSpecimenType().value),
             getDescriptionValue(row.getSpecimenType().value),
             null,
