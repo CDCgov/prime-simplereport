@@ -4536,14 +4536,14 @@ databaseChangeLog:
                   type: text
                   remarks: represents the data from "Testkit Name ID" column in the LIVD
   - changeSet:
-      id: create-device-disease-table-table
+      id: create-device-disease-table
       author: boban@skylight.digital
       comment: creates a new table to store the relationship between device and disease
       changes:
         - tagDatabase:
-            tag: create-device_disease_loinc_code-table
+            tag: create-device_type_disease-table
         - createTable:
-            tableName: device_disease_loinc_code
+            tableName: device_type_disease
             columns:
               - column:
                   name: internal_id
@@ -4587,9 +4587,9 @@ databaseChangeLog:
                   remarks: The code that identifies which disease was tested.
                   type: text
         - sql:
-            sql: GRANT SELECT ON ${database.defaultSchemaName}.device_disease_loinc_code TO ${noPhiUsername};
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.device_type_disease TO ${noPhiUsername};
         - sql:
-            sql: INSERT INTO ${database.defaultSchemaName}.device_disease_loinc_code SELECT * FROM ${database.defaultSchemaName}.device_test_performed_loinc_code
+            sql: INSERT INTO ${database.defaultSchemaName}.device_type_disease SELECT * FROM ${database.defaultSchemaName}.device_test_performed_loinc_code
       rollback:
         - dropTable:
-            tableName: device_disease_loinc_code
+            tableName: device_type_disease
