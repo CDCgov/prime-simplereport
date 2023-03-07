@@ -407,7 +407,7 @@ public class FhirConverter {
     var observation = new Observation();
     observation.setId(id);
     setStatus(observation, correctionStatus);
-    addCodeWithLoinc(diseaseCode, diseaseName, observation);
+    observation.setCode(createLoincConcept(diseaseCode, "", diseaseName));
     addSNOMEDValue(resultCode, observation, resultDescription);
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
@@ -440,40 +440,53 @@ public class FhirConverter {
     }
   }
 
-  public static Set<Observation> convertToAOEObservations(AskOnEntrySurvey surveyData) {
+  public static Set<Observation> convertToAOEObservations(
+      String eventId, AskOnEntrySurvey surveyData) {
     var observations = new HashSet<Observation>();
     var symptomaticCode =
-        createCodeWithLoinc("95419-8", "Has symptoms related to condition of interest");
-    if (!surveyData.getNoSymptoms()
-        && surveyData.getSymptoms().values().stream().allMatch(v -> v.equals(Boolean.FALSE))) {
-      // if no responses for no symptoms or any symptoms checked, AoE form not completed
-      observations.add(createAOEObservation(symptomaticCode, createYesNoUnkValue(null)));
-    } else if (surveyData.getNoSymptoms()) {
+        createLoincConcept(
+            "95419-8",
+            "Has symptoms related to condition of interest",
+            "Has symptoms related to condition of interest");
+    if (surveyData.getNoSymptoms()) {
       // user reported as not symptomatic
-      observations.add(createAOEObservation(symptomaticCode, createYesNoUnkValue(false)));
-    } else {
+      observations.add(
+          createAOEObservation(
+              eventId + "-symptomatic", symptomaticCode, createYesNoUnkConcept(false)));
+    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
       // user reported as symptomatic
-      observations.add(createAOEObservation(symptomaticCode, createYesNoUnkValue(true)));
+      observations.add(
+          createAOEObservation(
+              eventId + "-symptomatic", symptomaticCode, createYesNoUnkConcept(true)));
       if (surveyData.getSymptomOnsetDate() != null) {
         observations.add(
             createAOEObservation(
-                createCodeWithLoinc("11368-8", "Illness or injury onset date and time"),
+                eventId + "-onset",
+                createLoincConcept(
+                    "11368-8",
+                    "Illness or injury onset date and time",
+                    "Illness or injury onset date and time"),
                 new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
       }
+    } else {
+      // if neither no symptoms nor any symptoms checked, AoE form was not completed
+      observations.add(
+          createAOEObservation(
+              eventId + "-symptomatic", symptomaticCode, createYesNoUnkConcept(null)));
     }
-    // todo: add if pregnant (not required)
     return observations;
   }
 
-  public static Observation createAOEObservation(CodeableConcept code, Type value) {
+  public static Observation createAOEObservation(
+      String uniqueName, CodeableConcept code, Type value) {
     var observation = new Observation();
-    observation.setId(UUID.randomUUID().toString());
+    observation.setId(UUID.nameUUIDFromBytes(uniqueName.getBytes()).toString());
     observation.setStatus(ObservationStatus.FINAL);
 
     var identifier = new Identifier();
     identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
     identifier.setType(
-        createCodeWithLoinc("81959-9", "Public health laboratory ask at order entry panel"));
+        createLoincConcept("81959-9", "Public health laboratory ask at order entry panel", null));
     observation.setIdentifier(List.of(identifier));
 
     observation.setCode(code);
@@ -481,30 +494,30 @@ public class FhirConverter {
     return observation;
   }
 
-  // todo: better to create code or pass observation and add?
-  private static CodeableConcept createCodeWithLoinc(String loinc, String displayText) {
-    var code = new CodeableConcept();
-    var codeCoding = code.addCoding();
-    codeCoding.setSystem(LOINC_CODE_SYSTEM);
-    codeCoding.setCode(loinc);
-    codeCoding.setDisplay(displayText);
-    code.setText(displayText);
-    return code;
+  private static CodeableConcept createLoincConcept(
+      String codingCode, String codingDisplay, String text) {
+    var concept = new CodeableConcept();
+    var coding = concept.addCoding();
+    coding.setSystem(LOINC_CODE_SYSTEM);
+    coding.setCode(codingCode);
+    coding.setDisplay(codingDisplay);
+    concept.setText(text);
+    return concept;
   }
 
-  private static CodeableConcept createYesNoUnkValue(Boolean val) {
-    var value = new CodeableConcept();
-    var valueCoding = value.addCoding();
+  private static CodeableConcept createYesNoUnkConcept(Boolean val) {
+    var concept = new CodeableConcept();
+    var coding = concept.addCoding();
     if (val == null) {
-      valueCoding.setSystem(NULL_CODE_SYSTEM);
-      valueCoding.setCode(MappingConstants.UNK_CODE);
-      valueCoding.setDisplay(MappingConstants.UNKNOWN_STRING);
+      coding.setSystem(NULL_CODE_SYSTEM);
+      coding.setCode(MappingConstants.UNK_CODE);
+      coding.setDisplay(MappingConstants.UNKNOWN_STRING);
     } else {
-      valueCoding.setSystem(YESNO_CODE_SYSTEM);
-      valueCoding.setCode(val ? "Y" : "N");
-      valueCoding.setDisplay(val ? "Yes" : "No");
+      coding.setSystem(YESNO_CODE_SYSTEM);
+      coding.setCode(val ? "Y" : "N");
+      coding.setDisplay(val ? "Yes" : "No");
     }
-    return value;
+    return concept;
   }
 
   private static void addSNOMEDValue(
@@ -515,15 +528,6 @@ public class FhirConverter {
     valueCoding.setCode(resultCode);
     valueCoding.setDisplay(resultDisplay);
     observation.setValue(valueCodeableConcept);
-  }
-
-  private static void addCodeWithLoinc(String code, String displayText, Observation observation) {
-    var codeCodeableConcept = observation.getCode();
-    var codeCoding = codeCodeableConcept.addCoding();
-    codeCoding.setSystem(LOINC_CODE_SYSTEM);
-    codeCoding.setCode(code);
-    codeCoding.setDisplay(displayText);
-    codeCodeableConcept.setText(displayText);
   }
 
   public static ServiceRequest convertToServiceRequest(@NotNull TestOrder order) {
@@ -609,7 +613,7 @@ public class FhirConverter {
             testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
-        convertToAOEObservations(testEvent.getSurveyData()),
+        convertToAOEObservations(testEvent.getInternalId().toString(), testEvent.getSurveyData()),
         convertToServiceRequest(testEvent.getOrder()),
         convertToDiagnosticReport(testEvent),
         testEvent.getDateTested(),
