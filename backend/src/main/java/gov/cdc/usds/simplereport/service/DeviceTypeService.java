@@ -44,10 +44,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DeviceTypeService {
 
-  public static final String SWAB_TYPE_DELETED_MESSAGE =
+  private static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
 
-  public static final Set<String> COVID_VENDOR_ANALYTE_NAMES =
+  private static final Set<String> COVID_VENDOR_ANALYTE_NAMES =
       new HashSet<>(
           Arrays.asList(
               "sars-cov-2",
@@ -57,11 +57,11 @@ public class DeviceTypeService {
               "covid",
               "sars-2019-ncov",
               "2019-ncovrna"));
-  public static final Set<String> FLU_A_VENDOR_ANALYTE_NAMES =
+  private static final Set<String> FLU_A_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
-  public static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
+  private static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
-  public static final Set<String> RSV_VENDOR_ANALYTE_NAMES =
+  private static final Set<String> RSV_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("rsv", "respiratory syncytial virus"));
 
   private final DeviceTypeRepository deviceTypeRepository;

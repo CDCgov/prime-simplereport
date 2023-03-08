@@ -189,7 +189,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     // Second specimen type from response was added to device
     var updatedDeviceSpecimenTypesA =
         deviceSpecimenTypeRepository.findAllByDeviceTypeId(devA.getInternalId());
-    assertThat(updatedDeviceSpecimenTypesA.size()).isEqualTo(2);
+    assertThat(updatedDeviceSpecimenTypesA).hasSize(2);
     assertThat(
             updatedDeviceSpecimenTypesA.stream()
                 .map(DeviceTypeSpecimenTypeMapping::getSpecimenTypeId)
