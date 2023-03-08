@@ -180,6 +180,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .testPerformedLoincCode("loinc1")
                             .equipmentUid("equipmentUid1")
                             .testkitNameId("testkitNameId1")
+                            .testOrderedLoincCode("loinc3")
                             .build()))
                 .testLength(1)
                 .build());
@@ -198,6 +199,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .testPerformedLoincCode("loinc2")
                             .equipmentUid("equipmentUid2")
                             .testkitNameId("testkitNameId2")
+                            .testOrderedLoincCode("loinc3")
                             .build()))
                 .testLength(2)
                 .build());
@@ -232,6 +234,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(disease1TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc1");
     assertThat(disease1TestPerformed.get().getEquipmentUid()).isEqualTo("equipmentUid1");
     assertThat(disease1TestPerformed.get().getTestkitNameId()).isEqualTo("testkitNameId1");
+    assertThat(disease1TestPerformed.get().getTestOrderedLoincCode()).isEqualTo("loinc3");
 
     devB = _deviceTypeRepo.findById(devB.getInternalId()).get();
     assertNotNull(devB);
@@ -316,6 +319,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .testPerformedLoincCode("loinc1")
                             .equipmentUid("equipmentUid1")
                             .testkitNameId("testkitNameId1")
+                            .testOrderedLoincCode("loinc3")
                             .build()))
                 .testLength(10)
                 .build());
@@ -332,12 +336,14 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .testPerformedLoincCode("loinc2")
                             .equipmentUid("equipmentUid2")
                             .testkitNameId("testkitNameId2")
+                            .testOrderedLoincCode("loinc3")
                             .build(),
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease2.getInternalId())
                             .testPerformedLoincCode("loinc3")
                             .equipmentUid("equipmentUid3")
                             .testkitNameId("testkitNameId3")
+                            .testOrderedLoincCode("loinc4")
                             .build()))
                 .build());
 
@@ -359,6 +365,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(disease1TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc2");
     assertThat(disease1TestPerformed.get().getEquipmentUid()).isEqualTo("equipmentUid2");
     assertThat(disease1TestPerformed.get().getTestkitNameId()).isEqualTo("testkitNameId2");
+    assertThat(disease1TestPerformed.get().getTestOrderedLoincCode()).isEqualTo("loinc3");
 
     var disease2TestPerformed =
         updatedDevice.getSupportedDiseaseTestPerformed().stream()
@@ -373,6 +380,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(disease2TestPerformed.get().getTestPerformedLoincCode()).isEqualTo("loinc3");
     assertThat(disease2TestPerformed.get().getEquipmentUid()).isEqualTo("equipmentUid3");
     assertThat(disease2TestPerformed.get().getTestkitNameId()).isEqualTo("testkitNameId3");
+    assertThat(disease2TestPerformed.get().getTestOrderedLoincCode()).isEqualTo("loinc4");
 
     var deviceTypeDiseaseRepositoryAll = deviceTypeDiseaseRepository.findAll();
     assertThat(deviceTypeDiseaseRepositoryAll).hasSize(2);
@@ -409,6 +417,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .testPerformedLoincCode("loinc1")
                             .equipmentUid("equipmentUid1")
                             .testkitNameId("testkitNameId1")
+                            .testOrderedLoincCode("loinc3")
                             .build()))
                 .build());
 
@@ -423,6 +432,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
         .isEqualTo("equipmentUid1");
     assertThat(updatedDevice.getSupportedDiseaseTestPerformed().get(0).getTestkitNameId())
         .isEqualTo("testkitNameId1");
+    assertThat(updatedDevice.getSupportedDiseaseTestPerformed().get(0).getTestOrderedLoincCode())
+        .isEqualTo("loinc3");
     assertThat(
             updatedDevice
                 .getSupportedDiseaseTestPerformed()

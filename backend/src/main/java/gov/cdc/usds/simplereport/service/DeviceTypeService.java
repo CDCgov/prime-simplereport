@@ -208,6 +208,7 @@ public class DeviceTypeService {
                           .testPerformedLoincCode(input.getTestPerformedLoincCode())
                           .equipmentUid(input.getEquipmentUid())
                           .testkitNameId(input.getTestkitNameId())
+                          .testOrderedLoincCode(input.getTestOrderedLoincCode())
                           .build()));
         });
     return deviceTypeDiseaseList;
