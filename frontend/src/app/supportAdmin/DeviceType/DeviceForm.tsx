@@ -222,23 +222,17 @@ const DeviceForm = (props: Props) => {
    * Special focus on error for the pill component
    * workaround due to react-hook-component not being able to pass ref down to it
    */
-  useEffect(() => {
+  const onSubmitError = (currentErrors: any) => {
     if (
-      !errors.name &&
-      !errors.testLength &&
-      !errors.model &&
-      !errors.manufacturer &&
-      errors.swabTypes
+      !currentErrors.name &&
+      !currentErrors.testLength &&
+      !currentErrors.model &&
+      !currentErrors.manufacturer &&
+      currentErrors.swabTypes
     ) {
       focusOnFirstInputWithError(true);
     }
-  }, [
-    errors.swabTypes,
-    errors.name,
-    errors.testLength,
-    errors.model,
-    errors.manufacturer,
-  ]);
+  };
 
   /**
    * HTML
@@ -249,7 +243,7 @@ const DeviceForm = (props: Props) => {
         <div className="grid-row">
           <form
             className="prime-container card-container"
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={handleSubmit(onSubmit, onSubmitError)}
           >
             <div className="usa-card__header">
               <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
