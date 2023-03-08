@@ -523,29 +523,26 @@ public class FhirConverter {
 
   public static Observation createAOEObservation(
       String uniqueName, CodeableConcept code, Type value) {
-    var observation = new Observation();
+    var observation =
+        new Observation().setStatus(ObservationStatus.FINAL).setCode(code).setValue(value);
     observation.setId(UUID.nameUUIDFromBytes(uniqueName.getBytes()).toString());
-    observation.setStatus(ObservationStatus.FINAL);
 
-    var identifier = new Identifier();
-    identifier.setUse(Identifier.IdentifierUse.OFFICIAL);
-    identifier.setType(
-        createLoincConcept("81959-9", "Public health laboratory ask at order entry panel", null));
-    observation.setIdentifier(List.of(identifier));
+    observation
+        .addIdentifier()
+        .setUse(IdentifierUse.OFFICIAL)
+        .setType(
+            createLoincConcept(
+                "81959-9", "Public health laboratory ask at order entry panel", null));
 
-    observation.setCode(code);
-    observation.setValue(value);
     return observation;
   }
 
   private static CodeableConcept createLoincConcept(
       String codingCode, String codingDisplay, String text) {
-    var concept = new CodeableConcept();
-    var coding = concept.addCoding();
-    coding.setSystem(LOINC_CODE_SYSTEM);
-    coding.setCode(codingCode);
-    coding.setDisplay(codingDisplay);
-    concept.setText(text);
+    var concept = new CodeableConcept().setText(text);
+
+    concept.addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(codingCode).setDisplay(codingDisplay);
+
     return concept;
   }
 
@@ -553,13 +550,12 @@ public class FhirConverter {
     var concept = new CodeableConcept();
     var coding = concept.addCoding();
     if (val == null) {
-      coding.setSystem(NULL_CODE_SYSTEM);
-      coding.setCode(MappingConstants.UNK_CODE);
-      coding.setDisplay(MappingConstants.UNKNOWN_STRING);
+      coding
+          .setSystem(NULL_CODE_SYSTEM)
+          .setCode(MappingConstants.UNK_CODE)
+          .setDisplay(MappingConstants.UNKNOWN_STRING);
     } else {
-      coding.setSystem(YESNO_CODE_SYSTEM);
-      coding.setCode(val ? "Y" : "N");
-      coding.setDisplay(val ? "Yes" : "No");
+      coding.setSystem(YESNO_CODE_SYSTEM).setCode(val ? "Y" : "N").setDisplay(val ? "Yes" : "No");
     }
     return concept;
   }
