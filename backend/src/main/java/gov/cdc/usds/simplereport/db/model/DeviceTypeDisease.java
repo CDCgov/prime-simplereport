@@ -27,4 +27,5 @@ public class DeviceTypeDisease extends IdentifiedEntity {
   @Column private String testPerformedLoincCode;
   @Column private String equipmentUid;
   @Column private String testkitNameId;
+  @Column private String testOrderedLoincCode;
 }
