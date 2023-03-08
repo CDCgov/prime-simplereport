@@ -5,6 +5,7 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { getAppInsights } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
 import { RootState, updateOrganization } from "../store";
+import { useDocumentTitle } from "../utils/hooks";
 
 import ManageOrganization from "./ManageOrganization";
 
@@ -39,6 +40,8 @@ export const SET_ORGANIZATION = gql`
 `;
 
 const ManageOrganizationContainer: any = () => {
+  useDocumentTitle("Manage organization");
+
   const { data, loading, error } = useQuery<Data, {}>(GET_ORGANIZATION, {
     fetchPolicy: "no-cache",
   });
