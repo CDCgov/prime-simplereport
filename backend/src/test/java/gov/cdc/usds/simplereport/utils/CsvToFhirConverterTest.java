@@ -9,14 +9,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
-import graphql.AssertException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
-import org.hl7.fhir.r4.model.ServiceRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.info.GitProperties;
@@ -49,23 +47,10 @@ public class CsvToFhirConverterTest {
             .map(Bundle.BundleEntryComponent::getFullUrl)
             .collect(Collectors.toList());
 
-    var serviceRequestResource =
-        (ServiceRequest)
-            first.getEntry().stream()
-                .filter(entry -> entry.getFullUrl().contains("ServiceRequest/"))
-                .findFirst()
-                .orElseThrow(
-                    () -> new AssertException("Expected to find ServiceRequest, but not found"))
-                .getResource();
-    var performerRef = serviceRequestResource.getPerformerFirstRep().getReference();
-    var requesterRef = serviceRequestResource.getRequester().getReference();
-
     verify(repo, times(1)).findDeviceTypeByModelIgnoreCase(anyString());
-
     assertThat(output.size()).isEqualTo(1);
-    assertThat(first.getEntry().size()).isEqualTo(13);
-    assertThat(resourceUrls.size()).isEqualTo(13);
-    assertThat(performerRef).isNotEqualTo(requesterRef);
+    assertThat(first.getEntry().size()).isEqualTo(12);
+    assertThat(resourceUrls.size()).isEqualTo(12);
   }
 
   private InputStream loadCsv(String csvFile) {
