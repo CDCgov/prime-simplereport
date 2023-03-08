@@ -58,6 +58,7 @@ import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceDeviceNameComponent;
 import org.hl7.fhir.r4.model.Device.DeviceNameType;
@@ -549,14 +550,15 @@ public class FhirConverter {
       code = testEvent.getDeviceType().getLoincCode();
     }
 
-    return convertToDiagnosticReport(status, code, Objects.toString(testEvent.getInternalId(), ""));
+    return convertToDiagnosticReport(
+        status, code, Objects.toString(testEvent.getInternalId(), ""), testEvent.getDateTested());
   }
 
   public static DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code, String id) {
-    var diagnosticReport = new DiagnosticReport();
+      DiagnosticReportStatus status, String code, String id, Date dateTested) {
+    var diagnosticReport =
+        new DiagnosticReport().setStatus(status).setEffective(new DateTimeType(dateTested));
     diagnosticReport.setId(id);
-    diagnosticReport.setStatus(status);
     if (StringUtils.isNotBlank(code)) {
       diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);
     }
@@ -581,7 +583,6 @@ public class FhirConverter {
             testEvent.getReasonForCorrection()),
         convertToServiceRequest(testEvent.getOrder()),
         convertToDiagnosticReport(testEvent),
-        testEvent.getDateTested(),
         currentDate,
         gitProperties,
         processingId);
@@ -596,7 +597,6 @@ public class FhirConverter {
       List<Observation> observations,
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport,
-      Date dateTested,
       Date currentDate,
       GitProperties gitProperties,
       String processingId) {
@@ -609,7 +609,7 @@ public class FhirConverter {
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var provenance = createProvenance(organizationFullUrl, dateTested);
+    var provenance = createProvenance(organizationFullUrl, currentDate);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(

@@ -96,6 +96,7 @@
           }
         ],
         "status":"final",
+        "effectiveDateTime": "$EFFECTIVE_DATE_TIME_TESTED",
         "code":{
           "coding":[
             {
