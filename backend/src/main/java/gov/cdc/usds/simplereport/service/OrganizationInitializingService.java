@@ -248,24 +248,21 @@ public class OrganizationInitializingService {
       }
     }
 
-    Map<String, DeviceTestPerformedLoincCode> deviceExtraInfoByLoincTestkitEquipmentId =
+    Map<String, DeviceTestPerformedLoincCode> deviceExtraInfoByLoinc =
         deviceTestPerformedLoincCodeRepository.findAll().stream()
-            .collect(Collectors.toMap(d -> deviceExtraInfoKey(d), d -> d));
+            .collect(
+                Collectors.toMap(DeviceTestPerformedLoincCode::getTestPerformedLoincCode, d -> d));
     for (DeviceTestPerformedLoincCode d : getDeviceTestPerformedLoincCode(deviceTypesByName)) {
-      if (!deviceExtraInfoByLoincTestkitEquipmentId.containsKey(deviceExtraInfoKey(d))) {
+      if (!deviceExtraInfoByLoinc.containsKey(d.getTestPerformedLoincCode())) {
         log.info("Creating device test performed loinc code {}", d.getTestPerformedLoincCode());
         DeviceTestPerformedLoincCode deviceTestPerformedLoincCode =
             deviceTestPerformedLoincCodeRepository.save(d);
-        deviceExtraInfoByLoincTestkitEquipmentId.put(
+        deviceExtraInfoByLoinc.put(
             deviceTestPerformedLoincCode.getTestPerformedLoincCode(), deviceTestPerformedLoincCode);
       }
     }
 
     return new ArrayList<>(deviceTypesByName.values());
-  }
-
-  private static String deviceExtraInfoKey(DeviceTestPerformedLoincCode d) {
-    return d.getTestPerformedLoincCode() + d.getTestkitNameId() + d.getEquipmentUid();
   }
 
   private List<DeviceType> getDeviceTypes(Map<String, SpecimenType> specimenTypesByCode) {
