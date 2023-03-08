@@ -653,10 +653,7 @@ public class FhirConverter {
       Date currentDate,
       GitProperties gitProperties,
       String processingId) {
-    String orderingFacilityFullUrl =
-        orderingFacility == null
-            ? null
-            : ResourceType.Organization + "/" + orderingFacility.getId();
+
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var testingLabOrganizationFullUrl = ResourceType.Organization + "/" + testingLab.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
@@ -684,11 +681,7 @@ public class FhirConverter {
 
     serviceRequest.setSubject(new Reference(patientFullUrl));
     serviceRequest.addPerformer(new Reference(testingLabOrganizationFullUrl));
-    serviceRequest.setRequester(
-        new Reference(
-            orderingFacilityFullUrl == null
-                ? testingLabOrganizationFullUrl
-                : orderingFacilityFullUrl));
+    serviceRequest.setRequester(new Reference(practitionerRoleFullUrl));
     diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
     diagnosticReport.setSubject(new Reference(patientFullUrl));
     diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
@@ -699,9 +692,7 @@ public class FhirConverter {
     entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
     entryList.add(Pair.of(patientFullUrl, patient));
     entryList.add(Pair.of(testingLabOrganizationFullUrl, testingLab));
-    if (orderingFacility != null) {
-      entryList.add(Pair.of(orderingFacilityFullUrl, orderingFacility));
-    }
+
     entryList.add(Pair.of(practitionerFullUrl, practitioner));
     entryList.add(Pair.of(specimenFullUrl, specimen));
     entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
