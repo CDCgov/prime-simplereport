@@ -485,6 +485,49 @@
         "name":"SimpleReport"
       }
     },
-    {"fullUrl":"Observation/1d73edcb-a6bf-36a0-b172-c366b7585bbd","resource":{"resourceType":"Observation","id":"1d73edcb-a6bf-36a0-b172-c366b7585bbd","identifier":[{"use":"official","type":{"coding":[{"system":"http://loinc.org","code":"81959-9","display":"Public health laboratory ask at order entry panel"}]}}],"status":"final","code":{"coding":[{"system":"http://loinc.org","code":"95419-8","display":"Has symptoms related to condition of interest"}],"text":"Has symptoms related to condition of interest"},"subject":{"reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"},"valueCodeableConcept":{"coding":[{"system":"http://terminology.hl7.org/CodeSystem/v3-NullFlavor","code":"UNK","display":"unknown"}]}}}
+    {
+      "fullUrl": "Observation/1d73edcb-a6bf-36a0-b172-c366b7585bbd",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "1d73edcb-a6bf-36a0-b172-c366b7585bbd",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95419-8",
+              "display": "Has symptoms related to condition of interest"
+            }
+          ],
+          "text": "Has symptoms related to condition of interest"
+        },
+        "subject": {
+          "reference": "Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+              "code": "UNK",
+              "display": "unknown"
+            }
+          ]
+        }
+      }
+    }
   ]
 }
