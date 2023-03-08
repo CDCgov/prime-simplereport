@@ -130,6 +130,7 @@ class DeviceTypeDataLoaderHelperTest {
             .supportedDisease(new SupportedDisease())
             .equipmentUid("111")
             .testkitNameId("222")
+            .testOrderedLoincCode("234")
             .build();
     var deviceTypeDisease2 =
         DeviceTypeDisease.builder()
@@ -138,6 +139,7 @@ class DeviceTypeDataLoaderHelperTest {
             .supportedDisease(new SupportedDisease())
             .equipmentUid("333")
             .testkitNameId("444")
+            .testOrderedLoincCode("345")
             .build();
     var deviceTypeDisease3 =
         DeviceTypeDisease.builder()
@@ -146,6 +148,7 @@ class DeviceTypeDataLoaderHelperTest {
             .supportedDisease(new SupportedDisease())
             .equipmentUid("555")
             .testkitNameId("666")
+            .testOrderedLoincCode("244")
             .build();
 
     when(deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(deviceIdSet))

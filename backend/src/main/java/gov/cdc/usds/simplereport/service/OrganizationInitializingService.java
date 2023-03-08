@@ -251,7 +251,7 @@ public class OrganizationInitializingService {
     Map<String, DeviceTypeDisease> deviceExtraInfoByLoincTestkitEquipmentId =
         deviceTypeDiseaseRepository.findAll().stream()
             .collect(Collectors.toMap(d -> deviceExtraInfoKey(d), d -> d));
-    for (DeviceTypeDisease d : getdeviceTypeDiseaseCode(deviceTypesByName)) {
+    for (DeviceTypeDisease d : getDeviceTypeDiseaseCode(deviceTypesByName)) {
       if (!deviceExtraInfoByLoincTestkitEquipmentId.containsKey(deviceExtraInfoKey(d))) {
         log.info("Creating device test performed loinc code {}", d.getTestPerformedLoincCode());
         DeviceTypeDisease deviceTypeDisease = deviceTypeDiseaseRepository.save(d);
@@ -292,7 +292,7 @@ public class OrganizationInitializingService {
         .collect(Collectors.toList());
   }
 
-  private List<DeviceTypeDisease> getdeviceTypeDiseaseCode(
+  private List<DeviceTypeDisease> getDeviceTypeDiseaseCode(
       Map<String, DeviceType> deviceTypesByName) {
     List<List<DeviceTypeDisease>> collect =
         _props.getDeviceTypes().stream()
@@ -309,6 +309,7 @@ public class OrganizationInitializingService {
                                     .testPerformedLoincCode(c.getTestPerformedLoincCode())
                                     .supportedDisease(
                                         diseaseService.getDiseaseByName(c.getSupportedDisease()))
+                                    .testOrderedLoincCode(c.getTestOrderedLoincCode())
                                     .build())
                         .collect(Collectors.toList()))
             .collect(Collectors.toList());
