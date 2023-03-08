@@ -82,7 +82,7 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public TestResultUpload processResultCSV(InputStream csvStream, UUID facilityId) {
+  public TestResultUpload processResultCSV(InputStream csvStream) {
 
     TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
 

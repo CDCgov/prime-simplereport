@@ -52,7 +52,7 @@ public class FileUploadController {
     assertCsvFileType(file);
 
     try (InputStream resultsUpload = file.getInputStream()) {
-      return testResultUploadService.processResultCSV(resultsUpload, parseUUID(rawFacilityId));
+      return testResultUploadService.processResultCSV(resultsUpload);
     } catch (IOException e) {
       log.error("Test result CSV encountered an unexpected error", e);
       throw new CsvProcessingException("Unable to process test result CSV upload");

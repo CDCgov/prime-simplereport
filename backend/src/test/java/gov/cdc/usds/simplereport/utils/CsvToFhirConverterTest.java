@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.utils;
 
-import static gov.cdc.usds.simplereport.validators.FileValidatorTest.loadCsv;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -16,14 +15,12 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.info.GitProperties;
 
-@Slf4j
 public class CsvToFhirConverterTest {
 
   private static GitProperties gitProperties;
@@ -69,5 +66,9 @@ public class CsvToFhirConverterTest {
     assertThat(first.getEntry().size()).isEqualTo(13);
     assertThat(resourceUrls.size()).isEqualTo(13);
     assertThat(performerRef).isNotEqualTo(requesterRef);
+  }
+
+  private InputStream loadCsv(String csvFile) {
+    return CsvToFhirConverterTest.class.getClassLoader().getResourceAsStream(csvFile);
   }
 }

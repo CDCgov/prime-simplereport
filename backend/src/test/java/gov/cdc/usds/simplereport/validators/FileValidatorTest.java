@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class FileValidatorTest {
+class FileValidatorTest {
 
   List<String> patientBulkUploadRequiredFields =
       List.of(
@@ -326,7 +326,7 @@ public class FileValidatorTest {
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 
-  public static InputStream loadCsv(String csvFile) {
+  private InputStream loadCsv(String csvFile) {
     return FileValidatorTest.class.getClassLoader().getResourceAsStream(csvFile);
   }
 }

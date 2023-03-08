@@ -3,10 +3,26 @@ import { getAppInsightsHeaders } from "../app/TelemetryService";
 
 const api = new FetchClient();
 
-const getInitOptions = (csvFile: File, facilityId: string) => {
+const initPatientUploadRequest = (csvFile: File, facilityId: string) => {
   const body = new FormData();
   body.append("file", csvFile);
   body.append("rawFacilityId", facilityId);
+
+  return {
+    body,
+    method: "POST",
+    mode: "cors",
+    headers: {
+      "Access-Control-Request-Headers": "Authorization",
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+      ...getAppInsightsHeaders(),
+    },
+  } as RequestInit;
+};
+
+const getInitOptions = (csvFile: File) => {
+  const body = new FormData();
+  body.append("file", csvFile);
 
   return {
     body,
@@ -27,17 +43,11 @@ export class FileUploadService {
     }
     return fetch(
       api.getURL("/upload/patients"),
-      getInitOptions(csvFile, facilityId)
+      initPatientUploadRequest(csvFile, facilityId)
     );
   }
 
-  static uploadResults(csvFile: File, facilityId: string | undefined | null) {
-    if (facilityId == null) {
-      facilityId = "";
-    }
-    return fetch(
-      api.getURL("/upload/results"),
-      getInitOptions(csvFile, facilityId)
-    );
+  static uploadResults(csvFile: File) {
+    return fetch(api.getURL("/upload/results"), getInitOptions(csvFile));
   }
 }

@@ -671,7 +671,6 @@ public class FhirConverter {
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(
-
             testingLabOrganizationFullUrl,
             diagnosticReportFullUrl,
             provenanceFullUrl,
