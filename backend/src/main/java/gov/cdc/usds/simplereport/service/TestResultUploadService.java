@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -50,8 +48,6 @@ public class TestResultUploadService {
   private final OrganizationService _orgService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
-  final FhirContext ctx = FhirContext.forR4();
-  final IParser parser = ctx.newJsonParser();
 
   @Value("${data-hub.url}")
   private String dataHubUrl;

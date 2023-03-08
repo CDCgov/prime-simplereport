@@ -47,8 +47,7 @@ public class FileUploadController {
   }
 
   @PostMapping(RESULT_UPLOAD)
-  public TestResultUpload handleResultsUpload(
-      @RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
+  public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);
 
     try (InputStream resultsUpload = file.getInputStream()) {
