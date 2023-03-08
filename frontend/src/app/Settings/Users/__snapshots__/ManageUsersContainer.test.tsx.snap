@@ -1,0 +1,352 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ManageUsersContainer loads the component and displays users successfully 1`] = `
+<div>
+  <div
+    class="prime-container card-container manage-users-card"
+  >
+    <div
+      class="usa-card__header"
+    >
+      <h1>
+        Manage users
+      </h1>
+      <button
+        class="usa-button"
+        type="button"
+      >
+        + Add user
+      </button>
+    </div>
+    <div
+      class="usa-card__body"
+    >
+      <div
+        class="grid-row"
+      >
+        <div
+          class="display-block users-sidenav"
+        >
+          <h2
+            class="users-sidenav-header"
+          >
+            Users
+          </h2>
+          <nav
+            aria-label="Tertiary navigation"
+            class="prime-secondary-nav"
+          >
+            <div
+              aria-owns="user-tab-3a4a221d-a8ca-42b3-aa03-37b93266025b user-tab-1029653e-24d9-428e-83b0-468319948902 user-tab-60bb9e3a-fe8a-4b81-b894-b01649c95e70 user-tab-0d3fa224-3d56-4382-b89c-9d8e415e59b3 user-tab-17656bad-07b6-4fd4-bb9a-ccbc54e5ea0a"
+              class="usa-sidenav"
+              role="tablist"
+            >
+              <div
+                class="usa-sidenav__item users-sidenav-item"
+              >
+                <button
+                  aria-label="Barnes, Ben Billy"
+                  aria-selected="true"
+                  class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 padding-left-3 usa-current"
+                  id="user-tab-3a4a221d-a8ca-42b3-aa03-37b93266025b"
+                  role="tab"
+                  style="cursor: pointer;"
+                >
+                  <div
+                    class="sidenav-user-name"
+                  >
+                    Barnes, Ben Billy
+                  </div>
+                  <span
+                    class="sidenav-user-status padding-left-0"
+                  />
+                </button>
+              </div>
+              <div
+                class="usa-sidenav__item users-sidenav-item"
+              >
+                <button
+                  aria-label="Bobberoo, Bob"
+                  aria-selected="false"
+                  class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 padding-left-3"
+                  id="user-tab-1029653e-24d9-428e-83b0-468319948902"
+                  role="tab"
+                  style="cursor: pointer;"
+                >
+                  <div
+                    class="sidenav-user-name"
+                  >
+                    Bobberoo, Bob
+                  </div>
+                  <span
+                    class="sidenav-user-status padding-left-0"
+                  />
+                </button>
+              </div>
+              <div
+                class="usa-sidenav__item users-sidenav-item"
+              >
+                <button
+                  aria-label="Jackson, Jamar Donald"
+                  aria-selected="false"
+                  class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 padding-left-3"
+                  id="user-tab-60bb9e3a-fe8a-4b81-b894-b01649c95e70"
+                  role="tab"
+                  style="cursor: pointer;"
+                >
+                  <div
+                    class="sidenav-user-name"
+                  >
+                    Jackson, Jamar Donald
+                  </div>
+                  <span
+                    class="sidenav-user-status padding-left-0"
+                  />
+                </button>
+              </div>
+              <div
+                class="usa-sidenav__item users-sidenav-item"
+              >
+                <button
+                  aria-label="Reynolds, Ruby Raven"
+                  aria-selected="false"
+                  class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 padding-left-3"
+                  id="user-tab-0d3fa224-3d56-4382-b89c-9d8e415e59b3"
+                  role="tab"
+                  style="cursor: pointer;"
+                >
+                  <div
+                    class="sidenav-user-name"
+                  >
+                    Reynolds, Ruby Raven
+                  </div>
+                  <span
+                    class="sidenav-user-status padding-left-0"
+                  />
+                </button>
+              </div>
+              <div
+                class="usa-sidenav__item users-sidenav-item"
+              >
+                <button
+                  aria-label="Samuels, Sarah Sally"
+                  aria-selected="false"
+                  class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 padding-left-3"
+                  id="user-tab-17656bad-07b6-4fd4-bb9a-ccbc54e5ea0a"
+                  role="tab"
+                  style="cursor: pointer;"
+                >
+                  <div
+                    class="sidenav-user-name"
+                  >
+                    Samuels, Sarah Sally
+                  </div>
+                  <span
+                    class="sidenav-user-status padding-left-0"
+                  />
+                </button>
+              </div>
+            </div>
+          </nav>
+        </div>
+        <div
+          aria-labelledby="user-tab-3a4a221d-a8ca-42b3-aa03-37b93266025b"
+          class="tablet:grid-col padding-left-3 user-detail-column"
+          role="tabpanel"
+        >
+          <div>
+            <h2
+              class="display-inline-block margin-top-1 margin-bottom-0 user-name-header"
+            >
+              Barnes, Ben Billy
+            </h2>
+            <div
+              class="user-status-subheader"
+            >
+              <span
+                class="top-user-status padding-left-0"
+              />
+            </div>
+          </div>
+          <div
+            class="user-header grid-row flex-row flex-align-center"
+          />
+          <nav
+            aria-label="User action navigation"
+            class="prime-secondary-nav margin-top-4 padding-bottom-0"
+          >
+            <div
+              aria-owns="user-info-tab-id facility-access-tab-id"
+              class="usa-nav__secondary-links prime-nav usa-list"
+              role="tablist"
+            >
+              <div
+                class="usa-nav__secondary-item usa-current"
+              >
+                <button
+                  aria-selected="true"
+                  class="usa-button--unstyled text-ink text-no-underline"
+                  id="user-info-tab-id"
+                  role="tab"
+                >
+                  User information
+                </button>
+              </div>
+              <div
+                class="usa-nav__secondary-item "
+              >
+                <button
+                  aria-selected="false"
+                  class="usa-button--unstyled text-ink text-no-underline"
+                  id="facility-access-tab-id"
+                  role="tab"
+                >
+                  Facility access
+                </button>
+              </div>
+            </div>
+          </nav>
+          <div
+            aria-labelledby="user-info-tab-id"
+            class="padding-left-1"
+            role="tabpanel"
+          >
+            <h3
+              class="basic-info-header"
+            >
+              Basic information
+            </h3>
+            <div
+              class="user-header grid-row flex-row flex-align-center"
+            >
+              <div>
+                <div
+                  class="userinfo-subheader"
+                >
+                  Name
+                </div>
+                <p
+                  class="userinfo-text"
+                >
+                  Ben Billy Barnes
+                </p>
+              </div>
+              <button
+                aria-disabled="false"
+                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                type="button"
+              >
+                Edit name
+              </button>
+            </div>
+            <div
+              class="user-header grid-row flex-row flex-align-center"
+            >
+              <div>
+                <div
+                  class="userinfo-subheader"
+                >
+                  Email
+                </div>
+                <p
+                  class="userinfo-text"
+                >
+                  ben@example.com
+                </p>
+              </div>
+              <button
+                aria-disabled="false"
+                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                type="button"
+              >
+                Edit email
+              </button>
+            </div>
+            <div
+              class="userinfo-divider"
+            />
+            <h3
+              class="user-controls-header"
+            >
+              User controls
+            </h3>
+            <div
+              class="user-header grid-row flex-row flex-align-center"
+            >
+              <div
+                class="grid-col margin-right-8"
+              >
+                <div
+                  class="userinfo-subheader"
+                >
+                  Password
+                </div>
+                <p
+                  class="usercontrols-text"
+                >
+                  Send a link to reset user password. Users must answer a password recovery question to access their account.
+                </p>
+              </div>
+              <button
+                aria-disabled="false"
+                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                type="button"
+              >
+                Send password reset email
+              </button>
+            </div>
+            <div
+              class="user-header grid-row flex-row flex-align-center"
+            >
+              <div
+                class="grid-col"
+              >
+                <div
+                  class="userinfo-subheader"
+                >
+                  Reset multi-factor authentication (MFA)
+                </div>
+                <p
+                  class="usercontrols-text"
+                >
+                  Reset user MFA account access settings
+                </p>
+              </div>
+              <button
+                aria-disabled="false"
+                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                type="button"
+              >
+                Reset MFA
+              </button>
+            </div>
+            <div
+              class="user-header grid-row flex-row flex-align-center"
+            >
+              <div>
+                <div
+                  class="userinfo-subheader"
+                >
+                  Delete user
+                </div>
+                <p
+                  class="usercontrols-text"
+                >
+                  Permanently delete user account and data
+                </p>
+              </div>
+              <button
+                aria-disabled="false"
+                class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                type="button"
+              >
+                Delete user
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
