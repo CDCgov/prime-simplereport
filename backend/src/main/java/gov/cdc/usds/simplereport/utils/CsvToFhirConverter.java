@@ -159,7 +159,6 @@ public class CsvToFhirConverter {
               row.getOrderingFacilityState().value,
               row.getOrderingFacilityZipCode().value,
               null);
-      // TODO what should the ordering facility id be?
       orderingFacility =
           FhirConverter.convertToOrganization(
               UUID.randomUUID().toString(),
