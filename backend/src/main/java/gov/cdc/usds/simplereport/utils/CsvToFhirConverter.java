@@ -37,7 +37,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class FileConverter {
+public class CsvToFhirConverter {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
   private final Function<Map<String, String>, TestResultRow> fileRowConstructor =
@@ -69,31 +69,28 @@ public class FileConverter {
           "Plasma".toLowerCase(), "119361006",
           "Serum".toLowerCase(), "119364003");
 
-  public List<Bundle> convertToFhirBundles(InputStream csvStream, UUID facilityId, UUID orgId) {
+  public List<Bundle> convertToFhirBundles(InputStream csvStream, UUID orgId) {
     var testEvents = new ArrayList<Bundle>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
-    if (!valueIterator.hasNext()) {
-      // error
-    }
 
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
-
       try {
         row = getNextRow(valueIterator);
       } catch (CsvProcessingException ex) {
-        log.error("Exception converting bulk csv to fhir.", ex);
-        continue; // throw?
+        // anything that would land here should have been caught and handled by the file validator
+        log.error("Unable to parse csv.", ex);
+        continue;
       }
       var fileRow = (TestResultRow) fileRowConstructor.apply(row);
 
-      testEvents.add(convertRowToFhirBundle(fileRow, facilityId, orgId));
+      testEvents.add(convertRowToFhirBundle(fileRow, orgId));
     }
 
     return testEvents;
   }
 
-  private Bundle convertRowToFhirBundle(TestResultRow row, UUID facilityId, UUID orgId) {
+  private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
     var patientAddr =
@@ -147,13 +144,13 @@ public class FileConverter {
             DEFAULT_COUNTRY);
 
     Organization orderingFacility = null;
-    if (row.getOrderingFacilityStreet() != null
-        || row.getOrderingFacilityStreet2() != null
-        || row.getOrderingFacilityCity() != null
-        || row.getOrderingFacilityState() != null
-        || row.getOrderingFacilityZipCode() != null
-        || row.getOrderingFacilityName() != null
-        || row.getOrderingFacilityPhoneNumber() != null) {
+    if (row.getOrderingFacilityStreet().value != null
+        || row.getOrderingFacilityStreet2().value != null
+        || row.getOrderingFacilityCity().value != null
+        || row.getOrderingFacilityState().value != null
+        || row.getOrderingFacilityZipCode().value != null
+        || row.getOrderingFacilityName().value != null
+        || row.getOrderingFacilityPhoneNumber().value != null) {
       var orderingFacilityAddr =
           new StreetAddress(
               row.getOrderingFacilityStreet().value,
@@ -162,9 +159,10 @@ public class FileConverter {
               row.getOrderingFacilityState().value,
               row.getOrderingFacilityZipCode().value,
               null);
+      // TODO what should the ordering facility id be?
       orderingFacility =
           FhirConverter.convertToOrganization(
-              facilityId.toString(),
+              UUID.randomUUID().toString(),
               row.getOrderingFacilityName().value,
               row.getOrderingFacilityPhoneNumber().value,
               null,
@@ -259,7 +257,7 @@ public class FileConverter {
     if (input.matches(ALPHABET_REGEX)) {
       return input;
     }
-    return "";
+    return null; // vs empty string?
   }
 
   private DiagnosticReport.DiagnosticReportStatus mapTestResultStatusToFhirValue(String input) {

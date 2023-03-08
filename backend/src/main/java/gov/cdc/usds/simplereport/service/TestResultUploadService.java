@@ -20,7 +20,6 @@ import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
-import gov.cdc.usds.simplereport.utils.FileConverter;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -51,7 +50,6 @@ public class TestResultUploadService {
   private final OrganizationService _orgService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
-  private final FileConverter fileConverter;
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
 
@@ -108,11 +106,6 @@ public class TestResultUploadService {
     if (!"P".equals(processingModeCodeValue)) {
       content = attachProcessingModeCode(content);
     }
-    var bundles =
-        fileConverter.convertToFhirBundles(
-            new ByteArrayInputStream(content), facilityId, org.getInternalId());
-    var parsedBundles =
-        bundles.stream().map(parser::encodeResourceToString).collect(Collectors.toList());
 
     UploadResponse response = null;
     if (content.length > 0) {
