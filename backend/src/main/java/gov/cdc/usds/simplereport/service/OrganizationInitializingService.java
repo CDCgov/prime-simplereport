@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -249,20 +248,24 @@ public class OrganizationInitializingService {
       }
     }
 
-    Map<UUID, DeviceTestPerformedLoincCode> deviceExtraInfoByLoinc =
+    Map<String, DeviceTestPerformedLoincCode> deviceExtraInfoByLoincTestkitEquipmentId =
         deviceTestPerformedLoincCodeRepository.findAll().stream()
-            .collect(Collectors.toMap(DeviceTestPerformedLoincCode::getInternalId, d -> d));
+            .collect(Collectors.toMap(d -> deviceExtraInfoKey(d), d -> d));
     for (DeviceTestPerformedLoincCode d : getDeviceTestPerformedLoincCode(deviceTypesByName)) {
-      if (!deviceExtraInfoByLoinc.containsKey(d.getInternalId())) {
+      if (!deviceExtraInfoByLoincTestkitEquipmentId.containsKey(deviceExtraInfoKey(d))) {
         log.info("Creating device test performed loinc code {}", d.getTestPerformedLoincCode());
         DeviceTestPerformedLoincCode deviceTestPerformedLoincCode =
             deviceTestPerformedLoincCodeRepository.save(d);
-        deviceExtraInfoByLoinc.put(
-            deviceTestPerformedLoincCode.getInternalId(), deviceTestPerformedLoincCode);
+        deviceExtraInfoByLoincTestkitEquipmentId.put(
+            deviceTestPerformedLoincCode.getTestPerformedLoincCode(), deviceTestPerformedLoincCode);
       }
     }
 
     return new ArrayList<>(deviceTypesByName.values());
+  }
+
+  private static String deviceExtraInfoKey(DeviceTestPerformedLoincCode d) {
+    return d.getTestPerformedLoincCode() + d.getTestkitNameId() + d.getEquipmentUid();
   }
 
   private List<DeviceType> getDeviceTypes(Map<String, SpecimenType> specimenTypesByCode) {
