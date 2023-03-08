@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
@@ -489,23 +490,23 @@ public class FhirConverter {
     var observations = new HashSet<Observation>();
     var symptomaticCode =
         createLoincConcept(
-            "95419-8",
+            LOINC_AOE_SYMPTOMATIC,
             "Has symptoms related to condition of interest",
             "Has symptoms related to condition of interest");
     if (surveyData.getNoSymptoms()) {
       // user reported as not symptomatic
       observations.add(
           createAOEObservation(
-              eventId + "-symptomatic", symptomaticCode, createYesNoUnkConcept(false)));
+              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(false)));
     } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
       // user reported as symptomatic
       observations.add(
           createAOEObservation(
-              eventId + "-symptomatic", symptomaticCode, createYesNoUnkConcept(true)));
+              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(true)));
       if (surveyData.getSymptomOnsetDate() != null) {
         observations.add(
             createAOEObservation(
-                eventId + "-onset",
+                eventId + "11368-8",
                 createLoincConcept(
                     "11368-8",
                     "Illness or injury onset date and time",
@@ -516,7 +517,7 @@ public class FhirConverter {
       // if neither no symptoms nor any symptoms checked, AoE form was not completed
       observations.add(
           createAOEObservation(
-              eventId + "-symptomatic", symptomaticCode, createYesNoUnkConcept(null)));
+              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(null)));
     }
     return observations;
   }
