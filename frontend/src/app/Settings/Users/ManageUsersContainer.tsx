@@ -12,6 +12,7 @@ import {
   useResetUserMfaMutation,
   UserPermission,
 } from "../../../generated/graphql";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import ManageUsers from "./ManageUsers";
 
@@ -113,6 +114,8 @@ export interface UserFacilitySetting {
 }
 
 const ManageUsersContainer = () => {
+  useDocumentTitle("Manage users");
+
   const loggedInUser = useSelector<RootState, User>((state) => state.user);
   const allFacilities = useSelector<RootState, UserFacilitySetting[]>(
     (state) => state.facilities
