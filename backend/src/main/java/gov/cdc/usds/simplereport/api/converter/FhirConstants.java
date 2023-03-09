@@ -34,7 +34,9 @@ public class FhirConstants {
   public static final String DEFAULT_COUNTRY = "USA";
   public static final String UNIVERSAL_ID_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0301";
 
+  public static final String LOINC_AOE_IDENTIFIER = "81959-9";
   public static final String LOINC_AOE_SYMPTOMATIC = "95419-8";
+  public static final String LOINC_AOE_SYMPTOM_ONSET = "11368-8";
 
   public static final Map<String, String> PROCESSING_ID_DISPLAY =
       Map.of(

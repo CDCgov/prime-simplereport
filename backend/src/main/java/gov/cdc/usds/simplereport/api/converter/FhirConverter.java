@@ -6,7 +6,9 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_IDENTIFIER;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
@@ -506,9 +508,9 @@ public class FhirConverter {
       if (surveyData.getSymptomOnsetDate() != null) {
         observations.add(
             createAOEObservation(
-                eventId + "11368-8",
+                eventId + LOINC_AOE_SYMPTOM_ONSET,
                 createLoincConcept(
-                    "11368-8",
+                    LOINC_AOE_SYMPTOM_ONSET,
                     "Illness or injury onset date and time",
                     "Illness or injury onset date and time"),
                 new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
@@ -533,7 +535,7 @@ public class FhirConverter {
         .setUse(IdentifierUse.OFFICIAL)
         .setType(
             createLoincConcept(
-                "81959-9", "Public health laboratory ask at order entry panel", null));
+                LOINC_AOE_IDENTIFIER, "Public health laboratory ask at order entry panel", null));
 
     return observation;
   }
