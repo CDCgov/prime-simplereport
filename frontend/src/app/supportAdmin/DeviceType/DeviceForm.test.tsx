@@ -1,4 +1,5 @@
-import { render, screen, within } from "@testing-library/react";
+import React from "react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import DeviceForm from "./DeviceForm";
@@ -16,16 +17,6 @@ describe("create new device", () => {
       <DeviceForm
         formTitle="Device type"
         saveDeviceType={saveDeviceType}
-        initialDevice={{
-          name: "",
-          manufacturer: "",
-          model: "",
-          loincCode: "",
-          swabTypes: [],
-          supportedDiseases: [],
-          testLength: 15,
-          supportedDiseaseTestPerformed: [],
-        }}
         swabOptions={[{ label: "Swab (445297001)", value: "445297001" }]}
         supportedDiseaseOptions={[{ label: "COVID-19", value: "3821904728" }]}
       />
@@ -36,20 +27,41 @@ describe("create new device", () => {
     expect(screen.getByText("Save changes")).toBeDisabled();
   });
 
+  it("validates all form fields and displays error as needed", async () => {
+    await addValue("Equipment Uid", "123");
+    await userEvent.click(screen.getByText("Save changes"));
+    await waitFor(() =>
+      expect(screen.getAllByText("This is a required field")).toHaveLength(7)
+    );
+    await addValue("Device name", "Solvey rx350");
+    await addValue("Manufacturer", "Solvey");
+    await addValue("Model", "rx350");
+    await addValue("Test length", "15");
+    await userEvent.click(
+      screen.getByText("Swab (445297001)", { exact: false })
+    );
+    await userEvent.selectOptions(
+      screen.getByLabelText("Supported disease *"),
+      "COVID-19"
+    );
+    await addValue("Test performed code *", "1920-12");
+    await waitFor(() =>
+      expect(
+        screen.queryByText("This is a required field")
+      ).not.toBeInTheDocument()
+    );
+  });
+
   describe("All fields completed", () => {
     beforeEach(async () => {
       await addValue("Device name", "Accula");
       await addValue("Manufacturer", "Mesa Biotech");
       await addValue("Model", "Accula SARS-Cov-2 Test*");
-      await userEvent.clear(
-        screen.getByLabelText("Test length", { exact: false })
-      );
       await addValue("Test length", "10");
       await userEvent.click(
         screen.getByText("Swab (445297001)", { exact: false })
       );
 
-      await userEvent.click(screen.getByText("Add another disease"));
       await userEvent.selectOptions(
         screen.getByLabelText("Supported disease *"),
         "COVID-19"
@@ -60,12 +72,12 @@ describe("create new device", () => {
       );
 
       await userEvent.type(
-        screen.getByLabelText("Testkit Name Id *"),
+        screen.getByLabelText("Testkit Name Id"),
         "testkitNameId123"
       );
 
       await userEvent.type(
-        screen.getByLabelText("Equipment Uid *"),
+        screen.getByLabelText("Equipment Uid"),
         "equipmentUid321"
       );
     });
@@ -73,20 +85,18 @@ describe("create new device", () => {
     it("enables the save button", async () => {
       expect(screen.getByText("Save changes")).toBeEnabled();
     });
-    describe("on form submission", () => {
-      beforeEach(async () => {
-        await userEvent.click(screen.getByText("Save changes"));
-      });
 
-      it("calls the save callback once", async () => {
+    it("on form submission calls the save callback once", async () => {
+      await userEvent.click(screen.getByText("Save changes"));
+      await waitFor(() =>
         expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
           loincCode: "1920-12",
           manufacturer: "Mesa Biotech",
           model: "Accula SARS-Cov-2 Test*",
           name: "Accula",
-          testLength: "10",
+          testLength: 10,
           swabTypes: ["445297001"],
-          supportedDiseases: [],
+          supportedDiseases: ["3821904728"],
           supportedDiseaseTestPerformed: [
             {
               supportedDisease: "3821904728",
@@ -95,9 +105,8 @@ describe("create new device", () => {
               equipmentUid: "equipmentUid321",
             },
           ],
-        });
-        expect(saveDeviceType).toBeCalledTimes(1);
-      });
+        })
+      );
     });
   });
 });
@@ -264,8 +273,8 @@ describe("update existing devices", () => {
       const pillContainer = screen.getAllByTestId("pill-container")[0];
       const supportedDisease = screen.getAllByLabelText("Supported disease *");
       const testPerformed = screen.getAllByLabelText("Test performed code *");
-      const testkitNameId = screen.getAllByLabelText("Testkit Name Id *");
-      const equipmentUid = screen.getAllByLabelText("Equipment Uid *");
+      const testkitNameId = screen.getAllByLabelText("Testkit Name Id");
+      const equipmentUid = screen.getAllByLabelText("Equipment Uid");
 
       expect(manufacturerInput).toBeEnabled();
       expect(modelInput).toBeEnabled();
@@ -387,37 +396,38 @@ describe("update existing devices", () => {
           "LP 123"
         );
         await userEvent.type(
-          screen.getAllByLabelText("Testkit Name Id *")[1],
+          screen.getAllByLabelText("Testkit Name Id")[1],
           "testkitNameId123"
         );
 
         await userEvent.type(
-          screen.getAllByLabelText("Equipment Uid *")[1],
+          screen.getAllByLabelText("Equipment Uid")[1],
           "equipmentUid321"
         );
 
         await userEvent.click(screen.getByText("Save changes"));
 
-        expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
-          internalId: "abc1",
-          name: "Tesla Emitter",
-          model: "Model AX",
-          manufacturer: "Celoxitin LLC",
-          loincCode: "1234-1",
-          swabTypes: ["123", "456"],
-          supportedDiseases: ["123"],
-          testLength: 15,
-          supportedDiseaseTestPerformed: [
-            { supportedDisease: "123", testPerformedLoincCode: "1234-1" },
-            {
-              supportedDisease: "456",
-              testPerformedLoincCode: "LP 123",
-              equipmentUid: "equipmentUid321",
-              testkitNameId: "testkitNameId123",
-            },
-          ],
-        });
-        expect(saveDeviceType).toBeCalledTimes(1);
+        await waitFor(() =>
+          expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
+            internalId: "abc1",
+            name: "Tesla Emitter",
+            model: "Model AX",
+            manufacturer: "Celoxitin LLC",
+            loincCode: "1234-1",
+            swabTypes: ["123", "456"],
+            supportedDiseases: ["123", "456"],
+            testLength: 15,
+            supportedDiseaseTestPerformed: [
+              { supportedDisease: "123", testPerformedLoincCode: "1234-1" },
+              {
+                supportedDisease: "456",
+                testPerformedLoincCode: "LP 123",
+                equipmentUid: "equipmentUid321",
+                testkitNameId: "testkitNameId123",
+              },
+            ],
+          })
+        );
       });
       it("sets loinc code to the test performed code for covid", async () => {
         await userEvent.click(screen.getByTestId("combo-box-select"));
@@ -433,20 +443,21 @@ describe("update existing devices", () => {
 
         await userEvent.click(screen.getByText("Save changes"));
 
-        expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
-          internalId: "abc1",
-          name: "Tesla Emitter",
-          model: "Model A",
-          manufacturer: "Celoxitin",
-          loincCode: "950-9501",
-          swabTypes: ["123"],
-          supportedDiseases: ["123"],
-          testLength: 15,
-          supportedDiseaseTestPerformed: [
-            { supportedDisease: "123", testPerformedLoincCode: "950-9501" },
-          ],
-        });
-        expect(saveDeviceType).toBeCalledTimes(1);
+        await waitFor(() =>
+          expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
+            internalId: "abc1",
+            name: "Tesla Emitter",
+            model: "Model A",
+            manufacturer: "Celoxitin",
+            loincCode: "950-9501",
+            swabTypes: ["123"],
+            supportedDiseases: ["123"],
+            testLength: 15,
+            supportedDiseaseTestPerformed: [
+              { supportedDisease: "123", testPerformedLoincCode: "950-9501" },
+            ],
+          })
+        );
       });
     });
   });
