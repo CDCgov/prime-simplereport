@@ -71,6 +71,7 @@ import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.Device;
 import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -831,7 +832,9 @@ class FhirConverterTest {
   void convertToDiagnosticReport_TestEvent_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
+    var date = new Date();
     ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
+    ReflectionTestUtils.setField(testEvent, "createdAt", date);
 
     var actual = convertToDiagnosticReport(testEvent);
 
@@ -841,24 +844,30 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/diagnosticReport.json")),
             StandardCharsets.UTF_8);
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(date).getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
   void convertToDiagnosticReport_Strings_valid() {
-    var actual = convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2", "id-123");
+    var date = new Date();
+    var actual = convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2", "id-123", date);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+    assertThat(((DateTimeType) actual.getEffective()).getAsV3())
+        .isEqualTo(new DateTimeType(date).getAsV3());
   }
 
   @Test
   void convertToDiagnosticReport_Strings_null() {
-    var actual = convertToDiagnosticReport(null, null, null);
+    var actual = convertToDiagnosticReport(null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
@@ -1059,7 +1068,6 @@ class FhirConverterTest {
             List.of(observation),
             serviceRequest,
             diagnosticReport,
-            new Date(),
             date,
             gitProperties,
             "P");
@@ -1237,6 +1245,7 @@ class FhirConverterTest {
             new DeviceTestPerformedLoincCode(deviceTypeId, fluADisease, "444-123", null, null),
             new DeviceTestPerformedLoincCode(deviceTypeId, fluBDisease, "444-456", null, null));
     var date = new Date();
+    var dateTested = new Date();
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
@@ -1249,7 +1258,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
-    ReflectionTestUtils.setField(testEvent, "createdAt", date);
+    ReflectionTestUtils.setField(testEvent, "createdAt", dateTested);
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
@@ -1274,6 +1283,9 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(dateTested).getValueAsString());
     expectedSerialized =
         expectedSerialized.replace(
             "$PROVENANCE_RECORDED_DATE",
