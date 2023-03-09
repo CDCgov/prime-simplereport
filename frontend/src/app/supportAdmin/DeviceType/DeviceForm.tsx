@@ -64,6 +64,7 @@ const DeviceForm = (props: Props) => {
     formState: { errors, isSubmitting, isDirty },
     watch,
     reset,
+    setFocus,
   } = useForm<DeviceFormData>({
     defaultValues: {
       supportedDiseases: [
@@ -367,7 +368,10 @@ const DeviceForm = (props: Props) => {
                         disabled={loadingDeviceData}
                         required
                         onChange={onChange}
-                        inputTextRef={ref}
+                        registrationProps={{
+                          inputTextRef: ref,
+                          setFocus: () => setFocus(name),
+                        }}
                       />
                     )}
                     name="swabTypes"

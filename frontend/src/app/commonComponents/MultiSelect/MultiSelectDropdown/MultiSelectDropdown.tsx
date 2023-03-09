@@ -36,6 +36,10 @@ export enum FocusMode {
   Input,
   Item,
 }
+export interface RegistrationProps {
+  inputTextRef?: Ref<any>;
+  setFocus: Function;
+}
 
 interface MultiSelectDropDownProps {
   id: string;
@@ -48,22 +52,24 @@ interface MultiSelectDropDownProps {
   inputProps?: JSX.IntrinsicElements["input"];
   placeholder?: string;
   ariaInvalid?: boolean;
-  inputTextRef?: Ref<any>;
+  registrationProps?: RegistrationProps;
 }
 
 interface InputProps {
   focused: boolean;
-  inputTextRef?: Ref<any>;
+  registrationProps?: RegistrationProps;
 }
 
 const MultiSelectInput = ({
-  inputTextRef,
+  registrationProps,
   focused,
   ...inputProps
 }: InputProps & JSX.IntrinsicElements["input"]): React.ReactElement => {
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (focused && inputRef.current) {
+    if (focused && registrationProps?.inputTextRef) {
+      registrationProps.setFocus();
+    } else if (focused && inputRef.current) {
       inputRef.current.focus();
     }
   });
@@ -76,7 +82,11 @@ const MultiSelectInput = ({
       {...inputProps}
       autoCapitalize="off"
       autoComplete="off"
-      ref={inputTextRef ? inputTextRef : inputRef}
+      ref={
+        registrationProps?.inputTextRef
+          ? registrationProps.inputTextRef
+          : inputRef
+      }
     />
   );
 };
@@ -193,7 +203,7 @@ export const MultiSelectDropdown = ({
   inputProps,
   placeholder,
   ariaInvalid,
-  inputTextRef,
+  registrationProps,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -292,7 +302,7 @@ export const MultiSelectDropdown = ({
         aria-invalid={ariaInvalid}
         disabled={isDisabled}
         placeholder={placeholder}
-        inputTextRef={inputTextRef}
+        registrationProps={registrationProps}
         {...inputProps}
       />
       <span className="usa-combo-box__input-button-separator">&nbsp;</span>
