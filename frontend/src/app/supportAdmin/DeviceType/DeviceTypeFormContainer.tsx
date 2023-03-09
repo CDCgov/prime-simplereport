@@ -67,18 +67,6 @@ const DeviceTypeFormContainer = () => {
       <DeviceForm
         formTitle="Device type"
         saveDeviceType={saveDeviceType}
-        initialDevice={{
-          name: "",
-          manufacturer: "",
-          model: "",
-          loincCode: "",
-          swabTypes: [],
-          supportedDiseases: [],
-          testLength: 15,
-          supportedDiseaseTestPerformed: [
-            { supportedDisease: "", testPerformedLoincCode: "" },
-          ],
-        }}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
       />

@@ -1,4 +1,5 @@
 import React from "react";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 import Dropdown from "./Dropdown";
 
@@ -13,7 +14,7 @@ interface Props<T> {
   label?: string | React.ReactNode;
   name?: string;
   value: T;
-  onChange: (value: T) => void;
+  onChange?: (value: T) => void;
   onBlur?: () => void;
   defaultOption?: string;
   defaultSelect?: boolean;
@@ -23,6 +24,7 @@ interface Props<T> {
   selectClassName?: string;
   disabled?: boolean;
   className?: string;
+  registrationProps?: UseFormRegisterReturn<any>;
 }
 
 const Select = <T extends string>({
@@ -40,10 +42,12 @@ const Select = <T extends string>({
   selectClassName,
   disabled,
   className,
+  registrationProps,
 }: Props<T>): React.ReactElement => {
   const onChangeWrapper = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(e.target.value as T);
+    onChange && onChange(e.target.value as T);
   };
+
   return (
     <Dropdown
       label={label}
@@ -60,6 +64,7 @@ const Select = <T extends string>({
       selectClassName={selectClassName}
       disabled={disabled}
       className={className}
+      registrationProps={registrationProps}
     />
   );
 };
