@@ -11,7 +11,6 @@ import {
   SupportedDiseaseTestPerformedInput,
 } from "../../../generated/graphql";
 import Required from "../../commonComponents/Required";
-import { focusOnFirstInputWithError } from "../../utils/formValidation";
 
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 import DiseaseInformation from "./DiseaseInformation";
@@ -219,22 +218,6 @@ const DeviceForm = (props: Props) => {
   };
 
   /**
-   * Special focus on error for the pill component
-   * workaround due to react-hook-component not being able to pass ref down to it
-   */
-  const onSubmitError = (currentErrors: any) => {
-    if (
-      !currentErrors.name &&
-      !currentErrors.testLength &&
-      !currentErrors.model &&
-      !currentErrors.manufacturer &&
-      currentErrors.swabTypes
-    ) {
-      focusOnFirstInputWithError(true);
-    }
-  };
-
-  /**
    * HTML
    */
   return (
@@ -243,7 +226,7 @@ const DeviceForm = (props: Props) => {
         <div className="grid-row">
           <form
             className="prime-container card-container"
-            onSubmit={handleSubmit(onSubmit, onSubmitError)}
+            onSubmit={handleSubmit(onSubmit)}
           >
             <div className="usa-card__header">
               <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
@@ -370,7 +353,7 @@ const DeviceForm = (props: Props) => {
                 <div className="tablet:grid-col">
                   <Controller
                     render={({
-                      field: { onChange, value, name },
+                      field: { onChange, value, name, ref },
                       fieldState: { error },
                     }) => (
                       <MultiSelect
@@ -384,6 +367,7 @@ const DeviceForm = (props: Props) => {
                         disabled={loadingDeviceData}
                         required
                         onChange={onChange}
+                        inputTextRef={ref}
                       />
                     )}
                     name="swabTypes"

@@ -1,4 +1,10 @@
-import React, { KeyboardEvent, FocusEvent, useEffect, useRef } from "react";
+import React, {
+  KeyboardEvent,
+  FocusEvent,
+  useEffect,
+  useRef,
+  Ref,
+} from "react";
 import classnames from "classnames";
 
 import {
@@ -42,13 +48,16 @@ interface MultiSelectDropDownProps {
   inputProps?: JSX.IntrinsicElements["input"];
   placeholder?: string;
   ariaInvalid?: boolean;
+  inputTextRef?: Ref<any>;
 }
 
 interface InputProps {
   focused: boolean;
+  inputTextRef?: Ref<any>;
 }
 
 const MultiSelectInput = ({
+  inputTextRef,
   focused,
   ...inputProps
 }: InputProps & JSX.IntrinsicElements["input"]): React.ReactElement => {
@@ -67,7 +76,7 @@ const MultiSelectInput = ({
       {...inputProps}
       autoCapitalize="off"
       autoComplete="off"
-      ref={inputRef}
+      ref={inputTextRef ? inputTextRef : inputRef}
     />
   );
 };
@@ -184,6 +193,7 @@ export const MultiSelectDropdown = ({
   inputProps,
   placeholder,
   ariaInvalid,
+  inputTextRef,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -282,6 +292,7 @@ export const MultiSelectDropdown = ({
         aria-invalid={ariaInvalid}
         disabled={isDisabled}
         placeholder={placeholder}
+        inputTextRef={inputTextRef}
         {...inputProps}
       />
       <span className="usa-combo-box__input-button-separator">&nbsp;</span>

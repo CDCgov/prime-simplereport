@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Ref, useEffect, useState } from "react";
 import classnames from "classnames";
 import { UIDConsumer } from "react-uid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -31,6 +31,7 @@ export type MultiSelectProps = {
   disabled?: boolean;
   inputProps?: JSX.IntrinsicElements["input"];
   placeholder?: string;
+  inputTextRef?: Ref<any>;
 };
 
 type PillProps = {
@@ -71,6 +72,7 @@ export const MultiSelect = ({
   disabled,
   initialSelectedValues,
   placeholder,
+  inputTextRef,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -176,6 +178,7 @@ export const MultiSelect = ({
             disabled={isDisabled}
             placeholder={placeholder}
             ariaInvalid={validationStatus === "error"}
+            inputTextRef={inputTextRef}
           />
           <fieldset
             className={`fieldset--unstyled pill-container${
