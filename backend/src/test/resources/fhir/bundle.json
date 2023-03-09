@@ -323,6 +323,11 @@
           {
             "reference":"Organization/1c3d14b9-e222-4a16-9fb2-d9f173034a6a"
           }
+        ],
+        "supportingInfo": [
+          {
+            "reference":"Observation/c17b0cd0-fdfd-3381-98e9-730eaa5ba842"
+          }
         ]
       }
     },
@@ -479,6 +484,50 @@
         "resourceType":"Organization",
         "id":"07640c5d-87cd-488b-9343-a226c5166539",
         "name":"SimpleReport"
+      }
+    },
+    {
+      "fullUrl": "Observation/c17b0cd0-fdfd-3381-98e9-730eaa5ba842",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "c17b0cd0-fdfd-3381-98e9-730eaa5ba842",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95419-8",
+              "display": "Has symptoms related to condition of interest"
+            }
+          ],
+          "text": "Has symptoms related to condition of interest"
+        },
+        "subject": {
+          "reference": "Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+              "code": "UNK",
+              "display": "unknown"
+            }
+          ]
+        }
       }
     }
   ]

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertEmailsToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAOEObservations;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
@@ -33,6 +34,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -41,6 +43,7 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
@@ -60,6 +63,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -794,6 +798,61 @@ class FhirConverterTest {
   }
 
   @Test
+  void convertToAoeObservation_noSymptoms_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null);
+    String testId = "fakeId";
+
+    var actual = convertToAOEObservations(testId, answers);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationNoSymptoms.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_symptomatic_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4));
+    String testId = "fakeId";
+
+    var actual = convertToAOEObservations(testId, answers);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationSymptomatic.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_noAnswer_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null);
+    String testId = "fakeId";
+
+    var actual = convertToAOEObservations(testId, answers);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationNoAoeAnswer.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
   void convertToDiagnosticReport_TestEvent_valid() {
     var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
     var actual = convertToDiagnosticReport(testEvent);
@@ -1045,6 +1104,8 @@ class FhirConverterTest {
     var device = new Device();
     var specimen = new Specimen();
     var observation = new Observation();
+    var aoeobservation1 = new Observation();
+    var aoeobservation2 = new Observation();
     var serviceRequest = new ServiceRequest();
     var diagnosticReport = new DiagnosticReport();
     var date = new Date();
@@ -1054,6 +1115,8 @@ class FhirConverterTest {
     device.setId(UUID.randomUUID().toString());
     specimen.setId(UUID.randomUUID().toString());
     observation.setId(UUID.randomUUID().toString());
+    aoeobservation1.setId(UUID.randomUUID().toString());
+    aoeobservation2.setId(UUID.randomUUID().toString());
     serviceRequest.setId(UUID.randomUUID().toString());
     diagnosticReport.setId(UUID.randomUUID().toString());
 
@@ -1066,6 +1129,7 @@ class FhirConverterTest {
             device,
             specimen,
             List.of(observation),
+            Set.of(aoeobservation1, aoeobservation2),
             serviceRequest,
             diagnosticReport,
             date,
@@ -1080,15 +1144,17 @@ class FhirConverterTest {
     assertThat(actual.getTimestamp()).isEqualTo(date);
     assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
     assertThat(actual.getIdentifier().getValue()).isEqualTo(diagnosticReport.getId());
-    assertThat(actual.getEntry()).hasSize(12);
+    assertThat(actual.getEntry()).hasSize(14);
     assertThat(resourceUrls)
-        .hasSize(12)
+        .hasSize(14)
         .contains(
             "Patient/" + patient.getId(),
             "Organization/" + organization.getId(),
             "Practitioner/" + practitioner.getId(),
             "Specimen/" + specimen.getId(),
             "Observation/" + observation.getId(),
+            "Observation/" + aoeobservation1.getId(),
+            "Observation/" + aoeobservation2.getId(),
             "ServiceRequest/" + serviceRequest.getId(),
             "DiagnosticReport/" + diagnosticReport.getId(),
             "Device/" + device.getId(),
@@ -1121,7 +1187,7 @@ class FhirConverterTest {
 
     var observationEntry =
         actual.getEntry().stream()
-            .filter(entry -> entry.getFullUrl().contains("Observation/"))
+            .filter(entry -> entry.getFullUrl().contains("Observation/" + observation.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
     assertThat(((Observation) observationEntry.getResource()).getSubject().getReference())
@@ -1133,6 +1199,22 @@ class FhirConverterTest {
         .isEqualTo("Specimen/" + specimen.getId());
     assertThat(((Observation) observationEntry.getResource()).getDevice().getReference())
         .isEqualTo("Device/" + device.getId());
+
+    var aoeObservationEntry1 =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/" + aoeobservation1.getId()))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
+    assertThat(((Observation) aoeObservationEntry1.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + patient.getId());
+
+    var aoeObservationEntry2 =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/" + aoeobservation2.getId()))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
+    assertThat(((Observation) aoeObservationEntry2.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + patient.getId());
 
     var serviceRequestEntry =
         actual.getEntry().stream()
@@ -1150,6 +1232,13 @@ class FhirConverterTest {
         .isEqualTo("Organization/" + organization.getId());
     assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getRequester().getReference())
         .contains("PractitionerRole/");
+    assertThat(
+            ((ServiceRequest) serviceRequestEntry.getResource())
+                .getSupportingInfo().stream()
+                    .allMatch(r -> r.getReference().contains("Observation/")))
+        .isTrue();
+    assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getSupportingInfo().size())
+        .isEqualTo(2);
 
     var diagnosticReportEntry =
         actual.getEntry().stream()
@@ -1221,6 +1310,9 @@ class FhirConverterTest {
             "",
             null);
     var testOrder = new TestOrder(person, facility);
+    var answers =
+        new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));
+    testOrder.setAskOnEntrySurvey(answers);
     var covidDisease = new SupportedDisease("COVID-19", "987-1");
     var fluADisease = new SupportedDisease("FLU A", "LP 123");
     var fluBDisease = new SupportedDisease("FLU B", "LP 456");
