@@ -1,10 +1,13 @@
 import React from "react";
 
 import { useGetManagedFacilitiesQuery } from "../../../generated/graphql";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import ManageFacilities from "./ManageFacilities";
 
 const ManageFacilitiesContainer: any = () => {
+  useDocumentTitle("Manage facilities");
+
   const { data, loading, error } = useGetManagedFacilitiesQuery({
     fetchPolicy: "no-cache",
   });

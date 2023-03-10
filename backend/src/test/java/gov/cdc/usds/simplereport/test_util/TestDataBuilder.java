@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
+import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Result;
@@ -15,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
@@ -135,12 +137,22 @@ public class TestDataBuilder {
         List.of(deviceType));
   }
 
+  private static AskOnEntrySurvey createEmptyAskOnEntrySurvey() {
+    return AskOnEntrySurvey.builder()
+        .symptoms(Collections.emptyMap())
+        .noSymptoms(false)
+        .symptomOnsetDate(null)
+        .build();
+  }
+
   public static StreetAddress getAddress() {
     return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
   }
 
   public static TestOrder createTestOrder() {
-    return new TestOrder(createPerson(), createFacility());
+    var testOrder = new TestOrder(createPerson(), createFacility());
+    testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
+    return testOrder;
   }
 
   public static TestOrder createTestOrderWithDevice() {

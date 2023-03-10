@@ -7,6 +7,7 @@ import { updateFacility } from "../../store";
 import { showSuccess } from "../../utils/srToast";
 import { getAppInsights } from "../../TelemetryService";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import FacilityForm from "./FacilityForm";
 
@@ -162,6 +163,7 @@ interface Props {
 }
 
 const FacilityFormContainer: any = (props: Props) => {
+  useDocumentTitle("Add new facility");
   const { facilityId } = useParams();
   const [activeFacility] = useSelectedFacility();
   const { data, loading, error } = useQuery<FacilityData, {}>(

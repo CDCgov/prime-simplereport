@@ -15,7 +15,7 @@ type CustomButtonProps = React.PropsWithChildren<{
 interface Props {
   tooltip: string;
   position?: "top" | "bottom" | "left" | "right";
-  buttonLabel?: string;
+  hideText?: boolean;
   text?: string;
   className?: string;
 }
@@ -24,7 +24,7 @@ export const TextWithTooltip = ({
   tooltip,
   position,
   text,
-  buttonLabel,
+  hideText,
   className,
 }: Props) => {
   const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> =
@@ -33,7 +33,7 @@ export const TextWithTooltip = ({
         <button
           className={`usa-button usa-button--unstyled ${className}`}
           ref={ref}
-          aria-label={`${buttonLabel} tooltip`}
+          aria-label={hideText ? `${text} tooltip` : ""}
           {...tooltipProps}
         >
           {children}
@@ -54,7 +54,7 @@ export const TextWithTooltip = ({
       wrapperclasses="usa-text-with-tooltip"
       onClick={preventPageReload}
     >
-      {text}
+      {hideText ? "" : text}
       <FontAwesomeIcon
         alt-text="info"
         className="info-circle-icon"

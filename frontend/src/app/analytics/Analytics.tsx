@@ -8,6 +8,7 @@ import { useGetTopLevelDashboardMetricsNewQuery } from "../../generated/graphql"
 import "./Analytics.scss";
 import { formatDate } from "../utils/date";
 import { PATIENT_TERM_PLURAL } from "../../config/constants";
+import { useDocumentTitle } from "../utils/hooks";
 
 const getDateFromDaysAgo = (daysAgo: number): Date => {
   const date = new Date();
@@ -55,6 +56,8 @@ interface Props {
 }
 
 export const Analytics = (props: Props) => {
+  useDocumentTitle("COVID-19 testing data dashboard");
+
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
