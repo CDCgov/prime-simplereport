@@ -9,10 +9,13 @@ import {
 import { showError, showSuccess } from "../../utils/srToast";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import DeviceForm, { Device } from "./DeviceForm";
 
 const DeviceTypeFormContainer = () => {
+  useDocumentTitle("Device type");
+
   const [submitted, setSubmitted] = useState(false);
   const [activeFacility] = useSelectedFacility();
   const [createDeviceType] = useCreateDeviceTypeMutation();

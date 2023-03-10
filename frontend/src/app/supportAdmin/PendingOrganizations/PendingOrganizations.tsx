@@ -8,6 +8,7 @@ import {
   useEditPendingOrganizationMutation,
 } from "../../../generated/graphql";
 import { showSuccess } from "../../utils/srToast";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import {
   PendingOrganizationFormValues,
@@ -38,6 +39,8 @@ const PendingOrganizations = ({
   loading,
   refetch,
 }: Props) => {
+  useDocumentTitle("Edit or verify organization identity");
+
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
   );
