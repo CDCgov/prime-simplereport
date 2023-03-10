@@ -605,7 +605,7 @@ Object {
                               class="usa-label"
                               for="8"
                             >
-                              Testkit Name Id
+                              Test ordered code
                             </label>
                             <input
                               aria-disabled="true"
@@ -613,7 +613,7 @@ Object {
                               class="usa-input"
                               disabled=""
                               id="8"
-                              name="supportedDiseases.0.testkitNameId"
+                              name="supportedDiseases.0.testOrderedLoincCode"
                               type="text"
                               value=""
                             />
@@ -629,7 +629,7 @@ Object {
                               class="usa-label"
                               for="9"
                             >
-                              Equipment Uid
+                              Testkit Name Id
                             </label>
                             <input
                               aria-disabled="true"
@@ -637,6 +637,30 @@ Object {
                               class="usa-input"
                               disabled=""
                               id="9"
+                              name="supportedDiseases.0.testkitNameId"
+                              type="text"
+                              value=""
+                            />
+                          </div>
+                        </div>
+                        <div
+                          class="tablet:grid-col"
+                        >
+                          <div
+                            class="usa-form-group margin-top-1"
+                          >
+                            <label
+                              class="usa-label"
+                              for="10"
+                            >
+                              Equipment Uid
+                            </label>
+                            <input
+                              aria-disabled="true"
+                              aria-required="false"
+                              class="usa-input"
+                              disabled=""
+                              id="10"
                               name="supportedDiseases.0.equipmentUid"
                               type="text"
                               value=""
@@ -1297,7 +1321,7 @@ Object {
                             class="usa-label"
                             for="8"
                           >
-                            Testkit Name Id
+                            Test ordered code
                           </label>
                           <input
                             aria-disabled="true"
@@ -1305,7 +1329,7 @@ Object {
                             class="usa-input"
                             disabled=""
                             id="8"
-                            name="supportedDiseases.0.testkitNameId"
+                            name="supportedDiseases.0.testOrderedLoincCode"
                             type="text"
                             value=""
                           />
@@ -1321,7 +1345,7 @@ Object {
                             class="usa-label"
                             for="9"
                           >
-                            Equipment Uid
+                            Testkit Name Id
                           </label>
                           <input
                             aria-disabled="true"
@@ -1329,6 +1353,30 @@ Object {
                             class="usa-input"
                             disabled=""
                             id="9"
+                            name="supportedDiseases.0.testkitNameId"
+                            type="text"
+                            value=""
+                          />
+                        </div>
+                      </div>
+                      <div
+                        class="tablet:grid-col"
+                      >
+                        <div
+                          class="usa-form-group margin-top-1"
+                        >
+                          <label
+                            class="usa-label"
+                            for="10"
+                          >
+                            Equipment Uid
+                          </label>
+                          <input
+                            aria-disabled="true"
+                            aria-required="false"
+                            class="usa-input"
+                            disabled=""
+                            id="10"
                             name="supportedDiseases.0.equipmentUid"
                             type="text"
                             value=""
