@@ -26,8 +26,8 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
@@ -402,14 +402,13 @@ public class FhirConverter {
 
   public static List<Observation> convertToObservation(
       Set<Result> results,
-      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCode,
+      List<DeviceTypeDisease> deviceTypeDisease,
       TestCorrectionStatus correctionStatus,
       String correctionReason) {
     return results.stream()
         .map(
             result -> {
-              String testPerformedLoincCode =
-                  getTestPerformedLoincCode(deviceTestPerformedLoincCode, result);
+              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
               return convertToObservation(
                   result, testPerformedLoincCode, correctionStatus, correctionReason);
             })
@@ -417,11 +416,11 @@ public class FhirConverter {
   }
 
   private static String getTestPerformedLoincCode(
-      List<DeviceTestPerformedLoincCode> deviceTestPerformedLoincCode, Result result) {
-    return deviceTestPerformedLoincCode.stream()
+      List<DeviceTypeDisease> deviceTypeDisease, Result result) {
+    return deviceTypeDisease.stream()
         .filter(code -> code.getSupportedDisease() == result.getDisease())
         .findFirst()
-        .map(DeviceTestPerformedLoincCode::getTestPerformedLoincCode)
+        .map(DeviceTypeDisease::getTestPerformedLoincCode)
         .orElse(result.getTestOrder().getDeviceType().getLoincCode());
   }
 

@@ -80,6 +80,7 @@ input SupportedDiseaseTestPerformedInput {
   testPerformedLoincCode: String!
   equipmentUid: String
   testkitNameId: String
+  testOrderedLoincCode: String
 }
 
 type DeviceType {
@@ -100,6 +101,7 @@ type SupportedDiseaseTestPerformed {
   testPerformedLoincCode: String!
   equipmentUid: String
   testkitNameId: String
+  testOrderedLoincCode: String
 }
 
 type SupportedDisease {

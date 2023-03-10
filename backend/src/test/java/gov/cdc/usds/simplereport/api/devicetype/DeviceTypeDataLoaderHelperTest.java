@@ -6,13 +6,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.db.model.DeviceSupportedDisease;
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceSupportedDiseaseRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import java.util.List;
@@ -32,7 +32,7 @@ class DeviceTypeDataLoaderHelperTest {
   @Mock DiseaseService diseaseService;
   @Mock DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   @Mock SpecimenTypeRepository specimenTypeRepository;
-  @Mock DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
+  @Mock DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
   @InjectMocks private DeviceTypeDataLoaderService deviceTypeDataLoaderService;
 
@@ -117,51 +117,49 @@ class DeviceTypeDataLoaderHelperTest {
   }
 
   @Test
-  void getDeviceTestPerformedLoincCode() {
+  void getDeviceTypeDisease() {
     var device1Id = UUID.randomUUID();
     var device2Id = UUID.randomUUID();
     var device3Id = UUID.randomUUID();
     var deviceIdSet = Set.of(device1Id, device2Id, device3Id);
 
-    var deviceTestPerformedLoincCode1 =
-        DeviceTestPerformedLoincCode.builder()
+    var deviceTypeDisease1 =
+        DeviceTypeDisease.builder()
             .deviceTypeId(device1Id)
             .testPerformedLoincCode("123")
             .supportedDisease(new SupportedDisease())
             .equipmentUid("111")
             .testkitNameId("222")
+            .testOrderedLoincCode("234")
             .build();
-    var deviceTestPerformedLoincCode2 =
-        DeviceTestPerformedLoincCode.builder()
+    var deviceTypeDisease2 =
+        DeviceTypeDisease.builder()
             .deviceTypeId(device1Id)
             .testPerformedLoincCode("456")
             .supportedDisease(new SupportedDisease())
             .equipmentUid("333")
             .testkitNameId("444")
+            .testOrderedLoincCode("345")
             .build();
-    var deviceTestPerformedLoincCode3 =
-        DeviceTestPerformedLoincCode.builder()
+    var deviceTypeDisease3 =
+        DeviceTypeDisease.builder()
             .deviceTypeId(device2Id)
             .testPerformedLoincCode("123")
             .supportedDisease(new SupportedDisease())
             .equipmentUid("555")
             .testkitNameId("666")
+            .testOrderedLoincCode("244")
             .build();
 
-    when(deviceTestPerformedLoincCodeRepository.findAllByDeviceTypeIdIn(deviceIdSet))
-        .thenReturn(
-            List.of(
-                deviceTestPerformedLoincCode1,
-                deviceTestPerformedLoincCode2,
-                deviceTestPerformedLoincCode3));
+    when(deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(deviceIdSet))
+        .thenReturn(List.of(deviceTypeDisease1, deviceTypeDisease2, deviceTypeDisease3));
 
-    var actual = deviceTypeDataLoaderService.getDeviceTestPerformedLoincCode(deviceIdSet);
+    var actual = deviceTypeDataLoaderService.getDeviceTypeDisease(deviceIdSet);
 
     assertThat(actual)
         .hasSize(3)
-        .containsEntry(
-            device1Id, List.of(deviceTestPerformedLoincCode1, deviceTestPerformedLoincCode2))
-        .containsEntry(device2Id, List.of(deviceTestPerformedLoincCode3))
+        .containsEntry(device1Id, List.of(deviceTypeDisease1, deviceTypeDisease2))
+        .containsEntry(device2Id, List.of(deviceTypeDisease3))
         .containsEntry(device3Id, emptyList());
   }
 }

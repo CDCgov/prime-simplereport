@@ -11,4 +11,5 @@ public class SupportedDiseaseTestPerformedInput {
   String testPerformedLoincCode;
   String equipmentUid;
   String testkitNameId;
+  String testOrderedLoincCode;
 }
