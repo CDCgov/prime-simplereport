@@ -48,6 +48,19 @@ const PatientApp = () => {
       appInsights?.setAuthenticatedUserContext(plid, undefined, true);
     }
 
+    if (window?.visualViewport?.width) {
+      appInsights?.trackMetric(
+        {
+          name: "userViewport_patientExp",
+          average: window?.visualViewport?.width,
+        },
+        {
+          width: window?.visualViewport?.width,
+          height: window?.visualViewport?.height,
+        }
+      );
+    }
+
     dispatch(
       setInitialState({
         plid: getPatientLinkIdFromUrl(),
