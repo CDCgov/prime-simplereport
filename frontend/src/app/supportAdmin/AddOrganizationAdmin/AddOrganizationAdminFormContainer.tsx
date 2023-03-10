@@ -8,10 +8,13 @@ import {
   useGetOrganizationsQuery,
   Role,
 } from "../../../generated/graphql";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
 
 const AddOrganizationAdminFormContainer = () => {
+  useDocumentTitle("Add organization admin");
+
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
     fetchPolicy: "no-cache",

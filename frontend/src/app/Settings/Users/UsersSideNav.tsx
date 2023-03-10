@@ -66,7 +66,10 @@ const UsersSideNav: React.FC<Props> = ({
                 statusText = "";
             }
             return (
-              <div className="usa-sidenav__item users-sidenav-item">
+              <div
+                className="usa-sidenav__item users-sidenav-item"
+                key={user.id}
+              >
                 <button
                   id={"user-tab-" + user.id}
                   role="tab"

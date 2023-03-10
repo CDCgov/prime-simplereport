@@ -1,6 +1,9 @@
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { useDocumentTitle } from "../utils/hooks";
 
 const SupportAdmin = () => {
+  useDocumentTitle("Support admin");
+
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">

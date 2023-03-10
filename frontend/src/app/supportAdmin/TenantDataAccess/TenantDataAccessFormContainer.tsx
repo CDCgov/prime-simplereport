@@ -8,10 +8,13 @@ import {
   useSetCurrentUserTenantDataAccessOpMutation,
 } from "../../../generated/graphql";
 import { getAppInsights } from "../../TelemetryService";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
 const TenantDataAccessFormContainer = () => {
+  useDocumentTitle("Organization data access");
+
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
     fetchPolicy: "no-cache",
