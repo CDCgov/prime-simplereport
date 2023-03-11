@@ -5,7 +5,7 @@ on:
     branches: 'dependabot/gradle/**'
 
 env:
-  JAVA_VERSION: 11
+  JAVA_VERSION: 17
   JAVA_DISTRIBUTION: 'zulu'
 
 defaults:
