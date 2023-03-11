@@ -5,6 +5,7 @@
 GIT_SHA=${GIT_SHA:-$(git rev-parse --short HEAD)}
 ACR_TAG="simplereportacr.azurecr.io/api/simple-report-api-build:$GIT_SHA"
 
+echo $(java --version)
 export DOCKER_CLI_EXPERIMENTAL=enabled # to get "manifest inspect"
 
 if docker manifest inspect $ACR_TAG > /dev/null 2>&1; then
