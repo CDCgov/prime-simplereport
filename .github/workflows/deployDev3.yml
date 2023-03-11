@@ -6,6 +6,8 @@ on:
 env:
   DEPLOY_ENV: dev3
   NODE_VERSION: 18
+  JAVA_VERSION: 17
+  JAVA_DISTRIBUTION: 'zulu'
 concurrency:
   group: dev3-deploy
 
@@ -19,6 +21,11 @@ jobs:
       - uses: actions/checkout@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Login to ACR
         run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
       - name: Build and push Docker images
