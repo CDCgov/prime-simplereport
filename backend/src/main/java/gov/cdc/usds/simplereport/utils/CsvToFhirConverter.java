@@ -221,7 +221,8 @@ public class CsvToFhirConverter {
             mapTestResultStatusToFhirValue(row.getTestResultStatus().value),
             row.getTestPerformedCode().value,
             UUID.randomUUID().toString(),
-            Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+            new Date());
 
     return FhirConverter.createFhirBundle(
         patient,
