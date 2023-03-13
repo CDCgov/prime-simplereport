@@ -3,7 +3,7 @@ LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplerepo
 
 # Install OpenJDK-11
 RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y temurin-17-jdk && \
     apt-get install -y ant && \
     apt-get clean;
 
