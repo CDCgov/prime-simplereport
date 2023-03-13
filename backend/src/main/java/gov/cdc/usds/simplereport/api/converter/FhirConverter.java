@@ -305,11 +305,22 @@ public class FhirConverter {
   }
 
   public static Practitioner convertToPractitioner(Provider provider) {
-    var practitioner = new Practitioner();
-    practitioner.setId(provider.getInternalId().toString());
-    practitioner.addName(convertToHumanName(provider.getNameInfo()));
-    practitioner.addAddress(convertToAddress(provider.getAddress(), DEFAULT_COUNTRY));
-    practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
+    return convertToPractitioner(
+        provider.getInternalId().toString(),
+        provider.getNameInfo(),
+        provider.getTelephone(),
+        provider.getAddress(),
+        DEFAULT_COUNTRY);
+  }
+
+  public static Practitioner convertToPractitioner(
+      String id, PersonName name, String telephone, StreetAddress addr, String country) {
+    var practitioner =
+        new Practitioner()
+            .addName(convertToHumanName(name))
+            .addAddress(convertToAddress(addr, country))
+            .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
+    practitioner.setId(id);
     return practitioner;
   }
 
@@ -330,6 +341,21 @@ public class FhirConverter {
     return org;
   }
 
+  public static Organization convertToOrganization(
+      String id, String name, String telephone, String email, StreetAddress addr, String country) {
+    var org =
+        new Organization()
+            .setName(name)
+            .addAddress(convertToAddress(addr, country))
+            .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
+
+    if (email != null && !email.isBlank()) {
+      org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, email));
+    }
+    org.setId(id);
+    return org;
+  }
+
   public static Patient convertToPatient(Person person) {
     var patient = new Patient();
     patient.setId(person.getInternalId().toString());
@@ -345,6 +371,35 @@ public class FhirConverter {
     patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
     patient.addExtension(
         convertToTribalAffiliationExtension(person.getTribalAffiliation()).orElse(null));
+    return patient;
+  }
+
+  public static Patient convertToPatient(
+      String id,
+      PersonName name,
+      List<PhoneNumber> phoneNumbers,
+      List<String> emails,
+      String gender,
+      LocalDate dob,
+      StreetAddress address,
+      String country,
+      String race,
+      String ethnicity,
+      List<String> tribalAffiliations) {
+    var patient =
+        new Patient()
+            .addName(convertToHumanName(name))
+            .setGender(convertToAdministrativeGender(gender))
+            .setBirthDate(convertToDate(dob))
+            .addAddress(convertToAddress(address, country));
+
+    patient.addExtension(convertToRaceExtension(race));
+    patient.addExtension(convertToEthnicityExtension(ethnicity));
+    patient.addExtension(convertToTribalAffiliationExtension(tribalAffiliations).orElse(null));
+
+    patient.setId(id);
+    convertPhoneNumbersToContactPoint(phoneNumbers).forEach(patient::addTelecom);
+    convertEmailsToContactPoint(ContactPointUse.HOME, emails).forEach(patient::addTelecom);
     return patient;
   }
 
@@ -648,6 +703,7 @@ public class FhirConverter {
     return createFhirBundle(
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
+        null,
         convertToPractitioner(testEvent.getProviderData()),
         convertToDevice(testEvent.getDeviceType()),
         convertToSpecimen(testEvent.getSpecimenType()),
@@ -666,7 +722,8 @@ public class FhirConverter {
 
   public static Bundle createFhirBundle(
       Patient patient,
-      Organization organization,
+      Organization testingLab,
+      Organization orderingFacility,
       Practitioner practitioner,
       Device device,
       Specimen specimen,
@@ -678,19 +735,28 @@ public class FhirConverter {
       GitProperties gitProperties,
       String processingId) {
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
-    var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
+    var orderingFacilityFullUrl =
+        orderingFacility == null
+            ? null
+            : ResourceType.Organization + "/" + orderingFacility.getId();
+    var testingLabOrganizationFullUrl = ResourceType.Organization + "/" + testingLab.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
     var specimenFullUrl = ResourceType.Specimen + "/" + specimen.getId();
     var serviceRequestFullUrl = ResourceType.ServiceRequest + "/" + serviceRequest.getId();
     var diagnosticReportFullUrl = ResourceType.DiagnosticReport + "/" + diagnosticReport.getId();
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
-    var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var provenance = createProvenance(organizationFullUrl, currentDate);
+    var practitionerRole =
+        createPractitionerRole(
+            orderingFacilityFullUrl == null
+                ? testingLabOrganizationFullUrl
+                : orderingFacilityFullUrl,
+            practitionerFullUrl);
+    var provenance = createProvenance(testingLabOrganizationFullUrl, currentDate);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(
-            organizationFullUrl,
+            testingLabOrganizationFullUrl,
             diagnosticReportFullUrl,
             provenanceFullUrl,
             gitProperties,
@@ -698,11 +764,11 @@ public class FhirConverter {
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
-    patient.setManagingOrganization(new Reference(organizationFullUrl));
+    patient.setManagingOrganization(new Reference(testingLabOrganizationFullUrl));
     specimen.setSubject(new Reference(patientFullUrl));
 
     serviceRequest.setSubject(new Reference(patientFullUrl));
-    serviceRequest.addPerformer(new Reference(organizationFullUrl));
+    serviceRequest.addPerformer(new Reference(testingLabOrganizationFullUrl));
     serviceRequest.setRequester(new Reference(practitionerRoleFullUrl));
     diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
     diagnosticReport.setSubject(new Reference(patientFullUrl));
@@ -713,7 +779,10 @@ public class FhirConverter {
     entryList.add(Pair.of(provenanceFullUrl, provenance));
     entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
     entryList.add(Pair.of(patientFullUrl, patient));
-    entryList.add(Pair.of(organizationFullUrl, organization));
+    entryList.add(Pair.of(testingLabOrganizationFullUrl, testingLab));
+    if (orderingFacilityFullUrl != null) {
+      entryList.add(Pair.of(orderingFacilityFullUrl, orderingFacility));
+    }
     entryList.add(Pair.of(practitionerFullUrl, practitioner));
     entryList.add(Pair.of(specimenFullUrl, specimen));
     entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
@@ -729,7 +798,7 @@ public class FhirConverter {
           var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
 
           observation.setSubject(new Reference(patientFullUrl));
-          observation.addPerformer(new Reference(organizationFullUrl));
+          observation.addPerformer(new Reference(testingLabOrganizationFullUrl));
           observation.setSpecimen(new Reference(specimenFullUrl));
           observation.setDevice(new Reference(deviceFullUrl));
 
@@ -737,15 +806,17 @@ public class FhirConverter {
           entryList.add(Pair.of(observationFullUrl, observation));
         });
 
-    aoeObservations.forEach(
-        observation -> {
-          var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+    if (aoeObservations != null) {
+      aoeObservations.forEach(
+          observation -> {
+            var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
 
-          observation.setSubject(new Reference(patientFullUrl));
+            observation.setSubject(new Reference(patientFullUrl));
 
-          serviceRequest.addSupportingInfo(new Reference(observationFullUrl));
-          entryList.add(Pair.of(observationFullUrl, observation));
-        });
+            serviceRequest.addSupportingInfo(new Reference(observationFullUrl));
+            entryList.add(Pair.of(observationFullUrl, observation));
+          });
+    }
 
     var bundle =
         new Bundle()
