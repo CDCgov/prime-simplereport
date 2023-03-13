@@ -83,6 +83,7 @@ echo "Wiremock started!"
 echo
 
 echo "$(java -version)"
+echo $JAVA_HOME
 echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
 http_response=0
 polls=0
