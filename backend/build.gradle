@@ -13,6 +13,7 @@ plugins {
 group = 'gov.cdc.usds'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '17'
+targetCompatibility = '17'
 
 ext {
     set('springCloudVersion', "2021.0.3")
