@@ -157,6 +157,11 @@ jobs:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
           key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Sonar analysis
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
