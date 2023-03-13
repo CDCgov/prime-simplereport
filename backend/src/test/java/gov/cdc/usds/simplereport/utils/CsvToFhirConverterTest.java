@@ -49,8 +49,8 @@ public class CsvToFhirConverterTest {
 
     verify(repo, times(1)).findDeviceTypeByModelIgnoreCase(anyString());
     assertThat(output.size()).isEqualTo(1);
-    assertThat(first.getEntry().size()).isEqualTo(12);
-    assertThat(resourceUrls.size()).isEqualTo(12);
+    assertThat(first.getEntry().size()).isEqualTo(13);
+    assertThat(resourceUrls.size()).isEqualTo(13);
   }
 
   private InputStream loadCsv(String csvFile) {

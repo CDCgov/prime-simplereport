@@ -315,11 +315,12 @@ public class FhirConverter {
 
   public static Practitioner convertToPractitioner(
       String id, PersonName name, String telephone, StreetAddress addr, String country) {
-    var practitioner = new Practitioner();
+    var practitioner =
+        new Practitioner()
+            .addName(convertToHumanName(name))
+            .addAddress(convertToAddress(addr, country))
+            .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
     practitioner.setId(id);
-    practitioner.addName(convertToHumanName(name));
-    practitioner.addAddress(convertToAddress(addr, country));
-    practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
     return practitioner;
   }
 
@@ -342,14 +343,16 @@ public class FhirConverter {
 
   public static Organization convertToOrganization(
       String id, String name, String telephone, String email, StreetAddress addr, String country) {
-    var org = new Organization();
-    org.setId(id);
-    org.setName(name);
-    org.addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
+    var org =
+        new Organization()
+            .setName(name)
+            .addAddress(convertToAddress(addr, country))
+            .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
+
     if (email != null && !email.isBlank()) {
       org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, email));
     }
-    org.addAddress(convertToAddress(addr, country));
+    org.setId(id);
     return org;
   }
 
@@ -383,17 +386,20 @@ public class FhirConverter {
       String race,
       String ethnicity,
       List<String> tribalAffiliations) {
-    var patient = new Patient();
-    patient.setId(id);
-    patient.addName(convertToHumanName(name));
-    convertPhoneNumbersToContactPoint(phoneNumbers).forEach(patient::addTelecom);
-    convertEmailsToContactPoint(ContactPointUse.HOME, emails).forEach(patient::addTelecom);
-    patient.setGender(convertToAdministrativeGender(gender));
-    patient.setBirthDate(convertToDate(dob));
-    patient.addAddress(convertToAddress(address, country));
+    var patient =
+        new Patient()
+            .addName(convertToHumanName(name))
+            .setGender(convertToAdministrativeGender(gender))
+            .setBirthDate(convertToDate(dob))
+            .addAddress(convertToAddress(address, country));
+
     patient.addExtension(convertToRaceExtension(race));
     patient.addExtension(convertToEthnicityExtension(ethnicity));
     patient.addExtension(convertToTribalAffiliationExtension(tribalAffiliations).orElse(null));
+
+    patient.setId(id);
+    convertPhoneNumbersToContactPoint(phoneNumbers).forEach(patient::addTelecom);
+    convertEmailsToContactPoint(ContactPointUse.HOME, emails).forEach(patient::addTelecom);
     return patient;
   }
 
@@ -696,7 +702,6 @@ public class FhirConverter {
       GitProperties gitProperties,
       Date currentDate,
       String processingId) {
-    var org = convertToOrganization(testEvent.getFacility());
     return createFhirBundle(
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
@@ -732,6 +737,10 @@ public class FhirConverter {
       GitProperties gitProperties,
       String processingId) {
 
+    var orderingFacilityFullUrl =
+        orderingFacility == null
+            ? null
+            : ResourceType.Organization + "/" + orderingFacility.getId();
     var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
     var testingLabOrganizationFullUrl = ResourceType.Organization + "/" + testingLab.getId();
     var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
@@ -740,7 +749,12 @@ public class FhirConverter {
     var diagnosticReportFullUrl = ResourceType.DiagnosticReport + "/" + diagnosticReport.getId();
     var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
-    var practitionerRole = createPractitionerRole(testingLabOrganizationFullUrl, practitionerFullUrl);
+    var practitionerRole =
+        createPractitionerRole(
+            orderingFacilityFullUrl == null
+                ? testingLabOrganizationFullUrl
+                : orderingFacilityFullUrl,
+            practitionerFullUrl);
     var provenance = createProvenance(testingLabOrganizationFullUrl, currentDate);
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
@@ -769,6 +783,9 @@ public class FhirConverter {
     entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
     entryList.add(Pair.of(patientFullUrl, patient));
     entryList.add(Pair.of(testingLabOrganizationFullUrl, testingLab));
+    if (orderingFacilityFullUrl != null) {
+      entryList.add(Pair.of(orderingFacilityFullUrl, orderingFacility));
+    }
 
     entryList.add(Pair.of(practitionerFullUrl, practitioner));
     entryList.add(Pair.of(specimenFullUrl, specimen));

@@ -215,13 +215,14 @@ public class CsvToFhirConverter {
             row.getTestPerformedCode().value,
             UUID.randomUUID().toString());
 
+    var testDate = LocalDate.parse(row.getTestResultDate().value, dateTimeFormatter);
     var diagnosticReport =
         FhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().value),
             row.getTestPerformedCode().value,
-            UUID.randomUUID().toString());
+            UUID.randomUUID().toString(),
+            Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
-    var testDate = LocalDate.parse(row.getTestResultDate().value, dateTimeFormatter);
     return FhirConverter.createFhirBundle(
         patient,
         testingLabOrg,
@@ -230,9 +231,9 @@ public class CsvToFhirConverter {
         device,
         specimen,
         observation,
+        null,
         serviceRequest,
         diagnosticReport,
-        Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
         new Date(),
         gitProperties,
         processingModeCode);
