@@ -95,10 +95,20 @@ const DiseaseInformation = ({
             name={`supportedDiseases.${index}.testOrderedLoincCode`}
             label="Test ordered code"
             disabled={disabled}
+            required
             className={"margin-top-1"}
             value={values?.[index]?.testOrderedLoincCode}
+            validationStatus={
+              errors?.supportedDiseases?.[index]?.testPerformedLoincCode?.type
+                ? "error"
+                : undefined
+            }
+            errorMessage="This is a required field"
             registrationProps={register(
-              `supportedDiseases.${index}.testOrderedLoincCode` as const
+              `supportedDiseases.${index}.testOrderedLoincCode` as const,
+              {
+                required: true,
+              }
             )}
           />
         </div>

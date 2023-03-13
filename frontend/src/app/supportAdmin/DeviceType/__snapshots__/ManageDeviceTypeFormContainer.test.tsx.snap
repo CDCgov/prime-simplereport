@@ -606,10 +606,17 @@ Object {
                               for="8"
                             >
                               Test ordered code
+                              <abbr
+                                class="usa-hint usa-hint--required"
+                                title="required"
+                              >
+                                 
+                                *
+                              </abbr>
                             </label>
                             <input
                               aria-disabled="true"
-                              aria-required="false"
+                              aria-required="true"
                               class="usa-input"
                               disabled=""
                               id="8"
@@ -1322,10 +1329,17 @@ Object {
                             for="8"
                           >
                             Test ordered code
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
                           </label>
                           <input
                             aria-disabled="true"
-                            aria-required="false"
+                            aria-required="true"
                             class="usa-input"
                             disabled=""
                             id="8"

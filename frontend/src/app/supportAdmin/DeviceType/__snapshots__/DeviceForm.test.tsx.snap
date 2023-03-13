@@ -650,10 +650,17 @@ Object {
                               for="48"
                             >
                               Test ordered code
+                              <abbr
+                                class="usa-hint usa-hint--required"
+                                title="required"
+                              >
+                                 
+                                *
+                              </abbr>
                             </label>
                             <input
                               aria-disabled="true"
-                              aria-required="false"
+                              aria-required="true"
                               class="usa-input"
                               disabled=""
                               id="48"
@@ -1407,10 +1414,17 @@ Object {
                             for="48"
                           >
                             Test ordered code
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
                           </label>
                           <input
                             aria-disabled="true"
-                            aria-required="false"
+                            aria-required="true"
                             class="usa-input"
                             disabled=""
                             id="48"

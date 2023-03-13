@@ -404,10 +404,17 @@ Object {
                               for="8"
                             >
                               Test ordered code
+                              <abbr
+                                class="usa-hint usa-hint--required"
+                                title="required"
+                              >
+                                 
+                                *
+                              </abbr>
                             </label>
                             <input
                               aria-disabled="false"
-                              aria-required="false"
+                              aria-required="true"
                               class="usa-input"
                               id="8"
                               name="supportedDiseases.0.testOrderedLoincCode"
@@ -914,10 +921,17 @@ Object {
                             for="8"
                           >
                             Test ordered code
+                            <abbr
+                              class="usa-hint usa-hint--required"
+                              title="required"
+                            >
+                               
+                              *
+                            </abbr>
                           </label>
                           <input
                             aria-disabled="false"
-                            aria-required="false"
+                            aria-required="true"
                             class="usa-input"
                             id="8"
                             name="supportedDiseases.0.testOrderedLoincCode"
