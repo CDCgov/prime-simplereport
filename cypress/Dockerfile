@@ -1,10 +1,10 @@
 FROM cypress/browsers:node14.17.0-chrome91-ff89
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
-# Install OpenJDK-11
-RUN apt-get update && \
-    apt-get install -y temurin-17-jdk && \
-    apt-get install -y ant && \
+RUN apt-get update; \
+    apt-get upgrade; \
+    apt-get install -y temurin-17-jdk; \
+    apt-get install -y ant; \
     apt-get clean;
 
 ADD ./cypress /app/cypress
