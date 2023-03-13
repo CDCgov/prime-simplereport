@@ -99,7 +99,7 @@ const DiseaseInformation = ({
             className={"margin-top-1"}
             value={values?.[index]?.testOrderedLoincCode}
             validationStatus={
-              errors?.supportedDiseases?.[index]?.testPerformedLoincCode?.type
+              errors?.supportedDiseases?.[index]?.testOrderedLoincCode?.type
                 ? "error"
                 : undefined
             }
