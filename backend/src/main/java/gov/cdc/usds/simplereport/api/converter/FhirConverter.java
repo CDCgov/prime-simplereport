@@ -408,13 +408,15 @@ public class FhirConverter {
         deviceType.getManufacturer(), deviceType.getModel(), deviceType.getInternalId().toString());
   }
 
-  public static Device convertToDevice(
-      @NotNull String manufacturer, @NotNull String model, String id) {
+  public static Device convertToDevice(String manufacturer, @NotNull String model, String id) {
     var device =
         new Device()
-            .setManufacturer(manufacturer)
             .addDeviceName(
                 new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
+    if (manufacturer != null) {
+      device.setManufacturer(manufacturer);
+    }
+
     device.setId(id);
     return device;
   }
