@@ -30,8 +30,8 @@ import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -728,9 +728,9 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
     ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
     var covidDiseaseTestPerformedCode =
-        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6", null, null);
+        new DeviceTypeDisease(null, covidDisease, "94500-6", null, null, null);
     var fluDiseaseTestPerformedCode =
-        new DeviceTestPerformedLoincCode(null, fluDisease, "85477-8", null, null);
+        new DeviceTypeDisease(null, fluDisease, "85477-8", null, null, null);
 
     var actual =
         convertToObservation(
@@ -777,7 +777,7 @@ class FhirConverterTest {
     var testOrder = TestDataBuilder.createTestOrderWithDevice();
     var result = new Result(testOrder, covidDisease, TestResult.NEGATIVE);
     var covidDiseaseTestPerformedCode =
-        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6", null, null);
+        new DeviceTypeDisease(null, covidDisease, "94500-6", null, null, null);
 
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
 
@@ -1333,9 +1333,9 @@ class FhirConverterTest {
     var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
     var testPerformedCodesList =
         List.of(
-            new DeviceTestPerformedLoincCode(deviceTypeId, covidDisease, "333-123", null, null),
-            new DeviceTestPerformedLoincCode(deviceTypeId, fluADisease, "444-123", null, null),
-            new DeviceTestPerformedLoincCode(deviceTypeId, fluBDisease, "444-456", null, null));
+            new DeviceTypeDisease(deviceTypeId, covidDisease, "333-123", null, null, null),
+            new DeviceTypeDisease(deviceTypeId, fluADisease, "444-123", null, null, null),
+            new DeviceTypeDisease(deviceTypeId, fluBDisease, "444-456", null, null, null));
     var date = new Date();
     var dateTested = new Date();
     ReflectionTestUtils.setField(provider, "internalId", providerId);
