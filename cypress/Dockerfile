@@ -26,6 +26,9 @@ COPY ./cypress/e2e.sh /app/e2e.sh
 RUN echo "$(java -version)"
 RUN echo $JAVA_HOME
 RUN echo "$(ls /usr/lib/jvm/)"
+ENV JAVA_HOME /usr/lib/jvm/temurin-17-jdk-amd64/
+RUN export JAVA_HOME
+
 
 
 ENTRYPOINT [ "./e2e.sh" ]
