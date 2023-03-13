@@ -8,6 +8,9 @@ COPY build.gradle gradle.properties settings.gradle /app/backend/
 RUN chown -R gradle:gradle /app
 USER gradle
 
+RUN echo "$(java -version)"
+RUN echo $JAVA_HOME
+
 # Only download dependencies
 # Eat the expected build failure since no source code has been copied yet
 RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
