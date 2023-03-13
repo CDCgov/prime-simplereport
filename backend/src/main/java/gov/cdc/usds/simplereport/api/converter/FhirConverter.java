@@ -42,6 +42,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -587,8 +588,11 @@ public class FhirConverter {
     }
 
     String deviceLoincCode = null;
-    if (order.getDeviceType() != null) {
-      deviceLoincCode = order.getDeviceType().getLoincCode();
+    if (order.getDeviceType() != null
+        && order.getDeviceType().getSupportedDiseaseTestPerformed().size() > 0) {
+      deviceLoincCode =
+          MultiplexUtils.inferMultiplexTestOrderLoinc(
+              order.getDeviceType().getSupportedDiseaseTestPerformed());
     }
     return convertToServiceRequest(
         serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
