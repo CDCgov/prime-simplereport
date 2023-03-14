@@ -31,6 +31,7 @@ export type SupportedDiseasesFormData = {
   equipmentUid?: string;
   supportedDisease: string;
   testPerformedLoincCode: string;
+  testOrderedLoincCode: string;
   testkitNameId?: string;
 };
 
@@ -73,6 +74,7 @@ const DeviceForm = (props: Props) => {
           testPerformedLoincCode: "",
           equipmentUid: "",
           testkitNameId: "",
+          testOrderedLoincCode: "",
         },
       ],
     },
@@ -123,6 +125,11 @@ const DeviceForm = (props: Props) => {
             // @ts-ignore
             convertedSupportedDisease["testkitNameId"] =
               supportedDisease.testkitNameId;
+          }
+          if (supportedDisease.testOrderedLoincCode) {
+            // @ts-ignore
+            convertedSupportedDisease["testOrderedLoincCode"] =
+              supportedDisease.testOrderedLoincCode;
           }
           return convertedSupportedDisease;
         }
@@ -175,6 +182,7 @@ const DeviceForm = (props: Props) => {
           testPerformedLoincCode: diseaseTestPerformed.testPerformedLoincCode,
           testkitNameId: diseaseTestPerformed.testkitNameId,
           equipmentUid: diseaseTestPerformed.equipmentUid,
+          testOrderedLoincCode: diseaseTestPerformed.testOrderedLoincCode,
         })
       );
     } else if (device?.supportedDiseases?.length) {
