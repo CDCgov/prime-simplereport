@@ -79,6 +79,7 @@ describe("OrganizationForm", () => {
 
   it("displays form errors when submitting invalid input", async () => {
     await fillInDropDown(getOrgStateDropdown(), "VI");
+    await userEvent.tab();
     getSubmitButton().click();
 
     expect(await screen.findByText("Organization name is required"));
@@ -100,6 +101,7 @@ describe("OrganizationForm", () => {
   it("clears input when escaping out of modal", async () => {
     await fillInDropDown(getOrgStateDropdown(), "VI");
     expect(getOrgStateDropdown().value).toEqual("VI");
+    await userEvent.tab();
     expect(
       screen.getByText(
         "U.S. Virgin Islands isn't connected to SimpleReport yet.",
@@ -116,6 +118,7 @@ describe("OrganizationForm", () => {
   it("does not clear input when continuing through modal", async () => {
     await fillInDropDown(getOrgStateDropdown(), "VI");
     expect(getOrgStateDropdown().value).toEqual("VI");
+    await userEvent.tab();
     expect(
       screen.getByText(
         "U.S. Virgin Islands isn't connected to SimpleReport yet.",

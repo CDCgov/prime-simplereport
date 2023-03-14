@@ -76,17 +76,15 @@ export const UnsupportedStateModal: React.FC<UnsupportedStateModalProps> = ({
         >
           Join waitlist
         </Button>
-        {onClose && (
-          <Button
-            onClick={() => {
-              onClose(false);
-              setCheckboxState(false);
-            }}
-            disabled={!checkboxState}
-          >
-            Continue sign up
-          </Button>
-        )}
+        <Button
+          onClick={() => {
+            onClose(false);
+            setCheckboxState(false);
+          }}
+          disabled={!checkboxState}
+        >
+          Continue sign up
+        </Button>
       </Modal.Footer>
     </Modal>
   );

@@ -134,14 +134,11 @@ const OrganizationForm = () => {
     errors.workPhoneNumber,
   ]);
 
-  useEffect(() => {
-    if (
-      organization.state! &&
-      !liveJurisdictions.includes(organization.state)
-    ) {
+  const validateSupportedJurisdiction = async () => {
+    if (organization.state && !liveJurisdictions.includes(organization.state)) {
       setStateModalOpen(true);
     }
-  }, [organization.state]);
+  };
 
   if (orgExternalId) {
     return (
@@ -184,6 +181,7 @@ const OrganizationForm = () => {
             onChange={onDetailChange("state")}
             onBlur={() => {
               validateField("state");
+              validateSupportedJurisdiction();
             }}
             validationStatus={getValidationStatus("state")}
             errorMessage={errors.state}
