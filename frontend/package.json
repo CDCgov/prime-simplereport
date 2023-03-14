@@ -185,7 +185,7 @@
     "@graphql-codegen/typescript": "2.4.2",
     "@graphql-codegen/typescript-operations": "2.2.2",
     "@graphql-codegen/typescript-react-apollo": "3.3.6",
-    "@storybook/addon-a11y": "^6.4.12",
+    "@storybook/addon-a11y": "^6.5.16",
     "@storybook/addon-actions": "^6.5.13",
     "@storybook/addon-essentials": "^6.5.13",
     "@storybook/addon-interactions": "^6.5.13",
