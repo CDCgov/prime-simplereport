@@ -123,6 +123,11 @@
           {
             "reference":"Observation/f7184a68-c54e-4209-8cc6-5bf5b253e4bd"
           }
+        ],
+        "identifier": [
+          {
+            "value": "45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
+          }
         ]
       }
     },
@@ -295,7 +300,12 @@
         },
         "subject":{
           "reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
-        }
+        },
+        "identifier": [
+          {
+            "value": "725252ea-50ef-46bd-ae79-c70e1d04b949"
+          }
+        ]
       }
     },
     {
