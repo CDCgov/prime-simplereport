@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.utils;
 
+import com.vladmihalcea.hibernate.util.StringUtils;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -8,7 +9,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class MultiplexUtils {
-  public static <K, V extends Comparable<V>> TreeMap<K, V> sort_by_values(final Map<K, V> map) {
+
+  private static <K, V extends Comparable<V>> TreeMap<K, V> sortByValues(final Map<K, V> map) {
     Comparator<K> valueComparator =
         new Comparator<K>() {
           public int compare(K k1, K k2) {
@@ -40,16 +42,18 @@ public class MultiplexUtils {
     HashMap<String, Integer> testOrdersLoincs = new HashMap<>();
     deviceTypeDiseases.forEach(
         deviceTypeDisease -> {
-          if (testOrdersLoincs.containsKey(deviceTypeDisease.getTestOrderedLoincCode())) {
-            Integer results = testOrdersLoincs.get(deviceTypeDisease.getTestOrderedLoincCode());
-            testOrdersLoincs.put(deviceTypeDisease.getTestOrderedLoincCode(), results + 1);
-          } else {
-            testOrdersLoincs.put(deviceTypeDisease.getTestOrderedLoincCode(), 1);
+          if (!StringUtils.isBlank(deviceTypeDisease.getTestOrderedLoincCode())) {
+            if (testOrdersLoincs.containsKey(deviceTypeDisease.getTestOrderedLoincCode())) {
+              Integer results = testOrdersLoincs.get(deviceTypeDisease.getTestOrderedLoincCode());
+              testOrdersLoincs.put(deviceTypeDisease.getTestOrderedLoincCode(), results + 1);
+            } else {
+              testOrdersLoincs.put(deviceTypeDisease.getTestOrderedLoincCode(), 1);
+            }
           }
         });
 
     // Convert to arrayList and sort
-    TreeMap<String, Integer> sortedMap = sort_by_values(testOrdersLoincs);
+    TreeMap<String, Integer> sortedMap = sortByValues(testOrdersLoincs);
     return sortedMap.lastKey();
   }
 }

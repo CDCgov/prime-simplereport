@@ -95,6 +95,25 @@ public class DeviceType extends EternalAuditedEntity {
     this.testLength = testLength;
   }
 
+  @Builder
+  public DeviceType(
+      String name,
+      String manufacturer,
+      String model,
+      String loincCode,
+      int testLength,
+      List<SpecimenType> swabTypes,
+      List<DeviceTypeDisease> supportedDiseaseTestPerformed) {
+    super();
+    this.name = name;
+    this.manufacturer = manufacturer;
+    this.model = model;
+    this.loincCode = loincCode;
+    this.swabTypes = swabTypes;
+    this.testLength = testLength;
+    this.supportedDiseaseTestPerformed = supportedDiseaseTestPerformed;
+  }
+
   public String getName() {
     return name;
   }

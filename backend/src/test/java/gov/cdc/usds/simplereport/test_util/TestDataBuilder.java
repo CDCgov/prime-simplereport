@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.db.model.Facility_.DEFAULT_SPECIMEN_TYPE
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
@@ -20,9 +21,11 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 public class TestDataBuilder {
 
@@ -111,8 +114,60 @@ public class TestDataBuilder {
         null);
   }
 
+  public static DeviceTypeDisease createDeviceTypeDisease(SupportedDisease supportedDisease) {
+    return new DeviceTypeDisease(
+        UUID.randomUUID(),
+        supportedDisease,
+        supportedDisease.getLoinc(),
+        "543212134",
+        "BOOMX2",
+        "95422-2");
+  }
+
+  public static DeviceTypeDisease createDeviceTypeDisease() {
+    SupportedDisease supportedDisease = createCovidSupportedDisease();
+    return new DeviceTypeDisease(
+        UUID.randomUUID(),
+        supportedDisease,
+        supportedDisease.getLoinc(),
+        "543212134",
+        "BOOMX2",
+        "98670-3");
+  }
+
   public static DeviceType createDeviceType() {
     return new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E", 15);
+  }
+
+  public static DeviceType createDeviceTypeForCovid() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease());
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE,
+        "Acme",
+        "SFN",
+        "54321-BOOM",
+        15,
+        swabTypes,
+        supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceTypeForMultiplex() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createCovidSupportedDisease()));
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createFluASupportedDisease()));
+    supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createFluBSupportedDisease()));
+
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE,
+        "Acme",
+        "SFN",
+        "54321-BOOM",
+        15,
+        swabTypes,
+        supportedDiseaseTestPerformed);
   }
 
   public static SpecimenType createSpecimenType() {
@@ -152,6 +207,13 @@ public class TestDataBuilder {
   public static TestOrder createTestOrder() {
     var testOrder = new TestOrder(createPerson(), createFacility());
     testOrder.setAskOnEntrySurvey(new PatientAnswers(createEmptyAskOnEntrySurvey()));
+    return testOrder;
+  }
+
+  public static TestOrder createTestOrderWithMultiplexDevice() {
+    var testOrder = new TestOrder(createPerson(), createFacility());
+    DeviceType multiplexDevice = createDeviceTypeForMultiplex();
+    testOrder.setDeviceTypeAndSpecimenType(multiplexDevice, createSpecimenType());
     return testOrder;
   }
 
