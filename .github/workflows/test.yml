@@ -12,6 +12,8 @@ on:
 
 env:
   NODE_VERSION: 18
+  JAVA_VERSION: 17
+  JAVA_DISTRIBUTION: 'zulu'
   PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
 
 defaults:
@@ -155,6 +157,11 @@ jobs:
           path: |
             ops/services/app_functions/report_stream_batched_publisher/functions/coverage/**
           key: ${{ runner.os }}-function-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Sonar analysis
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
