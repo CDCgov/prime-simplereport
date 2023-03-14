@@ -13,6 +13,7 @@ public class MultiplexUtils {
   private static <K, V extends Comparable<V>> TreeMap<K, V> sortByValues(final Map<K, V> map) {
     Comparator<K> valueComparator =
         new Comparator<K>() {
+          @Override
           public int compare(K k1, K k2) {
             // comparing on the basis of values
             int comp = map.get(k1).compareTo(map.get(k2));
@@ -52,6 +53,9 @@ public class MultiplexUtils {
           }
         });
 
+    if (testOrdersLoincs.size() == 0) {
+      return null;
+    }
     // Convert to arrayList and sort
     TreeMap<String, Integer> sortedMap = sortByValues(testOrdersLoincs);
     return sortedMap.lastKey();

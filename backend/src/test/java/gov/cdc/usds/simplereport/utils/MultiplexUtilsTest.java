@@ -38,4 +38,50 @@ public class MultiplexUtilsTest {
     assertEquals(
         "loincMultiplex", MultiplexUtils.inferMultiplexTestOrderLoinc(supportedDiseaseTestsOrders));
   }
+
+  @Test
+  void inferMultiplexTestOrderLoinc_getsCalledWithSupportedDiseaseTestPerformedWithSomeLoinc() {
+    List<DeviceTypeDisease> supportedDiseaseTestsOrders =
+        List.of(
+            DeviceTypeDisease.builder()
+                .testPerformedLoincCode("loincFluA")
+                .equipmentUid("equipmentUid2")
+                .testkitNameId("testkitNameId2")
+                .build(),
+            DeviceTypeDisease.builder()
+                .testPerformedLoincCode("loincFluB")
+                .equipmentUid("equipmentUid2")
+                .testkitNameId("testkitNameId2")
+                .testOrderedLoincCode("loincMultiplex")
+                .build(),
+            DeviceTypeDisease.builder()
+                .testPerformedLoincCode("loincCovid")
+                .equipmentUid("equipmentUid2")
+                .testkitNameId("testkitNameId2")
+                .build());
+    assertEquals(
+        "loincMultiplex", MultiplexUtils.inferMultiplexTestOrderLoinc(supportedDiseaseTestsOrders));
+  }
+
+  @Test
+  void inferMultiplexTestOrderLoinc_getsCalledWithSupportedDiseaseTestPerformedWithNoloinc() {
+    List<DeviceTypeDisease> supportedDiseaseTestsOrders =
+        List.of(
+            DeviceTypeDisease.builder()
+                .testPerformedLoincCode("loincFluA")
+                .equipmentUid("equipmentUid2")
+                .testkitNameId("testkitNameId2")
+                .build(),
+            DeviceTypeDisease.builder()
+                .testPerformedLoincCode("loincFluB")
+                .equipmentUid("equipmentUid2")
+                .testkitNameId("testkitNameId2")
+                .build(),
+            DeviceTypeDisease.builder()
+                .testPerformedLoincCode("loincCovid")
+                .equipmentUid("equipmentUid2")
+                .testkitNameId("testkitNameId2")
+                .build());
+    assertEquals(null, MultiplexUtils.inferMultiplexTestOrderLoinc(supportedDiseaseTestsOrders));
+  }
 }
