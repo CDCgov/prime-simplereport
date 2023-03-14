@@ -24,6 +24,4 @@ RUN yarn install
 
 COPY ./cypress/e2e.sh /app/e2e.sh
 
-
-
 ENTRYPOINT [ "./e2e.sh" ]
