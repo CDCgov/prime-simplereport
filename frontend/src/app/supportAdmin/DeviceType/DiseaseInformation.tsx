@@ -92,6 +92,28 @@ const DiseaseInformation = ({
         </div>
         <div className="tablet:grid-col">
           <TextInput
+            name={`supportedDiseases.${index}.testOrderedLoincCode`}
+            label="Test ordered code"
+            disabled={disabled}
+            required
+            className={"margin-top-1"}
+            value={values?.[index]?.testOrderedLoincCode}
+            validationStatus={
+              errors?.supportedDiseases?.[index]?.testOrderedLoincCode?.type
+                ? "error"
+                : undefined
+            }
+            errorMessage="This is a required field"
+            registrationProps={register(
+              `supportedDiseases.${index}.testOrderedLoincCode` as const,
+              {
+                required: true,
+              }
+            )}
+          />
+        </div>
+        <div className="tablet:grid-col">
+          <TextInput
             name={`supportedDiseases.${index}.testkitNameId`}
             label="Testkit Name Id"
             disabled={disabled}
@@ -152,6 +174,7 @@ const DiseaseInformation = ({
                 testPerformedLoincCode: "",
                 equipmentUid: "",
                 testkitNameId: "",
+                testOrderedLoincCode: "",
               });
             }}
             variant="unstyled"
