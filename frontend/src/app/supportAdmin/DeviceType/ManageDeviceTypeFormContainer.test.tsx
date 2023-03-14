@@ -167,6 +167,10 @@ describe("ManageDeviceTypeFormContainer", () => {
       screen.getByLabelText("Test performed code *"),
       "LP 123"
     );
+    await userEvent.type(
+      screen.getByLabelText("Test ordered code *"),
+      "LP 321"
+    );
     await userEvent.click(screen.getByText("Save changes"));
 
     await waitFor(() =>
@@ -182,7 +186,11 @@ describe("ManageDeviceTypeFormContainer", () => {
           supportedDiseases: ["294729"],
           testLength: 15,
           supportedDiseaseTestPerformed: [
-            { supportedDisease: "294729", testPerformedLoincCode: "LP 123" },
+            {
+              supportedDisease: "294729",
+              testPerformedLoincCode: "LP 123",
+              testOrderedLoincCode: "LP 321",
+            },
           ],
         },
       })
