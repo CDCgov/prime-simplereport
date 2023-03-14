@@ -52,11 +52,11 @@ const PatientApp = () => {
       appInsights?.trackMetric(
         {
           name: "userViewport_patientExp",
-          average: window?.visualViewport?.width,
+          average: window.visualViewport.width,
         },
         {
-          width: window?.visualViewport?.width,
-          height: window?.visualViewport?.height,
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
         }
       );
     }

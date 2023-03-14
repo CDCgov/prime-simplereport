@@ -14,11 +14,11 @@ const SignUpApp = () => {
       appInsights?.trackMetric(
         {
           name: "userViewport_signUp",
-          average: window?.visualViewport?.width,
+          average: window.visualViewport.width,
         },
         {
-          width: window?.visualViewport?.width,
-          height: window?.visualViewport?.height,
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
         }
       );
     }

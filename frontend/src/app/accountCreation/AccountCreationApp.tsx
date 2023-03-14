@@ -48,11 +48,11 @@ const AccountCreationApp = () => {
       appInsights?.trackMetric(
         {
           name: "userViewport_accountCreation",
-          average: window?.visualViewport?.width,
+          average: window.visualViewport.width,
         },
         {
-          width: window?.visualViewport?.width,
-          height: window?.visualViewport?.height,
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
         }
       );
     }
