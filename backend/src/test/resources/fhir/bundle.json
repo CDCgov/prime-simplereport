@@ -319,7 +319,7 @@
           "coding":[
             {
               "system":"http://loinc.org",
-              "code":"loinc"
+              "code":"95422-2"
             }
           ]
         },
