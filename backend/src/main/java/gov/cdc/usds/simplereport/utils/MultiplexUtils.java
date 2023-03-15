@@ -44,12 +44,7 @@ public class MultiplexUtils {
     deviceTypeDiseases.forEach(
         deviceTypeDisease -> {
           if (!StringUtils.isBlank(deviceTypeDisease.getTestOrderedLoincCode())) {
-            if (testOrdersLoincs.containsKey(deviceTypeDisease.getTestOrderedLoincCode())) {
-              Integer results = testOrdersLoincs.get(deviceTypeDisease.getTestOrderedLoincCode());
-              testOrdersLoincs.put(deviceTypeDisease.getTestOrderedLoincCode(), results + 1);
-            } else {
-              testOrdersLoincs.put(deviceTypeDisease.getTestOrderedLoincCode(), 1);
-            }
+  testOrdersLoincs.merge(deviceTypeDisease.getTestOrderedLoincCode(), 1, Integer::sum);
           }
         });
 
