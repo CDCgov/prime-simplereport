@@ -53,7 +53,7 @@ public class MultiplexUtils {
           }
         });
 
-    if (testOrdersLoincs.size() == 0) {
+    if (testOrdersLoincs.isEmpty()) {
       return null;
     }
     // Convert to arrayList and sort
