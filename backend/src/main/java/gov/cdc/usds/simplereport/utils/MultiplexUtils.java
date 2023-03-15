@@ -35,7 +35,7 @@ public class MultiplexUtils {
   }
 
   public static String inferMultiplexTestOrderLoinc(List<DeviceTypeDisease> deviceTypeDiseases) {
-    if (deviceTypeDiseases.size() <= 0) {
+    if (deviceTypeDiseases.isEmpty()) {
       return null;
     }
 
