@@ -52,7 +52,6 @@ public class MultiplexUtils {
       return null;
     }
     // Convert to arrayList and sort
-    TreeMap<String, Integer> sortedMap = sortByValues(testOrdersLoincs);
-    return sortedMap.lastKey();
+    return Collections.max(testOrdersLoincs.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey();
   }
 }
