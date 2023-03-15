@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MultiplexUtils {
+  private MultiplexUtils() {}
 
   public static String inferMultiplexTestOrderLoinc(List<DeviceTypeDisease> deviceTypeDiseases) {
     if (deviceTypeDiseases.isEmpty()) {

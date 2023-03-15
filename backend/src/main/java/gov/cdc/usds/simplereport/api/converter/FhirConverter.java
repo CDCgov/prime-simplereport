@@ -589,7 +589,7 @@ public class FhirConverter {
 
     String deviceLoincCode = null;
     if (order.getDeviceType() != null
-        && order.getDeviceType().getSupportedDiseaseTestPerformed().size() > 0) {
+        && !order.getDeviceType().getSupportedDiseaseTestPerformed().isEmpty()) {
       deviceLoincCode =
           MultiplexUtils.inferMultiplexTestOrderLoinc(
               order.getDeviceType().getSupportedDiseaseTestPerformed());
