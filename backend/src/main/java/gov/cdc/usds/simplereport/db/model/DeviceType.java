@@ -104,13 +104,7 @@ public class DeviceType extends EternalAuditedEntity {
       int testLength,
       List<SpecimenType> swabTypes,
       List<DeviceTypeDisease> supportedDiseaseTestPerformed) {
-    super();
-    this.name = name;
-    this.manufacturer = manufacturer;
-    this.model = model;
-    this.loincCode = loincCode;
-    this.swabTypes = swabTypes;
-    this.testLength = testLength;
+    this(name, manufacturer, model, loincCode, testLength, swabTypes);
     this.supportedDiseaseTestPerformed = supportedDiseaseTestPerformed;
   }
 
