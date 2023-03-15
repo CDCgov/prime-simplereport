@@ -83,6 +83,18 @@ const App = () => {
     if (!data) return;
 
     appInsights?.setAuthenticatedUserContext(data.whoami.id, undefined, false);
+    if (window?.visualViewport?.width) {
+      appInsights?.trackMetric(
+        {
+          name: "userViewport_reporting",
+          average: window.visualViewport.width,
+        },
+        {
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
+        }
+      );
+    }
 
     dispatch(
       setInitialState({

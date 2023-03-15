@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
@@ -47,8 +47,10 @@ describe("PatientApp", () => {
       expect(setAuthenticatedUserContextMock).toHaveBeenCalledTimes(0);
     });
 
-    it("sets the authenticated user context as the plid when given the plid", () => {
-      setAuthenticatedUserContextMock = jest.fn();
+    it("sets the authenticated user context as the plid when given the plid", async () => {
+      const setAuthenticatedUserContextMock = jest.fn();
+      const clearAuthenticatedUserContextMock = jest.fn();
+      const trackMetricMock = jest.fn();
       store = mockStore({
         plid: "fake-plid",
         testResult: {
@@ -56,9 +58,15 @@ describe("PatientApp", () => {
         },
       });
       (getAppInsights as jest.Mock).mockImplementation(() => ({
+        trackMetric: trackMetricMock,
         setAuthenticatedUserContext: setAuthenticatedUserContextMock,
         clearAuthenticatedUserContext: clearAuthenticatedUserContextMock,
       }));
+
+      Object.defineProperty(global, "visualViewport", {
+        value: { width: 1200, height: 800 },
+      });
+
       render(
         <MemoryRouter>
           <Provider store={store}>
@@ -71,6 +79,19 @@ describe("PatientApp", () => {
         "fake-plid",
         undefined,
         true
+      );
+
+      await waitFor(() =>
+        expect(trackMetricMock).toHaveBeenCalledWith(
+          {
+            name: "userViewport_patientExp",
+            average: 1200,
+          },
+          {
+            width: 1200,
+            height: 800,
+          }
+        )
       );
     });
   });
