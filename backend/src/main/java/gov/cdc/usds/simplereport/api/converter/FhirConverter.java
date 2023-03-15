@@ -372,6 +372,7 @@ public class FhirConverter {
       String id) {
     var specimen = new Specimen();
     specimen.setId(id);
+    specimen.addIdentifier().setValue(id);
     if (StringUtils.isNotBlank(specimenCode)) {
       var codeableConcept = specimen.getType();
       var coding = codeableConcept.addCoding();
@@ -626,17 +627,25 @@ public class FhirConverter {
     }
 
     return convertToDiagnosticReport(
-        status, code, Objects.toString(testEvent.getInternalId(), ""), testEvent.getDateTested());
+        status,
+        code,
+        Objects.toString(testEvent.getInternalId(), ""),
+        testEvent.getDateTested(),
+        testEvent.getUpdatedAt());
   }
 
   public static DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code, String id, Date dateTested) {
+      DiagnosticReportStatus status, String code, String id, Date dateTested, Date dateUpdated) {
     var diagnosticReport =
-        new DiagnosticReport().setStatus(status).setEffective(new DateTimeType(dateTested));
+        new DiagnosticReport()
+            .setStatus(status)
+            .setEffective(new DateTimeType(dateTested))
+            .setIssued(dateUpdated);
     diagnosticReport.setId(id);
     if (StringUtils.isNotBlank(code)) {
       diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);
     }
+    diagnosticReport.addIdentifier().setValue(id);
     return diagnosticReport;
   }
 
