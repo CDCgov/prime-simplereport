@@ -913,7 +913,8 @@ class FhirConverterTest {
   @Test
   void convertToDiagnosticReport_Strings_valid() {
     var date = new Date();
-    var actual = convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2", "id-123", date);
+    var actual =
+        convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2", "id-123", date, date);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -922,11 +923,12 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
     assertThat(((DateTimeType) actual.getEffective()).getAsV3())
         .isEqualTo(new DateTimeType(date).getAsV3());
+    assertThat((actual.getIssued())).isEqualTo(date);
   }
 
   @Test
   void convertToDiagnosticReport_Strings_null() {
-    var actual = convertToDiagnosticReport(null, null, null, null);
+    var actual = convertToDiagnosticReport(null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
