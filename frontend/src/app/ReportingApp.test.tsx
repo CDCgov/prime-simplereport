@@ -5,6 +5,7 @@ import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -292,6 +293,7 @@ describe("App", () => {
   describe("logs to App Insights on WhoAmI error", () => {
     const oldTokenClaim = process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM;
     const trackExceptionMock = jest.fn();
+
     beforeEach(() => {
       process.env.REACT_APP_OKTA_TOKEN_ROLE_CLAIM = "test_roles";
       trackExceptionMock.mockReset();
@@ -372,10 +374,22 @@ describe("App", () => {
           "token roles": undefined,
         },
       });
-      jest.spyOn(console, "error").mockRestore();
     });
   });
   it("renders CleanTestResultsList when going to /results/", async () => {
+    const trackMetricMock = jest.fn();
+    const setAuthenticatedUserContextMock = jest.fn();
+    Object.defineProperty(global, "visualViewport", {
+      value: { width: 1200, height: 800 },
+    });
+    (getAppInsights as jest.Mock).mockImplementation(() => {
+      const ai = Object.create(ApplicationInsights.prototype);
+      return Object.assign(ai, {
+        trackMetric: trackMetricMock,
+        setAuthenticatedUserContext: setAuthenticatedUserContextMock,
+      });
+    });
+
     const mockedStore = mockStore({ ...store, dataLoaded: true });
 
     render(
@@ -393,6 +407,20 @@ describe("App", () => {
     );
 
     expect(await screen.findByText("CleanTestResultsList")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(trackMetricMock).toHaveBeenCalledWith(
+        {
+          name: "userViewport_reporting",
+          average: 1200,
+        },
+        {
+          width: 1200,
+          height: 800,
+        }
+      )
+    );
+
+    expect(setAuthenticatedUserContextMock).toHaveBeenCalled();
   });
 
   it("renders TestResultsList when going to /results/page_number ", async () => {

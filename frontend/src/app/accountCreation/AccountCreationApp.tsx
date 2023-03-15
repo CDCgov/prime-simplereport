@@ -7,6 +7,7 @@ import PageNotFound from "../commonComponents/PageNotFound";
 import CardBackground from "../commonComponents/CardBackground/CardBackground";
 import Card from "../commonComponents/Card/Card";
 import { getActivationTokenFromUrl } from "../utils/url";
+import { getAppInsights } from "../TelemetryService";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
@@ -26,6 +27,7 @@ import { AccountCreationApi } from "./AccountCreationApiService";
 import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
 
 const AccountCreationApp = () => {
+  const appInsights = getAppInsights();
   // Initialize to loading state on app load
   const [userAccountStatus, setUserAccountStatus] = useState(
     UserAccountStatus.LOADING
@@ -42,6 +44,19 @@ const AccountCreationApp = () => {
 
   // Runs once on app load
   useEffect(() => {
+    if (window?.visualViewport?.width) {
+      appInsights?.trackMetric(
+        {
+          name: "userViewport_accountCreation",
+          average: window.visualViewport.width,
+        },
+        {
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
+        }
+      );
+    }
+
     const getStatusAndActivate = async (
       activationToken: string | null = null
     ) => {
@@ -74,7 +89,7 @@ const AccountCreationApp = () => {
       const token = getActivationTokenFromUrl();
       getStatusAndActivate(token);
     }
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, appInsights]);
 
   // Show loading card while useEffect func is running
   if (userAccountStatus === UserAccountStatus.LOADING) {

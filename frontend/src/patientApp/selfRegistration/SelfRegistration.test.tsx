@@ -2,12 +2,15 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 import faker from "faker";
+
+import * as AppInsightsMock from "../../app/TelemetryService";
 import "../../i18n";
 
 import { SelfRegistration } from "./SelfRegistration";
@@ -42,6 +45,20 @@ const store = mockStore({});
 const originalConsoleError = console.error;
 
 describe("SelfRegistration", () => {
+  const renderWithValidLink = () =>
+    render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
+          <Routes>
+            <Route
+              path="/register/:registrationLink"
+              element={<SelfRegistration />}
+            />
+          </Routes>
+        </MemoryRouter>
+      </Provider>
+    );
+
   beforeEach(() => {
     // For smartystreets failures
     console.error = jest.fn();
@@ -70,18 +87,7 @@ describe("SelfRegistration", () => {
   });
 
   it("Allows for user to register through link", async () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-          <Routes>
-            <Route
-              path="/register/:registrationLink"
-              element={<SelfRegistration />}
-            />
-          </Routes>
-        </MemoryRouter>
-      </Provider>
-    );
+    renderWithValidLink();
 
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
     expect(screen.getByText("Foo Facility")).toBeInTheDocument();
@@ -106,18 +112,7 @@ describe("SelfRegistration", () => {
   });
 
   it("Handles duplicate registrant flow", async () => {
-    render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[`/register/${VALID_LINK}`]}>
-          <Routes>
-            <Route
-              path="/register/:registrationLink"
-              element={<SelfRegistration />}
-            />
-          </Routes>
-        </MemoryRouter>
-      </Provider>
-    );
+    renderWithValidLink();
 
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
     expect(screen.getByText("Foo Facility")).toBeInTheDocument();
@@ -145,6 +140,32 @@ describe("SelfRegistration", () => {
         exact: false,
       })
     ).toBeInTheDocument();
+  });
+
+  it("Sends viewport metric", async () => {
+    const trackMetricMock = jest.fn();
+    Object.defineProperty(global, "visualViewport", {
+      value: { width: 1200, height: 800 },
+    });
+    renderWithValidLink();
+    const getAppInsightsSpy = jest
+      .spyOn(AppInsightsMock, "getAppInsights")
+      .mockImplementation(
+        () => ({ trackMetric: trackMetricMock } as jest.MockedObject<any>)
+      );
+    await waitFor(() =>
+      expect(trackMetricMock).toHaveBeenCalledWith(
+        {
+          name: "userViewport_selfRegistration",
+          average: 1200,
+        },
+        {
+          width: 1200,
+          height: 800,
+        }
+      )
+    );
+    getAppInsightsSpy.mockRestore();
   });
 });
 
