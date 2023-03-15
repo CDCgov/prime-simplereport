@@ -937,10 +937,7 @@ class FhirConverterTest {
 
   @Test
   void convertToServiceRequest_TestOrder_valid() {
-    var testOrder =
-        new TestOrder(
-            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
-
+    var testOrder = TestDataBuilder.createTestOrderWithMultiplexDevice();
     var actual = convertToServiceRequest(testOrder);
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.ACTIVE);
@@ -1004,9 +1001,8 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_TestOrder_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var testOrder = TestDataBuilder.createEmptyTestOrder();
+    var testOrder = TestDataBuilder.createTestOrderWithMultiplexDevice();
     testOrder.markComplete();
-    testOrder.setDeviceTypeAndSpecimenType(TestDataBuilder.createEmptyDeviceWithLoinc(), null);
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);
@@ -1271,8 +1267,18 @@ class FhirConverterTest {
 
   @Test
   void createFhirBundle_TestEvent_matchesJson() throws IOException {
+    var covidDisease = new SupportedDisease("COVID-19", "987-1");
+    var fluADisease = new SupportedDisease("FLU A", "LP 123");
+    var fluBDisease = new SupportedDisease("FLU B", "LP 456");
     var address = new StreetAddress(List.of("1 Main St"), "Chicago", "IL", "60614", "");
-    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
+    List<DeviceTypeDisease> supportedTestOrders = new ArrayList<>();
+    supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(covidDisease));
+    supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluADisease));
+    supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluBDisease));
+    var deviceType =
+        new DeviceType(
+            "name", "manufacturer", "model", "loinc", 0, new ArrayList<>(), supportedTestOrders);
+
     var specimenType = new SpecimenType("name", "typeCode");
     var provider =
         new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
@@ -1314,9 +1320,7 @@ class FhirConverterTest {
     var answers =
         new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));
     testOrder.setAskOnEntrySurvey(answers);
-    var covidDisease = new SupportedDisease("COVID-19", "987-1");
-    var fluADisease = new SupportedDisease("FLU A", "LP 123");
-    var fluBDisease = new SupportedDisease("FLU B", "LP 456");
+
     var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
     var fluAResult = new Result(testOrder, fluADisease, TestResult.NEGATIVE);
     var fluBResult = new Result(testOrder, fluBDisease, TestResult.UNDETERMINED);
@@ -1335,8 +1339,8 @@ class FhirConverterTest {
     var testPerformedCodesList =
         List.of(
             new DeviceTypeDisease(deviceTypeId, covidDisease, "333-123", null, null, null),
-            new DeviceTypeDisease(deviceTypeId, fluADisease, "444-123", null, null, null),
-            new DeviceTypeDisease(deviceTypeId, fluBDisease, "444-456", null, null, null));
+            new DeviceTypeDisease(deviceTypeId, fluADisease, "444-123", null, null, "95422-2"),
+            new DeviceTypeDisease(deviceTypeId, fluBDisease, "444-456", null, null, "95422-2"));
     var date = new Date();
     var dateTested = new Date();
     ReflectionTestUtils.setField(provider, "internalId", providerId);
