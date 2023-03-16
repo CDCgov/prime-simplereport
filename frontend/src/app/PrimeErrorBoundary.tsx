@@ -53,7 +53,10 @@ export default class PrimeErrorBoundary extends React.Component<
     if (this.state.redirectToOkta) {
       const url = `${process.env.REACT_APP_OKTA_URL}/oauth2/default/v1/authorize`;
       const clientId = `?client_id=${process.env.REACT_APP_OKTA_CLIENT_ID}`;
-      const redirectUri = `&redirect_uri=${encodeURIComponent(getUrl())}`;
+      const sanitizedRedirectUri = stripIdTokenFromOktaRedirectUri(getUrl());
+      const redirectUri = `&redirect_uri=${encodeURIComponent(
+        sanitizedRedirectUri
+      )}`;
       const responseType = `&response_type=${encodeURIComponent(
         "token id_token"
       )}`;
@@ -71,4 +74,20 @@ export default class PrimeErrorBoundary extends React.Component<
 
     return this.props.children;
   }
+}
+
+export function stripIdTokenFromOktaRedirectUri(uri: string) {
+  const regexJWTAsQueryParam = /(?<=#id_token=).*?(?=&token_type=)/;
+  return stripIdTokenFromString(regexJWTAsQueryParam, uri);
+}
+
+export function stripIdTokenFromOperationName(operationName: string) {
+  const regexOperationName = /(?<=#id_token=).*/;
+  return stripIdTokenFromString(regexOperationName, operationName);
+}
+
+function stripIdTokenFromString(regex: RegExp, string: string) {
+  const idTokenFound = string.match(regex);
+  if (idTokenFound === null) return string;
+  return string.replace(idTokenFound[0], "{ID-TOKEN-OBSCURED}");
 }
