@@ -12,11 +12,13 @@ export interface FacilitySelectProps {
   facilities: Facility[];
 }
 
+export const FacilitySelectPageTitle = "Application home";
+
 const FacilitySelect: React.FC<FacilitySelectProps> = ({
   facilities,
   setActiveFacility,
 }) => {
-  useDocumentTitle("Application home");
+  useDocumentTitle(FacilitySelectPageTitle);
 
   return (
     <FacilityPopup>

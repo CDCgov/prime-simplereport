@@ -72,3 +72,19 @@ export default class PrimeErrorBoundary extends React.Component<
     return this.props.children;
   }
 }
+
+export function stripIdTokenFromOktaRedirectUri(uri: string) {
+  const regexJWTAsQueryParam = /(?<=#id_token=).*?(?=&token_type=)/;
+  return stripIdTokenFromString(regexJWTAsQueryParam, uri);
+}
+
+export function stripIdTokenFromOperationName(operationName: string) {
+  const regexOperationName = /(?<=#id_token=).*/;
+  return stripIdTokenFromString(regexOperationName, operationName);
+}
+
+function stripIdTokenFromString(regex: RegExp, string: string) {
+  const idTokenFound = string.match(regex);
+  if (idTokenFound === null) return string;
+  return string.replace(idTokenFound[0], "{ID-TOKEN-OBSCURED}");
+}

@@ -5,6 +5,11 @@ import {
 } from "@microsoft/applicationinsights-web";
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 
+import {
+  stripIdTokenFromOktaRedirectUri,
+  stripIdTokenFromOperationName,
+} from "./PrimeErrorBoundary";
+
 let reactPlugin: ReactPlugin | null = null;
 let appInsights: ApplicationInsights | null = null;
 
@@ -35,7 +40,7 @@ const createTelemetryService = () => {
     });
 
     appInsights.addTelemetryInitializer(function (envelope: ITelemetryItem) {
-      filterStaticFiles(envelope);
+      filterIdTokenOnOktaRedirect(envelope);
     });
 
     appInsights.loadAppInsights();
@@ -68,6 +73,41 @@ export function filterStaticFiles(envelope: ITelemetryItem) {
   }
 }
 
+export function filterIdTokenOnOktaRedirect(envelope: ITelemetryItem) {
+  const staticFileFound = filterStaticFiles(envelope) !== undefined;
+  if (staticFileFound) return false;
+
+  // Okta redirects only come from page views events
+  const eventIsPageView = envelope.baseType === "PageviewData";
+  if (!eventIsPageView) return true;
+
+  const telemetryItem = envelope?.baseData;
+
+  const telemetryItemNeedsIdSanitization =
+    // possible propeties that need sanitation
+    telemetryItem?.uri.includes("#id_token") ||
+    envelope?.ext?.trace.name.includes("#id_token");
+
+  if (
+    telemetryItemNeedsIdSanitization &&
+    telemetryItem?.uri &&
+    envelope?.ext?.trace.name
+  ) {
+    const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
+      telemetryItem.uri
+    );
+    telemetryItem.properties.refUri = urlWithoutIdToken;
+    telemetryItem.uri = urlWithoutIdToken;
+    telemetryItem.refUri = urlWithoutIdToken;
+
+    const operationNameWithoutIdToken = stripIdTokenFromOperationName(
+      envelope!.ext!.trace.name
+    );
+    telemetryItem.operation_Name = operationNameWithoutIdToken;
+    return true;
+  }
+}
+
 const logSeverityMap = {
   log: SeverityLevel.Information,
   warn: SeverityLevel.Warning,
@@ -88,19 +128,24 @@ export function withInsights(console: Console) {
       originalConsole[method](...data);
 
       if (method === "error" || method === "warn") {
-        const exception = data[0] instanceof Error ? data[0] : undefined;
+        let exception = data[0] instanceof Error ? data[0] : undefined;
+        let exceptionMessage = exception ? exception.message : data[0];
         const id = (() => {
-          if (exception) {
-            return exception.message;
+          if (typeof exceptionMessage === "string") {
+            const messageNeedsSanitation =
+              exceptionMessage.includes("#id_token");
+            if (!messageNeedsSanitation) return exceptionMessage;
+            const sanitizedUri =
+              stripIdTokenFromOktaRedirectUri(exceptionMessage);
+            exceptionMessage = sanitizedUri;
+            return sanitizedUri;
           }
-          if (typeof data[0] === "string") {
-            return data[0];
-          }
-          return JSON.stringify(data[0]);
+          const exceptionData = JSON.stringify(exceptionMessage);
+          return exceptionData;
         })();
-
+        const exceptionForAppInsights = new Error(exceptionMessage);
         appInsights?.trackException({
-          exception,
+          exception: exceptionForAppInsights,
           id,
           severityLevel,
           properties: {
@@ -114,7 +159,6 @@ export function withInsights(console: Console) {
 
       const message =
         typeof data[0] === "string" ? data[0] : JSON.stringify(data[0]);
-
       appInsights?.trackEvent({
         name: `${method.toUpperCase()} - ${message}`,
         properties: {
