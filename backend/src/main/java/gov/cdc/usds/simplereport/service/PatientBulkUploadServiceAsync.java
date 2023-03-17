@@ -164,7 +164,7 @@ public class PatientBulkUploadServiceAsync {
             EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
             Map.of("simplereport_url", simplereportUrl));
 
-        String errorMessage = "Error uploading patient roster";
+        String errorMessage = "Error uploading patient roster " + e;
         logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
 
         throw new IllegalArgumentException(errorMessage);
