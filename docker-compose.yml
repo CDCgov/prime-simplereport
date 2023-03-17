@@ -34,7 +34,7 @@ services:
   backend:
     build:
       context: backend
-    image: ghcr.io/cdcgov/prime-simplereport/backend:latest
+    image: ghcr.io/cdcgov/prime-simplereport/backend:${DOCKER_BACKEND_IMAGE_VERSION:-latest}
     container_name: backend
     env_file:
       - .env

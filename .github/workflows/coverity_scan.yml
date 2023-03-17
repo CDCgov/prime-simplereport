@@ -15,7 +15,7 @@ on:
     - cron: '0 18 * * *' # Daily at 18:00 UTC
 
 env:
-  JAVA_VERSION: 11
+  JAVA_VERSION: 17
   JAVA_DISTRIBUTION: 'zulu'
   NODE_VERSION: 18
 
@@ -41,7 +41,7 @@ jobs:
       - name: Install dependencies
         run: yarn install
         working-directory: ./frontend
-      - name: Set up JDK 11
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
