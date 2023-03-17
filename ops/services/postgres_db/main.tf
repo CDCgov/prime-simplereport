@@ -17,11 +17,19 @@ resource "azurerm_postgresql_flexible_server" "db" {
 
   tags = var.tags
 
-  // Time is Eastern
+  # Time is Eastern
   maintenance_window {
     day_of_week  = 0
     start_hour   = 0
     start_minute = 0
+  }
+
+  # Only activate high availability in production for now.
+  dynamic "high_availability" {
+    for_each = var.env == "prod" ? [1] : []
+    content {
+      mode = "SameZone"
+    }
   }
 
   # See note at https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#high_availability
