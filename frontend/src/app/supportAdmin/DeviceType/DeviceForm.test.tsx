@@ -140,11 +140,23 @@ describe("update existing devices", () => {
             name: "Tesla Emitter",
             model: "Model A",
             manufacturer: "Celoxitin",
-            loincCode: "1234-1",
             testLength: 15,
             swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
             supportedDiseases: [
               { internalId: "123", name: "COVID-19", loinc: "1234-1" },
+            ],
+            supportedDiseaseTestPerformed: [
+              {
+                supportedDisease: {
+                  internalId: "123",
+                  loinc: "1234-3",
+                  name: "COVID-19",
+                },
+                testPerformedLoincCode: "1234-1",
+                equipmentUid: "equipmentUid123",
+                testkitNameId: "testkitNameId123",
+                testOrderedLoincCode: "1432-1",
+              },
             ],
           },
           {
@@ -152,7 +164,6 @@ describe("update existing devices", () => {
             name: "Fission Energizer",
             model: "Model B",
             manufacturer: "Curentz",
-            loincCode: "1234-2",
             testLength: 15,
             swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
             supportedDiseases: [
@@ -160,17 +171,64 @@ describe("update existing devices", () => {
               { internalId: "456", name: "Flu A", loinc: "LP123" },
               { internalId: "789", name: "Flu B", loinc: "LP345" },
             ],
+            supportedDiseaseTestPerformed: [
+              {
+                supportedDisease: {
+                  internalId: "123",
+                  loinc: "1234-3",
+                  name: "COVID-19",
+                },
+                testPerformedLoincCode: "1234-1",
+                equipmentUid: "equipmentUid123",
+                testkitNameId: "testkitNameId123",
+                testOrderedLoincCode: "1432-1",
+              },
+              {
+                supportedDisease: {
+                  internalId: "456",
+                  loinc: "LP123",
+                  name: "Flu A",
+                },
+                testPerformedLoincCode: "Test123",
+                equipmentUid: "equipmentUid321",
+                testkitNameId: "testkitNameId321",
+                testOrderedLoincCode: "321Tset",
+              },
+              {
+                supportedDisease: {
+                  internalId: "789",
+                  loinc: "LP456",
+                  name: "Flu B",
+                },
+                testPerformedLoincCode: "Test345",
+                equipmentUid: "equipmentUid345",
+                testkitNameId: "testkitNameId345",
+                testOrderedLoincCode: "543Tset",
+              },
+            ],
           },
           {
             internalId: "abc3",
             name: "Covalent Observer",
             model: "Model C",
             manufacturer: "Vitamin Tox",
-            loincCode: "1234-3",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
             supportedDiseases: [
               { internalId: "123", name: "COVID-19", loinc: "1234-1" },
+            ],
+            supportedDiseaseTestPerformed: [
+              {
+                supportedDisease: {
+                  internalId: "123",
+                  loinc: "1234-3",
+                  name: "COVID-19",
+                },
+                testPerformedLoincCode: "1234-1",
+                equipmentUid: "equipmentUid123",
+                testkitNameId: "testkitNameId123",
+                testOrderedLoincCode: "1432-1",
+              },
             ],
           },
           {
@@ -178,7 +236,6 @@ describe("update existing devices", () => {
             name: "Postal Swab",
             model: "Post Office",
             manufacturer: "Local",
-            loincCode: "1234-3",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
             supportedDiseases: [
@@ -225,7 +282,6 @@ describe("update existing devices", () => {
             name: "Default Device",
             model: "Generic",
             manufacturer: "Brand",
-            loincCode: "1234-7",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
             supportedDiseases: [],

@@ -70,7 +70,6 @@ jest.mock("../../../generated/graphql", () => {
               name: "Tesla Emitter",
               model: "Model A",
               manufacturer: "Celoxitin",
-              loincCode: "1234-1",
               swabTypes: [
                 { internalId: "123", name: "nose", typeCode: "n123" },
               ],

@@ -76,9 +76,6 @@ public class DeviceTypeService {
     if (updateDevice.getModel() != null) {
       device.setModel(updateDevice.getModel());
     }
-    if (updateDevice.getLoincCode() != null) {
-      device.setLoincCode(updateDevice.getLoincCode());
-    }
     if (updateDevice.getSwabTypes() != null) {
       List<SpecimenType> updatedSpecimenTypes =
           updateDevice.getSwabTypes().stream()
@@ -160,7 +157,7 @@ public class DeviceTypeService {
                 createDevice.getName(),
                 createDevice.getManufacturer(),
                 createDevice.getModel(),
-                createDevice.getLoincCode(),
+                null,
                 null,
                 createDevice.getTestLength()));
 

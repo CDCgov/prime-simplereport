@@ -8,7 +8,6 @@ mutation updateDevice(
       name
       model
       manufacturer
-      loincCode
       swabType
     }
 }
