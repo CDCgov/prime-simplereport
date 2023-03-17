@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -122,7 +123,9 @@ public class PatientBulkUploadServiceAsync {
                 address,
                 country,
                 parsePersonRole(extractedData.getRole().getValue(), false),
-                List.of(extractedData.getEmail().getValue()),
+                extractedData.getEmail().getValue() == null
+                    ? Collections.emptyList()
+                    : List.of(extractedData.getEmail().getValue()),
                 convertRaceToDatabaseValue(extractedData.getRace().getValue()),
                 convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
                 null, // tribalAffiliation
