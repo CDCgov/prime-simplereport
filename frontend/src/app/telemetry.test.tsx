@@ -13,7 +13,7 @@ import {
 import {
   stripIdTokenFromOktaRedirectUri,
   stripIdTokenFromOperationName,
-} from "./PrimeErrorBoundary";
+} from "./utils/url";
 
 jest.mock("@microsoft/applicationinsights-web", () => {
   return {
