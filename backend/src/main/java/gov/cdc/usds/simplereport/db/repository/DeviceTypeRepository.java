@@ -10,4 +10,6 @@ public interface DeviceTypeRepository extends EternalAuditedEntityRepository<Dev
   List<DeviceType> findAllByInternalIdIn(Collection<UUID> ids);
 
   DeviceType findDeviceTypeByName(String name);
+
+  DeviceType findDeviceTypeByModelIgnoreCase(String model);
 }
