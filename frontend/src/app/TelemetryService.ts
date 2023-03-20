@@ -103,8 +103,8 @@ export function filterPotentialOktaRedirectEvent(envelope: ITelemetryItem) {
     telemetryItem.uri = urlWithoutIdToken;
     telemetryItem.refUri = urlWithoutIdToken;
 
-    envelope!.ext!.trace.name = stripIdTokenFromOperationName(
-      envelope!.ext!.trace.name
+    envelope.ext.trace.name = stripIdTokenFromOperationName(
+      envelope.ext.trace.name
     );
   }
   return envelope;
