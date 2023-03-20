@@ -5,10 +5,12 @@ import {
 
 import {
   ai,
+  filterPotentialOktaRedirectEvent,
   filterStaticFiles,
   getAppInsights,
   withInsights,
 } from "./TelemetryService";
+import { stripIdTokenFromOktaRedirectUri } from "./PrimeErrorBoundary";
 
 jest.mock("@microsoft/applicationinsights-web", () => {
   return {
@@ -45,11 +47,22 @@ describe("telemetry", () => {
     expect(getAppInsights()).not.toBe(null);
   });
 
-  it("calls app insights on console methods", () => {
+  it("ignores static files", () => {
+    const item = {
+      name: "Microsoft.ApplicationInsights.mock.RemoteDependency",
+      baseData: {
+        name: "GET /maintenance.json",
+      },
+    } as ITelemetryItem;
+    expect(filterStaticFiles(item)).toEqual(false);
+  });
+
+  it("correctly logs messages", () => {
     process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING =
       "fake-connection-string";
     const appInsights = getAppInsights();
     withInsights(console);
+
     const message = "hello there";
     console.log(message);
     expect(appInsights?.trackEvent).toBeCalledWith({
@@ -58,17 +71,6 @@ describe("telemetry", () => {
         severityLevel: SeverityLevel.Information,
         message,
         additionalInformation: undefined,
-      },
-    });
-
-    const warning = "some warning";
-    const data = { oh: "no" };
-    console.warn(warning, data);
-    expect(appInsights?.trackException).toBeCalledWith({
-      id: "some warning",
-      severityLevel: SeverityLevel.Warning,
-      properties: {
-        additionalInformation: JSON.stringify([data]),
       },
     });
 
@@ -93,15 +95,75 @@ describe("telemetry", () => {
         additionalInformation: undefined,
       },
     });
+
+    const warning = "some warning";
+    const data = { oh: "no" };
+    console.warn(warning, data);
+    expect(appInsights?.trackException).toBeCalledWith({
+      id: "some warning",
+      severityLevel: SeverityLevel.Warning,
+      properties: {
+        additionalInformation: JSON.stringify([data]),
+      },
+    });
   });
 
-  it("ignores static files", () => {
+  it("scrubs tokens out of message exceptions", () => {
+    process.env.REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING =
+      "fake-connection-string";
+    const appInsights = getAppInsights();
+    withInsights(console);
+
+    const nonErrorErrorWithToken =
+      "something something #id_token=blahblahblah&token_type=test";
+    const errorStringWithoutToken = stripIdTokenFromOktaRedirectUri(
+      nonErrorErrorWithToken
+    );
+    console.error(nonErrorErrorWithToken);
+    expect(appInsights?.trackException).toBeCalledWith({
+      exception: undefined,
+      id: errorStringWithoutToken,
+      severityLevel: SeverityLevel.Error,
+      properties: {
+        additionalInformation: undefined,
+      },
+    });
+
+    const error = new Error(nonErrorErrorWithToken);
+    const errorWithoutToken = new Error(errorStringWithoutToken);
+    console.error(error);
+    expect(appInsights?.trackException).toBeCalledWith({
+      exception: errorWithoutToken,
+      id: errorStringWithoutToken,
+      severityLevel: SeverityLevel.Error,
+      properties: {
+        additionalInformation: undefined,
+      },
+    });
+  });
+});
+
+describe("filter events on okta redirect", () => {
+  it("skips items whose baseTypes aren't Pageviews", () => {
+    const item = {
+      baseType: "blah",
+    } as ITelemetryItem;
+    expect(filterPotentialOktaRedirectEvent(item)).toBe(true);
+  });
+  it("scrubs values with id token", () => {
     const item = {
       name: "Microsoft.ApplicationInsights.mock.RemoteDependency",
       baseData: {
-        name: "GET /maintenance.json",
+        uri: "localhost/#id_token=blah",
+      },
+      baseType: "PageviewData",
+      ext: {
+        trace: {
+          name: "localhost/#id_token=blah",
+        },
       },
     } as ITelemetryItem;
-    expect(filterStaticFiles(item)).toEqual(false);
+
+    expect(filterPotentialOktaRedirectEvent(item)).toEqual(true);
   });
 });

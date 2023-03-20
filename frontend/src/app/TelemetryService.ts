@@ -40,7 +40,7 @@ const createTelemetryService = () => {
     });
 
     appInsights.addTelemetryInitializer(function (envelope: ITelemetryItem) {
-      filterIdTokenOnOktaRedirect(envelope);
+      filterUnneededItems(envelope);
     });
 
     appInsights.loadAppInsights();
@@ -73,18 +73,21 @@ export function filterStaticFiles(envelope: ITelemetryItem) {
   }
 }
 
-export function filterIdTokenOnOktaRedirect(envelope: ITelemetryItem) {
+export function filterUnneededItems(envelope: ITelemetryItem) {
   const staticFileFound = filterStaticFiles(envelope) !== undefined;
   if (staticFileFound) return false;
 
+  filterPotentialOktaRedirectEvent(envelope);
+}
+
+export function filterPotentialOktaRedirectEvent(envelope: ITelemetryItem) {
   // Okta redirects only come from page views events
-  const eventIsPageView = envelope.baseType === "PageviewData";
+  const eventIsPageView = envelope?.baseType === "PageviewData";
   if (!eventIsPageView) return true;
 
   const telemetryItem = envelope?.baseData;
 
   const telemetryItemNeedsIdSanitization =
-    // possible propeties that need sanitation
     telemetryItem?.uri.includes("#id_token") ||
     envelope?.ext?.trace.name.includes("#id_token");
 
@@ -96,15 +99,18 @@ export function filterIdTokenOnOktaRedirect(envelope: ITelemetryItem) {
     const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
       telemetryItem.uri
     );
-    // possible propeties that need replacing
-    telemetryItem.properties.refUri = urlWithoutIdToken;
     telemetryItem.uri = urlWithoutIdToken;
-    telemetryItem.refUri = urlWithoutIdToken;
 
-    const operationNameWithoutIdToken = stripIdTokenFromOperationName(
-      envelope!.ext!.trace.name
-    );
-    telemetryItem.operation_Name = operationNameWithoutIdToken;
+    // possible properties that need replacing
+    if (telemetryItem?.properties?.refUri)
+      telemetryItem.properties.refUri = urlWithoutIdToken;
+    if (telemetryItem?.refURI) telemetryItem.refUri = urlWithoutIdToken;
+
+    if (telemetryItem?.operation_Name) {
+      telemetryItem.operation_Name = stripIdTokenFromOperationName(
+        envelope!.ext!.trace.name
+      );
+    }
     return true;
   }
 }
@@ -130,23 +136,28 @@ export function withInsights(console: Console) {
 
       if (method === "error" || method === "warn") {
         let exception = data[0] instanceof Error ? data[0] : undefined;
-        let exceptionMessage = exception ? exception.message : data[0];
         const id = (() => {
-          if (typeof exceptionMessage === "string") {
-            const messageNeedsSanitation =
-              exceptionMessage.includes("#id_token");
-            if (!messageNeedsSanitation) return exceptionMessage;
-            const sanitizedUri =
-              stripIdTokenFromOktaRedirectUri(exceptionMessage);
-            exceptionMessage = sanitizedUri;
-            return sanitizedUri;
+          let message = exception ? exception.message : data[0];
+          if (typeof message === "string") {
+            const messageNeedsSanitation = message.includes("#id_token");
+            if (messageNeedsSanitation) {
+              message = stripIdTokenFromOktaRedirectUri(message);
+            }
           }
-          const exceptionData = JSON.stringify(exceptionMessage);
+          if (exception) {
+            exception = new Error(message);
+            return message;
+          }
+
+          if (typeof data[0] === "string") {
+            data[0] = message;
+            return message;
+          }
+          const exceptionData = JSON.stringify(data[0]);
           return exceptionData;
         })();
-        const exceptionForAppInsights = new Error(exceptionMessage);
         appInsights?.trackException({
-          exception: exceptionForAppInsights,
+          exception: exception,
           id,
           severityLevel,
           properties: {
