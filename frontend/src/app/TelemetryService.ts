@@ -93,22 +93,21 @@ export function filterPotentialOktaRedirectEvent(envelope: ITelemetryItem) {
 
   if (
     telemetryItemNeedsIdSanitization &&
-    telemetryItem?.uri &&
+    telemetryItem?.refUri &&
     envelope?.ext?.trace.name
   ) {
+    // possible properties that need replacing
     const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
       telemetryItem.uri
     );
     telemetryItem.uri = urlWithoutIdToken;
+    telemetryItem.refUri = urlWithoutIdToken;
 
-    // possible properties that need replacing
-    telemetryItem.properties.refUri = urlWithoutIdToken;
-    telemetryItem.operation_Name = stripIdTokenFromOperationName(
+    envelope!.ext!.trace.name = stripIdTokenFromOperationName(
       envelope!.ext!.trace.name
     );
-
-    return true;
   }
+  return envelope;
 }
 
 const logSeverityMap = {

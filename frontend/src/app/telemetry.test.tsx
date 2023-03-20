@@ -10,7 +10,10 @@ import {
   getAppInsights,
   withInsights,
 } from "./TelemetryService";
-import { stripIdTokenFromOktaRedirectUri } from "./PrimeErrorBoundary";
+import {
+  stripIdTokenFromOktaRedirectUri,
+  stripIdTokenFromOperationName,
+} from "./PrimeErrorBoundary";
 
 jest.mock("@microsoft/applicationinsights-web", () => {
   return {
@@ -151,19 +154,29 @@ describe("filter events on okta redirect", () => {
     expect(filterPotentialOktaRedirectEvent(item)).toBe(true);
   });
   it("scrubs values with id token", () => {
+    const urlWithToken = "localhost/#id_token=blahblahblah&token_type=test";
+    const urlWithoutToken = stripIdTokenFromOktaRedirectUri(urlWithToken);
+
+    const operationWithToken = "#id_token=blahblahblah&token_type=test";
+    const operationWithoutToken =
+      stripIdTokenFromOperationName(operationWithToken);
+
     const item = {
-      name: "Microsoft.ApplicationInsights.mock.RemoteDependency",
+      name: "Microsoft.ApplicationInsights.mock.Pageview",
       baseData: {
-        uri: "localhost/#id_token=blah",
+        uri: urlWithToken,
+        refUri: urlWithToken,
       },
       baseType: "PageviewData",
       ext: {
         trace: {
-          name: "localhost/#id_token=blah",
+          name: operationWithToken,
         },
       },
     } as ITelemetryItem;
-
-    expect(filterPotentialOktaRedirectEvent(item)).toEqual(true);
+    const returnItem = filterPotentialOktaRedirectEvent(item) as ITelemetryItem;
+    expect(returnItem?.ext?.trace?.name).toEqual(operationWithoutToken);
+    expect(returnItem?.baseData?.uri).toEqual(urlWithoutToken);
+    expect(returnItem?.baseData?.refUri).toEqual(urlWithoutToken);
   });
 });
