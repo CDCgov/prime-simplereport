@@ -102,15 +102,11 @@ export function filterPotentialOktaRedirectEvent(envelope: ITelemetryItem) {
     telemetryItem.uri = urlWithoutIdToken;
 
     // possible properties that need replacing
-    if (telemetryItem?.properties?.refUri)
-      telemetryItem.properties.refUri = urlWithoutIdToken;
-    if (telemetryItem?.refURI) telemetryItem.refUri = urlWithoutIdToken;
+    telemetryItem.properties.refUri = urlWithoutIdToken;
+    telemetryItem.operation_Name = stripIdTokenFromOperationName(
+      envelope!.ext!.trace.name
+    );
 
-    if (telemetryItem?.operation_Name) {
-      telemetryItem.operation_Name = stripIdTokenFromOperationName(
-        envelope!.ext!.trace.name
-      );
-    }
     return true;
   }
 }
@@ -153,8 +149,7 @@ export function withInsights(console: Console) {
             data[0] = message;
             return message;
           }
-          const exceptionData = JSON.stringify(data[0]);
-          return exceptionData;
+          return JSON.stringify(data[0]);
         })();
         appInsights?.trackException({
           exception: exception,
