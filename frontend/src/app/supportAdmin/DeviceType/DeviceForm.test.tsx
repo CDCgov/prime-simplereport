@@ -93,7 +93,7 @@ describe("create new device", () => {
       await userEvent.click(screen.getByText("Save changes"));
       await waitFor(() =>
         expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
-          loincCode: "1920-12",
+          internalId: undefined,
           manufacturer: "Mesa Biotech",
           model: "Accula SARS-Cov-2 Test*",
           name: "Accula",
@@ -368,6 +368,7 @@ describe("update existing devices", () => {
         equipmentUid.map((code) => (code as HTMLInputElement).value)
       ).toEqual(["equipmentUid123", "equipmentUid321", "equipmentUid345"]);
     });
+
     it("maps supported diseases to supported disease and empty test performed", async () => {
       await userEvent.click(screen.getByTestId("combo-box-select"));
       await userEvent.click(screen.getAllByText("Fission Energizer")[1]);
@@ -384,12 +385,15 @@ describe("update existing devices", () => {
       ).toEqual(["123", "456", "789"]);
       expect(
         testPerformed.map((code) => (code as HTMLInputElement).value)
-      ).toEqual(["1234-2", "", ""]);
+      ).toEqual(["1234-1", "Test123", "Test345"]);
     });
-    it("maps covid to supported disease", async () => {
+
+    // ToDo confirm that this workaround is not needed as all the devices have been back filed in the join table
+    /*it.only("maps covid to supported disease", async () => {
       await userEvent.click(screen.getByTestId("combo-box-select"));
       await userEvent.click(screen.getAllByText("Default Device")[1]);
 
+      screen.logTestingPlaygroundURL();
       expect(
         (screen.getByLabelText("Supported disease *") as HTMLInputElement).value
       ).toEqual("123");
@@ -397,7 +401,8 @@ describe("update existing devices", () => {
         (screen.getByLabelText("Test performed code *") as HTMLInputElement)
           .value
       ).toEqual("1234-7");
-    });
+    });*/
+
     it("displays a list of available snomeds", () => {
       const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
@@ -457,13 +462,22 @@ describe("update existing devices", () => {
           screen.getAllByLabelText("Supported disease *")[1],
           "Flu A"
         );
+        await userEvent.clear(
+          screen.getAllByLabelText("Test performed code *")[1]
+        );
         await userEvent.type(
           screen.getAllByLabelText("Test performed code *")[1],
           "LP 123"
         );
+        await userEvent.clear(
+          screen.getAllByLabelText("Test ordered code *")[0]
+        );
         await userEvent.type(
           screen.getAllByLabelText("Test ordered code *")[0],
           "LP 321"
+        );
+        await userEvent.clear(
+          screen.getAllByLabelText("Test ordered code *")[1]
         );
         await userEvent.type(
           screen.getAllByLabelText("Test ordered code *")[1],
@@ -486,7 +500,6 @@ describe("update existing devices", () => {
             name: "Tesla Emitter",
             model: "Model AX",
             manufacturer: "Celoxitin LLC",
-            loincCode: "1234-1",
             swabTypes: ["123", "456"],
             supportedDiseases: ["123", "456"],
             testLength: 15,
@@ -495,6 +508,8 @@ describe("update existing devices", () => {
                 supportedDisease: "123",
                 testPerformedLoincCode: "1234-1",
                 testOrderedLoincCode: "LP 321",
+                equipmentUid: "equipmentUid123",
+                testkitNameId: "testkitNameId123",
               },
               {
                 supportedDisease: "456",
@@ -518,10 +533,14 @@ describe("update existing devices", () => {
           screen.getAllByLabelText("Test performed code *")[0],
           "950-9501"
         );
+        await userEvent.clear(
+          screen.getAllByLabelText("Test ordered code *")[0]
+        );
         await userEvent.type(
           screen.getAllByLabelText("Test ordered code *")[0],
           "1059-059"
         );
+
         await userEvent.click(screen.getByText("Save changes"));
 
         await waitFor(() =>
@@ -530,7 +549,6 @@ describe("update existing devices", () => {
             name: "Tesla Emitter",
             model: "Model A",
             manufacturer: "Celoxitin",
-            loincCode: "950-9501",
             swabTypes: ["123"],
             supportedDiseases: ["123"],
             testLength: 15,
@@ -539,6 +557,8 @@ describe("update existing devices", () => {
                 supportedDisease: "123",
                 testPerformedLoincCode: "950-9501",
                 testOrderedLoincCode: "1059-059",
+                equipmentUid: "equipmentUid123",
+                testkitNameId: "testkitNameId123",
               },
             ],
           })

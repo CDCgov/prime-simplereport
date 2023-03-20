@@ -178,7 +178,6 @@ describe("ManageDeviceTypeFormContainer", () => {
         variables: {
           internalId: "abc3",
           name: "Covalent Observer",
-          loincCode: "LP 123",
           manufacturer: "Vitamin Tox LLC",
           model: "Model CD",
           swabTypes: ["789"],

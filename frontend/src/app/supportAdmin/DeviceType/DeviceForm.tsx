@@ -81,7 +81,7 @@ const DeviceForm = (props: Props) => {
         (supportedDisease: SupportedDiseasesFormData) =>
           supportedDisease.supportedDisease
       ),
-      supportedDiseaseTestPerformed: deviceData.supportedDiseases.map(
+      supportedDiseaseTestPerformed: deviceData.supportedDiseases?.map(
         (supportedDisease: SupportedDiseasesFormData) => {
           const convertedSupportedDisease = {
             supportedDisease: supportedDisease.supportedDisease,
@@ -160,7 +160,7 @@ const DeviceForm = (props: Props) => {
             [],
           testLength: device.testLength ? device.testLength : 15,
           supportedDiseaseTestPerformed:
-            device.supportedDiseaseTestPerformed.map(
+            device.supportedDiseaseTestPerformed?.map(
               (diseaseTestPerformed) => ({
                 supportedDisease:
                   diseaseTestPerformed.supportedDisease.internalId,
