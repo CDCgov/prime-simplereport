@@ -4593,3 +4593,13 @@ databaseChangeLog:
       rollback:
         - dropTable:
             tableName: device_type_disease
+  - changeSet:
+      id: drop-not-null-constraint-loinc_code
+      author: tsv7@cdc.gov
+      comment: Drop the not null constraint for loinc_code in device_type
+      changes:
+        - tagDatabase:
+            tag: drop-not-null-constraint-loinc_code
+        - dropNotNullConstraint:
+            columnName: loinc_code
+            tableName: device_type
