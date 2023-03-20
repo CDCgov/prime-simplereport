@@ -1,10 +1,14 @@
 FROM cypress/browsers:node14.17.0-chrome91-ff89
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
-# Install OpenJDK-11
-RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
-    apt-get install -y ant && \
+RUN apt-get install -y wget apt-transport-https; \
+    mkdir -p /etc/apt/keyrings; \
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc; \
+    echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list; \
+    apt-get update; \
+    apt-get upgrade; \
+    apt-get install -y temurin-17-jdk; \
+    apt-get install -y ant; \
     apt-get clean;
 
 ADD ./cypress /app/cypress
