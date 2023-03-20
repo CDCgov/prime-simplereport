@@ -8,7 +8,7 @@ import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 import {
   stripIdTokenFromOktaRedirectUri,
   stripIdTokenFromOperationName,
-} from "./PrimeErrorBoundary";
+} from "./utils/url";
 
 let reactPlugin: ReactPlugin | null = null;
 let appInsights: ApplicationInsights | null = null;
