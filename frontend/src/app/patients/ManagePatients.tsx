@@ -9,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { displayFullName } from "../utils";
 import {
@@ -256,7 +257,7 @@ export const DetachedManagePatients = ({
               <span className={"margin-right-1"}>
                 Add {PATIENT_TERM_PLURAL}
               </span>
-              <FontAwesomeIcon icon={faCaretDown} />
+              <FontAwesomeIcon icon={faCaretDown as IconProp} />
             </>
           }
           items={[
@@ -264,7 +265,7 @@ export const DetachedManagePatients = ({
               name: "individual",
               content: (
                 <IconLabel
-                  icon={faIdCard}
+                  icon={faIdCard as IconProp}
                   primaryText={`Add individual ${PATIENT_TERM}`}
                   secondaryText={"Fill out a form to add a patient"}
                 />
@@ -280,7 +281,7 @@ export const DetachedManagePatients = ({
               name: "upload patients",
               content: (
                 <IconLabel
-                  icon={faRightFromBracket}
+                  icon={faRightFromBracket as IconProp}
                   primaryText={"Import from spreadsheet"}
                   secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
                 />
