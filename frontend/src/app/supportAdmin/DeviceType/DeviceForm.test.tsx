@@ -388,21 +388,6 @@ describe("update existing devices", () => {
       ).toEqual(["1234-1", "Test123", "Test345"]);
     });
 
-    // ToDo confirm that this workaround is not needed as all the devices have been back filed in the join table
-    /*it.only("maps covid to supported disease", async () => {
-      await userEvent.click(screen.getByTestId("combo-box-select"));
-      await userEvent.click(screen.getAllByText("Default Device")[1]);
-
-      screen.logTestingPlaygroundURL();
-      expect(
-        (screen.getByLabelText("Supported disease *") as HTMLInputElement).value
-      ).toEqual("123");
-      expect(
-        (screen.getByLabelText("Test performed code *") as HTMLInputElement)
-          .value
-      ).toEqual("1234-7");
-    });*/
-
     it("displays a list of available snomeds", () => {
       const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
@@ -410,6 +395,7 @@ describe("update existing devices", () => {
       expect(within(snomedList).getByText("mouth")).toBeInTheDocument();
       expect(within(snomedList).getByText("nose")).toBeInTheDocument();
     });
+
     it("removes a supported disease when trash button is clicked", async () => {
       await userEvent.click(screen.getByTestId("combo-box-select"));
       await userEvent.click(screen.getAllByText("Postal Swab")[1]);
@@ -426,6 +412,7 @@ describe("update existing devices", () => {
           .map((disease) => (disease as HTMLInputElement).value)
       ).toEqual(["123", "789"]);
     });
+
     describe("selecting another device", () => {
       it("prefills input fields with new values", async () => {
         await userEvent.click(screen.getByTestId("combo-box-select"));
