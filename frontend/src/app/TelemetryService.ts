@@ -88,8 +88,7 @@ export function filterPotentialOktaRedirectEvent(envelope: ITelemetryItem) {
   const telemetryItem = envelope?.baseData;
 
   const telemetryItemNeedsIdSanitization =
-    telemetryItem?.uri.includes("#id_token") ||
-    envelope?.ext?.trace.name.includes("#id_token");
+    telemetryItem?.uri.includes("#id_token");
 
   if (
     telemetryItemNeedsIdSanitization &&
