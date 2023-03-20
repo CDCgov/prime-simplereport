@@ -96,6 +96,7 @@ export function filterIdTokenOnOktaRedirect(envelope: ITelemetryItem) {
     const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
       telemetryItem.uri
     );
+    // possible propeties that need replacing
     telemetryItem.properties.refUri = urlWithoutIdToken;
     telemetryItem.uri = urlWithoutIdToken;
     telemetryItem.refUri = urlWithoutIdToken;
