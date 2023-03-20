@@ -30,7 +30,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +71,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     List<UUID> facilityIds =
         _orgService.getFacilities(_orgService.getCurrentOrganization()).stream()
             .map(Facility::getInternalId)
-            .collect(Collectors.toList());
+            .toList();
     if (facilityIds.isEmpty()) {
       throw new IllegalStateException("This organization has no facilities");
     }
@@ -154,6 +153,49 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(phoneNumbers).hasSize(1);
     PhoneNumber phoneNumber = phoneNumbers.get(0);
     assertThat(phoneNumber.getNumber()).isEqualTo("410-867-5309");
+    assertThat(phoneNumber.getType()).isEqualTo(PhoneType.MOBILE);
+
+    verify(_emailService, times(1))
+        .sendWithDynamicTemplate(
+            List.of("bobbity@example.com"),
+            EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
+            Map.of("patients_url", "https://simplereport.gov/patients?facility=null"));
+  }
+
+  @Test
+  void validPersonWithEmptyOptional_savedToDatabase()
+      throws IOException, ExecutionException, InterruptedException {
+    // GIVEN
+    InputStream inputStream = loadCsv("patientBulkUpload/validEmptyOptionalValues.csv");
+    byte[] content = inputStream.readAllBytes();
+
+    // WHEN
+    CompletableFuture<Set<Person>> futureSavedPatients = this._service.savePatients(content, null);
+    Set<Person> savedPatients = futureSavedPatients.get();
+
+    // THEN
+    assertThat(savedPatients).hasSameSizeAs(fetchDatabasePatients());
+    assertThat(fetchDatabasePatientsForFacility(firstFacilityId))
+        .hasSameSizeAs(fetchDatabasePatientsForFacility(secondFacilityId));
+    assertThat(fetchDatabasePatients()).hasSize(1);
+
+    Person patient = fetchDatabasePatients().get(0);
+
+    assertThat(patient.getLastName()).isEqualTo("Kuphal");
+    assertThat(patient.getFirstName()).isEqualTo("Lucienne");
+    assertThat(patient.getRace()).isEqualTo("black");
+    assertThat(patient.getBirthDate()).isEqualTo(LocalDate.of(1986, 3, 12));
+    assertThat(patient.getGender()).isEqualTo("female");
+    assertThat(patient.getEthnicity()).isEqualTo("hispanic");
+    assertThat(patient.getCountry()).isEqualTo("USA");
+    assertThat(patient.getEmployedInHealthcare()).isFalse();
+    assertThat(patient.getResidentCongregateSetting()).isFalse();
+
+    List<PhoneNumber> phoneNumbers =
+        phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());
+    assertThat(phoneNumbers).hasSize(1);
+    PhoneNumber phoneNumber = phoneNumbers.get(0);
+    assertThat(phoneNumber.getNumber()).isEqualTo("410-675-4559");
     assertThat(phoneNumber.getType()).isEqualTo(PhoneType.MOBILE);
 
     verify(_emailService, times(1))
