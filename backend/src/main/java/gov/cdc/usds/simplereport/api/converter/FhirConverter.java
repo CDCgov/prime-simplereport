@@ -411,10 +411,23 @@ public class FhirConverter {
         .map(
             result -> {
               String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
+              String testkitNameId = getTestkitNameId(deviceTypeDisease, result);
               return convertToObservation(
-                  result, testPerformedLoincCode, correctionStatus, correctionReason);
+                  result,
+                  testPerformedLoincCode,
+                  correctionStatus,
+                  correctionReason,
+                  testkitNameId);
             })
         .collect(Collectors.toList());
+  }
+
+  private static String getTestkitNameId(List<DeviceTypeDisease> deviceTypeDisease, Result result) {
+    return deviceTypeDisease.stream()
+        .filter(code -> code.getSupportedDisease() == result.getDisease())
+        .findFirst()
+        .map(DeviceTypeDisease::getTestkitNameId)
+        .orElse(null);
   }
 
   private static String getTestPerformedLoincCode(
@@ -430,7 +443,8 @@ public class FhirConverter {
       Result result,
       String testPerformedCode,
       TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      String correctionReason,
+      String testkitNameId) {
     if (result != null && result.getDisease() != null) {
       return convertToObservation(
           testPerformedCode,
@@ -439,7 +453,8 @@ public class FhirConverter {
           correctionStatus,
           correctionReason,
           result.getInternalId().toString(),
-          result.getTestResult().toString());
+          result.getTestResult().toString(),
+          testkitNameId);
     }
     return null;
   }
@@ -451,12 +466,14 @@ public class FhirConverter {
       TestCorrectionStatus correctionStatus,
       String correctionReason,
       String id,
-      String resultDescription) {
+      String resultDescription,
+      String testkitNameId) {
     var observation = new Observation();
     observation.setId(id);
     setStatus(observation, correctionStatus);
     observation.setCode(createLoincConcept(diseaseCode, "", diseaseName));
     addSNOMEDValue(resultCode, observation, resultDescription);
+    observation.getMethod().addCoding().setCode(testkitNameId);
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
     return observation;
