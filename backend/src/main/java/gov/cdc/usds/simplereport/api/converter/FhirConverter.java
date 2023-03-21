@@ -365,6 +365,13 @@ public class FhirConverter {
     return device;
   }
 
+  public static Device convertToDevice(
+      @NotNull DeviceType deviceType, DeviceTypeDisease deviceTypeDisease) {
+    Device device = convertToDevice(deviceType);
+    device.addIdentifier(new Identifier().setValue(deviceTypeDisease.getEquipmentUid()));
+    return device;
+  }
+
   public static Specimen convertToSpecimen(
       String specimenCode,
       String specimenName,
@@ -402,39 +409,54 @@ public class FhirConverter {
         specimenType.getInternalId().toString());
   }
 
-  public static List<Observation> convertToObservation(
+  record ObservationDevicePair(Observation observation, Device device) {}
+
+  public static List<ObservationDevicePair> convertToObservation(
       Set<Result> results,
-      List<DeviceTypeDisease> deviceTypeDisease,
+      DeviceType deviceType,
       TestCorrectionStatus correctionStatus,
       String correctionReason) {
-    return results.stream()
-        .map(
-            result -> {
-              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
-              String testkitNameId = getTestkitNameId(deviceTypeDisease, result);
-              return convertToObservation(
+
+    List<DeviceTypeDisease> deviceTypeDiseases = deviceType.getSupportedDiseaseTestPerformed();
+    List<ObservationDevicePair> observations = new ArrayList<>();
+
+    results.forEach(
+        result -> {
+          DeviceTypeDisease deviceTypeDisease =
+              deviceTypeDiseases.stream()
+                  .filter(code -> code.getSupportedDisease() == result.getDisease())
+                  .findFirst()
+                  .orElse(null);
+
+          String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
+          String testkitNameId = getTestkitNameId(deviceTypeDisease);
+          Observation observation =
+              convertToObservation(
                   result,
                   testPerformedLoincCode,
                   correctionStatus,
                   correctionReason,
                   testkitNameId);
-            })
-        .collect(Collectors.toList());
+
+          Device device = convertToDevice(deviceType, deviceTypeDisease);
+          String deviceFullUrl = ResourceType.Device + "/" + device.getId();
+          observation.setDevice(new Reference(deviceFullUrl));
+
+          observations.add(new ObservationDevicePair(observation, device));
+        });
+
+    return observations;
   }
 
-  private static String getTestkitNameId(List<DeviceTypeDisease> deviceTypeDisease, Result result) {
-    return deviceTypeDisease.stream()
-        .filter(code -> code.getSupportedDisease() == result.getDisease())
-        .findFirst()
+  private static String getTestkitNameId(DeviceTypeDisease deviceTypeDisease) {
+    return Optional.ofNullable(deviceTypeDisease)
         .map(DeviceTypeDisease::getTestkitNameId)
         .orElse(null);
   }
 
   private static String getTestPerformedLoincCode(
-      List<DeviceTypeDisease> deviceTypeDisease, Result result) {
-    return deviceTypeDisease.stream()
-        .filter(code -> code.getSupportedDisease() == result.getDisease())
-        .findFirst()
+      DeviceTypeDisease deviceTypeDisease, Result result) {
+    return Optional.ofNullable(deviceTypeDisease)
         .map(DeviceTypeDisease::getTestPerformedLoincCode)
         .orElse(result.getTestOrder().getDeviceType().getLoincCode());
   }
@@ -679,11 +701,10 @@ public class FhirConverter {
         convertToPatient(testEvent.getPatient()),
         convertToOrganization(testEvent.getFacility()),
         convertToPractitioner(testEvent.getProviderData()),
-        convertToDevice(testEvent.getDeviceType()),
         convertToSpecimen(testEvent.getSpecimenType()),
         convertToObservation(
             testEvent.getResults(),
-            testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
+            testEvent.getDeviceType(),
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
         convertToAOEObservations(testEvent.getInternalId().toString(), testEvent.getSurveyData()),
@@ -698,9 +719,8 @@ public class FhirConverter {
       Patient patient,
       Organization organization,
       Practitioner practitioner,
-      Device device,
       Specimen specimen,
-      List<Observation> resultObservations,
+      List<ObservationDevicePair> observationDevicePairs,
       Set<Observation> aoeObservations,
       ServiceRequest serviceRequest,
       DiagnosticReport diagnosticReport,
@@ -713,7 +733,6 @@ public class FhirConverter {
     var specimenFullUrl = ResourceType.Specimen + "/" + specimen.getId();
     var serviceRequestFullUrl = ResourceType.ServiceRequest + "/" + serviceRequest.getId();
     var diagnosticReportFullUrl = ResourceType.DiagnosticReport + "/" + diagnosticReport.getId();
-    var deviceFullUrl = ResourceType.Device + "/" + device.getId();
 
     var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
     var provenance = createProvenance(organizationFullUrl, currentDate);
@@ -747,24 +766,26 @@ public class FhirConverter {
     entryList.add(Pair.of(practitionerFullUrl, practitioner));
     entryList.add(Pair.of(specimenFullUrl, specimen));
     entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
-    entryList.add(Pair.of(deviceFullUrl, device));
     entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
     entryList.add(
         Pair.of(
             ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
             new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
 
-    resultObservations.forEach(
-        observation -> {
-          var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+    observationDevicePairs.forEach(
+        pair -> {
+          Observation observation = pair.observation();
+          Device device = pair.device();
+
+          String observationFullUrl = ResourceType.Observation + "/" + observation.getId();
 
           observation.setSubject(new Reference(patientFullUrl));
           observation.addPerformer(new Reference(organizationFullUrl));
           observation.setSpecimen(new Reference(specimenFullUrl));
-          observation.setDevice(new Reference(deviceFullUrl));
 
           diagnosticReport.addResult(new Reference(observationFullUrl));
           entryList.add(Pair.of(observationFullUrl, observation));
+          entryList.add(Pair.of(observation.getDevice().getReference(), device));
         });
 
     aoeObservations.forEach(
