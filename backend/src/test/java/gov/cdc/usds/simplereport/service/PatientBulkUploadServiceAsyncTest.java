@@ -10,7 +10,9 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.BaseAuthenticatedFullStackTest;
+import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
@@ -21,9 +23,13 @@ import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -160,6 +166,12 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
             List.of("bobbity@example.com"),
             EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
             Map.of("patients_url", "https://simplereport.gov/patients?facility=null"));
+
+    final MappingIterator<Map<String, String>> valueIterator =
+        CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
+    assertThat(valueIterator.next().keySet())
+        .isEqualTo(
+            new HashSet<>((new PatientUploadRow(Collections.emptyMap())).getRequiredFields()));
   }
 
   @Test
