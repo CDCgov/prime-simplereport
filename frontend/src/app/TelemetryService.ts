@@ -68,15 +68,15 @@ export function isBlacklistedFile(envelope: ITelemetryItem) {
       regexRemoteDependency.test(envelope.name) &&
       staticFilesToIgnore.includes((envelope as any).baseData.name)
     ) {
-      return true;// file should be skipped
+      return true; // file should be skipped
     }
   } catch (e) {
     /* do nothing and don't disrupt logging*/
   }
 }
 
-export function sanitizeOktaToken(envelope: ITelemetryItem):void {
- try {
+export function sanitizeOktaToken(envelope: ITelemetryItem): void {
+  try {
     // Okta redirects only come from page views events
     const eventIsPageView = envelope?.baseType === "PageviewData";
     if (!eventIsPageView) return;
