@@ -40,7 +40,7 @@ const createTelemetryService = () => {
     });
 
     appInsights.addTelemetryInitializer(function (envelope: ITelemetryItem) {
-      if (isBlacklistedFile(envelope)) return false; //skips logging when returning false
+      if (isStaticFileToSkip(envelope)) return false; //skips logging when returning false
       // for all remaining logs
       sanitizeOktaToken(envelope);
     });
@@ -54,7 +54,7 @@ const createTelemetryService = () => {
 export const ai = createTelemetryService();
 export const getAppInsights = () => appInsights;
 
-export function isBlacklistedFile(envelope: ITelemetryItem) {
+export function isStaticFileToSkip(envelope: ITelemetryItem) {
   try {
     const regexRemoteDependency =
       /Microsoft.ApplicationInsights.(.*).RemoteDependency/;
