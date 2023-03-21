@@ -2,7 +2,6 @@ import {
   render,
   screen,
   waitFor,
-  waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -143,11 +142,7 @@ describe("TestTimerWidget", () => {
       await userEvent.click(timerButton);
       await screen.findByText("0:00");
 
-      // This is a 0-second timer, but it takes ~1 second to enter the
-      // countdown state and register as completed
-      await waitForElementToBeRemoved(() => screen.queryByText("0:00"));
-
-      expect(screen.getByText("RESULT READY")).toBeInTheDocument();
+      await screen.findByText("RESULT READY");
 
       expect(trackEventMock).toHaveBeenCalledWith(
         { name: "Test timer finished" },
