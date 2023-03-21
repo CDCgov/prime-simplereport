@@ -23,9 +23,4 @@ public class DeviceTypeResolver {
   public List<DeviceType> deviceType() {
     return deviceTypes();
   }
-
-  @QueryMapping
-  public void syncDevices() {
-    dts.syncDevices();
-  }
 }

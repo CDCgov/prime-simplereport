@@ -13,8 +13,7 @@ public interface SpecimenTypeRepository extends EternalAuditedEntityRepository<S
 
   List<SpecimenType> findAllByInternalIdIn(List<UUID> uuids);
 
-  @Deprecated // this doesn't check for soft-deletion! But we need that behavior for the
-  // backward-compatibility shim code.
+  // this doesn't check for soft-deletion!
   Optional<SpecimenType> findByTypeCode(String swabType);
 
   Optional<SpecimenType> findByTypeCodeAndIsDeletedFalse(String swabType);
