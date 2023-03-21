@@ -62,10 +62,23 @@ module "simple_report_api" {
     DATAHUB_API_KEY                               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     DATAHUB_FHIR_KEY                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
     DATAHUB_SIGNING_KEY                           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_signing_key.id})"
+    AZ_REPORTING_QUEUE_CXN_STRING                 = data.azurerm_storage_account.app.primary_connection_string
+    RS_QUEUE_CALLBACK_TOKEN                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.report_stream_exception_callback_token.id})"
 
     # true by default: can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows (and overrides) an identical declaration in application.yaml
     # SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
   }
+}
+
+module "report_stream_reporting_functions" {
+  source       = "../services/app_functions/report_stream_batched_publisher/infra"
+  environment  = local.env
+  env_level    = local.env_level
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  lb_subnet_id = data.terraform_remote_state.persistent_stg.outputs.subnet_lbs_id
+  depends_on = [
+    azurerm_storage_account.app
+  ]
 }

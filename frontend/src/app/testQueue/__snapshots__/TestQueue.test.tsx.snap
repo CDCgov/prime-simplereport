@@ -176,7 +176,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      d="M176 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h16V98.4C92.3 113.8 16 200 16 304c0 114.9 93.1 208 208 208s208-93.1 208-208c0-41.8-12.3-80.7-33.5-113.2l24.1-24.1c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L355.7 143c-28.1-23-62.2-38.8-99.7-44.6V64h16c17.7 0 32-14.3 32-32s-14.3-32-32-32H224 176zm72 192V320c0 13.3-10.7 24-24 24s-24-10.7-24-24V192c0-13.3 10.7-24 24-24s24 10.7 24 24z"
+                      d="M160 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h16V98.4C76.3 113.8 0 200 0 304C0 418.9 93.1 512 208 512s208-93.1 208-208c0-41.8-12.3-80.7-33.5-113.2l24.1-24.1c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L339.7 143c-28.1-23-62.2-38.8-99.7-44.6V64h16c17.7 0 32-14.3 32-32s-14.3-32-32-32H208 160zm72 192V320c0 13.3-10.7 24-24 24s-24-10.7-24-24V192c0-13.3 10.7-24 24-24s24 10.7 24 24z"
                       fill="currentColor"
                     />
                   </svg>
@@ -255,16 +255,13 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="usa-label"
                         for="1"
                       >
-                        <span>
-                          Device
-                        </span>
                         <span
                           class="usa-tooltip usa-text-with-tooltip"
                           data-testid="tooltipWrapper"
                         >
                           <button
                             aria-describedby="tooltip-211111"
-                            aria-label="Device tooltip"
+                            aria-label=""
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -272,6 +269,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             title=""
                             wrapperclasses="usa-text-with-tooltip"
                           >
+                            Device
                             <svg
                               alt-text="info"
                               aria-hidden="true"
@@ -284,7 +282,7 @@ exports[`TestQueue should render the test queue 1`] = `
                               xmlns="http://www.w3.org/2000/svg"
                             >
                               <path
-                                d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-144c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32z"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
                                 fill="currentColor"
                               />
                             </svg>
@@ -593,7 +591,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     xmlns="http://www.w3.org/2000/svg"
                   >
                     <path
-                      d="M176 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h16V98.4C92.3 113.8 16 200 16 304c0 114.9 93.1 208 208 208s208-93.1 208-208c0-41.8-12.3-80.7-33.5-113.2l24.1-24.1c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L355.7 143c-28.1-23-62.2-38.8-99.7-44.6V64h16c17.7 0 32-14.3 32-32s-14.3-32-32-32H224 176zm72 192V320c0 13.3-10.7 24-24 24s-24-10.7-24-24V192c0-13.3 10.7-24 24-24s24 10.7 24 24z"
+                      d="M160 0c-17.7 0-32 14.3-32 32s14.3 32 32 32h16V98.4C76.3 113.8 0 200 0 304C0 418.9 93.1 512 208 512s208-93.1 208-208c0-41.8-12.3-80.7-33.5-113.2l24.1-24.1c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L339.7 143c-28.1-23-62.2-38.8-99.7-44.6V64h16c17.7 0 32-14.3 32-32s-14.3-32-32-32H208 160zm72 192V320c0 13.3-10.7 24-24 24s-24-10.7-24-24V192c0-13.3 10.7-24 24-24s24 10.7 24 24z"
                       fill="currentColor"
                     />
                   </svg>
@@ -672,16 +670,13 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="usa-label"
                         for="4"
                       >
-                        <span>
-                          Device
-                        </span>
                         <span
                           class="usa-tooltip usa-text-with-tooltip"
                           data-testid="tooltipWrapper"
                         >
                           <button
                             aria-describedby="tooltip-211111"
-                            aria-label="Device tooltip"
+                            aria-label=""
                             class="usa-button usa-button--unstyled usa-tooltip__trigger"
                             data-testid="triggerElement"
                             position="right"
@@ -689,6 +684,7 @@ exports[`TestQueue should render the test queue 1`] = `
                             title=""
                             wrapperclasses="usa-text-with-tooltip"
                           >
+                            Device
                             <svg
                               alt-text="info"
                               aria-hidden="true"
@@ -701,7 +697,7 @@ exports[`TestQueue should render the test queue 1`] = `
                               xmlns="http://www.w3.org/2000/svg"
                             >
                               <path
-                                d="M256 512c141.4 0 256-114.6 256-256S397.4 0 256 0S0 114.6 0 256S114.6 512 256 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-144c-17.7 0-32-14.3-32-32s14.3-32 32-32s32 14.3 32 32s-14.3 32-32 32z"
+                                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
                                 fill="currentColor"
                               />
                             </svg>

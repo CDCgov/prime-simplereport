@@ -66,16 +66,20 @@ describe("Testing with multiplex devices", () => {
       cy.get('input[name="name"]').type(deviceName);
       cy.get('input[name="model"]').type("1RX");
       cy.get('input[name="manufacturer"]').type("acme");
+      cy.get('input[name="testLength"]').type("15");
       cy.get('input[role="combobox"]').first().type("Swab");
       cy.get('li[id="multi-select-swabTypes-list--option-1"]').click();
-      cy.get('select[name="selectSupportedDisease0"').select("COVID-19")
-      cy.get('input[name="testPerformedCode0"]').type("123-456")
-      cy.contains('.usa-button', "Add another disease").click()
-      cy.get('select[name="selectSupportedDisease1"').select("Flu A")
-      cy.get('input[name="testPerformedCode1"]').type("456-789")
-      cy.contains('.usa-button', "Add another disease").click()
-      cy.get('select[name="selectSupportedDisease2"').select("Flu B")
-      cy.get('input[name="testPerformedCode2"]').type("789-123")
+      cy.get('select[name="supportedDiseases.0.supportedDisease"').select("COVID-19");
+      cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').type("123-456");
+      cy.get('input[name="supportedDiseases.0.testOrderedLoincCode"]').type("9500-6");
+      cy.contains('.usa-button', "Add another disease").click();
+      cy.get('select[name="supportedDiseases.1.supportedDisease"').select("Flu A");
+      cy.get('input[name="supportedDiseases.1.testPerformedLoincCode"]').type("456-789");
+      cy.get('input[name="supportedDiseases.1.testOrderedLoincCode"]').type("9500-6");
+      cy.contains('.usa-button', "Add another disease").click();
+      cy.get('select[name="supportedDiseases.2.supportedDisease"').select("Flu B");
+      cy.get('input[name="supportedDiseases.2.testPerformedLoincCode"]').type("789-123");
+      cy.get('input[name="supportedDiseases.2.testOrderedLoincCode"]').type("9500-6");
       cy.contains("Save changes").should("be.enabled").click();
       cy.wait("@gqlcreateDeviceTypeMutation");
       cy.get(".Toastify").contains("Created Device");
@@ -97,12 +101,12 @@ describe("Testing with multiplex devices", () => {
       cy.get('input[name="model"]').should("have.value", "1RX");
       cy.get('input[name="manufacturer"]').should("have.value", "acme");
       cy.get(".pill").should("have.length", 1);
-      cy.get('select[name="selectSupportedDisease0"').find(":selected").should("have.text", "COVID-19")
-      cy.get('input[name="testPerformedCode0"]').should("have.value","123-456")
-      cy.get('select[name="selectSupportedDisease1"').find(":selected").should("have.text", "Flu A")
-      cy.get('input[name="testPerformedCode1"]').should("have.value","456-789")
-      cy.get('select[name="selectSupportedDisease2"').find(":selected").should("have.text", "Flu B")
-      cy.get('input[name="testPerformedCode2"]').should("have.value","789-123")
+      cy.get('select[name="supportedDiseases.0.supportedDisease"').find(":selected").should("have.text", "COVID-19")
+      cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').should("have.value","123-456")
+      cy.get('select[name="supportedDiseases.1.supportedDisease"').find(":selected").should("have.text", "Flu A")
+      cy.get('input[name="supportedDiseases.1.testPerformedLoincCode"]').should("have.value","456-789")
+      cy.get('select[name="supportedDiseases.2.supportedDisease"').find(":selected").should("have.text", "Flu B")
+      cy.get('input[name="supportedDiseases.2.testPerformedLoincCode"]').should("have.value","789-123")
     });
 
     it("adds the multiplex device to the testing facility", () => {

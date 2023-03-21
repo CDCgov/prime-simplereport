@@ -1,5 +1,6 @@
 import React from "react";
 
+import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
 
 import FacilityPopup from "./FacilityPopup";
@@ -15,6 +16,8 @@ const FacilitySelect: React.FC<FacilitySelectProps> = ({
   facilities,
   setActiveFacility,
 }) => {
+  useDocumentTitle("Application home");
+
   return (
     <FacilityPopup>
       <p className="select-text">

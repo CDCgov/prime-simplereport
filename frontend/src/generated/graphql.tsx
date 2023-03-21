@@ -930,6 +930,7 @@ export type SupportedDiseaseTestPerformed = {
   __typename?: "SupportedDiseaseTestPerformed";
   equipmentUid?: Maybe<Scalars["String"]>;
   supportedDisease: SupportedDisease;
+  testOrderedLoincCode?: Maybe<Scalars["String"]>;
   testPerformedLoincCode: Scalars["String"];
   testkitNameId?: Maybe<Scalars["String"]>;
 };
@@ -937,6 +938,7 @@ export type SupportedDiseaseTestPerformed = {
 export type SupportedDiseaseTestPerformedInput = {
   equipmentUid?: InputMaybe<Scalars["String"]>;
   supportedDisease: Scalars["ID"];
+  testOrderedLoincCode?: InputMaybe<Scalars["String"]>;
   testPerformedLoincCode: Scalars["String"];
   testkitNameId?: InputMaybe<Scalars["String"]>;
 };
@@ -1787,6 +1789,7 @@ export type GetDeviceTypeListQuery = {
           testPerformedLoincCode: string;
           testkitNameId?: string | null | undefined;
           equipmentUid?: string | null | undefined;
+          testOrderedLoincCode?: string | null | undefined;
           supportedDisease: {
             __typename?: "SupportedDisease";
             internalId: string;
@@ -5070,6 +5073,7 @@ export const GetDeviceTypeListDocument = gql`
         testPerformedLoincCode
         testkitNameId
         equipmentUid
+        testOrderedLoincCode
       }
       testLength
     }

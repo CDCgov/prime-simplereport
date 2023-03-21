@@ -18,7 +18,7 @@ import { ErrorResponse, onError } from "@apollo/client/link/error";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import Modal from "react-modal";
 
-import App from "./app/ReportingApp";
+import ReportingApp from "./app/ReportingApp";
 import PatientApp from "./patientApp/PatientApp";
 import AccountCreationApp from "./app/accountCreation/AccountCreationApp";
 import SignUpApp from "./app/signUp/SignUpApp";
@@ -139,7 +139,7 @@ export const ReactApp = () => (
                   />
                   <Route path="/session-timeout" element={<SessionTimeout />} />
                   <Route path="/reload-app" element={<Navigate to="/" />} />
-                  <Route path="/*" element={<App />} />
+                  <Route path="/*" element={<ReportingApp />} />
                   <Route element={<>Page not found</>} />
                 </Routes>
               </PrimeErrorBoundary>

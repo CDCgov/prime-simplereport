@@ -8,6 +8,10 @@ on:
   schedule:
     - cron: "45 4 * * 3"
 
+env:
+  JAVA_VERSION: 17
+  JAVA_DISTRIBUTION: 'zulu'
+
 jobs:
   analyze:
     name: Analyze
@@ -31,6 +35,12 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: +security-and-quality
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+          distribution: ${{env.JAVA_DISTRIBUTION}}
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v2

@@ -10,6 +10,7 @@ import Button from "../Button/Button";
 
 import MultiSelectDropdown, {
   MultiSelectDropdownOption,
+  RegistrationProps,
 } from "./MultiSelectDropdown/MultiSelectDropdown";
 
 import "./MultiSelect.scss";
@@ -31,6 +32,7 @@ export type MultiSelectProps = {
   disabled?: boolean;
   inputProps?: JSX.IntrinsicElements["input"];
   placeholder?: string;
+  registrationProps?: RegistrationProps;
 };
 
 type PillProps = {
@@ -71,6 +73,7 @@ export const MultiSelect = ({
   disabled,
   initialSelectedValues,
   placeholder,
+  registrationProps,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -176,6 +179,7 @@ export const MultiSelect = ({
             disabled={isDisabled}
             placeholder={placeholder}
             ariaInvalid={validationStatus === "error"}
+            registrationProps={registrationProps}
           />
           <fieldset
             className={`fieldset--unstyled pill-container${

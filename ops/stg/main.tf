@@ -30,6 +30,31 @@ resource "azurerm_storage_account" "app" {
   tags = local.management_tags
 }
 
+resource "azurerm_storage_queue" "test_event_queue" {
+  name                 = "test-event-publishing"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
+resource "azurerm_storage_queue" "test_event_exceptions_queue" {
+  name                 = "test-event-publishing-exceptions"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
+resource "azurerm_storage_queue" "test-event-publishing-error" {
+  name                 = "test-event-publishing-error"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
+resource "azurerm_storage_queue" "fhir_data_queue" {
+  name                 = "fhir-data-publishing"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
+resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
+  name                 = "fhir-data-publishing-error"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
 resource "azurerm_cdn_profile" "cdn_profile" {
   name                = "${local.name}-${local.env}"
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -102,6 +127,10 @@ module "app_gateway" {
 
   staging_fqdns = [
     module.simple_report_api.staging_hostname
+  ]
+
+  metabase_fqdns = [
+    module.metabase_service.app_hostname
   ]
 
   firewall_policy_id = module.web_application_firewall.web_application_firewall_id

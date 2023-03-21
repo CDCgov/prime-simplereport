@@ -326,7 +326,7 @@ resource "azurerm_application_gateway" "load_balancer" {
       condition {
         ignore_case = true
         negate      = false
-        pattern     = ".*metabase/(.*)"
+        pattern     = ".*/metabase(.*)"
         variable    = "var_uri_path"
       }
 

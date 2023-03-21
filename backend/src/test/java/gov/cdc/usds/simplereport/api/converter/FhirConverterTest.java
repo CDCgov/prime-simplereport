@@ -1,6 +1,108 @@
 /*
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertEmailsToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAOEObservations;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAddress;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAdministrativeGender;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToContactPoint;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDate;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDevice;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToDiagnosticReport;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToEthnicityExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToHumanName;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToObservation;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToOrganization;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPatient;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToPractitioner;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToRaceExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToServiceRequest;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToSpecimen;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToTribalAffiliationExtension;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBundle;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createMessageHeader;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createPractitionerRole;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createProvenance;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.from;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientAnswers;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.apache.commons.io.IOUtils;
+import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
+import org.hl7.fhir.r4.model.Bundle.BundleType;
+import org.hl7.fhir.r4.model.ContactPoint;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
+import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.Device;
+import org.hl7.fhir.r4.model.Device.DeviceNameType;
+import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
+import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Patient;
+import org.hl7.fhir.r4.model.Practitioner;
+import org.hl7.fhir.r4.model.PractitionerRole;
+import org.hl7.fhir.r4.model.PrimitiveType;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
+import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
+import org.hl7.fhir.r4.model.Specimen;
+import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.springframework.boot.info.GitProperties;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
 class FhirConverterTest {
@@ -509,7 +611,8 @@ class FhirConverterTest {
             TestCorrectionStatus.ORIGINAL,
             null,
             "id-123",
-            TestResult.POSITIVE.toString());
+            TestResult.POSITIVE.toString(),
+            "testKitName");
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -517,6 +620,8 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("diseaseCode");
+    assertThat(actual.getMethod().getCoding()).hasSize(1);
+    assertThat(actual.getMethod().getCoding().get(0).getCode()).isEqualTo("testKitName");
     assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
@@ -532,7 +637,8 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
-    var actual = convertToObservation(result, "loinc", TestCorrectionStatus.ORIGINAL, null);
+    var actual =
+        convertToObservation(result, "loinc", TestCorrectionStatus.ORIGINAL, null, "testkitName");
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -556,7 +662,8 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual =
-        convertToObservation(result, "loinc", TestCorrectionStatus.CORRECTED, "Oopsy Daisy");
+        convertToObservation(
+            result, "loinc", TestCorrectionStatus.CORRECTED, "Oopsy Daisy", "testkitName");
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
@@ -571,7 +678,8 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
-    var actual = convertToObservation(result, "loinc", TestCorrectionStatus.REMOVED, null);
+    var actual =
+        convertToObservation(result, "loinc", TestCorrectionStatus.REMOVED, null, "testkitName");
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay())
@@ -582,7 +690,7 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_null() {
-    var actual = convertToObservation(null, "", TestCorrectionStatus.ORIGINAL, null);
+    var actual = convertToObservation(null, "", TestCorrectionStatus.ORIGINAL, null, "testkitName");
 
     assertThat(actual).isNull();
   }
@@ -594,7 +702,8 @@ class FhirConverterTest {
             new Result(null, null, null, TestResult.POSITIVE),
             "",
             TestCorrectionStatus.ORIGINAL,
-            null);
+            null,
+            "testkitName");
 
     assertThat(actual).isNull();
   }
@@ -627,9 +736,11 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
     ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
     var covidDiseaseTestPerformedCode =
-        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6", null, null);
+        new DeviceTypeDisease(
+            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
     var fluDiseaseTestPerformedCode =
-        new DeviceTestPerformedLoincCode(null, fluDisease, "85477-8", null, null);
+        new DeviceTypeDisease(
+            null, fluDisease, "85477-8", "fluEquipmentUID", "fluTestkitNameId", "85477-0");
 
     var actual =
         convertToObservation(
@@ -676,7 +787,8 @@ class FhirConverterTest {
     var testOrder = TestDataBuilder.createTestOrderWithDevice();
     var result = new Result(testOrder, covidDisease, TestResult.NEGATIVE);
     var covidDiseaseTestPerformedCode =
-        new DeviceTestPerformedLoincCode(null, covidDisease, "94500-6", null, null);
+        new DeviceTypeDisease(
+            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
 
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
 
@@ -694,6 +806,61 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/observationCorrection.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(expectedSerialized1, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_noSymptoms_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null);
+    String testId = "fakeId";
+
+    var actual = convertToAOEObservations(testId, answers);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationNoSymptoms.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_symptomatic_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4));
+    String testId = "fakeId";
+
+    var actual = convertToAOEObservations(testId, answers);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationSymptomatic.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_noAnswer_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null);
+    String testId = "fakeId";
+
+    var actual = convertToAOEObservations(testId, answers);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationNoAoeAnswer.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
@@ -735,7 +902,9 @@ class FhirConverterTest {
   void convertToDiagnosticReport_TestEvent_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
+    var date = new Date();
     ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
+    ReflectionTestUtils.setField(testEvent, "createdAt", date);
 
     var actual = convertToDiagnosticReport(testEvent);
 
@@ -745,24 +914,32 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/diagnosticReport.json")),
             StandardCharsets.UTF_8);
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(date).getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
   @Test
   void convertToDiagnosticReport_Strings_valid() {
-    var actual = convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2", "id-123");
+    var date = new Date();
+    var actual =
+        convertToDiagnosticReport(DiagnosticReportStatus.FINAL, "95422-2", "id-123", date, date);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+    assertThat(((DateTimeType) actual.getEffective()).getAsV3())
+        .isEqualTo(new DateTimeType(date).getAsV3());
+    assertThat((actual.getIssued())).isEqualTo(date);
   }
 
   @Test
   void convertToDiagnosticReport_Strings_null() {
-    var actual = convertToDiagnosticReport(null, null, null);
+    var actual = convertToDiagnosticReport(null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
@@ -771,10 +948,7 @@ class FhirConverterTest {
 
   @Test
   void convertToServiceRequest_TestOrder_valid() {
-    var testOrder =
-        new TestOrder(
-            TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
-
+    var testOrder = TestDataBuilder.createTestOrderWithMultiplexDevice();
     var actual = convertToServiceRequest(testOrder);
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.ACTIVE);
@@ -838,9 +1012,8 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_TestOrder_matchesJson() throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var testOrder = TestDataBuilder.createEmptyTestOrder();
+    var testOrder = TestDataBuilder.createTestOrderWithMultiplexDevice();
     testOrder.markComplete();
-    testOrder.setDeviceTypeAndSpecimenType(TestDataBuilder.createEmptyDeviceWithLoinc(), null);
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual = convertToServiceRequest(testOrder);
@@ -940,6 +1113,8 @@ class FhirConverterTest {
     var device = new Device();
     var specimen = new Specimen();
     var observation = new Observation();
+    var aoeobservation1 = new Observation();
+    var aoeobservation2 = new Observation();
     var serviceRequest = new ServiceRequest();
     var diagnosticReport = new DiagnosticReport();
     var date = new Date();
@@ -949,6 +1124,8 @@ class FhirConverterTest {
     device.setId(UUID.randomUUID().toString());
     specimen.setId(UUID.randomUUID().toString());
     observation.setId(UUID.randomUUID().toString());
+    aoeobservation1.setId(UUID.randomUUID().toString());
+    aoeobservation2.setId(UUID.randomUUID().toString());
     serviceRequest.setId(UUID.randomUUID().toString());
     diagnosticReport.setId(UUID.randomUUID().toString());
 
@@ -960,9 +1137,9 @@ class FhirConverterTest {
             device,
             specimen,
             List.of(observation),
+            Set.of(aoeobservation1, aoeobservation2),
             serviceRequest,
             diagnosticReport,
-            new Date(),
             date,
             gitProperties,
             "P");
@@ -975,15 +1152,17 @@ class FhirConverterTest {
     assertThat(actual.getTimestamp()).isEqualTo(date);
     assertThat(actual.getType()).isEqualTo(BundleType.MESSAGE);
     assertThat(actual.getIdentifier().getValue()).isEqualTo(diagnosticReport.getId());
-    assertThat(actual.getEntry()).hasSize(12);
+    assertThat(actual.getEntry()).hasSize(14);
     assertThat(resourceUrls)
-        .hasSize(12)
+        .hasSize(14)
         .contains(
             "Patient/" + patient.getId(),
             "Organization/" + organization.getId(),
             "Practitioner/" + practitioner.getId(),
             "Specimen/" + specimen.getId(),
             "Observation/" + observation.getId(),
+            "Observation/" + aoeobservation1.getId(),
+            "Observation/" + aoeobservation2.getId(),
             "ServiceRequest/" + serviceRequest.getId(),
             "DiagnosticReport/" + diagnosticReport.getId(),
             "Device/" + device.getId(),
@@ -1016,7 +1195,7 @@ class FhirConverterTest {
 
     var observationEntry =
         actual.getEntry().stream()
-            .filter(entry -> entry.getFullUrl().contains("Observation/"))
+            .filter(entry -> entry.getFullUrl().contains("Observation/" + observation.getId()))
             .findFirst()
             .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
     assertThat(((Observation) observationEntry.getResource()).getSubject().getReference())
@@ -1028,6 +1207,22 @@ class FhirConverterTest {
         .isEqualTo("Specimen/" + specimen.getId());
     assertThat(((Observation) observationEntry.getResource()).getDevice().getReference())
         .isEqualTo("Device/" + device.getId());
+
+    var aoeObservationEntry1 =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/" + aoeobservation1.getId()))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
+    assertThat(((Observation) aoeObservationEntry1.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + patient.getId());
+
+    var aoeObservationEntry2 =
+        actual.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/" + aoeobservation2.getId()))
+            .findFirst()
+            .orElseThrow(() -> new AssertionError("Expected to find Observation, but not found"));
+    assertThat(((Observation) aoeObservationEntry2.getResource()).getSubject().getReference())
+        .isEqualTo("Patient/" + patient.getId());
 
     var serviceRequestEntry =
         actual.getEntry().stream()
@@ -1045,6 +1240,13 @@ class FhirConverterTest {
         .isEqualTo("Organization/" + organization.getId());
     assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getRequester().getReference())
         .contains("PractitionerRole/");
+    assertThat(
+            ((ServiceRequest) serviceRequestEntry.getResource())
+                .getSupportingInfo().stream()
+                    .allMatch(r -> r.getReference().contains("Observation/")))
+        .isTrue();
+    assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getSupportingInfo().size())
+        .isEqualTo(2);
 
     var diagnosticReportEntry =
         actual.getEntry().stream()
@@ -1076,8 +1278,18 @@ class FhirConverterTest {
 
   @Test
   void createFhirBundle_TestEvent_matchesJson() throws IOException {
+    var covidDisease = new SupportedDisease("COVID-19", "987-1");
+    var fluADisease = new SupportedDisease("FLU A", "LP 123");
+    var fluBDisease = new SupportedDisease("FLU B", "LP 456");
     var address = new StreetAddress(List.of("1 Main St"), "Chicago", "IL", "60614", "");
-    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "nasal", 0);
+    List<DeviceTypeDisease> supportedTestOrders = new ArrayList<>();
+    supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(covidDisease));
+    supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluADisease));
+    supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluBDisease));
+    var deviceType =
+        new DeviceType(
+            "name", "manufacturer", "model", "loinc", 0, new ArrayList<>(), supportedTestOrders);
+
     var specimenType = new SpecimenType("name", "typeCode");
     var provider =
         new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
@@ -1116,9 +1328,10 @@ class FhirConverterTest {
             "",
             null);
     var testOrder = new TestOrder(person, facility);
-    var covidDisease = new SupportedDisease("COVID-19", "987-1");
-    var fluADisease = new SupportedDisease("FLU A", "LP 123");
-    var fluBDisease = new SupportedDisease("FLU B", "LP 456");
+    var answers =
+        new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));
+    testOrder.setAskOnEntrySurvey(answers);
+
     var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
     var fluAResult = new Result(testOrder, fluADisease, TestResult.NEGATIVE);
     var fluBResult = new Result(testOrder, fluBDisease, TestResult.UNDETERMINED);
@@ -1136,10 +1349,19 @@ class FhirConverterTest {
     var testEventId = UUID.fromString("45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0");
     var testPerformedCodesList =
         List.of(
-            new DeviceTestPerformedLoincCode(deviceTypeId, covidDisease, "333-123", null, null),
-            new DeviceTestPerformedLoincCode(deviceTypeId, fluADisease, "444-123", null, null),
-            new DeviceTestPerformedLoincCode(deviceTypeId, fluBDisease, "444-456", null, null));
+            new DeviceTypeDisease(
+                deviceTypeId, covidDisease, "333-123", "equipmentUID1", "testkitNameId1", null),
+            new DeviceTypeDisease(
+                deviceTypeId, fluADisease, "444-123", "equipmentUID2", "testkitNameId2", "95422-2"),
+            new DeviceTypeDisease(
+                deviceTypeId,
+                fluBDisease,
+                "444-456",
+                "equipmentUID3",
+                "testkitNameId3",
+                "95422-2"));
     var date = new Date();
+    var dateTested = new Date();
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
@@ -1152,7 +1374,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
-    ReflectionTestUtils.setField(testEvent, "createdAt", date);
+    ReflectionTestUtils.setField(testEvent, "createdAt", dateTested);
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
@@ -1177,6 +1399,9 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(dateTested).getValueAsString());
     expectedSerialized =
         expectedSerialized.replace(
             "$PROVENANCE_RECORDED_DATE",

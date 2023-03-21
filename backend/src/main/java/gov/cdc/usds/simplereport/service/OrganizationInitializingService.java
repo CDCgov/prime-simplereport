@@ -10,15 +10,15 @@ import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoAuthorization;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceTestPerformedLoincCodeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
@@ -51,7 +51,7 @@ public class OrganizationInitializingService {
   private final ProviderRepository _providerRepo;
   private final DeviceTypeRepository _deviceTypeRepo;
   private final SpecimenTypeRepository _specimenTypeRepo;
-  private final DeviceTestPerformedLoincCodeRepository deviceTestPerformedLoincCodeRepository;
+  private final DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
   private final FacilityRepository _facilityRepo;
   private final ApiUserRepository _apiUserRepo;
   private final OktaRepository _oktaRepo;
@@ -249,20 +249,23 @@ public class OrganizationInitializingService {
       }
     }
 
-    Map<UUID, DeviceTestPerformedLoincCode> deviceExtraInfoByLoinc =
-        deviceTestPerformedLoincCodeRepository.findAll().stream()
-            .collect(Collectors.toMap(DeviceTestPerformedLoincCode::getInternalId, d -> d));
-    for (DeviceTestPerformedLoincCode d : getDeviceTestPerformedLoincCode(deviceTypesByName)) {
-      if (!deviceExtraInfoByLoinc.containsKey(d.getInternalId())) {
+    Map<String, DeviceTypeDisease> deviceExtraInfoByLoincTestkitEquipmentId =
+        deviceTypeDiseaseRepository.findAll().stream()
+            .collect(Collectors.toMap(d -> deviceExtraInfoKey(d), d -> d));
+    for (DeviceTypeDisease d : getDeviceTypeDiseaseCode(deviceTypesByName)) {
+      if (!deviceExtraInfoByLoincTestkitEquipmentId.containsKey(deviceExtraInfoKey(d))) {
         log.info("Creating device test performed loinc code {}", d.getTestPerformedLoincCode());
-        DeviceTestPerformedLoincCode deviceTestPerformedLoincCode =
-            deviceTestPerformedLoincCodeRepository.save(d);
-        deviceExtraInfoByLoinc.put(
-            deviceTestPerformedLoincCode.getInternalId(), deviceTestPerformedLoincCode);
+        DeviceTypeDisease deviceTypeDisease = deviceTypeDiseaseRepository.save(d);
+        deviceExtraInfoByLoincTestkitEquipmentId.put(
+            deviceTypeDisease.getTestPerformedLoincCode(), deviceTypeDisease);
       }
     }
 
     return new ArrayList<>(deviceTypesByName.values());
+  }
+
+  private static String deviceExtraInfoKey(DeviceTypeDisease d) {
+    return d.getTestPerformedLoincCode() + d.getTestkitNameId() + d.getEquipmentUid();
   }
 
   private List<DeviceType> getDeviceTypes(Map<String, SpecimenType> specimenTypesByCode) {
@@ -290,16 +293,16 @@ public class OrganizationInitializingService {
         .collect(Collectors.toList());
   }
 
-  private List<DeviceTestPerformedLoincCode> getDeviceTestPerformedLoincCode(
+  private List<DeviceTypeDisease> getDeviceTypeDiseaseCode(
       Map<String, DeviceType> deviceTypesByName) {
-    List<List<DeviceTestPerformedLoincCode>> collect =
+    List<List<DeviceTypeDisease>> collect =
         _props.getDeviceTypes().stream()
             .map(
                 device ->
                     device.getTestPerformedLoincs().stream()
                         .map(
                             c ->
-                                DeviceTestPerformedLoincCode.builder()
+                                DeviceTypeDisease.builder()
                                     .deviceTypeId(
                                         deviceTypesByName.get(device.getName()).getInternalId())
                                     .equipmentUid(c.getEquipmentUid())
@@ -307,6 +310,7 @@ public class OrganizationInitializingService {
                                     .testPerformedLoincCode(c.getTestPerformedLoincCode())
                                     .supportedDisease(
                                         diseaseService.getDiseaseByName(c.getSupportedDisease()))
+                                    .testOrderedLoincCode(c.getTestOrderedLoincCode())
                                     .build())
                         .collect(Collectors.toList()))
             .collect(Collectors.toList());
