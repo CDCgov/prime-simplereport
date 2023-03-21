@@ -366,9 +366,11 @@ public class FhirConverter {
   }
 
   public static Device convertToDevice(
-      @NotNull DeviceType deviceType, DeviceTypeDisease deviceTypeDisease) {
+      @NotNull DeviceType deviceType, Optional<DeviceTypeDisease> deviceTypeDisease) {
     Device device = convertToDevice(deviceType);
-    device.addIdentifier(new Identifier().setValue(deviceTypeDisease.getEquipmentUid()));
+    device.addIdentifier(
+        new Identifier()
+            .setValue(deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null)));
     return device;
   }
 
@@ -422,11 +424,10 @@ public class FhirConverter {
 
     results.forEach(
         result -> {
-          DeviceTypeDisease deviceTypeDisease =
+          Optional<DeviceTypeDisease> deviceTypeDisease =
               deviceTypeDiseases.stream()
                   .filter(code -> code.getSupportedDisease() == result.getDisease())
-                  .findFirst()
-                  .orElse(null);
+                  .findFirst();
 
           String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
           String testkitNameId = getTestkitNameId(deviceTypeDisease);
@@ -448,15 +449,13 @@ public class FhirConverter {
     return observations;
   }
 
-  private static String getTestkitNameId(DeviceTypeDisease deviceTypeDisease) {
-    return Optional.ofNullable(deviceTypeDisease)
-        .map(DeviceTypeDisease::getTestkitNameId)
-        .orElse(null);
+  private static String getTestkitNameId(Optional<DeviceTypeDisease> deviceTypeDisease) {
+    return deviceTypeDisease.map(DeviceTypeDisease::getTestkitNameId).orElse(null);
   }
 
   private static String getTestPerformedLoincCode(
-      DeviceTypeDisease deviceTypeDisease, Result result) {
-    return Optional.ofNullable(deviceTypeDisease)
+      Optional<DeviceTypeDisease> deviceTypeDisease, Result result) {
+    return deviceTypeDisease
         .map(DeviceTypeDisease::getTestPerformedLoincCode)
         .orElse(result.getTestOrder().getDeviceType().getLoincCode());
   }

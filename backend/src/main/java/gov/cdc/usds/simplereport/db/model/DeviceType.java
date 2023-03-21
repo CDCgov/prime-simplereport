@@ -78,7 +78,6 @@ public class DeviceType extends EternalAuditedEntity {
     this.testLength = testLength;
   }
 
-  @Builder
   public DeviceType(
       String name,
       String manufacturer,
