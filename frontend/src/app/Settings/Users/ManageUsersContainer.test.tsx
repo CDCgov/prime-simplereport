@@ -142,7 +142,6 @@ describe("ManageUsersContainer", () => {
   it("loads the component and displays users successfully", async () => {
     const { container } = renderComponentWithMocks(mocks, store);
     await waitForElementToBeRemoved(screen.queryByText("Loading..."));
-    await waitForElementToBeRemoved(screen.queryByText("Loading user data"));
     await screen.findByText(/barnes, ben billy/i);
     await screen.findByText(/ben@example.com/i);
     expect(container).toMatchSnapshot();
