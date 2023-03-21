@@ -4,7 +4,5 @@ query listDevices {
         internalId
         manufacturer
         model
-        loincCode
-        swabType
     }
 }

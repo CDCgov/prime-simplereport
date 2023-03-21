@@ -8,6 +8,5 @@ mutation updateDevice(
       name
       model
       manufacturer
-      swabType
     }
 }

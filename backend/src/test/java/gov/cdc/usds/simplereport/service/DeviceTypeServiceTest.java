@@ -81,7 +81,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                     .name("A")
                     .model("B")
                     .manufacturer("C")
-                    .loincCode("D")
                     .swabTypes(emptyList())
                     .supportedDiseases(emptyList())
                     .testLength(15)
@@ -129,7 +128,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .name("A")
                 .model("B")
                 .manufacturer("C")
-                .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseases(List.of(disease1.getInternalId()))
                 .testLength(1)
@@ -141,7 +139,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("A", devA.getName());
     assertEquals("B", devA.getModel());
     assertEquals("C", devA.getManufacturer());
-    assertEquals("D", devA.getLoincCode());
+    assertEquals(null, devA.getLoincCode());
     assertEquals("COVID-19", devA.getSupportedDiseases().get(0).getName());
     assertNull(devA.getSwabType());
     List<SpecimenType> devASwabTypes = devA.getSwabTypes();
@@ -171,7 +169,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .name("A")
                 .model("B")
                 .manufacturer("C")
-                .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseaseTestPerformed(
                     List.of(
@@ -190,7 +187,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .name("F")
                 .model("G")
                 .manufacturer("H")
-                .loincCode("I")
                 .swabTypes(List.of(swab2.getInternalId()))
                 .supportedDiseaseTestPerformed(
                     List.of(
@@ -212,7 +208,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("A", devA.getName());
     assertEquals("B", devA.getModel());
     assertEquals("C", devA.getManufacturer());
-    assertEquals("D", devA.getLoincCode());
+    assertEquals(null, devA.getLoincCode());
     assertEquals("COVID-19", devA.getSupportedDiseases().get(0).getName());
     assertNull(devA.getSwabType());
     List<SpecimenType> devASwabTypes = devA.getSwabTypes();
@@ -261,7 +257,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .name("A")
                 .model("B")
                 .manufacturer("C")
-                .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseases(List.of(disease1.getInternalId()))
                 .testLength(10)
@@ -275,7 +270,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .name("Z")
                 .model("Y")
                 .manufacturer("X")
-                .loincCode("W")
                 .swabTypes(List.of(swab2.getInternalId()))
                 .supportedDiseases(List.of(disease2.getInternalId()))
                 .testLength(22)
@@ -286,7 +280,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("Z", updatedDevice.getName());
     assertEquals("Y", updatedDevice.getModel());
     assertEquals("X", updatedDevice.getManufacturer());
-    assertEquals("W", updatedDevice.getLoincCode());
+    assertEquals(null, updatedDevice.getLoincCode());
     assertEquals("Flu A", updatedDevice.getSupportedDiseases().get(0).getName());
     assertEquals(22, updatedDevice.getTestLength());
     assertNull(updatedDevice.getSwabType());
@@ -310,7 +304,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .name("A")
                 .model("B")
                 .manufacturer("C")
-                .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseaseTestPerformed(
                     List.of(
@@ -399,7 +392,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .name("A")
                 .model("B")
                 .manufacturer("C")
-                .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseases(List.of(disease1.getInternalId()))
                 .testLength(10)
@@ -449,13 +441,13 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
     SupportedDisease disease1 = _diseaseService.covid();
+
     DeviceType device =
         _service.createDeviceType(
             CreateDeviceType.builder()
                 .name("A")
                 .model("B")
                 .manufacturer("C")
-                .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseases(List.of(disease1.getInternalId()))
                 .testLength(15)
@@ -471,7 +463,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals("A", updatedDevice.getName());
     assertEquals("B", updatedDevice.getModel());
     assertEquals("C", updatedDevice.getManufacturer());
-    assertEquals("D", updatedDevice.getLoincCode());
+    assertEquals(null, updatedDevice.getLoincCode());
     assertEquals("COVID-19", updatedDevice.getSupportedDiseases().get(0).getName());
     assertNull(updatedDevice.getSwabType());
     assertEquals(15, updatedDevice.getTestLength());
