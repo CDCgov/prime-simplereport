@@ -6,7 +6,7 @@ import {
 import {
   ai,
   getAppInsights,
-  isBlacklistedFile,
+  isStaticFileToSkip,
   sanitizeOktaToken,
   withInsights,
 } from "./TelemetryService";
@@ -57,7 +57,7 @@ describe("telemetry", () => {
         name: "GET /maintenance.json",
       },
     } as ITelemetryItem;
-    expect(isBlacklistedFile(item)).toEqual(true);
+    expect(isStaticFileToSkip(item)).toEqual(true);
   });
 
   it("correctly logs messages", () => {
