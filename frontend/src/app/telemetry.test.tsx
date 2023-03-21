@@ -5,9 +5,9 @@ import {
 
 import {
   ai,
-  filterPotentialOktaRedirectEvent,
-  filterStaticFiles,
   getAppInsights,
+  isBlacklistedFile,
+  sanitizeOktaToken,
   withInsights,
 } from "./TelemetryService";
 import {
@@ -57,7 +57,7 @@ describe("telemetry", () => {
         name: "GET /maintenance.json",
       },
     } as ITelemetryItem;
-    expect(filterStaticFiles(item)).toEqual(false);
+    expect(isBlacklistedFile(item)).toEqual(true);
   });
 
   it("correctly logs messages", () => {
@@ -151,7 +151,7 @@ describe("filter events on okta redirect", () => {
     const item = {
       baseType: "blah",
     } as ITelemetryItem;
-    expect(filterPotentialOktaRedirectEvent(item)).toBe(true);
+    expect(sanitizeOktaToken(item)).toBe(undefined);
   });
   it("scrubs values with id token", () => {
     const urlWithToken = "localhost/#id_token=blahblahblah&token_type=test";
@@ -174,9 +174,9 @@ describe("filter events on okta redirect", () => {
         },
       },
     } as ITelemetryItem;
-    const returnItem = filterPotentialOktaRedirectEvent(item) as ITelemetryItem;
-    expect(returnItem?.ext?.trace?.name).toEqual(operationWithoutToken);
-    expect(returnItem?.baseData?.uri).toEqual(urlWithoutToken);
-    expect(returnItem?.baseData?.refUri).toEqual(urlWithoutToken);
+    sanitizeOktaToken(item);
+    expect(item?.ext?.trace?.name).toEqual(operationWithoutToken);
+    expect(item?.baseData?.uri).toEqual(urlWithoutToken);
+    expect(item?.baseData?.refUri).toEqual(urlWithoutToken);
   });
 });
