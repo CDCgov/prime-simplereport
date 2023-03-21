@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -228,39 +229,27 @@ public class DeviceTypeService {
   }
 
   public String extractSpecimenTypeCode(String specimenDescription) {
-    Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
     Pattern specimenCode = Pattern.compile("^(.*?)\\^");
-    Matcher matcher = specimenDetails.matcher(specimenDescription);
-
-    if (!matcher.find()) {
-      // wut do if it doesn't match?
-      return "";
-    }
-
-    var result = specimenCode.matcher(matcher.group(1));
-
-    if (!result.find()) {
-      // wut do if it doesn't match?
-      return "";
-    }
-
-    return result.group(1);
+    return extractSpecimenDetails(specimenDescription, specimenCode);
   }
 
   public String extractSpecimenTypeName(String specimenDescription) {
-    Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
     Pattern specimenName = Pattern.compile("\\^(.*?)\\^");
+    return extractSpecimenDetails(specimenDescription, specimenName);
+  }
+
+  private String extractSpecimenDetails(String specimenDescription, Pattern specimenName) {
+    Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
+
     Matcher matcher = specimenDetails.matcher(specimenDescription);
 
     if (!matcher.find()) {
-      // wut do if it doesn't match?
       return "";
     }
 
     var result = specimenName.matcher(matcher.group(1));
 
     if (!result.find()) {
-      // wut do if it doesn't match?
       return "";
     }
 
@@ -270,6 +259,8 @@ public class DeviceTypeService {
   public List<UUID> getSpecimenTypeIdsFromDescription(LIVDResponse device) {
     return device.getVendorSpecimenDescription().stream()
         .map(this::parseVendorSpecimenDescription)
+        .filter(Optional::isPresent)
+        .map(Optional::get)
         .map(SpecimenType::getInternalId)
         .collect(Collectors.toList());
   }
@@ -298,6 +289,7 @@ public class DeviceTypeService {
 
     devices.forEach(
         device -> {
+          // Skip sync for any device entries with incomplete data
           if (device == null
               || device.getManufacturer() == null
               || device.getModel() == null
@@ -305,9 +297,7 @@ public class DeviceTypeService {
             return;
           }
 
-          // Have we already seen this device in the response?
-          // If so, create a DeviceTestPerformedLoincCode from entry and add to HashMap
-          // Does the device exist at all?
+          // Does the device exist at all in the DB?
           var foundDevice =
               deviceTypeRepository.findDeviceTypeByManufacturerAndModel(
                   device.getManufacturer(), device.getModel());
@@ -336,7 +326,7 @@ public class DeviceTypeService {
 
                     createDeviceType(
                         CreateDeviceType.builder()
-                            .name(device.getModel())
+                            .name(String.join(" ", device.getManufacturer(), device.getModel()))
                             .manufacturer(device.getManufacturer())
                             .model(device.getModel())
                             .loincCode(device.getTestPerformedLoincCode())
@@ -356,6 +346,9 @@ public class DeviceTypeService {
                             device.getManufacturer(), device.getModel())
                         .get();
                   });
+
+          // TODO: are all relevant properties of the incoming device table entry
+          // equal to existing data? If so, skip it
 
           if (!devicesToSync.containsKey(deviceToSync)) {
             devicesToSync.put(deviceToSync, new ArrayList<>());
@@ -397,6 +390,10 @@ public class DeviceTypeService {
 
     devicesToSync.forEach(
         (device, testPerformed) -> {
+          if (device == null) {
+            return;
+          }
+
           UpdateDeviceType input =
               UpdateDeviceType.builder()
                   .internalId(device.getInternalId())
@@ -410,17 +407,23 @@ public class DeviceTypeService {
         });
   }
 
-  private SpecimenType parseVendorSpecimenDescription(String specimenDescription) {
+  private Optional<SpecimenType> parseVendorSpecimenDescription(String specimenDescription) {
     var specimenCode = extractSpecimenTypeCode(specimenDescription);
+
+    if (Objects.equals(specimenCode, "")) {
+      return Optional.empty();
+    }
+
     var specimenType = specimenTypeRepository.findByTypeCode(specimenCode);
 
-    return specimenType.orElseGet(
-        () ->
-            specimenTypeService.createSpecimenType(
-                CreateSpecimenType.builder()
-                    .name(extractSpecimenTypeName(specimenDescription))
-                    .typeCode(specimenCode)
-                    .build()));
+    return Optional.of(
+        specimenType.orElseGet(
+            () ->
+                specimenTypeService.createSpecimenType(
+                    CreateSpecimenType.builder()
+                        .name(extractSpecimenTypeName(specimenDescription))
+                        .typeCode(specimenCode)
+                        .build())));
   }
 
   private ArrayList<DeviceTestPerformedLoincCode> createDeviceTestPerformedLoincCodeList(
