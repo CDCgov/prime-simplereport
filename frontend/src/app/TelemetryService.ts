@@ -40,7 +40,9 @@ const createTelemetryService = () => {
     });
 
     appInsights.addTelemetryInitializer(function (envelope: ITelemetryItem) {
-      filterUnneededItems(envelope);
+      if (isBlacklistedFile(envelope)) return false; //skips logging when returning false
+      // for all remaining logs
+      sanitizeOktaToken(envelope);
     });
 
     appInsights.loadAppInsights();
@@ -52,7 +54,7 @@ const createTelemetryService = () => {
 export const ai = createTelemetryService();
 export const getAppInsights = () => appInsights;
 
-export function filterStaticFiles(envelope: ITelemetryItem) {
+export function isBlacklistedFile(envelope: ITelemetryItem) {
   try {
     const regexRemoteDependency =
       /Microsoft.ApplicationInsights.(.*).RemoteDependency/;
@@ -66,47 +68,44 @@ export function filterStaticFiles(envelope: ITelemetryItem) {
       regexRemoteDependency.test(envelope.name) &&
       staticFilesToIgnore.includes((envelope as any).baseData.name)
     ) {
-      return false;
+      return true;// file should be skipped
     }
   } catch (e) {
     /* do nothing and don't disrupt logging*/
   }
 }
 
-export function filterUnneededItems(envelope: ITelemetryItem) {
-  const staticFileFound = filterStaticFiles(envelope) !== undefined;
-  if (staticFileFound) return false;
+export function sanitizeOktaToken(envelope: ITelemetryItem):void {
+ try {
+    // Okta redirects only come from page views events
+    const eventIsPageView = envelope?.baseType === "PageviewData";
+    if (!eventIsPageView) return;
 
-  filterPotentialOktaRedirectEvent(envelope);
-}
+    const telemetryItem = envelope?.baseData;
 
-export function filterPotentialOktaRedirectEvent(envelope: ITelemetryItem) {
-  // Okta redirects only come from page views events
-  const eventIsPageView = envelope?.baseType === "PageviewData";
-  if (!eventIsPageView) return true;
+    const telemetryItemNeedsIdSanitization =
+      telemetryItem?.uri.includes("#id_token");
 
-  const telemetryItem = envelope?.baseData;
+    if (
+      telemetryItemNeedsIdSanitization &&
+      telemetryItem?.refUri &&
+      envelope?.ext?.trace.name
+    ) {
+      // possible properties that need replacing
+      const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
+        telemetryItem.uri
+      );
+      telemetryItem.uri = urlWithoutIdToken;
+      telemetryItem.refUri = urlWithoutIdToken;
 
-  const telemetryItemNeedsIdSanitization =
-    telemetryItem?.uri.includes("#id_token");
-
-  if (
-    telemetryItemNeedsIdSanitization &&
-    telemetryItem?.refUri &&
-    envelope?.ext?.trace.name
-  ) {
-    // possible properties that need replacing
-    const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
-      telemetryItem.uri
-    );
-    telemetryItem.uri = urlWithoutIdToken;
-    telemetryItem.refUri = urlWithoutIdToken;
-
-    envelope.ext.trace.name = stripIdTokenFromOperationName(
-      envelope.ext.trace.name
-    );
+      envelope.ext.trace.name = stripIdTokenFromOperationName(
+        envelope.ext.trace.name
+      );
+    }
+  } catch (e) {
+    /* do nothing and don't disrupt logging*/
   }
-  return envelope;
+  return;
 }
 
 const logSeverityMap = {
