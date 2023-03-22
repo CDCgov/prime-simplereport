@@ -88,6 +88,7 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
@@ -738,6 +739,7 @@ class FhirConverterTest {
   void convertToObservation_Result_matchesJson() throws IOException {
     var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var fluId = "302a7919-b699-4e0d-95ca-5fd2e3fcaf7a";
+    var deviceTypeId = "d0d3344d-a747-4100-905a-5a8d7da1e442";
     var covidDisease = new SupportedDisease("COVID-19", "96741-4");
     var fluDisease = new SupportedDisease("FLU A", "LP14239-5");
     var testOrder = TestDataBuilder.createTestOrderWithDevice();
@@ -747,12 +749,21 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
+            UUID.fromString(deviceTypeId),
+            covidDisease,
+            "94500-6",
+            "covidEquipmentUID",
+            "covidTestkitNameId",
+            "94500-0");
     var fluDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null, fluDisease, "85477-8", "fluEquipmentUID", "fluTestkitNameId", "85477-0");
+            UUID.fromString(deviceTypeId),
+            fluDisease,
+            "85477-8",
+            "fluEquipmentUID",
+            "fluTestkitNameId",
+            "85477-0");
 
-    var deviceTypeId = "d0d3344d-a747-4100-905a-5a8d7da1e442";
     DeviceType deviceType =
         DeviceType.builder()
             .name("device")
@@ -1157,6 +1168,7 @@ class FhirConverterTest {
     device.setId(UUID.randomUUID().toString());
     specimen.setId(UUID.randomUUID().toString());
     observation.setId(UUID.randomUUID().toString());
+    observation.setDevice(new Reference(ResourceType.Device + "/" + device.getId()));
     aoeobservation1.setId(UUID.randomUUID().toString());
     aoeobservation2.setId(UUID.randomUUID().toString());
     serviceRequest.setId(UUID.randomUUID().toString());

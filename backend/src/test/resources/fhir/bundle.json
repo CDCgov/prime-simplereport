@@ -342,10 +342,53 @@
       }
     },
     {
-      "fullUrl":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4",
+      "fullUrl":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4/6db25889-09cb-4127-9330-cc7e7459c1cd",
       "resource":{
         "resourceType":"Device",
         "id":"48aabd5f-a591-4e0e-9fa2-301d3d5a6df4",
+        "identifier":[
+          {
+            "value":"equipmentUID3"
+          }
+        ],
+        "manufacturer":"manufacturer",
+        "deviceName":[
+          {
+            "name":"model",
+            "type":"model-name"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4/4163abc1-0a54-4aff-badb-87bb96a89470",
+      "resource":{
+        "resourceType":"Device",
+        "id":"48aabd5f-a591-4e0e-9fa2-301d3d5a6df4",
+        "identifier":[
+          {
+            "value":"equipmentUID1"
+          }
+        ],
+        "manufacturer":"manufacturer",
+        "deviceName":[
+          {
+            "name":"model",
+            "type":"model-name"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4/f7184a68-c54e-4209-8cc6-5bf5b253e4bd",
+      "resource":{
+        "resourceType":"Device",
+        "id":"48aabd5f-a591-4e0e-9fa2-301d3d5a6df4",
+        "identifier":[
+          {
+            "value":"equipmentUID2"
+          }
+        ],
         "manufacturer":"manufacturer",
         "deviceName":[
           {
@@ -404,7 +447,7 @@
           "reference":"Specimen/725252ea-50ef-46bd-ae79-c70e1d04b949"
         },
         "device":{
-          "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
+          "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4/6db25889-09cb-4127-9330-cc7e7459c1cd"
         },
         "method": {
           "coding": [
@@ -451,7 +494,7 @@
           "reference":"Specimen/725252ea-50ef-46bd-ae79-c70e1d04b949"
         },
         "device":{
-          "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
+          "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4/4163abc1-0a54-4aff-badb-87bb96a89470"
         },
         "method": {
           "coding": [
@@ -498,7 +541,7 @@
           "reference":"Specimen/725252ea-50ef-46bd-ae79-c70e1d04b949"
         },
         "device":{
-          "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
+          "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4/f7184a68-c54e-4209-8cc6-5bf5b253e4bd"
         },
         "method": {
           "coding": [

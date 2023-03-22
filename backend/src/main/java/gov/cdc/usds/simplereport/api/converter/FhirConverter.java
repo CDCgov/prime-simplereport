@@ -428,7 +428,6 @@ public class FhirConverter {
               deviceTypeDiseases.stream()
                   .filter(code -> code.getSupportedDisease() == result.getDisease())
                   .findFirst();
-
           String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
           String testkitNameId = getTestkitNameId(deviceTypeDisease);
           Observation observation =
@@ -438,12 +437,14 @@ public class FhirConverter {
                   correctionStatus,
                   correctionReason,
                   testkitNameId);
+          if (observation != null) {
+            Device device = convertToDevice(deviceType, deviceTypeDisease);
+            String deviceFullUrl =
+                ResourceType.Device + "/" + device.getId() + "/" + result.getInternalId();
+            observation.setDevice(new Reference(deviceFullUrl));
 
-          Device device = convertToDevice(deviceType, deviceTypeDisease);
-          String deviceFullUrl = ResourceType.Device + "/" + device.getId();
-          observation.setDevice(new Reference(deviceFullUrl));
-
-          observations.add(new ObservationDevicePair(observation, device));
+            observations.add(new ObservationDevicePair(observation, device));
+          }
         });
 
     return observations;

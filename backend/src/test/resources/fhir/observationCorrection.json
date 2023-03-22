@@ -27,6 +27,9 @@
       }
     ]
   },
+  "device": {
+    "reference": "Device/d0d3344d-a747-4100-905a-5a8d7da1e442/3c9c7370-e2e3-49ad-bb7a-f6005f41cf29"
+  },
   "note": [
     {
       "text": "Corrected Result: woops"

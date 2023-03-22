@@ -26,5 +26,8 @@
         "code": "fluTestkitNameId"
       }
     ]
+  },
+  "device": {
+    "reference": "Device/d0d3344d-a747-4100-905a-5a8d7da1e442/302a7919-b699-4e0d-95ca-5fd2e3fcaf7a"
   }
 }
