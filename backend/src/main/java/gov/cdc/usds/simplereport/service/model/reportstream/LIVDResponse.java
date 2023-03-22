@@ -14,6 +14,7 @@ public class LIVDResponse {
   private List<String> vendorSpecimenDescription;
   private String vendorAnalyteName;
   private String testPerformedLoincCode;
+  private String testOrderedLoincCode;
   private String testKitNameId;
   private String equipmentUid;
 }

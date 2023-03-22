@@ -334,6 +334,7 @@ public class DeviceTypeService {
                                     SupportedDiseaseTestPerformedInput.builder()
                                         .supportedDisease(supportedDisease.get().getInternalId())
                                         .testPerformedLoincCode(device.getTestPerformedLoincCode())
+                                        .testOrderedLoincCode(device.getTestOrderedLoincCode())
                                         .testkitNameId(device.getTestKitNameId())
                                         .equipmentUid(device.getEquipmentUid())
                                         .build()))
@@ -381,6 +382,7 @@ public class DeviceTypeService {
                   SupportedDiseaseTestPerformedInput.builder()
                       .supportedDisease(supportedDisease.get().getInternalId())
                       .testPerformedLoincCode(device.getTestPerformedLoincCode())
+                      .testOrderedLoincCode(device.getTestOrderedLoincCode())
                       .equipmentUid(device.getEquipmentUid())
                       .testkitNameId(device.getTestKitNameId())
                       .build());
@@ -438,6 +440,7 @@ public class DeviceTypeService {
                           .deviceTypeId(device.getInternalId())
                           .supportedDisease(disease)
                           .testPerformedLoincCode(input.getTestPerformedLoincCode())
+                          .testOrderedLoincCode(input.getTestOrderedLoincCode())
                           .equipmentUid(input.getEquipmentUid())
                           .testkitNameId(input.getTestkitNameId())
                           .testOrderedLoincCode(input.getTestOrderedLoincCode())
