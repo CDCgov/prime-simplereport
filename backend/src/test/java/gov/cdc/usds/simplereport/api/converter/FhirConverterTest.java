@@ -612,7 +612,7 @@ class FhirConverterTest {
             "id-123",
             TestResult.POSITIVE.toString(),
             "testKitName",
-            null);
+            "equipmentUid");
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -620,8 +620,7 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("diseaseCode");
-    assertThat(actual.getMethod().getCoding()).hasSize(1);
-    assertThat(actual.getMethod().getCoding().get(0).getCode()).isEqualTo("testKitName");
+    assertThat(actual.getMethod().getExtension()).hasSize(2);
     assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
@@ -639,7 +638,7 @@ class FhirConverterTest {
 
     var actual =
         convertToObservation(
-            result, "loinc", TestCorrectionStatus.ORIGINAL, null, "testkitName", null);
+            result, "loinc", TestCorrectionStatus.ORIGINAL, null, "testkitName", "equipmentUid");
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -664,7 +663,12 @@ class FhirConverterTest {
 
     var actual =
         convertToObservation(
-            result, "loinc", TestCorrectionStatus.CORRECTED, "Oopsy Daisy", "testkitName", null);
+            result,
+            "loinc",
+            TestCorrectionStatus.CORRECTED,
+            "Oopsy Daisy",
+            "testkitName",
+            "equipmentUid");
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
@@ -681,7 +685,7 @@ class FhirConverterTest {
 
     var actual =
         convertToObservation(
-            result, "loinc", TestCorrectionStatus.REMOVED, null, "testkitName", null);
+            result, "loinc", TestCorrectionStatus.REMOVED, null, "testkitName", "equipmentUid");
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay())
@@ -693,7 +697,8 @@ class FhirConverterTest {
   @Test
   void convertToObservation_Result_null() {
     var actual =
-        convertToObservation(null, "", TestCorrectionStatus.ORIGINAL, null, "testkitName", null);
+        convertToObservation(
+            null, "", TestCorrectionStatus.ORIGINAL, null, "testkitName", "equipmentUid");
 
     assertThat(actual).isNull();
   }
@@ -707,7 +712,7 @@ class FhirConverterTest {
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
-            null);
+            "equipmentUid");
 
     assertThat(actual).isNull();
   }
