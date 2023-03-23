@@ -86,6 +86,8 @@ type DeviceType {
   name: String!
   manufacturer: String!
   model: String!
+  loincCode: String @deprecated(reason: "loincCode is deprecated. Use supportedDiseaseTestPerformed instead.")
+  swabType: String @deprecated(reason: "swabType is deprecated. Use swabTypes instead.")
   swabTypes: [SpecimenType!]!
   supportedDiseases: [SupportedDisease!]!
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]!
