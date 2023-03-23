@@ -611,7 +611,8 @@ class FhirConverterTest {
             null,
             "id-123",
             TestResult.POSITIVE.toString(),
-            "testKitName");
+            "testKitName",
+            null);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -637,7 +638,8 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual =
-        convertToObservation(result, "loinc", TestCorrectionStatus.ORIGINAL, null, "testkitName");
+        convertToObservation(
+            result, "loinc", TestCorrectionStatus.ORIGINAL, null, "testkitName", null);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -662,7 +664,7 @@ class FhirConverterTest {
 
     var actual =
         convertToObservation(
-            result, "loinc", TestCorrectionStatus.CORRECTED, "Oopsy Daisy", "testkitName");
+            result, "loinc", TestCorrectionStatus.CORRECTED, "Oopsy Daisy", "testkitName", null);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
@@ -678,7 +680,8 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual =
-        convertToObservation(result, "loinc", TestCorrectionStatus.REMOVED, null, "testkitName");
+        convertToObservation(
+            result, "loinc", TestCorrectionStatus.REMOVED, null, "testkitName", null);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay())
@@ -689,7 +692,8 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_null() {
-    var actual = convertToObservation(null, "", TestCorrectionStatus.ORIGINAL, null, "testkitName");
+    var actual =
+        convertToObservation(null, "", TestCorrectionStatus.ORIGINAL, null, "testkitName", null);
 
     assertThat(actual).isNull();
   }
@@ -702,7 +706,8 @@ class FhirConverterTest {
             "",
             TestCorrectionStatus.ORIGINAL,
             null,
-            "testkitName");
+            "testkitName",
+            null);
 
     assertThat(actual).isNull();
   }

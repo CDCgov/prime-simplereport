@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EQUIPMENT_UID_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
@@ -16,6 +17,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_I
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.SNOMED_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TESTKIT_NAME_ID_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
@@ -404,37 +406,41 @@ public class FhirConverter {
 
   public static List<Observation> convertToObservation(
       Set<Result> results,
-      List<DeviceTypeDisease> deviceTypeDisease,
+      List<DeviceTypeDisease> deviceTypeDiseases,
       TestCorrectionStatus correctionStatus,
       String correctionReason) {
     return results.stream()
         .map(
             result -> {
+              Optional<DeviceTypeDisease> deviceTypeDisease =
+                  deviceTypeDiseases.stream()
+                      .filter(code -> code.getSupportedDisease() == result.getDisease())
+                      .findFirst();
               String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
-              String testkitNameId = getTestkitNameId(deviceTypeDisease, result);
+              String equipmentUid = getEquipmentUid(deviceTypeDisease);
+              String testkitNameId = getTestkitNameId(deviceTypeDisease);
               return convertToObservation(
                   result,
                   testPerformedLoincCode,
                   correctionStatus,
                   correctionReason,
-                  testkitNameId);
+                  testkitNameId,
+                  equipmentUid);
             })
         .collect(Collectors.toList());
   }
 
-  private static String getTestkitNameId(List<DeviceTypeDisease> deviceTypeDisease, Result result) {
-    return deviceTypeDisease.stream()
-        .filter(code -> code.getSupportedDisease() == result.getDisease())
-        .findFirst()
-        .map(DeviceTypeDisease::getTestkitNameId)
-        .orElse(null);
+  private static String getTestkitNameId(Optional<DeviceTypeDisease> deviceTypeDisease) {
+    return deviceTypeDisease.map(DeviceTypeDisease::getTestkitNameId).orElse(null);
+  }
+
+  private static String getEquipmentUid(Optional<DeviceTypeDisease> deviceTypeDisease) {
+    return deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
   }
 
   private static String getTestPerformedLoincCode(
-      List<DeviceTypeDisease> deviceTypeDisease, Result result) {
-    return deviceTypeDisease.stream()
-        .filter(code -> code.getSupportedDisease() == result.getDisease())
-        .findFirst()
+      Optional<DeviceTypeDisease> deviceTypeDisease, Result result) {
+    return deviceTypeDisease
         .map(DeviceTypeDisease::getTestPerformedLoincCode)
         .orElse(result.getTestOrder().getDeviceType().getLoincCode());
   }
@@ -444,7 +450,8 @@ public class FhirConverter {
       String testPerformedCode,
       TestCorrectionStatus correctionStatus,
       String correctionReason,
-      String testkitNameId) {
+      String testkitNameId,
+      String equipmentUid) {
     if (result != null && result.getDisease() != null) {
       return convertToObservation(
           testPerformedCode,
@@ -454,7 +461,8 @@ public class FhirConverter {
           correctionReason,
           result.getInternalId().toString(),
           result.getTestResult().toString(),
-          testkitNameId);
+          testkitNameId,
+          equipmentUid);
     }
     return null;
   }
@@ -467,13 +475,23 @@ public class FhirConverter {
       String correctionReason,
       String id,
       String resultDescription,
-      String testkitNameId) {
+      String testkitNameId,
+      String equipmentUid) {
     var observation = new Observation();
     observation.setId(id);
     setStatus(observation, correctionStatus);
     observation.setCode(createLoincConcept(diseaseCode, "", diseaseName));
     addSNOMEDValue(resultCode, observation, resultDescription);
-    observation.getMethod().addCoding().setCode(testkitNameId);
+    observation
+        .getMethod()
+        .addExtension(
+            new Extension()
+                .setUrl(TESTKIT_NAME_ID_EXTENSION_URL)
+                .setValue(new CodeableConcept().addCoding().setCode(testkitNameId)))
+        .addExtension(
+            new Extension()
+                .setUrl(EQUIPMENT_UID_EXTENSION_URL)
+                .setValue(new CodeableConcept().addCoding().setCode(equipmentUid)));
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
     return observation;
