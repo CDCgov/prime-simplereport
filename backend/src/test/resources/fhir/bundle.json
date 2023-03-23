@@ -396,7 +396,7 @@
             {
               "system":"http://snomed.info/sct",
               "code":"455371000124106",
-              "display": "UNDETERMINED"
+              "display": "Invalid result"
             }
           ]
         },
@@ -443,7 +443,7 @@
             {
               "system":"http://snomed.info/sct",
               "code":"260373001",
-              "display": "POSITIVE"
+              "display": "Detected"
             }
           ]
         },
@@ -490,7 +490,7 @@
             {
               "system":"http://snomed.info/sct",
               "code":"260415000",
-              "display": "NEGATIVE"
+              "display": "Not detected"
             }
           ]
         },

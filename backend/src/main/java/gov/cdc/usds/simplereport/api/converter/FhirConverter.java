@@ -26,6 +26,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -453,7 +454,7 @@ public class FhirConverter {
           correctionStatus,
           correctionReason,
           result.getInternalId().toString(),
-          result.getTestResult().toString(),
+          Translators.convertConceptCodeToConceptName(result.getResultLOINC()),
           testkitNameId);
     }
     return null;

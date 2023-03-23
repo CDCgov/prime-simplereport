@@ -439,4 +439,15 @@ public class Translators {
         return "455371000124106";
     }
   }
+
+  public static String convertConceptCodeToConceptName(String snomedCode) {
+    switch (snomedCode) {
+      case "260373001":
+        return "Detected";
+      case "260415000":
+        return "Not detected";
+      default:
+        return "Invalid result";
+    }
+  }
 }
