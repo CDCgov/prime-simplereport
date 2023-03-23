@@ -93,11 +93,15 @@ export type CreateSpecimenType = {
 export type DeviceType = {
   __typename?: "DeviceType";
   internalId: Scalars["ID"];
+  /** @deprecated loincCode is deprecated. Use supportedDiseaseTestPerformed instead. */
+  loincCode?: Maybe<Scalars["String"]>;
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformed>;
   supportedDiseases: Array<SupportedDisease>;
+  /** @deprecated swabType is deprecated. Use swabTypes instead. */
+  swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
   testLength: Scalars["Int"];
 };
