@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import OrganizationForm, {
@@ -9,7 +9,8 @@ const getOrgNameInput = () =>
   screen.getByRole("textbox", {
     name: "Organization name required",
   });
-const getOrgStateDropdown = () => screen.getByLabelText("Organization state *");
+const getOrgStateDropdown = () =>
+  screen.getByLabelText("Organization state *") as HTMLSelectElement;
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
 const getFirstNameInput = () => screen.getByLabelText("First name *");
 const getMiddleNameInput = () => screen.getByLabelText("Middle name");
@@ -78,6 +79,7 @@ describe("OrganizationForm", () => {
 
   it("displays form errors when submitting invalid input", async () => {
     await fillInDropDown(getOrgStateDropdown(), "VI");
+    await userEvent.tab();
     getSubmitButton().click();
 
     expect(await screen.findByText("Organization name is required"));
@@ -87,16 +89,49 @@ describe("OrganizationForm", () => {
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("SimpleReport isn't available yet in your state.", {
-        exact: false,
-      })
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
+    ).toBeInTheDocument();
+  });
+
+  it("clears input when escaping out of modal", async () => {
+    await fillInDropDown(getOrgStateDropdown(), "VI");
+    expect(getOrgStateDropdown().value).toEqual("VI");
+    await userEvent.tab();
+    expect(
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
     ).toBeInTheDocument();
 
-    await waitFor(() =>
-      expect(
-        screen.getByRole("textbox", { name: "Organization name required" })
-      ).toHaveFocus()
-    );
+    await userEvent.keyboard("{Escape}");
+    expect(getOrgStateDropdown().value).toBeFalsy();
+  });
+
+  it("does not clear input when continuing through modal", async () => {
+    await fillInDropDown(getOrgStateDropdown(), "VI");
+    expect(getOrgStateDropdown().value).toEqual("VI");
+    await userEvent.tab();
+    expect(
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
+    ).toBeInTheDocument();
+
+    screen.getByLabelText("acknowledged").click();
+    screen.getByText("Continue sign up").click();
+
+    expect(getOrgStateDropdown().value).toEqual("VI");
   });
 
   it("redirects to identity verification when submitting valid input", async () => {

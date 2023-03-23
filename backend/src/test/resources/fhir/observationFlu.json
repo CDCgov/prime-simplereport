@@ -19,5 +19,12 @@
         "display": "NEGATIVE"
       }
     ]
+  },
+  "method": {
+    "coding": [
+      {
+        "code": "fluTestkitNameId"
+      }
+    ]
   }
 }

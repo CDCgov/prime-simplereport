@@ -19,5 +19,12 @@
         "display": "POSITIVE"
       }
     ]
+  },
+  "method": {
+    "coding": [
+      {
+        "code": "covidTestkitNameId"
+      }
+    ]
   }
 }

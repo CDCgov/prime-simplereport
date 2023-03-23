@@ -405,6 +405,13 @@
         },
         "device":{
           "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
+        },
+        "method": {
+          "coding": [
+            {
+              "code": "testkitNameId3"
+            }
+          ]
         }
       }
     },
@@ -445,6 +452,13 @@
         },
         "device":{
           "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
+        },
+        "method": {
+          "coding": [
+            {
+              "code": "testkitNameId1"
+            }
+          ]
         }
       }
     },
@@ -485,6 +499,13 @@
         },
         "device":{
           "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
+        },
+        "method": {
+          "coding": [
+            {
+              "code": "testkitNameId2"
+            }
+          ]
         }
       }
     },

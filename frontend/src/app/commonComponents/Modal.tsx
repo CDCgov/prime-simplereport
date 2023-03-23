@@ -37,10 +37,11 @@ const Header: React.FC<HeaderProps> = ({ children, styleClassNames }) => (
 
 type FooterProps = {
   children?: React.ReactNode;
+  styleClassNames?: string;
 };
 
-const Footer: React.FC<FooterProps> = ({ children }) => (
-  <div className="modal__footer">{children}</div>
+const Footer: React.FC<FooterProps> = ({ children, styleClassNames }) => (
+  <div className={"modal__footer " + styleClassNames}>{children}</div>
 );
 
 const Modal = ({
