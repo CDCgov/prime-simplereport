@@ -151,6 +151,7 @@ public class DeviceTypeService {
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
       deviceSpecimenTypeNewRepository.saveAll(toBeAddedDeviceSpecimenTypes);
     }
+
     if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
       var deviceTypeDiseaseList =
           createDeviceTypeDiseaseList(updateDevice.getSupportedDiseaseTestPerformed(), device);
@@ -179,7 +180,7 @@ public class DeviceTypeService {
     List<SpecimenType> specimenTypes =
         createDevice.getSwabTypes().stream()
             .map(uuid -> specimenTypeRepository.findById(uuid).get())
-            .collect(Collectors.toList());
+            .toList();
 
     specimenTypes.forEach(
         specimenType -> {
@@ -322,9 +323,19 @@ public class DeviceTypeService {
                       return null;
                     }
 
+                    // Device name should be the same as the model name, unless a device
+                    // with that name already exists.
+                    // If so, prepend with the manufacturer name before creation
+                    var existingDeviceWithName =
+                        deviceTypeRepository.findDeviceTypeByName(device.getModel());
+                    var deviceName =
+                        existingDeviceWithName == null
+                            ? device.getModel()
+                            : String.join(" ", device.getManufacturer(), device.getModel());
+
                     createDeviceType(
                         CreateDeviceType.builder()
-                            .name(String.join(" ", device.getManufacturer(), device.getModel()))
+                            .name(deviceName)
                             .manufacturer(device.getManufacturer())
                             .model(device.getModel())
                             .loincCode(device.getTestPerformedLoincCode())
@@ -345,9 +356,6 @@ public class DeviceTypeService {
                             device.getManufacturer(), device.getModel())
                         .get();
                   });
-
-          // TODO: are all relevant properties of the incoming device table entry
-          // equal to existing data? If so, skip it
 
           if (!devicesToSync.containsKey(deviceToSync)) {
             devicesToSync.put(deviceToSync, new ArrayList<>());
@@ -389,21 +397,24 @@ public class DeviceTypeService {
         });
 
     devicesToSync.forEach(
-        (device, testPerformed) -> {
+        (device, testsPerformed) -> {
           if (device == null) {
             return;
           }
 
           UpdateDeviceType input =
               UpdateDeviceType.builder()
+                  // Update does not alter the device name
                   .internalId(device.getInternalId())
                   .manufacturer(device.getManufacturer())
                   .model(device.getModel())
-                  .supportedDiseaseTestPerformed(testPerformed)
+                  .supportedDiseaseTestPerformed(testsPerformed)
                   .swabTypes(deviceSpecimens.get(device.getModel() + device.getManufacturer()))
                   .build();
 
-          updateDeviceType(input);
+          if (!isNullDeviceUpdate(input, device)) {
+            updateDeviceType(input);
+          }
         });
   }
 
@@ -465,5 +476,27 @@ public class DeviceTypeService {
     } else {
       return Optional.empty();
     }
+  }
+
+  private boolean isNullDeviceUpdate(UpdateDeviceType update, DeviceType existing) {
+    ArrayList<DeviceTypeDisease> incomingDiseases =
+        createDeviceTypeDiseaseList(update.getSupportedDiseaseTestPerformed(), existing);
+    List<UUID> incomingSwabs = update.getSwabTypes();
+
+    if (existing.getSwabTypes() == null) {
+      return false;
+    }
+
+    if (existing.getSupportedDiseaseTestPerformed() == null) {
+      return false;
+    }
+
+    boolean hasNoDiseaseUpdates =
+        new HashSet<>(existing.getSupportedDiseaseTestPerformed()).containsAll(incomingDiseases);
+    boolean hasNoSwabUpdates =
+        new HashSet<>(existing.getSwabTypes().stream().map(SpecimenType::getInternalId).toList())
+            .containsAll(incomingSwabs);
+
+    return hasNoDiseaseUpdates && hasNoSwabUpdates;
   }
 }

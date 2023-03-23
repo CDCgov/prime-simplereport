@@ -105,6 +105,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
             List.of(SPECIMEN_DESCRIPTION_ONE),
             "influenza A RNA Result",
             "7777777",
+            "8888888",
             "Updated TestKit",
             "Updated Equip");
 
@@ -117,6 +118,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
             newDevice.getManufacturer(), newDevice.getModel());
     assertTrue(updatedDevice.isPresent());
 
+    // Device names are not altered by update operations
+    assertThat(updatedDevice.get().getName()).isEqualTo("Device A");
     var codes = updatedDevice.get().getSupportedDiseaseTestPerformed();
 
     assertThat(codes).hasSize(1);
@@ -134,6 +137,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
             "New Device Model",
             List.of(SPECIMEN_DESCRIPTION_ONE),
             "influenza A RNA Result",
+            "8888888",
             "0123456",
             "New TestKit",
             "New Equip");
@@ -165,6 +169,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
             List.of(SPECIMEN_DESCRIPTION_ONE, SPECIMEN_DESCRIPTION_TWO),
             "influenza A RNA Result",
             "0123456",
+            "8888888",
             "TestKit A",
             "Equip A");
     LIVDResponse deviceTwo =
@@ -174,6 +179,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
             List.of(SPECIMEN_DESCRIPTION_ONE, SPECIMEN_DESCRIPTION_THREE),
             "influenza A RNA Result",
             "0123456",
+            "8888888",
             "TestKit A",
             "Equip A");
     List<LIVDResponse> devices = List.of(deviceOne, deviceTwo);
