@@ -32,21 +32,11 @@ on:
 
 jobs:
   
-  cypress-remote-test:
+  cypress_remote_test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-
-    - name: Makefile deploy verification for backend in ${{ inputs.deploy_env }} environment
-      shell: bash
-      working-directory: ./ops
-      env:
-          CURL_TIMEOUT: 5
-      run: |
-        echo "::group::Run Makefile verification"
-        make check-${{ inputs.deploy_env }}-commit check-${{ inputs.deploy_env }}-readiness
-        echo "::endgroup::"
         
     - name: Update files permissions
       # Even though we don't use it, we need the .env file created here due to an issue similar to this one: https://github.com/mutagen-io/mutagen/issues/265

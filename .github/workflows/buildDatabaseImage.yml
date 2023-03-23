@@ -16,7 +16,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/db
+  IMAGE_NAME: ${{ github.repository }}/database
 
 jobs:
 
@@ -26,7 +26,8 @@ jobs:
     uses: ./.github/workflows/checkForChanges.yml
 
   build_and_push_database_image:
-    if: needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == true
+    # We want to build the image if there are changes in the database folder, or if we are forcing a build, or if we are on the main branch
+    if: needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
     needs: [database_changes]
     runs-on: ubuntu-latest
     permissions:
@@ -59,8 +60,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./
-          file: ./backend/db-setup/Dockerfile
+          context: backend/db-setup
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
