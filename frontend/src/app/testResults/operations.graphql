@@ -54,7 +54,10 @@ query GetFacilityResultsForCsvWithCount(
         name
         manufacturer
         model
-        swabType
+        swabTypes {
+          internalId,
+          name
+        }
       }
       patient {
         firstName

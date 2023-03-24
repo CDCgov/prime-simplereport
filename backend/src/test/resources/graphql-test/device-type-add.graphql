@@ -8,6 +8,5 @@ mutation addDevice(
       name
       model
       manufacturer
-      loincCode
     }
 }

@@ -6,38 +6,22 @@ import Button from "../../commonComponents/Button/Button";
 import TextInput from "../../commonComponents/TextInput";
 import MultiSelect from "../../commonComponents/MultiSelect/MultiSelect";
 import { MultiSelectDropdownOption } from "../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
-import {
-  DeviceType,
-  SupportedDiseaseTestPerformedInput,
-} from "../../../generated/graphql";
+import { DeviceType, UpdateDeviceType } from "../../../generated/graphql";
 import Required from "../../commonComponents/Required";
 
 import DeviceTypeReminderMessage from "./DeviceTypeReminderMessage";
 import DiseaseInformation from "./DiseaseInformation";
 
-export interface Device {
-  internalId?: string;
-  name: string;
-  manufacturer: string;
-  model: string;
-  loincCode: string;
-  swabTypes: Array<string>;
-  supportedDiseases: Array<string>;
-  testLength: number;
-  supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
-}
-
 export type SupportedDiseasesFormData = {
   equipmentUid?: string;
   supportedDisease: string;
   testPerformedLoincCode: string;
-  testOrderedLoincCode: string;
+  testOrderedLoincCode?: string;
   testkitNameId?: string;
 };
 
 export type DeviceFormData = {
   internalId?: string;
-  loincCode: string;
   name: string;
   model: string;
   manufacturer: string;
@@ -48,7 +32,7 @@ export type DeviceFormData = {
 
 interface Props {
   formTitle: string;
-  saveDeviceType: (device: Device) => void;
+  saveDeviceType: (device: UpdateDeviceType) => void;
   swabOptions: Array<MultiSelectDropdownOption>;
   supportedDiseaseOptions: Array<MultiSelectDropdownOption>;
   deviceOptions?: DeviceType[];
@@ -85,24 +69,11 @@ const DeviceForm = (props: Props) => {
   /**
    * Submit device data
    */
-  const inferLoincCode = (supportedDiseases: SupportedDiseasesFormData[]) => {
-    const covidId = props.supportedDiseaseOptions.find(
-      (d) => d.label === "COVID-19"
-    )?.value;
-
-    const covidDisease: SupportedDiseasesFormData[] = supportedDiseases.filter(
-      (supportedDisease: SupportedDiseasesFormData) =>
-        supportedDisease.supportedDisease === covidId
-    );
-
-    return covidDisease?.[0]?.testPerformedLoincCode;
-  };
 
   const onSubmit = async (deviceData: DeviceFormData) => {
     const updatedDevice = {
       ...selectedDevice,
       internalId: deviceData.internalId,
-      loincCode: inferLoincCode(deviceData.supportedDiseases),
       manufacturer: deviceData.manufacturer,
       model: deviceData.model,
       name: deviceData.name,
@@ -110,7 +81,7 @@ const DeviceForm = (props: Props) => {
         (supportedDisease: SupportedDiseasesFormData) =>
           supportedDisease.supportedDisease
       ),
-      supportedDiseaseTestPerformed: deviceData.supportedDiseases.map(
+      supportedDiseaseTestPerformed: deviceData.supportedDiseases?.map(
         (supportedDisease: SupportedDiseasesFormData) => {
           const convertedSupportedDisease = {
             supportedDisease: supportedDisease.supportedDisease,
@@ -136,7 +107,7 @@ const DeviceForm = (props: Props) => {
       ),
       swabTypes: deviceData.swabTypes,
       testLength: deviceData.testLength,
-    } as Device;
+    } as UpdateDeviceType;
 
     props.saveDeviceType(updatedDevice);
   };
@@ -145,14 +116,15 @@ const DeviceForm = (props: Props) => {
    * Edit mode setup
    */
 
-  const [selectedDevice, updateSelectedDevice] = useState<Device | undefined>();
+  const [selectedDevice, updateSelectedDevice] = useState<
+    UpdateDeviceType | undefined
+  >();
 
   const loadingDeviceData = !!props.deviceOptions && !selectedDevice;
 
   useEffect(() => {
     reset({
       internalId: selectedDevice?.internalId,
-      loincCode: selectedDevice?.loincCode,
       name: selectedDevice?.name,
       model: selectedDevice?.model,
       manufacturer: selectedDevice?.manufacturer,
@@ -173,42 +145,9 @@ const DeviceForm = (props: Props) => {
           .sort((a, b) => a.label.localeCompare(b.label))
       : [];
 
-  const getDeviceFromDeviceType = (device?: DeviceType): Device | undefined => {
-    let supportedDiseaseTestPerformed: SupportedDiseaseTestPerformedInput[];
-    if (device?.supportedDiseaseTestPerformed?.length) {
-      supportedDiseaseTestPerformed = device.supportedDiseaseTestPerformed.map(
-        (diseaseTestPerformed) => ({
-          supportedDisease: diseaseTestPerformed.supportedDisease.internalId,
-          testPerformedLoincCode: diseaseTestPerformed.testPerformedLoincCode,
-          testkitNameId: diseaseTestPerformed.testkitNameId,
-          equipmentUid: diseaseTestPerformed.equipmentUid,
-          testOrderedLoincCode: diseaseTestPerformed.testOrderedLoincCode,
-        })
-      );
-    } else if (device?.supportedDiseases?.length) {
-      supportedDiseaseTestPerformed = device.supportedDiseases.map(
-        (supportedDisease) => {
-          let testPerformedLoincCode = "";
-          if (supportedDisease.name === "COVID-19") {
-            testPerformedLoincCode = device.loincCode;
-          }
-          return {
-            supportedDisease: supportedDisease.internalId,
-            testPerformedLoincCode,
-          };
-        }
-      );
-    } else {
-      supportedDiseaseTestPerformed = [
-        {
-          supportedDisease:
-            props.supportedDiseaseOptions.find(
-              (option) => option.label === "COVID-19"
-            )?.value || "",
-          testPerformedLoincCode: device?.loincCode || "",
-        },
-      ];
-    }
+  const getDeviceFromDeviceType = (
+    device?: DeviceType
+  ): UpdateDeviceType | undefined => {
     return device
       ? {
           internalId: device.internalId,
@@ -219,9 +158,19 @@ const DeviceForm = (props: Props) => {
           supportedDiseases:
             device.supportedDiseases?.map((disease) => disease.internalId) ||
             [],
-          loincCode: device.loincCode,
           testLength: device.testLength ? device.testLength : 15,
-          supportedDiseaseTestPerformed,
+          supportedDiseaseTestPerformed:
+            device.supportedDiseaseTestPerformed?.map(
+              (diseaseTestPerformed) => ({
+                supportedDisease:
+                  diseaseTestPerformed.supportedDisease.internalId,
+                testPerformedLoincCode:
+                  diseaseTestPerformed.testPerformedLoincCode,
+                testkitNameId: diseaseTestPerformed.testkitNameId,
+                equipmentUid: diseaseTestPerformed.equipmentUid,
+                testOrderedLoincCode: diseaseTestPerformed.testOrderedLoincCode,
+              })
+            ),
         }
       : undefined;
   };

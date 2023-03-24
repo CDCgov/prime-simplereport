@@ -15,6 +15,11 @@ public class FhirConstants {
   public static final String PROCESSING_ID_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0103";
   public static final String ETHNICITY_EXTENSION_URL =
       "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group";
+  public static final String TESTKIT_NAME_ID_EXTENSION_URL =
+      "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id";
+
+  public static final String EQUIPMENT_UID_EXTENSION_URL =
+      "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid";
   public static final String ETHNICITY_CODE_SYSTEM =
       "http://terminology.hl7.org/CodeSystem/v2-0189";
   public static final String TRIBAL_AFFILIATION_EXTENSION_URL =

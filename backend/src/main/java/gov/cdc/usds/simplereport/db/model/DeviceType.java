@@ -23,8 +23,7 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false)
-  private String loincCode;
+  @Column private String loincCode;
 
   @Column(nullable = false)
   private String manufacturer;
@@ -32,8 +31,7 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String model;
 
-  @Column(nullable = false)
-  private String swabType;
+  @Column private String swabType;
 
   @JoinTable(
       name = "device_specimen_type",

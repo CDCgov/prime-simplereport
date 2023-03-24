@@ -406,10 +406,19 @@
         "device":{
           "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
         },
-        "method": {
-          "coding": [
+        "method":{
+          "extension":[
             {
-              "code": "testkitNameId3"
+              "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding":{
+                "code":"testkitNameId3"
+              }
+            },
+            {
+              "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding":{
+                "code":"equipmentUID3"
+              }
             }
           ]
         }
@@ -453,10 +462,19 @@
         "device":{
           "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
         },
-        "method": {
-          "coding": [
+        "method":{
+          "extension":[
             {
-              "code": "testkitNameId1"
+              "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding":{
+                "code":"testkitNameId1"
+              }
+            },
+            {
+              "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding":{
+                "code":"equipmentUID1"
+              }
             }
           ]
         }
@@ -500,10 +518,19 @@
         "device":{
           "reference":"Device/48aabd5f-a591-4e0e-9fa2-301d3d5a6df4"
         },
-        "method": {
-          "coding": [
+        "method":{
+          "extension":[
             {
-              "code": "testkitNameId2"
+              "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding":{
+                "code":"testkitNameId2"
+              }
+            },
+            {
+              "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding":{
+                "code":"equipmentUID2"
+              }
             }
           ]
         }

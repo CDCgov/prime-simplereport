@@ -2,7 +2,6 @@ query getDeviceTypesForLookup {
     deviceTypes {
         internalId
         name
-        loincCode
         manufacturer
         model
         swabTypes {
@@ -12,6 +11,16 @@ query getDeviceTypesForLookup {
         }
         supportedDiseases {
             name
+        }
+        supportedDiseaseTestPerformed {
+            supportedDisease {
+                internalId
+                name
+            }
+            testPerformedLoincCode
+            testkitNameId
+            equipmentUid
+            testOrderedLoincCode
         }
     }
 }
