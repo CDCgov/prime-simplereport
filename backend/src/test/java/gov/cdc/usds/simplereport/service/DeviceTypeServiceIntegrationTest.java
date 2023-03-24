@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -68,6 +69,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
                         SupportedDiseaseTestPerformedInput.builder()
                             .supportedDisease(disease.getInternalId())
                             .testPerformedLoincCode("000000000")
+                            .testOrderedLoincCode("000000000")
                             .equipmentUid("Equipment Uid")
                             .testkitNameId("TestKit Uid")
                             .build()))
@@ -215,5 +217,32 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
                 .collect(Collectors.toList()))
         .containsOnly(
             swab1.getInternalId(), swab3.getInternalId(), newSpecimenType.get().getInternalId());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void syncDevices_skipsNullUpdates() {
+    var existingDevice = deviceTypeRepo.findDeviceTypeByName(devA.getName());
+    var updatedAt = existingDevice.getUpdatedAt();
+
+    LIVDResponse device =
+        new LIVDResponse(
+            existingDevice.getManufacturer(),
+            existingDevice.getModel(),
+            List.of(SPECIMEN_DESCRIPTION_ONE),
+            "covid",
+            "000000000",
+            "000000000",
+            "TestKit Uid",
+            "Equipment Uid");
+
+    List<LIVDResponse> devices = List.of(device);
+
+    when(dataHubClient.getLIVDTable()).thenReturn(devices);
+    deviceTypeService.syncDevices();
+    var updatedDevice = deviceTypeRepo.findDeviceTypeByName(devA.getName());
+
+    // Device was not updated
+    assertEquals(updatedAt, updatedDevice.getUpdatedAt());
   }
 }

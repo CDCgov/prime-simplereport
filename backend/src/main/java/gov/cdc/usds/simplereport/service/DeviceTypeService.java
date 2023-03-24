@@ -412,7 +412,7 @@ public class DeviceTypeService {
                   .swabTypes(deviceSpecimens.get(device.getModel() + device.getManufacturer()))
                   .build();
 
-          if (!isNullDeviceUpdate(input, device)) {
+          if (hasUpdates(input, device)) {
             updateDeviceType(input);
           }
         });
@@ -478,25 +478,33 @@ public class DeviceTypeService {
     }
   }
 
-  private boolean isNullDeviceUpdate(UpdateDeviceType update, DeviceType existing) {
+  private boolean hasUpdates(UpdateDeviceType update, DeviceType existing) {
     ArrayList<DeviceTypeDisease> incomingDiseases =
         createDeviceTypeDiseaseList(update.getSupportedDiseaseTestPerformed(), existing);
     List<UUID> incomingSwabs = update.getSwabTypes();
 
     if (existing.getSwabTypes() == null) {
-      return false;
+      return true;
     }
 
     if (existing.getSupportedDiseaseTestPerformed() == null) {
-      return false;
+      return true;
     }
 
-    boolean hasNoDiseaseUpdates =
-        new HashSet<>(existing.getSupportedDiseaseTestPerformed()).containsAll(incomingDiseases);
-    boolean hasNoSwabUpdates =
-        new HashSet<>(existing.getSwabTypes().stream().map(SpecimenType::getInternalId).toList())
-            .containsAll(incomingSwabs);
+    boolean hasDiseaseUpdates =
+        !incomingDiseases.stream()
+            .allMatch(
+                d ->
+                    existing.getSupportedDiseaseTestPerformed().stream()
+                        .anyMatch(b -> b.equals(d)));
+    boolean hasSwabUpdates =
+        !incomingSwabs.stream()
+            .allMatch(
+                d ->
+                    existing.getSwabTypes().stream()
+                        .map(SpecimenType::getInternalId)
+                        .anyMatch(b -> b.equals(d)));
 
-    return hasNoDiseaseUpdates && hasNoSwabUpdates;
+    return hasDiseaseUpdates || hasSwabUpdates;
   }
 }
