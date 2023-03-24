@@ -30,6 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -42,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class DeviceTypeService {
 
@@ -290,10 +292,15 @@ public class DeviceTypeService {
               || device.getManufacturer() == null
               || device.getModel() == null
               || device.getVendorAnalyteName() == null) {
+            log.info("One or more required values are not present in the LIVD entry");
+            log.info("Skipping device...");
             return;
           }
 
           // Does the device exist at all in the DB?
+          log.info("Syncing device...");
+          log.info(device.getManufacturer());
+          log.info(device.getModel());
           var foundDevice =
               deviceTypeRepository.findDeviceTypeByManufacturerAndModel(
                   device.getManufacturer(), device.getModel());
@@ -317,6 +324,8 @@ public class DeviceTypeService {
 
                     if (supportedDisease.isEmpty()) {
                       // Skip this device
+                      log.info("Device does not contain required disease data");
+                      log.info("Skipping...");
                       return null;
                     }
 
@@ -346,6 +355,8 @@ public class DeviceTypeService {
                                         .equipmentUid(device.getEquipmentUid())
                                         .build()))
                             .build());
+
+                    log.info("Device {} created", deviceName);
 
                     return deviceTypeRepository
                         .findDeviceTypeByManufacturerAndModel(
