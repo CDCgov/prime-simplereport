@@ -338,7 +338,6 @@ public class DeviceTypeService {
                             .name(deviceName)
                             .manufacturer(device.getManufacturer())
                             .model(device.getModel())
-                            .loincCode(device.getTestPerformedLoincCode())
                             .swabTypes(specimensForDevice)
                             .supportedDiseaseTestPerformed(
                                 List.of(
