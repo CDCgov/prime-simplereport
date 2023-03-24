@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class SnomedConcept {
-  public String name;
-  public String code;
-  public TestResult displayName;
+  private String name;
+  private String code;
+  private TestResult displayName;
 }
