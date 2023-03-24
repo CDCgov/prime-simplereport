@@ -70,7 +70,6 @@ jest.mock("../../../generated/graphql", () => {
               name: "Tesla Emitter",
               model: "Model A",
               manufacturer: "Celoxitin",
-              loincCode: "1234-1",
               swabTypes: [
                 { internalId: "123", name: "nose", typeCode: "n123" },
               ],
@@ -179,7 +178,6 @@ describe("ManageDeviceTypeFormContainer", () => {
         variables: {
           internalId: "abc3",
           name: "Covalent Observer",
-          loincCode: "LP 123",
           manufacturer: "Vitamin Tox LLC",
           model: "Model CD",
           swabTypes: ["789"],

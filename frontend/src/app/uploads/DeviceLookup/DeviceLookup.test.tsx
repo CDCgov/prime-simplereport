@@ -18,11 +18,23 @@ const devices = [
     name: "Acme Emitter (RT-PCR)",
     model: "Model A",
     manufacturer: "Celoxitin",
-    loincCode: "1234-1",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
     supportedDiseases: [
       { internalId: "123", name: "COVID-19", loinc: "1234-1" },
+    ],
+    supportedDiseaseTestPerformed: [
+      {
+        supportedDisease: {
+          internalId: "123",
+          name: "COVID-19",
+          loinc: "1234-1",
+        },
+        testPerformedLoincCode: "1234-1",
+        equipmentUid: "equipmentUid123",
+        testkitNameId: "testkitNameId123",
+        testOrderedLoincCode: "1432-1",
+      },
     ],
   },
   {
@@ -34,6 +46,7 @@ const devices = [
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "nose-code" }],
     supportedDiseases: [],
+    supportedDiseaseTestPerformed: [],
   },
 ];
 
@@ -79,7 +92,7 @@ describe("Device lookup", () => {
     expect(model).toBeDisabled();
     expect(model).toHaveValue("Model A");
 
-    const loinc = screen.getByLabelText("Test performed code");
+    const loinc = screen.getByLabelText("Test performed code (COVID-19)");
     expect(loinc).toBeDisabled();
     expect(loinc).toHaveValue("1234-1");
 
@@ -103,7 +116,6 @@ describe("Device lookup", () => {
 
     jest.spyOn(navigator.clipboard, "writeText");
 
-    //todo console error complaining about wrapping things in `act`
     await userEvent.type(screen.getByLabelText("Select device"), "model");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
     await userEvent.click(screen.getByText("Select"));

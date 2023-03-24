@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import {
+  CreateDeviceTypeMutationVariables,
+  UpdateDeviceType,
   useCreateDeviceTypeMutation,
   useGetSpecimenTypesQuery,
   useGetSupportedDiseasesQuery,
@@ -11,7 +13,7 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 import { useDocumentTitle } from "../../utils/hooks";
 
-import DeviceForm, { Device } from "./DeviceForm";
+import DeviceForm from "./DeviceForm";
 
 const DeviceTypeFormContainer = () => {
   useDocumentTitle("Device type");
@@ -26,7 +28,7 @@ const DeviceTypeFormContainer = () => {
     fetchPolicy: "no-cache",
   });
 
-  const saveDeviceType = (device: Device) => {
+  const saveDeviceType = (device: UpdateDeviceType) => {
     if (device.testLength <= 0 || device.testLength > 999) {
       showError(
         "Failed to create device. Invalid test length",
@@ -35,7 +37,7 @@ const DeviceTypeFormContainer = () => {
     } else {
       if (!device.internalId) {
         createDeviceType({
-          variables: device,
+          variables: device as CreateDeviceTypeMutationVariables,
           fetchPolicy: "no-cache",
         }).then(() => {
           showSuccess("The device has been created", "Created Device");
