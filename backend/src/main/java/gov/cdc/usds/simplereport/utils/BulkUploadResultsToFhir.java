@@ -81,8 +81,7 @@ public class BulkUploadResultsToFhir {
           "Serum".toLowerCase(), "119364003");
 
   public List<String> convertToFhirBundles(InputStream csvStream, UUID orgId) {
-    var testEvents = new ArrayList<Bundle>();
-    var testEventFutures = new ArrayList<CompletableFuture<String>>();
+    var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
     while (valueIterator.hasNext()) {
@@ -94,15 +93,15 @@ public class BulkUploadResultsToFhir {
         log.error("Unable to parse csv.", ex);
         continue;
       }
-      var fileRow = (TestResultRow) fileRowConstructor.apply(row);
+      var fileRow = fileRowConstructor.apply(row);
 
       var future =
           CompletableFuture.supplyAsync(() -> convertRowToFhirBundle(fileRow, orgId))
               .thenApply(parser::encodeResourceToString);
-      testEventFutures.add(future);
+      futureTestEvents.add(future);
     }
 
-    return testEventFutures.stream()
+    return futureTestEvents.stream()
         .map(
             future -> {
               try {
@@ -110,7 +109,7 @@ public class BulkUploadResultsToFhir {
               } catch (InterruptedException | ExecutionException e) {
                 log.error("Bulk upload failure to convert to fhir.", e);
                 Thread.currentThread().interrupt();
-                throw new RuntimeException(e);
+                throw new CsvProcessingException("Unable to process file.");
               }
             })
         .collect(Collectors.toList());

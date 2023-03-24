@@ -40,7 +40,7 @@ public class BulkUploadResultsToFhirTest {
   }
 
   @Test
-  public void convertExistingCsv_success() {
+  void convertExistingCsv_success() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
 
@@ -52,9 +52,9 @@ public class BulkUploadResultsToFhirTest {
             .collect(Collectors.toList());
 
     verify(repo, times(1)).findDeviceTypeByModelIgnoreCase(anyString());
-    assertThat(serializedBundles.size()).isEqualTo(1);
-    assertThat(deserializedBundle.getEntry().size()).isEqualTo(13);
-    assertThat(resourceUrls.size()).isEqualTo(13);
+    assertThat(serializedBundles).hasSize(1);
+    assertThat(deserializedBundle.getEntry()).hasSize(13);
+    assertThat(resourceUrls).hasSize(13);
   }
 
   private InputStream loadCsv(String csvFile) {
