@@ -62,7 +62,6 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
                 .name("Device A")
                 .model("Model A")
                 .manufacturer("Manufacturer A")
-                .loincCode("D")
                 .swabTypes(List.of(swab1.getInternalId()))
                 .supportedDiseaseTestPerformed(
                     List.of(
@@ -83,7 +82,6 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
                 .name("Device B")
                 .model("Model B")
                 .manufacturer("Manufacturer B")
-                .loincCode("I")
                 .swabTypes(List.of(swab3.getInternalId()))
                 .supportedDiseaseTestPerformed(
                     List.of(
