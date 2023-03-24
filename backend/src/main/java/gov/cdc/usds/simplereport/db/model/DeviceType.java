@@ -52,11 +52,7 @@ public class DeviceType extends EternalAuditedEntity {
   private int testLength;
 
   @JsonIgnore
-  @OneToMany(
-      mappedBy = "deviceTypeId",
-      cascade = CascadeType.ALL,
-      orphanRemoval = true,
-      fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "deviceTypeId", cascade = CascadeType.ALL, orphanRemoval = true)
   List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
 
   protected DeviceType() {
