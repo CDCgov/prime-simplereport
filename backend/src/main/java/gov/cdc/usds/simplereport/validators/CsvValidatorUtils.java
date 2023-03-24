@@ -52,13 +52,34 @@ public class CsvValidatorUtils {
   private static final Set<String> VALID_COUNTRY_CODES =
       COUNTRY_CODES.stream().map(String::toLowerCase).collect(Collectors.toSet());
   private static final String UNKNOWN_LITERAL = "unknown";
+  private static final String UNKNOWN_CODE = "unk";
   private static final String OTHER_LITERAL = "other";
   private static final String REFUSED_LITERAL = "refused";
   private static final String FEMALE_LITERAL = "female";
   private static final String MALE_LITERAL = "male";
+  private static final String NATIVE_LITERAL = "american indian or alaska native";
+  private static final String NATIVE_CODE = "1002-5";
+  private static final String NATIVE_DB_VALUE = "native";
   private static final String ASIAN_LITERAL = "asian";
+  private static final String ASIAN_CODE = "2028-9";
+  private static final String BLACK_LITERAL = "black or african american";
+  private static final String BLACK_CODE = "2054-5";
+  private static final String BLACK_DB_VALUE = "black";
+  private static final String PACIFIC_ISLANDER_LITERAL =
+      "native hawaiian or other pacific islander";
+  private static final String PACIFIC_ISLANDER_CODE = "2076-8";
+  private static final String PACIFIC_DB_VALUE = "pacific";
   private static final String WHITE_LITERAL = "white";
-
+  private static final String WHITE_CODE = "2106-3";
+  private static final String OTHER_RACE_CODE = "2131-1";
+  private static final String ASK_LITERAL = "ask but unknown";
+  private static final String ASK_CODE = "asku";
+  private static final String HISPANIC_LITERAL = "hispanic or latino";
+  private static final String HISPANIC_CODE = "2135-2";
+  private static final String HISPANIC_DB_VALUE = "hispanic";
+  private static final String NOT_HISPANIC_LITERAL = "not hispanic or latino";
+  private static final String NOT_HISPANIC_CODE = "2186-5";
+  private static final String NOT_HISPANIC_DB_VALUE = "not_hispanic";
   private static final Set<String> GENDER_VALUES =
       Set.of(
           "m", MALE_LITERAL,
@@ -69,32 +90,32 @@ public class CsvValidatorUtils {
           "n", "not applicable");
   private static final Set<String> ETHNICITY_VALUES =
       Set.of(
-          "2135-2", "hispanic or latino",
-          "2186-5", "not hispanic or latino",
-          "unk", UNKNOWN_LITERAL);
+          HISPANIC_CODE, HISPANIC_LITERAL,
+          NOT_HISPANIC_CODE, NOT_HISPANIC_LITERAL,
+          UNKNOWN_CODE, UNKNOWN_LITERAL);
   private static final Set<String> RACE_VALUES =
       Set.of(
-          "1002-5",
-          "american indian or alaska native",
-          "2028-9",
+          NATIVE_CODE,
+          NATIVE_LITERAL,
+          ASIAN_CODE,
           ASIAN_LITERAL,
-          "2054-5",
-          "black or african american",
-          "2076-8",
-          "native hawaiian or other pacific islander",
-          "2106-3",
+          BLACK_CODE,
+          BLACK_LITERAL,
+          PACIFIC_ISLANDER_CODE,
+          PACIFIC_ISLANDER_LITERAL,
+          WHITE_CODE,
           WHITE_LITERAL,
-          "2131-1",
+          OTHER_RACE_CODE,
           OTHER_LITERAL,
-          "asku",
-          "ask but unknown",
-          "unk",
+          ASK_CODE,
+          ASK_LITERAL,
+          UNKNOWN_CODE,
           UNKNOWN_LITERAL);
   private static final Set<String> YES_NO_VALUES =
       Set.of(
           "y", "yes",
           "n", "no",
-          "u", "unk");
+          "u", UNKNOWN_CODE);
   private static final Set<String> TEST_RESULT_VALUES =
       Set.of("positive", "negative", "not detected", "detected", "invalid result");
   private static final Set<String> SPECIMEN_TYPE_VALUES =
@@ -292,9 +313,11 @@ public class CsvValidatorUtils {
   public static String convertEthnicityToDatabaseValue(String ethnicity) {
     Map<String, String> displayValueToDatabaseValue =
         Map.ofEntries(
-            Map.entry("hispanic or latino", "hispanic"),
-            Map.entry("not hispanic or latino", "not_hispanic"),
-            Map.entry("unk", UNKNOWN_LITERAL),
+            Map.entry(HISPANIC_LITERAL, HISPANIC_DB_VALUE),
+            Map.entry(HISPANIC_CODE, HISPANIC_DB_VALUE),
+            Map.entry(NOT_HISPANIC_LITERAL, NOT_HISPANIC_DB_VALUE),
+            Map.entry(NOT_HISPANIC_CODE, NOT_HISPANIC_DB_VALUE),
+            Map.entry(UNKNOWN_CODE, UNKNOWN_LITERAL),
             Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL));
 
     return displayValueToDatabaseValue.get(ethnicity.toLowerCase());
@@ -303,14 +326,22 @@ public class CsvValidatorUtils {
   public static String convertRaceToDatabaseValue(String race) {
     Map<String, String> displayValueToDatabaseValue =
         Map.ofEntries(
-            Map.entry("american indian or alaska native", "native"),
+            Map.entry(NATIVE_LITERAL, NATIVE_DB_VALUE),
+            Map.entry(NATIVE_CODE, NATIVE_DB_VALUE),
             Map.entry(ASIAN_LITERAL, ASIAN_LITERAL),
-            Map.entry("black or african american", "black"),
-            Map.entry("native hawaiian or other pacific islander", "pacific"),
+            Map.entry(ASIAN_CODE, ASIAN_LITERAL),
+            Map.entry(BLACK_LITERAL, BLACK_DB_VALUE),
+            Map.entry(BLACK_CODE, BLACK_DB_VALUE),
+            Map.entry(PACIFIC_ISLANDER_LITERAL, PACIFIC_DB_VALUE),
+            Map.entry(PACIFIC_ISLANDER_CODE, PACIFIC_DB_VALUE),
             Map.entry(WHITE_LITERAL, WHITE_LITERAL),
+            Map.entry(WHITE_CODE, WHITE_LITERAL),
             Map.entry(OTHER_LITERAL, OTHER_LITERAL),
-            Map.entry("ask but unknown", REFUSED_LITERAL),
-            Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL));
+            Map.entry(OTHER_RACE_CODE, OTHER_LITERAL),
+            Map.entry(ASK_LITERAL, REFUSED_LITERAL),
+            Map.entry(ASK_CODE, REFUSED_LITERAL),
+            Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL),
+            Map.entry(UNKNOWN_CODE, UNKNOWN_LITERAL));
 
     return displayValueToDatabaseValue.get(race.toLowerCase());
   }

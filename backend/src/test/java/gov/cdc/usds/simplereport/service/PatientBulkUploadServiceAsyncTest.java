@@ -218,6 +218,49 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
   }
 
   @Test
+  void validPersonWithAlternateValues_savedToDatabase()
+      throws IOException, ExecutionException, InterruptedException {
+    // GIVEN
+    InputStream inputStream = loadCsv("patientBulkUpload/alternateValues.csv");
+    byte[] content = inputStream.readAllBytes();
+
+    // WHEN
+    CompletableFuture<Set<Person>> futureSavedPatients = this._service.savePatients(content, null);
+    Set<Person> savedPatients = futureSavedPatients.get();
+
+    // THEN
+    assertThat(savedPatients).hasSameSizeAs(fetchDatabasePatients());
+    assertThat(fetchDatabasePatientsForFacility(firstFacilityId))
+        .hasSameSizeAs(fetchDatabasePatientsForFacility(secondFacilityId));
+    assertThat(fetchDatabasePatients()).hasSize(1);
+
+    Person patient = fetchDatabasePatients().get(0);
+
+    assertThat(patient.getLastName()).isEqualTo("Sporer");
+    assertThat(patient.getFirstName()).isEqualTo("Foobar");
+    assertThat(patient.getRace()).isEqualTo("asian");
+    assertThat(patient.getBirthDate()).isEqualTo(LocalDate.of(1940, 6, 12));
+    assertThat(patient.getGender()).isEqualTo("other");
+    assertThat(patient.getEthnicity()).isEqualTo("not_hispanic");
+    assertThat(patient.getCountry()).isEqualTo("USA");
+    assertThat(patient.getEmployedInHealthcare()).isNull();
+    assertThat(patient.getResidentCongregateSetting()).isNull();
+
+    List<PhoneNumber> phoneNumbers =
+        phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());
+    assertThat(phoneNumbers).hasSize(1);
+    PhoneNumber phoneNumber = phoneNumbers.get(0);
+    assertThat(phoneNumber.getNumber()).isEqualTo("410-881-4268");
+    assertThat(phoneNumber.getType()).isEqualTo(PhoneType.LANDLINE);
+
+    verify(_emailService, times(1))
+        .sendWithDynamicTemplate(
+            List.of("bobbity@example.com"),
+            EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
+            Map.of("patients_url", "https://simplereport.gov/patients?facility=null"));
+  }
+
+  @Test
   void duplicatePatient_isNotSaved() throws IOException, ExecutionException, InterruptedException {
     // GIVEN
     _personService.addPatient(
@@ -343,7 +386,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
   }
 
   @Test
-  @SliceTestConfiguration.WithSimpleReportStandardUser
+  @SliceTestConfiguration.WithSimpleReportOtherOrgUser
   void requiresPermissionAddPatientsToFacility() throws IOException {
     // GIVEN
     InputStream inputStream = loadCsv("patientBulkUpload/valid.csv");
