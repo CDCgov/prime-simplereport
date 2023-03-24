@@ -420,7 +420,11 @@ public class DeviceTypeService {
                   .build();
 
           if (hasUpdates(input, device)) {
-            updateDeviceType(input);
+            try {
+              updateDeviceType(input);
+            } catch (IllegalGraphqlArgumentException ignored) {
+              log.info("Skipping device...");
+            }
           }
         });
   }
