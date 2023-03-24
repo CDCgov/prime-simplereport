@@ -1,4 +1,8 @@
-import { render, screen } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
@@ -20,6 +24,9 @@ describe("App Component", () => {
         </MockedProvider>
       </Provider>
     );
-    expect(await screen.findByText(/loading/i));
+
+    await waitForElementToBeRemoved(() =>
+      screen.queryByText(/loading account information.../i)
+    );
   });
 });

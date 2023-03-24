@@ -12,6 +12,7 @@ import * as srToast from "../../utils/srToast";
 import AddToQueueSearch, {
   ADD_PATIENT_TO_QUEUE,
   QUERY_PATIENT,
+  QUERY_SINGLE_PATIENT,
 } from "./AddToQueueSearch";
 import { QueueProps } from "./SearchResults";
 
@@ -86,6 +87,15 @@ const mockGraphQLResult = jest.fn(() => {
 });
 
 const mocks = [
+  {
+    request: {
+      query: QUERY_SINGLE_PATIENT,
+      variables: {
+        internalId: "abc123",
+      },
+    },
+    result: mockFetchGraphQLResult(),
+  },
   {
     request: {
       query: QUERY_PATIENT,

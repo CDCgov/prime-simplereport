@@ -115,7 +115,6 @@ describe("DeviceTypeFormContainer", () => {
         fetchPolicy: "no-cache",
         variables: {
           internalId: undefined,
-          loincCode: "1920-12",
           manufacturer: "Mesa Biotech",
           model: "Accula SARS-Cov-2 Test*",
           name: "Accula",
