@@ -345,11 +345,7 @@ describe("QueueItem", () => {
 
   it("updates the timer when a device is changed", async () => {
     await renderQueueItem();
-
-    await userEvent.type(
-      screen.getAllByLabelText("Device", { exact: false })[1],
-      "lumira"
-    );
+    await userEvent.type(screen.getByTestId("device-type-dropdown"), "lumira");
 
     expect(await screen.findByTestId("timer")).toHaveTextContent("15:00");
   });

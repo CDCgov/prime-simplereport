@@ -5,14 +5,14 @@ plugins {
     id 'java'
     id 'checkstyle'
     id 'jacoco'
-    id 'org.sonarqube' version '3.0'
+    id 'org.sonarqube' version '4.0.0.2929'
     id 'com.gorylenko.gradle-git-properties' version '2.4.1'
-    id "com.diffplug.spotless" version "5.14.0"
+    id "com.diffplug.spotless" version "6.16.0"
 }
 
 group = 'gov.cdc.usds'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 ext {
     set('springCloudVersion', "2021.0.3")
@@ -76,7 +76,7 @@ dependencies {
     implementation 'com.microsoft.azure:applicationinsights-core:3.4.9'
 
     // Twilio for SMS
-    implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
+    implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
 
     // SendGrid for Email
     implementation 'com.sendgrid:sendgrid-java:4.7.2'

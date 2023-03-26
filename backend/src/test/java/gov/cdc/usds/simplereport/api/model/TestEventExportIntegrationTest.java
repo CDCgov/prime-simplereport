@@ -140,6 +140,10 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Ordered_test_code\":\"95209-3\","
             + "\"Specimen_source_site_code\":\"71836000\","
             + "\"Specimen_type_code\":\"445297001\","
+            + "\"Observation_result_status\":\"F\","
+            + "\"Order_result_status\":\"F\","
+            + "\"Test_Kit_Name_ID\":\"LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd.\","
+            + "\"Equipment_Model_ID\":\"LumiraDx Platform_LumiraDx\","
             + "\"Instrument_ID\":"
             + testEventExport.getInstrumentID()
             + ","
@@ -156,7 +160,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Site_of_care\":\"university\""
             + "}",
         objectMapper.writeValueAsString(testEventExport),
-        false);
+        true);
   }
 
   @Test
@@ -242,6 +246,9 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Ordered_test_code\":\"95209-3\","
             + "\"Specimen_source_site_code\":\"71836000\","
             + "\"Specimen_type_code\":\"445297001\","
+            + "\"Test_result_status\":\"C\","
+            + "\"Test_Kit_Name_ID\":\"LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd.\","
+            + "\"Equipment_Model_ID\":\"LumiraDx Platform_LumiraDx\","
             + "\"Instrument_ID\":"
             + correctedTestEventExport.getInstrumentID()
             + ","
@@ -258,7 +265,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Site_of_care\":\"university\""
             + "}",
         actualStr,
-        false);
+        true);
   }
 
   @Test
@@ -344,6 +351,9 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Ordered_test_code\":\"95209-3\","
             + "\"Specimen_source_site_code\":\"71836000\","
             + "\"Specimen_type_code\":\"445297001\","
+            + "\"Test_result_status\":\"W\","
+            + "\"Test_Kit_Name_ID\":\"LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd.\","
+            + "\"Equipment_Model_ID\":\"LumiraDx Platform_LumiraDx\","
             + "\"Instrument_ID\":"
             + correctedTestEventExport.getInstrumentID()
             + ","
@@ -360,7 +370,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Site_of_care\":\"university\""
             + "}",
         actualStr,
-        false);
+        true);
   }
 
   private JsonNode submitTestResult(Map<String, Object> variables, Optional<String> expectedError) {

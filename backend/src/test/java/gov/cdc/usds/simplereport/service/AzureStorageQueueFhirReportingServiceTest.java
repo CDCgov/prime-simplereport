@@ -35,6 +35,7 @@ class AzureStorageQueueFhirReportingServiceTest {
         new AzureStorageQueueFhirReportingService(context, client, gitProperties);
 
     var multiplexTestEvent = createMultiplexTestEvent();
+    ReflectionTestUtils.setField(multiplexTestEvent, "internalId", UUID.randomUUID());
     ReflectionTestUtils.setField(multiplexTestEvent.getPatient(), "internalId", UUID.randomUUID());
     ReflectionTestUtils.setField(
         multiplexTestEvent.getPatient(),

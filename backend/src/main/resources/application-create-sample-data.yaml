@@ -81,14 +81,17 @@ simple-report-initialization:
           supported-disease: "Flu A"
           equipment-uid: "00884999048034"
           testkit-name-id: "Alinity m Resp-4-Plex_Abbott Molecular Inc."
+          test-ordered-loinc-code: "95941-1"
         - test-performed-loinc-code: "94500-6"
           supported-disease: "COVID-19"
           equipment-uid: "00884999048034"
           testkit-name-id: "Alinity m Resp-4-Plex_Abbott Molecular Inc."
+          test-ordered-loinc-code: "95941-1"
         - test-performed-loinc-code: "85478-6"
           supported-disease: "Flu B"
           equipment-uid: "00884999048034"
           testkit-name-id: "Alinity m Resp-4-Plex_Abbott Molecular Inc."
+          test-ordered-loinc-code: "95941-1"
     - name: Abbott IDNow
       manufacturer: Abbott
       model: ID Now
@@ -99,6 +102,7 @@ simple-report-initialization:
           supported-disease: "COVID-19"
           equipment-uid: 00811877010616
           testkit-name-id: 10811877011269
+          test-ordered-loinc-code: "94534-5"
     - name: Abbott BinaxNow
       manufacturer: Abbott
       model: BinaxNOW COVID-19 Ag Card
@@ -109,6 +113,7 @@ simple-report-initialization:
           supported-disease: "COVID-19"
           equipment-uid: "No Equipment"
           testkit-name-id: 10811877011290
+          test-ordered-loinc-code: "94558-4"
     - name: Quidel Sofia 2
       manufacturer: Quidel
       model: Sofia 2 SARS Antigen FIA
@@ -119,6 +124,7 @@ simple-report-initialization:
           supported-disease: "COVID-19"
           equipment-uid: "Sofia Instrument_Quidel"
           testkit-name-id: "Sofia SARS Antigen FIA_Quidel Corporation"
+          test-ordered-loinc-code: "95209-3"
     - name: BD Veritor
       manufacturer: Becton, Dickinson and Company (BD)
       model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
@@ -129,6 +135,7 @@ simple-report-initialization:
           supported-disease: "COVID-19"
           equipment-uid: "BD Veritor Plus System_Becton Dickinson"
           testkit-name-id: "BD Veritor System for Rapid Detection of SARS-CoV-2_Becton, Dickinson and Company (BD)"
+          test-ordered-loinc-code: "94558-4"
     - name: LumiraDX
       manufacturer: LumiraDx UK Ltd.
       model: LumiraDx SARS-CoV-2 Ag Test*
@@ -139,6 +146,7 @@ simple-report-initialization:
           supported-disease: "COVID-19"
           equipment-uid: "LumiraDx Platform_LumiraDx"
           testkit-name-id: "LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd."
+          test-ordered-loinc-code: "95209-3"
     - name: Access Bio CareStart
       manufacturer: Access Bio, Inc.
       model: CareStart COVID-19 Antigen test*
@@ -149,6 +157,7 @@ simple-report-initialization:
           supported-disease: "COVID-19"
           equipment-uid: "No Equipment"
           testkit-name-id: "CareStart COVID-19 Antigen test_Access Bio, Inc."
+          test-ordered-loinc-code: "94558-4"
   patient-registration-links:
     - link: dis-org
       organization-external-id: DIS_ORG

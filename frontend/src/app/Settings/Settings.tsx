@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 
-import { useDocumentTitle } from "../utils/hooks";
-
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
@@ -12,8 +10,6 @@ import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLi
 import "./Settings.scss";
 
 const Settings = () => {
-  useDocumentTitle("Settings");
-
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">

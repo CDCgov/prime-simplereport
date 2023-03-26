@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
@@ -269,7 +270,7 @@ const UploadPatients = () => {
                   setErrors([]);
                 }}
               >
-                <FontAwesomeIcon icon={faXmark} />
+                <FontAwesomeIcon icon={faXmark as IconProp} />
               </button>
               <p className="usa-alert__text">
                 {errorMessage.body}
@@ -372,6 +373,7 @@ const UploadPatients = () => {
                   selectedRadio={facilityAmount}
                   onChange={setFacilityAmount}
                   variant="horizontal"
+                  renderAsForm
                 />
                 {facilityAmount === "oneFacility" && (
                   <>
@@ -416,7 +418,7 @@ const UploadPatients = () => {
                         aria-label="close"
                         onClick={() => setStatus("")}
                       >
-                        <FontAwesomeIcon icon={faXmark} />
+                        <FontAwesomeIcon icon={faXmark as IconProp} />
                       </button>
                       <p className="usa-alert__text">
                         We're now adding your patients to SimpleReport. You can

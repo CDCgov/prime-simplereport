@@ -291,9 +291,9 @@ requests
   }
 }
 
-resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_uploader_400" {
-  name                = "${var.env}-report_stream_uploader_400"
-  description         = "${local.env_title} alert when the publish function results in a 400"
+resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_batched_uploader_400" {
+  name                = "${var.env}-report_stream_batched_uploader_400"
+  description         = "${local.env_title} alert when the batched uploader publish function results in a 400"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
 
@@ -302,13 +302,42 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_uploader_4
   }
 
   data_source_id = var.app_insights_id
-  enabled        = contains(var.disabled_alerts, "report_stream_uploader_400") ? false : true
+  enabled        = contains(var.disabled_alerts, "report_stream_batched_uploader_400") ? false : true
 
   query = <<-QUERY
 customEvents
 | order by timestamp desc
 | extend httpStatus = toint(customDimensions["status"])
-| where httpStatus == 400 and name == "ReportStream Upload Failed"
+| where httpStatus == 400 and name == "Queue: test-event-publishing. ReportStream Upload Failed"
+  QUERY
+
+  severity    = 1
+  frequency   = 5
+  time_window = 6
+  trigger {
+    operator  = "GreaterThan"
+    threshold = 0
+  }
+}
+
+resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_fhir_batched_uploader_400" {
+  name                = "${var.env}-report_stream_fhir_batched_uploader_400"
+  description         = "${local.env_title} alert when the fhir batched uploader publish function results in a 400"
+  location            = data.azurerm_resource_group.app.location
+  resource_group_name = var.rg_name
+
+  action {
+    action_group = var.action_group_ids
+  }
+
+  data_source_id = var.app_insights_id
+  enabled        = contains(var.disabled_alerts, "report_stream_fhir_batched_uploader_400") ? false : true
+
+  query = <<-QUERY
+customEvents
+| order by timestamp desc
+| extend httpStatus = toint(customDimensions["status"])
+| where httpStatus == 400 and name == "Queue: fhir-data-publishing. ReportStream Upload Failed"
   QUERY
 
   severity    = 1
@@ -376,6 +405,30 @@ ${local.skip_on_weekends}
 
   action {
     action_group = var.action_group_ids
+  }
+}
+
+resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
+  count               = var.function_id == null || contains(var.disabled_alerts, "function_app_memory_alert") ? 0 : 1
+  enabled             = true
+  name                = "${var.env}_function_app_batch_publisher_memory_alert"
+  resource_group_name = var.rg_name
+  scopes              = [var.function_id]
+  description         = "Action will be triggered when memory usage is greater than 1200 mb, threshold is set in bytes"
+
+  criteria {
+    metric_namespace = "Microsoft.Web/sites"
+    metric_name      = "AverageMemoryWorkingSet"
+    aggregation      = "Average"
+    operator         = "GreaterThan"
+    threshold        = var.function_memory_threshold
+  }
+
+  dynamic "action" {
+    for_each = var.action_group_ids
+    content {
+      action_group_id = action.value
+    }
   }
 }
 

@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.api.devicetype;
 
-import gov.cdc.usds.simplereport.db.model.DeviceTestPerformedLoincCode;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import java.util.List;
@@ -35,15 +35,13 @@ public class DeviceTypeDataResolver {
             (deviceTypeIds, batchLoaderEnvironment) ->
                 Mono.just(deviceTypeDataLoaderService.getSpecimenTypes(deviceTypeIds)));
 
-    Class<List<DeviceTestPerformedLoincCode>> deviceTestPerformedLoincCodeClazz =
-        (Class) List.class;
+    Class<List<DeviceTypeDisease>> deviceTypeDiseaseCodeClazz = (Class) List.class;
     registry
-        .forTypePair(UUID.class, deviceTestPerformedLoincCodeClazz)
-        .withName("deviceTestPerformedLoincDataloader")
+        .forTypePair(UUID.class, deviceTypeDiseaseCodeClazz)
+        .withName("deviceTypeDiseaseDataloader")
         .registerMappedBatchLoader(
             (deviceTypeIds, batchLoaderEnvironment) ->
-                Mono.just(
-                    deviceTypeDataLoaderService.getDeviceTestPerformedLoincCode(deviceTypeIds)));
+                Mono.just(deviceTypeDataLoaderService.getDeviceTypeDisease(deviceTypeIds)));
   }
 
   @SchemaMapping(typeName = "DeviceType", field = "supportedDiseases")
@@ -60,9 +58,9 @@ public class DeviceTypeDataResolver {
   }
 
   @SchemaMapping(typeName = "DeviceType", field = "supportedDiseaseTestPerformed")
-  public CompletableFuture<List<DeviceTestPerformedLoincCode>> supportedDiseaseTestPerformed(
+  public CompletableFuture<List<DeviceTypeDisease>> supportedDiseaseTestPerformed(
       DeviceType deviceType,
-      DataLoader<UUID, List<DeviceTestPerformedLoincCode>> deviceTestPerformedLoincDataloader) {
-    return deviceTestPerformedLoincDataloader.load(deviceType.getInternalId());
+      DataLoader<UUID, List<DeviceTypeDisease>> deviceTypeDiseaseDataloader) {
+    return deviceTypeDiseaseDataloader.load(deviceType.getInternalId());
   }
 }

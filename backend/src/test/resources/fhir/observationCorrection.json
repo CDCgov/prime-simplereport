@@ -20,6 +20,22 @@
       }
     ]
   },
+  "method": {
+    "extension": [
+      {
+        "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+        "valueCoding": {
+          "code": "covidTestkitNameId"
+        }
+      },
+      {
+        "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+        "valueCoding": {
+          "code": "covidEquipmentUID"
+        }
+      }
+    ]
+  },
   "note": [
     {
       "text": "Corrected Result: woops"

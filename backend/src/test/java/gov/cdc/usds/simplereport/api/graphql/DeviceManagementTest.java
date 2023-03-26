@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.devicetype.DeviceTypeMutationResolver;
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
@@ -115,9 +116,17 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .name("Funny")
             .manufacturer("Acme")
             .model("Test-A-Lot")
-            .loincCode("123456")
             .swabTypes(specimenTypeIds)
             .supportedDiseases(supportedDiseaseIds)
+            .supportedDiseaseTestPerformed(
+                List.of(
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(supportedDiseaseIds.get(0))
+                        .testPerformedLoincCode("loinc1")
+                        .equipmentUid("equipmentUid1")
+                        .testkitNameId("testkitNameId1")
+                        .testOrderedLoincCode("loinc3")
+                        .build()))
             .build();
 
     return Map.of("input", input);
@@ -137,9 +146,17 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .name("Funny")
             .manufacturer("Acme")
             .model("Test-A-Lot")
-            .loincCode("123456")
             .swabTypes(specimenTypeIds)
             .supportedDiseases(supportedDiseaseIds)
+            .supportedDiseaseTestPerformed(
+                List.of(
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(supportedDiseaseIds.get(0))
+                        .testPerformedLoincCode("loinc1")
+                        .equipmentUid("equipmentUid1")
+                        .testkitNameId("testkitNameId1")
+                        .testOrderedLoincCode("loinc3")
+                        .build()))
             .build();
 
     return Map.of("input", input);

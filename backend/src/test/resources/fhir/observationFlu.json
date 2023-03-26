@@ -19,5 +19,21 @@
         "display": "NEGATIVE"
       }
     ]
+  },
+  "method": {
+    "extension": [
+      {
+        "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+        "valueCoding": {
+          "code": "fluTestkitNameId"
+        }
+      },
+      {
+        "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+        "valueCoding": {
+          "code": "fluEquipmentUID"
+        }
+      }
+    ]
   }
 }

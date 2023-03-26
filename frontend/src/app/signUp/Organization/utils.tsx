@@ -3,7 +3,6 @@ import { ReactElement } from "react";
 
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import { phoneNumberIsValid } from "../../patients/personSchema";
-import { liveJurisdictions } from "../../../config/constants";
 import Alert from "../../commonComponents/Alert";
 
 import { OrganizationCreateRequest } from "./OrganizationForm";
@@ -92,31 +91,6 @@ export const initOrgErrors = (): Record<
   workPhoneNumber: "",
 });
 
-const getStateErrorMessage = (param: any) =>
-  param.value !== "" ? (
-    <>
-      SimpleReport isn't available yet in your state. View{" "}
-      <a
-        href="https://simplereport.gov/using-simplereport/manage-facility-info/find-supported-jurisdictions"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        supported jurisdictions
-      </a>{" "}
-      or sign up for our{" "}
-      <a
-        href="https://simplereport.gov/waitlist"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        waitlist
-      </a>
-      .
-    </>
-  ) : (
-    "Organization state is required"
-  );
-
 export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
   .object()
   .shape({
@@ -125,10 +99,7 @@ export const organizationSchema: yup.SchemaOf<OrganizationCreateRequest> = yup
       .mixed()
       .oneOf(Object.keys(OrganizationTypeEnum), "Organization type is required")
       .required(),
-    state: yup
-      .mixed()
-      .oneOf(liveJurisdictions, getStateErrorMessage)
-      .required(),
+    state: yup.string().required("State is required"),
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),

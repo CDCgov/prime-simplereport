@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
@@ -70,7 +70,6 @@ jest.mock("../../../generated/graphql", () => {
               name: "Tesla Emitter",
               model: "Model A",
               manufacturer: "Celoxitin",
-              loincCode: "1234-1",
               swabTypes: [
                 { internalId: "123", name: "nose", typeCode: "n123" },
               ],
@@ -155,13 +154,11 @@ describe("ManageDeviceTypeFormContainer", () => {
     await userEvent.click(screen.getByTestId("combo-box-select"));
     await userEvent.click(screen.getAllByText("Covalent Observer")[1]);
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
     await addValue("Manufacturer", " LLC");
     await addValue("Model", "D");
     await userEvent.selectOptions(
       screen.getByLabelText("Supported disease *"),
-      "Flu A"
+      "COVID-19"
     );
     await userEvent.clear(screen.getByLabelText("Test performed code *"));
 
@@ -169,48 +166,38 @@ describe("ManageDeviceTypeFormContainer", () => {
       screen.getByLabelText("Test performed code *"),
       "LP 123"
     );
+    await userEvent.type(
+      screen.getByLabelText("Test ordered code *"),
+      "LP 321"
+    );
     await userEvent.click(screen.getByText("Save changes"));
 
+    await waitFor(() =>
+      expect(mockUpdateDeviceType).toHaveBeenCalledWith({
+        fetchPolicy: "no-cache",
+        variables: {
+          internalId: "abc3",
+          name: "Covalent Observer",
+          manufacturer: "Vitamin Tox LLC",
+          model: "Model CD",
+          swabTypes: ["789"],
+          supportedDiseases: ["294729"],
+          testLength: 15,
+          supportedDiseaseTestPerformed: [
+            {
+              supportedDisease: "294729",
+              testPerformedLoincCode: "LP 123",
+              testOrderedLoincCode: "LP 321",
+            },
+          ],
+        },
+      })
+    );
+
     expect(mockUpdateDeviceType).toBeCalledTimes(1);
-    expect(mockUpdateDeviceType).toHaveBeenCalledWith({
-      fetchPolicy: "no-cache",
-      variables: {
-        internalId: "abc3",
-        name: "Covalent Observer",
-        loincCode: "1234-3",
-        manufacturer: "Vitamin Tox LLC",
-        model: "Model CD",
-        swabTypes: ["789"],
-        supportedDiseases: ["294729"],
-        testLength: 15,
-        supportedDiseaseTestPerformed: [
-          { supportedDisease: "123-456", testPerformedLoincCode: "LP 123" },
-        ],
-      },
-    });
 
     expect(
       await screen.findByText("Redirected to /admin?facility=12345")
-    ).toBeInTheDocument();
-  });
-
-  it("should display error when update fails", async () => {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    await userEvent.click(screen.getByTestId("combo-box-select"));
-    await userEvent.click(screen.getAllByText("Covalent Observer")[1]);
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    await addValue("Manufacturer", " LLC");
-    await addValue("Model", "D");
-    await addValue("Test length", "invalid value");
-
-    await userEvent.click(screen.getByText("Save changes"));
-
-    expect(mockUpdateDeviceType).toBeCalledTimes(0);
-    expect(
-      await screen.findByText("Failed to update device. Invalid test length")
     ).toBeInTheDocument();
   });
 });

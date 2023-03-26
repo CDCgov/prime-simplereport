@@ -15,7 +15,7 @@ on:
     - cron: '0 18 * * *' # Daily at 18:00 UTC
 
 env:
-  JAVA_VERSION: 11
+  JAVA_VERSION: 17
   JAVA_DISTRIBUTION: 'zulu'
   NODE_VERSION: 18
 
@@ -33,7 +33,7 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ./frontend/node_modules
@@ -41,13 +41,13 @@ jobs:
       - name: Install dependencies
         run: yarn install
         working-directory: ./frontend
-      - name: Set up JDK 11
+      - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ~/.gradle/caches

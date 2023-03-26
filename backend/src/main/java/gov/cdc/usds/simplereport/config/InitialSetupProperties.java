@@ -125,5 +125,6 @@ public class InitialSetupProperties {
     String supportedDisease;
     String equipmentUid;
     String testkitNameId;
+    String testOrderedLoincCode;
   }
 }

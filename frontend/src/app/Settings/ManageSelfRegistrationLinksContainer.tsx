@@ -1,6 +1,7 @@
 import { useQuery, gql } from "@apollo/client";
 
 import { getUrl } from "../utils/url";
+import { useDocumentTitle } from "../utils/hooks";
 
 import { ManageSelfRegistrationLinks } from "./ManageSelfRegistrationLinks";
 
@@ -28,6 +29,8 @@ export const REGISTRATION_LINKS_QUERY = gql`
 `;
 
 export const ManageSelfRegistrationLinksContainer = () => {
+  useDocumentTitle("Patient self-registration");
+
   const { data, loading, error } = useQuery<Data, {}>(
     REGISTRATION_LINKS_QUERY,
     {

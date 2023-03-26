@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { SpecimenType } from "../../../generated/graphql";
@@ -88,6 +88,7 @@ describe("DeviceTypeFormContainer", () => {
     await addValue("Device name", "Accula");
     await addValue("Manufacturer", "Mesa Biotech");
     await addValue("Model", "Accula SARS-Cov-2 Test*");
+    await addValue("Test length (minutes) ", "15");
 
     await userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
     await userEvent.click(screen.getByText("Cotton (5309)"));
@@ -103,47 +104,35 @@ describe("DeviceTypeFormContainer", () => {
       screen.getByLabelText("Test performed code *"),
       "1920-12"
     );
-    await userEvent.click(screen.getByText("Save changes"));
-
-    await userEvent.click(screen.getByText("Save changes"));
-
-    await screen.findByText("Redirected to /admin?facility=12345");
-
-    expect(mockCreateDeviceType).toBeCalledTimes(1);
-    expect(mockCreateDeviceType).toHaveBeenCalledWith({
-      fetchPolicy: "no-cache",
-      variables: {
-        loincCode: "1920-12",
-        manufacturer: "Mesa Biotech",
-        model: "Accula SARS-Cov-2 Test*",
-        name: "Accula",
-        swabTypes: ["887799"],
-        supportedDiseases: [],
-        testLength: 15,
-        supportedDiseaseTestPerformed: [
-          { supportedDisease: "294729", testPerformedLoincCode: "1920-12" },
-        ],
-      },
-    });
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    await screen.findByText("Redirected to /admin?facility=12345");
-  });
-  it("should display error on invalid test length", async () => {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    await addValue("Manufacturer", " LLC");
-    await addValue("Model", "D");
-    await userEvent.clear(
-      screen.getByLabelText("Test length", { exact: false })
+    await userEvent.type(
+      screen.getByLabelText("Test ordered code *"),
+      "2102-91"
     );
-
     await userEvent.click(screen.getByText("Save changes"));
 
-    expect(mockCreateDeviceType).not.toHaveBeenCalled();
-    expect(
-      await screen.findByText("Failed to create device. Invalid test length")
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(mockCreateDeviceType).toHaveBeenCalledWith({
+        fetchPolicy: "no-cache",
+        variables: {
+          internalId: undefined,
+          manufacturer: "Mesa Biotech",
+          model: "Accula SARS-Cov-2 Test*",
+          name: "Accula",
+          swabTypes: ["887799"],
+          supportedDiseases: ["294729"],
+          testLength: 15,
+          supportedDiseaseTestPerformed: [
+            {
+              supportedDisease: "294729",
+              testPerformedLoincCode: "1920-12",
+              testOrderedLoincCode: "2102-91",
+            },
+          ],
+        },
+      })
+    );
+    expect(mockCreateDeviceType).toBeCalledTimes(1);
+
+    await screen.findByText("Redirected to /admin?facility=12345");
   });
 });

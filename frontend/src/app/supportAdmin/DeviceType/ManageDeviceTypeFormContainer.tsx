@@ -12,10 +12,13 @@ import {
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { showError, showSuccess } from "../../utils/srToast";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+import { useDocumentTitle } from "../../utils/hooks";
 
-import DeviceForm, { Device } from "./DeviceForm";
+import DeviceForm from "./DeviceForm";
 
 const ManageDeviceTypeFormContainer = () => {
+  useDocumentTitle("Manage devices");
+
   const [submitted, setSubmitted] = useState(false);
   const [activeFacility] = useSelectedFacility();
   const [updateDeviceType] = useUpdateDeviceTypeMutation();
@@ -29,7 +32,7 @@ const ManageDeviceTypeFormContainer = () => {
     fetchPolicy: "no-cache",
   });
 
-  const updateDevice = (device: Device) => {
+  const updateDevice = (device: UpdateDeviceType) => {
     if (device.testLength <= 0 || device.testLength > 999) {
       showError(
         "Failed to update device. Invalid test length",

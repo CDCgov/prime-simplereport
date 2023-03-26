@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import {
+  CreateDeviceTypeMutationVariables,
+  UpdateDeviceType,
   useCreateDeviceTypeMutation,
   useGetSpecimenTypesQuery,
   useGetSupportedDiseasesQuery,
@@ -9,10 +11,13 @@ import {
 import { showError, showSuccess } from "../../utils/srToast";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+import { useDocumentTitle } from "../../utils/hooks";
 
-import DeviceForm, { Device } from "./DeviceForm";
+import DeviceForm from "./DeviceForm";
 
 const DeviceTypeFormContainer = () => {
+  useDocumentTitle("Device type");
+
   const [submitted, setSubmitted] = useState(false);
   const [activeFacility] = useSelectedFacility();
   const [createDeviceType] = useCreateDeviceTypeMutation();
@@ -23,7 +28,7 @@ const DeviceTypeFormContainer = () => {
     fetchPolicy: "no-cache",
   });
 
-  const saveDeviceType = (device: Device) => {
+  const saveDeviceType = (device: UpdateDeviceType) => {
     if (device.testLength <= 0 || device.testLength > 999) {
       showError(
         "Failed to create device. Invalid test length",
@@ -32,7 +37,7 @@ const DeviceTypeFormContainer = () => {
     } else {
       if (!device.internalId) {
         createDeviceType({
-          variables: device,
+          variables: device as CreateDeviceTypeMutationVariables,
           fetchPolicy: "no-cache",
         }).then(() => {
           showSuccess("The device has been created", "Created Device");
@@ -67,18 +72,6 @@ const DeviceTypeFormContainer = () => {
       <DeviceForm
         formTitle="Device type"
         saveDeviceType={saveDeviceType}
-        initialDevice={{
-          name: "",
-          manufacturer: "",
-          model: "",
-          loincCode: "",
-          swabTypes: [],
-          supportedDiseases: [],
-          testLength: 15,
-          supportedDiseaseTestPerformed: [
-            { supportedDisease: "", testPerformedLoincCode: "" },
-          ],
-        }}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
       />

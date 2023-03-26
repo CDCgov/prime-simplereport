@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import moment from "moment";
 import "react-toastify/dist/ReactToastify.css";
@@ -10,6 +10,7 @@ import PatientHeader from "../PatientHeader";
 import { PxpApi, SelfRegistrationData } from "../PxpApiService";
 import TermsOfService from "../timeOfTest/TermsOfService";
 import Page from "../../app/commonComponents/Page/Page";
+import { getAppInsights } from "../../app/TelemetryService";
 
 import { Confirmation } from "./Confirmation";
 import { RegistrationContainer } from "./RegistrationContainer";
@@ -22,6 +23,7 @@ enum RegistrationStep {
 }
 
 export const SelfRegistration = () => {
+  const appInsights = getAppInsights();
   const { registrationLink } = useParams<{
     registrationLink: string | undefined;
   }>();
@@ -30,6 +32,21 @@ export const SelfRegistration = () => {
   const [personName, setPersonName] = useState("");
 
   const { t } = useTranslation();
+
+  useEffect(() => {
+    if (window?.visualViewport?.width) {
+      appInsights?.trackMetric(
+        {
+          name: "userViewport_selfRegistration",
+          average: window.visualViewport.width,
+        },
+        {
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
+        }
+      );
+    }
+  }, [appInsights]);
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
     const {

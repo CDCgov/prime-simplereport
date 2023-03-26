@@ -74,13 +74,10 @@ export type ApiUserWithStatus = {
 };
 
 export type CreateDeviceType = {
-  loincCode: Scalars["String"];
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseaseTestPerformed?: InputMaybe<
-    Array<SupportedDiseaseTestPerformedInput>
-  >;
+  supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
   supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
@@ -96,12 +93,14 @@ export type CreateSpecimenType = {
 export type DeviceType = {
   __typename?: "DeviceType";
   internalId: Scalars["ID"];
-  loincCode: Scalars["String"];
+  /** @deprecated loincCode is deprecated. Use supportedDiseaseTestPerformed instead. */
+  loincCode?: Maybe<Scalars["String"]>;
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseaseTestPerformed?: Maybe<Array<SupportedDiseaseTestPerformed>>;
+  supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformed>;
   supportedDiseases: Array<SupportedDisease>;
+  /** @deprecated swabType is deprecated. Use swabTypes instead. */
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
   testLength: Scalars["Int"];
@@ -930,6 +929,7 @@ export type SupportedDiseaseTestPerformed = {
   __typename?: "SupportedDiseaseTestPerformed";
   equipmentUid?: Maybe<Scalars["String"]>;
   supportedDisease: SupportedDisease;
+  testOrderedLoincCode?: Maybe<Scalars["String"]>;
   testPerformedLoincCode: Scalars["String"];
   testkitNameId?: Maybe<Scalars["String"]>;
 };
@@ -937,6 +937,7 @@ export type SupportedDiseaseTestPerformed = {
 export type SupportedDiseaseTestPerformedInput = {
   equipmentUid?: InputMaybe<Scalars["String"]>;
   supportedDisease: Scalars["ID"];
+  testOrderedLoincCode?: InputMaybe<Scalars["String"]>;
   testPerformedLoincCode: Scalars["String"];
   testkitNameId?: InputMaybe<Scalars["String"]>;
 };
@@ -1022,13 +1023,10 @@ export type TopLevelDashboardMetrics = {
 
 export type UpdateDeviceType = {
   internalId: Scalars["ID"];
-  loincCode: Scalars["String"];
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
-  supportedDiseaseTestPerformed?: InputMaybe<
-    Array<SupportedDiseaseTestPerformedInput>
-  >;
+  supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
   supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
@@ -1718,13 +1716,11 @@ export type CreateDeviceTypeMutationVariables = Exact<{
   name: Scalars["String"];
   manufacturer: Scalars["String"];
   model: Scalars["String"];
-  loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseases: Array<Scalars["ID"]> | Scalars["ID"];
-  supportedDiseaseTestPerformed?: InputMaybe<
+  supportedDiseaseTestPerformed:
     | Array<SupportedDiseaseTestPerformedInput>
-    | SupportedDiseaseTestPerformedInput
-  >;
+    | SupportedDiseaseTestPerformedInput;
   testLength: Scalars["Int"];
 }>;
 
@@ -1741,13 +1737,11 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
   name: Scalars["String"];
   manufacturer: Scalars["String"];
   model: Scalars["String"];
-  loincCode: Scalars["String"];
   swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
   supportedDiseases?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
-  supportedDiseaseTestPerformed?: InputMaybe<
+  supportedDiseaseTestPerformed:
     | Array<SupportedDiseaseTestPerformedInput>
-    | SupportedDiseaseTestPerformedInput
-  >;
+    | SupportedDiseaseTestPerformedInput;
   testLength: Scalars["Int"];
 }>;
 
@@ -1767,7 +1761,6 @@ export type GetDeviceTypeListQuery = {
     __typename?: "DeviceType";
     internalId: string;
     name: string;
-    loincCode: string;
     manufacturer: string;
     model: string;
     testLength: number;
@@ -1781,20 +1774,18 @@ export type GetDeviceTypeListQuery = {
       internalId: string;
       name: string;
     }>;
-    supportedDiseaseTestPerformed?:
-      | Array<{
-          __typename?: "SupportedDiseaseTestPerformed";
-          testPerformedLoincCode: string;
-          testkitNameId?: string | null | undefined;
-          equipmentUid?: string | null | undefined;
-          supportedDisease: {
-            __typename?: "SupportedDisease";
-            internalId: string;
-            name: string;
-          };
-        }>
-      | null
-      | undefined;
+    supportedDiseaseTestPerformed: Array<{
+      __typename?: "SupportedDiseaseTestPerformed";
+      testPerformedLoincCode: string;
+      testkitNameId?: string | null | undefined;
+      equipmentUid?: string | null | undefined;
+      testOrderedLoincCode?: string | null | undefined;
+      supportedDisease: {
+        __typename?: "SupportedDisease";
+        internalId: string;
+        name: string;
+      };
+    }>;
   }>;
 };
 
@@ -2461,7 +2452,11 @@ export type GetFacilityResultsForCsvWithCountQuery = {
                         name: string;
                         manufacturer: string;
                         model: string;
-                        swabType?: string | null | undefined;
+                        swabTypes: Array<{
+                          __typename?: "SpecimenType";
+                          internalId: string;
+                          name: string;
+                        }>;
                       }
                     | null
                     | undefined;
@@ -2834,7 +2829,6 @@ export type GetDeviceTypesForLookupQuery = {
     __typename?: "DeviceType";
     internalId: string;
     name: string;
-    loincCode: string;
     manufacturer: string;
     model: string;
     swabTypes: Array<{
@@ -2844,6 +2838,18 @@ export type GetDeviceTypesForLookupQuery = {
       typeCode: string;
     }>;
     supportedDiseases: Array<{ __typename?: "SupportedDisease"; name: string }>;
+    supportedDiseaseTestPerformed: Array<{
+      __typename?: "SupportedDiseaseTestPerformed";
+      testPerformedLoincCode: string;
+      testkitNameId?: string | null | undefined;
+      equipmentUid?: string | null | undefined;
+      testOrderedLoincCode?: string | null | undefined;
+      supportedDisease: {
+        __typename?: "SupportedDisease";
+        internalId: string;
+        name: string;
+      };
+    }>;
   }>;
 };
 
@@ -4893,10 +4899,9 @@ export const CreateDeviceTypeDocument = gql`
     $name: String!
     $manufacturer: String!
     $model: String!
-    $loincCode: String!
     $swabTypes: [ID!]!
     $supportedDiseases: [ID!]!
-    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
+    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
     $testLength: Int!
   ) {
     createDeviceType(
@@ -4904,7 +4909,6 @@ export const CreateDeviceTypeDocument = gql`
         name: $name
         manufacturer: $manufacturer
         model: $model
-        loincCode: $loincCode
         swabTypes: $swabTypes
         supportedDiseases: $supportedDiseases
         supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
@@ -4936,7 +4940,6 @@ export type CreateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      name: // value for 'name'
  *      manufacturer: // value for 'manufacturer'
  *      model: // value for 'model'
- *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
  *      supportedDiseases: // value for 'supportedDiseases'
  *      supportedDiseaseTestPerformed: // value for 'supportedDiseaseTestPerformed'
@@ -4971,10 +4974,9 @@ export const UpdateDeviceTypeDocument = gql`
     $name: String!
     $manufacturer: String!
     $model: String!
-    $loincCode: String!
     $swabTypes: [ID!]!
     $supportedDiseases: [ID!]
-    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]
+    $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
     $testLength: Int!
   ) {
     updateDeviceType(
@@ -4983,7 +4985,6 @@ export const UpdateDeviceTypeDocument = gql`
         name: $name
         manufacturer: $manufacturer
         model: $model
-        loincCode: $loincCode
         swabTypes: $swabTypes
         supportedDiseases: $supportedDiseases
         supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
@@ -5016,7 +5017,6 @@ export type UpdateDeviceTypeMutationFn = Apollo.MutationFunction<
  *      name: // value for 'name'
  *      manufacturer: // value for 'manufacturer'
  *      model: // value for 'model'
- *      loincCode: // value for 'loincCode'
  *      swabTypes: // value for 'swabTypes'
  *      supportedDiseases: // value for 'supportedDiseases'
  *      supportedDiseaseTestPerformed: // value for 'supportedDiseaseTestPerformed'
@@ -5050,7 +5050,6 @@ export const GetDeviceTypeListDocument = gql`
     deviceTypes {
       internalId
       name
-      loincCode
       manufacturer
       model
       testLength
@@ -5070,6 +5069,7 @@ export const GetDeviceTypeListDocument = gql`
         testPerformedLoincCode
         testkitNameId
         equipmentUid
+        testOrderedLoincCode
       }
       testLength
     }
@@ -6734,7 +6734,10 @@ export const GetFacilityResultsForCsvWithCountDocument = gql`
           name
           manufacturer
           model
-          swabType
+          swabTypes {
+            internalId
+            name
+          }
         }
         patient {
           firstName
@@ -7343,7 +7346,6 @@ export const GetDeviceTypesForLookupDocument = gql`
     deviceTypes {
       internalId
       name
-      loincCode
       manufacturer
       model
       swabTypes {
@@ -7353,6 +7355,16 @@ export const GetDeviceTypesForLookupDocument = gql`
       }
       supportedDiseases {
         name
+      }
+      supportedDiseaseTestPerformed {
+        supportedDisease {
+          internalId
+          name
+        }
+        testPerformedLoincCode
+        testkitNameId
+        equipmentUid
+        testOrderedLoincCode
       }
     }
   }

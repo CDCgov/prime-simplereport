@@ -23,8 +23,7 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false)
-  private String loincCode;
+  @Column private String loincCode;
 
   @Column(nullable = false)
   private String manufacturer;
@@ -32,8 +31,7 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String model;
 
-  @Column(nullable = false)
-  private String swabType;
+  @Column private String swabType;
 
   @JoinTable(
       name = "device_specimen_type",
@@ -55,7 +53,7 @@ public class DeviceType extends EternalAuditedEntity {
 
   @JsonIgnore
   @OneToMany(mappedBy = "deviceTypeId", cascade = CascadeType.ALL, orphanRemoval = true)
-  List<DeviceTestPerformedLoincCode> supportedDiseaseTestPerformed = new ArrayList<>();
+  List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
 
   protected DeviceType() {
     /* no-op for hibernate */
@@ -93,6 +91,19 @@ public class DeviceType extends EternalAuditedEntity {
     this.loincCode = loincCode;
     this.swabTypes = swabTypes;
     this.testLength = testLength;
+  }
+
+  @Builder
+  public DeviceType(
+      String name,
+      String manufacturer,
+      String model,
+      String loincCode,
+      int testLength,
+      List<SpecimenType> swabTypes,
+      List<DeviceTypeDisease> supportedDiseaseTestPerformed) {
+    this(name, manufacturer, model, loincCode, testLength, swabTypes);
+    this.supportedDiseaseTestPerformed = supportedDiseaseTestPerformed;
   }
 
   public String getName() {

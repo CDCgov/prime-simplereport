@@ -1,4 +1,4 @@
-import { ReactElement, useEffect, useRef, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
@@ -12,6 +12,7 @@ import Input from "../../commonComponents/Input";
 import {
   organizationCreationSteps,
   stateCodes,
+  liveJurisdictions,
 } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
@@ -28,8 +29,8 @@ import {
   organizationSchema as schema,
   organizationBackendErrors,
 } from "./utils";
-
 import "./OrganizationForm.scss";
+import { UnsupportedStateModal } from "./UnsupportedStateModal";
 
 export interface OrganizationCreateRequest {
   name: string;
@@ -52,6 +53,7 @@ const OrganizationForm = () => {
   const [organization, setOrganization] = useState<OrganizationCreateRequest>(
     initOrg()
   );
+  const [stateModalOpen, setStateModalOpen] = useState(false);
   const [errors, setErrors] = useState<OrganizationFormErrors>(initOrgErrors());
   const focusOnce = useRef(false);
   const [backendError, setBackendError] = useState<ReactElement>();
@@ -132,6 +134,12 @@ const OrganizationForm = () => {
     errors.workPhoneNumber,
   ]);
 
+  const validateSupportedJurisdiction = async () => {
+    if (organization.state && !liveJurisdictions.includes(organization.state)) {
+      setStateModalOpen(true);
+    }
+  };
+
   if (orgExternalId) {
     return (
       <Navigate
@@ -173,6 +181,7 @@ const OrganizationForm = () => {
             onChange={onDetailChange("state")}
             onBlur={() => {
               validateField("state");
+              validateSupportedJurisdiction();
             }}
             validationStatus={getValidationStatus("state")}
             errorMessage={errors.state}
@@ -241,16 +250,17 @@ const OrganizationForm = () => {
 
   return (
     <CardBackground>
-      <Card logo>
+      <Card logo cardIsForm>
         <div className="margin-bottom-2 organization-form usa-prose">
-          <h4 className="margin-top-2 margin-bottom-0">
+          <h1 className="margin-top-2 margin-bottom-0">
             Sign up for SimpleReport
-          </h4>
+          </h1>
           <StepIndicator
             steps={organizationCreationSteps}
             currentStepValue={"0"}
             noLabels={true}
             segmentIndicatorOnBottom={true}
+            headingLevel="h2"
           />
           <div className="gray-background padding-y-05 padding-x-3">
             <p className="font-ui-2xs line-height-sans-5 margin-bottom-1">
@@ -314,6 +324,16 @@ const OrganizationForm = () => {
           label={"Continue"}
         />
       </Card>
+      <UnsupportedStateModal
+        showModal={stateModalOpen}
+        state={organization.state}
+        onClose={(clearField: boolean) => {
+          if (clearField) {
+            setOrganization({ ...organization, state: "" });
+          }
+          setStateModalOpen(false);
+        }}
+      />
     </CardBackground>
   );
 };

@@ -1,10 +1,11 @@
-import siteLogo from "../../../img/simplereport-logo-color.svg";
+import { CardLogoHeader } from "./CardLogoHeader";
 
 export type CardProps = {
   logo?: boolean;
   bodyKicker?: string;
   bodyKickerCentered?: boolean;
   children?: React.ReactNode;
+  cardIsForm?: boolean;
 };
 
 export const Card: React.FC<CardProps> = ({
@@ -12,6 +13,7 @@ export const Card: React.FC<CardProps> = ({
   logo = false,
   bodyKicker = false,
   bodyKickerCentered = false,
+  cardIsForm = false,
 }) => {
   let kicker = null;
   if (bodyKicker && bodyKickerCentered) {
@@ -23,22 +25,17 @@ export const Card: React.FC<CardProps> = ({
   } else if (bodyKicker) {
     kicker = <p className="font-ui-sm text-bold margin-top-3">{bodyKicker}</p>;
   }
-  return (
-    <div className="card">
-      {logo && (
-        <header className="display-flex flex-column">
-          <img
-            className="flex-align-self-center maxw-card-lg width-full"
-            src={siteLogo}
-            alt="SimpleReport logo"
-          />
-          <div className="border-bottom border-base-lighter margin-x-neg-3 margin-top-3"></div>
-        </header>
-      )}
+  const body = (
+    <>
+      {logo && <CardLogoHeader />}
       {kicker}
       {children}
-    </div>
+    </>
   );
+
+  const ContainerEl = cardIsForm ? "form" : "div";
+
+  return <ContainerEl className="card">{body}</ContainerEl>;
 };
 
 export default Card;

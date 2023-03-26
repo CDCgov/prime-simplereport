@@ -13,7 +13,7 @@ on:
       - backend/src/main/resources/db/changelog/db.changelog-master.yaml
 
 env:
-  JAVA_VERSION: 11
+  JAVA_VERSION: 17
   JAVA_DISTRIBUTION: 'zulu'
 
 defaults:
@@ -31,7 +31,7 @@ jobs:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
       - name: Cache Java Dependencies
-        uses: actions/cache@v3.2.6
+        uses: actions/cache@v3.3.1
         with:
           path: |
             ~/.gradle/caches

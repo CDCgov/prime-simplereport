@@ -97,20 +97,25 @@ const DeviceDetails = (props: { device: DeviceType }) => {
       </div>
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
-          <div className="text-field">
-            <TextInput
-              label="Test performed code"
-              name="Test performed code"
-              hintText={<code>test_performed_code</code>}
-              value={device.loincCode}
-              onChange={onChange}
-              disabled={true}
-            />
-            {getCopyToClipboardButton(
-              device.loincCode,
-              `Copy Test performed code for ${device.name}`
-            )}
-          </div>
+          {device.supportedDiseaseTestPerformed.map((supportedTest) => (
+            <div
+              className="text-field"
+              key={`${supportedTest.supportedDisease.name}-${supportedTest.testPerformedLoincCode}`}
+            >
+              <TextInput
+                label={`Test performed code (${supportedTest.supportedDisease.name})`}
+                name="Test performed code"
+                hintText={<code>test_performed_code</code>}
+                value={supportedTest.testPerformedLoincCode}
+                onChange={onChange}
+                disabled={true}
+              />
+              {getCopyToClipboardButton(
+                supportedTest.testPerformedLoincCode,
+                `Copy Test performed code for ${device.name}`
+              )}
+            </div>
+          ))}
         </div>
       </div>
 
