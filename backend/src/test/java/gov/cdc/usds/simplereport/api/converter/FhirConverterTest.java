@@ -965,7 +965,7 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
-    assertThat(actual.getExtension().size()).isEqualTo(1);
+    assertThat(actual.getExtension()).hasSize(1);
     assertThat(
             actual
                 .castToCodeableConcept(
