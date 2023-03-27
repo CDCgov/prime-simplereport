@@ -1573,7 +1573,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                    or 
                   <mark>
                     <code>
-                      Ask but unknown
+                      Ask, but unknown
                     </code>
                   </mark>
                 </li>

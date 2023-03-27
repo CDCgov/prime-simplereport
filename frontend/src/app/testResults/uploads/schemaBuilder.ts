@@ -154,7 +154,7 @@ export const schemaBuilder = (facilityId: string | null) => {
                   "<mark><code>2076-8</code></mark> or <mark><code>Native Hawaiian or Other Pacific Islander</code></mark>",
                   "<mark><code>2106-3</code></mark> or <mark><code>White</code></mark>",
                   "<mark><code>2131-1</code></mark> or <mark><code>Other</code></mark>",
-                  "<mark><code>ASKU</code></mark> or <mark><code>Ask but unknown</code></mark>",
+                  "<mark><code>ASKU</code></mark> or <mark><code>Ask, but unknown</code></mark>",
                   "<mark><code>UNK</code></mark> or <mark><code>Unknown</code></mark>",
                 ],
                 description: [

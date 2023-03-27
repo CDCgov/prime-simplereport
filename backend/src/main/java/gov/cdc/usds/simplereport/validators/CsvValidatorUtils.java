@@ -317,8 +317,8 @@ public class CsvValidatorUtils {
             Map.entry(HISPANIC_CODE, HISPANIC_DB_VALUE),
             Map.entry(NOT_HISPANIC_LITERAL, NOT_HISPANIC_DB_VALUE),
             Map.entry(NOT_HISPANIC_CODE, NOT_HISPANIC_DB_VALUE),
-            Map.entry(UNKNOWN_CODE, UNKNOWN_LITERAL),
-            Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL));
+            Map.entry(UNKNOWN_CODE, REFUSED_LITERAL),
+            Map.entry(UNKNOWN_LITERAL, REFUSED_LITERAL));
 
     return displayValueToDatabaseValue.get(ethnicity.toLowerCase());
   }
@@ -340,8 +340,8 @@ public class CsvValidatorUtils {
             Map.entry(OTHER_RACE_CODE, OTHER_LITERAL),
             Map.entry(ASK_LITERAL, REFUSED_LITERAL),
             Map.entry(ASK_CODE, REFUSED_LITERAL),
-            Map.entry(UNKNOWN_LITERAL, UNKNOWN_LITERAL),
-            Map.entry(UNKNOWN_CODE, UNKNOWN_LITERAL));
+            Map.entry(UNKNOWN_LITERAL, REFUSED_LITERAL),
+            Map.entry(UNKNOWN_CODE, REFUSED_LITERAL));
 
     return displayValueToDatabaseValue.get(race.toLowerCase());
   }
