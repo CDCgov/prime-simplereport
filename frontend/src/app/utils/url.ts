@@ -42,6 +42,5 @@ export function stripIdTokenFromOperationName(operationName: string) {
 function stripIdTokenFromString(regex: RegExp, string: string) {
   const idTokenFound = string.match(regex);
   if (idTokenFound === null) return string;
-  console.log(idTokenFound);
   return string.replace(idTokenFound[0], "#id_token={ID-TOKEN-OBSCURED}");
 }
