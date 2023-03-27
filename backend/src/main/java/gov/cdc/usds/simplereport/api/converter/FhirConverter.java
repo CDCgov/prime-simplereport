@@ -67,6 +67,7 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
@@ -654,9 +655,10 @@ public class FhirConverter {
             .setUrl(ORDER_CONTROL_EXTENSION_URL)
             .setValue(
                 new CodeableConcept()
-                    .addCoding()
-                    .setSystem(ORDER_CONTROL_CODE_SYSTEM)
-                    .setCode(ORDER_CONTROL_CODE_OBSERVATIONS)));
+                    .addCoding(
+                        new Coding()
+                            .setSystem(ORDER_CONTROL_CODE_SYSTEM)
+                            .setCode(ORDER_CONTROL_CODE_OBSERVATIONS))));
 
     return serviceRequest;
   }
