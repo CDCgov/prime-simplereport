@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -267,12 +268,12 @@ public class DeviceTypeService {
    * Wrapper method for syncing devices from LIVD table so automation can call the inner method
    * without hitting the lock or conditions.
    */
-  @Scheduled(cron = "0 * * * * *", zone = "America/New_York")
+  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS, zone = "America/New_York")
   @SchedulerLock(
       name = "DeviceTypeService_syncDevices",
       lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT30M")
-  @ConditionalOnProperty("simple-report.device-sync-livd.enabled")
+  @ConditionalOnProperty(value = "simple-report.device-sync-livd.enabled", havingValue = "true")
   public void scheduledSyncDevices() {
     syncDevices();
   }
