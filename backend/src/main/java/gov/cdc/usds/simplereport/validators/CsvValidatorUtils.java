@@ -72,7 +72,7 @@ public class CsvValidatorUtils {
   private static final String WHITE_LITERAL = "white";
   private static final String WHITE_CODE = "2106-3";
   private static final String OTHER_RACE_CODE = "2131-1";
-  private static final String ASK_LITERAL = "ask but unknown";
+  private static final String ASK_LITERAL = "ask, but unknown";
   private static final String ASK_CODE = "asku";
   private static final String HISPANIC_LITERAL = "hispanic or latino";
   private static final String HISPANIC_CODE = "2135-2";
