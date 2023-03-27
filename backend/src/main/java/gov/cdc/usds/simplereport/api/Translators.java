@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.SnomedConceptRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -396,8 +397,16 @@ public class Translators {
           Map.entry("camp", "Camp"),
           Map.entry("lab", "Lab"),
           Map.entry("other", "Other"));
-
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
+
+  private static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =
+      new SnomedConceptRecord("Detected", "260373001", TestResult.POSITIVE);
+  private static final SnomedConceptRecord NOT_DETECTED_SNOMED_CONCEPT =
+      new SnomedConceptRecord("Not detected", "260415000", TestResult.NEGATIVE);
+  private static final SnomedConceptRecord INVALID_SNOMED_CONCEPT =
+      new SnomedConceptRecord("Invalid result", "455371000124106", TestResult.UNDETERMINED);
+  private static final List<SnomedConceptRecord> RESULTS_SNOMED_CONCEPTS =
+      List.of(DETECTED_SNOMED_CONCEPT, NOT_DETECTED_SNOMED_CONCEPT, INVALID_SNOMED_CONCEPT);
 
   public static String parseOrganizationType(String t) {
     String type = parseString(t);
@@ -419,24 +428,29 @@ public class Translators {
   }
 
   public static TestResult convertLoincToResult(String loinc) {
-    switch (loinc) {
-      case "260373001":
-        return TestResult.POSITIVE;
-      case "260415000":
-        return TestResult.NEGATIVE;
-      default:
-        return TestResult.UNDETERMINED;
-    }
+    SnomedConceptRecord concept =
+        RESULTS_SNOMED_CONCEPTS.stream()
+            .filter(snomedConcept -> loinc.equals(snomedConcept.code()))
+            .findFirst()
+            .orElse(INVALID_SNOMED_CONCEPT);
+    return concept.displayName();
   }
 
   public static String convertTestResultToLoinc(TestResult result) {
-    switch (result) {
-      case POSITIVE:
-        return "260373001";
-      case NEGATIVE:
-        return "260415000";
-      default:
-        return "455371000124106";
-    }
+    SnomedConceptRecord concept =
+        RESULTS_SNOMED_CONCEPTS.stream()
+            .filter(snomedConcept -> result.equals(snomedConcept.displayName()))
+            .findFirst()
+            .orElse(INVALID_SNOMED_CONCEPT);
+    return concept.code();
+  }
+
+  public static String convertConceptCodeToConceptName(String snomedCode) {
+    SnomedConceptRecord concept =
+        RESULTS_SNOMED_CONCEPTS.stream()
+            .filter(snomedConcept -> snomedCode.equals(snomedConcept.code()))
+            .findFirst()
+            .orElse(INVALID_SNOMED_CONCEPT);
+    return concept.name();
   }
 }
