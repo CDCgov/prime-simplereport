@@ -965,6 +965,25 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
+    assertThat(actual.getExtension().size()).isEqualTo(1);
+    // ToDo fix this URL
+    System.out.println("what does this have?");
+    actual.getExtensionByUrl("https://reportstream.cdc.gov/fhir/StructureDefinition/order-control");
+    System.out.println(
+        actual
+            .getExtensionByUrl(
+                "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control")
+            .getValue()
+            .getClass()
+            .getName());
+    /* assertThat(
+        actual
+            .castToCodeableConcept(
+                actual
+                    .getExtensionByUrl(
+                        "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control")
+                    .getValue()).getCoding().get(0).getCode())
+    .isEqualTo("RE");*/
   }
 
   @Test

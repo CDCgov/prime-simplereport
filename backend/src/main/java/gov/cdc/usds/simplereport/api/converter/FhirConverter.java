@@ -12,6 +12,9 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SY
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
@@ -492,6 +495,7 @@ public class FhirConverter {
             new Extension()
                 .setUrl(EQUIPMENT_UID_EXTENSION_URL)
                 .setValue(new CodeableConcept().addCoding().setCode(equipmentUid)));
+
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
     return observation;
@@ -640,9 +644,20 @@ public class FhirConverter {
     serviceRequest.setId(id);
     serviceRequest.setIntent(ServiceRequestIntent.ORDER);
     serviceRequest.setStatus(status);
+
     if (StringUtils.isNotBlank(requestedCode)) {
       serviceRequest.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(requestedCode);
     }
+
+    serviceRequest.addExtension(
+        new Extension()
+            .setUrl(ORDER_CONTROL_EXTENSION_URL)
+            .setValue(
+                new CodeableConcept()
+                    .addCoding()
+                    .setSystem(ORDER_CONTROL_CODE_SYSTEM)
+                    .setCode(ORDER_CONTROL_CODE_OBSERVATIONS)));
+
     return serviceRequest;
   }
 
