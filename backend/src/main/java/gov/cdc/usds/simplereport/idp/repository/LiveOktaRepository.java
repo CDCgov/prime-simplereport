@@ -472,7 +472,7 @@ public class LiveOktaRepository implements OktaRepository {
     var searchUsers =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     var qUsers = userApi.listUsers(username, null, null, null, null, null, null);
-    var users = Stream.concat(searchUsers.stream(), qUsers.stream()).collect(Collectors.toList());
+    var users = Stream.concat(searchUsers.stream(), qUsers.stream()).toList();
     throwErrorIfEmpty(
         users.stream(), "Cannot retrieve Okta user's status with unrecognized username");
     User user = users.get(0);
