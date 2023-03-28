@@ -59,10 +59,10 @@ describe("Testing with multiplex devices", () => {
       cy.visit("/admin/create-device-type");
       cy.wait("@gqlgetSpecimenTypesQuery");
       cy.wait("@gqlgetSupportedDiseasesQuery");
-
+      cy.contains("Device type");
+      cy.contains("Save changes").should("be.not.enabled");
       cy.injectAxe();
       cy.checkA11y();
-      cy.contains("Save changes").should("be.not.enabled");
       cy.get('input[name="name"]').type(deviceName);
       cy.get('input[name="model"]').type("1RX");
       cy.get('input[name="manufacturer"]').type("acme");
