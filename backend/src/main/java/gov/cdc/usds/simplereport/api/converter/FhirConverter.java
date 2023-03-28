@@ -563,6 +563,10 @@ public class FhirConverter {
 
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
+
+    // ToDo implement the logic to add the abnormal flags
+    // observation.addInterpretation().getCodingFirstRep().setSystem((resultCode.equals())?
+    // :).getCode()
     return observation;
   }
 
