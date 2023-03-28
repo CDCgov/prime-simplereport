@@ -7,8 +7,24 @@ on:
         description: 'The Liquibase tag to roll back to'
         required: true
       environment:
-        description: 'The environment of the DB that should be rolled back'
+        type: choice
         required: true
+        description: 'The environment of the DB that should be rolled back'
+        options:
+        - ""
+        - demo
+        - dev
+        - dev2
+        - dev3
+        - dev4
+        - dev5
+        - dev6
+        - dev7
+        - pentest
+        - test
+        - training
+        - stg
+        - prod
 
 concurrency:
   group: db-rollback
@@ -69,4 +85,5 @@ jobs:
           if [[ "$DEPLOY_ENV" == *"dev"* ]]; then RESOURCE_GROUP="dev"; fi;
           echo "Resource Group: $RESOURCE_GROUP"
           az container logs --follow -g prime-simple-report-$RESOURCE_GROUP --name simple-report-$DEPLOY_ENV-db-rollback
+          exit $(az container show -g prime-simple-report-$RESOURCE_GROUP --name simple-report-$DEPLOY_ENV-db-rollback | jq '.containers[].instanceView.currentState.exitCode')
           echo "::endgroup::"

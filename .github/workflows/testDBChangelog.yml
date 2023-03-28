@@ -40,6 +40,6 @@ jobs:
       - name: Start DB
         run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
       - name: Run forward migrations
-        run: ./gradlew liquibaseUpdate
+        run: gradle liquibaseUpdate
       - name: Test rolling back on last 20 migrations
-        run: ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=20
+        run: gradle liquibaseRollbackCount -PliquibaseCommandValue=20
