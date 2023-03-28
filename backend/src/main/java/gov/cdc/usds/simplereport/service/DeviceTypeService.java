@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,6 +75,9 @@ public class DeviceTypeService {
   private final SupportedDiseaseRepository supportedDiseaseRepository;
   private final DiseaseService diseaseService;
   private final SpecimenTypeService specimenTypeService;
+
+  @Value("${simple-report.device-sync-livd.enabled:false}")
+  private String deviceSyncEnabled;
 
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -273,9 +276,10 @@ public class DeviceTypeService {
       name = "DeviceTypeService_syncDevices",
       lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT30M")
-  @ConditionalOnProperty(value = "simple-report.device-sync-livd.enabled", havingValue = "true")
   public void scheduledSyncDevices() {
-    syncDevices();
+    if (Objects.equals(deviceSyncEnabled, "true")) {
+      syncDevices();
+    }
   }
 
   @Transactional
