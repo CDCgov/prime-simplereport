@@ -13,21 +13,18 @@ import ManageDevices from "./ManageDevices";
 const deviceA = {
   internalId: "device-a",
   name: "Device A",
-  supportedDiseases: [],
 };
 const deviceB = {
   internalId: "device-b",
   name: "Device B",
-  supportedDiseases: [],
 };
 const deviceC = {
   internalId: "device-c",
   name: "Device C",
-  supportedDiseases: [],
 };
 
 const devices: DeviceType[] = [deviceA, deviceB, deviceC];
-const selectedDevices: DeviceType[] = [deviceA, deviceB];
+const selectedDevices: FacilityFormDeviceType[] = [deviceA, deviceB];
 
 function ManageDevicesContainer(props: { selectedDevices: DeviceType[] }) {
   const [selectedDevices, updateSelectedDevices] = useState<DeviceType[]>(

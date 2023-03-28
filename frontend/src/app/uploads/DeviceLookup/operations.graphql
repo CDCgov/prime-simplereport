@@ -9,8 +9,12 @@ query getDeviceTypesForLookup {
             name
             typeCode
         }
-        supportedDiseases {
-            name
+        supportedDiseaseTestPerformed {
+            supportedDisease {
+                internalId
+                name
+                loinc
+            }
         }
         supportedDiseaseTestPerformed {
             supportedDisease {

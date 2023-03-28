@@ -589,19 +589,19 @@ Object {
                               />
                               <option
                                 aria-selected="false"
-                                value="123"
+                                value="177cfdfa-1ce5-404f-bd39-5492f87868f4"
                               >
                                 COVID-19
                               </option>
                               <option
                                 aria-selected="false"
-                                value="456"
+                                value="e286f2a8-38e2-445b-80a5-c16507a96b66"
                               >
                                 Flu A
                               </option>
                               <option
                                 aria-selected="false"
-                                value="789"
+                                value="14924488-268f-47db-bea6-aa706971a098"
                               >
                                 Flu B
                               </option>
@@ -1353,19 +1353,19 @@ Object {
                             />
                             <option
                               aria-selected="false"
-                              value="123"
+                              value="177cfdfa-1ce5-404f-bd39-5492f87868f4"
                             >
                               COVID-19
                             </option>
                             <option
                               aria-selected="false"
-                              value="456"
+                              value="e286f2a8-38e2-445b-80a5-c16507a96b66"
                             >
                               Flu A
                             </option>
                             <option
                               aria-selected="false"
-                              value="789"
+                              value="14924488-268f-47db-bea6-aa706971a098"
                             >
                               Flu B
                             </option>

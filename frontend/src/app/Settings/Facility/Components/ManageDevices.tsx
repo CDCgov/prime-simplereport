@@ -4,9 +4,9 @@ import { FacilityErrors } from "../facilitySchema";
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 
 interface Props {
-  deviceTypes: DeviceType[];
-  selectedDevices: DeviceType[];
-  updateSelectedDevices: (deviceTypes: DeviceType[]) => void;
+  deviceTypes: FacilityFormDeviceType[];
+  selectedDevices: FacilityFormDeviceType[];
+  updateSelectedDevices: (deviceTypes: FacilityFormDeviceType[]) => void;
   errors: FacilityErrors;
   clearError: (field: keyof FacilityErrors) => void;
   newOrg?: boolean;

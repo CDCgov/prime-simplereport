@@ -143,7 +143,7 @@ type AddressOptions = "facility" | "provider";
 
 export interface Props {
   facility: Facility;
-  deviceTypes: DeviceType[];
+  deviceTypes: FacilityFormDeviceType[];
   saveFacility: (facility: Facility) => void;
   newOrg?: boolean;
 }
