@@ -655,9 +655,10 @@ public class FhirConverter {
         .setUrl(ORDER_CONTROL_EXTENSION_URL)
         .setValue(
             new CodeableConcept()
-                .getCodingFirstRep()
-                .setSystem(ORDER_CONTROL_CODE_SYSTEM)
-                .setCode(ORDER_CONTROL_CODE_OBSERVATIONS));
+                .addCoding(
+                    new Coding()
+                        .setSystem(ORDER_CONTROL_CODE_SYSTEM)
+                        .setCode(ORDER_CONTROL_CODE_OBSERVATIONS)));
     return serviceRequest;
   }
 
