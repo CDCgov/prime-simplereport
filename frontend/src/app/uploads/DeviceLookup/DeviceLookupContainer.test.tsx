@@ -2,6 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 import SRToastContainer from "../../commonComponents/SRToastContainer";
+import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 
 import DeviceLookupContainer from "./DeviceLookupContainer";
 
@@ -18,6 +19,8 @@ jest.mock("../../../generated/graphql", () => {
               loincCode: "loinc-1",
               manufacturer: "Abbott",
               model: "A",
+              supportedDiseaseTestPerformed:
+                mockSupportedDiseaseTestPerformedCovid,
               swabTypes: [
                 {
                   internalId: "1234",

@@ -83,11 +83,10 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
   zipCode: yup.string().nullable(),
 });
 
-const deviceTypeSchema: yup.SchemaOf<DeviceType> = yup.object({
+const deviceTypeSchema: yup.SchemaOf<FacilityFormDeviceType> = yup.object({
   internalId: yup.string().required(),
   name: yup.string().required(),
   testLength: yup.number().optional(),
-  supportedDiseases: yup.array().of(yup.string()).optional(),
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({

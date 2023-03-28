@@ -60,7 +60,9 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
               <td id={`device-${idx}`}>{d.manufacturer}</td>
               <td id={`model-name-${idx}`}>{d.model}</td>
               <td id={`test-type-${idx}`}>
-                {d.supportedDiseases?.map((sd) => sd.name).join(", ")}
+                {d.supportedDiseaseTestPerformed
+                  ?.map((sd) => sd.supportedDisease.name)
+                  .join(", ")}
               </td>
               <td id={`view-${idx}`}>
                 {

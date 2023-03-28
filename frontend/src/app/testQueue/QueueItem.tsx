@@ -14,6 +14,7 @@ import {
   useEditQueueItemMutation,
   useSubmitQueueItemMutation,
   GetFacilityQueueQuery,
+  SupportedDisease,
 } from "../../generated/graphql";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
@@ -101,7 +102,6 @@ export type QueriedDeviceType = NonNullable<
   GetFacilityQueueQuery["facility"]
 >["deviceTypes"][number];
 export type QueriedFacility = GetFacilityQueueQuery["facility"];
-type QueriedSupportedDiseases = QueriedDeviceType["supportedDiseases"][number];
 
 const convertFromMultiplexResponse = (
   responseResult: QueriedTestOrder["results"]
@@ -236,7 +236,7 @@ const QueueItem = ({
   };
 
   const updateDeviceMultiplexSupport = (
-    supportedDiseases: QueriedSupportedDiseases[]
+    supportedDiseases: SupportedDisease[]
   ) => {
     const updatedDiseaseSupport =
       supportedDiseases.filter((d: any) => d.name !== "COVID-19").length > 0;
@@ -285,7 +285,12 @@ const QueueItem = ({
 
   useEffect(() => {
     if (devicesMap.has(deviceId)) {
-      updateDeviceMultiplexSupport(devicesMap.get(deviceId)!.supportedDiseases);
+      let supportedDiseases = devicesMap
+        .get(deviceId)!
+        .supportedDiseaseTestPerformed.map((supportedDisease) => {
+          return supportedDisease.supportedDisease;
+        });
+      updateDeviceMultiplexSupport(supportedDiseases);
     }
     // eslint-disable-next-line
   }, [deviceId]);

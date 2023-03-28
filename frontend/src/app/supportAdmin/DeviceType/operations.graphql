@@ -3,7 +3,6 @@ mutation createDeviceType(
   $manufacturer: String!
   $model: String!
   $swabTypes: [ID!]!
-  $supportedDiseases: [ID!]!
   $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
   $testLength: Int!
 ) {
@@ -13,7 +12,6 @@ mutation createDeviceType(
       manufacturer: $manufacturer
       model: $model
       swabTypes: $swabTypes
-      supportedDiseases: $supportedDiseases
       supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
       testLength: $testLength
     }
@@ -28,7 +26,6 @@ mutation updateDeviceType(
   $manufacturer: String!
   $model: String!
   $swabTypes: [ID!]!
-  $supportedDiseases: [ID!]
   $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
   $testLength: Int!
 ) {
@@ -39,7 +36,6 @@ mutation updateDeviceType(
       manufacturer: $manufacturer
       model: $model
       swabTypes: $swabTypes
-      supportedDiseases: $supportedDiseases
       supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
       testLength: $testLength
     }
@@ -56,10 +52,6 @@ query getDeviceTypeList{
     model,
     testLength,
     swabTypes {
-      internalId,
-      name
-    }
-    supportedDiseases {
       internalId,
       name
     }

@@ -9,8 +9,7 @@ type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
 > &
   Partial<T>;
 
-interface DeviceType {
-  supportedDiseases: { internalId: string; name: string }[];
+interface FacilityFormDeviceType {
   internalId: string;
   name: string;
   testLength?: number | undefined;
@@ -39,7 +38,7 @@ interface Facility extends Address {
   name: string;
   phone: string;
   email: string | null;
-  deviceTypes: DeviceType[];
+  deviceTypes: FacilityFormDeviceType[];
   orderingProvider: Provider;
 }
 
@@ -108,18 +107,7 @@ interface FacilityData {
         zipCode: string;
         phone: string;
         email: string;
-        deviceTypes: [
-          {
-            name: string;
-            internalId: string;
-            supportedDiseases: [
-              {
-                internalId: string;
-                name: string;
-              }
-            ];
-          }
-        ];
+        deviceTypes: FacilityFormDeviceType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -137,7 +125,7 @@ interface FacilityData {
       }
     ];
   };
-  deviceTypes: DeviceType[];
+  deviceTypes: FacilityFormDeviceType[];
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";

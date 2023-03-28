@@ -27,6 +27,8 @@ import {
   getStartDateFromDaysAgo,
 } from "./analytics/Analytics";
 import { getAppInsights } from "./TelemetryService";
+import mockSupportedDiseaseMultiplex from "./testQueue/mocks/mockSupportedDiseaseMultiplex";
+import mockSupportedDiseaseCovid from "./testQueue/mocks/mockSupportedDiseaseCovid";
 
 const mockDispatch = jest.fn();
 
@@ -157,14 +159,14 @@ const facilityQueryMock = {
             internalId: "d70bb3b8-96bd-40d9-a3ce-b266a7edb91d",
             name: "Quidel Sofia 2",
             testLength: 15,
-            supportedDiseases: [],
+            supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
             swabTypes: [],
           },
           {
             internalId: "5e44dcef-8cc6-44f4-a200-a5b8169ab60a",
             name: "LumiraDX",
             testLength: 15,
-            supportedDiseases: [],
+            supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
             swabTypes: [],
           },
         ],
