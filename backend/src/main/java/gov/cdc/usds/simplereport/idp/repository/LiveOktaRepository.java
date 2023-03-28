@@ -159,7 +159,7 @@ public class LiveOktaRepository implements OktaRepository {
             .listGroups(
                 generateGroupOrgPrefix(organizationExternalId), null, null, null, null, null)
             .stream();
-    var orgGroups = Stream.concat(searchResults, qResults).distinct().collect(Collectors.toList());
+    var orgGroups = Stream.concat(searchResults, qResults).distinct().toList();
     throwErrorIfEmpty(
         orgGroups.stream(),
         String.format(
@@ -351,7 +351,7 @@ public class LiveOktaRepository implements OktaRepository {
     var searchUsers =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     var qUsers = userApi.listUsers(username, null, null, null, null, null, null);
-    var users = Stream.concat(searchUsers.stream(), qUsers.stream()).collect(Collectors.toList());
+    var users = Stream.concat(searchUsers.stream(), qUsers.stream()).toList();
     throwErrorIfEmpty(users.stream(), "Cannot update role of Okta user with unrecognized username");
     User user = users.get(0);
 
@@ -570,7 +570,7 @@ public class LiveOktaRepository implements OktaRepository {
   @Override
   public List<String> fetchAdminUserEmail(Organization org) {
     var admins = getOrgAdminUsers(org);
-    return admins.stream().map(u -> u.getProfile().getLogin()).collect(Collectors.toList());
+    return admins.stream().map(u -> u.getProfile().getLogin()).toList();
   }
 
   @Override
@@ -630,7 +630,7 @@ public class LiveOktaRepository implements OktaRepository {
     var searchUser =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     var qUsers = userApi.listUsers(username, null, null, null, null, null, null);
-    var users = Stream.concat(searchUser.stream(), qUsers.stream()).collect(Collectors.toList());
+    var users = Stream.concat(searchUser.stream(), qUsers.stream()).toList();
     throwErrorIfEmpty(users.stream(), "Cannot get org external ID for nonexistent user");
     User user = users.get(0);
     return getOrganizationRoleClaimsForUser(user);
@@ -652,7 +652,7 @@ public class LiveOktaRepository implements OktaRepository {
         userApi.listUserGroups(user.getId()).stream()
             .filter(g -> g.getType() == GroupType.OKTA_GROUP)
             .map(g -> g.getProfile().getName())
-            .collect(Collectors.toList());
+            .toList();
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
 
     if (claims.size() != 1) {
