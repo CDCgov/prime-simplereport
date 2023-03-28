@@ -702,7 +702,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private String generateLoginSearchTerm(String username) {
-    return URLEncoder.encode("profile.login eq \"" + username + "\"", StandardCharsets.UTF_8);
+    return "profile.login eq \"" + username + "\"";
   }
 
   private void throwErrorIfEmpty(Stream<?> stream, String errorMessage) {
