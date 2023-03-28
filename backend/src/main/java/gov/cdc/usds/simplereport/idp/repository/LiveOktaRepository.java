@@ -473,15 +473,7 @@ public class LiveOktaRepository implements OktaRepository {
   public UserStatus getUserStatus(String username) {
     var searchUsers =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    var qUsers =
-        userApi.listUsers(
-            URLEncoder.encode(username, StandardCharsets.UTF_8),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null);
+    var qUsers = userApi.listUsers(username, null, null, null, null, null, null);
     var users = Stream.concat(searchUsers.stream(), qUsers.stream()).toList();
     throwErrorIfEmpty(
         users.stream(), "Cannot retrieve Okta user's status with unrecognized username");
@@ -702,7 +694,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private String generateLoginSearchTerm(String username) {
-    return "profile.login eq \"" + username + "\"";
+    return "profile.login eq \"" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "\"";
   }
 
   private void throwErrorIfEmpty(Stream<?> stream, String errorMessage) {
