@@ -18,8 +18,6 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -694,7 +692,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private String generateLoginSearchTerm(String username) {
-    return "profile.login eq \"" + URLEncoder.encode(username, StandardCharsets.UTF_8) + "\"";
+    return "profile.login eq \"" + username + "\"";
   }
 
   private void throwErrorIfEmpty(Stream<?> stream, String errorMessage) {
