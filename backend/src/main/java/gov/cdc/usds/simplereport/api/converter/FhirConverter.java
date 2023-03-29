@@ -478,14 +478,14 @@ public class FhirConverter {
 
   public static List<Observation> convertToObservation(
       Set<Result> results,
-      List<DeviceTypeDisease> deviceTypeDiseases,
+      DeviceType deviceType,
       TestCorrectionStatus correctionStatus,
       String correctionReason) {
     return results.stream()
         .map(
             result -> {
               Optional<DeviceTypeDisease> deviceTypeDisease =
-                  deviceTypeDiseases.stream()
+                  deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(code -> code.getSupportedDisease() == result.getDisease())
                       .findFirst();
               String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
@@ -497,7 +497,8 @@ public class FhirConverter {
                   correctionStatus,
                   correctionReason,
                   testkitNameId,
-                  equipmentUid);
+                  equipmentUid,
+                  deviceType.getModel());
             })
         .collect(Collectors.toList());
   }
@@ -523,7 +524,8 @@ public class FhirConverter {
       TestCorrectionStatus correctionStatus,
       String correctionReason,
       String testkitNameId,
-      String equipmentUid) {
+      String equipmentUid,
+      String deviceModel) {
     if (result != null && result.getDisease() != null) {
       return convertToObservation(
           testPerformedCode,
@@ -534,7 +536,8 @@ public class FhirConverter {
           result.getInternalId().toString(),
           Translators.convertConceptCodeToConceptName(result.getResultLOINC()),
           testkitNameId,
-          equipmentUid);
+          equipmentUid,
+          deviceModel);
     }
     return null;
   }
@@ -548,12 +551,14 @@ public class FhirConverter {
       String id,
       String resultDescription,
       String testkitNameId,
-      String equipmentUid) {
+      String equipmentUid,
+      String deviceModel) {
     var observation = new Observation();
     observation.setId(id);
     setStatus(observation, correctionStatus);
     observation.setCode(createLoincConcept(diseaseCode, "", diseaseName));
     addSNOMEDValue(resultCode, observation, resultDescription);
+    observation.getMethod().getCodingFirstRep().setDisplay(deviceModel);
     observation
         .getMethod()
         .addExtension(
@@ -805,7 +810,7 @@ public class FhirConverter {
         convertToSpecimen(testEvent.getSpecimenType()),
         convertToObservation(
             testEvent.getResults(),
-            testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
+            testEvent.getDeviceType(),
             testEvent.getCorrectionStatus(),
             testEvent.getReasonForCorrection()),
         convertToAOEObservations(testEvent.getInternalId().toString(), testEvent.getSurveyData()),

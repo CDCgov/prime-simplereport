@@ -250,7 +250,8 @@ public class BulkUploadResultsToFhir {
                 UUID.randomUUID().toString(),
                 getDescriptionValue(row.getTestResult().value),
                 testKitNameId,
-                equipmentUid));
+                equipmentUid,
+                row.getEquipmentModelName().value));
 
     var serviceRequest =
         FhirConverter.convertToServiceRequest(

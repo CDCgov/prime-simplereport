@@ -32,6 +32,11 @@
     }
   ],
   "method": {
+    "coding": [
+      {
+        "display": "deviceModel"
+      }
+    ],
     "extension": [
       {
         "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
