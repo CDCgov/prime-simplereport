@@ -1,7 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
+import static graphql.Assert.assertNotNull;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -242,5 +245,52 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
 
     // Device was not updated
     assertEquals(updatedAt, updatedDevice.getUpdatedAt());
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void syncDevices_skipsInvalidDiseases() {
+    LIVDResponse device =
+        new LIVDResponse(
+            "Some manufacturer",
+            "Some model",
+            List.of(SPECIMEN_DESCRIPTION_ONE),
+            "invalid disease!",
+            "000000000",
+            "000000000",
+            "TestKit Uid",
+            "Equipment Uid");
+
+    List<LIVDResponse> devices = List.of(device);
+
+    when(dataHubClient.getLIVDTable()).thenReturn(devices);
+    assertDoesNotThrow(() -> deviceTypeService.syncDevices());
+
+    var createdDevice = deviceTypeRepo.findDeviceTypeByName("Some model");
+    assertNull(createdDevice);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void syncDevices_avoidsDuplicateDeviceNames() {
+    // Define a device with a `model` matching a different value and a new `manufacturer`
+    LIVDResponse device =
+        new LIVDResponse(
+            "Shiny New Manufacturer",
+            "Device A",
+            List.of(SPECIMEN_DESCRIPTION_ONE),
+            "fluA",
+            "000000000",
+            "000000000",
+            "TestKit Uid",
+            "Equipment Uid");
+
+    List<LIVDResponse> devices = List.of(device);
+
+    when(dataHubClient.getLIVDTable()).thenReturn(devices);
+    deviceTypeService.syncDevices();
+
+    var createdDevice = deviceTypeRepo.findDeviceTypeByName("Shiny New Manufacturer Device A");
+    assertNotNull(createdDevice);
   }
 }
