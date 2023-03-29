@@ -275,9 +275,11 @@ class TranslatorTest {
     assertEquals(true, parseYesNoUnk("yEs"));
     assertEquals(false, parseYesNoUnk("n"));
     assertEquals(false, parseYesNoUnk("nO"));
-    assertNull(parseYesNoUnk("unknown"));
+    assertNull(parseYesNoUnk("u"));
+    assertNull(parseYesNoUnk("U"));
     assertNull(parseYesNoUnk("unk"));
-    assertNull(parseYesNoUnk("Unknown"));
+    assertNull(parseYesNoUnk("Unk"));
+    assertNull(parseYesNoUnk("UNK"));
   }
 
   @Test
@@ -286,6 +288,11 @@ class TranslatorTest {
         IllegalGraphqlArgumentException.class,
         () -> {
           parseYesNoUnk("positive");
+        });
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> {
+          parseYesNoUnk("unknown");
         });
   }
 

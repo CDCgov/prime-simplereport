@@ -20,6 +20,8 @@ import { PATIENT_TERM } from "../../config/constants";
 
 import TestQueue from "./TestQueue";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
+import mockSupportedDiseaseCovid from "./mocks/mockSupportedDiseaseCovid";
+import mockSupportedDiseaseMultiplex from "./mocks/mockSupportedDiseaseMultiplex";
 
 jest.mock("@microsoft/applicationinsights-react-js", () => {
   return {
@@ -298,7 +300,7 @@ const createPatient = ({
     name: "LumiraDX",
     model: "LumiraDx SARS-CoV-2 Ag Test*",
     testLength: 15,
-    supportedDiseases: [],
+    supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
   },
   specimenType: {
     internalId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
@@ -336,13 +338,7 @@ const result = {
           internalId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
           name: "LumiraDX",
           testLength: 15,
-          supportedDiseases: [
-            {
-              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-              loinc: "96741-4",
-              name: "COVID-19",
-            },
-          ],
+          supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
           swabTypes: [
             {
               name: "Swab of internal nose",
@@ -360,13 +356,7 @@ const result = {
           internalId: "5c711888-ba37-4b2e-b347-311ca364efdb",
           name: "Abbott BinaxNow",
           testLength: 15,
-          supportedDiseases: [
-            {
-              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-              loinc: "96741-4",
-              name: "COVID-19",
-            },
-          ],
+          supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
           swabTypes: [
             {
               name: "Swab of internal nose",
@@ -379,13 +369,7 @@ const result = {
           internalId: "32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10",
           name: "BD Veritor",
           testLength: 15,
-          supportedDiseases: [
-            {
-              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-              loinc: "96741-4",
-              name: "COVID-19",
-            },
-          ],
+          supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
           swabTypes: [
             {
               name: "Swab of internal nose",
@@ -403,23 +387,7 @@ const result = {
           internalId: "67109f6f-eaee-49d3-b8ff-c61b79a9da8e",
           name: "Multiplex",
           testLength: 15,
-          supportedDiseases: [
-            {
-              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-              loinc: "96741-4",
-              name: "COVID-19",
-            },
-            {
-              internalId: "e286f2a8-38e2-445b-80a5-c16507a96b66",
-              loinc: "LP14239-5",
-              name: "Flu A",
-            },
-            {
-              internalId: "14924488-268f-47db-bea6-aa706971a098",
-              loinc: "LP14240-3",
-              name: "Flu B",
-            },
-          ],
+          supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
           swabTypes: [
             {
               name: "Swab of internal nose",

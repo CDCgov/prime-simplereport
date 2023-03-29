@@ -17,16 +17,14 @@ import FacilityFormContainer, {
   UPDATE_FACILITY_MUTATION,
 } from "./FacilityFormContainer";
 
-export const deviceTypes: DeviceType[] = [
+export const deviceTypes: FacilityFormDeviceType[] = [
   {
     internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
     name: "Fake Device 1",
-    supportedDiseases: [],
   },
   {
     internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
     name: "Fake Device 2",
-    supportedDiseases: [],
   },
 ];
 

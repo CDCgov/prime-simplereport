@@ -313,6 +313,19 @@
       "resource":{
         "resourceType":"ServiceRequest",
         "id":"cae01b8c-37dc-4c09-a6d4-ae7bcafc9720",
+        "extension": [
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0119",
+                  "code": "RE"
+                }
+              ]
+            }
+          }
+        ],
         "status":"active",
         "intent":"order",
         "code":{
@@ -396,7 +409,7 @@
             {
               "system":"http://snomed.info/sct",
               "code":"455371000124106",
-              "display": "UNDETERMINED"
+              "display": "Invalid result"
             }
           ]
         },
@@ -452,7 +465,7 @@
             {
               "system":"http://snomed.info/sct",
               "code":"260373001",
-              "display": "POSITIVE"
+              "display": "Detected"
             }
           ]
         },
@@ -508,7 +521,7 @@
             {
               "system":"http://snomed.info/sct",
               "code":"260415000",
-              "display": "NEGATIVE"
+              "display": "Not detected"
             }
           ]
         },

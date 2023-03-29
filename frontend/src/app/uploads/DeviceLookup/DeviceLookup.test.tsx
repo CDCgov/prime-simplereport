@@ -8,6 +8,8 @@ import {
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 
+import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
+
 import DeviceLookup from "./DeviceLookup";
 
 window.scrollTo = jest.fn();
@@ -20,33 +22,19 @@ const devices = [
     manufacturer: "Celoxitin",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
-    supportedDiseases: [
-      { internalId: "123", name: "COVID-19", loinc: "1234-1" },
-    ],
-    supportedDiseaseTestPerformed: [
-      {
-        supportedDisease: {
-          internalId: "123",
-          name: "COVID-19",
-          loinc: "1234-1",
-        },
-        testPerformedLoincCode: "1234-1",
-        equipmentUid: "equipmentUid123",
-        testkitNameId: "testkitNameId123",
-        testOrderedLoincCode: "1432-1",
-      },
-    ],
+    supportedDiseases: [], // Remove in #5322
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
   },
   {
     internalId: "some-guid",
     name: "covid-mctester",
     model: "Giselle",
-    manufacturer: "yo-mama",
+    manufacturer: "mctester manufacturer",
     loincCode: "8675309",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "nose-code" }],
-    supportedDiseases: [],
-    supportedDiseaseTestPerformed: [],
+    supportedDiseases: [], // Remove in #5322
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
   },
 ];
 

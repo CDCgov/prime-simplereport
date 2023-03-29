@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.9",
-    "@fortawesome/fontawesome-svg-core": "^6.2.0",
+    "@fortawesome/fontawesome-svg-core": "^6.3.0",
     "@fortawesome/free-solid-svg-icons": "^6.3.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@microsoft/applicationinsights-react-js": "^3.0.5",
@@ -22,7 +22,7 @@
     "@types/react-transition-group": "^4.4.5",
     "@types/testing-library__jest-dom": "^5.14.5",
     "apollo-upload-client": "^17.0.0",
-    "browserslist": "4.21.4",
+    "browserslist": "4.21.5",
     "classnames": "^2.2.6",
     "flagged": "^2.0.8",
     "google-libphonenumber": "^3.2.26",

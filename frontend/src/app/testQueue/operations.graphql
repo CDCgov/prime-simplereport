@@ -105,10 +105,12 @@ query GetFacilityQueue($facilityId: ID!) {
       internalId
       name
       testLength
-      supportedDiseases {
-        internalId
-        name
-        loinc
+      supportedDiseaseTestPerformed {
+        supportedDisease {
+          internalId
+          name
+          loinc
+        }
       }
       swabTypes {
         internalId

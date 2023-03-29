@@ -48,4 +48,11 @@ public class FhirConstants {
           "D", "Debugging",
           "P", "Production",
           "T", "Training");
+
+  public static final String ORDER_CONTROL_EXTENSION_URL =
+      "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control";
+  public static final String ORDER_CONTROL_CODE_OBSERVATIONS = "RE";
+
+  public static final String ORDER_CONTROL_CODE_SYSTEM =
+      "http://terminology.hl7.org/CodeSystem/v2-0119";
 }

@@ -16,7 +16,7 @@
       {
         "system": "http://snomed.info/sct",
         "code": "260373001",
-        "display": "POSITIVE"
+        "display": "Detected"
       }
     ]
   },

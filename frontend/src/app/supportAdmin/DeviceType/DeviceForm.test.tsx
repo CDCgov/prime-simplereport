@@ -1,11 +1,20 @@
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { cloneDeep } from "lodash";
 
 import DeviceForm from "./DeviceForm";
+import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDiseaseTestPerformedCovid";
+import mockSupportedDiseaseTestPerformedMultiplex from "./mocks/mockSupportedDiseaseTestPerformedMultiplex";
 
 const addValue = async (name: string, value: string) => {
   await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+};
+
+const clearAndEnterInput = async (fieldToEdit: string, newValue: string) => {
+  const label = screen.getAllByLabelText(fieldToEdit)[0];
+  await userEvent.clear(label);
+  await userEvent.type(label, newValue);
 };
 
 describe("create new device", () => {
@@ -99,7 +108,6 @@ describe("create new device", () => {
           name: "Accula",
           testLength: 10,
           swabTypes: ["445297001"],
-          supportedDiseases: ["3821904728"],
           supportedDiseaseTestPerformed: [
             {
               supportedDisease: "3821904728",
@@ -120,6 +128,11 @@ describe("update existing devices", () => {
   let container: any;
   beforeEach(() => {
     saveDeviceType = jest.fn();
+    let supportedDiseaseWithoutTestPerformedLoinc = cloneDeep(
+      mockSupportedDiseaseTestPerformedMultiplex
+    );
+    supportedDiseaseWithoutTestPerformedLoinc[1].testPerformedLoincCode = "";
+    supportedDiseaseWithoutTestPerformedLoinc[2].testPerformedLoincCode = "";
     container = render(
       <DeviceForm
         formTitle="Manage devices"
@@ -129,11 +142,14 @@ describe("update existing devices", () => {
           { label: "eye", value: "456" },
           { label: "mouth", value: "789" },
         ]}
-        supportedDiseaseOptions={[
-          { label: "COVID-19", value: "123" },
-          { label: "Flu A", value: "456" },
-          { label: "Flu B", value: "789" },
-        ]}
+        supportedDiseaseOptions={mockSupportedDiseaseTestPerformedMultiplex.map(
+          (sd) => {
+            return {
+              label: sd.supportedDisease.name,
+              value: sd.supportedDisease.internalId,
+            };
+          }
+        )}
         deviceOptions={[
           {
             internalId: "abc1",
@@ -142,22 +158,9 @@ describe("update existing devices", () => {
             manufacturer: "Celoxitin",
             testLength: 15,
             swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
-            supportedDiseases: [
-              { internalId: "123", name: "COVID-19", loinc: "1234-1" },
-            ],
-            supportedDiseaseTestPerformed: [
-              {
-                supportedDisease: {
-                  internalId: "123",
-                  loinc: "1234-3",
-                  name: "COVID-19",
-                },
-                testPerformedLoincCode: "1234-1",
-                equipmentUid: "equipmentUid123",
-                testkitNameId: "testkitNameId123",
-                testOrderedLoincCode: "1432-1",
-              },
-            ],
+            supportedDiseases: [], // Remove in #5322
+            supportedDiseaseTestPerformed:
+              mockSupportedDiseaseTestPerformedCovid,
           },
           {
             internalId: "abc2",
@@ -166,46 +169,9 @@ describe("update existing devices", () => {
             manufacturer: "Curentz",
             testLength: 15,
             swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
-            supportedDiseases: [
-              { internalId: "123", name: "COVID-19", loinc: "1234-1" },
-              { internalId: "456", name: "Flu A", loinc: "LP123" },
-              { internalId: "789", name: "Flu B", loinc: "LP345" },
-            ],
-            supportedDiseaseTestPerformed: [
-              {
-                supportedDisease: {
-                  internalId: "123",
-                  loinc: "1234-3",
-                  name: "COVID-19",
-                },
-                testPerformedLoincCode: "1234-1",
-                equipmentUid: "equipmentUid123",
-                testkitNameId: "testkitNameId123",
-                testOrderedLoincCode: "1432-1",
-              },
-              {
-                supportedDisease: {
-                  internalId: "456",
-                  loinc: "LP123",
-                  name: "Flu A",
-                },
-                testPerformedLoincCode: "Test123",
-                equipmentUid: "equipmentUid321",
-                testkitNameId: "testkitNameId321",
-                testOrderedLoincCode: "321Tset",
-              },
-              {
-                supportedDisease: {
-                  internalId: "789",
-                  loinc: "LP456",
-                  name: "Flu B",
-                },
-                testPerformedLoincCode: "Test345",
-                equipmentUid: "equipmentUid345",
-                testkitNameId: "testkitNameId345",
-                testOrderedLoincCode: "543Tset",
-              },
-            ],
+            supportedDiseases: [], // Remove in #5322
+            supportedDiseaseTestPerformed:
+              supportedDiseaseWithoutTestPerformedLoinc,
           },
           {
             internalId: "abc3",
@@ -214,22 +180,9 @@ describe("update existing devices", () => {
             manufacturer: "Vitamin Tox",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
-            supportedDiseases: [
-              { internalId: "123", name: "COVID-19", loinc: "1234-1" },
-            ],
-            supportedDiseaseTestPerformed: [
-              {
-                supportedDisease: {
-                  internalId: "123",
-                  loinc: "1234-3",
-                  name: "COVID-19",
-                },
-                testPerformedLoincCode: "1234-1",
-                equipmentUid: "equipmentUid123",
-                testkitNameId: "testkitNameId123",
-                testOrderedLoincCode: "1432-1",
-              },
-            ],
+            supportedDiseases: [], // Remove in #5322
+            supportedDiseaseTestPerformed:
+              mockSupportedDiseaseTestPerformedCovid,
           },
           {
             internalId: "abc4",
@@ -238,44 +191,9 @@ describe("update existing devices", () => {
             manufacturer: "Local",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
-            supportedDiseases: [
-              { internalId: "123", name: "COVID-19", loinc: "1234-1" },
-            ],
-            supportedDiseaseTestPerformed: [
-              {
-                supportedDisease: {
-                  internalId: "123",
-                  loinc: "1234-3",
-                  name: "COVID-19",
-                },
-                testPerformedLoincCode: "1234-1",
-                equipmentUid: "equipmentUid123",
-                testkitNameId: "testkitNameId123",
-                testOrderedLoincCode: "1432-1",
-              },
-              {
-                supportedDisease: {
-                  internalId: "456",
-                  loinc: "LP123",
-                  name: "Flu A",
-                },
-                testPerformedLoincCode: "Test123",
-                equipmentUid: "equipmentUid321",
-                testkitNameId: "testkitNameId321",
-                testOrderedLoincCode: "321Tset",
-              },
-              {
-                supportedDisease: {
-                  internalId: "789",
-                  loinc: "LP456",
-                  name: "Flu B",
-                },
-                testPerformedLoincCode: "Test345",
-                equipmentUid: "equipmentUid345",
-                testkitNameId: "testkitNameId345",
-                testOrderedLoincCode: "543Tset",
-              },
-            ],
+            supportedDiseases: [], // Remove in #5322
+            supportedDiseaseTestPerformed:
+              mockSupportedDiseaseTestPerformedMultiplex,
           },
           {
             internalId: "abc5",
@@ -284,8 +202,9 @@ describe("update existing devices", () => {
             manufacturer: "Brand",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
-            supportedDiseases: [],
-            supportedDiseaseTestPerformed: [],
+            supportedDiseases: [], // Remove in #5322
+            supportedDiseaseTestPerformed:
+              mockSupportedDiseaseTestPerformedCovid,
           },
         ]}
       />
@@ -352,21 +271,33 @@ describe("update existing devices", () => {
         supportedDisease.map(
           (diseaseInput) => (diseaseInput as HTMLSelectElement).value
         )
-      ).toEqual(["123", "456", "789"]);
+      ).toEqual([
+        "177cfdfa-1ce5-404f-bd39-5492f87868f4",
+        "e286f2a8-38e2-445b-80a5-c16507a96b66",
+        "14924488-268f-47db-bea6-aa706971a098",
+      ]);
       expect(testPerformed).toHaveLength(3);
       expect(
         testPerformed.map((code) => (code as HTMLInputElement).value)
-      ).toEqual(["1234-1", "Test123", "Test345"]);
+      ).toEqual(["1234-1", "LP14239-3", "LP14240-1"]);
       expect(
         testOrdered.map((code) => (code as HTMLInputElement).value)
-      ).toEqual(["1432-1", "321Tset", "543Tset"]);
+      ).toEqual(["1432-1", "LP14239-6", "LP14240-5"]);
       expect(
         testkitNameId.map((code) => (code as HTMLInputElement).value)
-      ).toEqual(["testkitNameId123", "testkitNameId321", "testkitNameId345"]);
+      ).toEqual([
+        "testkitNameId123",
+        "FluATestkitNameId123",
+        "FluBTestkitNameId123",
+      ]);
 
       expect(
         equipmentUid.map((code) => (code as HTMLInputElement).value)
-      ).toEqual(["equipmentUid123", "equipmentUid321", "equipmentUid345"]);
+      ).toEqual([
+        "equipmentUid123",
+        "FluAEquipmentUid123",
+        "FluBEquipmentUid123",
+      ]);
     });
 
     it("maps supported diseases to supported disease and empty test performed", async () => {
@@ -382,10 +313,15 @@ describe("update existing devices", () => {
         supportedDisease.map(
           (diseaseInput) => (diseaseInput as HTMLSelectElement).value
         )
-      ).toEqual(["123", "456", "789"]);
+      ).toEqual([
+        "177cfdfa-1ce5-404f-bd39-5492f87868f4",
+        "e286f2a8-38e2-445b-80a5-c16507a96b66",
+        "14924488-268f-47db-bea6-aa706971a098",
+      ]);
+
       expect(
         testPerformed.map((code) => (code as HTMLInputElement).value)
-      ).toEqual(["1234-1", "Test123", "Test345"]);
+      ).toEqual(["1234-1", "", ""]);
     });
 
     it("displays a list of available snomeds", () => {
@@ -404,13 +340,20 @@ describe("update existing devices", () => {
         screen
           .getAllByLabelText("Supported disease *")
           .map((disease) => (disease as HTMLInputElement).value)
-      ).toEqual(["123", "456", "789"]);
+      ).toEqual([
+        "177cfdfa-1ce5-404f-bd39-5492f87868f4",
+        "e286f2a8-38e2-445b-80a5-c16507a96b66",
+        "14924488-268f-47db-bea6-aa706971a098",
+      ]);
       await userEvent.click(screen.getAllByLabelText("Delete disease")[0]);
       expect(
         screen
           .getAllByLabelText("Supported disease *")
           .map((disease) => (disease as HTMLInputElement).value)
-      ).toEqual(["123", "789"]);
+      ).toEqual([
+        "177cfdfa-1ce5-404f-bd39-5492f87868f4",
+        "14924488-268f-47db-bea6-aa706971a098",
+      ]);
     });
 
     describe("selecting another device", () => {
@@ -444,31 +387,19 @@ describe("update existing devices", () => {
         await addValue("Model", "X");
         await userEvent.click(snomedInput);
         await userEvent.click(within(snomedList).getByText("eye"));
+        await clearAndEnterInput("Test ordered code *", "LP 321");
         await userEvent.click(screen.getByText("Add another disease"));
         await userEvent.selectOptions(
           screen.getAllByLabelText("Supported disease *")[1],
           "Flu A"
         );
-        await userEvent.clear(
-          screen.getAllByLabelText("Test performed code *")[1]
-        );
         await userEvent.type(
           screen.getAllByLabelText("Test performed code *")[1],
           "LP 123"
         );
-        await userEvent.clear(
-          screen.getAllByLabelText("Test ordered code *")[0]
-        );
-        await userEvent.type(
-          screen.getAllByLabelText("Test ordered code *")[0],
-          "LP 321"
-        );
-        await userEvent.clear(
-          screen.getAllByLabelText("Test ordered code *")[1]
-        );
         await userEvent.type(
           screen.getAllByLabelText("Test ordered code *")[1],
-          "LP 321"
+          "LP 444"
         );
         await userEvent.type(
           screen.getAllByLabelText("Testkit Name Id")[1],
@@ -488,20 +419,19 @@ describe("update existing devices", () => {
             model: "Model AX",
             manufacturer: "Celoxitin LLC",
             swabTypes: ["123", "456"],
-            supportedDiseases: ["123", "456"],
             testLength: 15,
             supportedDiseaseTestPerformed: [
               {
-                supportedDisease: "123",
                 testPerformedLoincCode: "1234-1",
+                supportedDisease: "177cfdfa-1ce5-404f-bd39-5492f87868f4",
                 testOrderedLoincCode: "LP 321",
                 equipmentUid: "equipmentUid123",
                 testkitNameId: "testkitNameId123",
               },
               {
-                supportedDisease: "456",
+                supportedDisease: "e286f2a8-38e2-445b-80a5-c16507a96b66",
                 testPerformedLoincCode: "LP 123",
-                testOrderedLoincCode: "LP 321",
+                testOrderedLoincCode: "LP 444",
                 equipmentUid: "equipmentUid321",
                 testkitNameId: "testkitNameId123",
               },
@@ -512,22 +442,8 @@ describe("update existing devices", () => {
       it("sets loinc code to the test performed code for covid", async () => {
         await userEvent.click(screen.getByTestId("combo-box-select"));
         await userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
-        await userEvent.clear(
-          screen.getAllByLabelText("Test performed code *")[0]
-        );
-
-        await userEvent.type(
-          screen.getAllByLabelText("Test performed code *")[0],
-          "950-9501"
-        );
-        await userEvent.clear(
-          screen.getAllByLabelText("Test ordered code *")[0]
-        );
-        await userEvent.type(
-          screen.getAllByLabelText("Test ordered code *")[0],
-          "1059-059"
-        );
-
+        await clearAndEnterInput("Test performed code *", "950-9501");
+        await clearAndEnterInput("Test ordered code *", "1059-059");
         await userEvent.click(screen.getByText("Save changes"));
 
         await waitFor(() =>
@@ -537,14 +453,13 @@ describe("update existing devices", () => {
             model: "Model A",
             manufacturer: "Celoxitin",
             swabTypes: ["123"],
-            supportedDiseases: ["123"],
             testLength: 15,
             supportedDiseaseTestPerformed: [
               {
-                supportedDisease: "123",
+                equipmentUid: "equipmentUid123",
+                supportedDisease: "177cfdfa-1ce5-404f-bd39-5492f87868f4",
                 testPerformedLoincCode: "950-9501",
                 testOrderedLoincCode: "1059-059",
-                equipmentUid: "equipmentUid123",
                 testkitNameId: "testkitNameId123",
               },
             ],

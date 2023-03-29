@@ -32,6 +32,8 @@ import QueueItem, {
   QueriedTestOrder,
   QueueItemProps,
 } from "./QueueItem";
+import mockSupportedDiseaseCovid from "./mocks/mockSupportedDiseaseCovid";
+import mockSupportedDiseaseMultiplex from "./mocks/mockSupportedDiseaseMultiplex";
 
 jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -142,13 +144,7 @@ describe("QueueItem", () => {
         internalId: device1Id,
         name: device1Name,
         testLength: 15,
-        supportedDiseases: [
-          {
-            internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-            loinc: "96741-4",
-            name: "COVID-19",
-          },
-        ],
+        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
         swabTypes: [
           {
             name: specimen1Name,
@@ -166,13 +162,7 @@ describe("QueueItem", () => {
         internalId: device2Id,
         name: device2Name,
         testLength: 15,
-        supportedDiseases: [
-          {
-            internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-            loinc: "96741-4",
-            name: "COVID-19",
-          },
-        ],
+        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
         swabTypes: [
           {
             name: specimen1Name,
@@ -185,13 +175,7 @@ describe("QueueItem", () => {
         internalId: device3Id,
         name: device3Name,
         testLength: 15,
-        supportedDiseases: [
-          {
-            internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-            loinc: "96741-4",
-            name: "COVID-19",
-          },
-        ],
+        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
         swabTypes: [
           {
             name: specimen1Name,
@@ -209,23 +193,7 @@ describe("QueueItem", () => {
         internalId: device4Id,
         name: device4Name,
         testLength: 15,
-        supportedDiseases: [
-          {
-            internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-            loinc: "96741-4",
-            name: "COVID-19",
-          },
-          {
-            internalId: "e286f2a8-38e2-445b-80a5-c16507a96b66",
-            loinc: "LP14239-5",
-            name: "Flu A",
-          },
-          {
-            internalId: "14924488-268f-47db-bea6-aa706971a098",
-            loinc: "LP14240-3",
-            name: "Flu B",
-          },
-        ],
+        supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
         swabTypes: [
           {
             name: specimen1Name,
@@ -472,13 +440,7 @@ describe("QueueItem", () => {
           name: deletedDeviceName,
           model: "test",
           testLength: 12,
-          supportedDiseases: [
-            {
-              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-              loinc: "96741-4",
-              name: "COVID-19",
-            },
-          ],
+          supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
         },
         correctionStatus: "CORRECTED",
         reasonForCorrection: TestCorrectionReason.INCORRECT_RESULT,
