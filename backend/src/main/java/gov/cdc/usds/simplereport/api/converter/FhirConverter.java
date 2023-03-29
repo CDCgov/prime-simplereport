@@ -1,5 +1,9 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.Translators.DETECTED_SNOMED_CONCEPT;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAGS_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_ABNORMAL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EQUIPMENT_UID_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
@@ -563,7 +567,26 @@ public class FhirConverter {
 
     addCorrectionNote(
         correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
+
+    observation.addInterpretation().addCoding(convertToAbnormalFlagInterpretation(resultCode));
+
     return observation;
+  }
+
+  private static Coding convertToAbnormalFlagInterpretation(String resultCode) {
+    Coding abnormalFlag = new Coding();
+
+    abnormalFlag.setSystem(ABNORMAL_FLAGS_CODE_SYSTEM);
+
+    if (resultCode.equals(DETECTED_SNOMED_CONCEPT.code())) {
+      abnormalFlag.setCode(ABNORMAL_FLAG_ABNORMAL.code());
+      abnormalFlag.setDisplay(ABNORMAL_FLAG_ABNORMAL.displayName());
+    } else {
+      abnormalFlag.setCode(ABNORMAL_FLAG_NORMAL.code());
+      abnormalFlag.setDisplay(ABNORMAL_FLAG_NORMAL.displayName());
+    }
+
+    return abnormalFlag;
   }
 
   private static void setStatus(Observation observation, TestCorrectionStatus correctionStatus) {
