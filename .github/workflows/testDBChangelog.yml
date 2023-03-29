@@ -12,10 +12,6 @@ on:
     paths:
       - backend/src/main/resources/db/changelog/db.changelog-master.yaml
 
-env:
-  JAVA_VERSION: 17
-  JAVA_DISTRIBUTION: 'zulu'
-
 defaults:
   run:
     working-directory: backend
@@ -25,21 +21,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v3
-        with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
-      - name: Cache Java Dependencies
-        uses: actions/cache@v3.3.1
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Start DB
         run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
+      - name: Build rollback image
+        run: docker compose -f docker-compose.db-rollback.yml build
       - name: Run forward migrations
-        run: gradle liquibaseUpdate
+        run: docker compose -f docker-compose.db-rollback.yml run --entrypoint "gradle liquibaseUpdate" rollback
       - name: Test rolling back on last 20 migrations
-        run: gradle liquibaseRollbackCount -PliquibaseCommandValue=20
+        run: docker compose -f docker-compose.db-rollback.yml run --env LIQUIBASE_ROLLBACK_COUNT=20 rollback

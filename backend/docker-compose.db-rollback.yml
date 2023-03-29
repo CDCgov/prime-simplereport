@@ -4,13 +4,12 @@ services:
     build:
       context: ..
       dockerfile: backend/Dockerfile.db-rollback
-      target: build
     image: simple-report-api-build
     container_name: db_rollback
     environment:
       LIQUIBASE_ROLLBACK_TAG: ${LIQUIBASE_ROLLBACK_TAG:-}
+      LIQUIBASE_ROLLBACK_COUNT: ${LIQUIBASE_ROLLBACK_COUNT:-}
       SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/simple_report}
-      # GRADLE_USER_HOME: /home/gradle
     networks:
       - default
 networks:
