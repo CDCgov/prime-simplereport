@@ -5,7 +5,10 @@ import {
 } from "@microsoft/applicationinsights-web";
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 
-import { stripIdTokenFromString } from "./utils/url";
+import {
+  stripIdTokenFromOktaRedirectUri,
+  stripIdTokenFromOperationName,
+} from "./utils/url";
 
 let reactPlugin: ReactPlugin | null = null;
 let appInsights: ApplicationInsights | null = null;
@@ -89,11 +92,15 @@ export function sanitizeOktaToken(envelope: ITelemetryItem): void {
       envelope?.ext?.trace.name
     ) {
       // possible properties that need replacing
-      const urlWithoutIdToken = stripIdTokenFromString(telemetryItem.uri);
+      const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
+        telemetryItem.uri
+      );
       telemetryItem.uri = urlWithoutIdToken;
       telemetryItem.refUri = urlWithoutIdToken;
 
-      envelope.ext.trace.name = stripIdTokenFromString(envelope.ext.trace.name);
+      envelope.ext.trace.name = stripIdTokenFromOperationName(
+        envelope.ext.trace.name
+      );
     }
   } catch (e) {
     /* do nothing and don't disrupt logging*/
@@ -127,7 +134,7 @@ export function withInsights(console: Console) {
           if (typeof message === "string") {
             const messageNeedsSanitation = message.includes("#id_token");
             if (messageNeedsSanitation) {
-              message = stripIdTokenFromString(message);
+              message = stripIdTokenFromOktaRedirectUri(message);
             }
           }
           if (exception) {
