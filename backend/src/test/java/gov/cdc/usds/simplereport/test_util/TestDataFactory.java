@@ -120,8 +120,7 @@ public class TestDataFactory {
         deviceTypeRepository.findAll().stream()
             .filter(d -> d.getName().equals(DEFAULT_DEVICE_TYPE))
             .findFirst()
-            .orElseGet(
-                () -> createDeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E"));
+            .orElseGet(() -> createDeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN"));
 
     deviceSpecimenTypeNewRepository.save(
         new DeviceTypeSpecimenTypeMapping(
@@ -549,10 +548,8 @@ public class TestDataFactory {
     return patientRegistrationLinkRepository.save(prl);
   }
 
-  public DeviceType createDeviceType(
-      String name, String manufacturer, String model, String loincCode, String swabType) {
-    return deviceTypeRepository.save(
-        new DeviceType(name, manufacturer, model, loincCode, swabType, 15));
+  public DeviceType createDeviceType(String name, String manufacturer, String model) {
+    return deviceTypeRepository.save(new DeviceType(name, manufacturer, model, 15));
   }
 
   public DeviceType getGenericDevice() {

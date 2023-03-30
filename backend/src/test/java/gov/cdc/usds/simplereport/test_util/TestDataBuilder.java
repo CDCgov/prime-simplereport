@@ -73,7 +73,7 @@ public class TestDataBuilder {
   }
 
   public static DeviceType createEmptyDeviceWithLoinc() {
-    return new DeviceType(null, null, null, "95422-2", null, 0);
+    return new DeviceType(null, null, null, 0);
   }
 
   public static TestOrder createEmptyTestOrder() {
@@ -136,7 +136,7 @@ public class TestDataBuilder {
   }
 
   public static DeviceType createDeviceType() {
-    return new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E", 15);
+    return new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15);
   }
 
   public static DeviceType createDeviceTypeForCovid() {
@@ -144,13 +144,7 @@ public class TestDataBuilder {
     List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease());
     return new DeviceType(
-        DEFAULT_DEVICE_TYPE,
-        "Acme",
-        "SFN",
-        "54321-BOOM",
-        15,
-        swabTypes,
-        supportedDiseaseTestPerformed);
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
   public static DeviceType createDeviceTypeForMultiplex() {
@@ -161,13 +155,7 @@ public class TestDataBuilder {
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createFluBSupportedDisease()));
 
     return new DeviceType(
-        DEFAULT_DEVICE_TYPE,
-        "Acme",
-        "SFN",
-        "54321-BOOM",
-        15,
-        swabTypes,
-        supportedDiseaseTestPerformed);
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
   public static SpecimenType createSpecimenType() {

@@ -86,8 +86,6 @@ type DeviceType {
   name: String!
   manufacturer: String!
   model: String!
-  loincCode: String @deprecated(reason: "loincCode is deprecated. Use supportedDiseaseTestPerformed instead.")
-  swabType: String @deprecated(reason: "swabType is deprecated. Use swabTypes instead.")
   swabTypes: [SpecimenType!]!
   supportedDiseases: [SupportedDisease!]!
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]!
@@ -265,7 +263,6 @@ type TestResult {
   result: String @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
-  testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser

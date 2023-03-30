@@ -484,7 +484,7 @@ public class FhirConverter {
                   deviceTypeDiseases.stream()
                       .filter(code -> code.getSupportedDisease() == result.getDisease())
                       .findFirst();
-              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
+              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease);
               String equipmentUid = getEquipmentUid(deviceTypeDisease);
               String testkitNameId = getTestkitNameId(deviceTypeDisease);
               return convertToObservation(
@@ -506,11 +506,8 @@ public class FhirConverter {
     return deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
   }
 
-  private static String getTestPerformedLoincCode(
-      Optional<DeviceTypeDisease> deviceTypeDisease, Result result) {
-    return deviceTypeDisease
-        .map(DeviceTypeDisease::getTestPerformedLoincCode)
-        .orElse(result.getTestOrder().getDeviceType().getLoincCode());
+  private static String getTestPerformedLoincCode(Optional<DeviceTypeDisease> deviceTypeDisease) {
+    return deviceTypeDisease.map(DeviceTypeDisease::getTestPerformedLoincCode).orElse(null);
   }
 
   public static Observation convertToObservation(
@@ -742,7 +739,9 @@ public class FhirConverter {
 
     String code = null;
     if (testEvent.getDeviceType() != null) {
-      code = testEvent.getDeviceType().getLoincCode();
+      code =
+          MultiplexUtils.inferMultiplexTestOrderLoinc(
+              testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
     }
 
     return convertToDiagnosticReport(

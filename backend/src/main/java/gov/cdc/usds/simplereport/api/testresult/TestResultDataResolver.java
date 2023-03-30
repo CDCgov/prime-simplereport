@@ -86,11 +86,6 @@ public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
     return getSurvey(testEvent).getSymptomOnsetDate();
   }
 
-  @SchemaMapping(typeName = "TestResult", field = "testPerformed")
-  public TestDescription getTestPerformed(TestEvent event) {
-    return TestDescription.findTestDescription(event.getDeviceType().getLoincCode());
-  }
-
   @SchemaMapping(typeName = "TestDescription", field = "name")
   public String getTestPerformedName(TestDescription testDescription, @Argument String nameType) {
     return testDescription.getName(nameType);
