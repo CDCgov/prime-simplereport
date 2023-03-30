@@ -77,7 +77,7 @@ dependencies {
     implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
 
     // SendGrid for Email
-    implementation 'com.sendgrid:sendgrid-java:4.7.2'
+    implementation 'com.sendgrid:sendgrid-java:4.9.3'
 
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
