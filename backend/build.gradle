@@ -1,6 +1,6 @@
 plugins {
     id 'org.springframework.boot' version '2.7.8'
-    id 'org.liquibase.gradle' version '2.0.4'
+    id 'org.liquibase.gradle' version '2.2.0'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
     id 'checkstyle'
@@ -129,6 +129,8 @@ dependencies {
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
     implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:5.6.97' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://security.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3245104.
+
+    liquibaseRuntime 'info.picocli:picocli:4.6.1'
 }
 
 dependencyManagement {
