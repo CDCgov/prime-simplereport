@@ -154,12 +154,14 @@ describe("filter events on okta redirect", () => {
     expect(sanitizeOktaToken(item)).toBe(undefined);
   });
   it("scrubs values with id token", () => {
-    const urlWithToken = "localhost/#id_token=blahblahblah&token_type=test";
-    const urlWithoutToken = stripIdTokenFromOktaRedirectUri(urlWithToken);
+    const urlWithToken = "localhost/#id_token=blahblahblahtoken_type=test";
+    const urlWithOtherParamsWithoutToken =
+      stripIdTokenFromOktaRedirectUri(urlWithToken);
 
     const operationWithToken = "#id_token=blahblahblah&token_type=test";
     const operationWithoutToken =
       stripIdTokenFromMatchUntilEndOfString(operationWithToken);
+    const urlWithoutToken = stripIdTokenFromMatchUntilEndOfString(urlWithToken);
 
     const item = {
       name: "Microsoft.ApplicationInsights.mock.Pageview",
@@ -177,6 +179,6 @@ describe("filter events on okta redirect", () => {
     sanitizeOktaToken(item);
     expect(item?.ext?.trace?.name).toEqual(operationWithoutToken);
     expect(item?.baseData?.uri).toEqual(urlWithoutToken);
-    expect(item?.baseData?.refUri).toEqual(urlWithoutToken);
+    expect(item?.baseData?.refUri).toEqual(urlWithOtherParamsWithoutToken);
   });
 });
