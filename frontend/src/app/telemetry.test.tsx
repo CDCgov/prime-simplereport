@@ -12,7 +12,7 @@ import {
 } from "./TelemetryService";
 import {
   stripIdTokenFromOktaRedirectUri,
-  stripIdTokenFromOperationName,
+  stripIdTokenFromMatchUntilEndOfString,
 } from "./utils/url";
 
 jest.mock("@microsoft/applicationinsights-web", () => {
@@ -159,7 +159,7 @@ describe("filter events on okta redirect", () => {
 
     const operationWithToken = "#id_token=blahblahblah&token_type=test";
     const operationWithoutToken =
-      stripIdTokenFromOperationName(operationWithToken);
+      stripIdTokenFromMatchUntilEndOfString(operationWithToken);
 
     const item = {
       name: "Microsoft.ApplicationInsights.mock.Pageview",

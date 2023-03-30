@@ -7,7 +7,7 @@ import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 
 import {
   stripIdTokenFromOktaRedirectUri,
-  stripIdTokenFromOperationName,
+  stripIdTokenFromMatchUntilEndOfString,
 } from "./utils/url";
 
 let reactPlugin: ReactPlugin | null = null;
@@ -92,14 +92,15 @@ export function sanitizeOktaToken(envelope: ITelemetryItem): void {
       envelope?.ext?.trace.name
     ) {
       // possible properties that need replacing
-      const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
-        telemetryItem.uri
+      telemetryItem.refUri = stripIdTokenFromOktaRedirectUri(
+        telemetryItem.refUri
       );
-      telemetryItem.uri = urlWithoutIdToken;
-      telemetryItem.refUri = urlWithoutIdToken;
 
-      envelope.ext.trace.name = stripIdTokenFromOperationName(
+      envelope.ext.trace.name = stripIdTokenFromMatchUntilEndOfString(
         envelope.ext.trace.name
+      );
+      telemetryItem.uri = stripIdTokenFromMatchUntilEndOfString(
+        telemetryItem.uri
       );
     }
   } catch (e) {

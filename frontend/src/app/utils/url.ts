@@ -30,11 +30,11 @@ export function getUrl(relative = false): string {
 }
 
 export function stripIdTokenFromOktaRedirectUri(uri: string) {
-  const regexJWTAsQueryParam = /#id_token=(.*)(?=&)/;
+  const regexJWTAsQueryParam = /#id_token=(.*?)&(?!access_token)/;
   return stripIdTokenFromString(regexJWTAsQueryParam, uri);
 }
 
-export function stripIdTokenFromOperationName(operationName: string) {
+export function stripIdTokenFromMatchUntilEndOfString(operationName: string) {
   const regexOperationName = /#id_token=(.*)/;
   return stripIdTokenFromString(regexOperationName, operationName);
 }
