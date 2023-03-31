@@ -78,7 +78,6 @@ export type CreateDeviceType = {
   model: Scalars["String"];
   name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
-  supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
 };
@@ -99,7 +98,8 @@ export type DeviceType = {
   model: Scalars["String"];
   name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformed>;
-  supportedDiseases: Array<SupportedDisease>;
+  /** @deprecated supportedDiseases is deprecated. Use supportedDiseaseTestPerformed instead. */
+  supportedDiseases?: Maybe<Scalars["String"]>;
   /** @deprecated swabType is deprecated. Use swabTypes instead. */
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
@@ -1027,7 +1027,6 @@ export type UpdateDeviceType = {
   model: Scalars["String"];
   name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
-  supportedDiseases?: InputMaybe<Array<Scalars["ID"]>>;
   swabTypes: Array<Scalars["ID"]>;
   testLength: Scalars["Int"];
 };
