@@ -98,8 +98,6 @@ export type DeviceType = {
   model: Scalars["String"];
   name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformed>;
-  /** @deprecated supportedDiseases is deprecated. Use supportedDiseaseTestPerformed instead. */
-  supportedDiseases?: Maybe<Scalars["String"]>;
   /** @deprecated swabType is deprecated. Use swabTypes instead. */
   swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
