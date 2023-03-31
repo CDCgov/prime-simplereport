@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.api.testresult;
 
 import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
-import gov.cdc.usds.simplereport.api.model.TestDescription;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
@@ -18,7 +17,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.dataloader.DataLoader;
-import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.SchemaMapping;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.stereotype.Controller;
@@ -84,11 +82,6 @@ public class TestResultDataResolver implements InternalIdResolver<TestEvent> {
   @SchemaMapping(typeName = "TestResult", field = "symptomOnset")
   public LocalDate getSymptomOnset(TestEvent testEvent) {
     return getSurvey(testEvent).getSymptomOnsetDate();
-  }
-
-  @SchemaMapping(typeName = "TestDescription", field = "name")
-  public String getTestPerformedName(TestDescription testDescription, @Argument String nameType) {
-    return testDescription.getName(nameType);
   }
 
   @SchemaMapping(typeName = "TestResult", field = "facility")

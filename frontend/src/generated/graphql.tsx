@@ -93,15 +93,11 @@ export type CreateSpecimenType = {
 export type DeviceType = {
   __typename?: "DeviceType";
   internalId: Scalars["ID"];
-  /** @deprecated loincCode is deprecated. Use supportedDiseaseTestPerformed instead. */
-  loincCode?: Maybe<Scalars["String"]>;
   manufacturer: Scalars["String"];
   model: Scalars["String"];
   name: Scalars["String"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformed>;
   supportedDiseases: Array<SupportedDisease>;
-  /** @deprecated swabType is deprecated. Use swabTypes instead. */
-  swabType?: Maybe<Scalars["String"]>;
   swabTypes: Array<SpecimenType>;
   testLength: Scalars["Int"];
 };
@@ -948,16 +944,6 @@ export enum TestCorrectionStatus {
   Removed = "REMOVED",
 }
 
-export type TestDescription = {
-  __typename?: "TestDescription";
-  loincCode: Scalars["String"];
-  name: Scalars["String"];
-};
-
-export type TestDescriptionNameArgs = {
-  nameType?: InputMaybe<Scalars["String"]>;
-};
-
 export type TestOrder = {
   __typename?: "TestOrder";
   correctionStatus?: Maybe<Scalars["String"]>;
@@ -999,7 +985,6 @@ export type TestResult = {
   results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
-  testPerformed: TestDescription;
 };
 
 export enum TestResultDeliveryPreference {

@@ -121,11 +121,6 @@ type SpecimenType {
   collectionLocationCode: String
 }
 
-type TestDescription {
-  name(nameType: String = "long"): String!
-  loincCode: String!
-}
-
 type PhoneNumber {
   type: PhoneType
   number: String

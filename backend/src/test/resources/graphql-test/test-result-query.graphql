@@ -1,4 +1,4 @@
-query GetResultById($id: ID!, $nameType: String = "long") {
+query GetResultById($id: ID!) {
   testResult(id: $id) {
     internalId
     dateTested
@@ -20,9 +20,6 @@ query GetResultById($id: ID!, $nameType: String = "long") {
       middleName
       lastName
       lookupId
-    }
-    testPerformed {
-      name(nameType: $nameType)
     }
   }
 }
