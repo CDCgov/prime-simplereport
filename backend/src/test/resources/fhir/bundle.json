@@ -431,6 +431,11 @@
           }
         ],
         "method":{
+          "coding": [
+            {
+              "display": "model"
+            }
+          ],
           "extension":[
             {
               "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
@@ -498,6 +503,11 @@
           }
         ],
         "method":{
+          "coding": [
+            {
+              "display": "model"
+            }
+          ],
           "extension":[
             {
               "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
@@ -565,6 +575,11 @@
           }
         ],
         "method":{
+          "coding": [
+            {
+              "display": "model"
+            }
+          ],
           "extension":[
             {
               "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
