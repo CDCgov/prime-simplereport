@@ -4603,3 +4603,52 @@ databaseChangeLog:
         - dropNotNullConstraint:
             columnName: loinc_code
             tableName: device_type
+  - changeSet:
+      id: drop-device_test_performed_loinc_code-table
+      author: uem4@cdc.gov
+      comment: Drop duplicate table device test performed loinc code table
+      changes:
+        - dropTable:
+            tableName: device_test_performed_loinc_code
+      rollback:
+        - createTable:
+            tableName: device_test_performed_loinc_code
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: device_type_id
+                  remarks: The reference to the device type.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__device_type
+                    references: device_type
+              - column:
+                  name: supported_disease_id
+                  remarks: The reference to the supported disease.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__supported_disease_type
+                    references: supported_disease
+              - column:
+                  name: test_performed_loinc_code
+                  remarks: The code that identifies which disease was tested.
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: equipment_uid
+                  remarks: represents the data from "Equipment UID" column in the LIVD
+                  type: text
+              - column:
+                  name: testkit_name_id
+                  remarks: represents the data from "Testkit Name ID" column in the LIVD
+                  type: text
+

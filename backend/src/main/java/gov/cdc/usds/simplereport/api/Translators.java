@@ -399,7 +399,7 @@ public class Translators {
           Map.entry("other", "Other"));
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
 
-  private static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =
+  public static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =
       new SnomedConceptRecord("Detected", "260373001", TestResult.POSITIVE);
   private static final SnomedConceptRecord NOT_DETECTED_SNOMED_CONCEPT =
       new SnomedConceptRecord("Not detected", "260415000", TestResult.NEGATIVE);
