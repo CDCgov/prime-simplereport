@@ -122,7 +122,7 @@ public class DeviceTypeService {
               .map(specimenTypeRepository::findById)
               .filter(Optional::isPresent)
               .map(Optional::get)
-              .collect(Collectors.toList());
+              .toList();
 
       updatedSpecimenTypes.forEach(
           specimenType -> {
