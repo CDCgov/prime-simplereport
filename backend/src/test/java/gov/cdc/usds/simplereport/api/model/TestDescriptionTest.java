@@ -33,4 +33,10 @@ class TestDescriptionTest {
         "SARS-CoV-2 (COVID-19) RdRp gene [Presence] in Respiratory specimen by NAA with probe detection",
         rnaTest.getLongName());
   }
+
+  @Test
+  void uselessTest() {
+    TestDescription rnaTest = TestDescription.findTestDescription("94534-5");
+    assertEquals(rnaTest.getNothing(), "");
+  }
 }
