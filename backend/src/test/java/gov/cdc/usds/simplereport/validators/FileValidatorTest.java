@@ -253,6 +253,32 @@ class FileValidatorTest {
   }
 
   @Test
+  void testResults_invalid_deviceModel_testPerformedCode() {
+    // GIVEN
+    InputStream input =
+        loadCsv("testResultUpload/test-results-upload-invalid-deviceModel_testPerformedCode.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).hasSize(1);
+
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
+
+    assertThat(errorMessages)
+        .contains("Invalid equipment_model_name and test_performed_code combination");
+  }
+
+  @Test
+  void testResults_validFile_fluOnly() {
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).isEmpty();
+  }
+
+  @Test
   void testResultsFile_invalidHeaders() {
     // GIVEN
     InputStream input = new ByteArrayInputStream("invalid\nyes".getBytes());
