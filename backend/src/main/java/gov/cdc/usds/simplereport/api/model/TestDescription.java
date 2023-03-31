@@ -87,6 +87,14 @@ public class TestDescription {
     return consumerName;
   }
 
+  public String getNothing() {
+    return "";
+  }
+
+  public String getNothing2() {
+    return "";
+  }
+
   public static TestDescription findTestDescription(String loincCode) {
     return KNOWN_TESTS.getOrDefault(loincCode, DEFAULT_TEST);
   }
