@@ -77,7 +77,7 @@ public class DeviceTypeService {
   private final SpecimenTypeService specimenTypeService;
 
   @Value("${simple-report.device-sync-livd.enabled:false}")
-  private String deviceSyncEnabled;
+  private boolean deviceSyncEnabled;
 
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -264,20 +264,20 @@ public class DeviceTypeService {
         .filter(Optional::isPresent)
         .map(Optional::get)
         .map(SpecimenType::getInternalId)
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
    * Wrapper method for syncing devices from LIVD table so automation can call the inner method
    * without hitting the lock or conditions.
    */
-  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS, zone = "America/New_York")
+  @Scheduled(initialDelay = 5, fixedRate = 10, timeUnit = TimeUnit.MINUTES)
   @SchedulerLock(
       name = "DeviceTypeService_syncDevices",
       lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT30M")
   public void scheduledSyncDevices() {
-    if (Objects.equals(deviceSyncEnabled, "true")) {
+    if (deviceSyncEnabled) {
       syncDevices();
     }
   }
