@@ -267,22 +267,14 @@ public class FhirConverter {
       var ext = new Extension();
       ext.setUrl(ETHNICITY_EXTENSION_URL);
       var codeableConcept = new CodeableConcept();
-      var coding = codeableConcept.addCoding();
+      var coding = codeableConcept.addCoding().setSystem(ETHNICITY_CODE_SYSTEM);
       if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
-        if ("refused".equalsIgnoreCase(ethnicity)) {
-          coding.setSystem(NULL_CODE_SYSTEM);
-        } else {
-          coding.setSystem(ETHNICITY_CODE_SYSTEM);
-        }
-        coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-        coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-
+        coding
+            .setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0))
+            .setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
         codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
       } else {
-        coding.setSystem(NULL_CODE_SYSTEM);
-        coding.setCode(MappingConstants.U_CODE);
-        coding.setDisplay(MappingConstants.UNKNOWN_STRING);
-
+        coding.setCode(MappingConstants.U_CODE).setDisplay(MappingConstants.UNKNOWN_STRING);
         codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
       }
       ext.setValue(codeableConcept);
