@@ -5,13 +5,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import gov.cdc.usds.simplereport.db.model.DeviceSupportedDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceSupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
@@ -28,7 +26,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 class DeviceTypeDataLoaderHelperTest {
 
-  @Mock DeviceSupportedDiseaseRepository deviceSupportedDiseaseRepository;
   @Mock DiseaseService diseaseService;
   @Mock DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   @Mock SpecimenTypeRepository specimenTypeRepository;
@@ -45,6 +42,10 @@ class DeviceTypeDataLoaderHelperTest {
     Set<UUID> deviceSet = Set.of(device1Id, device2Id, device3Id);
     UUID supportedDisease1Id = UUID.randomUUID();
     UUID supportedDisease2Id = UUID.randomUUID();
+    String testPerformedLoinc = "test123PerformedLoinc";
+    String equipmentUid = "testEquipmentUid";
+    String testkitNameId = "testkitNameId";
+    String testOrderedLoinc = "test123OrderedLoinc";
 
     SupportedDisease supportedDisease1 = mock(SupportedDisease.class);
     SupportedDisease supportedDisease2 = mock(SupportedDisease.class);
@@ -58,12 +59,30 @@ class DeviceTypeDataLoaderHelperTest {
                 supportedDisease1Id, supportedDisease1,
                 supportedDisease2Id, supportedDisease2));
 
-    when(deviceSupportedDiseaseRepository.findAllByDeviceTypeIdIn(deviceSet))
+    when(deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(deviceSet))
         .thenReturn(
             List.of(
-                new DeviceSupportedDisease(device1Id, supportedDisease1Id),
-                new DeviceSupportedDisease(device2Id, supportedDisease1Id),
-                new DeviceSupportedDisease(device2Id, supportedDisease2Id)));
+                new DeviceTypeDisease(
+                    device1Id,
+                    supportedDisease1,
+                    testPerformedLoinc,
+                    equipmentUid,
+                    testkitNameId,
+                    testOrderedLoinc),
+                new DeviceTypeDisease(
+                    device2Id,
+                    supportedDisease1,
+                    testPerformedLoinc,
+                    equipmentUid,
+                    testkitNameId,
+                    testOrderedLoinc),
+                new DeviceTypeDisease(
+                    device2Id,
+                    supportedDisease2,
+                    testPerformedLoinc,
+                    equipmentUid,
+                    testkitNameId,
+                    testOrderedLoinc)));
 
     // WHEN
     Map<UUID, List<SupportedDisease>> supportedDiseases =
