@@ -436,10 +436,11 @@ public class FhirConverter {
       String specimenName,
       String collectionCode,
       String collectionName,
-      String id) {
+      String id,
+      String identifier) {
     var specimen = new Specimen();
     specimen.setId(id);
-    specimen.addIdentifier().setValue(id);
+    specimen.addIdentifier().setValue(identifier);
     if (StringUtils.isNotBlank(specimenCode)) {
       var codeableConcept = specimen.getType();
       var coding = codeableConcept.addCoding();
@@ -465,7 +466,8 @@ public class FhirConverter {
         specimenType.getName(),
         specimenType.getCollectionLocationCode(),
         specimenType.getCollectionLocationName(),
-        specimenType.getInternalId().toString());
+        specimenType.getInternalId().toString(),
+        UUID.randomUUID().toString());
   }
 
   public static List<Observation> convertToObservation(

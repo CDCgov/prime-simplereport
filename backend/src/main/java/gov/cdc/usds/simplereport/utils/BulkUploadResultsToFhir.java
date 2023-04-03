@@ -237,6 +237,7 @@ public class BulkUploadResultsToFhir {
             getDescriptionValue(row.getSpecimenType().value),
             null,
             null,
+            UUID.randomUUID().toString(),
             UUID.randomUUID().toString());
 
     var observation =
