@@ -44,13 +44,6 @@ public class DeviceTypeDataResolver {
                 Mono.just(deviceTypeDataLoaderService.getDeviceTypeDisease(deviceTypeIds)));
   }
 
-  @SchemaMapping(typeName = "DeviceType", field = "supportedDiseases")
-  public CompletableFuture<List<SupportedDisease>> supportedDiseases(
-      DeviceType deviceType,
-      DataLoader<UUID, List<SupportedDisease>> deviceTypeSupportedDiseasesLoader) {
-    return deviceTypeSupportedDiseasesLoader.load(deviceType.getInternalId());
-  }
-
   @SchemaMapping(typeName = "DeviceType", field = "swabTypes")
   public CompletableFuture<List<SpecimenType>> swabTypes(
       DeviceType deviceType, DataLoader<UUID, List<SpecimenType>> deviceTypeSpecimenTypesLoader) {

@@ -57,7 +57,6 @@ input CreateDeviceType {
   manufacturer: String!
   model: String!
   swabTypes: [ID!]!
-  supportedDiseases: [ID!]
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
   testLength: Int!
 }
@@ -68,7 +67,6 @@ input UpdateDeviceType {
   manufacturer: String!
   model: String!
   swabTypes: [ID!]!
-  supportedDiseases: [ID!]
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
   testLength: Int!
 }
@@ -89,7 +87,6 @@ type DeviceType {
   loincCode: String @deprecated(reason: "loincCode is deprecated. Use supportedDiseaseTestPerformed instead.")
   swabType: String @deprecated(reason: "swabType is deprecated. Use swabTypes instead.")
   swabTypes: [SpecimenType!]!
-  supportedDiseases: [SupportedDisease!]!
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]!
   testLength: Int!
 }

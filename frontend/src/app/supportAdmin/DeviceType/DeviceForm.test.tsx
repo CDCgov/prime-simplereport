@@ -158,7 +158,6 @@ describe("update existing devices", () => {
             manufacturer: "Celoxitin",
             testLength: 15,
             swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
-            supportedDiseases: [], // Remove in #5322
             supportedDiseaseTestPerformed:
               mockSupportedDiseaseTestPerformedCovid,
           },
@@ -169,7 +168,6 @@ describe("update existing devices", () => {
             manufacturer: "Curentz",
             testLength: 15,
             swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
-            supportedDiseases: [], // Remove in #5322
             supportedDiseaseTestPerformed:
               supportedDiseaseWithoutTestPerformedLoinc,
           },
@@ -180,7 +178,6 @@ describe("update existing devices", () => {
             manufacturer: "Vitamin Tox",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
-            supportedDiseases: [], // Remove in #5322
             supportedDiseaseTestPerformed:
               mockSupportedDiseaseTestPerformedCovid,
           },
@@ -191,7 +188,6 @@ describe("update existing devices", () => {
             manufacturer: "Local",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
-            supportedDiseases: [], // Remove in #5322
             supportedDiseaseTestPerformed:
               mockSupportedDiseaseTestPerformedMultiplex,
           },
@@ -202,7 +198,6 @@ describe("update existing devices", () => {
             manufacturer: "Brand",
             testLength: 15,
             swabTypes: [{ internalId: "789", name: "mouth", typeCode: "m789" }],
-            supportedDiseases: [], // Remove in #5322
             supportedDiseaseTestPerformed:
               mockSupportedDiseaseTestPerformedCovid,
           },
