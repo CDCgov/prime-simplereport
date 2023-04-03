@@ -1,6 +1,4 @@
-/*
 package gov.cdc.usds.simplereport.api.converter;
-
 
 @SpringBootTest
 class FhirConverterTest {
@@ -1347,6 +1345,3 @@ class FhirConverterTest {
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, JSONCompareMode.NON_EXTENSIBLE);
   }
 }
-
-
- */
