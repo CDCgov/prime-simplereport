@@ -22,7 +22,6 @@ const devices = [
     manufacturer: "Celoxitin",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
-    supportedDiseases: [], // Remove in #5322
     supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
   },
   {
@@ -33,7 +32,6 @@ const devices = [
     loincCode: "8675309",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "nose-code" }],
-    supportedDiseases: [], // Remove in #5322
     supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
   },
 ];

@@ -2,13 +2,11 @@ package gov.cdc.usds.simplereport.api.devicetype;
 
 import static java.util.Collections.emptyList;
 
-import gov.cdc.usds.simplereport.db.model.DeviceSupportedDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceSupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.DiseaseService;
@@ -26,7 +24,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 public class DeviceTypeDataLoaderService {
 
-  final DeviceSupportedDiseaseRepository deviceSupportedDiseaseRepository;
   final DiseaseService diseaseService;
   final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   final SpecimenTypeRepository specimenTypeRepository;
@@ -38,11 +35,11 @@ public class DeviceTypeDataLoaderService {
         diseaseService.getKnownSupportedDiseasesMap();
 
     // load deviceType -> [supportedDisease]
-    List<DeviceSupportedDisease> allByDeviceTypeIdIn =
-        deviceSupportedDiseaseRepository.findAllByDeviceTypeIdIn(deviceTypeIds);
-    Map<UUID, List<DeviceSupportedDisease>> deviceTypeIdSupportedDiseaseIdsMapping =
+    List<DeviceTypeDisease> allByDeviceTypeIdIn =
+        deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(deviceTypeIds);
+    Map<UUID, List<DeviceTypeDisease>> deviceTypeIdSupportedDiseaseIdsMapping =
         allByDeviceTypeIdIn.stream()
-            .collect(Collectors.groupingBy(DeviceSupportedDisease::getDeviceTypeId));
+            .collect(Collectors.groupingBy(DeviceTypeDisease::getDeviceTypeId));
 
     Map<UUID, List<SupportedDisease>> found = new HashMap<>();
 
@@ -55,7 +52,8 @@ public class DeviceTypeDataLoaderService {
               deviceSupportedDiseaseIds.stream()
                   .map(
                       deviceSupportedDisease ->
-                          supportedDiseasesMap.get(deviceSupportedDisease.getSupportedDiseaseId()))
+                          supportedDiseasesMap.get(
+                              deviceSupportedDisease.getSupportedDisease().getInternalId()))
                   .collect(Collectors.toList());
           found.put(deviceTypeId, deviceSupportedDiseases);
         });

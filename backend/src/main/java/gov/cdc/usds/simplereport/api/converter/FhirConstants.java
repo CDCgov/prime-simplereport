@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.CodingRecord;
 import java.util.Map;
 
 public class FhirConstants {
@@ -55,4 +56,9 @@ public class FhirConstants {
 
   public static final String ORDER_CONTROL_CODE_SYSTEM =
       "http://terminology.hl7.org/CodeSystem/v2-0119";
+
+  public static final String ABNORMAL_FLAGS_CODE_SYSTEM =
+      "http://terminology.hl7.org/CodeSystem/v2-0078";
+  public static final CodingRecord ABNORMAL_FLAG_NORMAL = new CodingRecord("N", "Normal");
+  public static final CodingRecord ABNORMAL_FLAG_ABNORMAL = new CodingRecord("A", "Abnormal");
 }

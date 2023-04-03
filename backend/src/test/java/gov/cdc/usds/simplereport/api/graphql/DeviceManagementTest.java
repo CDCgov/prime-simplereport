@@ -117,7 +117,6 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .manufacturer("Acme")
             .model("Test-A-Lot")
             .swabTypes(specimenTypeIds)
-            .supportedDiseases(supportedDiseaseIds)
             .supportedDiseaseTestPerformed(
                 List.of(
                     SupportedDiseaseTestPerformedInput.builder()
@@ -147,7 +146,6 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .manufacturer("Acme")
             .model("Test-A-Lot")
             .swabTypes(specimenTypeIds)
-            .supportedDiseases(supportedDiseaseIds)
             .supportedDiseaseTestPerformed(
                 List.of(
                     SupportedDiseaseTestPerformedInput.builder()

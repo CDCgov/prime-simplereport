@@ -51,10 +51,12 @@ query fetchFacilityQueue($facilityId: ID!) {
       internalId
       name
       testLength
-      supportedDiseases {
-        internalId
-        name
-        loinc
+      supportedDiseaseTestPerformed {
+        supportedDisease {
+          name
+          internalId
+          loinc
+        }
       }
       swabTypes {
         internalId
