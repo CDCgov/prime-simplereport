@@ -298,14 +298,11 @@ public class DeviceTypeService {
               || device.getModel() == null
               || device.getVendorAnalyteName() == null) {
             log.info("One or more required values are not present in the LIVD entry");
-            log.info("Skipping device...");
+
             return;
           }
 
           // Does the device exist at all in the DB?
-          log.info("Syncing device...");
-          log.info(device.getManufacturer());
-          log.info(device.getModel());
           var foundDevice =
               deviceTypeRepository.findDeviceTypeByManufacturerAndModel(
                   device.getManufacturer(), device.getModel());
@@ -329,8 +326,8 @@ public class DeviceTypeService {
 
                     if (supportedDisease.isEmpty()) {
                       // Skip this device
-                      log.info("Device does not contain required disease data");
-                      log.info("Skipping...");
+                      log.info(
+                          "Device {} does not contain required disease data", device.getModel());
                       return null;
                     }
 
@@ -393,6 +390,8 @@ public class DeviceTypeService {
 
           if (supportedDisease.isEmpty()) {
             // Skip this device
+            log.info("Device {} does not contain required disease data", device.getModel());
+
             return;
           }
 
@@ -428,7 +427,7 @@ public class DeviceTypeService {
             try {
               updateDeviceType(input);
             } catch (IllegalGraphqlArgumentException ignored) {
-              log.info("Skipping device...");
+              log.info("No updates for device {}, skipping sync", device.getName());
             }
           }
         });
