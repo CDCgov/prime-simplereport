@@ -159,7 +159,7 @@
             "valueCodeableConcept": {
               "coding": [
                 {
-                  "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0189",
                   "code": "U",
                   "display": "unknown"
                 }
