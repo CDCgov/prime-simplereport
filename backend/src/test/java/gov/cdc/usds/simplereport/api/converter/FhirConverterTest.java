@@ -483,7 +483,7 @@ class FhirConverterTest {
   @Test
   void convertToDevice_DeviceType_valid() {
     var internalId = UUID.randomUUID();
-    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15);
+    var deviceType = new DeviceType("name", "manufacturer", "model", 15);
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
     var actual = convertToDevice(deviceType);
@@ -500,12 +500,7 @@ class FhirConverterTest {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     DeviceType deviceType =
         new DeviceType(
-            "name",
-            "BioFire Diagnostics",
-            "BioFire Respiratory Panel 2.1 (RP2.1)*@",
-            "loinc",
-            "swab type",
-            15);
+            "name", "BioFire Diagnostics", "BioFire Respiratory Panel 2.1 (RP2.1)*@", 15);
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
     var actual = convertToDevice(deviceType);
@@ -741,22 +736,6 @@ class FhirConverterTest {
   }
 
   @Test
-  void convertToObservation_Result_defaultsToDeviceLoinc() {
-    var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var testOrder = TestDataBuilder.createTestOrderWithDevice();
-    var covidResult =
-        new Result(testOrder, new SupportedDisease("COVID-19", "96741-4"), TestResult.POSITIVE);
-    ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
-
-    var actual =
-        convertToObservation(
-            Set.of(covidResult), DeviceType.builder().build(), TestCorrectionStatus.ORIGINAL, null);
-
-    assertThat(actual).hasSize(1);
-    assertThat(actual.get(0).getCode().getCodingFirstRep().getCode()).isEqualTo("54321-BOOM");
-  }
-
-  @Test
   void convertToObservation_Result_matchesJson() throws IOException {
     var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var fluId = "302a7919-b699-4e0d-95ca-5fd2e3fcaf7a";
@@ -900,6 +879,8 @@ class FhirConverterTest {
   @Test
   void convertToDiagnosticReport_TestEvent_valid() {
     var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
+    ReflectionTestUtils.setField(
+        testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
     var actual = convertToDiagnosticReport(testEvent);
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -939,6 +920,8 @@ class FhirConverterTest {
     var date = new Date();
     ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
     ReflectionTestUtils.setField(testEvent, "createdAt", date);
+    ReflectionTestUtils.setField(
+        testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
 
     var actual = convertToDiagnosticReport(testEvent);
 
@@ -1345,8 +1328,7 @@ class FhirConverterTest {
     supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluADisease));
     supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluBDisease));
     var deviceType =
-        new DeviceType(
-            "name", "manufacturer", "model", "loinc", 0, new ArrayList<>(), supportedTestOrders);
+        new DeviceType("name", "manufacturer", "model", 0, new ArrayList<>(), supportedTestOrders);
 
     var specimenType = new SpecimenType("name", "typeCode");
     var provider =

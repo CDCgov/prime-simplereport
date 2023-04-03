@@ -22,15 +22,11 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String name;
 
-  @Column private String loincCode;
-
   @Column(nullable = false)
   private String manufacturer;
 
   @Column(nullable = false)
   private String model;
-
-  @Column private String swabType;
 
   @JoinTable(
       name = "device_specimen_type",
@@ -51,19 +47,11 @@ public class DeviceType extends EternalAuditedEntity {
   }
 
   @ConstructorBinding
-  public DeviceType(
-      String name,
-      String manufacturer,
-      String model,
-      String loincCode,
-      String swabType,
-      int testLength) {
+  public DeviceType(String name, String manufacturer, String model, int testLength) {
     super();
     this.name = name;
     this.manufacturer = manufacturer;
     this.model = model;
-    this.loincCode = loincCode;
-    this.swabType = swabType;
     this.testLength = testLength;
   }
 
@@ -72,28 +60,24 @@ public class DeviceType extends EternalAuditedEntity {
       String name,
       String manufacturer,
       String model,
-      String loincCode,
       int testLength,
       List<SpecimenType> swabTypes) {
     super();
     this.name = name;
     this.manufacturer = manufacturer;
     this.model = model;
-    this.loincCode = loincCode;
     this.swabTypes = swabTypes;
     this.testLength = testLength;
   }
 
-  @Builder
   public DeviceType(
       String name,
       String manufacturer,
       String model,
-      String loincCode,
       int testLength,
       List<SpecimenType> swabTypes,
       List<DeviceTypeDisease> supportedDiseaseTestPerformed) {
-    this(name, manufacturer, model, loincCode, testLength, swabTypes);
+    this(name, manufacturer, model, testLength, swabTypes);
     this.supportedDiseaseTestPerformed = supportedDiseaseTestPerformed;
   }
 
@@ -119,22 +103,6 @@ public class DeviceType extends EternalAuditedEntity {
 
   public void setModel(String model) {
     this.model = model;
-  }
-
-  public String getLoincCode() {
-    return loincCode;
-  }
-
-  public void setLoincCode(String loincCode) {
-    this.loincCode = loincCode;
-  }
-
-  public String getSwabType() {
-    return swabType;
-  }
-
-  public void setSwabType(String swabType) {
-    this.swabType = swabType;
   }
 
   public int getTestLength() {
