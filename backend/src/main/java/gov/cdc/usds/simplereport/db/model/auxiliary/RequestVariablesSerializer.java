@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.nimbusds.jose.util.StandardCharset;
@@ -34,7 +33,7 @@ public class RequestVariablesSerializer extends JsonSerializer<Map<String, Objec
 
   @Override
   public void serialize(Map<String, Object> value, JsonGenerator gen, SerializerProvider arg2)
-      throws IOException, JsonProcessingException {
+      throws IOException {
     Map<String, Object> parsedValue = new HashMap<>();
     for (Map.Entry<String, Object> entry : value.entrySet()) {
       parsedValue.put(entry.getKey(), parseValue(entry.getValue()));
