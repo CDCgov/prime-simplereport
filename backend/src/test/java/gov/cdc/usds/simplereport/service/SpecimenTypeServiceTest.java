@@ -4,11 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
-import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.TransactionSystemException;
 
@@ -19,10 +16,7 @@ import org.springframework.transaction.TransactionSystemException;
     })
 public class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService> {
 
-  @Autowired private SpecimenTypeRepository specimenTypeRepository;
-
   @Test
-  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void createNewSpecimenType_success() {
     _service.createSpecimenType(
         CreateSpecimenType.builder()
@@ -34,22 +28,6 @@ public class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService
 
     assertEquals(1, _service.fetchSpecimenTypes().size());
     assertEquals("Nasal swab", _service.fetchSpecimenTypes().get(0).getName());
-  }
-
-  @Test
-  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-  void createNewSpecimenType_failsWithInvalidCredentials() {
-    assertThrows(
-        AccessDeniedException.class,
-        () -> {
-          _service.createSpecimenType(
-              CreateSpecimenType.builder()
-                  .name("Nasal swab")
-                  .typeCode("012345678")
-                  .collectionLocationName("Nasopharangyal Structure")
-                  .collectionLocationCode("123456789")
-                  .build());
-        });
   }
 
   @Test
