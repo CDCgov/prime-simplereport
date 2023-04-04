@@ -17,8 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RequestVariablesSerializer extends JsonSerializer<Map<String, Object>> {
   private Object parseValue(Object value) {
-    if (value instanceof Part) {
-      Part part = (Part) value;
+    if (value instanceof Part part) {
       try (BufferedReader br =
           new BufferedReader(
               new InputStreamReader(part.getInputStream(), StandardCharset.UTF_8)); ) {
