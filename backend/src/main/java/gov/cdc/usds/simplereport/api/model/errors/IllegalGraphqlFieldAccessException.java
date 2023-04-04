@@ -8,7 +8,7 @@ import java.util.List;
 
 public class IllegalGraphqlFieldAccessException extends RuntimeException implements GraphQLError {
   private final List<SourceLocation> sourceLocations;
-  private final List<Object> path;
+  private final transient List<Object> path;
 
   public IllegalGraphqlFieldAccessException(
       String message, List<SourceLocation> sourceLocations, List<Object> path) {
