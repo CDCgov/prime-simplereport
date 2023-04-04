@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
@@ -58,13 +59,12 @@ public class DeviceTypeService {
               "sars-cov2",
               "covid",
               "sars-2019-ncov",
-              "2019-ncovrna"));
+              "2019-ncovrna",
+              "sars antigen result"));
   private static final Set<String> FLU_A_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
   private static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
-  private static final Set<String> RSV_VENDOR_ANALYTE_NAMES =
-      new HashSet<>(Arrays.asList("rsv", "respiratory syncytial virus"));
 
   private final DeviceTypeRepository deviceTypeRepository;
   private final DataHubClient client;
