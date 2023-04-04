@@ -34,16 +34,17 @@ class SpecimenTypeMutationResolverTest extends BaseServiceTest<SpecimenTypeServi
   @Test
   @SliceTestConfiguration.WithSimpleReportOrgAdminUser
   void createNewSpecimenType_failsWithInvalidCredentials() {
+
+    CreateSpecimenType newSpecimenType =
+        CreateSpecimenType.builder()
+            .name("Nasal swab")
+            .typeCode("012345678")
+            .collectionLocationName("Nasopharangyal Structure")
+            .collectionLocationCode("123456789")
+            .build();
+
     assertThrows(
         AccessDeniedException.class,
-        () -> {
-          specimenTypeMutationResolver.createSpecimenType(
-              CreateSpecimenType.builder()
-                  .name("Nasal swab")
-                  .typeCode("012345678")
-                  .collectionLocationName("Nasopharangyal Structure")
-                  .collectionLocationCode("123456789")
-                  .build());
-        });
+        () -> specimenTypeMutationResolver.createSpecimenType(newSpecimenType));
   }
 }
