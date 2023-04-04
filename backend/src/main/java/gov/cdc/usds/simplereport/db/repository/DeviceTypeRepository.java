@@ -17,5 +17,5 @@ public interface DeviceTypeRepository extends EternalAuditedEntityRepository<Dev
         "supportedDiseaseTestPerformed",
         "supportedDiseaseTestPerformed.supportedDisease"
       })
-  DeviceType findDeviceTypeByModelIgnoreCase(String model);
+  List<DeviceType> findAllByIsDeletedFalse();
 }

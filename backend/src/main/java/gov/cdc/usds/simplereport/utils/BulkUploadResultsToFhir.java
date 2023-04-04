@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAOEObservation;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
@@ -14,6 +15,7 @@ import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -25,8 +27,10 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,13 +55,16 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BulkUploadResultsToFhir {
 
-  private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
+  private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
+  private static final String SNOMED_REGEX = "^[0-9]{9}$";
   private final Function<Map<String, String>, TestResultRow> fileRowConstructor =
       TestResultRow::new;
 
   private final DeviceTypeRepository deviceTypeRepository;
 
   private final GitProperties gitProperties;
+
+  private List<DeviceType> availableDevices;
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
@@ -73,6 +80,19 @@ public class BulkUploadResultsToFhir {
           "Not Detected".toLowerCase(), "260415000",
           "Invalid Result".toLowerCase(), "455371000124106");
 
+  private static final Map<String, Boolean> yesNoToBooleanMap = new HashMap<>();
+
+  static {
+    yesNoToBooleanMap.put("Y".toLowerCase(), Boolean.TRUE);
+    yesNoToBooleanMap.put("YES".toLowerCase(), Boolean.TRUE);
+    yesNoToBooleanMap.put("N".toLowerCase(), Boolean.FALSE);
+    yesNoToBooleanMap.put("NO".toLowerCase(), Boolean.FALSE);
+    yesNoToBooleanMap.put("U".toLowerCase(), null);
+    yesNoToBooleanMap.put("UNK".toLowerCase(), null);
+    yesNoToBooleanMap.put(null, null);
+    yesNoToBooleanMap.put("", null);
+  }
+
   private final Map<String, String> specimenTypeToSnomedMap =
       Map.of(
           "Nasal Swab".toLowerCase(), "445297001",
@@ -87,7 +107,7 @@ public class BulkUploadResultsToFhir {
   public List<String> convertToFhirBundles(InputStream csvStream, UUID orgId) {
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
-
+    availableDevices = deviceTypeRepository.findAllByIsDeletedFalse();
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
       try {
@@ -122,6 +142,7 @@ public class BulkUploadResultsToFhir {
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
+    var testEventId = UUID.randomUUID().toString();
     var patientAddr =
         new StreetAddress(
             row.getPatientStreet().value,
@@ -141,9 +162,9 @@ public class BulkUploadResultsToFhir {
     var providerAddr =
         new StreetAddress(
             row.getOrderingProviderStreet().value,
-            row.getOrderingFacilityStreet2().value,
-            row.getOrderingFacilityCity().value,
-            row.getOrderingFacilityState().value,
+            row.getOrderingProviderStreet2().value,
+            row.getOrderingProviderCity().value,
+            row.getOrderingProviderState().value,
             row.getOrderingProviderZipCode().value,
             null);
 
@@ -168,6 +189,7 @@ public class BulkUploadResultsToFhir {
                 .ethnicity(row.getPatientEthnicity().value)
                 .tribalAffiliations(new ArrayList<>())
                 .build());
+
     var testingLabOrg =
         FhirConverter.convertToOrganization(
             orgId.toString(),
@@ -210,36 +232,63 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderId().value,
             new PersonName(
                 row.getOrderingProviderFirstName().value,
-                row.getOrderingProviderLastName().value,
                 row.getOrderingProviderMiddleName().value,
+                row.getOrderingProviderLastName().value,
                 null),
             row.getOrderingProviderPhoneNumber().value,
             providerAddr,
             DEFAULT_COUNTRY,
             row.getOrderingProviderId().value);
 
-    var additionalDeviceData =
-        deviceTypeRepository.findDeviceTypeByModelIgnoreCase(row.getEquipmentModelName().value);
-
     String equipmentUid = null;
     String testKitNameId = null;
     String manufacturer = null;
+    String diseaseName = null;
     UUID deviceId = UUID.randomUUID();
-    if (additionalDeviceData != null) {
-      var diseaseCode = row.getTestPerformedCode().value;
+    var testPerformedCode = row.getTestPerformedCode().value;
+    var modelName = row.getEquipmentModelName().value;
+    var matchingDevices =
+        availableDevices.stream()
+            .filter(device -> device.getModel().equalsIgnoreCase(modelName))
+            .filter(
+                device ->
+                    device.getSupportedDiseaseTestPerformed().stream()
+                        .anyMatch(
+                            disease ->
+                                Objects.equals(
+                                    disease.getTestPerformedLoincCode(), testPerformedCode)))
+            .toList();
+
+    if (matchingDevices.size() == 1) {
+      var deviceType = matchingDevices.get(0);
       Optional<DeviceTypeDisease> deviceTypeDisease =
-          additionalDeviceData.getSupportedDiseaseTestPerformed().stream()
-              .filter(code -> Objects.equals(code.getSupportedDisease().getLoinc(), diseaseCode))
+          deviceType.getSupportedDiseaseTestPerformed().stream()
+              .filter(code -> Objects.equals(code.getTestPerformedLoincCode(), testPerformedCode))
               .findFirst();
-      manufacturer = additionalDeviceData.getManufacturer();
+      manufacturer = deviceType.getManufacturer();
       equipmentUid = deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
       testKitNameId = deviceTypeDisease.map(DeviceTypeDisease::getTestkitNameId).orElse(null);
       deviceId = deviceTypeDisease.map(DeviceTypeDisease::getInternalId).orElse(deviceId);
+      var supportedDisease =
+          deviceTypeDisease.map(DeviceTypeDisease::getSupportedDisease).orElse(null);
+      diseaseName = supportedDisease != null ? supportedDisease.getName() : null;
+    } else if (matchingDevices.isEmpty()) {
+      log.info(
+          "No device found for model ("
+              + modelName
+              + ") and test performed code ("
+              + testPerformedCode
+              + ")");
+    } else {
+      log.info(
+          "More than one device found for model ("
+              + modelName
+              + ") and test performed code ("
+              + testPerformedCode
+              + ")");
     }
 
-    var device =
-        FhirConverter.convertToDevice(
-            manufacturer, row.getEquipmentModelName().value, deviceId.toString());
+    var device = FhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
     var specimen =
         FhirConverter.convertToSpecimen(
@@ -268,18 +317,36 @@ public class BulkUploadResultsToFhir {
                     .deviceModel(row.getEquipmentModelName().value)
                     .build()));
 
+    LocalDate symptomOnsetDate = null;
+    if (row.getIllnessOnsetDate().value != null
+        && !row.getIllnessOnsetDate().value.trim().isBlank()) {
+      try {
+        symptomOnsetDate = LocalDate.parse(row.getIllnessOnsetDate().value, dateTimeFormatter);
+      } catch (DateTimeParseException e) {
+        // empty values for optional fields come through as empty strings, not null
+        log.error("Unable to parse date from CSV.");
+      }
+    }
+
+    Boolean symptomatic = null;
+    if (row.getSymptomaticForDisease().value != null) {
+      symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().value.toLowerCase());
+    }
+
+    var aoeObservations = convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
+
     var serviceRequest =
         FhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.ACTIVE,
-            row.getTestPerformedCode().value,
+            testPerformedCode,
             UUID.randomUUID().toString());
 
     var testDate = LocalDate.parse(row.getTestResultDate().value, dateTimeFormatter);
     var diagnosticReport =
         FhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().value),
-            row.getTestPerformedCode().value,
-            UUID.randomUUID().toString(),
+            testPerformedCode,
+            testEventId,
             Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
             new Date());
 
@@ -292,7 +359,7 @@ public class BulkUploadResultsToFhir {
             .device(device)
             .specimen(specimen)
             .resultObservations(observation)
-            .aoeObservations(null)
+            .aoeObservations(aoeObservations)
             .serviceRequest(serviceRequest)
             .diagnosticReport(diagnosticReport)
             .currentDate(new Date())
@@ -311,8 +378,10 @@ public class BulkUploadResultsToFhir {
   private String getSpecimenTypeSnomed(String input) {
     if (input.matches(ALPHABET_REGEX)) {
       return specimenTypeToSnomedMap.get(input.toLowerCase());
+    } else if (input.matches(SNOMED_REGEX)) {
+      return input;
     }
-    return input;
+    return null;
   }
 
   private String getDescriptionValue(String input) {

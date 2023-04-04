@@ -11,6 +11,7 @@ import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(
@@ -21,6 +22,10 @@ public interface DataHubClient {
 
   @PostMapping(value = "/api/reports?processing=async", consumes = "text/csv")
   UploadResponse uploadCSV(@Param("file") byte[] file);
+
+  @PostMapping(value = "/api/waters", consumes = "application/fhir+ndjson")
+  UploadResponse uploadFhir(
+      @RequestBody() String fhirNDJson, @RequestHeader(value = "Authorization") String authHeader);
 
   @PostMapping(value = "/api/token")
   TokenResponse fetchAccessToken(@SpringQueryMap Map<String, String> parameters);

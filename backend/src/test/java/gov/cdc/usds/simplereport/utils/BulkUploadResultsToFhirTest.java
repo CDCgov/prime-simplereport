@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -18,6 +17,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.info.GitProperties;
 
@@ -28,15 +28,20 @@ public class BulkUploadResultsToFhirTest {
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
 
-  BulkUploadResultsToFhir sut = new BulkUploadResultsToFhir(repo, gitProperties);
+  BulkUploadResultsToFhir sut;
 
   @BeforeAll
   public static void init() {
     gitProperties = mock(GitProperties.class);
-    repo = spy(DeviceTypeRepository.class);
 
     when(gitProperties.getCommitTime()).thenReturn(commitTime);
     when(gitProperties.getShortCommitId()).thenReturn("short-commit-id");
+  }
+
+  @BeforeEach
+  public void beforeEach() {
+    repo = spy(DeviceTypeRepository.class);
+    sut = new BulkUploadResultsToFhir(repo, gitProperties);
   }
 
   @Test
@@ -44,17 +49,48 @@ public class BulkUploadResultsToFhirTest {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
 
-    var first = serializedBundles.stream().findFirst().get();
+    var first = serializedBundles.get(0);
     var deserializedBundle = (Bundle) parser.parseResource(first);
     var resourceUrls =
         deserializedBundle.getEntry().stream()
             .map(Bundle.BundleEntryComponent::getFullUrl)
             .collect(Collectors.toList());
 
-    verify(repo, times(1)).findDeviceTypeByModelIgnoreCase(anyString());
-    assertThat(serializedBundles).hasSize(1);
-    assertThat(deserializedBundle.getEntry()).hasSize(13);
-    assertThat(resourceUrls).hasSize(13);
+    verify(repo, times(1)).findAll();
+    assertThat(serializedBundles).hasSize(2);
+    assertThat(deserializedBundle.getEntry()).hasSize(14);
+    assertThat(resourceUrls).hasSize(14);
+  }
+
+  @Test
+  void convertExistingCsv_aoeQuestionsMapped() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
+
+    var asymptomaticEntry = serializedBundles.get(0);
+    var deserializedAsymptomatic = (Bundle) parser.parseResource(asymptomaticEntry);
+    var asymptomaticObservations =
+        deserializedAsymptomatic.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/"))
+            .toList();
+    var asymptomaticAOE =
+        asymptomaticObservations.stream()
+            .filter(
+                observation -> observation.getResource().getNamedProperty("identifier").hasValues())
+            .toList();
+    assertThat(asymptomaticAOE).hasSize(1);
+
+    var symptomaticEntry = serializedBundles.get(1);
+    var deserializedSymptomatic = (Bundle) parser.parseResource(symptomaticEntry);
+    var symptomaticObservations =
+        deserializedSymptomatic.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/"))
+            .toList();
+    var symptomaticAOE =
+        symptomaticObservations.stream()
+            .filter(obs -> obs.getResource().getNamedProperty("identifier").hasValues())
+            .toList();
+    assertThat(symptomaticAOE).hasSize(2);
   }
 
   private InputStream loadCsv(String csvFile) {

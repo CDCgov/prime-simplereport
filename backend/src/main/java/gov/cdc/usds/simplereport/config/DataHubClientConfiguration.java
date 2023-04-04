@@ -16,6 +16,9 @@ public class DataHubClientConfiguration {
   @Value("${datahub.csv-upload-api-client}")
   private String simpleReportCsvUploadClientName;
 
+  @Value("${datahub.csv-upload-api-fhir-client}")
+  private String simpleReportCsvUploadFhirClientName;
+
   @Value("${datahub.api-version}")
   private String csvApiVersion;
 
@@ -33,7 +36,13 @@ public class DataHubClientConfiguration {
         template.body("{}");
       }
 
-      template.header("client", simpleReportCsvUploadClientName);
+      var contentType = template.headers().get("Content-Type");
+      if (contentType != null && contentType.contains("application/fhir+ndjson")) {
+        template.header("client", simpleReportCsvUploadFhirClientName);
+      } else {
+        template.header("client", simpleReportCsvUploadClientName);
+      }
+
       template.header("x-api-version", csvApiVersion);
       template.header("x-functions-key", apiKey);
     };
