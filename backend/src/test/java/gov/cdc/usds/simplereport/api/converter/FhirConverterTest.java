@@ -87,6 +87,7 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
@@ -522,9 +523,11 @@ class FhirConverterTest {
             "Nasopharyngeal swab",
             "53342003",
             "Internal nose structure (body structure)",
-            "id-123");
+            "id-123",
+            "uuid-123");
 
     assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getIdentifierFirstRep().getValue()).isEqualTo("uuid-123");
     assertThat(actual.getType().getCoding()).hasSize(1);
     assertThat(actual.getType().getCodingFirstRep().getSystem()).isEqualTo(snomedCode);
     assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("258500001");
@@ -541,7 +544,7 @@ class FhirConverterTest {
 
   @Test
   void convertToSpecimen_Strings_null() {
-    var actual = convertToSpecimen(null, null, null, null, null);
+    var actual = convertToSpecimen(null, null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
@@ -592,6 +595,9 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/specimen.json")),
             StandardCharsets.UTF_8);
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$SPECIMEN_IDENTIFIER", actual.getIdentifierFirstRep().getValue());
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
@@ -1452,6 +1458,19 @@ class FhirConverterTest {
             "$BUNDLE_TIMESTAMP",
             OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$SPECIMEN_IDENTIFIER",
+            ((Specimen)
+                    actual.getEntry().stream()
+                        .filter(
+                            entry -> entry.getFullUrl().contains(ResourceType.Specimen.toString()))
+                        .findFirst()
+                        .get()
+                        .getResource())
+                .getIdentifierFirstRep()
+                .getValue());
+
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, JSONCompareMode.NON_EXTENSIBLE);
   }
 }
