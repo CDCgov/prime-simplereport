@@ -126,7 +126,13 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   }
 
   public List<DeviceType> getDeviceTypes() {
-    return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
+    return configuredDeviceTypes.stream()
+        .filter(e -> !e.isDeleted())
+        .filter(
+            deviceType ->
+                deviceType.getSupportedDiseaseTestPerformed().stream()
+                    .anyMatch(s -> "COVID-19".equals(s.getSupportedDisease().getName())))
+        .collect(Collectors.toList());
   }
 
   public void removeDeviceType(DeviceType deletedDevice) {
