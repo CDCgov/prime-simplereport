@@ -4651,4 +4651,29 @@ databaseChangeLog:
                   name: testkit_name_id
                   remarks: represents the data from "Testkit Name ID" column in the LIVD
                   type: text
-
+  - changeSet:
+      id: drop-columns-loinc_code-swab_type
+      author: tsv7@cdc.gov
+      comment: Drop the columns loincCode and swabType in device_type table
+      changes:
+        - tagDatabase:
+            tag: drop-columns-loinc_code-swab_type
+        - dropColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: loinc_code
+              - column:
+                  name: swab_type
+      rollback:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: loinc_code
+                  type: text
+                  remarks: The LOINC code for this device, for reporting purposes (sadly, not unique)
+              - column:
+                  name: swab_type
+                  type: text
+                  remarks: The swab type used for this device

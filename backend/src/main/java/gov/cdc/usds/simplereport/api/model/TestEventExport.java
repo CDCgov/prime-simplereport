@@ -597,7 +597,12 @@ public class TestEventExport {
 
   @JsonProperty("Ordered_test_code")
   public String getOrderedTestCode() {
-    return deviceType.map(DeviceType::getLoincCode).orElse(null);
+    // This field is mapped to the testPerformedLoinc but was mistakenly named ordered_test_code
+    return deviceType
+        .map(DeviceType::getSupportedDiseaseTestPerformed)
+        .flatMap(TestEventExport::getCovidDiseaseInfo)
+        .map(DeviceTypeDisease::getTestPerformedLoincCode)
+        .orElse(null);
   }
 
   @JsonProperty("Specimen_source_site_code")

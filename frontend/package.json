@@ -233,11 +233,12 @@
     "redux-mock-store": "^1.5.4",
     "stylelint": "^13.13.1",
     "stylelint-config-standard": "^22.0.0",
-    "typescript": "^4.9.5",
+    "typescript": "^5.0.3",
     "webpack": "^5.75.0"
   },
   "resolutions": {
-    "nth-check": "2.1.1"
+    "nth-check": "2.1.1",
+    "@storybook/react-docgen-typescript-plugin": "1.0.6--canary.9.cd77847.0"
   },
   "msw": {
     "workerDirectory": "/storybook_public"

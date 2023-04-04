@@ -275,7 +275,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     DeviceType facilityDevice = _dataFactory.getGenericDevice();
     SpecimenType facilitySpecimen = _dataFactory.getGenericSpecimen();
 
-    DeviceType newDevice = _dataFactory.createDeviceType("new device", "llc", "t", "123", "swab");
+    DeviceType newDevice = _dataFactory.createDeviceType("new device", "llc", "t");
     SpecimenType newSpecimen =
         _dataFactory.createSpecimenType("new specimen", "123456", "321", "123456");
 

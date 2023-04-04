@@ -267,22 +267,14 @@ public class FhirConverter {
       var ext = new Extension();
       ext.setUrl(ETHNICITY_EXTENSION_URL);
       var codeableConcept = new CodeableConcept();
-      var coding = codeableConcept.addCoding();
+      var coding = codeableConcept.addCoding().setSystem(ETHNICITY_CODE_SYSTEM);
       if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
-        if ("refused".equalsIgnoreCase(ethnicity)) {
-          coding.setSystem(NULL_CODE_SYSTEM);
-        } else {
-          coding.setSystem(ETHNICITY_CODE_SYSTEM);
-        }
-        coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-        coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-
+        coding
+            .setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0))
+            .setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
         codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
       } else {
-        coding.setSystem(NULL_CODE_SYSTEM);
-        coding.setCode(MappingConstants.U_CODE);
-        coding.setDisplay(MappingConstants.UNKNOWN_STRING);
-
+        coding.setCode(MappingConstants.U_CODE).setDisplay(MappingConstants.UNKNOWN_STRING);
         codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
       }
       ext.setValue(codeableConcept);
@@ -444,10 +436,11 @@ public class FhirConverter {
       String specimenName,
       String collectionCode,
       String collectionName,
-      String id) {
+      String id,
+      String identifier) {
     var specimen = new Specimen();
     specimen.setId(id);
-    specimen.addIdentifier().setValue(id);
+    specimen.addIdentifier().setValue(identifier);
     if (StringUtils.isNotBlank(specimenCode)) {
       var codeableConcept = specimen.getType();
       var coding = codeableConcept.addCoding();
@@ -473,7 +466,8 @@ public class FhirConverter {
         specimenType.getName(),
         specimenType.getCollectionLocationCode(),
         specimenType.getCollectionLocationName(),
-        specimenType.getInternalId().toString());
+        specimenType.getInternalId().toString(),
+        UUID.randomUUID().toString());
   }
 
   public static List<Observation> convertToObservation(
@@ -488,7 +482,7 @@ public class FhirConverter {
                   deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(code -> code.getSupportedDisease() == result.getDisease())
                       .findFirst();
-              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
+              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease);
               String equipmentUid = getEquipmentUid(deviceTypeDisease);
               String testkitNameId = getTestkitNameId(deviceTypeDisease);
               return convertToObservation(
@@ -511,11 +505,8 @@ public class FhirConverter {
     return deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
   }
 
-  private static String getTestPerformedLoincCode(
-      Optional<DeviceTypeDisease> deviceTypeDisease, Result result) {
-    return deviceTypeDisease
-        .map(DeviceTypeDisease::getTestPerformedLoincCode)
-        .orElse(result.getTestOrder().getDeviceType().getLoincCode());
+  private static String getTestPerformedLoincCode(Optional<DeviceTypeDisease> deviceTypeDisease) {
+    return deviceTypeDisease.map(DeviceTypeDisease::getTestPerformedLoincCode).orElse(null);
   }
 
   public static Observation convertToObservation(
@@ -770,7 +761,9 @@ public class FhirConverter {
 
     String code = null;
     if (testEvent.getDeviceType() != null) {
-      code = testEvent.getDeviceType().getLoincCode();
+      code =
+          MultiplexUtils.inferMultiplexTestOrderLoinc(
+              testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
     }
 
     return convertToDiagnosticReport(

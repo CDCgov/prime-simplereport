@@ -275,14 +275,6 @@ public class OrganizationInitializingService {
                     .name(d.getName())
                     .model(d.getModel())
                     .manufacturer(d.getManufacturer())
-                    .loincCode(
-                        d.getTestPerformedLoincs().stream()
-                            .filter(t -> "COVID-19".equals(t.getSupportedDisease()))
-                            .map(
-                                InitialSetupProperties.ConfigSupportedDiseaseTestPerformed
-                                    ::getTestPerformedLoincCode)
-                            .findFirst()
-                            .orElseThrow())
                     .swabTypes(
                         d.getSpecimenTypes().stream()
                             .map(specimenTypesByCode::get)

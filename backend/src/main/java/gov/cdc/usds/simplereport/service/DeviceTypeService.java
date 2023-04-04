@@ -184,8 +184,6 @@ public class DeviceTypeService {
                 createDevice.getName(),
                 createDevice.getManufacturer(),
                 createDevice.getModel(),
-                null,
-                null,
                 createDevice.getTestLength()));
 
     specimenTypes.stream()
