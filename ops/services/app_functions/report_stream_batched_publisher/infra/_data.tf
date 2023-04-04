@@ -1,5 +1,5 @@
 locals {
-  token_env_suffix = var.environment == "prod" ? "prod" : "test"
+  token_env_suffix = (var.environment == "prod" || var.environment == "stg") ? "prod" : "test"
 }
 
 data "azurerm_resource_group" "rg_global" {
