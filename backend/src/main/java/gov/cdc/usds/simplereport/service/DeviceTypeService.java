@@ -65,6 +65,8 @@ public class DeviceTypeService {
       new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
   private static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
+  private static final int INITIAL_DELAY_MINUTES = 5;
+  private static final int INTERVAL_MINUTES = 60;
 
   private final DeviceTypeRepository deviceTypeRepository;
   private final DataHubClient client;
@@ -241,7 +243,10 @@ public class DeviceTypeService {
    * Wrapper method for syncing devices from LIVD table so automation can call the inner method
    * without hitting the lock or conditions.
    */
-  @Scheduled(initialDelay = 5, fixedRate = 60, timeUnit = TimeUnit.MINUTES)
+  @Scheduled(
+      initialDelay = INITIAL_DELAY_MINUTES,
+      fixedRate = INTERVAL_MINUTES,
+      timeUnit = TimeUnit.MINUTES)
   @SchedulerLock(
       name = "DeviceTypeService_syncDevices",
       lockAtLeastFor = "PT30S",
