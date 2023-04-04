@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import java.util.List;
@@ -24,7 +23,6 @@ public class SpecimenTypeService {
     return _specimenTypeRepo.findAll();
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
   public SpecimenType createSpecimenType(CreateSpecimenType input) {
     return _specimenTypeRepo.save(
         new SpecimenType(

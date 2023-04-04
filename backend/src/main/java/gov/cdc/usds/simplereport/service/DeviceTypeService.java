@@ -251,6 +251,7 @@ public class DeviceTypeService {
       name = "DeviceTypeService_syncDevices",
       lockAtLeastFor = "PT30S",
       lockAtMostFor = "PT30M")
+  @Transactional
   public void scheduledSyncDevices() {
     if (deviceSyncEnabled) {
       syncDevices();
@@ -316,29 +317,29 @@ public class DeviceTypeService {
                             ? device.getModel()
                             : String.join(" ", device.getManufacturer(), device.getModel());
 
-                    createDeviceType(
-                        CreateDeviceType.builder()
-                            .name(deviceName)
-                            .manufacturer(device.getManufacturer())
-                            .model(device.getModel())
-                            .swabTypes(specimensForDevice)
-                            .supportedDiseaseTestPerformed(
-                                List.of(
-                                    SupportedDiseaseTestPerformedInput.builder()
-                                        .supportedDisease(supportedDisease.get().getInternalId())
-                                        .testPerformedLoincCode(device.getTestPerformedLoincCode())
-                                        .testOrderedLoincCode(device.getTestOrderedLoincCode())
-                                        .testkitNameId(device.getTestKitNameId())
-                                        .equipmentUid(device.getEquipmentUid())
-                                        .build()))
-                            .build());
+                    DeviceType newlyCreatedDeviceType =
+                        createDeviceType(
+                            CreateDeviceType.builder()
+                                .name(deviceName)
+                                .manufacturer(device.getManufacturer())
+                                .model(device.getModel())
+                                .swabTypes(specimensForDevice)
+                                .supportedDiseaseTestPerformed(
+                                    List.of(
+                                        SupportedDiseaseTestPerformedInput.builder()
+                                            .supportedDisease(
+                                                supportedDisease.get().getInternalId())
+                                            .testPerformedLoincCode(
+                                                device.getTestPerformedLoincCode())
+                                            .testOrderedLoincCode(device.getTestOrderedLoincCode())
+                                            .testkitNameId(device.getTestKitNameId())
+                                            .equipmentUid(device.getEquipmentUid())
+                                            .build()))
+                                .build());
 
-                    log.info("Device {} created", deviceName);
+                    log.info("Device {} created", newlyCreatedDeviceType.getName());
 
-                    return deviceTypeRepository
-                        .findDeviceTypeByManufacturerAndModel(
-                            device.getManufacturer(), device.getModel())
-                        .get();
+                    return newlyCreatedDeviceType;
                   });
 
           if (!devicesToSync.containsKey(deviceToSync)) {
