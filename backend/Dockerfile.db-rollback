@@ -1,16 +1,18 @@
-
 FROM gradle:7.6.0-jdk17 AS build
 
 WORKDIR /home/gradle/graphql-api
+
 COPY ./.git ./.git
 
 WORKDIR /home/gradle/graphql-api/backend
+
 COPY ./backend/gradle ./gradle
 COPY ./backend/*.gradle ./
 COPY ./backend/config ./config
 COPY ./backend/src ./src
 COPY ./backend/gradle.properties gradle.properties
-COPY ./backend/db_rollback.sh ./db_rollback.sh
+COPY ./backend/lombok.config lombok.config
+COPY ./backend/db_rollback.sh db_rollback.sh
 
 RUN chown -R gradle:gradle .
 

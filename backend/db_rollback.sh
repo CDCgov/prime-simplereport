@@ -4,6 +4,9 @@
 tag="$LIQUIBASE_ROLLBACK_TAG"
 count="$LIQUIBASE_ROLLBACK_COUNT"
 
+echo "Running validations..."
+gradle liquibaseValidate
+
 if [ -n "$tag" ]; then
   echo "Rolling back to tag: $tag"
   gradle liquibaseRollback -PliquibaseCommandValue=$tag
