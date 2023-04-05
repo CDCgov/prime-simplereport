@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity_;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -105,7 +106,7 @@ public class TestOrderService {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
-      order.on(cb.equal(root.get(AuditedEntity_.internalId), order.get(TestOrder_.testEvent)));
+      order.on(cb.equal(root.get(IdentifiedEntity_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
       query.distinct(true);
 
@@ -115,7 +116,8 @@ public class TestOrderService {
             cb.and(
                 p,
                 cb.equal(
-                    root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
+                    root.get(BaseTestInfo_.facility).get(IdentifiedEntity_.internalId),
+                    facilityId));
       } else {
         p =
             cb.and(
@@ -129,7 +131,7 @@ public class TestOrderService {
             cb.and(
                 p,
                 cb.equal(
-                    root.get(BaseTestInfo_.patient).get(AuditedEntity_.internalId), patientId));
+                    root.get(BaseTestInfo_.patient).get(IdentifiedEntity_.internalId), patientId));
       }
       if (result != null) {
         p = cb.and(p, cb.equal(resultJoin.get(Result_.testResult), result));
