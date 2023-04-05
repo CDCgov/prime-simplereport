@@ -342,7 +342,8 @@ describe("FacilityForm", () => {
         await userEvent.type(cliaInput, "12F3456789");
         await userEvent.tab();
 
-        const expectedError = "CLIA number should be 10 characters";
+        const expectedError =
+          "CLIA numbers must be 10 characters (##D#######), or a special temporary number from CA, IL, VT, WA, WY, or the Department of Defense";
 
         expect(
           await screen.findByText(expectedError, {
