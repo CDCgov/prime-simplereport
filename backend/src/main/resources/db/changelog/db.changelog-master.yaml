@@ -2066,9 +2066,8 @@ databaseChangeLog:
             CREATE ROLE ${noPhiUsername} WITH LOGIN NOSUPERUSER ENCRYPTED PASSWORD '${noPhiPassword}';
       rollback:
         - sql:
-            sql: |
-              -- do nothing;
-            comment: We can't actually remove this role because the metabase DB will still be using it.
+          sql: |
+            DROP ROLE ${noPhiUsername};
   - changeSet:
       id: add-no-phi-views
       author: josh@skylight.digital
