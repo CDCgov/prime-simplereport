@@ -93,20 +93,10 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   name: yup.string().required("Facility name is missing"),
   cliaNumber: yup
     .string()
-    .required(
-      "CLIA numbers must be 10 characters (##D#######), or a special temporary number from CA, IL, VT, WA, WY, or the Department of Defense"
-    )
+    .required()
     .test(
       "facility-clia",
-      ({ value }) => {
-        if (
-          (value.length === 10 && value[2] === "Z") ||
-          (!!value[0] && /[a-zA-Z]/.test(value[0]))
-        ) {
-          return "Special temporary CLIAs are only valid in CA, IL, VT, WA, and WY.";
-        }
-        return "CLIA numbers must be 10 characters (##D#######), or a special temporary number from CA, IL, VT, WA, WY, or the Department of Defense";
-      },
+      "CLIA numbers must be 10 characters (##D#######), or a special temporary number from CA, IL, VT, WA, WY, or the Department of Defense",
       (input, facility) => {
         if (!stateRequiresCLIANumberValidation(facility.parent.state)) {
           return true;
