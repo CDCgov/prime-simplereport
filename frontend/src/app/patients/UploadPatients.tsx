@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IAutoExceptionTelemetry } from "@microsoft/applicationinsights-common/src/Interfaces/IExceptionTelemetry";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
@@ -26,13 +27,19 @@ import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
 
-const UploadPatients = () => {
-  type ErrorMessage = {
-    header: string;
-    body: ReactElement | null;
-    includeGuide: boolean;
-  };
+type ErrorMessage = {
+  header: string;
+  body: ReactElement | null;
+  includeGuide: boolean;
+};
 
+type ValidationError = {
+  scope: "item";
+  message: string;
+  indices: number[] | null;
+};
+
+const UploadPatients = () => {
   useDocumentTitle("Import patients from spreadsheet");
   const [facilityAmount, setFacilityAmount] = useState<string>();
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
@@ -89,6 +96,28 @@ const UploadPatients = () => {
     };
   }
 
+  function trackValidationErrors(validationErrors: ValidationError[]): void {
+    const trackErrors: Promise<any>[] = validationErrors.map(
+      (error) =>
+        new Promise<any>((res) => {
+          const exception: IAutoExceptionTelemetry = {
+            columnNumber: 0,
+            error: new Error("patient upload validation error"),
+            lineNumber: 0,
+            url: "/app/upload-patients",
+            message: error.message,
+            typeName: "patient upload validation error",
+          };
+          appInsights?.trackException({ exception, severityLevel: 1 });
+          return res;
+        })
+    );
+
+    Promise.allSettled(trackErrors).then(() => {
+      /* do nothing*/
+    });
+  }
+
   const handleResponseStatus = async (res: Response) => {
     if (res.status !== 200) {
       setStatus("fail");
@@ -104,13 +133,7 @@ const UploadPatients = () => {
       if (response.status === "FAILURE") {
         setStatus("fail");
         if (response?.errors?.length) {
-          appInsights?.trackTrace(
-            { message: "patientUpload_validationError", severityLevel: 1 },
-            Object.assign(
-              {},
-              ...response?.errors.map((error: any) => ({ [error.message]: "" }))
-            )
-          );
+          trackValidationErrors(response.errors);
           setErrorMessage({
             header: "Error: File not accepted",
             body: (
