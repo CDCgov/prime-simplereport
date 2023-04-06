@@ -26,6 +26,7 @@ import {
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
+import { maskPatientUploadValidationError } from "../utils/dataMasking";
 
 type ErrorMessage = {
   header: string;
@@ -97,6 +98,7 @@ const UploadPatients = () => {
   }
 
   function trackValidationErrors(validationErrors: ValidationError[]): void {
+    // clean the values for the type of error `androgynous is not an acceptable value for the biological_sex column.`
     const trackErrors: Promise<any>[] = validationErrors.map(
       (error) =>
         new Promise<any>((res) => {
@@ -105,7 +107,7 @@ const UploadPatients = () => {
             error: null,
             lineNumber: 0,
             url: "/app/upload-patients",
-            message: error.message,
+            message: maskPatientUploadValidationError(error.message),
           };
           appInsights?.trackException(
             { id: crypto.randomUUID(), exception, severityLevel: 1 },
