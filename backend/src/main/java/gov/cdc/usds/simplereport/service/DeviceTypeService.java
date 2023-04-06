@@ -50,6 +50,71 @@ public class DeviceTypeService {
   private static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
 
+  private static final Set<String> FluA_DEVICE_SYNC_BLOCK_LIST =
+      Set.of(
+          "BioCode CoV-2 Flu Plus Assay|Applied BioCode, Inc.",
+          "BioFire Respiratory Panel 2.1-EZ (RP2.1-EZ)|BioFire Diagnostics, LLC",
+          "NxTAG Respiratory Pathogen Panel + SARS-CoV-2|Luminex Molecular Diagnostics, Inc.",
+          "QIAstat-Dx Respiratory SARS-CoV-2 Panel|QIAGEN GmbH",
+          "ePlex Respiratory Pathogen Panel 2|GenMark Diagnostics, Inc.");
+
+  private static final Set<String> COVID19_DEVICE_SYNC_BLOCK_LIST =
+      Set.of(
+          "ACON SARS-CoV-2 IgG/IgM Rapid Test|ACON Laboratories, Inc.",
+          "ADVIA Centaur SARS-CoV-2 IgG (sCOVG)|Siemens Healthcare Diagnostics Inc.",
+          "ARGENE SARS-COV-2 R-GENE|bioMérieux",
+          "Access SARS-CoV-2 IgG II|Beckman Coulter, Inc.",
+          "Alinity i|Abbott",
+          "Architect i1000SR|Abbott",
+          "Architect i2000SR|Abbott",
+          "Assure COVID-19 IgG/IgM Rapid Test Device|Assure Tech. (Hangzhou Co., Ltd)",
+          "Atellica IM SARS-CoV-2 IgG (sCOVG)|Siemens Healthcare Diagnostics Inc.",
+          "BioPlex 2200 SARS-CoV-2 IgG|Bio-Rad Laboratories",
+          "COVID-19 IgG/IgM Rapid Test Cassette (Whole Blood/Serum/Plasma)|Healgen Scientific",
+          "COVID-SeroKlir, Kantaro Semi-Quantitative SARS-CoV-2 IgG Antibody Kit|Kantaro Biosciences, LLC",
+          "COVIDSeq Test|Illumina",
+          "Diazyme DZ-Lite SARS-CoV-2 IgG CLIA Kit|Diazyme Laboratories, Inc.",
+          "Dimension EXL SARS-CoV-2 IgG (CV2G)|Siemens Healthcare Diagnostics Inc.",
+          "Dimension Vista SARS-CoV-2 IgG (COV2G)|Siemens Healthcare Diagnostics Inc.",
+          "EUROIMMUN Anti-SARS-CoV-2 S1 Curve ELISA (IgG)|EUROIMMUN US, Inc.",
+          "EliA SARS-CoV-2-Sp1 IgG Test|Phadia AB",
+          "Innovita 2019-nCoV Ab Test (Colloidal Gold)|Innovita (Tangshan) Biological Technology Co., Ltd.",
+          "LDT: Express Gene 2019-nCoV RT-PCR Diagnostic Panel|Express Gene LLC, DBA: Express Gene Molecular Diagnostics Laboratory",
+          "LDT: Gravity Diagnostics SARS-CoV-2 RT-PCR Assay|Gravity Diagnostics, LLC",
+          "LDT: Infinity BiologiX TaqPath SARS-CoV-2 Assay|Infinity BiologiX LLC",
+          "LDT: Wren Laboratories COVID-19 PCR Test|Wren Laboratories LLC",
+          "LIAISON SARS-CoV-2 TrimericS IgG|DiaSorin, Inc.",
+          "LumiraDx SARS-CoV-2 & Flu A/B RNA STAR Complete Assay|LumiraDx UK Ltd.",
+          "MAGLUMI 2019-nCoV IgM/IgG|Shenzhen New Industries Biomedical Engineering Co., Ltd.",
+          "Metrix COVID-19 Test|Aptitude Medical Systems Inc.",
+          "MidaSpot COVID-19 Antibody Combo Detection Kit|Nirmidas Biotech, Inc.",
+          "NeuMoDx SARS-CoV-2 Assay|NeuMoDx Molecular, Inc.",
+          "New York SARS-CoV-2 Real-time Reverse Transcriptase (RT)-PCR Diagnostic Panel|Wadsworth Center, New York State Department of Public Health",
+          "Nirmidas COVID-19 (SARS-CoV-2) IgM/IgG Antibody Detection Kit|Nirmidas Biotech, Inc.",
+          "Orawell IgM/IgG Rapid Test|Jiangsu Well Biotech Co., Ltd.",
+          "PerkinElmer New Coronavirus Nucleic Acid Detection Kit test|PerkinElmer",
+          "Phosphorus COVID-19 RT-qPCR Test|Phosphorus Diagnostics LLC",
+          "QUANTA Flash SARS-CoV-2 IgG|Inova Diagnostics, Inc.",
+          "Rapid COVID-19 IgM/IgG Combo Test Kit|Megna Health, Inc.",
+          "Rheonix COVID-19 MDx Assay|Rheonix Inc.",
+          "RightSign COVID-19 IgG/IgM Rapid Test Cassette|Hangzhou Biotest Biotech",
+          "SARS-CoV-2 IgM/IgG Antibody Test Kit|Biohit Healthcare",
+          "Sienna-Clarity COVIBLOCK COVID-19 IgG/IgM Rapid Test Cassette|Salofa Oy",
+          "Simoa Semi-Quantitative SARS-CoV-2 IgG Antibody Test|Quanterix Corporation",
+          "TBG SARS-CoV-2 IgG / IgM Rapid Test Kit|TBG Biotechnology",
+          "TRUPCR SARS-CoV-2 Kit|3B Blackbio Biotech India",
+          "TaqPath SARS-CoV-2 Assay|P23 Labs",
+          "VITROS Immunodiagnostic Products Anti-SARS-CoV-2 IgG Quantitative Reagent Pack used in combination with the VITROS Immunodiagnostic Products Anti- SARS-CoV-2 IgG Quantitative Calibrator|Ortho-Clinical Diagnostics, Inc.",
+          "Vibrant COVID-19 Ab Assay|Vibrant",
+          "Xiamen BIOTIME SARS-CoV-2 IgG/IgM Rapid Qualitative Test|Xiamen Biotime Biotechnology Co., Ltd.",
+          "cobas SARS-CoV-2 Duo for use on the cobas 6800/8800 Systems|Roche Molecular Systems, Inc.",
+          "cobas e 402|Roche",
+          "cobas e 411|Roche",
+          "cobas e 601|Roche",
+          "cobas e 602|Roche",
+          "cobas e 801|Roche",
+          "qSARS-CoV-2 IgG/IgM Rapid Test|Cellex");
+
   private static final Set<String> COVID_VENDOR_ANALYTE_NAMES =
       new HashSet<>(
           Arrays.asList(
@@ -275,6 +340,12 @@ public class DeviceTypeService {
               || device.getVendorAnalyteName() == null) {
             log.info("One or more required values are not present in the LIVD entry");
 
+            return;
+          }
+          String deviceIdentifier = device.getModel() + "|" + device.getManufacturer();
+          if (COVID19_DEVICE_SYNC_BLOCK_LIST.contains(deviceIdentifier)
+              || FluA_DEVICE_SYNC_BLOCK_LIST.contains(deviceIdentifier)) {
+            log.info("Blocking the sync of " + device.getModel());
             return;
           }
 
