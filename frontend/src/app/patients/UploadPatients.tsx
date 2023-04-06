@@ -18,6 +18,7 @@ import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
 import iconLoader from "../../img/loader.svg";
 import { getFacilityIdFromUrl } from "../utils/url";
+import { maskPatientUploadValidationError } from "../utils/dataMasking";
 import {
   MAX_CSV_UPLOAD_BYTES,
   MAX_CSV_UPLOAD_ROW_COUNT,
@@ -26,7 +27,6 @@ import {
 import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
-import { maskPatientUploadValidationError } from "../utils/dataMasking";
 
 type ErrorMessage = {
   header: string;
