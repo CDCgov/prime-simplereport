@@ -6,7 +6,6 @@
 # This enables live reload of the backend for development.
 ###########
 
-echo $JAVA_HOME
 # Start a continuous build process and send to background
 echo "Starting continuous build..."
 gradle -Dorg.gradle.java.home=$JAVA_HOME --no-daemon -t build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck -x bootBuildInfo & sleep 15

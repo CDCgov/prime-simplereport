@@ -7,24 +7,8 @@ on:
         description: 'The Liquibase tag to roll back to'
         required: true
       environment:
-        type: choice
+        description: 'The environment of the DB that should be rolled back. Options: (demo dev dev2 dev3 dev4 dev5 dev6 dev7 pentest test training stg prod)'
         required: true
-        description: 'The environment of the DB that should be rolled back'
-        options:
-        - ""
-        - demo
-        - dev
-        - dev2
-        - dev3
-        - dev4
-        - dev5
-        - dev6
-        - dev7
-        - pentest
-        - test
-        - training
-        - stg
-        - prod
 
 concurrency:
   group: db-rollback

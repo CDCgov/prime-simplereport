@@ -1,17 +1,11 @@
 #!/bin/bash
 
-# Use shorter names for the environment variables
+# Pick and set one of these environmet variables
 tag="$LIQUIBASE_ROLLBACK_TAG"
 count="$LIQUIBASE_ROLLBACK_COUNT"
 
 echo "Running validations..."
 gradle liquibaseValidate
-
-# Check if the task failed (exit code is non-zero)
-# if ! gradle liquibaseValidate; then
-#     echo "Validation failed. Clearing checksums..."
-#     gradle liquibaseClearCheckSums
-# fi
 
 if [ -n "$tag" ]; then
   echo "Rolling back to tag: $tag"

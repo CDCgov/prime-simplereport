@@ -2068,14 +2068,14 @@ databaseChangeLog:
             CREATE ROLE ${noPhiUsername} WITH LOGIN NOSUPERUSER ENCRYPTED PASSWORD '${noPhiPassword}';
       rollback:
         - sql:
-          sql: |
-            -- do nothing;
-          comment: We can't actually remove this role because the metabase DB will still be using it.
+            sql: |
+              -- do nothing;
+            comment: We can't actually remove this role because the metabase DB will still be using it.
   - changeSet:
       id: add-no-phi-views
       author: josh@skylight.digital
-      comment: Add views for some tables that omit columns containing PHI.
-      changes:
+      comment: Add views for some tables that omit columns containin
+echo $JAVA_HOME
         - createView:
             viewName: api_user_no_phi_view
             remarks: A subset of the api_user table with columns containing PHI removed.

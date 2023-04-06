@@ -28,6 +28,6 @@ jobs:
       - name: Run forward migrations
         run: docker compose -f docker-compose.db-rollback.yml run --entrypoint "gradle liquibaseUpdate" rollback
       - name: Run liquibase validation
-        run: docker compose -f docker-compose.db-rollback.yml run --entrypoint "gradle liquibaseUpdate" rollback
+        run: docker compose -f docker-compose.db-rollback.yml run --entrypoint "gradle liquibaseValidate" rollback
       - name: Test rolling back on last 20 migrations
         run: docker compose -f docker-compose.db-rollback.yml run --env LIQUIBASE_ROLLBACK_COUNT=20 rollback
