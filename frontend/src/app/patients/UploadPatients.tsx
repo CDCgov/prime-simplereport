@@ -102,13 +102,15 @@ const UploadPatients = () => {
         new Promise<any>((res) => {
           const exception: IAutoExceptionTelemetry = {
             columnNumber: 0,
-            error: new Error("patient upload validation error"),
+            error: null,
             lineNumber: 0,
             url: "/app/upload-patients",
             message: error.message,
-            typeName: "patient upload validation error",
           };
-          appInsights?.trackException({ exception, severityLevel: 1 });
+          appInsights?.trackException(
+            { id: crypto.randomUUID(), exception, severityLevel: 1 },
+            { exceptionType: "patientUploadValidationError" }
+          );
           return res;
         })
     );
