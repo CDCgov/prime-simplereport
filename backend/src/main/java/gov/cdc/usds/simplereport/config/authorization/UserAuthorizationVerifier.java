@@ -253,7 +253,7 @@ public class UserAuthorizationVerifier {
       throw new UnidentifiedUserException();
     }
     Optional<ApiUser> found = _userRepo.findByLoginEmail(id.getUsername());
-    if (!found.isPresent()) {
+    if (found.isEmpty()) {
       throw new NonexistentUserException();
     }
 
