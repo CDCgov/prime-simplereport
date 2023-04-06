@@ -507,19 +507,6 @@ public class TestOrderService {
         .orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
-  private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
-    Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
-    Result covidResult;
-    if (pendingResult.isPresent()) {
-      covidResult = pendingResult.get();
-      covidResult.setResult(result);
-    } else {
-      covidResult = new Result(order, _diseaseService.covid(), result);
-    }
-    order.addResult(covidResult);
-    return _resultRepo.save(covidResult);
-  }
-
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTest(
