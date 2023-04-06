@@ -3,8 +3,7 @@ package gov.cdc.usds.simplereport.logging;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
@@ -14,10 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 /** HandlerInterceptor to set a request ID for patient experience REST handlers. */
 @Component
 @ConditionalOnWebApplication
+@Slf4j
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
-
-  private static final Logger log =
-      LoggerFactory.getLogger(PatientExperienceLoggingInterceptor.class);
 
   @Override
   public boolean preHandle(
