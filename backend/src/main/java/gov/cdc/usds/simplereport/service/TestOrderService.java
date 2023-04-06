@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.twilio.exception.ApiException;
-import com.twilio.exception.TwilioException;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.AggregateFacilityMetrics;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
@@ -10,7 +8,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
 import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -18,11 +16,15 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.Result_;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder_;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -35,6 +37,7 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +50,10 @@ import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,15 +67,20 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = false)
 public class TestOrderService {
-  private final OrganizationService _os;
-  private final PersonService _ps;
-  private final DeviceTypeService _dts;
-  private final TestOrderRepository _repo;
-  private final PatientAnswersRepository _parepo;
-  private final TestEventRepository _terepo;
-  private final PatientLinkService _pls;
+  private final OrganizationService _organizationService;
+  private final PersonService _personService;
+  private final DeviceTypeService _deviceTypeService;
+  private final TestOrderRepository _testOrderRepo;
+  private final PatientAnswersRepository _patientAnswersRepo;
+  private final TestEventRepository _testEventRepo;
+  private final PatientLinkService _patientLinkService;
+
+  @Qualifier("csvQueueReportingService")
   private final TestEventReportingService _testEventReportingService;
-  private final FacilityDeviceTypeService _facilityDeviceTypeService;
+
+  @Qualifier("fhirQueueReportingService")
+  private final TestEventReportingService _fhirQueueReportingService;
+
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
   private final ResultRepository _resultRepo;
@@ -79,8 +90,8 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public List<TestOrder> getQueue(UUID facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
-    return _repo.fetchQueue(fac.getOrganization(), fac);
+    Facility fac = _organizationService.getFacilityInCurrentOrg(facilityId);
+    return _testOrderRepo.fetchQueue(fac.getOrganization(), fac);
   }
 
   // Specifications filters for queries
@@ -92,9 +103,11 @@ public class TestOrderService {
       Date startDate,
       Date endDate) {
     return (root, query, cb) -> {
+      Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
       order.on(cb.equal(root.get(AuditedEntity_.internalId), order.get(TestOrder_.testEvent)));
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
+      query.distinct(true);
 
       Predicate p = cb.conjunction();
       if (facilityId != null) {
@@ -104,7 +117,12 @@ public class TestOrderService {
                 cb.equal(
                     root.get(BaseTestInfo_.facility).get(AuditedEntity_.internalId), facilityId));
       } else {
-        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.organization), _os.getCurrentOrganization()));
+        p =
+            cb.and(
+                p,
+                cb.equal(
+                    root.get(BaseTestInfo_.organization),
+                    _organizationService.getCurrentOrganization()));
       }
       if (patientId != null) {
         p =
@@ -114,7 +132,7 @@ public class TestOrderService {
                     root.get(BaseTestInfo_.patient).get(AuditedEntity_.internalId), patientId));
       }
       if (result != null) {
-        p = cb.and(p, cb.equal(root.get(BaseTestInfo_.result), result));
+        p = cb.and(p, cb.equal(resultJoin.get(Result_.testResult), result));
       }
       if (role != null) {
         p = cb.and(p, cb.equal(root.get(BaseTestInfo_.patient).get(Person_.role), role));
@@ -150,7 +168,7 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public List<TestEvent> getTestEventsResults(
+  public Page<TestEvent> getFacilityTestEventsResults(
       UUID facilityId,
       UUID patientId,
       TestResult result,
@@ -159,16 +177,18 @@ public class TestOrderService {
       Date endDate,
       int pageOffset,
       int pageSize) {
-    return _terepo
-        .findAll(
-            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
-            PageRequest.of(pageOffset, pageSize))
-        .toList();
+
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
+    return _testEventRepo.findAll(
+        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
+        pageRequest);
   }
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionViewAllFacilityResults
-  public List<TestEvent> getAllFacilityTestEventsResults(
+  public Page<TestEvent> getOrganizationTestEventsResults(
       UUID patientId,
       TestResult result,
       PersonRole role,
@@ -176,11 +196,12 @@ public class TestOrderService {
       Date endDate,
       int pageOffset,
       int pageSize) {
-    return _terepo
-        .findAll(
-            buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate),
-            PageRequest.of(pageOffset, pageSize))
-        .toList();
+
+    PageRequest pageRequest =
+        PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
+
+    return _testEventRepo.findAll(
+        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate), pageRequest);
   }
 
   @Transactional(readOnly = true)
@@ -192,15 +213,15 @@ public class TestOrderService {
       Date startDate,
       Date endDate) {
     return (int)
-        _terepo.count(
+        _testEventRepo.count(
             buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate));
   }
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
   public TestEvent getTestResult(UUID testEventId) {
-    Organization org = _os.getCurrentOrganization();
-    return _terepo.findByOrganizationAndInternalId(org, testEventId);
+    Organization org = _organizationService.getCurrentOrganization();
+    return _testEventRepo.findByOrganizationAndInternalId(org, testEventId);
   }
 
   @Transactional(readOnly = true)
@@ -209,112 +230,165 @@ public class TestOrderService {
     // NOTE: this may change. do we really want to limit visible test results to
     // only
     // tests performed at accessible facilities?
-    return _terepo.findAllByPatientAndFacilities(patient, _os.getAccessibleFacilities());
+    return _testEventRepo.findAllByPatientAndFacilities(
+        patient, _organizationService.getAccessibleFacilities());
   }
 
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(UUID id) {
-    Organization org = _os.getCurrentOrganization();
+    Organization org = _organizationService.getCurrentOrganization();
     return getTestOrder(org, id);
   }
 
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(Organization org, UUID id) {
     TestOrder order =
-        _repo
+        _testOrderRepo
             .fetchQueueItemByOrganizationAndId(org, id)
             .orElseThrow(TestOrderService::noSuchOrderFound);
-    Hibernate.initialize(order.getResultSet());
+    Hibernate.initialize(order.getResults());
     return order;
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
-  @Deprecated // switch to specifying device-specimen combo
-  public TestOrder editQueueItem(
-      UUID testOrderId, UUID deviceSpecimenTypeId, String result, Date dateTested) {
-    lockOrder(testOrderId);
+  public TestOrder editQueueItemMultiplexResult(
+      UUID testOrderId,
+      UUID deviceTypeId,
+      UUID specimenTypeId,
+      List<MultiplexResultInput> results,
+      Date dateTested) {
     try {
+      DeviceType deviceType = _deviceTypeService.getDeviceType(deviceTypeId);
+      SpecimenType specimenType =
+          deviceType.getSwabTypes().stream()
+              .filter(swab -> swab.getInternalId().equals(specimenTypeId))
+              .findFirst()
+              .orElseThrow(
+                  () ->
+                      new IllegalGraphqlArgumentException(
+                          "invalid device type and specimen type combination"));
+
+      lockOrder(testOrderId);
       TestOrder order = this.getTestOrder(testOrderId);
 
-      if (deviceSpecimenTypeId != null) {
-        DeviceSpecimenType deviceSpecimenType = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+      order.setDeviceTypeAndSpecimenType(deviceType, specimenType);
+      // Set the most-recently configured device specimen for a facility's
+      // test as facility default
+      order.getFacility().setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
 
-        if (deviceSpecimenType != null) {
-          order.setDeviceSpecimen(deviceSpecimenType);
-          // Set the most-recently configured device specimen for a facility's
-          // test as facility default
-          order.getFacility().addDefaultDeviceSpecimen(deviceSpecimenType);
-        }
+      if (!results.isEmpty()) {
+        editMultiplexResult(order, results);
       }
-
-      if (result != null) {
-        updateTestOrderCovidResult(order, TestResult.valueOf(result));
-      }
-
       order.setDateTestedBackdate(dateTested);
-
-      return _repo.save(order);
+      return _testOrderRepo.save(order);
     } finally {
       unlockOrder(testOrderId);
     }
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
-  @Transactional(noRollbackFor = {TwilioException.class, ApiException.class})
-  public AddTestResultResponse addTestResult(
-      UUID deviceSpecimenTypeId, TestResult result, UUID patientId, Date dateTested) {
-    Organization org = _os.getCurrentOrganization();
-    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
+  public AddTestResultResponse addMultiplexResult(
+      UUID deviceTypeId,
+      UUID specimenTypeId,
+      List<MultiplexResultInput> results,
+      UUID patientId,
+      Date dateTested) {
+    Organization org = _organizationService.getCurrentOrganization();
+    Person person = _personService.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order =
-        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+        _testOrderRepo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
 
-    DeviceSpecimenType deviceSpecimen = _dts.getDeviceSpecimenType(deviceSpecimenTypeId);
+    DeviceType deviceType = _deviceTypeService.getDeviceType(deviceTypeId);
+    SpecimenType specimenType =
+        deviceType.getSwabTypes().stream()
+            .filter(swab -> swab.getInternalId().equals(specimenTypeId))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "invalid device type and specimen type combination"));
 
     lockOrder(order.getInternalId());
+    TestOrder savedOrder = null;
 
     try {
-      order.setDeviceSpecimen(deviceSpecimen);
-      Result resultEntity = updateTestOrderCovidResult(order, result);
+      order.setDeviceTypeAndSpecimenType(deviceType, specimenType);
+      var resultSet = editMultiplexResult(order, results);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
-      boolean hasPriorTests = _terepo.existsByPatient(person);
-
+      boolean hasPriorTests = _testEventRepo.existsByPatient(person);
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests)
-              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
+              ? new TestEvent(order, hasPriorTests, resultSet)
+              : new TestEvent(
+                  order, order.getCorrectionStatus(), order.getReasonForCorrection(), resultSet);
 
-      TestEvent savedEvent = _terepo.save(testEvent);
+      TestEvent savedEvent = _testEventRepo.save(testEvent);
+
+      // Only edit/save the pending results - don't change all Results to point
+      // towards the new
+      // TestEvent.
+      // Doing so would break the corrections/removal flow.
+      Set<Result> resultsForTestOrder = _resultRepo.getAllPendingResults(order);
+      resultsForTestOrder.forEach(result -> result.setTestEvent(savedEvent));
+      _resultRepo.saveAll(resultsForTestOrder);
+
       order.setTestEventRef(savedEvent);
-      TestOrder savedOrder = _repo.save(order);
-
-      resultEntity.setTestEvent(savedEvent);
-      _resultRepo.save(resultEntity);
+      savedOrder = _testOrderRepo.save(order);
       _testEventReportingService.report(savedEvent);
-
-      ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
-
-      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-      if (patientHasDeliveryPreference(savedOrder)) {
-
-        if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
-          deliveryStatuses.add(smsDeliveryStatus);
-        }
-
-        if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
-          boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
-          deliveryStatuses.add(emailDeliveryStatus);
-        }
-      }
-
-      boolean deliveryStatus =
-          deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
-      return new AddTestResultResponse(savedOrder, deliveryStatus);
+      _fhirQueueReportingService.report(testEvent);
     } finally {
       unlockOrder(order.getInternalId());
     }
+
+    ArrayList<Boolean> deliveryStatuses = new ArrayList<>();
+
+    PatientLink patientLink = _patientLinkService.createPatientLink(savedOrder.getInternalId());
+    if (patientHasDeliveryPreference(savedOrder)) {
+
+      if (smsDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+        boolean smsDeliveryStatus = testResultsDeliveryService.smsTestResults(patientLink);
+        deliveryStatuses.add(smsDeliveryStatus);
+      }
+
+      if (emailDeliveryPreference(savedOrder) || smsAndEmailDeliveryPreference(savedOrder)) {
+        boolean emailDeliveryStatus = testResultsDeliveryService.emailTestResults(patientLink);
+        deliveryStatuses.add(emailDeliveryStatus);
+      }
+    }
+
+    boolean deliveryStatus =
+        deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
+    return new AddTestResultResponse(savedOrder, deliveryStatus);
+  }
+
+  private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
+    // For new results, check if there's already a pending result for the same test.
+    // If so, update it, if not, create a new one.
+    return newResults.stream()
+        .map(
+            newResult -> {
+              Optional<Result> pendingResult =
+                  _resultRepo.getPendingResult(
+                      order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
+              if (pendingResult.isPresent()) {
+                pendingResult.get().setResult(newResult.getTestResult());
+                order.addResult(pendingResult.get());
+                _resultRepo.save(pendingResult.get());
+                return pendingResult.get();
+              } else {
+                Result result =
+                    new Result(
+                        order,
+                        _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
+                        newResult.getTestResult());
+                order.addResult(result);
+                _resultRepo.save(result);
+                return result;
+              }
+            })
+        .collect(Collectors.toSet());
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
@@ -347,12 +421,13 @@ public class TestOrderService {
     // "elegantly" does not
     // seem worth extra code given that it should never happen (and will result in
     // an exception either way)
-    Optional<TestOrder> existingOrder = _repo.fetchQueueItem(_os.getCurrentOrganization(), patient);
+    Optional<TestOrder> existingOrder =
+        _testOrderRepo.fetchQueueItem(_organizationService.getCurrentOrganization(), patient);
     if (existingOrder.isPresent()) {
       throw new IllegalGraphqlArgumentException(
           "Cannot create multiple queue entries for the same patient");
     }
-    Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
+    Facility testFacility = _organizationService.getFacilityInCurrentOrg(facilityId);
     if (!patient
             .getOrganization()
             .getInternalId()
@@ -364,10 +439,12 @@ public class TestOrderService {
               + "are incompatible with facility of queue");
     }
 
-    if (testFacility.getDefaultDeviceSpecimen() == null) {
-      testFacility.addDefaultDeviceSpecimen(
-          _dts.getFirstDeviceSpecimenTypeForDeviceTypeId(
-              testFacility.getDeviceTypes().get(0).getInternalId()));
+    // if test facility doesn't have defaults, grab the first device on that facility
+    if (testFacility.getDefaultDeviceType() == null
+        || testFacility.getDefaultSpecimenType() == null) {
+      testFacility.setDefaultDeviceTypeSpecimenType(
+          testFacility.getDeviceTypes().get(0),
+          testFacility.getDeviceTypes().get(0).getSwabTypes().get(0));
     }
 
     TestOrder newOrder = new TestOrder(patient, testFacility);
@@ -380,9 +457,9 @@ public class TestOrderService {
             .symptomOnsetDate(symptomOnsetDate)
             .build();
     PatientAnswers answers = new PatientAnswers(survey);
-    _parepo.save(answers);
+    _patientAnswersRepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
-    return _repo.save(newOrder);
+    return _testOrderRepo.save(newOrder);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
@@ -410,42 +487,44 @@ public class TestOrderService {
     survey.setNoSymptoms(noSymptoms);
     survey.setSymptomOnsetDate(symptomOnsetDate);
     answers.setSurvey(survey);
-    _parepo.save(answers);
+    _patientAnswersRepo.save(answers);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
   public void removePatientFromQueue(UUID patientId) {
     TestOrder order = retrieveTestOrder(patientId);
     order.cancelOrder();
-    _repo.save(order);
+    _testOrderRepo.save(order);
   }
 
   private TestOrder retrieveTestOrder(UUID patientId) {
-    Organization org = _os.getCurrentOrganization();
-    Person patient = _ps.getPatientNoPermissionsCheck(patientId, org);
-    return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
+    Organization org = _organizationService.getCurrentOrganization();
+    Person patient = _personService.getPatientNoPermissionsCheck(patientId, org);
+    return _testOrderRepo
+        .fetchQueueItem(org, patient)
+        .orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
   private Result updateTestOrderCovidResult(TestOrder order, TestResult result) {
-    // Remove setResultsColumn as part of #3664
-    order.setResultColumn(result);
-    Optional<Result> covidResult = order.getResultForDisease(_diseaseService.covid());
-    if (covidResult.isPresent()) {
-      covidResult.get().setResult(result);
-      return _resultRepo.save(covidResult.get());
+    Optional<Result> pendingResult = _resultRepo.getPendingResult(order, _diseaseService.covid());
+    Result covidResult;
+    if (pendingResult.isPresent()) {
+      covidResult = pendingResult.get();
+      covidResult.setResult(result);
     } else {
-      Result resultEntity = new Result(order, _diseaseService.covid(), result);
-      return _resultRepo.save(resultEntity);
+      covidResult = new Result(order, _diseaseService.covid(), result);
     }
+    order.addResult(covidResult);
+    return _resultRepo.save(covidResult);
   }
 
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTest(
       UUID testEventId, TestCorrectionStatus status, String reasonForCorrection) {
-    Organization org = _os.getCurrentOrganization(); // always check against org
+    Organization org = _organizationService.getCurrentOrganization(); // always check against org
     // The client sends us a TestEvent, we need to map back to the Order.
-    TestEvent event = _terepo.findByOrganizationAndInternalId(org, testEventId);
+    TestEvent event = _testEventRepo.findByOrganizationAndInternalId(org, testEventId);
     if (event == null) {
       // should this throw?
       throw new IllegalGraphqlArgumentException("Cannot find TestResult");
@@ -470,24 +549,47 @@ public class TestOrderService {
       order.setCorrectionStatus(status);
       order.setReasonForCorrection(reasonForCorrection);
       order.markPending();
-      _repo.save(order);
+
+      if (order.getDateTestedBackdate() == null) {
+        order.setDateTestedBackdate(event.getDateTested());
+      }
+      _testOrderRepo.save(order);
 
       return event;
     }
 
     // generate a duplicate test_event that just has a status of REMOVED and the
     // reason
-    TestEvent newRemoveEvent =
-        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
-    _terepo.save(newRemoveEvent);
+
+    // Get the most recent results for each disease
+    Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
+        order.getResults().stream()
+            .collect(
+                Collectors.groupingBy(
+                    Result::getDisease,
+                    Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
+    var results =
+        latestResultsPerDisease.values().stream()
+            .filter(Optional::isPresent)
+            .map(result -> new Result(result.get()))
+            .collect(Collectors.toSet());
+    var newRemoveEvent =
+        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
+    _testEventRepo.save(newRemoveEvent);
+    results.forEach(
+        result -> {
+          result.setTestEvent(newRemoveEvent);
+        });
+    _resultRepo.saveAll(results);
     _testEventReportingService.report(newRemoveEvent);
+    _fhirQueueReportingService.report(newRemoveEvent);
 
     order.setReasonForCorrection(reasonForCorrection);
     order.setTestEventRef(newRemoveEvent);
 
     order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
 
-    _repo.save(order);
+    _testOrderRepo.save(order);
 
     return newRemoveEvent;
   }
@@ -508,16 +610,18 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionEditOrganization
   public OrganizationLevelDashboardMetrics getOrganizationLevelDashboardMetrics(
       Date startDate, Date endDate) {
-    Organization org = _os.getCurrentOrganization();
+    Organization org = _organizationService.getCurrentOrganization();
     List<UUID> facilityIds =
-        _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toList());
+        _organizationService.getFacilities(org).stream()
+            .map(Facility::getInternalId)
+            .collect(Collectors.toList());
 
     List<AggregateFacilityMetrics> facilityMetrics = new ArrayList<AggregateFacilityMetrics>();
 
     for (UUID facilityId : facilityIds) {
       List<TestResultWithCount> results =
-          _terepo.countByResultForFacility(facilityId, startDate, endDate);
-      Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+          _testEventRepo.countByResultForFacility(facilityId, startDate, endDate);
+      Facility facility = _organizationService.getFacilityInCurrentOrg(facilityId);
       Map<TestResult, Long> testResultMap =
           results.stream()
               .collect(
@@ -557,16 +661,18 @@ public class TestOrderService {
     }
 
     if (facilityId != null) {
-      Facility fac = _os.getFacilityInCurrentOrg(facilityId);
+      Facility fac = _organizationService.getFacilityInCurrentOrg(facilityId);
       facilityIds = Set.of(fac.getInternalId());
     } else {
-      Organization org = _os.getCurrentOrganization();
+      Organization org = _organizationService.getCurrentOrganization();
       facilityIds =
-          _os.getFacilities(org).stream().map(Facility::getInternalId).collect(Collectors.toSet());
+          _organizationService.getFacilities(org).stream()
+              .map(Facility::getInternalId)
+              .collect(Collectors.toSet());
     }
 
     List<TestResultWithCount> testResultList =
-        _terepo.countByResultByFacility(facilityIds, startDate, endDate);
+        _testEventRepo.countByResultByFacility(facilityIds, startDate, endDate);
     Map<TestResult, Long> testResultMap =
         testResultList.stream()
             .collect(
@@ -579,14 +685,14 @@ public class TestOrderService {
   }
 
   private void lockOrder(UUID orderId) throws IllegalGraphqlArgumentException {
-    if (!_repo.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode())) {
+    if (!_testOrderRepo.tryLock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode())) {
       throw new IllegalGraphqlArgumentException(
           "Someone else is currently modifying this test result.");
     }
   }
 
   private void unlockOrder(UUID orderId) {
-    _repo.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode());
+    _testOrderRepo.unlock(AdvisoryLockManager.TEST_ORDER_LOCK_SCOPE, orderId.hashCode());
   }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {

@@ -1,23 +1,26 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { isEqual } from "lodash";
 
-import Alert from "../commonComponents/Alert";
+import {
+  MultiplexResultInput,
+  useRemovePatientFromQueueMutation,
+  useEditQueueItemMutation,
+  useSubmitQueueItemMutation,
+  GetFacilityQueueQuery,
+  SupportedDisease,
+} from "../../generated/graphql";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
-import TestResultInputForm from "../testResults/TestResultInputForm";
-import { displayFullName, showNotification } from "../utils";
+import CovidResultInputForm from "../testResults/CovidResultInputForm";
+import { displayFullName } from "../utils";
+import { showError, showSuccess } from "../utils/srToast";
 import { RootState } from "../store";
 import { getAppInsights } from "../TelemetryService";
 import { formatDate } from "../utils/date";
@@ -26,6 +29,7 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../testResults/TestResultCorrectionModal";
+import MultiplexResultInputForm from "../testResults/MultiplexResultInputForm";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -37,100 +41,19 @@ import {
 } from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
-import { AoEAnswers, TestQueuePerson } from "./AoEForm/AoEForm";
+import { AoEAnswers } from "./AoEForm/AoEForm";
 import { QueueItemSubmitLoader } from "./QueueItemSubmitLoader";
 import { UPDATE_AOE } from "./addToQueue/AddToQueueSearch";
 
-export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
-
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
-export const REMOVE_PATIENT_FROM_QUEUE = gql`
-  mutation RemovePatientFromQueue($patientId: ID!) {
-    removePatientFromQueue(patientId: $patientId)
-  }
-`;
-
-export const EDIT_QUEUE_ITEM = gql`
-  mutation EditQueueItem(
-    $id: ID!
-    $deviceId: String
-    $deviceSpecimenType: ID
-    $result: String
-    $dateTested: DateTime
-  ) {
-    editQueueItem(
-      id: $id
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      result: $result
-      dateTested: $dateTested
-    ) {
-      result
-      dateTested
-      deviceType {
-        internalId
-        testLength
-      }
-      deviceSpecimenType {
-        internalId
-        deviceType {
-          internalId
-          testLength
-        }
-        specimenType {
-          internalId
-        }
-      }
-    }
-  }
-`;
-
-interface EditQueueItemParams {
-  id: string;
-  deviceId?: string;
-  deviceSpecimenType: string;
-  result?: TestResult;
-  dateTested?: string;
-}
-
-interface EditQueueItemResponse {
-  editQueueItem: {
-    result: TestResult;
-    dateTested: string;
-    deviceType: { internalId: string; testLength: number };
-    deviceSpecimenType: DeviceSpecimenType;
-  };
-}
-
-export const SUBMIT_TEST_RESULT = gql`
-  mutation SubmitTestResult(
-    $patientId: ID!
-    $deviceId: String!
-    $deviceSpecimenType: ID
-    $result: String!
-    $dateTested: DateTime
-  ) {
-    addTestResultNew(
-      patientId: $patientId
-      deviceId: $deviceId
-      deviceSpecimenType: $deviceSpecimenType
-      result: $result
-      dateTested: $dateTested
-    ) {
-      testResult {
-        internalId
-      }
-      deliverySuccess
-    }
-  }
-`;
-
 interface AreYouSureProps {
+  isOpen: boolean;
   cancelText: string;
   continueText: string;
   cancelHandler: () => void;
   continueHandler: () => void;
+  children: React.ReactNode;
 }
 
 const AreYouSure: React.FC<AreYouSureProps> = ({
@@ -138,10 +61,11 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
   cancelText,
   continueHandler,
   continueText,
+  isOpen,
   children,
 }) => (
   <Modal
-    isOpen={true}
+    isOpen={isOpen}
     style={{
       content: {
         maxHeight: "90vh",
@@ -152,6 +76,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
     contentLabel="Questions not answered"
     ariaHideApp={process.env.NODE_ENV !== "test"}
+    onRequestClose={cancelHandler}
   >
     <div className="sr-modal-content">{children}</div>
     <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
@@ -163,65 +88,65 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
   </Modal>
 );
 
-if (process.env.NODE_ENV !== "test") {
-  Modal.setAppElement("#root");
-}
+export const findResultByDiseaseName = (
+  results: MultiplexResultInput[],
+  name: string
+) =>
+  results.find((r: MultiplexResultInput) => r.diseaseName === name)
+    ?.testResult ?? null;
+
+export type QueriedTestOrder = NonNullable<
+  NonNullable<GetFacilityQueueQuery["queue"]>[number]
+>;
+export type QueriedDeviceType = NonNullable<
+  GetFacilityQueueQuery["facility"]
+>["deviceTypes"][number];
+export type QueriedFacility = GetFacilityQueueQuery["facility"];
+
+const convertFromMultiplexResponse = (
+  responseResult: QueriedTestOrder["results"]
+): MultiplexResultInput[] => {
+  const multiplexResultInputs: MultiplexResultInput[] = responseResult.map(
+    (result) => ({
+      diseaseName: result.disease?.name,
+      testResult: result.testResult,
+    })
+  );
+  return multiplexResultInputs;
+};
+
+export type DevicesMap = Map<string, QueriedDeviceType>;
 
 export interface QueueItemProps {
-  internalId: string;
-  patient: TestQueuePerson;
+  queueItem: QueriedTestOrder;
   startTestPatientId: string | null;
   setStartTestPatientId: any;
-  devices: {
-    name: string;
-    internalId: string;
-    testLength: number;
-  }[];
-  deviceSpecimenTypes: DeviceSpecimenType[];
-  askOnEntry: AoEAnswers;
-  selectedDeviceId: string;
-  selectedDeviceSpecimenTypeId: string;
-  selectedDeviceTestLength: number;
-  selectedTestResult: TestResult;
-  dateTestedProp: string;
+  facility: QueriedFacility;
   refetchQueue: () => void;
-  facilityName: string | undefined;
-  facilityId: string;
-  isCorrection?: boolean;
-  reasonForCorrection?: TestCorrectionReason;
+  devicesMap: DevicesMap;
 }
 
 interface updateQueueItemProps {
   deviceId?: string;
-  deviceSpecimenType: string;
+  specimenTypeId?: string;
   testLength?: number;
-  result?: TestResult;
-  dateTested?: string;
+  results?: MultiplexResultInput[];
+  dateTested: string | null;
 }
 
 type SaveState = "idle" | "editing" | "saving" | "error";
 
 const QueueItem = ({
-  internalId,
-  patient,
+  refetchQueue,
+  queueItem,
   startTestPatientId,
   setStartTestPatientId,
-  deviceSpecimenTypes,
-  askOnEntry,
-  selectedDeviceId,
-  selectedDeviceSpecimenTypeId,
-  selectedDeviceTestLength,
-  selectedTestResult,
-  refetchQueue,
-  facilityName,
-  facilityId,
-  dateTestedProp,
-  isCorrection = false,
-  reasonForCorrection,
+  facility,
+  devicesMap,
 }: QueueItemProps) => {
-  const appInsights = getAppInsights();
+  const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
   const navigate = useNavigate();
-
+  const appInsights = getAppInsights();
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Remove Patient From Queue" });
@@ -238,84 +163,174 @@ const QueueItem = ({
     }
   };
 
-  const [mutationError, updateMutationError] = useState(null);
-  const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
-  const [submitTestResult, { loading }] = useMutation(SUBMIT_TEST_RESULT);
-  const [updateAoe] = useMutation(UPDATE_AOE);
-  const [editQueueItem] = useMutation<
-    EditQueueItemResponse,
-    EditQueueItemParams
-  >(EDIT_QUEUE_ITEM);
+  const isCorrection = queueItem.correctionStatus === "CORRECTED";
+  const reasonForCorrection =
+    queueItem.reasonForCorrection as TestCorrectionReason;
+  const selectedDeviceTestLength = queueItem.deviceType.testLength;
 
+  const [removePatientFromQueue] = useRemovePatientFromQueueMutation();
+  const [submitTestResult, { loading }] = useSubmitQueueItemMutation();
+  const [updateAoe] = useMutation(UPDATE_AOE);
+  const [editQueueItem] = useEditQueueItemMutation();
+
+  const DEBOUNCE_TIME = 300;
+
+  const [mutationError, updateMutationError] = useState(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
-  const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
-  useEffect(() => {
-    setAoeAnswers(askOnEntry);
-  }, [askOnEntry]);
+  const [aoeAnswers, setAoeAnswers] = useState({
+    noSymptoms: queueItem.noSymptoms,
+    symptoms: queueItem.symptoms,
+    symptomOnset: queueItem.symptomOnset,
+    pregnancy: queueItem.pregnancy,
+  } as AoEAnswers);
 
-  const [deviceId, updateDeviceId] = useState<string>(selectedDeviceId);
-  const [specimenId, updateSpecimenId] = useState<string>("");
-  const [deviceSpecimenTypeId, updateDeviceSpecimenTypeId] = useState(
-    selectedDeviceSpecimenTypeId
+  const [deviceId, updateDeviceId] = useState<string>(
+    queueItem.deviceType.internalId
+  );
+  const [deviceTypeErrorMessage, setDeviceTypeErrorMessage] = useState<
+    string | null
+  >(null);
+  const [specimenId, updateSpecimenId] = useState<string>(
+    queueItem.specimenType.internalId
+  );
+  const [specimenTypeErrorMessage, setSpecimenTypeErrorMessage] = useState<
+    string | null
+  >(null);
+  const [supportsMultipleDiseases, updateSupportsMultipleDiseases] =
+    useState(false);
+
+  const [cacheTestResults, setCacheTestResults] = useState(
+    convertFromMultiplexResponse(queueItem.results)
   );
 
-  // Populate device+specimen state variables from selected device specimen type
+  const [dateTested, updateDateTested] = useState<string | null>(
+    queueItem.dateTested || null
+  );
+  const shouldUseCurrentDateTime = dateTested === null;
+
+  // this tracks if the ui made any edits, this needs to publish update to backend
+  const [dirtyState, setDirtyState] = useState(false);
+
+  const updateQueueItem = (props: updateQueueItemProps) => {
+    return editQueueItem({
+      variables: {
+        id: queueItem.internalId,
+        deviceTypeId: props.deviceId,
+        results: props.results,
+        dateTested: props.dateTested,
+        specimenTypeId: props.specimenTypeId,
+      },
+    })
+      .then((response) => {
+        if (!response.data) throw Error("updateQueueItem null response");
+
+        const newDeviceId = response?.data?.editQueueItem?.deviceType;
+        if (newDeviceId && newDeviceId.internalId !== deviceId) {
+          updateDeviceId(newDeviceId.internalId);
+          updateTimer(queueItem.internalId, newDeviceId.testLength);
+        }
+      })
+      .catch(updateMutationError);
+  };
+
+  const updateDeviceMultiplexSupport = (
+    supportedDiseases: SupportedDisease[]
+  ) => {
+    const updatedDiseaseSupport =
+      supportedDiseases.filter((d: any) => d.name !== "COVID-19").length > 0;
+    if (supportsMultipleDiseases !== updatedDiseaseSupport) {
+      updateSupportsMultipleDiseases(updatedDiseaseSupport);
+    }
+  };
+
   useEffect(() => {
-    // Asserting this type should be OK - the parent component is responsible
-    // for removing invalid or deleted device specimen types from the collection
-    // passed in as props
-    const deviceSpecimenType = deviceSpecimenTypes.find(
-      (dst) => dst.internalId === deviceSpecimenTypeId
-    ) as DeviceSpecimenType;
+    // Update test card changes from server
 
-    updateDeviceSpecimenTypeId(deviceSpecimenType.internalId);
-    updateDeviceId(deviceSpecimenType.deviceType.internalId);
-    updateSpecimenId(deviceSpecimenType.specimenType.internalId);
-  }, [deviceSpecimenTypes, deviceSpecimenTypeId]);
+    if (deviceId !== queueItem.deviceType.internalId) {
+      updateDeviceId(queueItem.deviceType.internalId);
+    }
+    if (specimenId !== queueItem.specimenType.internalId) {
+      updateSpecimenId(queueItem.specimenType.internalId);
+    }
 
-  const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
+    //update date tested fields
+    if (dateTested !== queueItem.dateTested) {
+      updateDateTested(queueItem.dateTested);
+    }
 
-  useEffect(() => {
-    if (startTestPatientId === patient.internalId) {
+    //update results
+    const updatedResults = convertFromMultiplexResponse(queueItem.results);
+    if (!isEqual(cacheTestResults, updatedResults)) {
+      setCacheTestResults(updatedResults);
+    }
+
+    //update aoe
+    const askOnEntry = {
+      noSymptoms: queueItem.noSymptoms,
+      symptoms: queueItem.symptoms,
+      symptomOnset: queueItem.symptomOnset,
+      pregnancy: queueItem.pregnancy,
+    } as AoEAnswers;
+    if (aoeAnswers !== askOnEntry) {
+      setAoeAnswers(askOnEntry);
+    }
+
+    if (startTestPatientId === queueItem.patient.internalId) {
       testCardElement.current.scrollIntoView({ behavior: "smooth" });
     }
-  });
+    // eslint-disable-next-line
+  }, [queueItem, startTestPatientId]);
 
-  const deviceTypes = deviceSpecimenTypes
-    .map((d) => d.deviceType)
-    .reduce((allDevices, device: DeviceType) => {
-      const id = device.internalId;
+  useEffect(() => {
+    if (devicesMap.has(deviceId)) {
+      let supportedDiseases = devicesMap
+        .get(deviceId)!
+        .supportedDiseaseTestPerformed.map((supportedDisease) => {
+          return supportedDisease.supportedDisease;
+        });
+      updateDeviceMultiplexSupport(supportedDiseases);
+    }
+    // eslint-disable-next-line
+  }, [deviceId]);
 
-      if (!(id in allDevices)) {
-        allDevices[id] = device;
-      }
+  useEffect(() => {
+    if (deviceTypeIsInvalid()) {
+      setDeviceTypeErrorMessage("Please select a device");
+      setSaveState("error");
+    } else if (specimenTypeIsInvalid()) {
+      setSpecimenTypeErrorMessage("Please select a swab type");
+      setSaveState("error");
+    }
+    // eslint-disable-next-line
+  }, [devicesMap, deviceId, specimenId]);
 
-      return allDevices;
-    }, {} as Record<string, DeviceType>);
-
-  const [deviceTestLength, updateDeviceTestLength] = useState(
-    selectedDeviceTestLength
-  );
-
-  const [useCurrentDateTime, updateUseCurrentDateTime] = useState<
-    "true" | "false"
-  >(dateTestedProp ? "false" : "true");
-  // this is an ISO string
-  // always assume the current date unless provided something else
-  const [dateTested, updateDateTested] = useState<string | undefined>(
-    dateTestedProp || undefined
-  );
+  useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    if (dirtyState) {
+      setDirtyState(false);
+      setSaveState("editing");
+      debounceTimer = setTimeout(async () => {
+        await updateQueueItem({
+          deviceId,
+          dateTested,
+          specimenTypeId: specimenId,
+          results: cacheTestResults,
+        });
+        setSaveState("idle");
+      }, DEBOUNCE_TIME);
+    }
+    return () => {
+      clearTimeout(debounceTimer);
+      setSaveState("idle");
+    };
+    // eslint-disable-next-line
+  }, [deviceId, specimenId, dateTested, cacheTestResults]);
 
   const organization = useSelector<RootState, Organization>(
     (state: any) => state.organization as Organization
   );
-
-  // helper method to work around the annoying string-booleans
-  function shouldUseCurrentDateTime() {
-    return useCurrentDateTime === "true";
-  }
 
   // `Array.prototype.sort`-friendly callback for devices and swab types
   function alphabetizeByName(
@@ -346,10 +361,7 @@ const QueueItem = ({
     return dateTested > EARLIEST_TEST_DATE && dateTested < new Date();
   }
 
-  const [testResultValue, updateTestResultValue] = useState<
-    TestResult | undefined
-  >(selectedTestResult || undefined);
-
+  const covidResult = findResultByDiseaseName(cacheTestResults, "COVID-19");
   const [confirmationType, setConfirmationType] = useState<
     "submitResult" | "removeFromQueue" | "none"
   >("none");
@@ -365,31 +377,28 @@ const QueueItem = ({
   const testResultsSubmitted = (response: any) => {
     let { title, body } = {
       ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
-        patient
+        queueItem.patient
       ),
     };
 
-    if (response?.data?.addTestResultNew.deliverySuccess === false) {
-      let deliveryFailureAlert = (
-        <Alert
-          type="error"
-          title={`Unable to text result to ${patientFullName}`}
-          body="The phone number provided may not be valid or may not be able to accept text messages"
-        />
-      );
-      showNotification(deliveryFailureAlert);
+    if (response?.data?.submitQueueItem.deliverySuccess === false) {
+      let deliveryFailureTitle = `Unable to text result to ${patientFullName}`;
+      let deliveryFailureMsg =
+        "The phone number provided may not be valid or may not be able to accept text messages";
+      showError(deliveryFailureMsg, deliveryFailureTitle);
     }
-
-    let alert = <Alert type="success" title={title} body={body} />;
-    showNotification(alert);
+    showSuccess(body, title);
   };
 
+  const deviceTypeIsInvalid = () => !devicesMap.has(deviceId);
+  const specimenTypeIsInvalid = () =>
+    devicesMap.has(deviceId) &&
+    devicesMap
+      .get(deviceId)!
+      .swabTypes.filter((s) => s.internalId === specimenId).length === 0;
+
   const onTestResultSubmit = async (forceSubmit: boolean = false) => {
-    if (
-      dateTested &&
-      !shouldUseCurrentDateTime() &&
-      !isValidCustomDateTested(dateTested)
-    ) {
+    if (dateTested && !isValidCustomDateTested(dateTested)) {
       const message =
         new Date(dateTested) < EARLIEST_TEST_DATE
           ? `Test date must be after ${moment(EARLIEST_TEST_DATE).format(
@@ -397,9 +406,7 @@ const QueueItem = ({
             )}`
           : "Test date can't be in the future";
 
-      showNotification(
-        <Alert type="error" title="Invalid test date" body={message} />
-      );
+      showError(message, "Invalid test date");
 
       setSaveState("error");
       return;
@@ -417,16 +424,16 @@ const QueueItem = ({
     try {
       const result = await submitTestResult({
         variables: {
-          patientId: patient.internalId,
-          deviceId: deviceId,
-          deviceSpecimenType: deviceSpecimenTypeId,
-          result: testResultValue,
-          dateTested: shouldUseCurrentDateTime() ? null : dateTested,
+          patientId: queueItem.patient?.internalId,
+          deviceTypeId: deviceId,
+          specimenTypeId: specimenId,
+          results: cacheTestResults,
+          dateTested: dateTested,
         },
       });
       testResultsSubmitted(result);
       refetchQueue();
-      removeTimer(internalId);
+      removeTimer(queueItem.internalId);
       setStartTestPatientId(null);
     } catch (error: any) {
       setSaveState("error");
@@ -434,113 +441,37 @@ const QueueItem = ({
     }
   };
 
-  const updateQueueItem = useCallback(
-    (props: updateQueueItemProps) => {
-      return editQueueItem({
-        variables: {
-          id: internalId,
-          deviceId: props.deviceId,
-          result: props.result,
-          dateTested: props.dateTested,
-          deviceSpecimenType: props.deviceSpecimenType,
-        },
-      })
-        .then((response) => {
-          if (!response.data) throw Error("updateQueueItem null response");
-          updateDeviceSpecimenTypeId(
-            response.data.editQueueItem.deviceSpecimenType.internalId
-          );
-          updateTestResultValue(
-            response.data.editQueueItem.result || undefined
-          );
-
-          updateTimer(
-            internalId,
-            response.data.editQueueItem.deviceSpecimenType.deviceType
-              .testLength as number
-          );
-          updateDeviceTestLength(
-            response.data.editQueueItem.deviceSpecimenType.deviceType
-              .testLength as number
-          );
-        })
-        .catch(updateMutationError);
-    },
-    [editQueueItem, internalId]
-  );
-
   const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const deviceSpecimenTypesForDevice = deviceSpecimenTypes.filter(
-      (dst) => dst.deviceType.internalId === e.currentTarget.value
-    );
-    // When changing devices, the target device may not be configured with the current swab type
-    // In that case, just grab from the top of the list
-    const newDeviceTypeSpecimen =
-      deviceSpecimenTypesForDevice.find(
-        (dst) => dst.specimenType.internalId === specimenId
-      ) || deviceSpecimenTypesForDevice[0];
-
-    updateDeviceSpecimenTypeId(newDeviceTypeSpecimen.internalId);
+    const deviceId = e.currentTarget.value;
+    updateDeviceId(deviceId);
+    devicesMap.has(deviceId) &&
+      updateSpecimenId(devicesMap.get(deviceId)!.swabTypes[0].internalId);
+    setDeviceTypeErrorMessage(null);
+    setDirtyState(true);
   };
 
   const onSpecimenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newDeviceSpecimenType = deviceSpecimenTypes.find(
-      (dst) =>
-        dst.specimenType.internalId === e.currentTarget.value &&
-        dst.deviceType.internalId === deviceId
-    );
-
-    updateDeviceSpecimenTypeId(newDeviceSpecimenType?.internalId);
+    updateSpecimenId(e.currentTarget.value);
+    setSpecimenTypeErrorMessage(null);
+    setDirtyState(true);
   };
 
   const onDateTestedChange = (date: moment.Moment) => {
-    const newDateTested = date.toISOString();
-
     // the date string returned from the server is only precise to seconds; moment's
     // toISOString method returns millisecond precision. as a result, an onChange event
     // was being fired when this component initialized, sending an EditQueueItem to
     // the back end w/ the same data that it already had. this prevents it:
-    if (moment(dateTested).isSame(date)) {
-      return;
+    if (!moment(dateTested).isSame(date)) {
+      // Save any date given as input to React state, valid or otherwise. Validation
+      // is performed on submit
+      updateDateTested(date.toISOString());
+      setDirtyState(true);
     }
-
-    // Save any date given as input to React state, valid or otherwise. Validation
-    // is performed on submit
-    updateDateTested(newDateTested);
   };
 
-  const isMounted = useRef(false);
-  const DEBOUNCE_TIME = 500;
-  useEffect(() => {
-    let debounceTimer: ReturnType<typeof setTimeout>;
-    if (!isMounted.current) {
-      isMounted.current = true;
-    } else {
-      setSaveState("editing");
-      debounceTimer = setTimeout(async () => {
-        await updateQueueItem({
-          deviceId,
-          dateTested,
-          deviceSpecimenType: deviceSpecimenTypeId,
-          result: testResultValue,
-        });
-        setSaveState("idle");
-      }, DEBOUNCE_TIME);
-    }
-    return () => {
-      clearTimeout(debounceTimer);
-      setSaveState("idle");
-    };
-  }, [
-    deviceId,
-    deviceSpecimenTypeId,
-    dateTested,
-    testResultValue,
-    updateQueueItem,
-  ]);
-
-  const onTestResultChange = (result: TestResult | undefined) => {
-    updateTestResultValue(result);
+  const onTestResultChange = (resultsFromForm: MultiplexResultInput[]) => {
+    setCacheTestResults(resultsFromForm);
+    setDirtyState(true);
   };
 
   const removeFromQueue = () => {
@@ -550,12 +481,12 @@ const QueueItem = ({
     }
     removePatientFromQueue({
       variables: {
-        patientId: removePatientId,
+        patientId: removePatientId ?? "",
       },
     })
       .then(() => refetchQueue())
       .then(() => setStartTestPatientId(null))
-      .then(() => removeTimer(internalId))
+      .then(() => removeTimer(queueItem.internalId))
       .catch((error) => {
         updateMutationError(error);
       })
@@ -586,80 +517,92 @@ const QueueItem = ({
       variables: {
         ...answers,
         symptomOnset,
-        patientId: patient.internalId,
+        patientId: queueItem.patient.internalId,
       },
     })
-      .then(refetchQueue)
+      .then(() => refetchQueue())
       .catch(updateMutationError);
   };
 
-  const onUseCurrentDateChange = () => {
-    // if we want to use a custom date
-    if (shouldUseCurrentDateTime()) {
-      updateUseCurrentDateTime("false");
+  const onUseCurrentDateChange = (checked: boolean) => {
+    if (checked) {
+      // if we want to use the current date time
+      updateDateTested(null);
+      setBeforeDateWarning(false);
+    } else {
+      // if we want to use a custom date
+      updateDateTested(moment().toISOString());
     }
-    // if we want to use the current date time
-    else {
-      updateDateTested(undefined);
-      updateUseCurrentDateTime("true");
-    }
+    setDirtyState(true);
   };
 
-  const deviceLookup: Map<DeviceType, SpecimenType[]> = useMemo(
-    () =>
-      deviceSpecimenTypes.reduce((allDevices, { deviceType, specimenType }) => {
-        const device = deviceTypes[deviceType.internalId];
-        allDevices.get(device)?.push(specimenType);
-
-        return allDevices;
-      }, new Map(Object.values(deviceTypes).map((device) => [device, [] as SpecimenType[]]))),
-    // adding `deviceTypes` to dependency list will cause an infinite loop of state updates
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [deviceSpecimenTypes]
-  );
-
   const patientFullName = displayFullName(
-    patient.firstName,
-    patient.middleName,
-    patient.lastName
+    queueItem.patient.firstName,
+    queueItem.patient.middleName,
+    queueItem.patient.lastName
   );
 
   const closeButton = (
     <button
       onClick={() => {
-        setRemovePatientId(patient.internalId);
+        setRemovePatientId(queueItem.patient.internalId);
         setConfirmationType("removeFromQueue");
       }}
       className="prime-close-button"
-      aria-label="Close"
+      aria-label={`Close test for ${patientFullName}`}
     >
       <span className="fa-layers">
-        <FontAwesomeIcon icon={"circle"} size="2x" inverse />
-        <FontAwesomeIcon icon={"times-circle"} size="2x" />
+        <FontAwesomeIcon
+          alt-text="close-circle"
+          icon={"circle"}
+          size="2x"
+          inverse
+        />
+        <FontAwesomeIcon alt-text="close-x" icon={"times-circle"} size="2x" />
       </span>
     </button>
   );
 
+  const isBeforeDateWarningThreshold = (date: Moment) => {
+    return date < moment().subtract(6, "months");
+  };
+
+  const [dateBeforeWarnThreshold, setBeforeDateWarning] = useState(
+    isBeforeDateWarningThreshold(moment(dateTested))
+  );
+
   const handleDateChange = (date: string) => {
     if (date) {
-      const newDate = moment(date)
-        .hour(selectedDate.hours())
-        .minute(selectedDate.minutes());
+      const newDate = moment(date);
+      if (dateTested) {
+        const oldDateTested = moment(dateTested);
+        newDate.hour(oldDateTested.hours());
+        newDate.minute(oldDateTested.minutes());
+      }
+
+      if (isBeforeDateWarningThreshold(newDate)) {
+        setBeforeDateWarning(true);
+      }
+      // unset warning state
+      else if (
+        !isBeforeDateWarningThreshold(newDate) &&
+        dateBeforeWarnThreshold
+      ) {
+        setBeforeDateWarning(false);
+      }
       onDateTestedChange(newDate);
     }
   };
 
   const handleTimeChange = (timeStamp: string) => {
     const [hours, minutes] = timeStamp.split(":");
-    const newDate = moment(selectedDate)
+    const newDate = moment(dateTested)
       .hours(parseInt(hours))
       .minutes(parseInt(minutes));
     onDateTestedChange(newDate);
   };
 
-  const selectedDate = dateTested ? moment(dateTested) : moment();
-
-  const timer = useTestTimer(internalId, deviceTestLength);
+  const timer = useTestTimer(queueItem.internalId, selectedDeviceTestLength);
 
   function cardColorDisplay() {
     const prefix = "prime-queue-item__";
@@ -669,11 +612,14 @@ const QueueItem = ({
     if (saveState === "error") {
       return prefix + "error";
     }
-    if (timer.countdown < 0 && testResultValue === "UNKNOWN") {
+    if (timer.countdown < 0 && covidResult === "UNKNOWN") {
       return prefix + "ready";
     }
-    if (startTestPatientId === patient.internalId) {
+    if (startTestPatientId === queueItem.patient.internalId) {
       return prefix + "info";
+    }
+    if (dateBeforeWarnThreshold) {
+      return prefix + "ready";
     }
     return undefined;
   }
@@ -682,25 +628,52 @@ const QueueItem = ({
     "position-relative",
     "grid-container",
     "prime-container",
-    "prime-queue-item card-container",
+    "prime-queue-item card-container queue-container-wide",
     timer.countdown < 0 &&
-      testResultValue !== "UNKNOWN" &&
+      covidResult !== "UNKNOWN" &&
       "prime-queue-item__completed",
     cardColorDisplay()
   );
 
   const timerContext = {
     organizationName: organization.name,
-    facilityName: facilityName,
-    patientId: patient.internalId,
-    testOrderId: internalId,
+    facilityName: facility!.name,
+    patientId: queueItem.patient.internalId,
+    testOrderId: queueItem.internalId,
   };
+
+  let deviceTypeOptions = [...facility!.deviceTypes]
+    .sort(alphabetizeByName)
+    .map((d) => ({
+      label: d.name,
+      value: d.internalId,
+    }));
+
+  if (!devicesMap.has(deviceId)) {
+    // this adds an empty option for when the device has been deleted from the facility, but it's on the test order
+    deviceTypeOptions = [{ label: "", value: "" }, ...deviceTypeOptions];
+  }
+
+  let specimenTypeOptions =
+    deviceId && devicesMap.has(deviceId)
+      ? [...devicesMap.get(deviceId)!.swabTypes]
+          .sort(alphabetizeByName)
+          .map((s: SpecimenType) => ({
+            label: s.name,
+            value: s.internalId,
+          }))
+      : [];
+
+  if (specimenTypeIsInvalid()) {
+    // this adds a empty option for when the specimen has been deleted from the device, but it's on the test order
+    specimenTypeOptions = [{ label: "", value: "" }, ...specimenTypeOptions];
+  }
 
   return (
     <React.Fragment>
       <div
         className={containerClasses}
-        data-testid={`test-card-${patient.internalId}`}
+        data-testid={`test-card-${queueItem.patient.internalId}`}
       >
         <QueueItemSubmitLoader
           show={saveState === "saving"}
@@ -709,6 +682,16 @@ const QueueItem = ({
         <div className="prime-card-container" ref={testCardElement}>
           {saveState !== "saving" && closeButton}
           <div className="grid-row">
+            {dateBeforeWarnThreshold && (
+              <div
+                className={classnames("tablet:grid-col-12", "card-correction")}
+                data-testid="test-correction-header"
+              >
+                <strong>Check test date:</strong> The date you selected is more
+                than six months ago. Please make sure it's correct before
+                submitting.
+              </div>
+            )}
             {isCorrection && reasonForCorrection && (
               <div
                 className={classnames("tablet:grid-col-12", "card-correction")}
@@ -719,28 +702,37 @@ const QueueItem = ({
                   : reasonForCorrection}
               </div>
             )}
-            <div className="tablet:grid-col-9">
+            <div
+              className={
+                supportsMultipleDiseases
+                  ? "tablet:grid-col-fill"
+                  : "tablet:grid-col-9"
+              }
+            >
               <div
                 className="grid-row prime-test-name usa-card__header"
-                id="patient-name-header"
+                id={`patient-name-header-${queueItem.patient.internalId}`}
               >
                 <div className="card-header">
-                  <div
-                    className="card-name"
-                    onClick={() => {
-                      navigate({
-                        pathname: `/patient/${patient.internalId}`,
-                        search: `?facility=${facilityId}`,
-                      });
-                    }}
-                  >
-                    {patientFullName}
-                  </div>
+                  <h2>
+                    <Button
+                      variant="unstyled"
+                      className="card-name"
+                      onClick={() => {
+                        navigate({
+                          pathname: `/patient/${queueItem.patient.internalId}`,
+                          search: `?facility=${facility!.id}&fromQueue=true`,
+                        });
+                      }}
+                    >
+                      {patientFullName}
+                    </Button>
+                  </h2>
                   <div className="card-dob">
                     Date of birth:
                     <span className="card-date">
                       {" "}
-                      {moment(patient.birthDate).format("MM/DD/yyyy")}
+                      {moment(queueItem.patient.birthDate).format("MM/DD/yyyy")}
                     </span>
                   </div>
                 </div>
@@ -748,79 +740,100 @@ const QueueItem = ({
               </div>
               <div className="margin-top-2 margin-left-2 margin-bottom-2">
                 <div className="grid-row">
-                  <div className="grid-col-4 flex-col-container padding-right-2">
+                  <div className="desktop:grid-col-4 flex-col-container padding-right-2">
                     <Button
                       variant="unstyled"
                       label="Test questionnaire"
                       onClick={openAoeModal}
                       className="test-questionnaire-btn"
                     />
-                    {isAoeModalOpen && (
-                      <AoEModalForm
-                        onClose={closeAoeModal}
-                        patient={patient}
-                        loadState={aoeAnswers}
-                        saveCallback={saveAoeCallback}
-                      />
-                    )}
+                    <AoEModalForm
+                      isOpen={isAoeModalOpen}
+                      onClose={closeAoeModal}
+                      patient={queueItem.patient}
+                      loadState={aoeAnswers}
+                      saveCallback={saveAoeCallback}
+                    />
                     <div className="margin-bottom-1">
                       <AskOnEntryTag aoeAnswers={aoeAnswers} />
                     </div>
                   </div>
 
-                  <div className="flex-col-container">
+                  <div className="desktop:grid-col-fill flex-col-container">
                     <div
                       className={classnames(
-                        saveState === "error" && "queue-item-error-message"
+                        saveState === "error" &&
+                          !deviceTypeErrorMessage &&
+                          !specimenTypeErrorMessage &&
+                          "queue-item-error-message",
+                        dateBeforeWarnThreshold && "card-correction-label"
                       )}
                     >
                       Test date and time
                     </div>
                     <div className="test-date-time-container">
-                      <input
-                        hidden={useCurrentDateTime !== "false"}
-                        className={classnames(
-                          "card-test-input",
-                          saveState === "error" && "card-test-input__error"
-                        )}
-                        id="test-date"
-                        data-testid="test-date"
-                        name="test-date"
-                        type="date"
-                        min={formatDate(new Date("Jan 1, 2020"))}
-                        max={formatDate(moment().toDate())}
-                        defaultValue={formatDate(selectedDate.toDate())}
-                        onChange={(event) =>
-                          handleDateChange(event.target.value)
-                        }
-                      />
-                      <input
-                        hidden={useCurrentDateTime !== "false"}
-                        className={classnames(
-                          "card-test-input",
-                          saveState === "error" && "card-test-input__error"
-                        )}
-                        name={"test-time"}
-                        data-testid="test-time"
-                        type="time"
-                        step="60"
-                        value={selectedDate.format("HH:mm")}
-                        onChange={(e) => handleTimeChange(e.target.value)}
-                      />
-
+                      {!shouldUseCurrentDateTime && (
+                        <>
+                          <input
+                            hidden={shouldUseCurrentDateTime}
+                            className={classnames(
+                              "card-test-input",
+                              saveState === "error" && "card-test-input__error",
+                              dateBeforeWarnThreshold && "card-correction-input"
+                            )}
+                            aria-label="Test date"
+                            id={`test-date-${queueItem.patient.internalId}`}
+                            data-testid="test-date"
+                            name="test-date"
+                            type="date"
+                            min={formatDate(new Date("Jan 1, 2020"))}
+                            max={formatDate(moment().toDate())}
+                            value={formatDate(moment(dateTested).toDate())}
+                            onChange={(event) =>
+                              handleDateChange(event.target.value)
+                            }
+                            disabled={
+                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
+                            }
+                          />
+                          <input
+                            hidden={shouldUseCurrentDateTime}
+                            className={classnames(
+                              "card-test-input",
+                              saveState === "error" && "card-test-input__error",
+                              dateBeforeWarnThreshold && "card-correction-input"
+                            )}
+                            name={"test-time"}
+                            aria-label="Test time"
+                            data-testid="test-time"
+                            type="time"
+                            step="60"
+                            value={moment(dateTested).format("HH:mm")}
+                            onChange={(e) => handleTimeChange(e.target.value)}
+                            disabled={
+                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
+                            }
+                          />
+                        </>
+                      )}
                       <div className="check-box-container">
                         <div className="usa-checkbox">
                           <input
-                            id={`current-date-check-${patient.internalId}`}
+                            id={`current-date-check-${queueItem.patient.internalId}`}
                             className="usa-checkbox__input margin"
-                            value={useCurrentDateTime}
-                            checked={useCurrentDateTime === "true"}
+                            checked={shouldUseCurrentDateTime}
                             type="checkbox"
-                            onChange={onUseCurrentDateChange}
+                            onChange={(e) =>
+                              onUseCurrentDateChange(e.target.checked)
+                            }
+                            aria-label="Use current date and time"
+                            disabled={
+                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
+                            }
                           />
                           <label
                             className="usa-checkbox__label margin-0 margin-right-05em"
-                            htmlFor={`current-date-check-${patient.internalId}`}
+                            htmlFor={`current-date-check-${queueItem.patient.internalId}`}
                           >
                             Current date/time
                           </label>
@@ -832,22 +845,16 @@ const QueueItem = ({
                 <div
                   className={classnames(
                     "queue-item__form prime-ul grid-row",
-                    useCurrentDateTime === "false" && "queue-item__form--open"
+                    !shouldUseCurrentDateTime && "queue-item__form--open"
                   )}
                 >
                   <div className="prime-li flex-align-self-end tablet:grid-col-4 padding-right-2">
                     <Dropdown
-                      options={Array.from(deviceLookup.keys())
-                        .sort(alphabetizeByName)
-                        .map((d: DeviceType) => ({
-                          label: d.name,
-                          value: d.internalId,
-                        }))}
+                      options={deviceTypeOptions}
                       label={
                         <>
-                          <span>Device</span>
-
                           <TextWithTooltip
+                            text="Device"
                             tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
                             position="right"
                           />
@@ -857,81 +864,110 @@ const QueueItem = ({
                       selectedValue={deviceId}
                       onChange={onDeviceChange}
                       className="card-dropdown"
+                      data-testid="device-type-dropdown"
+                      errorMessage={deviceTypeErrorMessage}
+                      validationStatus={
+                        deviceTypeErrorMessage ? "error" : "success"
+                      }
                     />
                   </div>
                   <div className="prime-li flex-align-self-end tablet:grid-col-5 padding-right-2">
                     <Dropdown
-                      options={(deviceLookup.get(
-                        deviceTypes[deviceId]
-                      ) as SpecimenType[])
-                        .sort(alphabetizeByName)
-                        .map((s: SpecimenType) => ({
-                          label: s.name,
-                          value: s.internalId,
-                        }))}
+                      options={specimenTypeOptions}
                       label="Swab type"
                       name="swabType"
                       selectedValue={specimenId}
                       onChange={onSpecimenChange}
                       className="card-dropdown"
+                      data-testid="specimen-type-dropdown"
+                      disabled={specimenTypeOptions.length === 0}
+                      errorMessage={specimenTypeErrorMessage}
+                      validationStatus={
+                        specimenTypeErrorMessage ? "error" : "success"
+                      }
                     />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="tablet:grid-col-3 prime-test-result">
-              {confirmationType !== "none" && (
-                <AreYouSure
-                  cancelText="No, go back"
-                  continueText={
-                    confirmationType === "submitResult"
-                      ? "Submit anyway"
-                      : "Yes, I'm sure"
-                  }
-                  cancelHandler={() => setConfirmationType("none")}
-                  continueHandler={
-                    confirmationType === "submitResult"
-                      ? () => {
-                          onTestResultSubmit(true);
-                        }
-                      : removeFromQueue
-                  }
-                >
-                  {confirmationType === "submitResult" ? (
-                    <p className="usa-prose">
-                      The test questionnaire for{" "}
-                      <b> {` ${patientFullName} `} </b> has not been completed.
-                      Do you want to submit results anyway?
-                    </p>
-                  ) : isCorrection ? (
-                    <p>
-                      Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
-                      test correction? The original test result won’t be
-                      changed.
-                    </p>
-                  ) : (
-                    <>
-                      <p className="usa-prose">
-                        Are you sure you want to stop <b>{patientFullName}'s</b>{" "}
-                        test?
-                      </p>
-                      <p className="usa-prose">
-                        Doing so will remove this person from the list. You can
-                        use the search bar to start their test again later.
-                      </p>
-                    </>
-                  )}
-                </AreYouSure>
-              )}
-              <TestResultInputForm
-                queueItemId={internalId}
-                testResultValue={testResultValue}
-                isSubmitDisabled={
-                  loading || saveState === "editing" || saveState === "saving"
+            <div
+              className={`prime-test-result ${
+                supportsMultipleDiseases
+                  ? "tablet:grid-col-5 desktop:grid-col-auto "
+                  : "tablet:grid-col-3"
+              }`}
+            >
+              <AreYouSure
+                isOpen={confirmationType !== "none"}
+                cancelText="No, go back"
+                continueText={
+                  confirmationType === "submitResult"
+                    ? "Submit anyway"
+                    : "Yes, I'm sure"
                 }
-                onSubmit={onTestResultSubmit}
-                onChange={onTestResultChange}
-              />
+                cancelHandler={() => setConfirmationType("none")}
+                continueHandler={
+                  confirmationType === "submitResult"
+                    ? () => {
+                        onTestResultSubmit(true);
+                      }
+                    : removeFromQueue
+                }
+              >
+                {confirmationType === "submitResult" ? (
+                  <p className="usa-prose">
+                    The test questionnaire for <b> {` ${patientFullName} `} </b>{" "}
+                    has not been completed. Do you want to submit results
+                    anyway?
+                  </p>
+                ) : isCorrection ? (
+                  <p>
+                    Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
+                    test correction? The original test result won’t be changed.
+                  </p>
+                ) : (
+                  <>
+                    <p className="usa-prose">
+                      Are you sure you want to stop <b>{patientFullName}'s</b>{" "}
+                      test?
+                    </p>
+                    <p className="usa-prose">
+                      Doing so will remove this person from the list. You can
+                      use the search bar to start their test again later.
+                    </p>
+                  </>
+                )}
+              </AreYouSure>
+
+              {supportsMultipleDiseases ? (
+                <MultiplexResultInputForm
+                  queueItemId={queueItem.internalId}
+                  testResults={cacheTestResults}
+                  isSubmitDisabled={
+                    loading ||
+                    saveState === "editing" ||
+                    saveState === "saving" ||
+                    deviceTypeIsInvalid() ||
+                    specimenTypeIsInvalid()
+                  }
+                  onSubmit={onTestResultSubmit}
+                  onChange={onTestResultChange}
+                />
+              ) : (
+                <CovidResultInputForm
+                  queueItemId={queueItem.internalId}
+                  testResults={cacheTestResults}
+                  isSubmitDisabled={
+                    loading ||
+                    saveState === "editing" ||
+                    saveState === "saving" ||
+                    deviceTypeIsInvalid() ||
+                    specimenTypeIsInvalid()
+                  }
+                  onSubmit={onTestResultSubmit}
+                  onChange={onTestResultChange}
+                />
+              )}
             </div>
           </div>
         </div>

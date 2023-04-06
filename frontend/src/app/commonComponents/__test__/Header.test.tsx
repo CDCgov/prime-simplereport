@@ -46,7 +46,11 @@ describe("Header.tsx", () => {
     process.env = OLD_ENV;
   });
 
-  const WrappedHeader: React.FC = ({ children }) => (
+  type WrappedHeaderProps = {
+    children?: React.ReactNode;
+  };
+
+  const WrappedHeader: React.FC<WrappedHeaderProps> = ({ children }) => (
     <MemoryRouter>
       <Provider store={store}>
         <Header />
@@ -58,17 +62,17 @@ describe("Header.tsx", () => {
   it("displays the support link correctly", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
-    userEvent.click(screen.getByTestId("desktop-user-button"));
+    await userEvent.click(screen.getByTestId("desktop-user-button"));
     expect(screen.getByTestId("desktop-support-link")).toBeVisible();
-    userEvent.click(screen.getByTestId("desktop-support-link"));
+    await userEvent.click(screen.getByTestId("desktop-support-link"));
     expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
   });
   it("displays new feature link correctly", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
-    userEvent.click(screen.getByTestId("desktop-user-button"));
+    await userEvent.click(screen.getByTestId("desktop-user-button"));
     expect(screen.getByTestId("desktop-whats-new-link")).toBeVisible();
-    userEvent.click(screen.getByTestId("desktop-whats-new-link"));
+    await userEvent.click(screen.getByTestId("desktop-whats-new-link"));
     expect(trackEventMock).toHaveBeenCalledWith({ name: "What's new" });
   });
   it("it does not render login links", () => {
@@ -84,7 +88,7 @@ describe("Header.tsx", () => {
         </WrappedHeader>
       );
       const dropdown = await screen.findAllByRole("option");
-      userEvent.selectOptions(dropdown[1].closest("select")!, "2");
+      await userEvent.selectOptions(dropdown[1].closest("select")!, "2");
       expect(
         await screen.findByText("Facility 2 is selected")
       ).toBeInTheDocument();

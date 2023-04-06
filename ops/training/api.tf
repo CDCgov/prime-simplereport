@@ -9,11 +9,14 @@ module "simple_report_api" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   webapp_subnet_id = data.terraform_remote_state.persistent_training.outputs.subnet_webapp_id
+  lb_subnet_id     = data.terraform_remote_state.persistent_training.outputs.subnet_lbs_id
 
-  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
-  key_vault_id     = data.azurerm_key_vault.global.id
-  tenant_id        = data.azurerm_client_config.current.tenant_id
-  https_only       = true
+  docker_image     = "simplereportacr.azurecr.io/api/simple-report-api-build"
+  docker_image_tag = var.acr_image_tag
+
+  key_vault_id = data.azurerm_key_vault.global.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  https_only   = true
 
   deploy_info = {
     env           = "training",
@@ -48,6 +51,11 @@ module "simple_report_api" {
     EXPERIAN_PID_CLIENT_REFERENCE_ID              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_client_reference_id.id})"
     EXPERIAN_PID_USERNAME                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_username.id})"
     EXPERIAN_PID_PASSWORD                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_password.id})"
+    DATAHUB_URL                                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_url.id})"
+    DATAHUB_API_KEY                               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
+    DATAHUB_FHIR_KEY                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
+    DATAHUB_SIGNING_KEY                           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_signing_key.id})"
+
     # true by default: can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows (and overrides) an identical declaration in application.yaml

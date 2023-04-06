@@ -3,6 +3,8 @@
 // Make the table sortable
 // Link backend queries in correctly
 
+import { PATIENT_TERM_PLURAL } from "../../config/constants";
+
 interface Props {
   tableName: string;
   tableType: string;
@@ -62,7 +64,7 @@ const AggregateResultsTable: React.FC<Props> = ({
               Tests conducted
             </th>
             <th scope="col" role="columnheader" className="text-center">
-              Number of people tested
+              Number of {PATIENT_TERM_PLURAL} tested
             </th>
             <th scope="col" role="columnheader" className="text-center">
               Positive tests

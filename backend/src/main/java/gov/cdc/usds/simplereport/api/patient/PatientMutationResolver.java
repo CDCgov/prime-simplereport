@@ -11,76 +11,57 @@ import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseTribalAffiliation;
 
-import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
-import gov.cdc.usds.simplereport.service.UploadService;
 import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.Part;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.stereotype.Controller;
 
 /** Mutations for creating and updating patient records. */
-@Component
+@Controller
 @Slf4j
-public class PatientMutationResolver implements GraphQLMutationResolver {
-  private final PersonService _ps;
-  private final UploadService _us;
+@RequiredArgsConstructor
+public class PatientMutationResolver {
+  private final PersonService personService;
 
-  public PatientMutationResolver(PersonService ps, UploadService us) {
-    _ps = ps;
-    _us = us;
-  }
-
-  public String uploadPatients(Part part) {
-    try (InputStream people = part.getInputStream()) {
-      return _us.processPersonCSV(people);
-    } catch (IllegalGraphqlArgumentException e) {
-      throw e;
-    } catch (IOException e) {
-      log.error("Patient CSV upload failed", e);
-      throw new CsvProcessingException("Unable to complete patient CSV upload");
-    }
-  }
-
+  @MutationMapping
   public Person addPatient(
-      UUID facilityId,
-      String lookupId,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      LocalDate birthDate,
-      String street,
-      String street2,
-      String city,
-      String state,
-      String zipCode,
-      String telephone,
-      List<PhoneNumberInput> phoneNumbers,
-      String role,
-      String email,
-      List<String> emails,
-      String county,
-      String country,
-      String race,
-      String ethnicity,
-      String tribalAffiliation,
-      String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare,
-      String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery) {
+      @Argument UUID facilityId,
+      @Argument String lookupId,
+      @Argument String firstName,
+      @Argument String middleName,
+      @Argument String lastName,
+      @Argument String suffix,
+      @Argument LocalDate birthDate,
+      @Argument String street,
+      @Argument String streetTwo,
+      @Argument String city,
+      @Argument String state,
+      @Argument String zipCode,
+      @Argument String telephone,
+      @Argument List<PhoneNumberInput> phoneNumbers,
+      @Argument String role,
+      @Argument String email,
+      @Argument List<String> emails,
+      @Argument String county,
+      @Argument String country,
+      @Argument String race,
+      @Argument String ethnicity,
+      @Argument String tribalAffiliation,
+      @Argument String gender,
+      @Argument Boolean residentCongregateSetting,
+      @Argument Boolean employedInHealthcare,
+      @Argument String preferredLanguage,
+      @Argument TestResultDeliveryPreference testResultDelivery) {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
@@ -88,7 +69,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
 
     var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
-    return _ps.addPatient(
+    return personService.addPatient(
         facilityId,
         parseString(lookupId),
         parseString(firstName),
@@ -98,7 +79,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         birthDate,
         new StreetAddress(
             parseString(street),
-            parseString(street2),
+            parseString(streetTwo),
             parseString(city),
             parseState(state),
             parseString(zipCode),
@@ -117,35 +98,36 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         testResultDelivery);
   }
 
+  @MutationMapping
   public Person updatePatient(
-      UUID facilityId,
-      UUID patientId,
-      String lookupId,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      LocalDate birthDate,
-      String street,
-      String street2,
-      String city,
-      String state,
-      String zipCode,
-      String telephone,
-      List<PhoneNumberInput> phoneNumbers,
-      String role,
-      String email,
-      List<String> emails,
-      String county,
-      String country,
-      String race,
-      String ethnicity,
-      String tribalAffiliation,
-      String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare,
-      String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery) {
+      @Argument UUID facilityId,
+      @Argument UUID patientId,
+      @Argument String lookupId,
+      @Argument String firstName,
+      @Argument String middleName,
+      @Argument String lastName,
+      @Argument String suffix,
+      @Argument LocalDate birthDate,
+      @Argument String street,
+      @Argument String streetTwo,
+      @Argument String city,
+      @Argument String state,
+      @Argument String zipCode,
+      @Argument String telephone,
+      @Argument List<PhoneNumberInput> phoneNumbers,
+      @Argument String role,
+      @Argument String email,
+      @Argument List<String> emails,
+      @Argument String county,
+      @Argument String country,
+      @Argument String race,
+      @Argument String ethnicity,
+      @Argument String tribalAffiliation,
+      @Argument String gender,
+      @Argument Boolean residentCongregateSetting,
+      @Argument Boolean employedInHealthcare,
+      @Argument String preferredLanguage,
+      @Argument TestResultDeliveryPreference testResultDelivery) {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
@@ -153,7 +135,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
 
     var backwardsCompatibleEmails = new PatientEmailsHolder(email, emails);
 
-    return _ps.updatePatient(
+    return personService.updatePatient(
         facilityId,
         patientId,
         parseString(lookupId),
@@ -164,7 +146,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         birthDate,
         new StreetAddress(
             parseString(street),
-            parseString(street2),
+            parseString(streetTwo),
             parseString(city),
             parseState(state),
             parseString(zipCode),
@@ -183,7 +165,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         testResultDelivery);
   }
 
-  public Person setPatientIsDeleted(UUID id, Boolean deleted) {
-    return _ps.setIsDeleted(id, deleted);
+  @MutationMapping
+  public Person setPatientIsDeleted(@Argument UUID id, @Argument Boolean deleted) {
+    return personService.setIsDeleted(id, deleted);
   }
 }

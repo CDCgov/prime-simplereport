@@ -1,0 +1,25 @@
+query GetResultById($id: ID!) {
+  testResult(id: $id) {
+    internalId
+    dateTested
+    results{
+      disease{
+          internalId
+          name
+          loinc
+      }
+      testResult
+    }
+    deviceType {
+      internalId
+      name
+    }
+    patient {
+      internalId
+      firstName
+      middleName
+      lastName
+      lookupId
+    }
+  }
+}

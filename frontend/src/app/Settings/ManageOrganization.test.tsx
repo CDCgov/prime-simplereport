@@ -26,10 +26,12 @@ describe("ManageOrganization", () => {
       </Provider>
     );
     const saveButton = await screen.findByText("Save settings");
-    const orgNameInput = screen.queryByLabelText("Organization name", {
-      exact: false,
-    });
-    expect(orgNameInput).not.toBeInTheDocument();
+    await screen.findByText(
+      /the organization name is used for reporting to public health departments\. please contact if you need to change it\./i
+    );
+    expect(
+      screen.queryByRole("textbox", { name: /organization name required/i })
+    ).not.toBeInTheDocument();
     expect(saveButton).toBeDisabled();
   });
   it("allows org name and type change for super admins", async () => {
@@ -49,10 +51,10 @@ describe("ManageOrganization", () => {
     });
     const saveButton = screen.getByText("Save settings");
     expect(orgNameInput).toBeEnabled();
-    userEvent.type(orgNameInput, "Penny Lane");
-    userEvent.selectOptions(orgTypeInput, "other");
+    await userEvent.type(orgNameInput, "Penny Lane");
+    await userEvent.selectOptions(orgTypeInput, "other");
     expect(saveButton).toBeEnabled();
-    userEvent.click(saveButton);
+    await userEvent.click(saveButton);
   });
 
   it("allows org type change for regular admins", async () => {
@@ -68,9 +70,9 @@ describe("ManageOrganization", () => {
       exact: false,
     });
     const saveButton = screen.getByText("Save settings");
-    userEvent.selectOptions(orgTypeInput, "hospice");
+    await userEvent.selectOptions(orgTypeInput, "hospice");
     expect(saveButton).toBeEnabled();
-    userEvent.click(saveButton);
+    await userEvent.click(saveButton);
   });
 });
 

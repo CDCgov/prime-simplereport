@@ -1,22 +1,28 @@
 import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
+import { useFeature } from "flagged";
 
 import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import { TestResult } from "../testQueue/QueueItem";
 import { formatFullName } from "../utils/user";
 import { symptomsStringToArray } from "../utils/symptoms";
 import {
   PregnancyCode,
   pregnancyMap,
 } from "../../patientApp/timeOfTest/constants";
+import {
+  getResultByDiseaseName,
+  hasMultiplexResults,
+} from "../utils/testResults";
 import { formatDateWithTimeOption } from "../utils/date";
+
+import { MULTIPLEX_DISEASES } from "./constants";
 
 type Result = {
   dateTested: string;
-  result: TestResult;
+  results: MultiplexResult[];
   correctionStatus: TestCorrectionStatus;
   noSymptoms: boolean;
   symptoms: string;
@@ -44,7 +50,12 @@ export const testResultDetailsQuery = gql`
   query getTestResultDetails($id: ID!) {
     testResult(id: $id) {
       dateTested
-      result
+      results {
+        disease {
+          name
+        }
+        testResult
+      }
       correctionStatus
       symptoms
       symptomOnset
@@ -83,7 +94,7 @@ interface Props {
 export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
   const {
     dateTested,
-    result,
+    results,
     correctionStatus,
     symptoms,
     symptomOnset,
@@ -95,7 +106,24 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
-
+  const displayResult: { [diseaseResult: string]: TestResult | null } = {
+    covidResult: results
+      ? getResultByDiseaseName(results, MULTIPLEX_DISEASES.COVID_19)
+      : "UNKNOWN",
+  };
+  const multiplexFeatureFlagEnabled = useFeature("multiplexEnabled");
+  const multiplexEnabled =
+    multiplexFeatureFlagEnabled && results && hasMultiplexResults(results);
+  if (multiplexEnabled) {
+    displayResult["fluAResult"] = getResultByDiseaseName(
+      results,
+      MULTIPLEX_DISEASES.FLU_A
+    );
+    displayResult["fluBResult"] = getResultByDiseaseName(
+      results,
+      MULTIPLEX_DISEASES.FLU_B
+    );
+  }
   return (
     <Modal
       isOpen={true}
@@ -109,10 +137,11 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      onRequestClose={closeModal}
     >
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-          Test details
+          Result details
         </h1>
         <div className="sr-time-of-test-buttons">
           <button
@@ -162,14 +191,31 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           </span>
         </div>
       </div>
-      <h2 className="font-sans-md margin-top-3">Test details</h2>
+      <h2 className="font-sans-md margin-top-3">Test information</h2>
       <table className={containerClasses}>
         <tbody>
           <DetailsRow
-            label="SARS-CoV-2 result"
-            value={result}
+            label="COVID-19 result"
+            value={displayResult["covidResult"]}
             removed={removed}
           />
+
+          {multiplexEnabled ? (
+            <>
+              <DetailsRow
+                label="Flu A result"
+                value={displayResult["fluAResult"]}
+                removed={removed}
+              />
+              <DetailsRow
+                label="Flu B result"
+                value={displayResult["fluBResult"]}
+                removed={removed}
+              />
+            </>
+          ) : (
+            <></>
+          )}
           <DetailsRow
             label="Test date"
             value={dateTested && formatDateWithTimeOption(dateTested, true)}
@@ -190,7 +236,6 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           <DetailsRow
             label="Symptom onset"
             value={symptomOnset && formatDateWithTimeOption(symptomOnset)}
-            indent
             removed={removed}
           />
           <DetailsRow

@@ -18,6 +18,7 @@ public class TestUserIdentities {
   public static final String TEST_ROLE_PREFIX = "SR-UNITTEST-TENANT:";
 
   public static final String DEFAULT_ORGANIZATION = "DIS_ORG";
+  public static final String OTHER_ORGANIZATION = "DAT_ORG";
 
   public static final String TEST_FACILITY_1 = "Testing Site";
   public static final String TEST_FACILITY_2 = "Injection Site";

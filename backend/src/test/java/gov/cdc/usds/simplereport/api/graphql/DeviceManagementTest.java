@@ -2,19 +2,31 @@ package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import gov.cdc.usds.simplereport.api.devicetype.DeviceTypeMutationResolver;
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
@@ -32,15 +44,15 @@ class DeviceManagementTest extends BaseGraphqlTest {
 
   @Test
   void createDeviceTypeNew_orgUser_failure() {
-    ObjectNode variables = getCreateDeviceTypeInput();
+    Map<String, Object> variables = getCreateDeviceTypeInput();
     runQuery("device-type-add", variables, ACCESS_ERROR);
   }
 
   @Test
   void updateDeviceTypeNew_orgUser_failure() {
     ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
-    ObjectNode variables =
-        getCreateDeviceTypeInput().put("id", someDeviceType.get("internalId").asText());
+    HashMap<String, Object> variables = new HashMap<>(getCreateDeviceTypeInput());
+    variables.put("id", someDeviceType.get("internalId").asText());
     runQuery("device-type-add", variables, ACCESS_ERROR);
   }
 
@@ -91,7 +103,7 @@ class DeviceManagementTest extends BaseGraphqlTest {
     return List.of(disease1, disease2, disease3);
   }
 
-  private ObjectNode getCreateDeviceTypeInput() {
+  private Map<String, Object> getCreateDeviceTypeInput() {
 
     List<UUID> specimenTypeIds =
         fetchSpecimenTypeIds().stream().map(UUID::fromString).collect(Collectors.toList());
@@ -104,15 +116,22 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .name("Funny")
             .manufacturer("Acme")
             .model("Test-A-Lot")
-            .loincCode("123456")
             .swabTypes(specimenTypeIds)
-            .supportedDiseases(supportedDiseaseIds)
+            .supportedDiseaseTestPerformed(
+                List.of(
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(supportedDiseaseIds.get(0))
+                        .testPerformedLoincCode("loinc1")
+                        .equipmentUid("equipmentUid1")
+                        .testkitNameId("testkitNameId1")
+                        .testOrderedLoincCode("loinc3")
+                        .build()))
             .build();
 
-    return JsonNodeFactory.instance.objectNode().putPOJO("input", input);
+    return Map.of("input", input);
   }
 
-  private ObjectNode getUpdateDeviceTypeInput(UUID internalId) {
+  private Map<String, Object> getUpdateDeviceTypeInput(UUID internalId) {
 
     List<UUID> specimenTypeIds =
         fetchSpecimenTypeIds().stream().map(UUID::fromString).collect(Collectors.toList());
@@ -126,11 +145,53 @@ class DeviceManagementTest extends BaseGraphqlTest {
             .name("Funny")
             .manufacturer("Acme")
             .model("Test-A-Lot")
-            .loincCode("123456")
             .swabTypes(specimenTypeIds)
-            .supportedDiseases(supportedDiseaseIds)
+            .supportedDiseaseTestPerformed(
+                List.of(
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(supportedDiseaseIds.get(0))
+                        .testPerformedLoincCode("loinc1")
+                        .equipmentUid("equipmentUid1")
+                        .testkitNameId("testkitNameId1")
+                        .testOrderedLoincCode("loinc3")
+                        .build()))
             .build();
 
-    return JsonNodeFactory.instance.objectNode().putPOJO("input", input);
+    return Map.of("input", input);
+  }
+
+  @Test
+  void markDeviceTypeAsDeleted_uuid_success() {
+    DeviceTypeService deviceTypeServiceMock = mock(DeviceTypeService.class);
+    DeviceType dummyDevice = mock(DeviceType.class);
+    when(deviceTypeServiceMock.getDeviceType(any(UUID.class))).thenReturn(dummyDevice);
+    ArgumentCaptor<DeviceType> deviceCaptor = ArgumentCaptor.forClass(DeviceType.class);
+
+    DeviceTypeMutationResolver deviceTypeMR = new DeviceTypeMutationResolver(deviceTypeServiceMock);
+    assertEquals(dummyDevice, deviceTypeMR.markDeviceTypeAsDeleted(mock(UUID.class), null));
+    verify(deviceTypeServiceMock).removeDeviceType(deviceCaptor.capture());
+    assertEquals(dummyDevice, deviceCaptor.getValue());
+  }
+
+  @Test
+  void markDeviceTypeAsDeleted_deviceName_success() {
+    DeviceTypeService deviceTypeServiceMock = mock(DeviceTypeService.class);
+    DeviceType dummyDevice = mock(DeviceType.class);
+    when(deviceTypeServiceMock.getDeviceType(anyString())).thenReturn(dummyDevice);
+    ArgumentCaptor<DeviceType> deviceCaptor = ArgumentCaptor.forClass(DeviceType.class);
+
+    DeviceTypeMutationResolver deviceTypeMR = new DeviceTypeMutationResolver(deviceTypeServiceMock);
+    assertEquals(dummyDevice, deviceTypeMR.markDeviceTypeAsDeleted(null, "dummyName"));
+    verify(deviceTypeServiceMock).removeDeviceType(deviceCaptor.capture());
+    assertEquals(dummyDevice, deviceCaptor.getValue());
+  }
+
+  @Test
+  void markDeviceTypeAsDeleted_notDeviceFound() {
+    DeviceTypeService deviceTypeServiceMock = mock(DeviceTypeService.class);
+    when(deviceTypeServiceMock.getDeviceType(anyString())).thenReturn(null);
+    DeviceTypeMutationResolver deviceTypeMR = new DeviceTypeMutationResolver(deviceTypeServiceMock);
+    assertEquals(null, deviceTypeMR.markDeviceTypeAsDeleted(null, "dummyName"));
+    verify(deviceTypeServiceMock, never()).removeDeviceType(any(DeviceType.class));
   }
 }

@@ -3,6 +3,7 @@ import ReactModal from "react-modal";
 import classnames from "classnames";
 import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import iconClose from "../../img/close.svg";
 
@@ -11,14 +12,12 @@ type ModalVariant = "warning";
 interface Props {
   onClose: () => void;
   showModal: boolean;
+  contentLabel: string;
   showClose?: boolean;
   containerClassName?: string;
   variant?: "warning";
   title?: string;
-}
-interface SubComponents {
-  Header: typeof Header;
-  Footer: typeof Footer;
+  children?: React.ReactNode;
 }
 
 type IconDefinition = typeof faExclamationCircle;
@@ -27,21 +26,33 @@ const variantIcons: Record<ModalVariant, IconDefinition> = {
   warning: faExclamationCircle,
 };
 
-const Header: React.FC<{}> = ({ children }) => (
-  <h3 className="modal__heading">{children}</h3>
-);
-const Footer: React.FC<{}> = ({ children }) => (
-  <div className="modal__footer">{children}</div>
+type HeaderProps = {
+  children?: React.ReactNode;
+  styleClassNames?: string;
+};
+
+const Header: React.FC<HeaderProps> = ({ children, styleClassNames }) => (
+  <h1 className={"modal__heading " + styleClassNames}>{children}</h1>
 );
 
-const Modal: React.FC<Props> & SubComponents = ({
+type FooterProps = {
+  children?: React.ReactNode;
+  styleClassNames?: string;
+};
+
+const Footer: React.FC<FooterProps> = ({ children, styleClassNames }) => (
+  <div className={"modal__footer " + styleClassNames}>{children}</div>
+);
+
+const Modal = ({
   onClose,
   showModal,
   children,
   showClose = true,
   containerClassName,
   variant,
-}) => {
+  contentLabel,
+}: Props): JSX.Element => {
   const containerClasses = classnames(
     containerClassName,
     "modal__container",
@@ -70,6 +81,7 @@ const Modal: React.FC<Props> & SubComponents = ({
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       ariaHideApp={process.env.NODE_ENV !== "test"}
+      contentLabel={contentLabel}
     >
       <div className={containerClasses}>
         {showClose && (
@@ -81,14 +93,19 @@ const Modal: React.FC<Props> & SubComponents = ({
             <img className="modal__close-img" src={iconClose} alt="Close" />
           </button>
         )}
-        <div className="modal__content grid-row">
-          {variant && (
-            <div className="grid-col flex-auto margin-right-2">
-              <FontAwesomeIcon icon={variantIcons[variant]} size="2x" />
-            </div>
-          )}
-          <div className="grid-col">{children}</div>
-        </div>
+        <main>
+          <div className="modal__content grid-row">
+            {variant && (
+              <div className="grid-col flex-auto margin-right-2">
+                <FontAwesomeIcon
+                  icon={variantIcons[variant] as IconProp}
+                  size="2x"
+                />
+              </div>
+            )}
+            <div className="grid-col">{children}</div>
+          </div>
+        </main>
       </div>
     </ReactModal>
   );

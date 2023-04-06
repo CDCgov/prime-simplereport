@@ -1,7 +1,3 @@
-import { toast } from "react-toastify";
-
-import Alert, { AlertType } from "../commonComponents/Alert";
-
 export const displayFullName = (
   first: string | null | undefined,
   middle: string | null | undefined,
@@ -40,37 +36,4 @@ export const dedupeAndCompactStrings = (strings: string[]) => {
 
     return acc;
   }, []);
-};
-
-export const showNotification = (children: JSX.Element) => {
-  try {
-    // id will de-dup. just use whole message as id
-    const toastId = JSON.stringify(children.props).substr(0, 512);
-    toast(children, { toastId });
-    toast.clearWaitingQueue(); // don't pile up messages
-  } catch (err: any) {
-    console.error(err, err.stack);
-  }
-};
-
-export const showAlertNotification = (
-  type: AlertType,
-  title?: string,
-  message?: string
-) => {
-  showNotification(
-    <Alert
-      type={type}
-      title={title}
-      body={message ? message.substr(0, 512) : undefined}
-    />
-  );
-};
-
-export const showError = (
-  message = "Please check for missing data or typos.",
-  title = "Problems saving data to server"
-) => {
-  const err_msg = message.substr(0, 512);
-  showNotification(<Alert type="error" title={title} body={err_msg} />);
 };

@@ -1,0 +1,8 @@
+query getDeletedPatients {
+  patients(includeArchived: true) {
+    firstName
+    lastName
+    birthDate
+    telephone
+  }
+}

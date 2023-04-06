@@ -35,10 +35,8 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const { t } = useTranslation();
   const { phoneNumberUpdateSchema, getValidationError } = usePersonSchemata();
 
-  const {
-    PHONE_TYPE_VALUES,
-    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS,
-  } = useTranslatedConstants();
+  const { PHONE_TYPE_VALUES, TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS } =
+    useTranslatedConstants();
 
   const phoneNumbersOrDefault = useMemo(
     () =>
@@ -54,22 +52,31 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   );
 
   const clearError = useCallback(
-    (idx: number, field: keyof PhoneNumberErrors) => {
+    (
+      idx: number,
+      field: keyof PhoneNumberErrors,
+      secondaryField?: keyof PhoneNumberErrors
+    ) => {
       const newErrors = errors.map((error, i) => {
         if (i !== idx) {
           return error;
         }
-
-        return {
-          ...error,
-          [field]: "",
-        };
+        const newFieldValues = secondaryField
+          ? {
+              ...error,
+              [field]: "",
+              [secondaryField]: "",
+            }
+          : {
+              ...error,
+              [field]: "",
+            };
+        return newFieldValues;
       });
       setErrors(newErrors);
     },
     [errors]
   );
-
   const validationStatus = (idx: number, name: keyof PhoneNumberErrors) => {
     return errors[idx] && errors[idx][name] ? "error" : undefined;
   };
@@ -171,6 +178,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   const onPhoneNumberRemove = (index: number) => {
     const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
+    clearError(index, "type", "number");
     newPhoneNumbers.splice(index, 1);
     updatePhoneNumbers(newPhoneNumbers);
   };
@@ -190,9 +198,14 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
       return (
         <div key={idx}>
-          <div className="display-flex">
+          <div
+            className={`display-flex ${
+              isPrimary ? "" : "patient-form-deletion-field "
+            }`}
+          >
             <Input
-              className="flex-fill"
+              idString={`phoneInput-${idx}`}
+              className={`flex-fill phoneNumberFormElement`}
               field="number"
               label={
                 isPrimary
@@ -203,15 +216,18 @@ const ManagePhoneNumbers: React.FC<Props> = ({
               formObject={phoneNumber}
               validate={(field) => validateField(idx, field)}
               getValidationStatus={() => validationStatus(idx, "number")}
-              onChange={(_) => (value) => onPhoneNumberChange(idx, value)}
+              onChange={(_) => (value) => {
+                onPhoneNumberChange(idx, value);
+                validateField(idx, "type");
+              }}
               errors={errors[idx] || {}}
             />
             {!isPrimary && (
               <div className="flex-align-self-end">
                 <button
-                  className="usa-button--unstyled padding-105 height-5"
+                  className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   onClick={() => onPhoneNumberRemove(idx)}
-                  aria-label={`Delete phone number ${phoneNumber.number}`.trim()}
+                  aria-label={`Delete phone number ${phoneNumber.number.trim()}`}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
@@ -220,7 +236,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
           </div>
           <RadioGroup
             name={`phoneType-${idx}`}
-            className="margin-top-3"
+            className={`margin-top-3 phoneNumberFormElement`}
             legend={t("patient.form.contact.phoneType")}
             buttons={PHONE_TYPE_VALUES}
             selectedRadio={phoneNumber.type}

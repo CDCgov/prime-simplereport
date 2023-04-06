@@ -1,14 +1,16 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
+import org.springframework.graphql.data.method.annotation.Argument;
 
 public class PhoneNumberInput {
-  String type;
-  String number;
+  private String type;
+  private String number;
 
-  public PhoneNumberInput() {}
-
-  public PhoneNumberInput(String type, String number) {
+  public PhoneNumberInput(
+      @Argument @JsonProperty("type") String type,
+      @Argument @JsonProperty("number") String number) {
     this.type = type;
     this.number = number;
   }

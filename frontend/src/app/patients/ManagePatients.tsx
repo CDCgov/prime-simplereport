@@ -2,12 +2,22 @@ import { gql, useQuery } from "@apollo/client";
 import React, { useEffect, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCaretDown,
+  faIdCard,
+  faRightFromBracket,
+} from "@fortawesome/free-solid-svg-icons";
 import { NavigateOptions, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import { displayFullName } from "../utils";
-import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+import {
+  PATIENT_TERM,
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { capitalizeText } from "../utils/text";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -19,12 +29,11 @@ import {
 import Pagination from "../commonComponents/Pagination";
 import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
-import Button from "../commonComponents/Button/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
-import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
+import { MenuButton } from "../commonComponents/MenuButton";
+import { IconLabel } from "../commonComponents/IconLabel";
 
-import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
@@ -32,12 +41,12 @@ import "./ManagePatients.scss";
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
     $facilityId: ID!
-    $showDeleted: Boolean!
+    $includeArchived: Boolean!
     $namePrefixMatch: String
   ) {
     patientsCount(
       facilityId: $facilityId
-      showDeleted: $showDeleted
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
     )
   }
@@ -48,14 +57,14 @@ export const patientQuery = gql`
     $facilityId: ID!
     $pageNumber: Int!
     $pageSize: Int!
-    $showDeleted: Boolean
+    $includeArchived: Boolean
     $namePrefixMatch: String
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: $pageNumber
       pageSize: $pageSize
-      showDeleted: $showDeleted
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
     ) {
       internalId
@@ -82,7 +91,7 @@ export interface Patient {
   role: string;
   lastTest: {
     dateAdded: string;
-    result: TestResultType;
+    result: TestResult;
     dateTested: string;
     deviceTypeModel: string;
     deviceTypeName: string;
@@ -97,11 +106,10 @@ interface Props {
   currentPage: number;
   entriesPerPage: number;
   totalEntries?: number;
-  showDeleted?: boolean;
+  includeArchived?: boolean;
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
-  isAdmin: boolean;
 }
 
 export const DetachedManagePatients = ({
@@ -112,7 +120,6 @@ export const DetachedManagePatients = ({
   totalEntries,
   refetch,
   setNamePrefixMatch,
-  isAdmin,
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
@@ -186,7 +193,7 @@ export const DetachedManagePatients = ({
         canEditUser && !patient.isDeleted ? (
           <LinkWithQuery
             to={`/patient/${patient.internalId}`}
-            className="sr-patient-edit-link"
+            className="sr-link__primary"
           >
             {fullName}
           </LinkWithQuery>
@@ -202,7 +209,9 @@ export const DetachedManagePatients = ({
             patient.isDeleted && "sr-patient-row--removed"
           )}
         >
-          <th scope="row">{editUserLink}</th>
+          <th scope="row" className="sr-patient-row-header">
+            {editUserLink}
+          </th>
           <td>{moment(patient.birthDate).format("MM/DD/yyyy")}</td>
           <td>{capitalizeText(patient.role)}</td>
           <td>
@@ -226,7 +235,7 @@ export const DetachedManagePatients = ({
                       }),
                   },
                   {
-                    name: "Archive person",
+                    name: `Archive ${PATIENT_TERM}`,
                     action: () => setArchivePerson(patient),
                   },
                 ]}
@@ -238,13 +247,66 @@ export const DetachedManagePatients = ({
     });
   };
 
+  function showActionButtons() {
+    if (canEditUser) {
+      return (
+        <MenuButton
+          id={"add-patient"}
+          buttonContent={
+            <>
+              <span className={"margin-right-1"}>
+                Add {PATIENT_TERM_PLURAL}
+              </span>
+              <FontAwesomeIcon icon={faCaretDown as IconProp} />
+            </>
+          }
+          items={[
+            {
+              name: "individual",
+              content: (
+                <IconLabel
+                  icon={faIdCard as IconProp}
+                  primaryText={`Add individual ${PATIENT_TERM}`}
+                  secondaryText={"Fill out a form to add a patient"}
+                />
+              ),
+              action: () => {
+                setRedirect({
+                  pathname: "/add-patient",
+                  search: `?facility=${activeFacilityId}`,
+                });
+              },
+            },
+            {
+              name: "upload patients",
+              content: (
+                <IconLabel
+                  icon={faRightFromBracket as IconProp}
+                  primaryText={"Import from spreadsheet"}
+                  secondaryText={`Bulk upload ${PATIENT_TERM_PLURAL} with a CSV file`}
+                />
+              ),
+              action: () => {
+                setRedirect({
+                  pathname: "/upload-patients",
+                  search: `?facility=${activeFacilityId}`,
+                });
+              },
+            },
+          ]}
+        />
+      );
+    }
+    return null;
+  }
+
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
-              <h2>
+              <h1 className="font-sans-lg">
                 {PATIENT_TERM_PLURAL_CAP}
                 <span className="sr-showing-patients-on-page">
                   {totalEntries === undefined ? (
@@ -257,33 +319,12 @@ export const DetachedManagePatients = ({
                     </>
                   )}
                 </span>
-              </h2>
-              <div>
-                <Button
-                  className="sr-active-button"
-                  icon={faSlidersH}
-                  onClick={() => {
-                    setNamePrefixMatch(null);
-                    setDebounced(null);
-                  }}
-                >
-                  Clear filters
-                </Button>
-                {canEditUser ? (
-                  <LinkWithQuery
-                    className="usa-button usa-button--primary"
-                    to={`/add-patient`}
-                    id="add-patient-button"
-                  >
-                    <FontAwesomeIcon icon="plus" />
-                    {` Add ${PATIENT_TERM}`}
-                  </LinkWithQuery>
-                ) : null}
-              </div>
+              </h1>
+              <div>{showActionButtons()}</div>
             </div>
             <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
               <SearchInput
-                label="Person"
+                label={PATIENT_TERM_CAP}
                 onInputChange={(e) => {
                   setDebounced(e.target.value);
                 }}
@@ -293,8 +334,8 @@ export const DetachedManagePatients = ({
                 }}
                 queryString={debounced || ""}
                 className="display-inline-block"
-                placeholder=""
                 focusOnMount
+                showSubmitButton={false}
               />
             </div>
             <div className="usa-card__body sr-patient-list">
@@ -332,10 +373,9 @@ export const DetachedManagePatients = ({
               </div>
             )}
           </div>
-          {isAdmin && <PatientUpload onSuccess={refetch} />}
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 
@@ -350,17 +390,18 @@ const ManagePatients = (
 ) => {
   const [namePrefixMatch, setNamePrefixMatch] = useState<string | null>(null);
 
-  const { data: totalPatients, error, refetch: refetchCount } = useQuery(
-    patientsCountQuery,
-    {
-      variables: {
-        facilityId: props.activeFacilityId,
-        showDeleted: false,
-        namePrefixMatch,
-      },
-      fetchPolicy: "no-cache",
-    }
-  );
+  const {
+    data: totalPatients,
+    error,
+    refetch: refetchCount,
+  } = useQuery(patientsCountQuery, {
+    variables: {
+      facilityId: props.activeFacilityId,
+      includeArchived: false,
+      namePrefixMatch,
+    },
+    fetchPolicy: "no-cache",
+  });
 
   if (props.activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
@@ -381,7 +422,7 @@ const ManagePatients = (
           facilityId: props.activeFacilityId,
           pageNumber: pageNumber - 1,
           pageSize: entriesPerPage,
-          showDeleted: props.showDeleted || false,
+          includeArchived: props.includeArchived || false,
           namePrefixMatch,
         },
       }}

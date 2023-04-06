@@ -1,4 +1,10 @@
-import React, { KeyboardEvent, FocusEvent, useEffect, useRef } from "react";
+import React, {
+  KeyboardEvent,
+  FocusEvent,
+  useEffect,
+  useRef,
+  Ref,
+} from "react";
 import classnames from "classnames";
 
 import {
@@ -30,6 +36,10 @@ export enum FocusMode {
   Input,
   Item,
 }
+export interface RegistrationProps {
+  inputTextRef?: Ref<any>;
+  setFocus: Function;
+}
 
 interface MultiSelectDropDownProps {
   id: string;
@@ -40,19 +50,26 @@ interface MultiSelectDropDownProps {
   onChange: (option: MultiSelectDropdownOption) => void;
   noResults?: string;
   inputProps?: JSX.IntrinsicElements["input"];
+  placeholder?: string;
+  ariaInvalid?: boolean;
+  registrationProps?: RegistrationProps;
 }
 
 interface InputProps {
   focused: boolean;
+  registrationProps?: RegistrationProps;
 }
 
 const MultiSelectInput = ({
+  registrationProps,
   focused,
   ...inputProps
 }: InputProps & JSX.IntrinsicElements["input"]): React.ReactElement => {
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
-    if (focused && inputRef.current) {
+    if (focused && registrationProps?.inputTextRef) {
+      registrationProps.setFocus();
+    } else if (focused && inputRef.current) {
       inputRef.current.focus();
     }
   });
@@ -65,7 +82,11 @@ const MultiSelectInput = ({
       {...inputProps}
       autoCapitalize="off"
       autoComplete="off"
-      ref={inputRef}
+      ref={
+        registrationProps?.inputTextRef
+          ? registrationProps.inputTextRef
+          : inputRef
+      }
     />
   );
 };
@@ -96,75 +117,80 @@ const focusSibling = (
   }
 };
 
-const handleInputKeyDown = (
-  dispatch: React.Dispatch<Action>,
-  state: State,
-  selectOption: (option: MultiSelectDropdownOption) => void
-) => (event: KeyboardEvent): void => {
-  if (event.key === "Escape") {
-    dispatch({ type: ActionTypes.CLOSE_LIST });
-  } else if (["ArrowDown", "Down"].includes(event.key)) {
-    event.preventDefault();
-    dispatch({
-      type: ActionTypes.FOCUS_OPTION,
-      option: state.filteredOptions[0],
-    });
-  } else if (event.key === "Tab") {
-    // Clear button is not visible in this case so manually handle focus
-    if (state.isOpen) {
-      // If there are filtered options, prevent default
-      // If there are "No Results Found", tab over to prevent a keyboard trap
-      if (state.filteredOptions.length > 0) {
-        event.preventDefault();
-        dispatch({
-          type: ActionTypes.FOCUS_OPTION,
-          option: state.filteredOptions[0],
-        });
-      } else {
+const handleInputKeyDown =
+  (
+    dispatch: React.Dispatch<Action>,
+    state: State,
+    selectOption: (option: MultiSelectDropdownOption) => void
+  ) =>
+  (event: KeyboardEvent): void => {
+    if (event.key === "Escape") {
+      dispatch({ type: ActionTypes.CLOSE_LIST });
+    } else if (["ArrowDown", "Down"].includes(event.key)) {
+      event.preventDefault();
+      dispatch({
+        type: ActionTypes.FOCUS_OPTION,
+        option: state.filteredOptions[0],
+      });
+    } else if (event.key === "Tab") {
+      // Clear button is not visible in this case so manually handle focus
+      if (state.isOpen) {
+        // If there are filtered options, prevent default
+        // If there are "No Results Found", tab over to prevent a keyboard trap
+        if (state.filteredOptions.length > 0) {
+          event.preventDefault();
+          dispatch({
+            type: ActionTypes.FOCUS_OPTION,
+            option: state.filteredOptions[0],
+          });
+        } else {
+          dispatch({
+            type: ActionTypes.BLUR,
+          });
+        }
+      }
+
+      if (!state.isOpen) {
         dispatch({
           type: ActionTypes.BLUR,
         });
       }
+    } else if (event.key === "Enter") {
+      event.preventDefault();
+      const selectedOptions = state.filteredOptions.find(
+        (option) =>
+          option.label.toLowerCase() === state.inputValue.toLowerCase()
+      );
+      if (selectedOptions) {
+        selectOption(selectedOptions);
+      } else {
+        dispatch({ type: ActionTypes.CLEAR });
+      }
     }
+  };
 
-    if (!state.isOpen) {
-      dispatch({
-        type: ActionTypes.BLUR,
-      });
+const handleListItemKeyDown =
+  (
+    dispatch: React.Dispatch<Action>,
+    state: State,
+    selectOption: (option: MultiSelectDropdownOption) => void
+  ) =>
+  (event: KeyboardEvent): void => {
+    if (event.key === "Escape") {
+      dispatch({ type: ActionTypes.CLOSE_LIST });
+    } else if (event.key === "Tab" || event.key === "Enter") {
+      event.preventDefault();
+      if (state.focusedOption) {
+        selectOption(state.focusedOption);
+      }
+    } else if (event.key === "ArrowDown" || event.key === "Down") {
+      event.preventDefault();
+      focusSibling(dispatch, state, Direction.Next);
+    } else if (event.key === "ArrowUp" || event.key === "Up") {
+      event.preventDefault();
+      focusSibling(dispatch, state, Direction.Previous);
     }
-  } else if (event.key === "Enter") {
-    event.preventDefault();
-    const selectedOptions = state.filteredOptions.find(
-      (option) => option.label.toLowerCase() === state.inputValue.toLowerCase()
-    );
-    if (selectedOptions) {
-      selectOption(selectedOptions);
-    } else {
-      dispatch({ type: ActionTypes.CLEAR });
-    }
-  }
-};
-
-const handleListItemKeyDown = (
-  dispatch: React.Dispatch<Action>,
-  state: State,
-  selectOption: (option: MultiSelectDropdownOption) => void
-) => (event: KeyboardEvent): void => {
-  if (event.key === "Escape") {
-    dispatch({ type: ActionTypes.CLOSE_LIST });
-  } else if (event.key === "Tab" || event.key === "Enter") {
-    event.preventDefault();
-    if (state.focusedOption) {
-      selectOption(state.focusedOption);
-    }
-  } else if (event.key === "ArrowDown" || event.key === "Down") {
-    event.preventDefault();
-    focusSibling(dispatch, state, Direction.Next);
-  } else if (event.key === "ArrowUp" || event.key === "Up") {
-    event.preventDefault();
-    focusSibling(dispatch, state, Direction.Previous);
-  }
-};
+  };
 
 export const MultiSelectDropdown = ({
   id,
@@ -175,6 +201,9 @@ export const MultiSelectDropdown = ({
   onChange,
   noResults,
   inputProps,
+  placeholder,
+  ariaInvalid,
+  registrationProps,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -265,10 +294,15 @@ export const MultiSelectDropdown = ({
         onKeyDown={handleInputKeyDown(dispatch, state, selectOption)}
         value={state.inputValue}
         focused={state.focusMode === FocusMode.Input}
-        role="multi-select-input"
+        role="combobox"
+        aria-label={placeholder}
+        aria-labelledby={`label-for-${id}`}
         aria-owns={listID}
         aria-expanded={state.isOpen}
+        aria-invalid={ariaInvalid}
         disabled={isDisabled}
+        placeholder={placeholder}
+        registrationProps={registrationProps}
         {...inputProps}
       />
       <span className="usa-combo-box__input-button-separator">&nbsp;</span>
@@ -278,7 +312,7 @@ export const MultiSelectDropdown = ({
           type="button"
           className="usa-combo-box__toggle-list"
           tabIndex={-1}
-          aria-label="Toggle the dropdown list"
+          aria-hidden={"true"}
           onClick={(): void =>
             dispatch({
               type: state.isOpen

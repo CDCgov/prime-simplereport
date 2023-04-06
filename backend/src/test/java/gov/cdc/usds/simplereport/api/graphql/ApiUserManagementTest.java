@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
+import static java.util.Collections.emptyMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -12,7 +13,6 @@ import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -44,10 +44,32 @@ import org.springframework.test.context.TestPropertySource;
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserManagementTest extends BaseGraphqlTest {
 
-  private static final String NO_USER_ERROR = "Cannot find user.";
+  private static final String NO_USER_ERROR =
+      "header: Cannot find user.; body: Please check for errors and try again";
 
   private static final List<String> USERNAMES =
       List.of("rjj@gmail.com", "rjjones@gmail.com", "jaredholler@msn.com", "janicek90@yahoo.com");
+
+  private static final EnumSet<UserPermission> ADMIN_PERMISSIONS =
+      EnumSet.of(
+          UserPermission.READ_PATIENT_LIST,
+          UserPermission.READ_ARCHIVED_PATIENT_LIST,
+          UserPermission.SEARCH_PATIENTS,
+          UserPermission.READ_RESULT_LIST,
+          UserPermission.EDIT_PATIENT,
+          UserPermission.ARCHIVE_PATIENT,
+          UserPermission.EDIT_FACILITY,
+          UserPermission.EDIT_ORGANIZATION,
+          UserPermission.MANAGE_USERS,
+          UserPermission.START_TEST,
+          UserPermission.UPDATE_TEST,
+          UserPermission.SUBMIT_TEST,
+          UserPermission.ACCESS_ALL_FACILITIES,
+          UserPermission.VIEW_ARCHIVED_FACILITIES,
+          UserPermission.UPLOAD_RESULTS_SPREADSHEET);
+
+  private static final EnumSet<UserPermission> TENANT_DATA_ACCESS_PERMISSIONS =
+      EnumSet.allOf(UserPermission.class);
 
   @SpyBean private OktaRepository _oktaRepo;
 
@@ -61,7 +83,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
   @Test
   void whoami_standardUser_okResponses() {
-    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    ObjectNode who =
+        (ObjectNode) runQuery("current-user-query", "whoDat", null, null).get("whoami");
     assertEquals("Bobbity", who.get("firstName").asText());
     assertEquals("Bobbity", who.path("name").get("firstName").asText());
     assertEquals("Bob", who.get("middleName").asText());
@@ -81,7 +104,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         extractPermissionsFromUser(who));
     assertUserCanAccessExactFacilities(who, Set.of(TestUserIdentities.TEST_FACILITY_2));
     assertLastAuditEntry(
@@ -95,7 +119,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         null);
 
     JsonNode orgNode = who.path("organization");
@@ -145,7 +170,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertFalse(who.get("isAdmin").asBoolean());
     assertEquals(who.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(who));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(who));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(who));
     assertUserCanAccessAllFacilities(who);
   }
 
@@ -167,7 +192,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST,
-            UserPermission.ACCESS_ALL_FACILITIES),
+            UserPermission.ACCESS_ALL_FACILITIES,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         extractPermissionsFromUser(who));
     assertUserCanAccessAllFacilities(who);
   }
@@ -206,7 +232,24 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         user.get("organization").get("externalId").asText());
     assertEquals(user.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(user));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(user));
+    assertEquals(
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.READ_ARCHIVED_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.EDIT_FACILITY,
+            UserPermission.EDIT_ORGANIZATION,
+            UserPermission.MANAGE_USERS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST,
+            UserPermission.ACCESS_ALL_FACILITIES,
+            UserPermission.VIEW_ARCHIVED_FACILITIES,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
+        extractPermissionsFromUser(user));
 
     assertUserCanAccessAllFacilities(user);
 
@@ -218,7 +261,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUser_newArgStructure_success() {
     useSuperUser();
-    ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
+    Map<String, Object> variables = makeBoilerplateArgs(Role.ADMIN, true);
     JsonNode user = runQuery("add-user", "addUserNovel", variables, null).get("addUser");
     assertEquals("Rhonda", user.get("name").get("firstName").asText());
 
@@ -232,11 +275,11 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     TestUserIdentities.withUser(
         TestUserIdentities.SITE_ADMIN_USER,
         () -> {
-          Organization org = _dataFactory.createUnverifiedOrg();
+          Organization org = _dataFactory.saveUnverifiedOrganization();
 
           useSuperUser();
 
-          ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
+          Map<String, Object> variables = makeBoilerplateArgs(Role.ADMIN, true);
           variables.put("organizationExternalId", org.getExternalId());
           JsonNode user = runQuery("add-user", "addUserNovel", variables, null).get("addUser");
           assertEquals("Rhonda", user.get("name").get("firstName").asText());
@@ -251,23 +294,25 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUser_invalidNames_failure() {
     useSuperUser();
-    ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, false);
+    HashMap<String, Object> variables = new HashMap<>(makeBoilerplateArgs(Role.ADMIN, false));
     variables.remove("lastName");
+
     runQuery("add-user", "addUserNovel", variables, "cannot be empty");
-    variables = makeBoilerplateArgs(Role.ADMIN, true).put("lastName", "Oopsies");
+    variables = new HashMap<>(makeBoilerplateArgs(Role.ADMIN, true));
+    variables.put("lastName", "Oopsies");
     runQuery("add-user", "addUserNovel", variables, "both unrolled and structured name arguments");
   }
 
   @Test
   void addUser_adminUser_failure() {
     useOrgAdmin();
-    ObjectNode variables = makeBoilerplateArgs(Role.USER);
+    Map<String, Object> variables = makeBoilerplateArgs(Role.USER);
     runQuery("add-user", "addUserOp", variables, ACCESS_ERROR);
   }
 
   @Test
   void addUser_orgUser_failure() {
-    ObjectNode variables = makeBoilerplateArgs(Role.USER);
+    Map<String, Object> variables = makeBoilerplateArgs(Role.USER);
     runQuery("add-user", "addUserOp", variables, ACCESS_ERROR);
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
@@ -280,7 +325,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         List.of("addUser"));
   }
 
@@ -304,10 +350,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.SEARCH_PATIENTS),
         extractPermissionsFromUser(user));
     assertLastAuditEntry(
-        TestUserIdentities.ORG_ADMIN_USER,
-        operation,
-        EnumSet.allOf(UserPermission.class),
-        List.of());
+        TestUserIdentities.ORG_ADMIN_USER, operation, ADMIN_PERMISSIONS, List.of());
     assertUserCanAccessExactFacilities(user, Set.of());
 
     verify(_oktaRepo)
@@ -318,7 +361,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUserToCurrentOrg_newArgStructure_success() {
     useOrgAdmin();
-    ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, true);
+    Map<String, Object> variables = makeBoilerplateArgs(Role.ADMIN, true);
     JsonNode user =
         runQuery("add-user-to-current-org", "addUserToCurrentOrgNovel", variables, null)
             .get("addUserToCurrentOrg");
@@ -332,10 +375,11 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUserToCurrentOrg_invalidNames_failure() {
     useOrgAdmin();
-    ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, false);
+    HashMap<String, Object> variables = new HashMap<>(makeBoilerplateArgs(Role.ADMIN, false));
     variables.remove("lastName");
     runQuery("add-user-to-current-org", "addUserToCurrentOrgNovel", variables, "cannot be empty");
-    variables = makeBoilerplateArgs(Role.ADMIN, true).put("lastName", "Oopsies");
+    variables = new HashMap<>(makeBoilerplateArgs(Role.ADMIN, true));
+    variables.put("lastName", "Oopsies");
     runQuery(
         "add-user-to-current-org",
         "addUserToCurrentOrgNovel",
@@ -346,7 +390,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUserToCurrentOrg_superUser_failure() {
     useSuperUser();
-    ObjectNode variables = makeBoilerplateArgs(Role.USER);
+    Map<String, Object> variables = makeBoilerplateArgs(Role.USER);
     runQuery("add-user-to-current-org", "addUserToCurrentOrgOp", variables, ACCESS_ERROR);
     assertLastAuditEntry(
         TestUserIdentities.SITE_ADMIN_USER,
@@ -357,7 +401,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
   @Test
   void addUserToCurrentOrg_orgUser_failure() {
-    ObjectNode variables = makeBoilerplateArgs(Role.USER);
+    Map<String, Object> variables = makeBoilerplateArgs(Role.USER);
     runQuery(
         "add-user-to-current-org",
         "addUserToCurrentOrgOp",
@@ -373,8 +417,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     String addedUserId = runBoilerplateAddUserToCurrentOrg(Role.ENTRY_ONLY).get("id").asText();
 
     // disable new user
-    ObjectNode deleteVariables =
-        JsonNodeFactory.instance.objectNode().put("id", addedUserId).put("deleted", true);
+    Map<String, Object> deleteVariables = Map.of("id", addedUserId, "deleted", true);
     String email =
         runQuery("set-user-is-deleted", deleteVariables)
             .get("setUserIsDeleted")
@@ -382,7 +425,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             .asText();
 
     // add user again (expect the user to be re-enabled with their original role)
-    ObjectNode addVariables = makeBoilerplateArgs(Role.USER, false);
+    Map<String, Object> addVariables = makeBoilerplateArgs(Role.USER, false);
     addVariables.put("email", email);
     addVariables.put("firstName", "A-Different-FirstName");
     addVariables.put("lastName", "A-Different-LastName");
@@ -407,7 +450,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.SEARCH_PATIENTS,
             UserPermission.START_TEST,
             UserPermission.SUBMIT_TEST,
-            UserPermission.UPDATE_TEST),
+            UserPermission.UPDATE_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         extractPermissionsFromUser(enabledUser));
 
     verify(_oktaRepo)
@@ -420,12 +464,12 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     useOrgAdmin();
     runBoilerplateAddUserToCurrentOrg(Role.ADMIN);
 
-    ObjectNode variables = makeBoilerplateArgs(Role.ADMIN, false);
+    Map<String, Object> variables = makeBoilerplateArgs(Role.ADMIN, false);
     runQuery(
         "add-user-to-current-org",
         "addUserToCurrentOrgNovel",
         variables,
-        "A user with this email address already exists.");
+        "A user with this email already exists in our system. Please contact SimpleReport support for help.");
   }
 
   @Test
@@ -435,7 +479,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode addUser = runBoilerplateAddUserToCurrentOrg(Role.USER);
     String id = addUser.get("id").asText();
 
-    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    Map<String, Object> updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode updateResp = runQuery("update-user", "updateUser", updateVariables, null);
     ObjectNode updateUser = (ObjectNode) updateResp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
@@ -451,7 +495,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         extractPermissionsFromUser(updateUser));
     assertUserCanAccessExactFacilities(updateUser, Set.of());
   }
@@ -463,14 +508,14 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
     String id = addUser.get("id").asText();
 
-    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    Map<String, Object> updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode resp = runQuery("update-user", "updateUser", updateVariables, null);
     ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
     assertEquals(USERNAMES.get(0), updateUser.get("email").asText());
     assertEquals(updateUser.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(updateUser));
 
     assertUserCanAccessAllFacilities(updateUser);
   }
@@ -484,7 +529,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgUser();
 
-    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    Map<String, Object> updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     runQuery(
         "update-user",
         "updateUser",
@@ -495,7 +540,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void updateUser_nonexistentUser_failure() {
     useSuperUser();
-    ObjectNode updateVariables =
+    Map<String, Object> updateVariables =
         getUpdateUserVariables(
             "fa2efa2e-fa2e-fa2e-fa2e-fa2efa2efa2e", "Ronda", "J", "Jones", "III");
     runQuery("update-user", "updateUser", updateVariables, NO_USER_ERROR);
@@ -507,13 +552,13 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     String id = who.get("id").asText();
 
-    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    Map<String, Object> updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode resp = runQuery("update-user", "updateUser", updateVariables, null);
     ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
     assertEquals(TestUserIdentities.ORG_ADMIN_USER, updateUser.get("email").asText());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
   }
 
@@ -525,8 +570,11 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     String newEmail = addUser.get("id").asText();
     String id = addUser.get("id").asText();
 
-    ObjectNode newEmailNode =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("email", newEmail);
+    Map<String, Object> newEmailNode =
+        Map.of(
+            "id", id,
+            "email", newEmail);
+
     ObjectNode updateResp = runQuery("update-user-email", "updateUserEmail", newEmailNode, null);
     ObjectNode updateUser = (ObjectNode) updateResp.get("updateUserEmail");
 
@@ -542,8 +590,10 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     String newEmail = addUser.get("id").asText();
     String id = addUser.get("id").asText();
 
-    ObjectNode updateVars =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("email", newEmail);
+    Map<String, Object> updateVars =
+        Map.of(
+            "id", id,
+            "email", newEmail);
     ObjectNode updateResp = runQuery("update-user-email", "updateUserEmail", updateVars, null);
     ObjectNode updateUser = (ObjectNode) updateResp.get("updateUserEmail");
 
@@ -561,8 +611,11 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgUser();
 
-    ObjectNode updateVars =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("email", newEmail);
+    Map<String, Object> updateVars =
+        Map.of(
+            "id", id,
+            "email", newEmail);
+
     runQuery(
         "update-user-email",
         "updateUserEmail",
@@ -577,8 +630,10 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     String newEmail = who.get("id").asText();
     String id = who.get("id").asText();
 
-    ObjectNode updateVars =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("email", newEmail);
+    Map<String, Object> updateVars =
+        Map.of(
+            "id", id,
+            "email", newEmail);
     ObjectNode resp = runQuery("update-user-email", "updateUserEmail", updateVars, null);
     ObjectNode updateUser = (ObjectNode) resp.get("updateUserEmail");
 
@@ -595,7 +650,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgAdmin();
 
-    ObjectNode resetUserPasswordVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    Map<String, Object> resetUserPasswordVariables = Map.of("id", id);
     ObjectNode resp =
         runQuery("reset-user-password", "resetUserPassword", resetUserPasswordVariables, null);
     ObjectNode resetUserPassword = (ObjectNode) resp.get("resetUserPassword");
@@ -611,7 +666,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgUser();
 
-    ObjectNode resetUserPasswordVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    Map<String, Object> resetUserPasswordVariables = Map.of("id", id);
     runQuery(
         "reset-user-password",
         "resetUserPassword",
@@ -628,7 +683,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgAdmin();
 
-    ObjectNode resetUserMfaVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    Map<String, Object> resetUserMfaVariables = Map.of("id", id);
     ObjectNode resp = runQuery("reset-user-mfa", "resetUserMfa", resetUserMfaVariables, null);
     ObjectNode resetUserMfa = (ObjectNode) resp.get("resetUserMfa");
     assertEquals(USERNAMES.get(0), resetUserMfa.get("email").asText());
@@ -643,7 +698,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgUser();
 
-    ObjectNode resetUserMfaVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    Map<String, Object> resetUserMfaVariables = Map.of("id", id);
     runQuery(
         "reset-user-mfa",
         "resetUserMfa",
@@ -660,7 +715,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgAdmin();
 
-    ObjectNode resendActivationEmailVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    Map<String, Object> resendActivationEmailVariables = Map.of("id", id);
     ObjectNode resp =
         runQuery(
             "resend-activation-email",
@@ -680,7 +735,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgUser();
 
-    ObjectNode resendActivationEmailVariables = JsonNodeFactory.instance.objectNode().put("id", id);
+    Map<String, Object> resendActivationEmailVariables = Map.of("id", id);
     runQuery(
         "resend-activation-email",
         "resendActivationEmail",
@@ -696,7 +751,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     String id = addUser.get("id").asText();
 
     // Update 1: ENTRY_ONLY, All facilities
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, true, Set.of());
 
     ObjectNode updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
@@ -724,7 +779,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals("Admin user", updateUser.get("roleDescription").asText());
     assertEquals(updateUser.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
-    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
+    assertEquals(ADMIN_PERMISSIONS, extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
 
     // Update 3: USER, Access to 2 facilities
@@ -752,7 +807,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         extractPermissionsFromUser(updateUser));
     assertUserCanAccessExactFacilities(
         updateUser, Set.of(TestUserIdentities.TEST_FACILITY_1, TestUserIdentities.TEST_FACILITY_2));
@@ -778,7 +834,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET),
         extractPermissionsFromUser(updateUser));
     assertUserCanAccessExactFacilities(updateUser, Set.of());
   }
@@ -789,7 +846,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
   private ObjectNode runBoilerplateAddUserToCurrentOrg(Role newUserRole, String operation) {
 
-    ObjectNode addVariables = makeBoilerplateArgs(newUserRole);
+    Map<String, Object> addVariables = makeBoilerplateArgs(newUserRole);
     ObjectNode addResp = runQuery("add-user-to-current-org", operation, addVariables, null);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
     return addUser;
@@ -800,17 +857,17 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   private ObjectNode runBoilerplateAddUser(Role newUserRole, String operation) {
-    ObjectNode addVariables = makeBoilerplateArgs(Role.ADMIN);
+    Map<String, Object> addVariables = makeBoilerplateArgs(Role.ADMIN);
     ObjectNode addResp = runQuery("add-user", operation, addVariables, null);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     return addUser;
   }
 
-  private ObjectNode makeBoilerplateArgs(Role role) {
+  private Map<String, Object> makeBoilerplateArgs(Role role) {
     return makeBoilerplateArgs(role, false);
   }
 
-  private ObjectNode makeBoilerplateArgs(Role role, boolean useNestedName) {
+  private Map<String, Object> makeBoilerplateArgs(Role role, boolean useNestedName) {
     return getAddUserVariables(
         "Rhonda",
         "Janet",
@@ -829,7 +886,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
     String id = addUser.get("id").asText();
 
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, true, Set.of());
 
     ObjectNode updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
@@ -857,7 +914,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOutsideOrgAdmin();
 
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, false, Set.of());
 
     runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
@@ -870,7 +927,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOutsideOrgUser();
 
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, false, Set.of());
 
     runQuery(
@@ -886,7 +943,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgUser();
 
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, false, Set.of());
 
     runQuery(
@@ -898,7 +955,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void updateUserPrivileges_nonexistentUser_failure() {
     useSuperUser();
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(
             "fa2efa2e-fa2e-fa2e-fa2e-fa2efa2efa2e", Role.ENTRY_ONLY, true, Set.of());
     runQuery("update-user-privileges", updatePrivilegesVariables, NO_USER_ERROR);
@@ -910,7 +967,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     String id = who.get("id").asText();
 
-    ObjectNode updatePrivilegesVariables =
+    Map<String, Object> updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, true, Set.of());
     runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
   }
@@ -921,16 +978,13 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     String id = runBoilerplateAddUserToCurrentOrg(Role.ENTRY_ONLY).get("id").asText();
     assertTrue(fetchUserList().stream().anyMatch(o -> id.equals(o.get("id").asText())));
 
-    ObjectNode deleteVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
-
+    Map<String, Object> deleteVariables = Map.of("id", id, "deleted", true);
     ObjectNode resp = runQuery("set-user-is-deleted", deleteVariables);
     assertEquals(USERNAMES.get(0), resp.get("setUserIsDeleted").get("email").asText());
 
     assertTrue(fetchUserList().stream().noneMatch(o -> id.equals(o.get("id").asText())));
 
-    ObjectNode restoreVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", false);
+    Map<String, Object> restoreVariables = Map.of("id", id, "deleted", false);
     ObjectNode restoreResp = runQuery("set-user-is-deleted", restoreVariables);
     assertEquals(USERNAMES.get(0), restoreResp.get("setUserIsDeleted").get("email").asText());
 
@@ -942,8 +996,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     useSuperUser();
     String id = runBoilerplateAddUser(Role.USER).get("id").asText();
 
-    ObjectNode deleteVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
+    Map<String, Object> deleteVariables = Map.of("id", id, "deleted", true);
 
     ObjectNode resp = runQuery("set-user-is-deleted", deleteVariables);
     assertEquals(USERNAMES.get(0), resp.get("setUserIsDeleted").get("email").asText());
@@ -961,8 +1014,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOutsideOrgAdmin();
 
-    ObjectNode deleteVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
+    Map<String, Object> deleteVariables = Map.of("id", id, "deleted", true);
+
     runQuery("set-user-is-deleted", deleteVariables, ACCESS_ERROR);
   }
 
@@ -973,8 +1026,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOutsideOrgUser();
 
-    ObjectNode deleteVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
+    Map<String, Object> deleteVariables = Map.of("id", id, "deleted", true);
+
     runQuery(
         "set-user-is-deleted",
         deleteVariables,
@@ -997,8 +1050,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     useOrgUser();
 
-    ObjectNode deleteVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
+    Map<String, Object> deleteVariables = Map.of("id", id, "deleted", true);
+
     runQuery(
         "set-user-is-deleted",
         deleteVariables,
@@ -1011,8 +1064,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     String id = who.get("id").asText();
 
-    ObjectNode deleteVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
+    Map<String, Object> deleteVariables = Map.of("id", id, "deleted", true);
+
     runQuery("set-user-is-deleted", deleteVariables, ACCESS_ERROR);
   }
 
@@ -1021,7 +1074,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   void getUsers_adminUser_success() {
     useOrgAdmin();
 
-    List<ObjectNode> usersAdded =
+    List<Map<String, Object>> usersAdded =
         Arrays.asList(
             makeBoilerplateArgs(Role.ADMIN),
             getAddUserVariables(
@@ -1040,7 +1093,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                 USERNAMES.get(3),
                 TestUserIdentities.DEFAULT_ORGANIZATION,
                 Role.ADMIN.name()));
-    for (ObjectNode userVariables : usersAdded) {
+    for (Map<String, Object> userVariables : usersAdded) {
       runQuery("add-user-to-current-org", "addUserToCurrentOrgOp", userVariables, null);
     }
 
@@ -1049,16 +1102,16 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertTrue(usersRetrieved.size() > usersAdded.size());
 
     for (int i = 0; i < usersAdded.size(); i++) {
-      ObjectNode userAdded = usersAdded.get(i);
+      Map<String, Object> userAdded = usersAdded.get(i);
       Optional<ObjectNode> found =
           usersRetrieved.stream()
-              .filter(u -> u.get("email").asText().equals(userAdded.get("email").asText()))
+              .filter(u -> u.get("email").asText().equals(userAdded.get("email")))
               .findFirst();
       assertTrue(found.isPresent());
       ObjectNode userRetrieved = found.get();
 
-      assertEquals(userRetrieved.get("firstName").asText(), userAdded.get("firstName").asText());
-      assertEquals(userRetrieved.get("email").asText(), userAdded.get("email").asText());
+      assertEquals(userRetrieved.get("firstName").asText(), userAdded.get("firstName"));
+      assertEquals(userRetrieved.get("email").asText(), userAdded.get("email"));
     }
   }
 
@@ -1074,11 +1127,12 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void setCurrentUserTenantDataAccess_adminUser_success() {
     useSuperUser();
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("organizationExternalId", TestUserIdentities.DEFAULT_ORGANIZATION)
-            .put("justification", "This is my justification");
+    Map<String, Object> variables =
+        Map.of(
+            "organizationExternalId",
+            TestUserIdentities.DEFAULT_ORGANIZATION,
+            "justification",
+            "This is my justification");
     ObjectNode user =
         (ObjectNode)
             runQuery(
@@ -1089,27 +1143,26 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                 .get("setCurrentUserTenantDataAccess");
     assertEquals("ruby@example.com", user.get("email").asText());
     assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
-    Set<UserPermission> allPermissions =
-        Arrays.stream(UserPermission.values()).collect(Collectors.toSet());
-    assertEquals(allPermissions, extractPermissionsFromUser(user));
+    assertEquals(TENANT_DATA_ACCESS_PERMISSIONS, extractPermissionsFromUser(user));
     assertLastAuditEntry("ruby@example.com", null, null);
 
     // run query using tenant data access
     runQuery("current-user-query").get("whoami");
     assertLastAuditEntry(
-        "ruby@example.com", TestUserIdentities.DEFAULT_ORGANIZATION, allPermissions);
+        "ruby@example.com",
+        TestUserIdentities.DEFAULT_ORGANIZATION,
+        TENANT_DATA_ACCESS_PERMISSIONS);
   }
 
   @Test
   void setCurrentUserTenantDataAccess_adminUserRemoveAccess_success() {
     useSuperUser();
-    ObjectNode variables = JsonNodeFactory.instance.objectNode();
     ObjectNode user =
         (ObjectNode)
             runQuery(
                     "set-current-user-tenant-data-access",
                     "SetCurrentUserTenantDataAccessOp",
-                    variables,
+                    emptyMap(),
                     null)
                 .get("setCurrentUserTenantDataAccess");
     assertEquals("ruby@example.com", user.get("email").asText());
@@ -1121,11 +1174,12 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void setCurrentUserTenantDataAccess_orgAdminUser_failure() {
     useOrgAdmin();
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("organizationExternalId", TestUserIdentities.DEFAULT_ORGANIZATION)
-            .put("justification", "This is my justification");
+    Map<String, Object> variables =
+        Map.of(
+            "organizationExternalId",
+            TestUserIdentities.DEFAULT_ORGANIZATION,
+            "justification",
+            "This is my justification");
     runQuery(
         "set-current-user-tenant-data-access",
         "SetCurrentUserTenantDataAccessOp",
@@ -1139,13 +1193,12 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         TestUserIdentities.SITE_ADMIN_USER,
         () -> {
           useSuperUser();
-          _dataFactory.createValidOrg("The Mall", "k12", "dc-with-trailing-space ", true);
+          _dataFactory.saveOrganization("The Mall", "k12", "dc-with-trailing-space ", true);
 
-          ObjectNode variables =
-              JsonNodeFactory.instance
-                  .objectNode()
-                  .put("organizationExternalId", "dc-with-trailing-space ")
-                  .put("justification", "This is my justification");
+          Map<String, Object> variables =
+              Map.of(
+                  "organizationExternalId", "dc-with-trailing-space ",
+                  "justification", "This is my justification");
           ObjectNode user =
               (ObjectNode)
                   runQuery(
@@ -1156,14 +1209,13 @@ class ApiUserManagementTest extends BaseGraphqlTest {
                       .get("setCurrentUserTenantDataAccess");
           assertEquals("ruby@example.com", user.get("email").asText());
           assertEquals(Role.ADMIN, Role.valueOf(user.get("role").asText()));
-          Set<UserPermission> allPermissions =
-              Arrays.stream(UserPermission.values()).collect(Collectors.toSet());
-          assertEquals(allPermissions, extractPermissionsFromUser(user));
+          assertEquals(TENANT_DATA_ACCESS_PERMISSIONS, extractPermissionsFromUser(user));
           assertLastAuditEntry("ruby@example.com", null, null);
 
           // run query using tenant data access
           runQuery("current-user-query").get("whoami");
-          assertLastAuditEntry("ruby@example.com", "dc-with-trailing-space ", allPermissions);
+          assertLastAuditEntry(
+              "ruby@example.com", "dc-with-trailing-space ", TENANT_DATA_ACCESS_PERMISSIONS);
         });
   }
 
@@ -1175,7 +1227,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     return list;
   }
 
-  private ObjectNode getAddUserVariables(
+  private Map<String, Object> getAddUserVariables(
       String firstName,
       String middleName,
       String lastName,
@@ -1184,26 +1236,26 @@ class ApiUserManagementTest extends BaseGraphqlTest {
       String orgExternalId,
       String role,
       boolean nestedName) {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("email", email)
-            .put("organizationExternalId", orgExternalId)
-            .put("role", role);
-    ObjectNode forNameFields = variables;
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("email", email);
+    variables.put("organizationExternalId", orgExternalId);
+    variables.put("role", role);
+
+    HashMap<String, Object> nameInfo = new HashMap<>();
+    nameInfo.put("firstName", firstName);
+    nameInfo.put("middleName", middleName);
+    nameInfo.put("lastName", lastName);
+    nameInfo.put("suffix", suffix);
+
     if (nestedName) {
-      forNameFields = JsonNodeFactory.instance.objectNode();
-      variables.set("name", forNameFields);
+      variables.put("name", nameInfo);
+    } else {
+      variables.putAll(nameInfo);
     }
-    forNameFields
-        .put("firstName", firstName)
-        .put("middleName", middleName)
-        .put("lastName", lastName)
-        .put("suffix", suffix);
     return variables;
   }
 
-  private ObjectNode getAddUserVariables(
+  private Map<String, Object> getAddUserVariables(
       String firstName,
       String middleName,
       String lastName,
@@ -1215,16 +1267,15 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         firstName, middleName, lastName, suffix, email, orgExternalId, role, false);
   }
 
-  private ObjectNode getUpdateUserVariables(
+  private Map<String, Object> getUpdateUserVariables(
       String id, String firstName, String middleName, String lastName, String suffix) {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("firstName", firstName)
-            .put("middleName", middleName)
-            .put("lastName", lastName)
-            .put("suffix", suffix);
+    Map<String, Object> variables =
+        Map.of(
+            "id", id,
+            "firstName", firstName,
+            "middleName", middleName,
+            "lastName", lastName,
+            "suffix", suffix);
     return variables;
   }
 

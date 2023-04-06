@@ -2,21 +2,21 @@
 import { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 
-import { TestResult } from "../testQueue/QueueItem";
 import {
   TestResultDeliveryPreference,
   TestResultDeliveryPreferences,
 } from "../patients/TestResultDeliveryPreference";
+import { TEST_RESULTS } from "../testResults/constants";
 import i18n from "../../i18n";
 
 export const DATE_FORMAT_MM_DD_YYYY =
   "^([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{1,2}-[0-9]{1,2}-[0-9]{4})|([0-9]{8})$";
 
 export const COVID_RESULTS: { [key: string]: TestResult } = {
-  POSITIVE: "POSITIVE",
-  NEGATIVE: "NEGATIVE",
-  INCONCLUSIVE: "UNDETERMINED",
-  UNKNOWN: "UNKNOWN",
+  POSITIVE: TEST_RESULTS.POSITIVE,
+  NEGATIVE: TEST_RESULTS.NEGATIVE,
+  INCONCLUSIVE: TEST_RESULTS.UNDETERMINED,
+  UNKNOWN: TEST_RESULTS.UNKNOWN,
 };
 
 const testResultDescriptions = (t: TFunction): Record<TestResult, string> => {
@@ -765,12 +765,10 @@ export const useTranslatedConstants = () => {
     ROLE_VALUES: roleValues(t),
     ETHNICITY_VALUES: ethnicityValues(t),
     GENDER_VALUES: genderValues(t),
-    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS: testResultDeliveryPreferenceValuesSms(
-      t
-    ),
-    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL: testResultDeliveryPreferenceValuesEmail(
-      t
-    ),
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS:
+      testResultDeliveryPreferenceValuesSms(t),
+    TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL:
+      testResultDeliveryPreferenceValuesEmail(t),
     PHONE_TYPE_VALUES: phoneTypeValues(t),
     YES_NO_VALUES: yesNoValues(t),
     YES_NO_UNKNOWN_VALUES: yesNoUnkownValues(t),

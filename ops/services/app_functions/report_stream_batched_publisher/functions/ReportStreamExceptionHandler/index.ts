@@ -1,13 +1,13 @@
 import { AzureFunction, Context } from "@azure/functions";
 import fetch, { Headers } from "node-fetch";
 import { ENV } from "../config";
-import { SimpleReportReportStreamResponse } from "../QueueBatchedReportStreamUploader/rs-response";
+import { ReportStreamCallbackRequest } from "../common/types";
 
 const { SIMPLE_REPORT_CB_TOKEN, SIMPLE_REPORT_CB_URL } = ENV;
 
 const queueTrigger: AzureFunction = async function (
   context: Context,
-  message: SimpleReportReportStreamResponse
+  message: ReportStreamCallbackRequest
 ): Promise<void> {
   const headers = new Headers({
     Accept: "application/json",
@@ -22,7 +22,9 @@ const queueTrigger: AzureFunction = async function (
   if (!result.ok) {
     throw new Error(`${result.status}: ${await result.text()}`);
   }
-  context.log(`Successfully processed exception for record ${message.testEventInternalId}`);
+  context.log(
+    `Successfully processed exception for record ${message.testEventInternalId} from queue ${message.queueName}`
+  );
 };
 
 export default queueTrigger;

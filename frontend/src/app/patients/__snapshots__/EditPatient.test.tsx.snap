@@ -6,19 +6,19 @@ Object {
   "baseElement": <body>
     <div>
       <div
-        class="bg-base-lightest"
+        class="prime-home bg-base-lightest"
       >
         <div
           class="grid-container"
         >
-          <main
-            class="prime-edit-patient prime-home"
+          <div
+            class="prime-edit-patient"
           >
             <div
               class="margin-bottom-4"
             >
               <div
-                class="patient__header"
+                class="patient__header "
               >
                 <div
                   class="display-flex flex-justify"
@@ -41,7 +41,7 @@ Object {
                         class="margin-left-05"
                         href="/patients"
                       >
-                        People
+                        Patients
                       </a>
                     </div>
                     <div
@@ -58,9 +58,10 @@ Object {
                     class="display-flex flex-align-center"
                   >
                     <button
+                      aria-disabled="true"
                       class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                       disabled=""
-                      id="edit-patient-save-lower"
+                      id="edit-patient-save-upper"
                       type="button"
                     >
                       Save and start test
@@ -74,7 +75,7 @@ Object {
                   </div>
                 </div>
               </div>
-              <div
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -106,7 +107,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="95"
+                        for="120"
                       >
                         First name
                         <abbr
@@ -121,7 +122,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="95"
+                        id="120"
                         name="firstName"
                         type="text"
                         value="Eugenia"
@@ -132,7 +133,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="96"
+                        for="121"
                       >
                         Middle name
                       </label>
@@ -140,7 +141,7 @@ Object {
                         aria-disabled="false"
                         aria-required="false"
                         class="usa-input"
-                        id="96"
+                        id="121"
                         name="middleName"
                         type="text"
                         value=""
@@ -151,7 +152,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="97"
+                        for="122"
                       >
                         Last name
                         <abbr
@@ -166,7 +167,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="97"
+                        id="122"
                         name="lastName"
                         type="text"
                         value="Franecki"
@@ -181,14 +182,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="98"
+                        for="123"
                       >
                         Role
                       </label>
                       <select
                         aria-required="false"
                         class="usa-select"
-                        id="98"
+                        id="123"
                         name="role"
                       >
                         <option
@@ -197,21 +198,25 @@ Object {
                           - Select -
                         </option>
                         <option
+                          aria-selected="false"
                           value="STAFF"
                         >
                           Staff
                         </option>
                         <option
+                          aria-selected="false"
                           value="RESIDENT"
                         >
                           Resident
                         </option>
                         <option
+                          aria-selected="false"
                           value="STUDENT"
                         >
                           Student
                         </option>
                         <option
+                          aria-selected="false"
                           value="VISITOR"
                         >
                           Visitor
@@ -223,7 +228,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="99"
+                        for="124"
                       >
                         Testing facility
                         <abbr
@@ -237,7 +242,7 @@ Object {
                       <select
                         aria-required="true"
                         class="usa-select"
-                        id="99"
+                        id="124"
                         name="facilityId"
                       >
                         <option
@@ -246,11 +251,13 @@ Object {
                           - Select -
                         </option>
                         <option
+                          aria-selected="true"
                           value="~~ALL-FACILITIES~~"
                         >
                           All facilities
                         </option>
                         <option
+                          aria-selected="false"
                           value="b0d2041f-93c9-4192-b19a-dd99c0044a7e"
                         >
                           123
@@ -276,7 +283,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="100"
+                        for="125"
                       >
                         Date of birth (mm/dd/yyyy)
                         <abbr
@@ -291,7 +298,7 @@ Object {
                         aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
-                        id="100"
+                        id="125"
                         max="2021-08-01"
                         min="1900-01-01"
                         name="birthDate"
@@ -301,8 +308,8 @@ Object {
                     </div>
                   </div>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -323,14 +330,15 @@ Object {
                   >
                     <div>
                       <div
-                        class="display-flex"
+                        class="display-flex "
                       >
                         <div
-                          class="usa-form-group flex-fill"
+                          class="usa-form-group flex-fill phoneNumberFormElement"
+                          id="phoneInput-0"
                         >
                           <label
                             class="usa-label"
-                            for="101"
+                            for="126"
                           >
                             Primary phone number
                             <abbr
@@ -344,7 +352,8 @@ Object {
                           <input
                             aria-required="true"
                             class="usa-input"
-                            id="101"
+                            data-testid="phoneInput-0"
+                            id="126"
                             name="number"
                             type="text"
                             value="(270) 867-5309"
@@ -355,7 +364,8 @@ Object {
                         class="usa-form-group"
                       >
                         <fieldset
-                          class="usa-fieldset prime-radios margin-top-3"
+                          class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
+                          id="phoneType-0"
                         >
                           <legend
                             class="usa-legend"
@@ -379,14 +389,14 @@ Object {
                                 checked=""
                                 class="usa-radio__input"
                                 data-required="true"
-                                id="102-val-MOBILE"
+                                id="127-val-MOBILE"
                                 name="phoneType-0"
                                 type="radio"
                                 value="MOBILE"
                               />
                               <label
                                 class="usa-radio__label"
-                                for="102-val-MOBILE"
+                                for="127-val-MOBILE"
                               >
                                 Mobile
                               </label>
@@ -397,14 +407,14 @@ Object {
                               <input
                                 class="usa-radio__input"
                                 data-required="true"
-                                id="102-val-LANDLINE"
+                                id="127-val-LANDLINE"
                                 name="phoneType-0"
                                 type="radio"
                                 value="LANDLINE"
                               />
                               <label
                                 class="usa-radio__label"
-                                for="102-val-LANDLINE"
+                                for="127-val-LANDLINE"
                               >
                                 Landline
                               </label>
@@ -419,7 +429,7 @@ Object {
                     >
                       <svg
                         aria-hidden="true"
-                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                        class="svg-inline--fa fa-plus margin-right-1"
                         data-icon="plus"
                         data-prefix="fas"
                         focusable="false"
@@ -428,7 +438,7 @@ Object {
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                          d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z"
                           fill="currentColor"
                         />
                       </svg>
@@ -439,6 +449,7 @@ Object {
                     >
                       <fieldset
                         class="usa-fieldset prime-radios"
+                        id="testResultDeliveryText"
                       >
                         <legend
                           class="usa-legend"
@@ -454,14 +465,14 @@ Object {
                             <input
                               class="usa-radio__input"
                               data-required="false"
-                              id="103-val-SMS"
+                              id="128-val-SMS"
                               name="testResultDeliveryText"
                               type="radio"
                               value="SMS"
                             />
                             <label
                               class="usa-radio__label"
-                              for="103-val-SMS"
+                              for="128-val-SMS"
                             >
                               Yes, text all mobile numbers on file.
                             </label>
@@ -473,14 +484,14 @@ Object {
                               checked=""
                               class="usa-radio__input"
                               data-required="false"
-                              id="103-val-NONE"
+                              id="128-val-NONE"
                               name="testResultDeliveryText"
                               type="radio"
                               value="NONE"
                             />
                             <label
                               class="usa-radio__label"
-                              for="103-val-NONE"
+                              for="128-val-NONE"
                             >
                               No
                             </label>
@@ -497,49 +508,27 @@ Object {
                     >
                       <div>
                         <div
-                          class="display-flex"
+                          class="display-flex "
                         >
                           <div
-                            class="usa-form-group flex-fill"
+                            class="usa-form-group flex-fill emailFormElement"
+                            id="email-0"
                           >
                             <label
                               class="usa-label"
-                              for="104"
+                              for="129"
                             >
                               Email address
                             </label>
                             <input
                               aria-required="false"
                               class="usa-input"
-                              id="104"
+                              data-testid="email-0"
+                              id="129"
                               name="email-0"
                               type="text"
                               value="foo@bar.com"
                             />
-                          </div>
-                          <div
-                            class="flex-align-self-end"
-                          >
-                            <button
-                              aria-label="Delete email foo@bar.com"
-                              class="usa-button--unstyled padding-105 height-5"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="svg-inline--fa fa-trash fa-w-14 text-error"
-                                data-icon="trash"
-                                data-prefix="fas"
-                                focusable="false"
-                                role="img"
-                                viewBox="0 0 448 512"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
-                                  fill="currentColor"
-                                />
-                              </svg>
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -549,7 +538,7 @@ Object {
                       >
                         <svg
                           aria-hidden="true"
-                          class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                          class="svg-inline--fa fa-plus margin-right-1"
                           data-icon="plus"
                           data-prefix="fas"
                           focusable="false"
@@ -558,7 +547,7 @@ Object {
                           xmlns="http://www.w3.org/2000/svg"
                         >
                           <path
-                            d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                            d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z"
                             fill="currentColor"
                           />
                         </svg>
@@ -570,6 +559,7 @@ Object {
                     >
                       <fieldset
                         class="usa-fieldset prime-radios"
+                        id="testResultDeliveryEmail"
                       >
                         <legend
                           class="usa-legend"
@@ -585,14 +575,14 @@ Object {
                             <input
                               class="usa-radio__input"
                               data-required="false"
-                              id="105-val-EMAIL"
+                              id="130-val-EMAIL"
                               name="testResultDeliveryEmail"
                               type="radio"
                               value="EMAIL"
                             />
                             <label
                               class="usa-radio__label"
-                              for="105-val-EMAIL"
+                              for="130-val-EMAIL"
                             >
                               Yes
                             </label>
@@ -604,14 +594,14 @@ Object {
                               checked=""
                               class="usa-radio__input"
                               data-required="false"
-                              id="105-val-NONE"
+                              id="130-val-NONE"
                               name="testResultDeliveryEmail"
                               type="radio"
                               value="NONE"
                             />
                             <label
                               class="usa-radio__label"
-                              for="105-val-NONE"
+                              for="130-val-NONE"
                             >
                               No
                             </label>
@@ -628,7 +618,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="106"
+                        for="131"
                       >
                         Country
                         <abbr
@@ -642,1315 +632,1577 @@ Object {
                       <select
                         aria-required="true"
                         class="usa-select"
-                        id="106"
+                        id="131"
                         name="country"
                       >
                         <option
+                          aria-selected="false"
                           value="AFG"
                         >
                           Afghanistan
                         </option>
                         <option
+                          aria-selected="false"
                           value="XQZ"
                         >
                           Akrotiri
                         </option>
                         <option
+                          aria-selected="false"
                           value="ALB"
                         >
                           Albania
                         </option>
                         <option
+                          aria-selected="false"
                           value="DZA"
                         >
                           Algeria
                         </option>
                         <option
+                          aria-selected="false"
                           value="ASM"
                         >
                           American Samoa
                         </option>
                         <option
+                          aria-selected="false"
                           value="AND"
                         >
                           Andorra
                         </option>
                         <option
+                          aria-selected="false"
                           value="AGO"
                         >
                           Angola
                         </option>
                         <option
+                          aria-selected="false"
                           value="AIA"
                         >
                           Anguilla
                         </option>
                         <option
+                          aria-selected="false"
                           value="ATA"
                         >
                           Antarctica
                         </option>
                         <option
+                          aria-selected="false"
                           value="ATG"
                         >
                           Antigua
                         </option>
                         <option
+                          aria-selected="false"
                           value="ARG"
                         >
                           Argentina
                         </option>
                         <option
+                          aria-selected="false"
                           value="ARM"
                         >
                           Armenia
                         </option>
                         <option
+                          aria-selected="false"
                           value="ABW"
                         >
                           Aruba
                         </option>
                         <option
+                          aria-selected="false"
                           value="XAC"
                         >
                           Ashmore and Cartier Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="AUS"
                         >
                           Australia
                         </option>
                         <option
+                          aria-selected="false"
                           value="AUT"
                         >
                           Austria
                         </option>
                         <option
+                          aria-selected="false"
                           value="AZE"
                         >
                           Azerbaijan
                         </option>
                         <option
+                          aria-selected="false"
                           value="BHS"
                         >
                           Bahamas, The
                         </option>
                         <option
+                          aria-selected="false"
                           value="BHR"
                         >
                           Bahrain
                         </option>
                         <option
+                          aria-selected="false"
                           value="XBK"
                         >
                           Baker Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="BGD"
                         >
                           Bangladesh
                         </option>
                         <option
+                          aria-selected="false"
                           value="BRB"
                         >
                           Barbados
                         </option>
                         <option
+                          aria-selected="false"
                           value="BLR"
                         >
                           Belarus
                         </option>
                         <option
+                          aria-selected="false"
                           value="BEL"
                         >
                           Belgium
                         </option>
                         <option
+                          aria-selected="false"
                           value="BLZ"
                         >
                           Belize
                         </option>
                         <option
+                          aria-selected="false"
                           value="BEN"
                         >
                           Benin
                         </option>
                         <option
+                          aria-selected="false"
                           value="BMU"
                         >
                           Bermuda
                         </option>
                         <option
+                          aria-selected="false"
                           value="BTN"
                         >
                           Bhutan
                         </option>
                         <option
+                          aria-selected="false"
                           value="BOL"
                         >
                           Bolivia
                         </option>
                         <option
+                          aria-selected="false"
                           value="BIH"
                         >
                           Bosnia and Herzegovina
                         </option>
                         <option
+                          aria-selected="false"
                           value="BWA"
                         >
                           Botswana
                         </option>
                         <option
+                          aria-selected="false"
                           value="BVT"
                         >
                           Bouvet Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="BRA"
                         >
                           Brazil
                         </option>
                         <option
+                          aria-selected="false"
                           value="IOT"
                         >
                           British Indian Ocean Territory
                         </option>
                         <option
+                          aria-selected="false"
                           value="BRN"
                         >
                           Brunei
                         </option>
                         <option
+                          aria-selected="false"
                           value="BGR"
                         >
                           Bulgaria
                         </option>
                         <option
+                          aria-selected="false"
                           value="BFA"
                         >
                           Burkina Faso
                         </option>
                         <option
+                          aria-selected="false"
                           value="MMR"
                         >
                           Burma
                         </option>
                         <option
+                          aria-selected="false"
                           value="BDI"
                         >
                           Burundi
                         </option>
                         <option
+                          aria-selected="false"
                           value="CPV"
                         >
                           Cabo Verde
                         </option>
                         <option
+                          aria-selected="false"
                           value="KHM"
                         >
                           Cambodia
                         </option>
                         <option
+                          aria-selected="false"
                           value="CMR"
                         >
                           Cameroon
                         </option>
                         <option
+                          aria-selected="false"
                           value="CAN"
                         >
                           Canada
                         </option>
                         <option
+                          aria-selected="false"
                           value="CYM"
                         >
                           Cayman Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="CAF"
                         >
                           Central African Republic
                         </option>
                         <option
+                          aria-selected="false"
                           value="TCD"
                         >
                           Chad
                         </option>
                         <option
+                          aria-selected="false"
                           value="CHL"
                         >
                           Chile
                         </option>
                         <option
+                          aria-selected="false"
                           value="CHN"
                         >
                           China
                         </option>
                         <option
+                          aria-selected="false"
                           value="CXR"
                         >
                           Christmas Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="CPT"
                         >
                           Clipperton Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="CCK"
                         >
                           Cocos (Keeling) Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="COL"
                         >
                           Colombia
                         </option>
                         <option
+                          aria-selected="false"
                           value="COM"
                         >
                           Comoros
                         </option>
                         <option
+                          aria-selected="false"
                           value="COK"
                         >
                           Cook Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="XCS"
                         >
                           Coral Sea Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="CRI"
                         >
                           Costa Rica
                         </option>
                         <option
+                          aria-selected="false"
                           value="CIV"
                         >
                           Côte d’Ivoire
                         </option>
                         <option
+                          aria-selected="false"
                           value="HRV"
                         >
                           Croatia
                         </option>
                         <option
+                          aria-selected="false"
                           value="CUB"
                         >
                           Cuba
                         </option>
                         <option
+                          aria-selected="false"
                           value="CUW"
                         >
                           Curaçao
                         </option>
                         <option
+                          aria-selected="false"
                           value="CYP"
                         >
                           Cyprus
                         </option>
                         <option
+                          aria-selected="false"
                           value="CZE"
                         >
                           Czechia
                         </option>
                         <option
+                          aria-selected="false"
                           value="COD"
                         >
                           Democratic Republic of the Congo
                         </option>
                         <option
+                          aria-selected="false"
                           value="DNK"
                         >
                           Denmark
                         </option>
                         <option
+                          aria-selected="false"
                           value="XXD"
                         >
                           Dhekelia
                         </option>
                         <option
+                          aria-selected="false"
                           value="DJI"
                         >
                           Djibouti
                         </option>
                         <option
+                          aria-selected="false"
                           value="DMA"
                         >
                           Dominica
                         </option>
                         <option
+                          aria-selected="false"
                           value="DOM"
                         >
                           Dominican Republic
                         </option>
                         <option
+                          aria-selected="false"
                           value="ECU"
                         >
                           Ecuador
                         </option>
                         <option
+                          aria-selected="false"
                           value="EGY"
                         >
                           Egypt
                         </option>
                         <option
+                          aria-selected="false"
                           value="SLV"
                         >
                           El Salvador
                         </option>
                         <option
+                          aria-selected="false"
                           value="GNQ"
                         >
                           Equatorial Guinea
                         </option>
                         <option
+                          aria-selected="false"
                           value="ERI"
                         >
                           Eritrea
                         </option>
                         <option
+                          aria-selected="false"
                           value="EST"
                         >
                           Estonia
                         </option>
                         <option
+                          aria-selected="false"
                           value="SWZ"
                         >
                           Eswatini
                         </option>
                         <option
+                          aria-selected="false"
                           value="ETH"
                         >
                           Ethiopia
                         </option>
                         <option
+                          aria-selected="false"
                           value="FLK"
                         >
                           Falkland Islands (Islas Malvinas)
                         </option>
                         <option
+                          aria-selected="false"
                           value="FRO"
                         >
                           Faroe Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="FJI"
                         >
                           Fiji
                         </option>
                         <option
+                          aria-selected="false"
                           value="FIN"
                         >
                           Finland
                         </option>
                         <option
+                          aria-selected="false"
                           value="FRA"
                         >
                           France
                         </option>
                         <option
+                          aria-selected="false"
                           value="GUF"
                         >
                           French Guiana
                         </option>
                         <option
+                          aria-selected="false"
                           value="PYF"
                         >
                           French Polynesia
                         </option>
                         <option
+                          aria-selected="false"
                           value="ATF"
                         >
                           French Southern and Antarctic Lands
                         </option>
                         <option
+                          aria-selected="false"
                           value="GAB"
                         >
                           Gabon
                         </option>
                         <option
+                          aria-selected="false"
                           value="GMB"
                         >
                           Gambia, The
                         </option>
                         <option
+                          aria-selected="false"
                           value="GEO"
                         >
                           Georgia
                         </option>
                         <option
+                          aria-selected="false"
                           value="DEU"
                         >
                           Germany
                         </option>
                         <option
+                          aria-selected="false"
                           value="GHA"
                         >
                           Ghana
                         </option>
                         <option
+                          aria-selected="false"
                           value="GIB"
                         >
                           Gibraltar
                         </option>
                         <option
+                          aria-selected="false"
                           value="GRC"
                         >
                           Greece
                         </option>
                         <option
+                          aria-selected="false"
                           value="GRL"
                         >
                           Greenland
                         </option>
                         <option
+                          aria-selected="false"
                           value="GRD"
                         >
                           Grenada
                         </option>
                         <option
+                          aria-selected="false"
                           value="GLP"
                         >
                           Guadeloupe
                         </option>
                         <option
+                          aria-selected="false"
                           value="GUM"
                         >
                           Guam
                         </option>
                         <option
+                          aria-selected="false"
                           value="GTM"
                         >
                           Guatemala
                         </option>
                         <option
+                          aria-selected="false"
                           value="GGY"
                         >
                           Guernsey
                         </option>
                         <option
+                          aria-selected="false"
                           value="GIN"
                         >
                           Guinea
                         </option>
                         <option
+                          aria-selected="false"
                           value="GNB"
                         >
                           Guinea-Bissau
                         </option>
                         <option
+                          aria-selected="false"
                           value="GUY"
                         >
                           Guyana
                         </option>
                         <option
+                          aria-selected="false"
                           value="HTI"
                         >
                           Haiti
                         </option>
                         <option
+                          aria-selected="false"
                           value="HMD"
                         >
                           Heard Island and McDonald Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="VAT"
                         >
                           Holy See
                         </option>
                         <option
+                          aria-selected="false"
                           value="HND"
                         >
                           Honduras
                         </option>
                         <option
+                          aria-selected="false"
                           value="HKG"
                         >
                           Hong Kong
                         </option>
                         <option
+                          aria-selected="false"
                           value="XHO"
                         >
                           Howland Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="HUN"
                         >
                           Hungary
                         </option>
                         <option
+                          aria-selected="false"
                           value="ISL"
                         >
                           Iceland
                         </option>
                         <option
+                          aria-selected="false"
                           value="IND"
                         >
                           India
                         </option>
                         <option
+                          aria-selected="false"
                           value="IDN"
                         >
                           Indonesia
                         </option>
                         <option
+                          aria-selected="false"
                           value="IRN"
                         >
                           Iran
                         </option>
                         <option
+                          aria-selected="false"
                           value="IRQ"
                         >
                           Iraq
                         </option>
                         <option
+                          aria-selected="false"
                           value="IRL"
                         >
                           Ireland
                         </option>
                         <option
+                          aria-selected="false"
                           value="IMN"
                         >
                           Isle of Man
                         </option>
                         <option
+                          aria-selected="false"
                           value="ISR"
                         >
                           Israel
                         </option>
                         <option
+                          aria-selected="false"
                           value="ITA"
                         >
                           Italy
                         </option>
                         <option
+                          aria-selected="false"
                           value="JAM"
                         >
                           Jamaica
                         </option>
                         <option
+                          aria-selected="false"
                           value="XJM"
                         >
                           Jan Mayen
                         </option>
                         <option
+                          aria-selected="false"
                           value="JPN"
                         >
                           Japan
                         </option>
                         <option
+                          aria-selected="false"
                           value="XJV"
                         >
                           Jarvis Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="JEY"
                         >
                           Jersey
                         </option>
                         <option
+                          aria-selected="false"
                           value="XJA"
                         >
                           Johnston Atoll
                         </option>
                         <option
+                          aria-selected="false"
                           value="JOR"
                         >
                           Jordan
                         </option>
                         <option
+                          aria-selected="false"
                           value="KAZ"
                         >
                           Kazakhstan
                         </option>
                         <option
+                          aria-selected="false"
                           value="KEN"
                         >
                           Kenya
                         </option>
                         <option
+                          aria-selected="false"
                           value="XKR"
                         >
                           Kingman Reef
                         </option>
                         <option
+                          aria-selected="false"
                           value="KIR"
                         >
                           Kiribati
                         </option>
                         <option
+                          aria-selected="false"
                           value="PRK"
                         >
                           Korea, North
                         </option>
                         <option
+                          aria-selected="false"
                           value="KOR"
                         >
                           Korea, South
                         </option>
                         <option
+                          aria-selected="false"
                           value="XKS"
                         >
                           Kosovo
                         </option>
                         <option
+                          aria-selected="false"
                           value="KWT"
                         >
                           Kuwait
                         </option>
                         <option
+                          aria-selected="false"
                           value="KGZ"
                         >
                           Kyrgyzstan
                         </option>
                         <option
+                          aria-selected="false"
                           value="LAO"
                         >
                           Laos
                         </option>
                         <option
+                          aria-selected="false"
                           value="LVA"
                         >
                           Latvia
                         </option>
                         <option
+                          aria-selected="false"
                           value="LBN"
                         >
                           Lebanon
                         </option>
                         <option
+                          aria-selected="false"
                           value="LSO"
                         >
                           Lesotho
                         </option>
                         <option
+                          aria-selected="false"
                           value="LBR"
                         >
                           Liberia
                         </option>
                         <option
+                          aria-selected="false"
                           value="LBY"
                         >
                           Libya
                         </option>
                         <option
+                          aria-selected="false"
                           value="LIE"
                         >
                           Liechtenstein
                         </option>
                         <option
+                          aria-selected="false"
                           value="LTU"
                         >
                           Lithuania
                         </option>
                         <option
+                          aria-selected="false"
                           value="LUX"
                         >
                           Luxembourg
                         </option>
                         <option
+                          aria-selected="false"
                           value="MAC"
                         >
                           Macau
                         </option>
                         <option
+                          aria-selected="false"
                           value="MDG"
                         >
                           Madagascar
                         </option>
                         <option
+                          aria-selected="false"
                           value="MWI"
                         >
                           Malawi
                         </option>
                         <option
+                          aria-selected="false"
                           value="MYS"
                         >
                           Malaysia
                         </option>
                         <option
+                          aria-selected="false"
                           value="MDV"
                         >
                           Maldives
                         </option>
                         <option
+                          aria-selected="false"
                           value="MLI"
                         >
                           Mali
                         </option>
                         <option
+                          aria-selected="false"
                           value="MLT"
                         >
                           Malta
                         </option>
                         <option
+                          aria-selected="false"
                           value="MHL"
                         >
                           Marshall Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="MTQ"
                         >
                           Martinique
                         </option>
                         <option
+                          aria-selected="false"
                           value="MRT"
                         >
                           Mauritania
                         </option>
                         <option
+                          aria-selected="false"
                           value="MUS"
                         >
                           Mauritius
                         </option>
                         <option
+                          aria-selected="false"
                           value="MYT"
                         >
                           Mayotte
                         </option>
                         <option
+                          aria-selected="false"
                           value="MEX"
                         >
                           Mexico
                         </option>
                         <option
+                          aria-selected="false"
                           value="FSM"
                         >
                           Micronesia, Federated States of
                         </option>
                         <option
+                          aria-selected="false"
                           value="XMW"
                         >
                           Midway Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="MDA"
                         >
                           Moldova
                         </option>
                         <option
+                          aria-selected="false"
                           value="MCO"
                         >
                           Monaco
                         </option>
                         <option
+                          aria-selected="false"
                           value="MNG"
                         >
                           Mongolia
                         </option>
                         <option
+                          aria-selected="false"
                           value="MNE"
                         >
                           Montenegro
                         </option>
                         <option
+                          aria-selected="false"
                           value="MSR"
                         >
                           Montserrat
                         </option>
                         <option
+                          aria-selected="false"
                           value="MAR"
                         >
                           Morocco
                         </option>
                         <option
+                          aria-selected="false"
                           value="MOZ"
                         >
                           Mozambique
                         </option>
                         <option
+                          aria-selected="false"
                           value="NAM"
                         >
                           Namibia
                         </option>
                         <option
+                          aria-selected="false"
                           value="NRU"
                         >
                           Nauru
                         </option>
                         <option
+                          aria-selected="false"
                           value="XNV"
                         >
                           Navassa Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="NPL"
                         >
                           Nepal
                         </option>
                         <option
+                          aria-selected="false"
                           value="NLD"
                         >
                           Netherlands
                         </option>
                         <option
+                          aria-selected="false"
                           value="NCL"
                         >
                           New Caledonia
                         </option>
                         <option
+                          aria-selected="false"
                           value="NZL"
                         >
                           New Zealand
                         </option>
                         <option
+                          aria-selected="false"
                           value="NIC"
                         >
                           Nicaragua
                         </option>
                         <option
+                          aria-selected="false"
                           value="NER"
                         >
                           Niger
                         </option>
                         <option
+                          aria-selected="false"
                           value="NGA"
                         >
                           Nigeria
                         </option>
                         <option
+                          aria-selected="false"
                           value="NIU"
                         >
                           Niue
                         </option>
                         <option
+                          aria-selected="false"
                           value="NFK"
                         >
                           Norfolk Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="MKD"
                         >
                           North Macedonia
                         </option>
                         <option
+                          aria-selected="false"
                           value="MNP"
                         >
                           Northern Mariana Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="NOR"
                         >
                           Norway
                         </option>
                         <option
+                          aria-selected="false"
                           value="OMN"
                         >
                           Oman
                         </option>
                         <option
+                          aria-selected="false"
                           value="PAK"
                         >
                           Pakistan
                         </option>
                         <option
+                          aria-selected="false"
                           value="PLW"
                         >
                           Palau
                         </option>
                         <option
+                          aria-selected="false"
                           value="XPL"
                         >
                           Palmyra Atoll
                         </option>
                         <option
+                          aria-selected="false"
                           value="PAN"
                         >
                           Panama
                         </option>
                         <option
+                          aria-selected="false"
                           value="PNG"
                         >
                           Papua New Guinea
                         </option>
                         <option
+                          aria-selected="false"
                           value="XPR"
                         >
                           Paracel Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="PRY"
                         >
                           Paraguay
                         </option>
                         <option
+                          aria-selected="false"
                           value="PER"
                         >
                           Peru
                         </option>
                         <option
+                          aria-selected="false"
                           value="PHL"
                         >
                           Philippines
                         </option>
                         <option
+                          aria-selected="false"
                           value="PCN"
                         >
                           Pitcairn Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="POL"
                         >
                           Poland
                         </option>
                         <option
+                          aria-selected="false"
                           value="PRT"
                         >
                           Portugal
                         </option>
                         <option
+                          aria-selected="false"
                           value="PRI"
                         >
                           Puerto Rico
                         </option>
                         <option
+                          aria-selected="false"
                           value="QAT"
                         >
                           Qatar
                         </option>
                         <option
+                          aria-selected="false"
                           value="COG"
                         >
                           Republic of the Congo
                         </option>
                         <option
+                          aria-selected="false"
                           value="REU"
                         >
                           Reunion
                         </option>
                         <option
+                          aria-selected="false"
                           value="ROU"
                         >
                           Romania
                         </option>
                         <option
+                          aria-selected="false"
                           value="RUS"
                         >
                           Russia
                         </option>
                         <option
+                          aria-selected="false"
                           value="RWA"
                         >
                           Rwanda
                         </option>
                         <option
+                          aria-selected="false"
                           value="BLM"
                         >
                           Saint Barthelemy
                         </option>
                         <option
+                          aria-selected="false"
                           value="SHN"
                         >
                           Saint Helena, Ascension, and Tristan da Cunha
                         </option>
                         <option
+                          aria-selected="false"
                           value="KNA"
                         >
                           Saint Kitts and Nevis
                         </option>
                         <option
+                          aria-selected="false"
                           value="LCA"
                         >
                           Saint Lucia
                         </option>
                         <option
+                          aria-selected="false"
                           value="MAF"
                         >
                           Saint Martin
                         </option>
                         <option
+                          aria-selected="false"
                           value="SPM"
                         >
                           Saint Pierre and Miquelon
                         </option>
                         <option
+                          aria-selected="false"
                           value="VCT"
                         >
                           Saint Vincent and the Grenadines
                         </option>
                         <option
+                          aria-selected="false"
                           value="WSM"
                         >
                           Samoa
                         </option>
                         <option
+                          aria-selected="false"
                           value="SMR"
                         >
                           San Marino
                         </option>
                         <option
+                          aria-selected="false"
                           value="STP"
                         >
                           Sao Tome and Principe
                         </option>
                         <option
+                          aria-selected="false"
                           value="SAU"
                         >
                           Saudi Arabia
                         </option>
                         <option
+                          aria-selected="false"
                           value="SEN"
                         >
                           Senegal
                         </option>
                         <option
+                          aria-selected="false"
                           value="SRB"
                         >
                           Serbia
                         </option>
                         <option
+                          aria-selected="false"
                           value="SYC"
                         >
                           Seychelles
                         </option>
                         <option
+                          aria-selected="false"
                           value="SLE"
                         >
                           Sierra Leone
                         </option>
                         <option
+                          aria-selected="false"
                           value="SGP"
                         >
                           Singapore
                         </option>
                         <option
+                          aria-selected="false"
                           value="SXM"
                         >
                           Sint Maarten
                         </option>
                         <option
+                          aria-selected="false"
                           value="SVK"
                         >
                           Slovakia
                         </option>
                         <option
+                          aria-selected="false"
                           value="SVN"
                         >
                           Slovenia
                         </option>
                         <option
+                          aria-selected="false"
                           value="SLB"
                         >
                           Solomon Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="SOM"
                         >
                           Somalia
                         </option>
                         <option
+                          aria-selected="false"
                           value="ZAF"
                         >
                           South Africa
                         </option>
                         <option
+                          aria-selected="false"
                           value="SGS"
                         >
                           South Georgia and the South Sandwich Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="SSD"
                         >
                           South Sudan
                         </option>
                         <option
+                          aria-selected="false"
                           value="ESP"
                         >
                           Spain
                         </option>
                         <option
+                          aria-selected="false"
                           value="XSP"
                         >
                           Spratly Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="LKA"
                         >
                           Sri Lanka
                         </option>
                         <option
+                          aria-selected="false"
                           value="SDN"
                         >
                           Sudan
                         </option>
                         <option
+                          aria-selected="false"
                           value="SUR"
                         >
                           Suriname
                         </option>
                         <option
+                          aria-selected="false"
                           value="XSV"
                         >
                           Svalbard
                         </option>
                         <option
+                          aria-selected="false"
                           value="SWE"
                         >
                           Sweden
                         </option>
                         <option
+                          aria-selected="false"
                           value="CHE"
                         >
                           Switzerland
                         </option>
                         <option
+                          aria-selected="false"
                           value="SYR"
                         >
                           Syria
                         </option>
                         <option
+                          aria-selected="false"
                           value="TWN"
                         >
                           Taiwan
                         </option>
                         <option
+                          aria-selected="false"
                           value="TJK"
                         >
                           Tajikistan
                         </option>
                         <option
+                          aria-selected="false"
                           value="TZA"
                         >
                           Tanzania
                         </option>
                         <option
+                          aria-selected="false"
                           value="THA"
                         >
                           Thailand
                         </option>
                         <option
+                          aria-selected="false"
                           value="TLS"
                         >
                           Timor-Leste
                         </option>
                         <option
+                          aria-selected="false"
                           value="TGO"
                         >
                           Togo
                         </option>
                         <option
+                          aria-selected="false"
                           value="TKL"
                         >
                           Tokelau
                         </option>
                         <option
+                          aria-selected="false"
                           value="TON"
                         >
                           Tonga
                         </option>
                         <option
+                          aria-selected="false"
                           value="TTO"
                         >
                           Trinidad and Tobago
                         </option>
                         <option
+                          aria-selected="false"
                           value="TUN"
                         >
                           Tunisia
                         </option>
                         <option
+                          aria-selected="false"
                           value="TUR"
                         >
                           Turkey
                         </option>
                         <option
+                          aria-selected="false"
                           value="TKM"
                         >
                           Turkmenistan
                         </option>
                         <option
+                          aria-selected="false"
                           value="TCA"
                         >
                           Turks and Caicos Islands
                         </option>
                         <option
+                          aria-selected="false"
                           value="TUV"
                         >
                           Tuvalu
                         </option>
                         <option
+                          aria-selected="false"
                           value="UGA"
                         >
                           Uganda
                         </option>
                         <option
+                          aria-selected="false"
                           value="UKR"
                         >
                           Ukraine
                         </option>
                         <option
+                          aria-selected="false"
                           value="ARE"
                         >
                           United Arab Emirates
                         </option>
                         <option
+                          aria-selected="false"
                           value="GBR"
                         >
                           United Kingdom
                         </option>
                         <option
+                          aria-selected="true"
                           value="USA"
                         >
                           United States
                         </option>
                         <option
+                          aria-selected="false"
                           value="URY"
                         >
                           Uruguay
                         </option>
                         <option
+                          aria-selected="false"
                           value="UZB"
                         >
                           Uzbekistan
                         </option>
                         <option
+                          aria-selected="false"
                           value="VUT"
                         >
                           Vanuatu
                         </option>
                         <option
+                          aria-selected="false"
                           value="VEN"
                         >
                           Venezuela
                         </option>
                         <option
+                          aria-selected="false"
                           value="VNM"
                         >
                           Vietnam
                         </option>
                         <option
+                          aria-selected="false"
                           value="VGB"
                         >
                           Virgin Islands, British
                         </option>
                         <option
+                          aria-selected="false"
                           value="VIR"
                         >
                           Virgin Islands, U.S.
                         </option>
                         <option
+                          aria-selected="false"
                           value="XWK"
                         >
                           Wake Island
                         </option>
                         <option
+                          aria-selected="false"
                           value="WLF"
                         >
                           Wallis and Futuna
                         </option>
                         <option
+                          aria-selected="false"
                           value="YEM"
                         >
                           Yemen
                         </option>
                         <option
+                          aria-selected="false"
                           value="ZMB"
                         >
                           Zambia
                         </option>
                         <option
+                          aria-selected="false"
                           value="ZWE"
                         >
                           Zimbabwe
@@ -1966,7 +2218,7 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="107"
+                        for="132"
                       >
                         Street address 1
                         <abbr
@@ -1980,7 +2232,7 @@ Object {
                       <input
                         aria-required="true"
                         class="usa-input"
-                        id="107"
+                        id="132"
                         name="street"
                         type="text"
                         value="736 Jackson PI NW"
@@ -1995,14 +2247,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="108"
+                        for="133"
                       >
                         Street address 2
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="108"
+                        id="133"
                         name="streetTwo"
                         type="text"
                         value="DC"
@@ -2017,14 +2269,21 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="109"
+                        for="134"
                       >
                         City
+                        <abbr
+                          class="usa-hint usa-hint--required"
+                          title="required"
+                        >
+                           
+                          *
+                        </abbr>
                       </label>
                       <input
-                        aria-required="false"
+                        aria-required="true"
                         class="usa-input"
-                        id="109"
+                        id="134"
                         name="city"
                         type="text"
                         value=""
@@ -2035,14 +2294,14 @@ Object {
                     >
                       <label
                         class="usa-label"
-                        for="110"
+                        for="135"
                       >
                         County
                       </label>
                       <input
                         aria-required="false"
                         class="usa-input"
-                        id="110"
+                        id="135"
                         name="county"
                         type="text"
                         value=""
@@ -2050,8 +2309,8 @@ Object {
                     </div>
                   </div>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -2072,6 +2331,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="race"
                     >
                       <legend
                         class="usa-legend"
@@ -2094,14 +2354,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="111-val-native"
+                            id="136-val-native"
                             name="race"
                             type="radio"
                             value="native"
                           />
                           <label
                             class="usa-radio__label"
-                            for="111-val-native"
+                            for="136-val-native"
                           >
                             American Indian/Alaskan Native
                           </label>
@@ -2112,14 +2372,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="111-val-asian"
+                            id="136-val-asian"
                             name="race"
                             type="radio"
                             value="asian"
                           />
                           <label
                             class="usa-radio__label"
-                            for="111-val-asian"
+                            for="136-val-asian"
                           >
                             Asian
                           </label>
@@ -2130,14 +2390,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="111-val-black"
+                            id="136-val-black"
                             name="race"
                             type="radio"
                             value="black"
                           />
                           <label
                             class="usa-radio__label"
-                            for="111-val-black"
+                            for="136-val-black"
                           >
                             Black/African American
                           </label>
@@ -2148,14 +2408,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="111-val-pacific"
+                            id="136-val-pacific"
                             name="race"
                             type="radio"
                             value="pacific"
                           />
                           <label
                             class="usa-radio__label"
-                            for="111-val-pacific"
+                            for="136-val-pacific"
                           >
                             Native Hawaiian/other Pacific Islander
                           </label>
@@ -2166,14 +2426,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="111-val-white"
+                            id="136-val-white"
                             name="race"
                             type="radio"
                             value="white"
                           />
                           <label
                             class="usa-radio__label"
-                            for="111-val-white"
+                            for="136-val-white"
                           >
                             White
                           </label>
@@ -2184,14 +2444,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="111-val-other"
+                            id="136-val-other"
                             name="race"
                             type="radio"
                             value="other"
                           />
                           <label
                             class="usa-radio__label"
-                            for="111-val-other"
+                            for="136-val-other"
                           >
                             Other
                           </label>
@@ -2202,14 +2462,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="111-val-refused"
+                            id="136-val-refused"
                             name="race"
                             type="radio"
                             value="refused"
                           />
                           <label
                             class="usa-radio__label"
-                            for="111-val-refused"
+                            for="136-val-refused"
                           >
                             Prefer not to answer
                           </label>
@@ -2232,6 +2492,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="ethnicity"
                     >
                       <legend
                         class="usa-legend"
@@ -2254,14 +2515,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="112-val-hispanic"
+                            id="137-val-hispanic"
                             name="ethnicity"
                             type="radio"
                             value="hispanic"
                           />
                           <label
                             class="usa-radio__label"
-                            for="112-val-hispanic"
+                            for="137-val-hispanic"
                           >
                             Yes
                           </label>
@@ -2272,14 +2533,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="112-val-not_hispanic"
+                            id="137-val-not_hispanic"
                             name="ethnicity"
                             type="radio"
                             value="not_hispanic"
                           />
                           <label
                             class="usa-radio__label"
-                            for="112-val-not_hispanic"
+                            for="137-val-not_hispanic"
                           >
                             No
                           </label>
@@ -2290,14 +2551,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="112-val-refused"
+                            id="137-val-refused"
                             name="ethnicity"
                             type="radio"
                             value="refused"
                           />
                           <label
                             class="usa-radio__label"
-                            for="112-val-refused"
+                            for="137-val-refused"
                           >
                             Prefer not to answer
                           </label>
@@ -2310,6 +2571,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="gender"
                     >
                       <legend
                         class="usa-legend"
@@ -2337,14 +2599,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="113-val-female"
+                            id="138-val-female"
                             name="gender"
                             type="radio"
                             value="female"
                           />
                           <label
                             class="usa-radio__label"
-                            for="113-val-female"
+                            for="138-val-female"
                           >
                             Female
                           </label>
@@ -2355,14 +2617,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="113-val-male"
+                            id="138-val-male"
                             name="gender"
                             type="radio"
                             value="male"
                           />
                           <label
                             class="usa-radio__label"
-                            for="113-val-male"
+                            for="138-val-male"
                           >
                             Male
                           </label>
@@ -2373,14 +2635,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="113-val-other"
+                            id="138-val-other"
                             name="gender"
                             type="radio"
                             value="other"
                           />
                           <label
                             class="usa-radio__label"
-                            for="113-val-other"
+                            for="138-val-other"
                           >
                             Other
                           </label>
@@ -2391,14 +2653,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="true"
-                            id="113-val-refused"
+                            id="138-val-refused"
                             name="gender"
                             type="radio"
                             value="refused"
                           />
                           <label
                             class="usa-radio__label"
-                            for="113-val-refused"
+                            for="138-val-refused"
                           >
                             Prefer not to answer
                           </label>
@@ -2407,8 +2669,8 @@ Object {
                     </fieldset>
                   </div>
                 </fieldset>
-              </div>
-              <div
+              </form>
+              <form
                 class="prime-formgroup"
               >
                 <fieldset
@@ -2417,13 +2679,14 @@ Object {
                   <legend
                     class="prime-formgroup-heading usa-legend"
                   >
-                    Other information
+                    Housing and work
                   </legend>
                   <div
                     class="usa-form-group"
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="residentCongregateSetting"
                     >
                       <legend
                         class="usa-legend"
@@ -2445,14 +2708,14 @@ Object {
                             checked=""
                             class="usa-radio__input"
                             data-required="false"
-                            id="114-val-YES"
+                            id="139-val-YES"
                             name="residentCongregateSetting"
                             type="radio"
                             value="YES"
                           />
                           <label
                             class="usa-radio__label"
-                            for="114-val-YES"
+                            for="139-val-YES"
                           >
                             Yes
                           </label>
@@ -2463,14 +2726,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="false"
-                            id="114-val-NO"
+                            id="139-val-NO"
                             name="residentCongregateSetting"
                             type="radio"
                             value="NO"
                           />
                           <label
                             class="usa-radio__label"
-                            for="114-val-NO"
+                            for="139-val-NO"
                           >
                             No
                           </label>
@@ -2481,14 +2744,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="false"
-                            id="114-val-NOT_SURE"
+                            id="139-val-NOT_SURE"
                             name="residentCongregateSetting"
                             type="radio"
                             value="NOT_SURE"
                           />
                           <label
                             class="usa-radio__label"
-                            for="114-val-NOT_SURE"
+                            for="139-val-NOT_SURE"
                           >
                             Not sure
                           </label>
@@ -2501,6 +2764,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="employedInHealthcare"
                     >
                       <legend
                         class="usa-legend"
@@ -2517,14 +2781,14 @@ Object {
                             checked=""
                             class="usa-radio__input"
                             data-required="false"
-                            id="115-val-YES"
+                            id="140-val-YES"
                             name="employedInHealthcare"
                             type="radio"
                             value="YES"
                           />
                           <label
                             class="usa-radio__label"
-                            for="115-val-YES"
+                            for="140-val-YES"
                           >
                             Yes
                           </label>
@@ -2535,14 +2799,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="false"
-                            id="115-val-NO"
+                            id="140-val-NO"
                             name="employedInHealthcare"
                             type="radio"
                             value="NO"
                           />
                           <label
                             class="usa-radio__label"
-                            for="115-val-NO"
+                            for="140-val-NO"
                           >
                             No
                           </label>
@@ -2553,14 +2817,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="false"
-                            id="115-val-NOT_SURE"
+                            id="140-val-NOT_SURE"
                             name="employedInHealthcare"
                             type="radio"
                             value="NOT_SURE"
                           />
                           <label
                             class="usa-radio__label"
-                            for="115-val-NOT_SURE"
+                            for="140-val-NOT_SURE"
                           >
                             Not sure
                           </label>
@@ -2569,11 +2833,12 @@ Object {
                     </fieldset>
                   </div>
                 </fieldset>
-              </div>
+              </form>
               <div
                 class="prime-edit-patient-heading"
               >
                 <button
+                  aria-disabled="true"
                   class="usa-button usa-button-disabled prime-save-patient-changes"
                   disabled=""
                   id="edit-patient-save-lower"
@@ -2583,7 +2848,7 @@ Object {
                 </button>
               </div>
             </div>
-          </main>
+          </div>
         </div>
       </div>
     </div>
@@ -2593,19 +2858,19 @@ Object {
   </body>,
   "container": <div>
     <div
-      class="bg-base-lightest"
+      class="prime-home bg-base-lightest"
     >
       <div
         class="grid-container"
       >
-        <main
-          class="prime-edit-patient prime-home"
+        <div
+          class="prime-edit-patient"
         >
           <div
             class="margin-bottom-4"
           >
             <div
-              class="patient__header"
+              class="patient__header "
             >
               <div
                 class="display-flex flex-justify"
@@ -2628,7 +2893,7 @@ Object {
                       class="margin-left-05"
                       href="/patients"
                     >
-                      People
+                      Patients
                     </a>
                   </div>
                   <div
@@ -2645,9 +2910,10 @@ Object {
                   class="display-flex flex-align-center"
                 >
                   <button
+                    aria-disabled="true"
                     class="usa-button usa-button--outline usa-button-disabled prime-save-patient-changes-start-test"
                     disabled=""
-                    id="edit-patient-save-lower"
+                    id="edit-patient-save-upper"
                     type="button"
                   >
                     Save and start test
@@ -2661,7 +2927,7 @@ Object {
                 </div>
               </div>
             </div>
-            <div
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -2693,7 +2959,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="95"
+                      for="120"
                     >
                       First name
                       <abbr
@@ -2708,7 +2974,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="95"
+                      id="120"
                       name="firstName"
                       type="text"
                       value="Eugenia"
@@ -2719,7 +2985,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="96"
+                      for="121"
                     >
                       Middle name
                     </label>
@@ -2727,7 +2993,7 @@ Object {
                       aria-disabled="false"
                       aria-required="false"
                       class="usa-input"
-                      id="96"
+                      id="121"
                       name="middleName"
                       type="text"
                       value=""
@@ -2738,7 +3004,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="97"
+                      for="122"
                     >
                       Last name
                       <abbr
@@ -2753,7 +3019,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="97"
+                      id="122"
                       name="lastName"
                       type="text"
                       value="Franecki"
@@ -2768,14 +3034,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="98"
+                      for="123"
                     >
                       Role
                     </label>
                     <select
                       aria-required="false"
                       class="usa-select"
-                      id="98"
+                      id="123"
                       name="role"
                     >
                       <option
@@ -2784,21 +3050,25 @@ Object {
                         - Select -
                       </option>
                       <option
+                        aria-selected="false"
                         value="STAFF"
                       >
                         Staff
                       </option>
                       <option
+                        aria-selected="false"
                         value="RESIDENT"
                       >
                         Resident
                       </option>
                       <option
+                        aria-selected="false"
                         value="STUDENT"
                       >
                         Student
                       </option>
                       <option
+                        aria-selected="false"
                         value="VISITOR"
                       >
                         Visitor
@@ -2810,7 +3080,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="99"
+                      for="124"
                     >
                       Testing facility
                       <abbr
@@ -2824,7 +3094,7 @@ Object {
                     <select
                       aria-required="true"
                       class="usa-select"
-                      id="99"
+                      id="124"
                       name="facilityId"
                     >
                       <option
@@ -2833,11 +3103,13 @@ Object {
                         - Select -
                       </option>
                       <option
+                        aria-selected="true"
                         value="~~ALL-FACILITIES~~"
                       >
                         All facilities
                       </option>
                       <option
+                        aria-selected="false"
                         value="b0d2041f-93c9-4192-b19a-dd99c0044a7e"
                       >
                         123
@@ -2863,7 +3135,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="100"
+                      for="125"
                     >
                       Date of birth (mm/dd/yyyy)
                       <abbr
@@ -2878,7 +3150,7 @@ Object {
                       aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
-                      id="100"
+                      id="125"
                       max="2021-08-01"
                       min="1900-01-01"
                       name="birthDate"
@@ -2888,8 +3160,8 @@ Object {
                   </div>
                 </div>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -2910,14 +3182,15 @@ Object {
                 >
                   <div>
                     <div
-                      class="display-flex"
+                      class="display-flex "
                     >
                       <div
-                        class="usa-form-group flex-fill"
+                        class="usa-form-group flex-fill phoneNumberFormElement"
+                        id="phoneInput-0"
                       >
                         <label
                           class="usa-label"
-                          for="101"
+                          for="126"
                         >
                           Primary phone number
                           <abbr
@@ -2931,7 +3204,8 @@ Object {
                         <input
                           aria-required="true"
                           class="usa-input"
-                          id="101"
+                          data-testid="phoneInput-0"
+                          id="126"
                           name="number"
                           type="text"
                           value="(270) 867-5309"
@@ -2942,7 +3216,8 @@ Object {
                       class="usa-form-group"
                     >
                       <fieldset
-                        class="usa-fieldset prime-radios margin-top-3"
+                        class="usa-fieldset prime-radios margin-top-3 phoneNumberFormElement"
+                        id="phoneType-0"
                       >
                         <legend
                           class="usa-legend"
@@ -2966,14 +3241,14 @@ Object {
                               checked=""
                               class="usa-radio__input"
                               data-required="true"
-                              id="102-val-MOBILE"
+                              id="127-val-MOBILE"
                               name="phoneType-0"
                               type="radio"
                               value="MOBILE"
                             />
                             <label
                               class="usa-radio__label"
-                              for="102-val-MOBILE"
+                              for="127-val-MOBILE"
                             >
                               Mobile
                             </label>
@@ -2984,14 +3259,14 @@ Object {
                             <input
                               class="usa-radio__input"
                               data-required="true"
-                              id="102-val-LANDLINE"
+                              id="127-val-LANDLINE"
                               name="phoneType-0"
                               type="radio"
                               value="LANDLINE"
                             />
                             <label
                               class="usa-radio__label"
-                              for="102-val-LANDLINE"
+                              for="127-val-LANDLINE"
                             >
                               Landline
                             </label>
@@ -3006,7 +3281,7 @@ Object {
                   >
                     <svg
                       aria-hidden="true"
-                      class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                      class="svg-inline--fa fa-plus margin-right-1"
                       data-icon="plus"
                       data-prefix="fas"
                       focusable="false"
@@ -3015,7 +3290,7 @@ Object {
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                        d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z"
                         fill="currentColor"
                       />
                     </svg>
@@ -3026,6 +3301,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="testResultDeliveryText"
                     >
                       <legend
                         class="usa-legend"
@@ -3041,14 +3317,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="false"
-                            id="103-val-SMS"
+                            id="128-val-SMS"
                             name="testResultDeliveryText"
                             type="radio"
                             value="SMS"
                           />
                           <label
                             class="usa-radio__label"
-                            for="103-val-SMS"
+                            for="128-val-SMS"
                           >
                             Yes, text all mobile numbers on file.
                           </label>
@@ -3060,14 +3336,14 @@ Object {
                             checked=""
                             class="usa-radio__input"
                             data-required="false"
-                            id="103-val-NONE"
+                            id="128-val-NONE"
                             name="testResultDeliveryText"
                             type="radio"
                             value="NONE"
                           />
                           <label
                             class="usa-radio__label"
-                            for="103-val-NONE"
+                            for="128-val-NONE"
                           >
                             No
                           </label>
@@ -3084,49 +3360,27 @@ Object {
                   >
                     <div>
                       <div
-                        class="display-flex"
+                        class="display-flex "
                       >
                         <div
-                          class="usa-form-group flex-fill"
+                          class="usa-form-group flex-fill emailFormElement"
+                          id="email-0"
                         >
                           <label
                             class="usa-label"
-                            for="104"
+                            for="129"
                           >
                             Email address
                           </label>
                           <input
                             aria-required="false"
                             class="usa-input"
-                            id="104"
+                            data-testid="email-0"
+                            id="129"
                             name="email-0"
                             type="text"
                             value="foo@bar.com"
                           />
-                        </div>
-                        <div
-                          class="flex-align-self-end"
-                        >
-                          <button
-                            aria-label="Delete email foo@bar.com"
-                            class="usa-button--unstyled padding-105 height-5"
-                          >
-                            <svg
-                              aria-hidden="true"
-                              class="svg-inline--fa fa-trash fa-w-14 text-error"
-                              data-icon="trash"
-                              data-prefix="fas"
-                              focusable="false"
-                              role="img"
-                              viewBox="0 0 448 512"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
-                                fill="currentColor"
-                              />
-                            </svg>
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -3136,7 +3390,7 @@ Object {
                     >
                       <svg
                         aria-hidden="true"
-                        class="svg-inline--fa fa-plus fa-w-14 margin-right-1"
+                        class="svg-inline--fa fa-plus margin-right-1"
                         data-icon="plus"
                         data-prefix="fas"
                         focusable="false"
@@ -3145,7 +3399,7 @@ Object {
                         xmlns="http://www.w3.org/2000/svg"
                       >
                         <path
-                          d="M416 208H272V64c0-17.67-14.33-32-32-32h-32c-17.67 0-32 14.33-32 32v144H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h144v144c0 17.67 14.33 32 32 32h32c17.67 0 32-14.33 32-32V304h144c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                          d="M240 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H32c-17.7 0-32 14.3-32 32s14.3 32 32 32H176V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H240V80z"
                           fill="currentColor"
                         />
                       </svg>
@@ -3157,6 +3411,7 @@ Object {
                   >
                     <fieldset
                       class="usa-fieldset prime-radios"
+                      id="testResultDeliveryEmail"
                     >
                       <legend
                         class="usa-legend"
@@ -3172,14 +3427,14 @@ Object {
                           <input
                             class="usa-radio__input"
                             data-required="false"
-                            id="105-val-EMAIL"
+                            id="130-val-EMAIL"
                             name="testResultDeliveryEmail"
                             type="radio"
                             value="EMAIL"
                           />
                           <label
                             class="usa-radio__label"
-                            for="105-val-EMAIL"
+                            for="130-val-EMAIL"
                           >
                             Yes
                           </label>
@@ -3191,14 +3446,14 @@ Object {
                             checked=""
                             class="usa-radio__input"
                             data-required="false"
-                            id="105-val-NONE"
+                            id="130-val-NONE"
                             name="testResultDeliveryEmail"
                             type="radio"
                             value="NONE"
                           />
                           <label
                             class="usa-radio__label"
-                            for="105-val-NONE"
+                            for="130-val-NONE"
                           >
                             No
                           </label>
@@ -3215,7 +3470,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="106"
+                      for="131"
                     >
                       Country
                       <abbr
@@ -3229,1315 +3484,1577 @@ Object {
                     <select
                       aria-required="true"
                       class="usa-select"
-                      id="106"
+                      id="131"
                       name="country"
                     >
                       <option
+                        aria-selected="false"
                         value="AFG"
                       >
                         Afghanistan
                       </option>
                       <option
+                        aria-selected="false"
                         value="XQZ"
                       >
                         Akrotiri
                       </option>
                       <option
+                        aria-selected="false"
                         value="ALB"
                       >
                         Albania
                       </option>
                       <option
+                        aria-selected="false"
                         value="DZA"
                       >
                         Algeria
                       </option>
                       <option
+                        aria-selected="false"
                         value="ASM"
                       >
                         American Samoa
                       </option>
                       <option
+                        aria-selected="false"
                         value="AND"
                       >
                         Andorra
                       </option>
                       <option
+                        aria-selected="false"
                         value="AGO"
                       >
                         Angola
                       </option>
                       <option
+                        aria-selected="false"
                         value="AIA"
                       >
                         Anguilla
                       </option>
                       <option
+                        aria-selected="false"
                         value="ATA"
                       >
                         Antarctica
                       </option>
                       <option
+                        aria-selected="false"
                         value="ATG"
                       >
                         Antigua
                       </option>
                       <option
+                        aria-selected="false"
                         value="ARG"
                       >
                         Argentina
                       </option>
                       <option
+                        aria-selected="false"
                         value="ARM"
                       >
                         Armenia
                       </option>
                       <option
+                        aria-selected="false"
                         value="ABW"
                       >
                         Aruba
                       </option>
                       <option
+                        aria-selected="false"
                         value="XAC"
                       >
                         Ashmore and Cartier Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="AUS"
                       >
                         Australia
                       </option>
                       <option
+                        aria-selected="false"
                         value="AUT"
                       >
                         Austria
                       </option>
                       <option
+                        aria-selected="false"
                         value="AZE"
                       >
                         Azerbaijan
                       </option>
                       <option
+                        aria-selected="false"
                         value="BHS"
                       >
                         Bahamas, The
                       </option>
                       <option
+                        aria-selected="false"
                         value="BHR"
                       >
                         Bahrain
                       </option>
                       <option
+                        aria-selected="false"
                         value="XBK"
                       >
                         Baker Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="BGD"
                       >
                         Bangladesh
                       </option>
                       <option
+                        aria-selected="false"
                         value="BRB"
                       >
                         Barbados
                       </option>
                       <option
+                        aria-selected="false"
                         value="BLR"
                       >
                         Belarus
                       </option>
                       <option
+                        aria-selected="false"
                         value="BEL"
                       >
                         Belgium
                       </option>
                       <option
+                        aria-selected="false"
                         value="BLZ"
                       >
                         Belize
                       </option>
                       <option
+                        aria-selected="false"
                         value="BEN"
                       >
                         Benin
                       </option>
                       <option
+                        aria-selected="false"
                         value="BMU"
                       >
                         Bermuda
                       </option>
                       <option
+                        aria-selected="false"
                         value="BTN"
                       >
                         Bhutan
                       </option>
                       <option
+                        aria-selected="false"
                         value="BOL"
                       >
                         Bolivia
                       </option>
                       <option
+                        aria-selected="false"
                         value="BIH"
                       >
                         Bosnia and Herzegovina
                       </option>
                       <option
+                        aria-selected="false"
                         value="BWA"
                       >
                         Botswana
                       </option>
                       <option
+                        aria-selected="false"
                         value="BVT"
                       >
                         Bouvet Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="BRA"
                       >
                         Brazil
                       </option>
                       <option
+                        aria-selected="false"
                         value="IOT"
                       >
                         British Indian Ocean Territory
                       </option>
                       <option
+                        aria-selected="false"
                         value="BRN"
                       >
                         Brunei
                       </option>
                       <option
+                        aria-selected="false"
                         value="BGR"
                       >
                         Bulgaria
                       </option>
                       <option
+                        aria-selected="false"
                         value="BFA"
                       >
                         Burkina Faso
                       </option>
                       <option
+                        aria-selected="false"
                         value="MMR"
                       >
                         Burma
                       </option>
                       <option
+                        aria-selected="false"
                         value="BDI"
                       >
                         Burundi
                       </option>
                       <option
+                        aria-selected="false"
                         value="CPV"
                       >
                         Cabo Verde
                       </option>
                       <option
+                        aria-selected="false"
                         value="KHM"
                       >
                         Cambodia
                       </option>
                       <option
+                        aria-selected="false"
                         value="CMR"
                       >
                         Cameroon
                       </option>
                       <option
+                        aria-selected="false"
                         value="CAN"
                       >
                         Canada
                       </option>
                       <option
+                        aria-selected="false"
                         value="CYM"
                       >
                         Cayman Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="CAF"
                       >
                         Central African Republic
                       </option>
                       <option
+                        aria-selected="false"
                         value="TCD"
                       >
                         Chad
                       </option>
                       <option
+                        aria-selected="false"
                         value="CHL"
                       >
                         Chile
                       </option>
                       <option
+                        aria-selected="false"
                         value="CHN"
                       >
                         China
                       </option>
                       <option
+                        aria-selected="false"
                         value="CXR"
                       >
                         Christmas Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="CPT"
                       >
                         Clipperton Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="CCK"
                       >
                         Cocos (Keeling) Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="COL"
                       >
                         Colombia
                       </option>
                       <option
+                        aria-selected="false"
                         value="COM"
                       >
                         Comoros
                       </option>
                       <option
+                        aria-selected="false"
                         value="COK"
                       >
                         Cook Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="XCS"
                       >
                         Coral Sea Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="CRI"
                       >
                         Costa Rica
                       </option>
                       <option
+                        aria-selected="false"
                         value="CIV"
                       >
                         Côte d’Ivoire
                       </option>
                       <option
+                        aria-selected="false"
                         value="HRV"
                       >
                         Croatia
                       </option>
                       <option
+                        aria-selected="false"
                         value="CUB"
                       >
                         Cuba
                       </option>
                       <option
+                        aria-selected="false"
                         value="CUW"
                       >
                         Curaçao
                       </option>
                       <option
+                        aria-selected="false"
                         value="CYP"
                       >
                         Cyprus
                       </option>
                       <option
+                        aria-selected="false"
                         value="CZE"
                       >
                         Czechia
                       </option>
                       <option
+                        aria-selected="false"
                         value="COD"
                       >
                         Democratic Republic of the Congo
                       </option>
                       <option
+                        aria-selected="false"
                         value="DNK"
                       >
                         Denmark
                       </option>
                       <option
+                        aria-selected="false"
                         value="XXD"
                       >
                         Dhekelia
                       </option>
                       <option
+                        aria-selected="false"
                         value="DJI"
                       >
                         Djibouti
                       </option>
                       <option
+                        aria-selected="false"
                         value="DMA"
                       >
                         Dominica
                       </option>
                       <option
+                        aria-selected="false"
                         value="DOM"
                       >
                         Dominican Republic
                       </option>
                       <option
+                        aria-selected="false"
                         value="ECU"
                       >
                         Ecuador
                       </option>
                       <option
+                        aria-selected="false"
                         value="EGY"
                       >
                         Egypt
                       </option>
                       <option
+                        aria-selected="false"
                         value="SLV"
                       >
                         El Salvador
                       </option>
                       <option
+                        aria-selected="false"
                         value="GNQ"
                       >
                         Equatorial Guinea
                       </option>
                       <option
+                        aria-selected="false"
                         value="ERI"
                       >
                         Eritrea
                       </option>
                       <option
+                        aria-selected="false"
                         value="EST"
                       >
                         Estonia
                       </option>
                       <option
+                        aria-selected="false"
                         value="SWZ"
                       >
                         Eswatini
                       </option>
                       <option
+                        aria-selected="false"
                         value="ETH"
                       >
                         Ethiopia
                       </option>
                       <option
+                        aria-selected="false"
                         value="FLK"
                       >
                         Falkland Islands (Islas Malvinas)
                       </option>
                       <option
+                        aria-selected="false"
                         value="FRO"
                       >
                         Faroe Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="FJI"
                       >
                         Fiji
                       </option>
                       <option
+                        aria-selected="false"
                         value="FIN"
                       >
                         Finland
                       </option>
                       <option
+                        aria-selected="false"
                         value="FRA"
                       >
                         France
                       </option>
                       <option
+                        aria-selected="false"
                         value="GUF"
                       >
                         French Guiana
                       </option>
                       <option
+                        aria-selected="false"
                         value="PYF"
                       >
                         French Polynesia
                       </option>
                       <option
+                        aria-selected="false"
                         value="ATF"
                       >
                         French Southern and Antarctic Lands
                       </option>
                       <option
+                        aria-selected="false"
                         value="GAB"
                       >
                         Gabon
                       </option>
                       <option
+                        aria-selected="false"
                         value="GMB"
                       >
                         Gambia, The
                       </option>
                       <option
+                        aria-selected="false"
                         value="GEO"
                       >
                         Georgia
                       </option>
                       <option
+                        aria-selected="false"
                         value="DEU"
                       >
                         Germany
                       </option>
                       <option
+                        aria-selected="false"
                         value="GHA"
                       >
                         Ghana
                       </option>
                       <option
+                        aria-selected="false"
                         value="GIB"
                       >
                         Gibraltar
                       </option>
                       <option
+                        aria-selected="false"
                         value="GRC"
                       >
                         Greece
                       </option>
                       <option
+                        aria-selected="false"
                         value="GRL"
                       >
                         Greenland
                       </option>
                       <option
+                        aria-selected="false"
                         value="GRD"
                       >
                         Grenada
                       </option>
                       <option
+                        aria-selected="false"
                         value="GLP"
                       >
                         Guadeloupe
                       </option>
                       <option
+                        aria-selected="false"
                         value="GUM"
                       >
                         Guam
                       </option>
                       <option
+                        aria-selected="false"
                         value="GTM"
                       >
                         Guatemala
                       </option>
                       <option
+                        aria-selected="false"
                         value="GGY"
                       >
                         Guernsey
                       </option>
                       <option
+                        aria-selected="false"
                         value="GIN"
                       >
                         Guinea
                       </option>
                       <option
+                        aria-selected="false"
                         value="GNB"
                       >
                         Guinea-Bissau
                       </option>
                       <option
+                        aria-selected="false"
                         value="GUY"
                       >
                         Guyana
                       </option>
                       <option
+                        aria-selected="false"
                         value="HTI"
                       >
                         Haiti
                       </option>
                       <option
+                        aria-selected="false"
                         value="HMD"
                       >
                         Heard Island and McDonald Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="VAT"
                       >
                         Holy See
                       </option>
                       <option
+                        aria-selected="false"
                         value="HND"
                       >
                         Honduras
                       </option>
                       <option
+                        aria-selected="false"
                         value="HKG"
                       >
                         Hong Kong
                       </option>
                       <option
+                        aria-selected="false"
                         value="XHO"
                       >
                         Howland Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="HUN"
                       >
                         Hungary
                       </option>
                       <option
+                        aria-selected="false"
                         value="ISL"
                       >
                         Iceland
                       </option>
                       <option
+                        aria-selected="false"
                         value="IND"
                       >
                         India
                       </option>
                       <option
+                        aria-selected="false"
                         value="IDN"
                       >
                         Indonesia
                       </option>
                       <option
+                        aria-selected="false"
                         value="IRN"
                       >
                         Iran
                       </option>
                       <option
+                        aria-selected="false"
                         value="IRQ"
                       >
                         Iraq
                       </option>
                       <option
+                        aria-selected="false"
                         value="IRL"
                       >
                         Ireland
                       </option>
                       <option
+                        aria-selected="false"
                         value="IMN"
                       >
                         Isle of Man
                       </option>
                       <option
+                        aria-selected="false"
                         value="ISR"
                       >
                         Israel
                       </option>
                       <option
+                        aria-selected="false"
                         value="ITA"
                       >
                         Italy
                       </option>
                       <option
+                        aria-selected="false"
                         value="JAM"
                       >
                         Jamaica
                       </option>
                       <option
+                        aria-selected="false"
                         value="XJM"
                       >
                         Jan Mayen
                       </option>
                       <option
+                        aria-selected="false"
                         value="JPN"
                       >
                         Japan
                       </option>
                       <option
+                        aria-selected="false"
                         value="XJV"
                       >
                         Jarvis Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="JEY"
                       >
                         Jersey
                       </option>
                       <option
+                        aria-selected="false"
                         value="XJA"
                       >
                         Johnston Atoll
                       </option>
                       <option
+                        aria-selected="false"
                         value="JOR"
                       >
                         Jordan
                       </option>
                       <option
+                        aria-selected="false"
                         value="KAZ"
                       >
                         Kazakhstan
                       </option>
                       <option
+                        aria-selected="false"
                         value="KEN"
                       >
                         Kenya
                       </option>
                       <option
+                        aria-selected="false"
                         value="XKR"
                       >
                         Kingman Reef
                       </option>
                       <option
+                        aria-selected="false"
                         value="KIR"
                       >
                         Kiribati
                       </option>
                       <option
+                        aria-selected="false"
                         value="PRK"
                       >
                         Korea, North
                       </option>
                       <option
+                        aria-selected="false"
                         value="KOR"
                       >
                         Korea, South
                       </option>
                       <option
+                        aria-selected="false"
                         value="XKS"
                       >
                         Kosovo
                       </option>
                       <option
+                        aria-selected="false"
                         value="KWT"
                       >
                         Kuwait
                       </option>
                       <option
+                        aria-selected="false"
                         value="KGZ"
                       >
                         Kyrgyzstan
                       </option>
                       <option
+                        aria-selected="false"
                         value="LAO"
                       >
                         Laos
                       </option>
                       <option
+                        aria-selected="false"
                         value="LVA"
                       >
                         Latvia
                       </option>
                       <option
+                        aria-selected="false"
                         value="LBN"
                       >
                         Lebanon
                       </option>
                       <option
+                        aria-selected="false"
                         value="LSO"
                       >
                         Lesotho
                       </option>
                       <option
+                        aria-selected="false"
                         value="LBR"
                       >
                         Liberia
                       </option>
                       <option
+                        aria-selected="false"
                         value="LBY"
                       >
                         Libya
                       </option>
                       <option
+                        aria-selected="false"
                         value="LIE"
                       >
                         Liechtenstein
                       </option>
                       <option
+                        aria-selected="false"
                         value="LTU"
                       >
                         Lithuania
                       </option>
                       <option
+                        aria-selected="false"
                         value="LUX"
                       >
                         Luxembourg
                       </option>
                       <option
+                        aria-selected="false"
                         value="MAC"
                       >
                         Macau
                       </option>
                       <option
+                        aria-selected="false"
                         value="MDG"
                       >
                         Madagascar
                       </option>
                       <option
+                        aria-selected="false"
                         value="MWI"
                       >
                         Malawi
                       </option>
                       <option
+                        aria-selected="false"
                         value="MYS"
                       >
                         Malaysia
                       </option>
                       <option
+                        aria-selected="false"
                         value="MDV"
                       >
                         Maldives
                       </option>
                       <option
+                        aria-selected="false"
                         value="MLI"
                       >
                         Mali
                       </option>
                       <option
+                        aria-selected="false"
                         value="MLT"
                       >
                         Malta
                       </option>
                       <option
+                        aria-selected="false"
                         value="MHL"
                       >
                         Marshall Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="MTQ"
                       >
                         Martinique
                       </option>
                       <option
+                        aria-selected="false"
                         value="MRT"
                       >
                         Mauritania
                       </option>
                       <option
+                        aria-selected="false"
                         value="MUS"
                       >
                         Mauritius
                       </option>
                       <option
+                        aria-selected="false"
                         value="MYT"
                       >
                         Mayotte
                       </option>
                       <option
+                        aria-selected="false"
                         value="MEX"
                       >
                         Mexico
                       </option>
                       <option
+                        aria-selected="false"
                         value="FSM"
                       >
                         Micronesia, Federated States of
                       </option>
                       <option
+                        aria-selected="false"
                         value="XMW"
                       >
                         Midway Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="MDA"
                       >
                         Moldova
                       </option>
                       <option
+                        aria-selected="false"
                         value="MCO"
                       >
                         Monaco
                       </option>
                       <option
+                        aria-selected="false"
                         value="MNG"
                       >
                         Mongolia
                       </option>
                       <option
+                        aria-selected="false"
                         value="MNE"
                       >
                         Montenegro
                       </option>
                       <option
+                        aria-selected="false"
                         value="MSR"
                       >
                         Montserrat
                       </option>
                       <option
+                        aria-selected="false"
                         value="MAR"
                       >
                         Morocco
                       </option>
                       <option
+                        aria-selected="false"
                         value="MOZ"
                       >
                         Mozambique
                       </option>
                       <option
+                        aria-selected="false"
                         value="NAM"
                       >
                         Namibia
                       </option>
                       <option
+                        aria-selected="false"
                         value="NRU"
                       >
                         Nauru
                       </option>
                       <option
+                        aria-selected="false"
                         value="XNV"
                       >
                         Navassa Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="NPL"
                       >
                         Nepal
                       </option>
                       <option
+                        aria-selected="false"
                         value="NLD"
                       >
                         Netherlands
                       </option>
                       <option
+                        aria-selected="false"
                         value="NCL"
                       >
                         New Caledonia
                       </option>
                       <option
+                        aria-selected="false"
                         value="NZL"
                       >
                         New Zealand
                       </option>
                       <option
+                        aria-selected="false"
                         value="NIC"
                       >
                         Nicaragua
                       </option>
                       <option
+                        aria-selected="false"
                         value="NER"
                       >
                         Niger
                       </option>
                       <option
+                        aria-selected="false"
                         value="NGA"
                       >
                         Nigeria
                       </option>
                       <option
+                        aria-selected="false"
                         value="NIU"
                       >
                         Niue
                       </option>
                       <option
+                        aria-selected="false"
                         value="NFK"
                       >
                         Norfolk Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="MKD"
                       >
                         North Macedonia
                       </option>
                       <option
+                        aria-selected="false"
                         value="MNP"
                       >
                         Northern Mariana Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="NOR"
                       >
                         Norway
                       </option>
                       <option
+                        aria-selected="false"
                         value="OMN"
                       >
                         Oman
                       </option>
                       <option
+                        aria-selected="false"
                         value="PAK"
                       >
                         Pakistan
                       </option>
                       <option
+                        aria-selected="false"
                         value="PLW"
                       >
                         Palau
                       </option>
                       <option
+                        aria-selected="false"
                         value="XPL"
                       >
                         Palmyra Atoll
                       </option>
                       <option
+                        aria-selected="false"
                         value="PAN"
                       >
                         Panama
                       </option>
                       <option
+                        aria-selected="false"
                         value="PNG"
                       >
                         Papua New Guinea
                       </option>
                       <option
+                        aria-selected="false"
                         value="XPR"
                       >
                         Paracel Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="PRY"
                       >
                         Paraguay
                       </option>
                       <option
+                        aria-selected="false"
                         value="PER"
                       >
                         Peru
                       </option>
                       <option
+                        aria-selected="false"
                         value="PHL"
                       >
                         Philippines
                       </option>
                       <option
+                        aria-selected="false"
                         value="PCN"
                       >
                         Pitcairn Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="POL"
                       >
                         Poland
                       </option>
                       <option
+                        aria-selected="false"
                         value="PRT"
                       >
                         Portugal
                       </option>
                       <option
+                        aria-selected="false"
                         value="PRI"
                       >
                         Puerto Rico
                       </option>
                       <option
+                        aria-selected="false"
                         value="QAT"
                       >
                         Qatar
                       </option>
                       <option
+                        aria-selected="false"
                         value="COG"
                       >
                         Republic of the Congo
                       </option>
                       <option
+                        aria-selected="false"
                         value="REU"
                       >
                         Reunion
                       </option>
                       <option
+                        aria-selected="false"
                         value="ROU"
                       >
                         Romania
                       </option>
                       <option
+                        aria-selected="false"
                         value="RUS"
                       >
                         Russia
                       </option>
                       <option
+                        aria-selected="false"
                         value="RWA"
                       >
                         Rwanda
                       </option>
                       <option
+                        aria-selected="false"
                         value="BLM"
                       >
                         Saint Barthelemy
                       </option>
                       <option
+                        aria-selected="false"
                         value="SHN"
                       >
                         Saint Helena, Ascension, and Tristan da Cunha
                       </option>
                       <option
+                        aria-selected="false"
                         value="KNA"
                       >
                         Saint Kitts and Nevis
                       </option>
                       <option
+                        aria-selected="false"
                         value="LCA"
                       >
                         Saint Lucia
                       </option>
                       <option
+                        aria-selected="false"
                         value="MAF"
                       >
                         Saint Martin
                       </option>
                       <option
+                        aria-selected="false"
                         value="SPM"
                       >
                         Saint Pierre and Miquelon
                       </option>
                       <option
+                        aria-selected="false"
                         value="VCT"
                       >
                         Saint Vincent and the Grenadines
                       </option>
                       <option
+                        aria-selected="false"
                         value="WSM"
                       >
                         Samoa
                       </option>
                       <option
+                        aria-selected="false"
                         value="SMR"
                       >
                         San Marino
                       </option>
                       <option
+                        aria-selected="false"
                         value="STP"
                       >
                         Sao Tome and Principe
                       </option>
                       <option
+                        aria-selected="false"
                         value="SAU"
                       >
                         Saudi Arabia
                       </option>
                       <option
+                        aria-selected="false"
                         value="SEN"
                       >
                         Senegal
                       </option>
                       <option
+                        aria-selected="false"
                         value="SRB"
                       >
                         Serbia
                       </option>
                       <option
+                        aria-selected="false"
                         value="SYC"
                       >
                         Seychelles
                       </option>
                       <option
+                        aria-selected="false"
                         value="SLE"
                       >
                         Sierra Leone
                       </option>
                       <option
+                        aria-selected="false"
                         value="SGP"
                       >
                         Singapore
                       </option>
                       <option
+                        aria-selected="false"
                         value="SXM"
                       >
                         Sint Maarten
                       </option>
                       <option
+                        aria-selected="false"
                         value="SVK"
                       >
                         Slovakia
                       </option>
                       <option
+                        aria-selected="false"
                         value="SVN"
                       >
                         Slovenia
                       </option>
                       <option
+                        aria-selected="false"
                         value="SLB"
                       >
                         Solomon Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="SOM"
                       >
                         Somalia
                       </option>
                       <option
+                        aria-selected="false"
                         value="ZAF"
                       >
                         South Africa
                       </option>
                       <option
+                        aria-selected="false"
                         value="SGS"
                       >
                         South Georgia and the South Sandwich Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="SSD"
                       >
                         South Sudan
                       </option>
                       <option
+                        aria-selected="false"
                         value="ESP"
                       >
                         Spain
                       </option>
                       <option
+                        aria-selected="false"
                         value="XSP"
                       >
                         Spratly Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="LKA"
                       >
                         Sri Lanka
                       </option>
                       <option
+                        aria-selected="false"
                         value="SDN"
                       >
                         Sudan
                       </option>
                       <option
+                        aria-selected="false"
                         value="SUR"
                       >
                         Suriname
                       </option>
                       <option
+                        aria-selected="false"
                         value="XSV"
                       >
                         Svalbard
                       </option>
                       <option
+                        aria-selected="false"
                         value="SWE"
                       >
                         Sweden
                       </option>
                       <option
+                        aria-selected="false"
                         value="CHE"
                       >
                         Switzerland
                       </option>
                       <option
+                        aria-selected="false"
                         value="SYR"
                       >
                         Syria
                       </option>
                       <option
+                        aria-selected="false"
                         value="TWN"
                       >
                         Taiwan
                       </option>
                       <option
+                        aria-selected="false"
                         value="TJK"
                       >
                         Tajikistan
                       </option>
                       <option
+                        aria-selected="false"
                         value="TZA"
                       >
                         Tanzania
                       </option>
                       <option
+                        aria-selected="false"
                         value="THA"
                       >
                         Thailand
                       </option>
                       <option
+                        aria-selected="false"
                         value="TLS"
                       >
                         Timor-Leste
                       </option>
                       <option
+                        aria-selected="false"
                         value="TGO"
                       >
                         Togo
                       </option>
                       <option
+                        aria-selected="false"
                         value="TKL"
                       >
                         Tokelau
                       </option>
                       <option
+                        aria-selected="false"
                         value="TON"
                       >
                         Tonga
                       </option>
                       <option
+                        aria-selected="false"
                         value="TTO"
                       >
                         Trinidad and Tobago
                       </option>
                       <option
+                        aria-selected="false"
                         value="TUN"
                       >
                         Tunisia
                       </option>
                       <option
+                        aria-selected="false"
                         value="TUR"
                       >
                         Turkey
                       </option>
                       <option
+                        aria-selected="false"
                         value="TKM"
                       >
                         Turkmenistan
                       </option>
                       <option
+                        aria-selected="false"
                         value="TCA"
                       >
                         Turks and Caicos Islands
                       </option>
                       <option
+                        aria-selected="false"
                         value="TUV"
                       >
                         Tuvalu
                       </option>
                       <option
+                        aria-selected="false"
                         value="UGA"
                       >
                         Uganda
                       </option>
                       <option
+                        aria-selected="false"
                         value="UKR"
                       >
                         Ukraine
                       </option>
                       <option
+                        aria-selected="false"
                         value="ARE"
                       >
                         United Arab Emirates
                       </option>
                       <option
+                        aria-selected="false"
                         value="GBR"
                       >
                         United Kingdom
                       </option>
                       <option
+                        aria-selected="true"
                         value="USA"
                       >
                         United States
                       </option>
                       <option
+                        aria-selected="false"
                         value="URY"
                       >
                         Uruguay
                       </option>
                       <option
+                        aria-selected="false"
                         value="UZB"
                       >
                         Uzbekistan
                       </option>
                       <option
+                        aria-selected="false"
                         value="VUT"
                       >
                         Vanuatu
                       </option>
                       <option
+                        aria-selected="false"
                         value="VEN"
                       >
                         Venezuela
                       </option>
                       <option
+                        aria-selected="false"
                         value="VNM"
                       >
                         Vietnam
                       </option>
                       <option
+                        aria-selected="false"
                         value="VGB"
                       >
                         Virgin Islands, British
                       </option>
                       <option
+                        aria-selected="false"
                         value="VIR"
                       >
                         Virgin Islands, U.S.
                       </option>
                       <option
+                        aria-selected="false"
                         value="XWK"
                       >
                         Wake Island
                       </option>
                       <option
+                        aria-selected="false"
                         value="WLF"
                       >
                         Wallis and Futuna
                       </option>
                       <option
+                        aria-selected="false"
                         value="YEM"
                       >
                         Yemen
                       </option>
                       <option
+                        aria-selected="false"
                         value="ZMB"
                       >
                         Zambia
                       </option>
                       <option
+                        aria-selected="false"
                         value="ZWE"
                       >
                         Zimbabwe
@@ -4553,7 +5070,7 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="107"
+                      for="132"
                     >
                       Street address 1
                       <abbr
@@ -4567,7 +5084,7 @@ Object {
                     <input
                       aria-required="true"
                       class="usa-input"
-                      id="107"
+                      id="132"
                       name="street"
                       type="text"
                       value="736 Jackson PI NW"
@@ -4582,14 +5099,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="108"
+                      for="133"
                     >
                       Street address 2
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="108"
+                      id="133"
                       name="streetTwo"
                       type="text"
                       value="DC"
@@ -4604,14 +5121,21 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="109"
+                      for="134"
                     >
                       City
+                      <abbr
+                        class="usa-hint usa-hint--required"
+                        title="required"
+                      >
+                         
+                        *
+                      </abbr>
                     </label>
                     <input
-                      aria-required="false"
+                      aria-required="true"
                       class="usa-input"
-                      id="109"
+                      id="134"
                       name="city"
                       type="text"
                       value=""
@@ -4622,14 +5146,14 @@ Object {
                   >
                     <label
                       class="usa-label"
-                      for="110"
+                      for="135"
                     >
                       County
                     </label>
                     <input
                       aria-required="false"
                       class="usa-input"
-                      id="110"
+                      id="135"
                       name="county"
                       type="text"
                       value=""
@@ -4637,8 +5161,8 @@ Object {
                   </div>
                 </div>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -4659,6 +5183,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="race"
                   >
                     <legend
                       class="usa-legend"
@@ -4681,14 +5206,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="111-val-native"
+                          id="136-val-native"
                           name="race"
                           type="radio"
                           value="native"
                         />
                         <label
                           class="usa-radio__label"
-                          for="111-val-native"
+                          for="136-val-native"
                         >
                           American Indian/Alaskan Native
                         </label>
@@ -4699,14 +5224,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="111-val-asian"
+                          id="136-val-asian"
                           name="race"
                           type="radio"
                           value="asian"
                         />
                         <label
                           class="usa-radio__label"
-                          for="111-val-asian"
+                          for="136-val-asian"
                         >
                           Asian
                         </label>
@@ -4717,14 +5242,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="111-val-black"
+                          id="136-val-black"
                           name="race"
                           type="radio"
                           value="black"
                         />
                         <label
                           class="usa-radio__label"
-                          for="111-val-black"
+                          for="136-val-black"
                         >
                           Black/African American
                         </label>
@@ -4735,14 +5260,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="111-val-pacific"
+                          id="136-val-pacific"
                           name="race"
                           type="radio"
                           value="pacific"
                         />
                         <label
                           class="usa-radio__label"
-                          for="111-val-pacific"
+                          for="136-val-pacific"
                         >
                           Native Hawaiian/other Pacific Islander
                         </label>
@@ -4753,14 +5278,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="111-val-white"
+                          id="136-val-white"
                           name="race"
                           type="radio"
                           value="white"
                         />
                         <label
                           class="usa-radio__label"
-                          for="111-val-white"
+                          for="136-val-white"
                         >
                           White
                         </label>
@@ -4771,14 +5296,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="111-val-other"
+                          id="136-val-other"
                           name="race"
                           type="radio"
                           value="other"
                         />
                         <label
                           class="usa-radio__label"
-                          for="111-val-other"
+                          for="136-val-other"
                         >
                           Other
                         </label>
@@ -4789,14 +5314,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="111-val-refused"
+                          id="136-val-refused"
                           name="race"
                           type="radio"
                           value="refused"
                         />
                         <label
                           class="usa-radio__label"
-                          for="111-val-refused"
+                          for="136-val-refused"
                         >
                           Prefer not to answer
                         </label>
@@ -4819,6 +5344,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="ethnicity"
                   >
                     <legend
                       class="usa-legend"
@@ -4841,14 +5367,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="112-val-hispanic"
+                          id="137-val-hispanic"
                           name="ethnicity"
                           type="radio"
                           value="hispanic"
                         />
                         <label
                           class="usa-radio__label"
-                          for="112-val-hispanic"
+                          for="137-val-hispanic"
                         >
                           Yes
                         </label>
@@ -4859,14 +5385,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="112-val-not_hispanic"
+                          id="137-val-not_hispanic"
                           name="ethnicity"
                           type="radio"
                           value="not_hispanic"
                         />
                         <label
                           class="usa-radio__label"
-                          for="112-val-not_hispanic"
+                          for="137-val-not_hispanic"
                         >
                           No
                         </label>
@@ -4877,14 +5403,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="112-val-refused"
+                          id="137-val-refused"
                           name="ethnicity"
                           type="radio"
                           value="refused"
                         />
                         <label
                           class="usa-radio__label"
-                          for="112-val-refused"
+                          for="137-val-refused"
                         >
                           Prefer not to answer
                         </label>
@@ -4897,6 +5423,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="gender"
                   >
                     <legend
                       class="usa-legend"
@@ -4924,14 +5451,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="113-val-female"
+                          id="138-val-female"
                           name="gender"
                           type="radio"
                           value="female"
                         />
                         <label
                           class="usa-radio__label"
-                          for="113-val-female"
+                          for="138-val-female"
                         >
                           Female
                         </label>
@@ -4942,14 +5469,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="113-val-male"
+                          id="138-val-male"
                           name="gender"
                           type="radio"
                           value="male"
                         />
                         <label
                           class="usa-radio__label"
-                          for="113-val-male"
+                          for="138-val-male"
                         >
                           Male
                         </label>
@@ -4960,14 +5487,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="113-val-other"
+                          id="138-val-other"
                           name="gender"
                           type="radio"
                           value="other"
                         />
                         <label
                           class="usa-radio__label"
-                          for="113-val-other"
+                          for="138-val-other"
                         >
                           Other
                         </label>
@@ -4978,14 +5505,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="true"
-                          id="113-val-refused"
+                          id="138-val-refused"
                           name="gender"
                           type="radio"
                           value="refused"
                         />
                         <label
                           class="usa-radio__label"
-                          for="113-val-refused"
+                          for="138-val-refused"
                         >
                           Prefer not to answer
                         </label>
@@ -4994,8 +5521,8 @@ Object {
                   </fieldset>
                 </div>
               </fieldset>
-            </div>
-            <div
+            </form>
+            <form
               class="prime-formgroup"
             >
               <fieldset
@@ -5004,13 +5531,14 @@ Object {
                 <legend
                   class="prime-formgroup-heading usa-legend"
                 >
-                  Other information
+                  Housing and work
                 </legend>
                 <div
                   class="usa-form-group"
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="residentCongregateSetting"
                   >
                     <legend
                       class="usa-legend"
@@ -5032,14 +5560,14 @@ Object {
                           checked=""
                           class="usa-radio__input"
                           data-required="false"
-                          id="114-val-YES"
+                          id="139-val-YES"
                           name="residentCongregateSetting"
                           type="radio"
                           value="YES"
                         />
                         <label
                           class="usa-radio__label"
-                          for="114-val-YES"
+                          for="139-val-YES"
                         >
                           Yes
                         </label>
@@ -5050,14 +5578,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="114-val-NO"
+                          id="139-val-NO"
                           name="residentCongregateSetting"
                           type="radio"
                           value="NO"
                         />
                         <label
                           class="usa-radio__label"
-                          for="114-val-NO"
+                          for="139-val-NO"
                         >
                           No
                         </label>
@@ -5068,14 +5596,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="114-val-NOT_SURE"
+                          id="139-val-NOT_SURE"
                           name="residentCongregateSetting"
                           type="radio"
                           value="NOT_SURE"
                         />
                         <label
                           class="usa-radio__label"
-                          for="114-val-NOT_SURE"
+                          for="139-val-NOT_SURE"
                         >
                           Not sure
                         </label>
@@ -5088,6 +5616,7 @@ Object {
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    id="employedInHealthcare"
                   >
                     <legend
                       class="usa-legend"
@@ -5104,14 +5633,14 @@ Object {
                           checked=""
                           class="usa-radio__input"
                           data-required="false"
-                          id="115-val-YES"
+                          id="140-val-YES"
                           name="employedInHealthcare"
                           type="radio"
                           value="YES"
                         />
                         <label
                           class="usa-radio__label"
-                          for="115-val-YES"
+                          for="140-val-YES"
                         >
                           Yes
                         </label>
@@ -5122,14 +5651,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="115-val-NO"
+                          id="140-val-NO"
                           name="employedInHealthcare"
                           type="radio"
                           value="NO"
                         />
                         <label
                           class="usa-radio__label"
-                          for="115-val-NO"
+                          for="140-val-NO"
                         >
                           No
                         </label>
@@ -5140,14 +5669,14 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="115-val-NOT_SURE"
+                          id="140-val-NOT_SURE"
                           name="employedInHealthcare"
                           type="radio"
                           value="NOT_SURE"
                         />
                         <label
                           class="usa-radio__label"
-                          for="115-val-NOT_SURE"
+                          for="140-val-NOT_SURE"
                         >
                           Not sure
                         </label>
@@ -5156,11 +5685,12 @@ Object {
                   </fieldset>
                 </div>
               </fieldset>
-            </div>
+            </form>
             <div
               class="prime-edit-patient-heading"
             >
               <button
+                aria-disabled="true"
                 class="usa-button usa-button-disabled prime-save-patient-changes"
                 disabled=""
                 id="edit-patient-save-lower"
@@ -5170,7 +5700,7 @@ Object {
               </button>
             </div>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   </div>,

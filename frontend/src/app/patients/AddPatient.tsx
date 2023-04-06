@@ -5,22 +5,21 @@ import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { useSelector } from "react-redux";
 
-import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
-import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
-import { showNotification, dedupeAndCompactStrings } from "../utils";
-import Alert from "../commonComponents/Alert";
+import { PATIENT_TERM_CAP } from "../../config/constants";
+import { dedupeAndCompactStrings } from "../utils";
+import { showSuccess } from "../utils/srToast";
 import Button from "../commonComponents/Button/Button";
-import {
-  DuplicatePatientModal,
-  IdentifyingData,
-} from "../../app/patients/Components/DuplicatePatientModal";
-import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { RootState } from "../store";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 
+import {
+  DuplicatePatientModal,
+  IdentifyingData,
+} from "./Components/DuplicatePatientModal";
 import PersonForm from "./Components/PersonForm";
+import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 export const EMPTY_PERSON: Nullable<PersonFormData> = {
   facilityId: "",
@@ -47,7 +46,7 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   emails: null,
   street: "",
   streetTwo: null,
-  city: null,
+  city: "",
   state: "",
   zipCode: "",
   country: "USA",
@@ -146,7 +145,7 @@ interface AddPatientResponse {
 }
 
 const AddPatient = () => {
-  useDocumentTitle("Add Patient");
+  useDocumentTitle("Add individual patient");
 
   const { t } = useTranslation();
 
@@ -248,13 +247,9 @@ const AddPatient = () => {
         emails: dedupeAndCompactStrings(person.emails || []),
       },
     });
-
-    showNotification(
-      <Alert
-        type="success"
-        title={`${PATIENT_TERM_CAP} record created`}
-        body="New information record has been created."
-      />
+    showSuccess(
+      "New information record has been created.",
+      `${PATIENT_TERM_CAP} record created`
     );
 
     if (startTest) {
@@ -289,11 +284,12 @@ const AddPatient = () => {
 
   const getSaveButtons = (
     formChanged: boolean,
-    onSave: (startTest?: boolean) => void
+    onSave: (startTest?: boolean) => void,
+    location: string
   ) => (
     <>
       <Button
-        id="edit-patient-save-lower"
+        id={`edit-patient-save-and-start-${location}`}
         className="prime-save-patient-changes-start-test"
         disabled={loading || !formChanged}
         onClick={() => {
@@ -305,7 +301,7 @@ const AddPatient = () => {
         }
       />
       <Button
-        id="edit-patient-save-lower"
+        id={`edit-patient-save-${location}`}
         className="prime-save-patient-changes"
         disabled={loading || !formChanged}
         onClick={() => {
@@ -318,13 +314,27 @@ const AddPatient = () => {
     </>
   );
 
+  function getHeader() {
+    return (
+      _: any,
+      onSave: (startTest?: boolean | undefined) => void,
+      formChanged: boolean
+    ) =>
+      AddPatientHeader({
+        additional: (
+          <div className="display-flex flex-align-center">
+            {getSaveButtons(formChanged, onSave, "upper")}
+          </div>
+        ),
+      });
+  }
+
   return (
-    <main className={"prime-edit-patient prime-home"}>
-      <div className={"grid-container margin-bottom-4"}>
+    <div className={"prime-edit-patient prime-home"}>
+      <div className={"grid-container margin-bottom-4 maxw-desktop-lg"}>
         <DuplicatePatientModal
           showModal={
-            patientExistsResponse?.patientExistsWithoutZip &&
-            preventModal === false
+            patientExistsResponse?.patientExistsWithoutZip && !preventModal
           }
           onDuplicate={() => setRedirect(personPath)}
           entityName={
@@ -341,41 +351,16 @@ const AddPatient = () => {
           patient={EMPTY_PERSON}
           savePerson={savePerson}
           onBlur={onBlur}
-          getHeader={(_, onSave, formChanged) => (
-            <div className="display-flex flex-justify">
-              <div>
-                <div className="display-flex flex-align-center">
-                  <svg
-                    className="usa-icon text-base margin-left-neg-2px"
-                    aria-hidden="true"
-                    focusable="false"
-                    role="img"
-                  >
-                    <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                  </svg>
-                  <LinkWithQuery to={`/patients`} className="margin-left-05">
-                    People
-                  </LinkWithQuery>
-                </div>
-                <div className="prime-edit-patient-heading margin-y-0">
-                  <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-                    Add new {PATIENT_TERM}
-                  </h1>
-                </div>
-              </div>
-              <div className="display-flex flex-align-center">
-                {getSaveButtons(formChanged, onSave)}
-              </div>
-            </div>
-          )}
+          getHeader={getHeader()}
+          headerClassName={"padding-bottom-0"}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">
-              {getSaveButtons(formChanged, onSave)}
+              {getSaveButtons(formChanged, onSave, "lower")}
             </div>
           )}
         />
       </div>
-    </main>
+    </div>
   );
 };
 

@@ -9,7 +9,8 @@ const getOrgNameInput = () =>
   screen.getByRole("textbox", {
     name: "Organization name required",
   });
-const getOrgStateDropdown = () => screen.getByLabelText("Organization state *");
+const getOrgStateDropdown = () =>
+  screen.getByLabelText("Organization state *") as HTMLSelectElement;
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
 const getFirstNameInput = () => screen.getByLabelText("First name *");
 const getMiddleNameInput = () => screen.getByLabelText("Middle name");
@@ -18,8 +19,8 @@ const getEmailInput = () => screen.getByLabelText("Work email *");
 const getPhoneInput = () => screen.getByLabelText("Work phone number *");
 const getSubmitButton = () => screen.getByText("Continue");
 
-const fillInDropDown = (input: any, text: string) =>
-  userEvent.selectOptions(input, [text]);
+const fillInDropDown = async (input: any, text: string) =>
+  await userEvent.selectOptions(input, [text]);
 
 jest.mock("../SignUpApi", () => ({
   SignUpApi: {
@@ -77,49 +78,87 @@ describe("OrganizationForm", () => {
   });
 
   it("displays form errors when submitting invalid input", async () => {
-    fillInDropDown(getOrgStateDropdown(), "IN");
+    await fillInDropDown(getOrgStateDropdown(), "VI");
+    await userEvent.tab();
     getSubmitButton().click();
 
-    expect(
-      await screen.findByText("Organization name is required")
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Organization name is required"));
 
     expect(
       screen.getByText("Organization type is required")
     ).toBeInTheDocument();
 
     expect(
-      screen.getByText("SimpleReport isn't available yet in your state.", {
-        exact: false,
-      })
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
     ).toBeInTheDocument();
   });
 
+  it("clears input when escaping out of modal", async () => {
+    await fillInDropDown(getOrgStateDropdown(), "VI");
+    expect(getOrgStateDropdown().value).toEqual("VI");
+    await userEvent.tab();
+    expect(
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
+    ).toBeInTheDocument();
+
+    await userEvent.keyboard("{Escape}");
+    expect(getOrgStateDropdown().value).toBeFalsy();
+  });
+
+  it("does not clear input when continuing through modal", async () => {
+    await fillInDropDown(getOrgStateDropdown(), "VI");
+    expect(getOrgStateDropdown().value).toEqual("VI");
+    await userEvent.tab();
+    expect(
+      screen.getByText(
+        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
+        {
+          exact: false,
+        }
+      )
+    ).toBeInTheDocument();
+
+    screen.getByLabelText("acknowledged").click();
+    screen.getByText("Continue sign up").click();
+
+    expect(getOrgStateDropdown().value).toEqual("VI");
+  });
+
   it("redirects to identity verification when submitting valid input", async () => {
-    userEvent.type(getOrgNameInput(), "Drake");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "ever@greatest.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "Drake");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "ever@greatest.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
       await screen.findByText("Redirected to /sign-up/identity-verification")
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a duplicate org error when submitting a duplicate org", async () => {
-    userEvent.type(getOrgNameInput(), "Duplicate");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "ever@greatest.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "Duplicate");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "ever@greatest.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -127,18 +166,18 @@ describe("OrganizationForm", () => {
         "This organization already has a SimpleReport account. Please contact your organization administrator to request access.",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a duplicate email error when submitting a duplicate email", async () => {
-    userEvent.type(getOrgNameInput(), "Foo");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "duplicate@test.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "Foo");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "duplicate@test.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -146,18 +185,18 @@ describe("OrganizationForm", () => {
         "This email address is already registered with SimpleReport.",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a duplicate org error and id verification link for an admin re-signing up", async () => {
-    userEvent.type(getOrgNameInput(), "DuplicateAdmin");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "admin@example.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "DuplicateAdmin");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "admin@example.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -165,18 +204,18 @@ describe("OrganizationForm", () => {
         "Your organization is already registered with SimpleReport. To begin using it, schedule a time",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a duplicate org error and instructions for admin user who has finished id verification", async () => {
-    userEvent.type(getOrgNameInput(), "IdentityVerificationComplete");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "admin@example.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "IdentityVerificationComplete");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "admin@example.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -184,18 +223,18 @@ describe("OrganizationForm", () => {
         "Your organization is already registered with SimpleReport. Check your email for instructions on setting up your account.",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("displays a generic error message for Okta internal errors", async () => {
-    userEvent.type(getOrgNameInput(), "InternalError");
-    fillInDropDown(getOrgStateDropdown(), "TX");
-    fillInDropDown(getOrgTypeDropdown(), "Employer");
-    userEvent.type(getFirstNameInput(), "Greatest");
-    userEvent.type(getMiddleNameInput(), "OG");
-    userEvent.type(getLastNameInput(), "Ever");
-    userEvent.type(getEmailInput(), "admin@example.com");
-    userEvent.type(getPhoneInput(), "8008675309");
+    await userEvent.type(getOrgNameInput(), "InternalError");
+    await fillInDropDown(getOrgStateDropdown(), "TX");
+    await fillInDropDown(getOrgTypeDropdown(), "Employer");
+    await userEvent.type(getFirstNameInput(), "Greatest");
+    await userEvent.type(getMiddleNameInput(), "OG");
+    await userEvent.type(getLastNameInput(), "Ever");
+    await userEvent.type(getEmailInput(), "admin@example.com");
+    await userEvent.type(getPhoneInput(), "8008675309");
     getSubmitButton().click();
 
     expect(
@@ -203,6 +242,6 @@ describe("OrganizationForm", () => {
         "An unexpected error occurred. Please resubmit this form",
         { exact: false }
       )
-    ).toBeInTheDocument();
+    );
   });
 });

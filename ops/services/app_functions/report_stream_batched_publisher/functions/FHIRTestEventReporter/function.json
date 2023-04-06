@@ -1,0 +1,11 @@
+{
+  "bindings": [
+    {
+      "name": "FHIRTestEventReporter",
+      "type": "timerTrigger",
+      "direction": "in",
+      "schedule": "0 */2 * * * *"
+    }
+  ],
+  "scriptFile": "../dist/FHIRTestEventReporter/index.js"
+}

@@ -1,4 +1,4 @@
-# configuration for dev and demo server startup on a blank DB
+# configuration for dev and demo server startup
 simple-report-initialization:
   organizations:
     - org-name: Dis Organization
@@ -20,7 +20,7 @@ simple-report-initialization:
     #   address:
     #     street-1: 2797 N Cerrada de Beto
     #   organization-external-id: DIS_ORG
-    - facility-name: Testing Site
+    - name: Testing Site
       clia-number: "999888777-6"
       address:
         street-1: 1001 Rodeo Dr
@@ -30,7 +30,7 @@ simple-report-initialization:
       telephone: 8002324636
       email: testingsite@disorg.com
       organization-external-id: DIS_ORG
-    - facility-name: Uptown Clinic
+    - name: Uptown Clinic
       clia-number: "123456789-0"
       address:
         street-1: 1400 Lexington Ave
@@ -39,7 +39,7 @@ simple-report-initialization:
         postal-code: 10128
       telephone: 8002324636
       organization-external-id: DAT_ORG
-    - facility-name: Downtown Clinic
+    - name: Downtown Clinic
       clia-number: "987654321-0"
       address:
         street-1: 5 Bleecker St
@@ -71,41 +71,100 @@ simple-report-initialization:
       collection-location-name: Nasopharyngeal structure
       collection-location-code: "71836000"
   device-types:
+    - name: Abbott Alinity M
+      manufacturer: Abbott
+      model: Alinity m
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "85477-8"
+          supported-disease: "Flu A"
+          equipment-uid: "00884999048034"
+          testkit-name-id: "Alinity m Resp-4-Plex_Abbott Molecular Inc."
+          test-ordered-loinc-code: "95941-1"
+        - test-performed-loinc-code: "94500-6"
+          supported-disease: "COVID-19"
+          equipment-uid: "00884999048034"
+          testkit-name-id: "Alinity m Resp-4-Plex_Abbott Molecular Inc."
+          test-ordered-loinc-code: "95941-1"
+        - test-performed-loinc-code: "85478-6"
+          supported-disease: "Flu B"
+          equipment-uid: "00884999048034"
+          testkit-name-id: "Alinity m Resp-4-Plex_Abbott Molecular Inc."
+          test-ordered-loinc-code: "95941-1"
     - name: Abbott IDNow
       manufacturer: Abbott
       model: ID Now
-      loinc-code: "94534-5"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94534-5"
+          supported-disease: "COVID-19"
+          equipment-uid: 00811877010616
+          testkit-name-id: 10811877011269
+          test-ordered-loinc-code: "94534-5"
     - name: Abbott BinaxNow
       manufacturer: Abbott
       model: BinaxNOW COVID-19 Ag Card
-      loinc-code: "94558-4"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94558-4"
+          supported-disease: "COVID-19"
+          equipment-uid: "No Equipment"
+          testkit-name-id: 10811877011290
+          test-ordered-loinc-code: "94558-4"
     - name: Quidel Sofia 2
       manufacturer: Quidel
       model: Sofia 2 SARS Antigen FIA
-      loinc-code: "95209-3"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "95209-3"
+          supported-disease: "COVID-19"
+          equipment-uid: "Sofia Instrument_Quidel"
+          testkit-name-id: "Sofia SARS Antigen FIA_Quidel Corporation"
+          test-ordered-loinc-code: "95209-3"
     - name: BD Veritor
       manufacturer: Becton, Dickinson and Company (BD)
       model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
-      loinc-code: "94558-4"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94558-4"
+          supported-disease: "COVID-19"
+          equipment-uid: "BD Veritor Plus System_Becton Dickinson"
+          testkit-name-id: "BD Veritor System for Rapid Detection of SARS-CoV-2_Becton, Dickinson and Company (BD)"
+          test-ordered-loinc-code: "94558-4"
     - name: LumiraDX
       manufacturer: LumiraDx UK Ltd.
       model: LumiraDx SARS-CoV-2 Ag Test*
-      loinc-code: "95209-3"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "95209-3"
+          supported-disease: "COVID-19"
+          equipment-uid: "LumiraDx Platform_LumiraDx"
+          testkit-name-id: "LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd."
+          test-ordered-loinc-code: "95209-3"
     - name: Access Bio CareStart
       manufacturer: Access Bio, Inc.
       model: CareStart COVID-19 Antigen test*
-      loinc-code: "94558-4"
-      swab-type: "258500001"
+      specimen-types:
+        - "258500001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94558-4"
+          supported-disease: "COVID-19"
+          equipment-uid: "No Equipment"
+          testkit-name-id: "CareStart COVID-19 Antigen test_Access Bio, Inc."
+          test-ordered-loinc-code: "94558-4"
   patient-registration-links:
-    - patient-registration-link: dis-org
+    - link: dis-org
       organization-external-id: DIS_ORG
-    - patient-registration-link: t37ft
+    - link: t37ft
       facility-name: Testing Site
+    - link: dat-org
+      organization-external-id: DAT_ORG
 simple-report:
   demo-users:
     site-admin-emails:

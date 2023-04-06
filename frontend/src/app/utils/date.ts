@@ -17,13 +17,12 @@ export const formatDateLong = (date: string | undefined) => {
   return moment(date)?.format("MMMM Do, YYYY");
 };
 
-export const formatDateTime = (dateFormat: string, timeFormat: string) => (
-  date: DateInputFormat,
-  withTime?: boolean
-) => {
-  const format = withTime ? `${dateFormat} ${timeFormat}` : dateFormat;
-  return moment(date)?.format(format);
-};
+export const formatDateTime =
+  (dateFormat: string, timeFormat: string) =>
+  (date: DateInputFormat, withTime?: boolean) => {
+    const format = withTime ? `${dateFormat} ${timeFormat}` : dateFormat;
+    return moment(date)?.format(format);
+  };
 
 export const formatDateWithTimeOption = formatDateTime("MM/DD/yyyy", "h:mma");
 export const formatLongDateWithTimeOption = formatDateTime(

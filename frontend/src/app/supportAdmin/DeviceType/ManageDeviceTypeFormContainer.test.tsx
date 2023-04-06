@@ -1,12 +1,17 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
-import { addValue } from "./DeviceTypeForm.test";
+import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDiseaseTestPerformedCovid";
 
 const mockUpdateDeviceType = jest.fn();
+
+const addValue = async (name: string, value: string) => {
+  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+};
 
 jest.mock("../../../generated/graphql", () => {
   return {
@@ -48,6 +53,11 @@ jest.mock("../../../generated/graphql", () => {
               name: "COVID-19",
               loinc: "4829",
             },
+            {
+              internalId: "123-456",
+              name: "Flu A",
+              loinc: "4829",
+            },
           ],
         },
       };
@@ -61,13 +71,12 @@ jest.mock("../../../generated/graphql", () => {
               name: "Tesla Emitter",
               model: "Model A",
               manufacturer: "Celoxitin",
-              loincCode: "1234-1",
               swabTypes: [
                 { internalId: "123", name: "nose", typeCode: "n123" },
               ],
-              supportedDiseases: [
-                { internalId: "294729", name: "COVID-19", loinc: "4829" },
-              ],
+              supportedDiseaseTestPerformed:
+                mockSupportedDiseaseTestPerformedCovid,
+              testLength: 15,
             },
             {
               internalId: "abc2",
@@ -76,9 +85,9 @@ jest.mock("../../../generated/graphql", () => {
               manufacturer: "Curentz",
               loincCode: "1234-2",
               swabTypes: [{ internalId: "456", name: "eye", typeCode: "e456" }],
-              supportedDiseases: [
-                { internalId: "294729", name: "COVID-19", loinc: "4829" },
-              ],
+              supportedDiseaseTestPerformed:
+                mockSupportedDiseaseTestPerformedCovid,
+              testLength: 15,
             },
             {
               internalId: "abc3",
@@ -89,9 +98,9 @@ jest.mock("../../../generated/graphql", () => {
               swabTypes: [
                 { internalId: "789", name: "mouth", typeCode: "m789" },
               ],
-              supportedDiseases: [
-                { internalId: "294729", name: "COVID-19", loinc: "4829" },
-              ],
+              supportedDiseaseTestPerformed:
+                mockSupportedDiseaseTestPerformedCovid,
+              testLength: 15,
             },
           ] as DeviceType[],
         },
@@ -108,9 +117,32 @@ jest.mock("react-router-dom", () => {
   };
 });
 
+const mockFacility: any = {
+  id: "12345",
+};
+
+jest.mock("../../facilitySelect/useSelectedFacility", () => {
+  return {
+    useSelectedFacility: () => {
+      return [mockFacility, () => {}];
+    },
+  };
+});
+
+let container: any;
+
 describe("ManageDeviceTypeFormContainer", () => {
   beforeEach(() => {
-    render(<ManageDeviceTypeFormContainer />);
+    container = render(
+      <>
+        <ManageDeviceTypeFormContainer />
+        <SRToastContainer />
+      </>
+    );
+  });
+
+  it("renders the Manage Device Type Form Container item", () => {
+    expect(container).toMatchSnapshot();
   });
 
   it("should show the device type form", async () => {
@@ -120,33 +152,55 @@ describe("ManageDeviceTypeFormContainer", () => {
   it("should update the selected device", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    userEvent.selectOptions(
-      screen.getByLabelText("Device name", { exact: false }),
-      "Covalent Observer"
+    await userEvent.click(screen.getByTestId("combo-box-select"));
+    await userEvent.click(screen.getAllByText("Covalent Observer")[1]);
+
+    await addValue("Manufacturer", " LLC");
+    await addValue("Model", "D");
+    await userEvent.selectOptions(
+      screen.getByLabelText("Supported disease *"),
+      "COVID-19"
+    );
+    await userEvent.clear(screen.getByLabelText("Test performed code *"));
+    await userEvent.type(
+      screen.getByLabelText("Test performed code *"),
+      "LP 123"
     );
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await userEvent.clear(screen.getByLabelText("Test ordered code *"));
+    await userEvent.type(
+      screen.getByLabelText("Test ordered code *"),
+      "LP 321"
+    );
+    await userEvent.click(screen.getByText("Save changes"));
 
-    addValue("Manufacturer", " LLC");
-
-    addValue("Model", "D");
-
-    userEvent.click(screen.getByText("Save changes"));
+    await waitFor(() =>
+      expect(mockUpdateDeviceType).toHaveBeenCalledWith({
+        fetchPolicy: "no-cache",
+        variables: {
+          internalId: "abc3",
+          name: "Covalent Observer",
+          manufacturer: "Vitamin Tox LLC",
+          model: "Model CD",
+          swabTypes: ["789"],
+          testLength: 15,
+          supportedDiseaseTestPerformed: [
+            {
+              supportedDisease: "294729",
+              testPerformedLoincCode: "LP 123",
+              testOrderedLoincCode: "LP 321",
+              testkitNameId: "testkitNameId123",
+              equipmentUid: "equipmentUid123",
+            },
+          ],
+        },
+      })
+    );
 
     expect(mockUpdateDeviceType).toBeCalledTimes(1);
-    expect(mockUpdateDeviceType).toHaveBeenCalledWith({
-      fetchPolicy: "no-cache",
-      variables: {
-        internalId: "abc3",
-        name: "Covalent Observer",
-        loincCode: "1234-3",
-        manufacturer: "Vitamin Tox LLC",
-        model: "Model CD",
-        swabTypes: ["789"],
-        supportedDiseases: ["294729"],
-      },
-    });
 
-    expect(await screen.findByText("Redirected to /admin")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Redirected to /admin?facility=12345")
+    ).toBeInTheDocument();
   });
 });

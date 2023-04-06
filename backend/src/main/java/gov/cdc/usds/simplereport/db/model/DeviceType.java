@@ -1,15 +1,17 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** The durable (and non-deletable) representation of a POC test device model. */
@@ -21,16 +23,10 @@ public class DeviceType extends EternalAuditedEntity {
   private String name;
 
   @Column(nullable = false)
-  private String loincCode;
-
-  @Column(nullable = false)
   private String manufacturer;
 
   @Column(nullable = false)
   private String model;
-
-  @Column(nullable = false)
-  private String swabType;
 
   @JoinTable(
       name = "device_specimen_type",
@@ -39,41 +35,50 @@ public class DeviceType extends EternalAuditedEntity {
   @OneToMany(fetch = FetchType.LAZY)
   private List<SpecimenType> swabTypes;
 
-  @JoinTable(
-      name = "device_supported_disease",
-      joinColumns = @JoinColumn(name = "device_type_id"),
-      inverseJoinColumns = @JoinColumn(name = "supported_disease_id"))
-  @OneToMany(fetch = FetchType.LAZY)
-  @Setter
-  private List<SupportedDisease> supportedDiseases;
-
   @Column(nullable = false)
   private int testLength;
 
   @JsonIgnore
-  /** This relationship is necessary for DeviceTypeRepository.findAllByTestOrdersInternalIdIn */
-  @OneToMany(mappedBy = "deviceType", fetch = FetchType.LAZY)
-  List<TestOrder> testOrders;
+  @OneToMany(mappedBy = "deviceTypeId", cascade = CascadeType.ALL, orphanRemoval = true)
+  List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
 
   protected DeviceType() {
     /* no-op for hibernate */
   }
 
   @ConstructorBinding
-  public DeviceType(
-      String name,
-      String manufacturer,
-      String model,
-      String loincCode,
-      String swabType,
-      int testLength) {
+  public DeviceType(String name, String manufacturer, String model, int testLength) {
     super();
     this.name = name;
     this.manufacturer = manufacturer;
     this.model = model;
-    this.loincCode = loincCode;
-    this.swabType = swabType;
     this.testLength = testLength;
+  }
+
+  @Builder
+  public DeviceType(
+      String name,
+      String manufacturer,
+      String model,
+      int testLength,
+      List<SpecimenType> swabTypes) {
+    super();
+    this.name = name;
+    this.manufacturer = manufacturer;
+    this.model = model;
+    this.swabTypes = swabTypes;
+    this.testLength = testLength;
+  }
+
+  public DeviceType(
+      String name,
+      String manufacturer,
+      String model,
+      int testLength,
+      List<SpecimenType> swabTypes,
+      List<DeviceTypeDisease> supportedDiseaseTestPerformed) {
+    this(name, manufacturer, model, testLength, swabTypes);
+    this.supportedDiseaseTestPerformed = supportedDiseaseTestPerformed;
   }
 
   public String getName() {
@@ -98,22 +103,6 @@ public class DeviceType extends EternalAuditedEntity {
 
   public void setModel(String model) {
     this.model = model;
-  }
-
-  public String getLoincCode() {
-    return loincCode;
-  }
-
-  public void setLoincCode(String loincCode) {
-    this.loincCode = loincCode;
-  }
-
-  public String getSwabType() {
-    return swabType;
-  }
-
-  public void setSwabType(String swabType) {
-    this.swabType = swabType;
   }
 
   public int getTestLength() {

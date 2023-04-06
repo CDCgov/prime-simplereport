@@ -1,9 +1,4 @@
-import {
-  render,
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
@@ -102,7 +97,7 @@ describe("TestTimerWidget", () => {
 
       const startTimer = await screen.findByRole("button");
 
-      userEvent.click(startTimer);
+      await userEvent.click(startTimer);
       expect(trackEventMock).toHaveBeenCalled();
       expect(trackEventMock).toHaveBeenCalledTimes(1);
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -117,7 +112,7 @@ describe("TestTimerWidget", () => {
       const timerButton = await screen.findByRole("button");
 
       // Start timer
-      userEvent.click(timerButton);
+      await userEvent.click(timerButton);
       await screen.findByText("15:00");
 
       // The timer does not enter the countdown state instantly, so clicking the
@@ -126,7 +121,7 @@ describe("TestTimerWidget", () => {
       await waitFor(() => findTimer("internal-id")?.tick(Date.now()));
 
       // Reset timer
-      userEvent.click(timerButton);
+      await userEvent.click(timerButton);
       await screen.findByText("15:00");
 
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -140,14 +135,10 @@ describe("TestTimerWidget", () => {
 
       const timerButton = await screen.findByRole("button");
 
-      userEvent.click(timerButton);
+      await userEvent.click(timerButton);
       await screen.findByText("0:00");
 
-      // This is a 0-second timer, but it takes ~1 second to enter the
-      // countdown state and register as completed
-      await waitForElementToBeRemoved(() => screen.queryByText("0:00"));
-
-      expect(screen.getByText("RESULT READY")).toBeInTheDocument();
+      await screen.findByText("RESULT READY");
 
       expect(trackEventMock).toHaveBeenCalledWith(
         { name: "Test timer finished" },

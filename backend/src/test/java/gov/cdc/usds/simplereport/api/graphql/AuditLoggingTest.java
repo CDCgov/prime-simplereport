@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,20 +43,21 @@ class AuditLoggingTest extends BaseGraphqlTest {
           UserPermission.ARCHIVE_PATIENT,
           UserPermission.START_TEST,
           UserPermission.UPDATE_TEST,
-          UserPermission.SUBMIT_TEST);
+          UserPermission.SUBMIT_TEST,
+          UserPermission.UPLOAD_RESULTS_SPREADSHEET);
 
   @Test
   void auditableGraphqlRequest_noInterestingHeaders_boringAudit() {
     useOrgUser();
-    runQuery("current-user-query");
-    String requestId = getGraphqlRequestIdHeader();
+    runQuery("current-user-query", "whoDat", null, null);
     ConsoleApiAuditEvent event =
         assertLastAuditEntry(
-            requestId, TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
+            null, TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
     assertEquals(TestUserIdentities.DEFAULT_ORGANIZATION, event.getOrganization().getExternalId());
 
     HttpRequestDetails httpDetails = event.getHttpRequestDetails();
     // defaults
+    assertNotNull(event.getRequestId());
     assertEquals("localhost", httpDetails.getServerName());
     assertEquals("/graphql", httpDetails.getRequestUri());
     assertEquals("127.0.0.1", httpDetails.getRemoteAddress());
@@ -72,12 +73,12 @@ class AuditLoggingTest extends BaseGraphqlTest {
     addHeader("X-FORWARDED-FOR", "10.10.3.2:1"); // old joke
     addHeader("X-forwarded-Proto", "ssh");
     addHeader("x-ORIGINAL-host", "simplereport.ly");
-    runQuery("current-user-query");
-    String requestId = getGraphqlRequestIdHeader();
+    runQuery("current-user-query", "whoDat", null, null);
     ConsoleApiAuditEvent event =
         assertLastAuditEntry(
-            requestId, TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
+            null, TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
     assertEquals(TestUserIdentities.DEFAULT_ORGANIZATION, event.getOrganization().getExternalId());
+    assertNotNull(event.getRequestId());
 
     HttpRequestDetails httpDetails = event.getHttpRequestDetails();
     assertEquals(List.of("10.10.3.2:1"), httpDetails.getForwardedAddresses());
@@ -88,23 +89,34 @@ class AuditLoggingTest extends BaseGraphqlTest {
   @Test
   void auditableGraphqlRequest_nonStandardOrgUser_correctUserAndOrg() {
     useOutsideOrgAdmin();
-    runQuery("current-user-query");
+    runQuery("current-user-query", "whoDat", null, null);
     ConsoleApiAuditEvent event =
         assertLastAuditEntry(
-            getGraphqlRequestIdHeader(),
+            null,
             TestUserIdentities.OTHER_ORG_ADMIN,
             "whoDat",
-            EnumSet.allOf(UserPermission.class),
+            EnumSet.of(
+                UserPermission.READ_PATIENT_LIST,
+                UserPermission.READ_ARCHIVED_PATIENT_LIST,
+                UserPermission.SEARCH_PATIENTS,
+                UserPermission.READ_RESULT_LIST,
+                UserPermission.EDIT_PATIENT,
+                UserPermission.ARCHIVE_PATIENT,
+                UserPermission.EDIT_FACILITY,
+                UserPermission.EDIT_ORGANIZATION,
+                UserPermission.MANAGE_USERS,
+                UserPermission.START_TEST,
+                UserPermission.UPDATE_TEST,
+                UserPermission.SUBMIT_TEST,
+                UserPermission.ACCESS_ALL_FACILITIES,
+                UserPermission.VIEW_ARCHIVED_FACILITIES,
+                UserPermission.UPLOAD_RESULTS_SPREADSHEET),
             null);
+
+    assertNotNull(event.getRequestId());
     assertEquals(
         "DAT_ORG", // this should be a constant
         event.getOrganization().getExternalId());
-  }
-
-  private String getGraphqlRequestIdHeader() {
-    List<String> header = getLastResponse().getHeaders().get("X-Simplereport-RequestId");
-    assertThat(header).isNotNull().hasSize(1);
-    return header.get(0);
   }
 
   @Test
@@ -139,7 +151,7 @@ class AuditLoggingTest extends BaseGraphqlTest {
     MutableObject<PatientLink> linkHolder = new MutableObject<>();
     TestUserIdentities.withStandardUser(
         () -> {
-          Organization org = _dataFactory.createValidOrg();
+          Organization org = _dataFactory.saveValidOrganization();
           Facility site = _dataFactory.createValidFacility(org);
           Person person = _dataFactory.createFullPerson(org);
           TestEvent testEvent = _dataFactory.createTestEvent(person, site);

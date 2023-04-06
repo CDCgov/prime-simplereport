@@ -11,7 +11,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseTestResult;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
-import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
+import static gov.cdc.usds.simplereport.api.Translators.parseYesNoUnk;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -34,17 +34,17 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 class TranslatorTest {
   @Test
-  void testEmptyShortDate() {
+  void emptyUserShortDate_returnsNull() {
     assertNull(parseUserShortDate(""));
   }
 
   @Test
-  void testNullShortDate() {
+  void nullUserShortDate_returnsNull() {
     assertNull(parseUserShortDate(null));
   }
 
   @Test
-  void testValidShortDate() {
+  void validUserShortDate_withStandardFormatParsesCorrectly() {
     LocalDate result = parseUserShortDate("2/1/2021");
     assertEquals(2, result.getMonthValue());
     assertEquals(1, result.getDayOfMonth());
@@ -52,7 +52,7 @@ class TranslatorTest {
   }
 
   @Test
-  void testValidDateWithLeadingZeros() {
+  void validUserShortDate_withLeadingZerosParsesCorrectly() {
     LocalDate result = parseUserShortDate("02/01/2021");
     assertEquals(2, result.getMonthValue());
     assertEquals(1, result.getDayOfMonth());
@@ -60,14 +60,22 @@ class TranslatorTest {
   }
 
   @Test
-  void testInvalidShortDate() {
+  void validUserShortDate_withShortYearParsesCorrectly() {
+    LocalDate result = parseUserShortDate("2/1/80");
+    assertEquals(2, result.getMonthValue());
+    assertEquals(1, result.getDayOfMonth());
+    assertEquals(1980, result.getYear());
+  }
+
+  @Test
+  void invalidUserShortDate_throwsException() {
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
             () -> {
-              parseUserShortDate("fooexample.com");
+              parseUserShortDate("0/0/23");
             });
-    assertEquals("[fooexample.com] is not a valid date", caught.getMessage());
+    assertEquals("[0/0/23] is not a valid date", caught.getMessage());
   }
 
   @Test
@@ -252,29 +260,39 @@ class TranslatorTest {
   }
 
   @Test
-  void testEmptyParseYesNo() {
-    assertNull(parseYesNo(""));
+  void testEmptyParseYesNoUnk() {
+    assertNull(parseYesNoUnk(""));
   }
 
   @Test
-  void testNullParseYesNo() {
-    assertNull(parseYesNo(null));
+  void testNullParseYesNoUnk() {
+    assertNull(parseYesNoUnk(null));
   }
 
   @Test
-  void testValidParseYesNo() {
-    assertEquals(true, parseYesNo("y"));
-    assertEquals(true, parseYesNo("yEs"));
-    assertEquals(false, parseYesNo("n"));
-    assertEquals(false, parseYesNo("nO"));
+  void testValidParseYesNoUnk() {
+    assertEquals(true, parseYesNoUnk("y"));
+    assertEquals(true, parseYesNoUnk("yEs"));
+    assertEquals(false, parseYesNoUnk("n"));
+    assertEquals(false, parseYesNoUnk("nO"));
+    assertNull(parseYesNoUnk("u"));
+    assertNull(parseYesNoUnk("U"));
+    assertNull(parseYesNoUnk("unk"));
+    assertNull(parseYesNoUnk("Unk"));
+    assertNull(parseYesNoUnk("UNK"));
   }
 
   @Test
-  void testInvalidParseYesNo() {
+  void testInvalidParseYesNoUnk() {
     assertThrows(
         IllegalGraphqlArgumentException.class,
         () -> {
-          parseYesNo("positive");
+          parseYesNoUnk("positive");
+        });
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> {
+          parseYesNoUnk("unknown");
         });
   }
 

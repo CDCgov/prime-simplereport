@@ -1,14 +1,19 @@
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { useDocumentTitle } from "../utils/hooks";
 
 const SupportAdmin = () => {
+  useDocumentTitle("Support admin");
+
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2>Support admin</h2>
+                <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
+                  Support admin
+                </h1>
               </div>
             </div>
             <div className="usa-card__body">
@@ -41,7 +46,7 @@ const SupportAdmin = () => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

@@ -72,6 +72,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
         .permitAll()
 
+        // Feature Flags that apply at app level
+        .antMatchers(HttpMethod.GET, WebConfiguration.FEATURE_FLAGS)
+        .permitAll()
+
         // ReportStreamResponse callback authorization is handled in the controller
         .antMatchers(HttpMethod.POST, WebConfiguration.RS_QUEUE_CALLBACK)
         .permitAll()
@@ -97,7 +101,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         // breaks the REST controller, so we disable it for most paths.
         // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
         .and()
-        .csrf()
+        .oauth2ResourceServer()
+        .jwt();
+    http.csrf()
         .requireCsrfProtectionMatcher(
             new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST));
 

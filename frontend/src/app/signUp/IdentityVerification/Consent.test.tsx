@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 import Consent from "./Consent";
@@ -42,5 +42,10 @@ describe("Consent", () => {
     );
 
     expect(screen.getByText("Redirected to /sign-up")).toBeInTheDocument();
+  });
+
+  it("shows Identity verification consent when agreed", () => {
+    fireEvent.click(screen.getByText("I agree"));
+    expect(screen.getByText("Why we verify your identity")).toBeInTheDocument();
   });
 });

@@ -30,29 +30,21 @@ resource "okta_auth_server_claim" "given_name" {
 resource "okta_group" "prime_users" {
   name        = "Prime Team Members"
   description = "All Prime team members"
+  skip_users  = true
 }
 
 // Create a sign on policy requiring MFA
-
 resource "okta_policy_signon" "mfa_require" {
-  name            = "simple-report-mfa-require"
+  name            = "MFA policy"
   status          = "ACTIVE"
-  description     = "Require MFA for all users"
+  description     = "MFA for everyone"
   groups_included = [var.all_users_group_id]
 }
 
-resource "okta_policy_rule_signon" "app_mfa" {
-  policy_id          = okta_policy_signon.mfa_require.id
-  name               = "simple-report-mfa-require"
-  status             = "ACTIVE"
-  mfa_required       = true
-  mfa_prompt         = "SESSION"
-  network_connection = "ANYWHERE"
-  authtype           = "ANY"
-  mfa_lifetime       = 720
-  session_idle       = 720
-  session_lifetime   = 720
-}
+# This unblocks global config sync issues but we need to revisit 
+# and plan future global Okta work
+# https://github.com/CDCgov/prime-simplereport/issues/5362
+# resource "okta_policy_rule_signon" "app_mfa" {}
 
 //Changes made here also need to be made to the Azure WAF!
 resource "okta_network_zone" "sr_network_zone" {

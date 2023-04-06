@@ -43,10 +43,8 @@ describe("MultiSelectDropdown component", () => {
         onChange={jest.fn()}
       />
     );
-    expect(screen.getByRole("multi-select-input")).toBeInTheDocument();
-    expect(screen.getByRole("multi-select-input")).toBeInstanceOf(
-      HTMLInputElement
-    );
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+    expect(screen.getByRole("combobox")).toBeInstanceOf(HTMLInputElement);
   });
 
   it("renders hidden options list on load", () => {
@@ -68,7 +66,7 @@ describe("MultiSelectDropdown component", () => {
     expect(screen.getByTestId("multi-select-option-list")).not.toBeVisible();
   });
 
-  it("shows options list when input toggle clicked", () => {
+  it("shows options list when input toggle clicked", async () => {
     render(
       <MultiSelectDropdown
         id="favorite-fruit"
@@ -78,12 +76,12 @@ describe("MultiSelectDropdown component", () => {
       />
     );
 
-    userEvent.click(screen.getByTestId("multi-select-toggle"));
+    await userEvent.click(screen.getByTestId("multi-select-toggle"));
 
     expect(screen.getByTestId("multi-select-option-list")).toBeVisible();
   });
 
-  it("shows list when input is clicked", () => {
+  it("shows list when input is clicked", async () => {
     render(
       <MultiSelectDropdown
         id="favorite-fruit"
@@ -93,12 +91,12 @@ describe("MultiSelectDropdown component", () => {
       />
     );
 
-    userEvent.click(screen.getByTestId("multi-select-input"));
+    await userEvent.click(screen.getByTestId("multi-select-input"));
 
     expect(screen.getByTestId("multi-select-option-list")).toBeVisible();
   });
 
-  it("shows list when input is typed into", () => {
+  it("shows list when input is typed into", async () => {
     render(
       <MultiSelectDropdown
         id="favorite-fruit"
@@ -108,7 +106,7 @@ describe("MultiSelectDropdown component", () => {
       />
     );
 
-    userEvent.type(screen.getByTestId("multi-select-input"), "b");
+    await userEvent.type(screen.getByTestId("multi-select-input"), "b");
 
     expect(screen.getByTestId("multi-select-option-list")).toBeVisible();
   });
@@ -126,7 +124,7 @@ describe("MultiSelectDropdown component", () => {
     expect(screen.getByTestId("multi-select-input")).toBeDisabled();
   });
 
-  it("does not show the list when clicking the disabled component", () => {
+  it("does not show the list when clicking the disabled component", async () => {
     render(
       <MultiSelectDropdown
         id="favorite-fruit"
@@ -136,7 +134,7 @@ describe("MultiSelectDropdown component", () => {
         disabled={true}
       />
     );
-    userEvent.click(screen.getByTestId("multi-select-toggle"));
+    await userEvent.click(screen.getByTestId("multi-select-toggle"));
 
     expect(screen.getByTestId("multi-select-option-list")).not.toBeVisible();
   });
@@ -160,7 +158,7 @@ describe("MultiSelectDropdown component", () => {
   });
 
   describe("filtering", () => {
-    it("shows all options on initial load when no default value exists", () => {
+    it("shows all options on initial load when no default value exists", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -170,14 +168,14 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.click(screen.getByTestId("multi-select-input"));
+      await userEvent.click(screen.getByTestId("multi-select-input"));
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toBe(fruitOptions.length);
     });
 
-    it("shows all options on initial load when a default value exists", () => {
+    it("shows all options on initial load when a default value exists", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -187,14 +185,14 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.click(screen.getByTestId("multi-select-input"));
+      await userEvent.click(screen.getByTestId("multi-select-input"));
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toBe(fruitOptions.length);
     });
 
-    it("filters the options list after a character is typed", () => {
+    it("filters the options list after a character is typed", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -205,14 +203,14 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      userEvent.type(input, "a");
+      await userEvent.type(input, "a");
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toEqual(5);
     });
 
-    it("persists filter options if dropdown is closed and open without selection", () => {
+    it("persists filter options if dropdown is closed and open without selection", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -223,20 +221,20 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      userEvent.type(input, "yu");
-      userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await userEvent.type(input, "yu");
+      await userEvent.click(screen.getByTestId("multi-select-toggle"));
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toEqual(6);
 
-      userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await userEvent.click(screen.getByTestId("multi-select-toggle"));
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toEqual(6);
     });
 
-    it("clears filter when item selected", () => {
+    it("clears filter when item selected", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -247,15 +245,15 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      userEvent.type(input, "ap");
-      userEvent.click(screen.getByTestId("multi-select-option-Apples"));
+      await userEvent.type(input, "ap");
+      await userEvent.click(screen.getByTestId("multi-select-option-Apples"));
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toEqual(fruitOptions.length);
     });
 
-    it("shows no results message when there is no match", () => {
+    it("shows no results message when there is no match", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -265,7 +263,7 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.type(screen.getByTestId("multi-select-input"), "zz");
+      await userEvent.type(screen.getByTestId("multi-select-input"), "zz");
 
       const firstItem = screen.getByTestId("multi-select-option-list")
         .children[0];
@@ -274,7 +272,7 @@ describe("MultiSelectDropdown component", () => {
       expect(firstItem).toHaveTextContent("No results found");
     });
 
-    it("shows all results when typed value is cleared", () => {
+    it("shows all results when typed value is cleared", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -285,8 +283,8 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      userEvent.type(input, "apple");
-      userEvent.clear(input);
+      await userEvent.type(input, "apple");
+      await userEvent.clear(input);
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toEqual(fruitOptions.length);
@@ -294,7 +292,7 @@ describe("MultiSelectDropdown component", () => {
   });
 
   describe("keyboard actions", () => {
-    it("clears input when there is no match and enter is pressed", () => {
+    it("clears input when there is no match and enter is pressed", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -304,14 +302,17 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.type(screen.getByTestId("multi-select-input"), "zzz{enter}");
+      await userEvent.type(
+        screen.getByTestId("multi-select-input"),
+        "zzz{enter}"
+      );
 
       expect(screen.getByTestId("multi-select-option-list")).not.toBeVisible();
       expect(screen.getByTestId("multi-select-input")).toHaveValue("");
       expect(screen.getByTestId("multi-select-input")).toHaveFocus();
     });
 
-    it("clears filter when there is no match and enter is pressed", () => {
+    it("clears filter when there is no match and enter is pressed", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -321,7 +322,10 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.type(screen.getByTestId("multi-select-input"), "zzz{enter}");
+      await userEvent.type(
+        screen.getByTestId("multi-select-input"),
+        "zzz{enter}"
+      );
 
       expect(screen.getByTestId("multi-select-option-list")).not.toBeVisible();
       expect(
@@ -329,7 +333,7 @@ describe("MultiSelectDropdown component", () => {
       ).toBe(fruitOptions.length);
     });
 
-    it("focuses the first filtered option with tab", () => {
+    it("focuses the first filtered option with tab", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -339,8 +343,8 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.type(screen.getByTestId("multi-select-input"), "a");
-      userEvent.tab();
+      await userEvent.type(screen.getByTestId("multi-select-input"), "a");
+      await userEvent.tab();
 
       const firstItem = screen.getByTestId("multi-select-option-list")
         .children[0];
@@ -348,7 +352,7 @@ describe("MultiSelectDropdown component", () => {
       expect(firstItem).toHaveAttribute("tabindex", "0");
     });
 
-    it("focuses the first option with tab", () => {
+    it("focuses the first option with tab", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -358,8 +362,8 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.click(screen.getByTestId("multi-select-input")); // open menu
-      userEvent.tab();
+      await userEvent.click(screen.getByTestId("multi-select-input")); // open menu
+      await userEvent.tab();
 
       expect(screen.getByTestId("multi-select-option-Apples")).toHaveFocus();
       expect(screen.getByTestId("multi-select-option-Apples")).toHaveAttribute(
@@ -368,7 +372,7 @@ describe("MultiSelectDropdown component", () => {
       );
     });
 
-    it("selects the focused option with tab", () => {
+    it("selects the focused option with tab", async () => {
       const onChange = jest.fn();
       render(
         <MultiSelectDropdown
@@ -379,11 +383,11 @@ describe("MultiSelectDropdown component", () => {
         />
       );
       // focus oranges
-      userEvent.type(screen.getByTestId("multi-select-input"), "oran");
-      userEvent.tab();
+      await userEvent.type(screen.getByTestId("multi-select-input"), "oran");
+      await userEvent.tab();
 
       // select oranges
-      userEvent.tab();
+      await userEvent.tab();
 
       expect(onChange).toHaveBeenLastCalledWith({
         label: "Oranges",
@@ -391,7 +395,7 @@ describe("MultiSelectDropdown component", () => {
       });
     });
 
-    it("switches focus when there are no filtered options", () => {
+    it("switches focus when there are no filtered options", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -402,13 +406,13 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const comboBoxInput = screen.getByTestId("multi-select-input");
-      userEvent.type(comboBoxInput, "zzz");
-      userEvent.tab();
+      await userEvent.type(comboBoxInput, "zzz");
+      await userEvent.tab();
 
       expect(comboBoxInput).not.toHaveFocus();
     });
 
-    it("selects the focused option with enter", () => {
+    it("selects the focused option with enter", async () => {
       const onChange = jest.fn();
       render(
         <MultiSelectDropdown
@@ -419,9 +423,9 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.type(screen.getByTestId("multi-select-input"), "Ora");
-      userEvent.tab();
-      userEvent.type(
+      await userEvent.type(screen.getByTestId("multi-select-input"), "Ora");
+      await userEvent.tab();
+      await userEvent.type(
         screen.getByTestId("multi-select-option-Oranges"),
         "{enter}"
       );
@@ -432,7 +436,7 @@ describe("MultiSelectDropdown component", () => {
       });
     });
 
-    it("focuses the next option when down arrow is pressed", () => {
+    it("focuses the next option when down arrow is pressed", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -442,8 +446,8 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.type(screen.getByTestId("multi-select-input"), "a");
-      userEvent.tab();
+      await userEvent.type(screen.getByTestId("multi-select-input"), "a");
+      await userEvent.tab();
       fireEvent.keyDown(screen.getByTestId("multi-select-option-Apples"), {
         key: "ArrowDown",
       });
@@ -451,7 +455,7 @@ describe("MultiSelectDropdown component", () => {
       expect(screen.getByTestId("multi-select-option-Bananas")).toHaveFocus();
     });
 
-    it("focuses the previous option when up arrow is pressed", () => {
+    it("focuses the previous option when up arrow is pressed", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -461,8 +465,8 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.type(screen.getByTestId("multi-select-input"), "a");
-      userEvent.tab();
+      await userEvent.type(screen.getByTestId("multi-select-input"), "a");
+      await userEvent.tab();
       fireEvent.keyDown(screen.getByTestId("multi-select-option-Apples"), {
         key: "ArrowDown",
       });
@@ -476,7 +480,7 @@ describe("MultiSelectDropdown component", () => {
       expect(screen.getByTestId("multi-select-option-Bananas")).toHaveFocus();
     });
 
-    it("opens the menu when down arrow is pressed in the input", () => {
+    it("opens the menu when down arrow is pressed in the input", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -486,7 +490,7 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.click(screen.getByTestId("multi-select-input"));
+      await userEvent.click(screen.getByTestId("multi-select-input"));
       fireEvent.keyDown(screen.getByTestId("multi-select-input"), {
         key: "ArrowDown",
       });
@@ -495,7 +499,7 @@ describe("MultiSelectDropdown component", () => {
       expect(screen.getByTestId("multi-select-option-Apples")).toHaveFocus();
     });
 
-    it("does not change focus when last option is focused and down arrow is pressed", () => {
+    it("does not change focus when last option is focused and down arrow is pressed", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -506,7 +510,9 @@ describe("MultiSelectDropdown component", () => {
       );
 
       fireEvent.click(screen.getByTestId("multi-select-input"));
-      userEvent.hover(screen.getByTestId("multi-select-option-Strawberries"));
+      await userEvent.hover(
+        screen.getByTestId("multi-select-option-Strawberries")
+      );
       fireEvent.keyDown(
         screen.getByTestId("multi-select-option-Strawberries"),
         {
@@ -519,7 +525,7 @@ describe("MultiSelectDropdown component", () => {
       ).toHaveFocus();
     });
 
-    it("does not close menu when an option is selected and the first option is focused and up arrow is pressed", () => {
+    it("does not close menu when an option is selected and the first option is focused and up arrow is pressed", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -530,7 +536,7 @@ describe("MultiSelectDropdown component", () => {
       );
 
       // Apple is the item at top of list
-      userEvent.hover(screen.getByTestId("multi-select-option-Apples"));
+      await userEvent.hover(screen.getByTestId("multi-select-option-Apples"));
       fireEvent.keyDown(screen.getByTestId("multi-select-option-Apples"), {
         key: "ArrowUp",
       });
@@ -543,7 +549,7 @@ describe("MultiSelectDropdown component", () => {
       expect(screen.getByTestId("multi-select-option-list")).toBeVisible();
     });
 
-    it("clears out the input when options list is closed and no matching options is selected", () => {
+    it("clears out the input when options list is closed and no matching options is selected", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -554,7 +560,7 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const comboBoxInput = screen.getByTestId("multi-select-input");
-      userEvent.type(comboBoxInput, "a{enter}");
+      await userEvent.type(comboBoxInput, "a{enter}");
       expect(comboBoxInput).toHaveValue("");
     });
   });
@@ -582,7 +588,7 @@ describe("MultiSelectDropdown component", () => {
       ).toEqual(fruitOptions.length);
     });
 
-    it("displays options list when input is clicked twice", () => {
+    it("displays options list when input is clicked twice", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -592,7 +598,7 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.dblClick(screen.getByTestId("multi-select-input"));
+      await userEvent.dblClick(screen.getByTestId("multi-select-input"));
 
       expect(screen.getByTestId("multi-select-input")).toHaveAttribute(
         "aria-expanded",
@@ -621,7 +627,7 @@ describe("MultiSelectDropdown component", () => {
       expect(screen.getByTestId("multi-select-option-list")).not.toBeVisible();
     });
 
-    it("hides options list when clicking away and a specific option has focus", () => {
+    it("hides options list when clicking away and a specific option has focus", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -632,7 +638,9 @@ describe("MultiSelectDropdown component", () => {
       );
 
       fireEvent.click(screen.getByTestId("multi-select-input"));
-      userEvent.hover(screen.getByTestId("multi-select-option-Blueberries"));
+      await userEvent.hover(
+        screen.getByTestId("multi-select-option-Blueberries")
+      );
 
       fireEvent.blur(screen.getByTestId("multi-select-option-Blueberries"));
 
@@ -690,7 +698,7 @@ describe("MultiSelectDropdown component", () => {
       });
     });
 
-    it("persists input text when items list is blurred", () => {
+    it("persists input text when items list is blurred", async () => {
       const onChange = jest.fn();
       render(
         <>
@@ -704,8 +712,8 @@ describe("MultiSelectDropdown component", () => {
         </>
       );
 
-      userEvent.click(screen.getByTestId("multi-select-toggle"));
-      userEvent.click(screen.getByTestId("multi-select-option-Apples"));
+      await userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await userEvent.click(screen.getByTestId("multi-select-option-Apples"));
       fireEvent.blur(screen.getByTestId("multi-select-input"));
 
       expect(onChange).toHaveBeenLastCalledWith({
@@ -714,7 +722,7 @@ describe("MultiSelectDropdown component", () => {
       });
     });
 
-    it("persists input text if dropdown is closed and open without selection", () => {
+    it("persists input text if dropdown is closed and open without selection", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -725,16 +733,16 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      userEvent.type(input, "gr");
+      await userEvent.type(input, "gr");
 
-      userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await userEvent.click(screen.getByTestId("multi-select-toggle"));
       expect(input).toHaveValue("gr");
 
-      userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await userEvent.click(screen.getByTestId("multi-select-toggle"));
       expect(input).toHaveValue("gr");
     });
 
-    it("clears input with item selected on click", () => {
+    it("clears input with item selected on click", async () => {
       const onChange = jest.fn();
       render(
         <MultiSelectDropdown
@@ -746,7 +754,7 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      userEvent.type(input, "Gr");
+      await userEvent.type(input, "Gr");
       fireEvent.click(screen.getByTestId("multi-select-option-Grapes"));
 
       expect(onChange).toHaveBeenLastCalledWith({
@@ -755,7 +763,7 @@ describe("MultiSelectDropdown component", () => {
       });
     });
 
-    it("focuses an option on hover", () => {
+    it("focuses an option on hover", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -765,14 +773,16 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      userEvent.click(screen.getByTestId("multi-select-toggle"));
-      userEvent.hover(screen.getByTestId("multi-select-option-Blueberries"));
+      await userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await userEvent.hover(
+        screen.getByTestId("multi-select-option-Blueberries")
+      );
 
       expect(screen.getByTestId("multi-select-option-Blueberries")).toHaveClass(
         "usa-combo-box__list-option--focused"
       );
 
-      userEvent.hover(screen.getByTestId("multi-select-option-Grapes"));
+      await userEvent.hover(screen.getByTestId("multi-select-option-Grapes"));
       expect(
         screen.getByTestId("multi-select-option-Blueberries")
       ).not.toHaveClass("usa-combo-box__list-option--focused");
@@ -781,7 +791,7 @@ describe("MultiSelectDropdown component", () => {
       );
     });
 
-    it("clears focus when clicking outside of the component", () => {
+    it("clears focus when clicking outside of the component", async () => {
       render(
         <>
           <div data-testid="outside" />
@@ -794,14 +804,14 @@ describe("MultiSelectDropdown component", () => {
         </>
       );
 
-      userEvent.click(screen.getByTestId("multi-select-input"));
-      userEvent.click(screen.getByTestId("outside"));
+      await userEvent.click(screen.getByTestId("multi-select-input"));
+      await userEvent.click(screen.getByTestId("outside"));
       expect(screen.getByTestId("multi-select-input")).not.toHaveFocus();
     });
   });
 
   describe("accessibility and internationalization", () => {
-    it("adds correct aria attributes on options when an item is selected", () => {
+    it("adds correct aria attributes on options when an item is selected", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -814,7 +824,7 @@ describe("MultiSelectDropdown component", () => {
 
       // open options list
       fireEvent.click(screen.getByTestId("multi-select-input"));
-      userEvent.tab();
+      await userEvent.tab();
 
       Object.values(list.children).forEach((node) => {
         if (node === screen.getByTestId("multi-select-option-Apples")) {
@@ -828,7 +838,7 @@ describe("MultiSelectDropdown component", () => {
       });
     });
 
-    it("allows no results message to be customized", () => {
+    it("allows no results message to be customized", async () => {
       render(
         <MultiSelectDropdown
           id="favorite-fruit"
@@ -838,7 +848,7 @@ describe("MultiSelectDropdown component", () => {
           noResults="NOTHING"
         />
       );
-      userEvent.type(screen.getByTestId("multi-select-input"), "zzz");
+      await userEvent.type(screen.getByTestId("multi-select-input"), "zzz");
       const firstItem = screen.getByTestId("multi-select-option-list")
         .children[0];
       expect(firstItem).toHaveTextContent("NOTHING");

@@ -30,6 +30,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +38,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
+import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,16 +82,30 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public UserInfo createUserInCurrentOrg(
-      String username, PersonName name, Role role, boolean active) {
+  public UserInfo createUserInCurrentOrg(String username, PersonName name, Role role) {
     Organization org = _orgService.getCurrentOrganization();
 
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(username.toLowerCase());
-    if (found.isPresent()) {
-      return reprovisionUser(found.get(), name, org, role);
-    }
+    return found
+        .map(apiUser -> reprovisionUser(apiUser, name, org, role))
+        .orElseGet(() -> createUserHelper(username, name, org, role));
+  }
 
-    return createUserHelper(username, name, org, role);
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public ApiUser createApiUserNoOkta(String email, PersonName name) {
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(email.toLowerCase());
+    if (found.isPresent()) {
+      throw new IllegalGraphqlArgumentException("User already exists");
+    } else {
+      IdentityAttributes userIdentity = new IdentityAttributes(email, name);
+      ApiUser apiUser = _apiUserRepo.save(new ApiUser(email, userIdentity));
+      log.info(
+          "User with id={} created by user with id={}",
+          apiUser.getInternalId(),
+          getCurrentApiUser().getInternalId().toString());
+
+      return apiUser;
+    }
   }
 
   private UserInfo reprovisionUser(ApiUser apiUser, PersonName name, Organization org, Role role) {
@@ -104,7 +119,7 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(apiUser.getLoginEmail())
             .orElseThrow(MisconfiguredUserException::new);
     if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
-      throw new AccessDeniedException("Unable to add user.");
+      throw new ConflictingUserException();
     }
 
     // re-provision the user
@@ -132,7 +147,8 @@ public class ApiUserService {
     return user;
   }
 
-  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role) {
+  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role)
+      throws ConflictingUserException {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     boolean active = org.getIdentityVerified();
@@ -223,14 +239,13 @@ public class ApiUserService {
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
-    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
     log.info(
         "User with id={} updated by user with id={}",
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId().toString());
 
-    return new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
+    return new UserInfo(apiUser, orgRoles, isAdmin);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
@@ -492,13 +507,17 @@ public class ApiUserService {
       return getCurrentApiUserNoCache();
     }
 
-    if (_apiUserContextHolder.hasBeenPopulated()) {
-      log.debug("Retrieving user from request context");
-      return _apiUserContextHolder.getCurrentApiUser();
+    try {
+      if (_apiUserContextHolder.hasBeenPopulated()) {
+        log.debug("Retrieving user from request context");
+        return _apiUserContextHolder.getCurrentApiUser();
+      }
+      ApiUser user = getCurrentApiUserNoCache();
+      _apiUserContextHolder.setCurrentApiUser(user);
+      return user;
+    } catch (ScopeNotActiveException e) {
+      return getCurrentApiUserNoCache();
     }
-    ApiUser user = getCurrentApiUserNoCache();
-    _apiUserContextHolder.setCurrentApiUser(user);
-    return user;
   }
 
   private ApiUser getCurrentApiUserNoCache() {
@@ -589,6 +608,15 @@ public class ApiUserService {
     boolean isAdmin = isAdmin(apiUser);
 
     return new UserInfo(apiUser, orgRoles, isAdmin);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public List<ApiUser> getAllUsersByOrganization(Organization organization) {
+    Set<String> usernames = _oktaRepo.getAllUsersForOrganization(organization);
+    return usernames.stream()
+        .map(username -> _apiUserRepo.findByLoginEmailIncludeArchived(username).orElse(null))
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
   }
 
   private UserInfo cancelCurrentUserTenantDataAccess() {

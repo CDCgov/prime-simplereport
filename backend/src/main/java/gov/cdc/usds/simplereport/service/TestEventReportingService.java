@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 
@@ -35,12 +34,4 @@ public interface TestEventReportingService {
       throw e;
     }
   }
-
-  /**
-   * Designate the supplied test events as having already been reported. Used primarily to prevent
-   * double reporting when both the queue-based system and the cronjob-based system are in use.
-   *
-   * @param testEvents The {@link TestEvent}s to mark as already reported.
-   */
-  void markTestEventsAsReported(Set<TestEvent> testEvents);
 }

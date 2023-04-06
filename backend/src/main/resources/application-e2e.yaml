@@ -1,3 +1,10 @@
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  level:
+    root: info
+    org.hibernate: off
+    gov.cdc.usds.simplereport.service.AuditService: off
 spring:
   profiles:
     include: server-debug, create-sample-devices
@@ -12,7 +19,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        show_sql: true
+        show_sql: false
         format_sql: false # override this in application-local.yaml to get pretty-printed SQL all the time
         default_schema: simple_report
 server:
@@ -44,30 +51,69 @@ simple-report-initialization:
     - name: Abbott IDNow
       manufacturer: Abbott
       model: ID Now
-      loinc-code: "94534-5"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94534-5"
+          supported-disease: "COVID-19"
+          equipment-uid: 00811877010616
+          testkit-name-id: 10811877011269
+          test-ordered-loinc-code: "94534-5"
     - name: Abbott BinaxNow
       manufacturer: Abbott
       model: BinaxNOW COVID-19 Ag Card
-      loinc-code: "94558-4"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94558-4"
+          supported-disease: "COVID-19"
+          equipment-uid: "No Equipment"
+          testkit-name-id: 10811877011290
+          test-ordered-loinc-code: "94558-4"
     - name: Quidel Sofia 2
       manufacturer: Quidel
       model: Sofia 2 SARS Antigen FIA
-      loinc-code: "95209-3"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "95209-3"
+          supported-disease: "COVID-19"
+          equipment-uid: "Sofia Instrument_Quidel"
+          testkit-name-id: "Sofia SARS Antigen FIA_Quidel Corporation"
+          test-ordered-loinc-code: "95209-3"
     - name: BD Veritor
       manufacturer: Becton, Dickinson and Company (BD)
       model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
-      loinc-code: "94558-4"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94558-4"
+          supported-disease: "COVID-19"
+          equipment-uid: "BD Veritor Plus System_Becton Dickinson"
+          testkit-name-id: "BD Veritor System for Rapid Detection of SARS-CoV-2_Becton, Dickinson and Company (BD)"
+          test-ordered-loinc-code: "94558-4"
     - name: LumiraDX
       manufacturer: LumiraDx UK Ltd.
       model: LumiraDx SARS-CoV-2 Ag Test*
-      loinc-code: "95209-3"
-      swab-type: "445297001"
+      specimen-types:
+        - "445297001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "95209-3"
+          supported-disease: "COVID-19"
+          equipment-uid: "LumiraDx Platform_LumiraDx"
+          testkit-name-id: "LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd."
+          test-ordered-loinc-code: "95209-3"
     - name: Access Bio CareStart
       manufacturer: Access Bio, Inc.
       model: CareStart COVID-19 Antigen test*
-      loinc-code: "94558-4"
-      swab-type: "258500001"
+      specimen-types:
+        - "258500001"
+      test-performed-loincs:
+        - test-performed-loinc-code: "94558-4"
+          supported-disease: "COVID-19"
+          equipment-uid: "No Equipment"
+          testkit-name-id: "CareStart COVID-19 Antigen test_Access Bio, Inc."
+          test-ordered-loinc-code: "94558-4"
+datahub:
+  url: "http://invalidhost:8080"
+  api-key: "placeholder"

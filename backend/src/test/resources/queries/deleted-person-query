@@ -1,8 +1,0 @@
-query getDeletedPatients {
-  patients(showDeleted: true) {
-    firstName
-    lastName
-    birthDate
-    telephone
-  }
-}

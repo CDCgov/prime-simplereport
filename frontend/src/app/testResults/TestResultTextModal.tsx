@@ -2,7 +2,7 @@ import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 
 import Button from "../commonComponents/Button/Button";
-import { showAlertNotification } from "../utils";
+import { showAlertNotification } from "../utils/srToast";
 import { formatFullName } from "../utils/user";
 import "./TestResultCorrectionModal.scss";
 import {
@@ -87,6 +87,7 @@ export const DetachedTestResultTextModal = ({
       className="sr-test-correction-modal-content"
       overlayClassName="sr-test-correction-modal-overlay"
       contentLabel="Printable test result"
+      onRequestClose={closeModal}
     >
       <h3>Text result?</h3>
       <p>

@@ -5,20 +5,16 @@ terraform {
     container_name       = "sr-tfstate"
     key                  = "prod/terraform.tfstate"
   }
-}
-
-terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 2.92.0"
+      version = "~> 3.44"
     }
   }
-  required_version = "~> 1.1.4"
+  required_version = "~> 1.3.3"
 }
 
 provider "azurerm" {
   features {}
   skip_provider_registration = true
 }
-

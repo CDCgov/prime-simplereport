@@ -19,9 +19,8 @@ export interface EditOrgMutationResponse {
 const phoneNumberIsValidOrEmpty = (input: any) =>
   input === "" || phoneNumberIsValid(input);
 
-export const pendingOrganizationSchema: yup.SchemaOf<PendingOrganizationFormValues> = yup
-  .object()
-  .shape({
+export const pendingOrganizationSchema: yup.SchemaOf<PendingOrganizationFormValues> =
+  yup.object().shape({
     name: yup.string().required("Organization name is required"),
     adminFirstName: yup.string(),
     adminLastName: yup.string(),

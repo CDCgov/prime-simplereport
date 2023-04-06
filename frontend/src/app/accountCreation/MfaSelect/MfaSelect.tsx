@@ -112,6 +112,7 @@ export const MfaSelect = () => {
           onBlur={validateMfaOption}
           onChange={setMfaOption}
           variant="tile"
+          renderAsForm
         />
         <Button
           className="margin-top-3"

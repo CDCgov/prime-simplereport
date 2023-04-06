@@ -1,15 +1,30 @@
 import { useState } from "react";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import ManageDevices from "./ManageDevices";
 
-const deviceA = { internalId: "device-a", name: "Device A" };
-const deviceB = { internalId: "device-b", name: "Device B" };
-const deviceC = { internalId: "device-c", name: "Device C" };
+const deviceA = {
+  internalId: "device-a",
+  name: "Device A",
+};
+const deviceB = {
+  internalId: "device-b",
+  name: "Device B",
+};
+const deviceC = {
+  internalId: "device-c",
+  name: "Device C",
+};
 
 const devices: DeviceType[] = [deviceA, deviceB, deviceC];
-const selectedDevices: DeviceType[] = [deviceA, deviceB];
+const selectedDevices: FacilityFormDeviceType[] = [deviceA, deviceB];
 
 function ManageDevicesContainer(props: { selectedDevices: DeviceType[] }) {
   const [selectedDevices, updateSelectedDevices] = useState<DeviceType[]>(
@@ -22,6 +37,7 @@ function ManageDevicesContainer(props: { selectedDevices: DeviceType[] }) {
       selectedDevices={selectedDevices}
       updateSelectedDevices={updateSelectedDevices}
       errors={{}}
+      clearError={jest.fn}
     />
   );
 }
@@ -32,7 +48,8 @@ describe("ManageDevices", () => {
 
     it("renders a message if no devices are present in the list", async () => {
       const expected = await screen.findByText(
-        "There are currently no devices"
+        "There are currently no devices",
+        { exact: false }
       );
 
       expect(expected).toBeInTheDocument();
@@ -45,80 +62,72 @@ describe("ManageDevices", () => {
     });
 
     it("renders a list of devices", () => {
-      const dropdowns = screen.getAllByRole("combobox");
+      const multiselect = screen.getByTestId("multi-select");
 
-      expect(dropdowns.length).toBe(2);
-
-      const [deviceOne, deviceTwo] = dropdowns;
-
-      expect(deviceOne).toHaveValue(devices[0].internalId);
-      expect(deviceTwo).toHaveValue(devices[1].internalId);
+      expect(multiselect).toBeInTheDocument();
     });
 
     it("renders the device dropdown in alphabetical order", async () => {
-      const dropdowns = screen.getAllByRole("combobox");
-
-      expect(dropdowns.length).toBe(2);
-
-      const [deviceOne] = dropdowns;
-
-      const deviceOptions = await within(deviceOne).findAllByRole("option");
-
-      expect(
-        deviceOptions.map(
-          (deviceOption) => (deviceOption as HTMLOptionElement).value
-        )
-      ).toStrictEqual([
+      const multiselect = screen.getByTestId("multi-select");
+      const deviceList = within(multiselect).getByTestId(
+        "multi-select-option-list"
+      );
+      const deviceOptionIds = within(deviceList)
+        .getAllByTestId("multi-select-option-device", { exact: false })
+        .map((deviceOption) => deviceOption.id);
+      const expectedDeviceOptionIds = [
         deviceA.internalId,
         deviceB.internalId,
         deviceC.internalId,
-      ]);
-    });
+      ];
 
-    it("allows user to change the device type on an existing device", async () => {
-      const [deviceDropdown] = await screen.findAllByRole("combobox");
-
-      userEvent.selectOptions(deviceDropdown, "device-a");
-
+      expect(deviceOptionIds.length === expectedDeviceOptionIds.length);
       expect(
-        ((
-          await screen.findAllByRole("option", {
-            name: "Device A",
-          })
-        )[0] as HTMLOptionElement).selected
-      ).toBeTruthy();
+        deviceOptionIds.every(
+          (id, index) => id === expectedDeviceOptionIds[index]
+        )
+      );
     });
 
-    it("prevents selecting a device type more than once", () => {
-      const [devices] = screen.getAllByRole("combobox");
+    it("renders the selected devices", async () => {
+      const pillContainer = screen.getByTestId("pill-container");
 
-      const option = within(devices).getByText("Device A") as HTMLOptionElement;
-      expect(option.disabled).toBeTruthy();
+      within(pillContainer).getByText("Device A");
+      within(pillContainer).getByText("Device B");
+      await waitFor(() =>
+        expect(
+          within(pillContainer).queryByText("Device C")
+        ).not.toBeInTheDocument()
+      );
     });
 
-    it("adds a device to the list", async () => {
-      const dropdowns = await screen.findAllByRole("combobox");
+    it("allows user to add a device type to the existing list of devices", async () => {
+      const deviceInput = screen.getByTestId("multi-select-toggle");
+      const deviceList = screen.getByTestId("multi-select-option-list");
 
-      expect(dropdowns.length).toBe(2);
+      await userEvent.click(deviceInput);
+      await userEvent.click(within(deviceList).getByText("Device C"));
 
-      fireEvent.click(screen.getByText("Add device", { exact: false }));
-
-      const updatedDropdowns = await screen.findAllByRole("combobox");
-      expect(updatedDropdowns.length).toBe(3);
+      expect(await screen.findByTestId("pill-container"));
+      expect(
+        await within(screen.getByTestId("pill-container")).findByText(
+          "Device C"
+        )
+      );
     });
 
     it("removes a device from the list", async () => {
-      const dropdowns = await screen.findAllByRole("combobox");
+      const pillContainer = screen.getByTestId("pill-container");
+      const deleteIcon = within(pillContainer).getAllByRole("button")[0];
 
-      expect(dropdowns.length).toBe(2);
+      within(pillContainer).getByText("Device A");
+      fireEvent.click(deleteIcon);
 
-      fireEvent.click(
-        screen.getAllByLabelText("Delete device", { exact: false })[0]
+      await waitFor(() =>
+        expect(
+          within(pillContainer).queryByText("Device A")
+        ).not.toBeInTheDocument()
       );
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      const updatedDropdowns = await screen.findAllByRole("combobox");
-      expect(updatedDropdowns.length).toBe(1);
     });
   });
 });

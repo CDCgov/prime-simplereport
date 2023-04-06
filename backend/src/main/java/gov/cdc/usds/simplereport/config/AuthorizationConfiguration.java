@@ -75,6 +75,9 @@ public class AuthorizationConfiguration {
   private static final String SPEL_HAS_PERMISSION_ACCESS_ALL_FACILITIES =
       SPEL_HAS_PERMISSION + "ACCESS_ALL_FACILITIES" + ")";
 
+  private static final String SPEL_HAS_PERMISSION_RESULTS_UPLOAD =
+      SPEL_HAS_PERMISSION + "UPLOAD_RESULTS_SPREADSHEET" + ")";
+
   private static final String SPEL_IS_SITE_ADMIN =
       "@" + AUTHORIZER_BEAN + ".userHasSiteAdminRole()";
 
@@ -110,7 +113,7 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH =
       "@"
           + AUTHORIZER_BEAN
-          + ".userHasSpecificPatientSearchPermission(#facilityId, #isArchived, #namePrefixMatch, #includeArchivedFacilities)";
+          + ".userHasSpecificPatientSearchPermission(#facilityId, #includeArchived, #namePrefixMatch, #includeArchivedFacilities)";
 
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
@@ -447,4 +450,13 @@ public class AuthorizationConfiguration {
           + " && "
           + SPEL_CAN_VIEW_QUEUE_ITEM_FOR_PATIENT)
   public @interface RequirePermissionSubmitTestForPatient {}
+
+  /**
+   * Require the current user to have the {@link UserPermission#UPLOAD_RESULTS_SPREADSHEET}
+   * permission
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_RESULTS_UPLOAD)
+  public @interface RequirePermissionCSVUpload {}
 }

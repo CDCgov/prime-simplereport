@@ -6,10 +6,10 @@ extend type Query {
   pendingOrganizations: [PendingOrganization!]!
 }
 extend type Mutation {
-  uploadPatients(patientList: Upload!): String
   resendToReportStream(testEventIds: [ID!]!): Boolean
   createDeviceType(input: CreateDeviceType!): DeviceType
   updateDeviceType(input: UpdateDeviceType!): DeviceType
+  createSpecimenType(input: CreateSpecimenType!): SpecimenType
   addUser( # not actually used in the admin console (currently)
     name: NameInput
     firstName: String
@@ -20,7 +20,15 @@ extend type Mutation {
     organizationExternalId: String!
     role: Role!
   ): User
-  createOrganization(
+  createApiUserNoOkta(
+    name: NameInput
+    firstName: String
+    middleName: String
+    lastName: String
+    suffix: String
+    email: String
+  ): ApiUser
+    createOrganization(
     name: String!
     type: String!
     externalId: String!
@@ -88,4 +96,5 @@ extend type Mutation {
   adminUpdateOrganization(name: String!, type: String!): String
   markFacilityAsDeleted(facilityId: ID!, deleted: Boolean!): String
   markOrganizationAsDeleted(organizationId: ID!, deleted: Boolean!): String
+  markDeviceTypeAsDeleted(deviceId: ID, deviceName: String):DeviceType
 }

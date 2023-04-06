@@ -1,6 +1,8 @@
 import "./CardBackground.scss";
 
-export type CardContainerProps = {};
+export type CardContainerProps = {
+  children?: React.ReactNode;
+};
 
 export const CardBackground: React.FC<CardContainerProps> = ({ children }) => {
   return (

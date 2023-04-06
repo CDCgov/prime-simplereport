@@ -1,10 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
+import MockDate from "mockdate";
 
 import { GetTopLevelDashboardMetricsNewDocument } from "../../generated/graphql";
+import { PATIENT_TERM_PLURAL } from "../../config/constants";
 
 import {
   Analytics,
@@ -28,7 +30,7 @@ const store = mockStore({
 });
 
 beforeAll(() => {
-  jest.useFakeTimers("modern").setSystemTime(new Date("2021-08-01").getTime());
+  MockDate.set("2021-08-01");
 });
 
 const getMocks = () => [
@@ -198,9 +200,8 @@ const getMocks = () => [
 
 describe("Analytics", () => {
   beforeEach(() => {
-    jest
-      .useFakeTimers("modern")
-      .setSystemTime(new Date("2021-08-01").getTime());
+    MockDate.set("2021-08-01");
+
     render(
       <MockedProvider mocks={getMocks()}>
         <Provider store={store}>
@@ -211,7 +212,7 @@ describe("Analytics", () => {
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    MockDate.reset();
   });
 
   it("renders", async () => {
@@ -233,7 +234,7 @@ describe("Analytics", () => {
   });
   it("allows filtering by Lincoln Middle School", async () => {
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+    await userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
       "Lincoln Middle School",
     ]);
     expect(await screen.findByText("72341")).toBeInTheDocument();
@@ -243,7 +244,7 @@ describe("Analytics", () => {
   });
   it("allows filtering by Rosa Parks High School", async () => {
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+    await userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
       "Rosa Parks High School",
     ]);
     expect(await screen.findByText("52479")).toBeInTheDocument();
@@ -253,7 +254,7 @@ describe("Analytics", () => {
   });
   it("allows filtering by last day", async () => {
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Date range"), [
+    await userEvent.selectOptions(screen.getByLabelText("Date range"), [
       "Last day (24 hours)",
     ]);
     expect(await screen.findByText("120")).toBeInTheDocument();
@@ -263,14 +264,14 @@ describe("Analytics", () => {
   });
   it("allows filtering by last week", async () => {
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Date range"), [
+    await userEvent.selectOptions(screen.getByLabelText("Date range"), [
       "Last week (7 days)",
     ]);
     expect(await screen.findByText("124820")).toBeInTheDocument();
   });
   it("allows filtering by last month", async () => {
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Date range"), [
+    await userEvent.selectOptions(screen.getByLabelText("Date range"), [
       "Last month (30 days)",
     ]);
     expect(await screen.findByText("623492")).toBeInTheDocument();
@@ -280,38 +281,39 @@ describe("Analytics", () => {
   });
   it("allows filtering by a custom date range", async () => {
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Date range"), [
+    await userEvent.selectOptions(screen.getByLabelText("Date range"), [
       "Custom date range",
     ]);
     await screen.findByText("COVID-19 testing data");
-    userEvent.type(
-      screen.getAllByTestId("date-picker-external-input")[0],
-      "07/01/2021"
-    );
-    await screen.findByText("COVID-19 testing data");
-    await userEvent.type(
-      screen.getAllByTestId("date-picker-external-input")[1],
-      "07/31/2021"
-    );
+    const startDate = screen.getByTestId("startDate") as HTMLInputElement;
+    const endDate = screen.getByTestId("endDate") as HTMLInputElement;
+
+    fireEvent.change(startDate, { target: { value: "2021-07-01" } });
+    fireEvent.change(endDate, { target: { value: "2021-07-31" } });
+
+    await screen.findByText(`All ${PATIENT_TERM_PLURAL} tested`);
+
     expect(await screen.findByText("14982")).toBeInTheDocument();
     expect(await screen.findByText("953")).toBeInTheDocument();
     expect(await screen.findByText("14029")).toBeInTheDocument();
     expect(await screen.findByText("6.4%")).toBeInTheDocument();
+    expect(startDate.value).toEqual("2021-07-01");
+    expect(endDate.value).toEqual("2021-07-31");
   });
   it("shows N/A for positivity rate at Empty School", async () => {
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+    await userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
       "Empty School",
     ]);
     expect(await screen.findByText("N/A")).toBeInTheDocument();
   });
   it("shows 0% for positivity rate at Empty School over last month", async () => {
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
+    await userEvent.selectOptions(screen.getByLabelText("Testing facility"), [
       "Empty School",
     ]);
     await screen.findByText("COVID-19 testing data");
-    userEvent.selectOptions(screen.getByLabelText("Date range"), [
+    await userEvent.selectOptions(screen.getByLabelText("Date range"), [
       "Last month (30 days)",
     ]);
     expect(await screen.findByText("0.0%")).toBeInTheDocument();

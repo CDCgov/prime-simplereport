@@ -10,41 +10,29 @@ locals {
       "DOCKER_REGISTRY_SERVER_USERNAME" = data.terraform_remote_state.global.outputs.acr_simeplereport_name
       "WEBSITES_PORT"                   = "8080"
       "WEBSITE_DNS_SERVER"              = "168.63.129.16" # https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones
-      "WEBSITE_VNET_ROUTE_ALL"          = "1"
   })
 }
 
-resource "azurerm_app_service_plan" "service_plan" {
+resource "azurerm_service_plan" "service_plan" {
   name                = "${var.az_account}-appserviceplan-${var.env}"
   location            = var.resource_group_location
+  os_type             = "Linux"
   resource_group_name = var.resource_group_name
-
-  # Define Linux as Host OS
-  kind     = "Linux"
-  reserved = true
-
-  sku {
-    tier     = var.instance_tier
-    size     = var.instance_size
-    capacity = var.instance_count
-  }
+  sku_name            = var.sku_name
 }
 
-resource "azurerm_app_service" "service" {
-  name                = "${var.name}-${var.env}"
-  location            = var.resource_group_location
-  resource_group_name = var.resource_group_name
-  app_service_plan_id = azurerm_app_service_plan.service_plan.id
-
-  # Configure Docker Image to load on start
-  site_config {
-    linux_fx_version = var.docker_image_uri
-    always_on        = "true"
-    min_tls_version  = "1.2"
-  }
-
-  app_settings = local.all_app_settings
-  https_only   = var.https_only
+# The following code snippet creates a Linux App Service and configures it to run a Docker container. 
+# It also creates a firewall rule allowing the load balancer to route traffic to the App Service.
+# The docker_image variable is defined in the variables.tf file.
+# The docker_image_tag variable is defined in the variables.tf file.
+resource "azurerm_linux_web_app" "service" {
+  name                      = "${var.name}-${var.env}"
+  app_settings              = local.all_app_settings
+  https_only                = var.https_only
+  location                  = var.resource_group_location
+  resource_group_name       = var.resource_group_name
+  service_plan_id           = azurerm_service_plan.service_plan.id
+  virtual_network_subnet_id = var.webapp_subnet_id
 
   identity {
     type = "SystemAssigned"
@@ -59,27 +47,41 @@ resource "azurerm_app_service" "service" {
     }
   }
 
-  lifecycle {
-    ignore_changes = [
-      app_settings, site_config[0].linux_fx_version
-    ]
+  # Configure Docker Image to load on start
+  site_config {
+    always_on               = "true"
+    scm_minimum_tls_version = "1.2"
+    use_32_bit_worker       = false
+    ftps_state              = "Disabled"
+    vnet_route_all_enabled  = false
+
+    cors {
+      allowed_origins     = []
+      support_credentials = false
+    }
+
+    application_stack {
+      docker_image     = var.docker_image
+      docker_image_tag = var.docker_image_tag
+    }
+
+    // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
+    }
   }
 }
 
-resource "azurerm_app_service_slot" "staging" {
-  name                = "staging"
-  app_service_name    = azurerm_app_service.service.name
-  app_service_plan_id = azurerm_app_service_plan.service_plan.id
-  resource_group_name = var.resource_group_name
-  location            = var.resource_group_location
+# Creates a staging slot for the Linux Web App
+# This is used for staging the deployment of the new code
 
-  app_settings = local.all_app_settings
-  https_only   = var.https_only
-
-  site_config {
-    linux_fx_version = var.docker_image_uri
-    always_on        = "true"
-  }
+resource "azurerm_linux_web_app_slot" "staging" {
+  name                      = "staging"
+  app_service_id            = azurerm_linux_web_app.service.id
+  app_settings              = local.all_app_settings
+  https_only                = var.https_only
+  virtual_network_subnet_id = var.webapp_subnet_id
 
   identity {
     type = "SystemAssigned"
@@ -91,50 +93,75 @@ resource "azurerm_app_service_slot" "staging" {
         retention_in_days = 7
         retention_in_mb   = 30
       }
+    }
+  }
+
+  # Configure Docker Image to load on start
+  site_config {
+    always_on               = "true"
+    scm_minimum_tls_version = "1.2"
+    use_32_bit_worker       = false
+    ftps_state              = "Disabled"
+    vnet_route_all_enabled  = false
+
+    cors {
+      allowed_origins     = []
+      support_credentials = false
+    }
+
+    application_stack {
+      docker_image     = var.docker_image
+      docker_image_tag = var.docker_image_tag
+    }
+
+    // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
+    ip_restriction {
+      virtual_network_subnet_id = var.lb_subnet_id
+      action                    = "Allow"
     }
   }
 }
 
 resource "azurerm_key_vault_access_policy" "app_secret_access" {
   key_vault_id = var.key_vault_id
-  object_id    = azurerm_app_service.service.identity[0].principal_id
+  object_id    = azurerm_linux_web_app.service.identity[0].principal_id
   tenant_id    = var.tenant_id
 
   key_permissions = [
-    "get",
-    "list",
+    "Get",
+    "List",
   ]
   secret_permissions = [
-    "get",
-    "list",
+    "Get",
+    "List",
   ]
 }
 
 resource "azurerm_key_vault_access_policy" "staging_slot_secret_access" {
   key_vault_id = var.key_vault_id
-  object_id    = azurerm_app_service_slot.staging.identity[0].principal_id
+  object_id    = azurerm_linux_web_app_slot.staging.identity[0].principal_id
   tenant_id    = var.tenant_id
 
   key_permissions = [
-    "get",
-    "list",
+    "Get",
+    "List",
   ]
   secret_permissions = [
-    "get",
-    "list",
+    "Get",
+    "List",
   ]
 }
 
 # Associate the App Service and staging slot with the environment's VNet:
 
 resource "azurerm_app_service_virtual_network_swift_connection" "app" {
-  app_service_id = azurerm_app_service.service.id
+  app_service_id = azurerm_linux_web_app.service.id
   subnet_id      = var.webapp_subnet_id
 }
 
 resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
-  slot_name      = azurerm_app_service_slot.staging.name
-  app_service_id = azurerm_app_service.service.id
+  slot_name      = azurerm_linux_web_app_slot.staging.name
+  app_service_id = azurerm_linux_web_app.service.id
   subnet_id      = var.webapp_subnet_id
 }
 
@@ -163,14 +190,14 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
 
   WHAT'S HAPPENING HERE:
 
-  1) The wildcard-simplereport-gov cert is being imported from Key Vault into the App Service
+  1) The new-sr-wildcard cert is being imported from Key Vault into the App Service
     [NOTE: This only takes place if this is the first environment being created in this environment level. Cert ownership is bound to the index-less environment!]
   2) That cert is being bound to the custom domain created above, enabling HTTPS
 */
 
 resource "azurerm_app_service_certificate" "app" {
   count               = var.env_index == 1 ? 1 : 0
-  name                = "wildcard-simplereport-gov"
+  name                = "new-sr-wildcard"
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
   key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.id
@@ -184,7 +211,7 @@ resource "azurerm_app_service_certificate_binding" "app" {
   # Azure only allows for a single instance of a certificate fingerprint in a specific resource group.connection {
   # in resource groups with multiple environments, we have to work around this by using this
   # prescribed value for certificate_id. 
-  hostname_binding_id = "${azurerm_app_service.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
-  certificate_id      = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/wildcard-simplereport-gov"
+  hostname_binding_id = "${azurerm_linux_web_app.service.id}/hostNameBindings/api-${var.env}.simplereport.gov"
+  certificate_id      = "${data.azurerm_subscription.primary.id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Web/certificates/new-sr-wildcard"
   ssl_state           = "SniEnabled"
 }

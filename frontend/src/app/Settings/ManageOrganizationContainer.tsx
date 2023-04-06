@@ -1,11 +1,11 @@
-import React, { ComponentProps } from "react";
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { gql, useQuery, useMutation } from "@apollo/client";
 
-import Alert from "../commonComponents/Alert";
 import { getAppInsights } from "../TelemetryService";
-import { showNotification } from "../utils";
+import { showError, showSuccess } from "../utils/srToast";
 import { RootState, updateOrganization } from "../store";
+import { useDocumentTitle } from "../utils/hooks";
 
 import ManageOrganization from "./ManageOrganization";
 
@@ -40,6 +40,8 @@ export const SET_ORGANIZATION = gql`
 `;
 
 const ManageOrganizationContainer: any = () => {
+  useDocumentTitle("Manage organization");
+
   const { data, loading, error } = useQuery<Data, {}>(GET_ORGANIZATION, {
     fetchPolicy: "no-cache",
   });
@@ -70,22 +72,19 @@ const ManageOrganizationContainer: any = () => {
       ? () => adminSetOrganization({ variables: { name, type } })
       : () => setOrganization({ variables: { type } });
 
-    const alertProps: ComponentProps<typeof Alert> = {
-      type: "success",
-      title: "Updated organization",
-      body: "The settings for the organization have been updated",
-    };
-
     try {
       await mutation();
       dispatch(updateOrganization({ name }));
+      showSuccess(
+        "The settings for the organization have been updated",
+        "Updated organization"
+      );
     } catch (e: any) {
-      alertProps.type = "error";
-      alertProps.title = "Error updating organization";
-      alertProps.body =
-        "There was an eroror updating the organization settings";
+      showError(
+        "There was an error updating the organization settings",
+        "Error updating organization"
+      );
     }
-    showNotification(<Alert {...alertProps} />);
   };
 
   return (

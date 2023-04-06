@@ -1,10 +1,8 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import com.okta.sdk.error.Error;
-import com.okta.sdk.error.ErrorCause;
-import com.okta.sdk.resource.ResourceException;
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
@@ -26,8 +24,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /** Handles all user/organization management in Okta */
@@ -35,6 +36,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class DemoOktaRepository implements OktaRepository {
+
+  @Value("${simple-report.authorization.environment-name:DEV}")
+  private String environment;
 
   private final OrganizationExtractor organizationExtractor;
   private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
@@ -66,7 +70,7 @@ public class DemoOktaRepository implements OktaRepository {
       Set<OrganizationRole> roles,
       boolean active) {
     if (allUsernames.contains(userIdentity.getUsername())) {
-      throw new ResourceException(new DuplicateUserError());
+      throw new ConflictingUserException();
     }
 
     String organizationExternalId = org.getExternalId();
@@ -102,7 +106,7 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(orgRoles);
   }
 
-  // these two methods don't do much in a demo envt since a user's username or email don't change
+  // this method currently doesn't do much in a demo envt
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
     if (!usernameOrgRolesMap.containsKey(userIdentity.getUsername())) {
       throw new IllegalGraphqlArgumentException(
@@ -113,12 +117,22 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> updateUserEmail(
-      IdentityAttributes userIdentity, String email) {
-    if (!usernameOrgRolesMap.containsKey(userIdentity.getUsername())) {
+      IdentityAttributes userIdentity, String newEmail) {
+    String currentEmail = userIdentity.getUsername();
+    if (!usernameOrgRolesMap.containsKey(currentEmail)) {
       throw new IllegalGraphqlArgumentException(
           "Cannot change email of Okta user with unrecognized username");
     }
-    OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(userIdentity.getUsername());
+
+    if (usernameOrgRolesMap.containsKey(newEmail)) {
+      throw new ConflictingUserException();
+    }
+
+    String org = usernameOrgRolesMap.get(userIdentity.getUsername()).getOrganizationExternalId();
+    orgUsernamesMap.get(org).remove(currentEmail);
+    orgUsernamesMap.get(org).add(newEmail);
+    usernameOrgRolesMap.put(newEmail, usernameOrgRolesMap.remove(userIdentity.getUsername()));
+    OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(newEmail);
     return Optional.of(orgRoles);
   }
 
@@ -207,13 +221,13 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
+  // returns ALL users including inactive ones
   public Set<String> getAllUsersForOrganization(Organization org) {
     if (!orgUsernamesMap.containsKey(org.getExternalId())) {
       throw new IllegalGraphqlArgumentException(
           "Cannot get Okta users from nonexistent organization.");
     }
     return orgUsernamesMap.get(org.getExternalId()).stream()
-        .filter(u -> !inactiveUsernames.contains(u))
         .collect(Collectors.toUnmodifiableSet());
   }
 
@@ -309,13 +323,25 @@ public class DemoOktaRepository implements OktaRepository {
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
     // when accessing tenant data, bypass okta and get org from the altered authorities
-    if (tenantDataContextHolder.hasBeenPopulated()
-        && username.equals(tenantDataContextHolder.getUsername())) {
-      return getOrganizationRoleClaimsFromTenantDataAccess(
-          tenantDataContextHolder.getAuthorities());
+    try {
+      if (tenantDataContextHolder.hasBeenPopulated()
+          && username.equals(tenantDataContextHolder.getUsername())) {
+        return getOrganizationRoleClaimsFromTenantDataAccess(
+            tenantDataContextHolder.getAuthorities());
+      }
+      return Optional.ofNullable(usernameOrgRolesMap.get(username));
+    } catch (ScopeNotActiveException e) {
+      // Tests are set up with a full SecurityContextHolder and should not rely on
+      // usernameOrgRolesMap as the source of truth.
+      if (!("UNITTEST".equals(environment)) && usernameOrgRolesMap.containsKey(username)) {
+        return Optional.of(usernameOrgRolesMap.get(username));
+      }
+      Set<String> authorities =
+          SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+              .map(GrantedAuthority::getAuthority)
+              .collect(Collectors.toSet());
+      return getOrganizationRoleClaimsFromTenantDataAccess(authorities);
     }
-
-    return Optional.ofNullable(usernameOrgRolesMap.get(username));
   }
 
   public void reset() {
@@ -324,34 +350,5 @@ public class DemoOktaRepository implements OktaRepository {
     orgFacilitiesMap.clear();
     inactiveUsernames.clear();
     allUsernames.clear();
-  }
-
-  // Dummy error for duplicate users.
-  // Status, code, and message taken from a real Okta exception.
-  private class DuplicateUserError implements Error {
-
-    public int getStatus() {
-      return HttpStatus.BAD_REQUEST.value();
-    }
-
-    public String getCode() {
-      return "E0000001";
-    }
-
-    public String getMessage() {
-      return "An object with this field already exists in the current organization";
-    }
-
-    public String getId() {
-      return "0";
-    }
-
-    public List<ErrorCause> getCauses() {
-      return List.of();
-    }
-
-    public Map<String, List<String>> getHeaders() {
-      return Map.of();
-    }
   }
 }

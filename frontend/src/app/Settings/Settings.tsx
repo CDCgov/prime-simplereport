@@ -1,7 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 
-import { useDocumentTitle } from "../utils/hooks";
-
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
@@ -9,11 +7,11 @@ import ManageUsersContainer from "./Users/ManageUsersContainer";
 import SettingsNav from "./SettingsNav";
 import { ManageSelfRegistrationLinksContainer } from "./ManageSelfRegistrationLinksContainer";
 
-const Settings = () => {
-  useDocumentTitle("Settings");
+import "./Settings.scss";
 
+const Settings = () => {
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <SettingsNav />
         <Routes>
@@ -34,7 +32,7 @@ const Settings = () => {
           <Route path="/" element={<ManageUsersContainer />} />
         </Routes>
       </div>
-    </main>
+    </div>
   );
 };
 

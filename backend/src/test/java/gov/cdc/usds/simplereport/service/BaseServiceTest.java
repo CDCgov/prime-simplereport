@@ -93,10 +93,6 @@ public abstract class BaseServiceTest<T> {
     _diseaseService.initDiseases();
   }
 
-  protected void reset() {
-    _truncator.truncateAll();
-  }
-
   protected static void assertSecurityError(Executable e) {
     AccessDeniedException exception = assertThrows(AccessDeniedException.class, e);
     assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());

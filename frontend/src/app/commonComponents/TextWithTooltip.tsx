@@ -3,9 +3,11 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "@trussworks/react-uswds";
 import React from "react";
 import "./TextWithTooltip.scss";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 type CustomButtonProps = React.PropsWithChildren<{
   className?: string;
+  children: React.ReactNode;
 }> &
   JSX.IntrinsicElements["button"] &
   React.RefAttributes<HTMLButtonElement>;
@@ -13,6 +15,7 @@ type CustomButtonProps = React.PropsWithChildren<{
 interface Props {
   tooltip: string;
   position?: "top" | "bottom" | "left" | "right";
+  hideText?: boolean;
   text?: string;
   className?: string;
 }
@@ -21,20 +24,25 @@ export const TextWithTooltip = ({
   tooltip,
   position,
   text,
+  hideText,
   className,
 }: Props) => {
-  const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> = React.forwardRef(
-    ({ className, children, ...tooltipProps }: CustomButtonProps, ref) => (
-      <button
-        className={`usa-button usa-button--unstyled ${className}`}
-        ref={ref}
-        {...tooltipProps}
-      >
-        {children}
-      </button>
-    )
-  );
-
+  const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> =
+    React.forwardRef(
+      ({ className, children, ...tooltipProps }: CustomButtonProps, ref) => (
+        <button
+          className={`usa-button usa-button--unstyled ${className}`}
+          ref={ref}
+          aria-label={hideText ? `${text} tooltip` : ""}
+          {...tooltipProps}
+        >
+          {children}
+        </button>
+      )
+    );
+  function preventPageReload(e: React.MouseEvent) {
+    e.preventDefault();
+  }
   CustomButton.displayName = "custom button";
 
   return (
@@ -44,9 +52,14 @@ export const TextWithTooltip = ({
       position={position || "top"}
       className={className}
       wrapperclasses="usa-text-with-tooltip"
+      onClick={preventPageReload}
     >
-      {text}
-      <FontAwesomeIcon className="info-circle-icon" icon={faInfoCircle} />
+      {hideText ? "" : text}
+      <FontAwesomeIcon
+        alt-text="info"
+        className="info-circle-icon"
+        icon={faInfoCircle as IconProp}
+      />
     </Tooltip>
   );
 };

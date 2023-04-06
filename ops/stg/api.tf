@@ -4,18 +4,21 @@ module "simple_report_api" {
   env    = local.env
 
   instance_count = 3
-  instance_tier  = "PremiumV3"
-  instance_size  = "P2v3"
+
+  sku_name = "P2v3"
 
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   webapp_subnet_id = data.terraform_remote_state.persistent_stg.outputs.subnet_webapp_id
+  lb_subnet_id     = data.terraform_remote_state.persistent_stg.outputs.subnet_lbs_id
 
-  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
-  key_vault_id     = data.azurerm_key_vault.global.id
-  tenant_id        = data.azurerm_client_config.current.tenant_id
-  https_only       = true
+  docker_image     = "simplereportacr.azurecr.io/api/simple-report-api-build"
+  docker_image_tag = var.acr_image_tag
+
+  key_vault_id = data.azurerm_key_vault.global.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  https_only   = true
 
   deploy_info = {
     env           = "stg",
@@ -55,9 +58,27 @@ module "simple_report_api" {
     EXPERIAN_PID_CLIENT_REFERENCE_ID              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_client_reference_id.id})"
     EXPERIAN_PID_USERNAME                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_username.id})"
     EXPERIAN_PID_PASSWORD                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.experian_preciseid_password.id})"
+    DATAHUB_URL                                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_url.id})"
+    DATAHUB_API_KEY                               = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
+    DATAHUB_FHIR_KEY                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_fhir_key.id})"
+    DATAHUB_SIGNING_KEY                           = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_signing_key.id})"
+    AZ_REPORTING_QUEUE_CXN_STRING                 = data.azurerm_storage_account.app.primary_connection_string
+    RS_QUEUE_CALLBACK_TOKEN                       = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.report_stream_exception_callback_token.id})"
+
     # true by default: can be disabled quickly here
     # SPRING_LIQUIBASE_ENABLED                       = "true"
     # this shadows (and overrides) an identical declaration in application.yaml
     # SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
   }
+}
+
+module "report_stream_reporting_functions" {
+  source       = "../services/app_functions/report_stream_batched_publisher/infra"
+  environment  = local.env
+  env_level    = local.env_level
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  lb_subnet_id = data.terraform_remote_state.persistent_stg.outputs.subnet_lbs_id
+  depends_on = [
+    azurerm_storage_account.app
+  ]
 }

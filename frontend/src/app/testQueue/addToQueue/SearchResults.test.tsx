@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Patient } from "../../patients/ManagePatients";
-import { TestResult } from "../QueueItem";
+import { PATIENT_TERM } from "../../../config/constants";
 
 import SearchResults from "./SearchResults";
 
@@ -51,7 +51,10 @@ const patients: Patient[] = [
 ];
 
 const mockFacilityID = "facility-id-101";
-const RouterWithFacility: React.FC = ({ children }) => (
+
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => (
   <MemoryRouter initialEntries={[`/queue?facility=${mockFacilityID}`]}>
     <Routes>{children}</Routes>
   </MemoryRouter>
@@ -89,7 +92,7 @@ describe("SearchResults", () => {
       expect(screen.getByText("No results found.")).toBeInTheDocument();
     });
 
-    it("should show add patient button", () => {
+    it("should show add patient button", async () => {
       render(
         <RouterWithFacility>
           <Route
@@ -108,8 +111,8 @@ describe("SearchResults", () => {
         </RouterWithFacility>
       );
 
-      expect(screen.getByText("Add new patient")).toBeInTheDocument();
-      userEvent.click(screen.getByText("Add new patient"));
+      expect(screen.getByText(`Add new ${PATIENT_TERM}`)).toBeInTheDocument();
+      await userEvent.click(screen.getByText(`Add new ${PATIENT_TERM}`));
       expect(
         screen.getByText(
           `Redirected to /add-patient?facility=${mockFacilityID}`

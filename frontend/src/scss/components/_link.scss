@@ -1,0 +1,10 @@
+.sr-link__primary {
+  @extend .usa-link;
+
+  @include u-text('semibold');
+  @include u-text('no-underline');
+
+  &:hover {
+    @include u-text('underline');
+  }
+}

@@ -3,12 +3,15 @@ package gov.cdc.usds.simplereport.api.model;
 import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
+import gov.cdc.usds.simplereport.api.MappingConstants;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -16,12 +19,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import graphql.com.google.common.collect.ImmutableMap;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -38,13 +43,15 @@ import java.util.UUID;
 public class TestEventExport {
   private static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
   public static final String USA = "USA";
+  private String processingModeCode = "P";
   private final TestEvent testEvent;
   private final Optional<Person> patient;
   private final Optional<AskOnEntrySurvey> survey;
   private final Optional<Provider> provider;
   private final Optional<Facility> facility;
   private final Optional<Organization> organization;
-  private final Optional<DeviceSpecimenType> deviceSpecimenType;
+  private final Optional<DeviceType> deviceType;
+  private final Optional<SpecimenType> specimenType;
 
   public TestEventExport(TestEvent testEvent) {
     this.testEvent = testEvent;
@@ -54,17 +61,21 @@ public class TestEventExport {
     this.facility = Optional.ofNullable(testEvent.getFacility());
     this.organization = Optional.ofNullable(testEvent.getOrganization());
 
-    this.deviceSpecimenType = Optional.ofNullable(testEvent.getDeviceSpecimen());
+    this.deviceType = Optional.ofNullable(testEvent.getDeviceType());
+    this.specimenType = Optional.ofNullable(testEvent.getSpecimenType());
+  }
+
+  public TestEventExport(TestEvent testEvent, String processingModeCode) {
+    this(testEvent);
+    this.processingModeCode = processingModeCode;
   }
 
   private String genderUnknown = "U";
-  private String ethnicityUnknown = "U";
-  private String raceUnknown = "UNK";
   private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
   // "Internal nose structure"
   // values pulled from
   // https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
-  private Map<String, String> genderMap =
+  private final Map<String, String> genderMap =
       Map.of(
           "male", "M",
           "female", "F",
@@ -75,29 +86,102 @@ public class TestEventExport {
           "refused", genderUnknown,
           "notapplicable", "N");
 
-  private Map<String, String> ethnicityMap =
+  private final Map<String, String> ethnicityMap =
       Map.of(
           "hispanic", "H",
           "not_hispanic", "N",
           "refused", "U");
 
-  private Map<TestResult, String> testResultMap =
+  private final Map<TestResult, String> testResultMap =
       Map.of(
           TestResult.POSITIVE, "260373001",
           TestResult.NEGATIVE, "260415000",
           TestResult.UNDETERMINED, "419984006");
 
-  private Map<String, String> raceMap =
-      Map.of(
-          "native", "1002-5",
-          "asian", "2028-9",
-          "black", "2054-5",
-          "pacific", "2076-8",
-          "white", "2106-3",
-          "other", "2131-1",
-          "unknown", raceUnknown,
-          "refused", "ASKU" // Asked, but unknown
-          );
+  private Map<String, String> preferredLanguageMap =
+      ImmutableMap.<String, String>builder()
+          .put("English", "eng")
+          .put("Spanish", "spa")
+          .put("Unknown", "zxx")
+          .put("Afrikaans", "afr")
+          .put("Amaric", "amh")
+          .put("American Sign Language", "sgn")
+          .put("Arabic", "ara")
+          .put("Armenian", "arm")
+          .put("Aromanian; Arumanian; Macedo-Romanian", "rup")
+          .put("Bantu (other)", "bnt")
+          .put("Bengali", "ben")
+          .put("Burmese", "bur")
+          .put("Cantonese", "yue")
+          .put("Caucasian (other)", "cau")
+          .put("Cherokee", "chr")
+          .put("Chinese", "yue")
+          .put("Creoles and pidgins, French-based (Other)", "cpf")
+          .put("Cushitic (other)", "cus")
+          .put("Dakota", "dak")
+          .put("Fiji", "fij")
+          .put("Filipino; Pilipino", "fil")
+          .put("French", "fre")
+          .put("German", "ger")
+          .put("Gujarati", "guj")
+          .put("Hebrew", "heb")
+          .put("Hindi", "hin")
+          .put("Hmong", "hmn")
+          .put("Indonesian", "ind")
+          .put("Italian", "ita")
+          .put("Japanese", "jpn")
+          .put("Kannada", "kan")
+          .put("Korean", "kor")
+          .put("Kru languages", "kro")
+          .put("Kurdish", "kur")
+          .put("Laotian", "lao")
+          .put("Latin", "lat")
+          .put("Malayalam", "mal")
+          .put("Mandar", "mdr")
+          .put("Mandarin", "cmn")
+          .put("Marathi", "mar")
+          .put("Marshallese", "mah")
+          .put("Mon-Khmer (Other)", "mkh")
+          .put("Cambodian", "khm")
+          .put("Mongolian", "mon")
+          .put("Navajo", "nav")
+          .put("Nepali", "nep")
+          .put("Not Specified", "zxx")
+          .put("Pashto", "pus")
+          .put("Portuguese", "por")
+          .put("Punjabi", "pan")
+          .put("Rarotongan; Cook Islands Maori", "rar")
+          .put("Russian", "rus")
+          .put("Samoan", "smo")
+          .put("Sign Languages", "sgn")
+          .put("Somali", "som")
+          .put("Swahili", "swa")
+          .put("Tagalog", "tgl")
+          .put("Tahitian", "tah")
+          .put("Tamil", "tam")
+          .put("Tegulu", "tel")
+          .put("Thai", "tha")
+          .put("Tigrinya", "tir")
+          .put("Ukrainian", "ukr")
+          .put("Urdu", "urd")
+          .put("Vietnamese", "vie")
+          .put("Yiddish", "yid")
+          .put("Zapotec", "zap")
+          .put("Chaochow", "tws")
+          .put("Luganda", "lug")
+          .put("Mien", "ium")
+          .put("Morrocan Arabic", "ary")
+          .put("Sebuano", "ceb")
+          .put("Singhalese", "sin")
+          .put("Taiwanese", "oan")
+          .build();
+
+  private static Optional<? extends DeviceTypeDisease> getCovidDiseaseInfo(
+      List<DeviceTypeDisease> deviceTypeDiseases) {
+    return deviceTypeDiseases.stream()
+        .filter(s -> "COVID-19".equals(s.getSupportedDisease().getName()))
+        .findFirst();
+  }
 
   private String boolToYesNoUnk(Boolean value) {
     if (value == null) {
@@ -153,7 +237,10 @@ public class TestEventExport {
 
   @JsonProperty("Patient_race")
   public String getPatientRace() {
-    return patient.map(Person::getRace).map(raceMap::get).orElse(raceUnknown);
+    return patient
+        .map(Person::getRace)
+        .map(PersonUtils.raceMap::get)
+        .orElse(MappingConstants.UNK_CODE);
   }
 
   @JsonProperty("Patient_DOB")
@@ -168,7 +255,7 @@ public class TestEventExport {
 
   @JsonProperty("Patient_ethnicity")
   public String getPatientEthnicity() {
-    return patient.map(Person::getEthnicity).map(ethnicityMap::get).orElse(ethnicityUnknown);
+    return patient.map(Person::getEthnicity).map(ethnicityMap::get).orElse(MappingConstants.U_CODE);
   }
 
   @JsonProperty("Patient_street")
@@ -242,7 +329,11 @@ public class TestEventExport {
 
   @JsonProperty("Patient_preferred_language")
   public String getPatientPreferredLanguage() {
-    return patient.map(Person::getPreferredLanguage).orElse("");
+    String defaultLanguage = patient.isPresent() ? patient.get().getPreferredLanguage() : "";
+    return patient
+        .map(Person::getPreferredLanguage)
+        .map(preferredLanguageMap::get)
+        .orElse(defaultLanguage);
   }
 
   @JsonProperty("Employed_in_healthcare")
@@ -326,16 +417,13 @@ public class TestEventExport {
 
   @JsonProperty("Test_result_code")
   public String getTestResult() {
-    return testResultMap.get(testEvent.getResult());
+    return testResultMap.get(testEvent.getCovidTestResult().orElseThrow());
   }
 
   @JsonProperty("Specimen_collection_date_time")
   public String getSpecimenCollectionDateTime() {
     var testDuration =
-        deviceSpecimenType
-            .map(DeviceSpecimenType::getDeviceType)
-            .map(DeviceType::getTestLength)
-            .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
+        deviceType.map(DeviceType::getTestLength).orElse(FALLBACK_DEFAULT_TEST_MINUTES);
     return dateToHealthCareString(
         convertToLocalDateTime(
             Date.from(
@@ -409,9 +497,7 @@ public class TestEventExport {
 
   @JsonProperty("Processing_mode_code")
   public String getFacilityProcessingModeCode() {
-    // todo: this should check a facility attribute to see what mode it's in. (or a separate table
-    // of prod-ready fac)
-    return "P"; // D:Debugging P:Production T:Training
+    return processingModeCode; // D:Debugging P:Production T:Training
   }
 
   @JsonProperty("Ordering_facility_city")
@@ -511,32 +597,50 @@ public class TestEventExport {
 
   @JsonProperty("Ordered_test_code")
   public String getOrderedTestCode() {
-    return deviceSpecimenType.map(dst -> dst.getDeviceType().getLoincCode()).orElse(null);
+    // This field is mapped to the testPerformedLoinc but was mistakenly named ordered_test_code
+    return deviceType
+        .map(DeviceType::getSupportedDiseaseTestPerformed)
+        .flatMap(TestEventExport::getCovidDiseaseInfo)
+        .map(DeviceTypeDisease::getTestPerformedLoincCode)
+        .orElse(null);
   }
 
   @JsonProperty("Specimen_source_site_code")
   public String getSpecimenSourceSiteCode() {
-    return deviceSpecimenType
-        .map(dst -> dst.getSpecimenType().getCollectionLocationCode())
-        .orElse(DEFAULT_LOCATION_CODE);
+    return specimenType.map(SpecimenType::getCollectionLocationCode).orElse(DEFAULT_LOCATION_CODE);
   }
 
   @JsonProperty("Specimen_type_code")
   public String getSpecimenTypeCode() {
-    return deviceSpecimenType.map(dst -> dst.getSpecimenType().getTypeCode()).orElse(null);
+    return specimenType.map(SpecimenType::getTypeCode).orElse(null);
   }
 
   @JsonProperty("Instrument_ID")
   public String getInstrumentID() {
-    return deviceSpecimenType
-        .map(dst -> dst.getDeviceType().getInternalId())
-        .map(UUID::toString)
-        .orElse(null);
+    return deviceType.map(d -> d.getInternalId().toString()).orElse(null);
   }
 
   @JsonProperty("Device_ID")
   public String getDeviceID() {
-    return deviceSpecimenType.map(dst -> dst.getDeviceType().getModel()).orElse(null);
+    return deviceType.map(DeviceType::getModel).orElse(null);
+  }
+
+  @JsonProperty("Test_Kit_Name_ID")
+  public String getTestKitNameId() {
+    return deviceType
+        .map(DeviceType::getSupportedDiseaseTestPerformed)
+        .flatMap(TestEventExport::getCovidDiseaseInfo)
+        .map(DeviceTypeDisease::getTestkitNameId)
+        .orElse(null);
+  }
+
+  @JsonProperty("Equipment_Model_ID")
+  public String getEquipmentModelId() {
+    return deviceType
+        .map(DeviceType::getSupportedDiseaseTestPerformed)
+        .flatMap(TestEventExport::getCovidDiseaseInfo)
+        .map(DeviceTypeDisease::getEquipmentUid)
+        .orElse(null);
   }
 
   @JsonProperty("Test_date")

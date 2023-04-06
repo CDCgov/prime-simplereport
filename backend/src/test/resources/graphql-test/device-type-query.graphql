@@ -1,0 +1,8 @@
+query listDevices {
+    deviceType {
+        name
+        internalId
+        manufacturer
+        model
+    }
+}

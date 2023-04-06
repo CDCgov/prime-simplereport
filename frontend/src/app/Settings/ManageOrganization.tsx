@@ -5,7 +5,7 @@ import Button from "../commonComponents/Button/Button";
 import RequiredMessage from "../commonComponents/RequiredMessage";
 import Alert from "../commonComponents/Alert";
 import Select from "../commonComponents/Select";
-import { showNotification } from "../utils";
+import { showError } from "../utils/srToast";
 import { OrganizationTypeEnum } from "../signUp/Organization/utils";
 
 import { EditableOrganization } from "./ManageOrganizationContainer";
@@ -22,65 +22,60 @@ const ManageOrganization: React.FC<Props> = (props) => {
     Partial<Record<keyof EditableOrganization, string>>
   >({});
   const [formChanged, setFormChanged] = useState(false);
-  const onChange = <K extends keyof EditableOrganization>(key: K) => (
-    value: EditableOrganization[K]
-  ) => {
-    setOrganization({ ...organization, [key]: value });
-    setFormChanged(true);
-  };
+  const onChange =
+    <K extends keyof EditableOrganization>(key: K) =>
+    (value: EditableOrganization[K]) => {
+      setOrganization({ ...organization, [key]: value });
+      setFormChanged(true);
+    };
 
-  const validateField = (field: keyof EditableOrganization): boolean => {
+  const validateField = (
+    field: keyof EditableOrganization
+  ): string | undefined => {
     if (field === "name") {
       if (organization[field].trim().length === 0) {
-        setErrors({
-          ...errors,
-          [field]: "The organization's name cannot be blank",
-        });
-        return false;
+        return "The organization's name cannot be blank";
       }
     }
     if (field === "type") {
       if (!Object.keys(OrganizationTypeEnum).includes(organization[field])) {
-        setErrors({
-          ...errors,
-          [field]: "An organization type must be selected",
-        });
-        return false;
+        return "An organization type must be selected";
       }
     }
-    setErrors({ ...errors, [field]: undefined });
-    return true;
+    return undefined;
   };
 
   const validateAndSave = () => {
-    const validName = validateField("name");
-    const validType = validateField("type");
-    if (validName && validType) {
+    const nameError = validateField("name");
+    const typeError = validateField("type");
+
+    if (!nameError && !typeError) {
       props.onSave(organization);
     } else {
-      showNotification(
-        <Alert
-          type="error"
-          title="Information missing"
-          body={
-            <ul>
-              {[errors["name"], errors["type"]]
-                .filter((msg) => !!msg)
-                .map((msg) => (
-                  <li key={msg}>{msg}</li>
-                ))}
-            </ul>
-          }
-        />
+      const updatedErrors = {
+        ...errors,
+        name: nameError,
+        type: typeError,
+      };
+      let ulAlertBody = (
+        <ul>
+          {[nameError, typeError]
+            .filter((msg) => !!msg)
+            .map((msg) => (
+              <li key={msg}>{msg}</li>
+            ))}
+        </ul>
       );
+      showError(ulAlertBody, "Information missing");
+      setErrors(updatedErrors);
     }
   };
 
   return (
     <div className="grid-row position-relative">
-      <div className="prime-container card-container">
+      <div className="prime-container card-container settings-tab">
         <div className="usa-card__header">
-          <h2>Manage organization</h2>
+          <h1>Manage organization</h1>
           <Button
             onClick={validateAndSave}
             label="Save settings"
@@ -99,7 +94,6 @@ const ManageOrganization: React.FC<Props> = (props) => {
               if you need to change it.
             </Alert>
           )}
-
           {props.canEditOrganizationName ? (
             <TextInput
               label="Organization name"

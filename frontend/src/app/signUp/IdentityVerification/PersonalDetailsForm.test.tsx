@@ -32,8 +32,8 @@ describe("PersonalDetailsForm", () => {
   });
 
   describe("Filling out the form", () => {
-    beforeEach(() => {
-      userEvent.type(
+    beforeEach(async () => {
+      await userEvent.type(
         screen.getByLabelText("Email *", { exact: false }),
         "bob@bob.bob"
       );
@@ -53,40 +53,38 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On submitting with an invalid phone number", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("Phone number", { exact: false }),
           "123"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid phone number is required")
         ).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Date of birth", { exact: false })
+        ).toHaveFocus();
       });
     });
     describe("On submitting an invalid street address 1", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("Street address 1", { exact: false }),
           "111 greendale dr,"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid street address is required")
         ).toBeInTheDocument();
       });
     });
-    describe("On clicking an invalid date of birth and submitting", () => {
+    describe("On entering an invalid date of birth and submitting", () => {
       it("shows an error", async () => {
-        userEvent.click(screen.getByTestId("date-picker-button"));
-        const nextMonthButton = screen.getByTestId("next-month");
-        expect(nextMonthButton).toHaveClass(
-          "usa-date-picker__calendar__next-month"
+        await userEvent.type(
+          screen.getByLabelText("Date of birth", { exact: false }),
+          "01/01/9999"
         );
-        userEvent.click(nextMonthButton);
-        const dateButton = screen.getByText("15");
-        expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-        userEvent.click(dateButton);
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid date of birth is required")
         ).toBeInTheDocument();
@@ -94,16 +92,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On clicking a valid date of birth and submitting", () => {
       it("shows an error", async () => {
-        userEvent.click(screen.getByTestId("date-picker-button"));
-        const previousMonthButton = screen.getByTestId("previous-month");
-        expect(previousMonthButton).toHaveClass(
-          "usa-date-picker__calendar__previous-month"
+        await userEvent.type(
+          screen.getByLabelText(/Date of birth/i),
+          "09/15/2022"
         );
-        userEvent.click(previousMonthButton);
-        const dateButton = screen.getByText("15");
-        expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-        userEvent.click(dateButton);
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         await waitFor(() => {
           expect(
             screen.queryByText("A valid date of birth is required")
@@ -113,11 +106,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On submitting an invalid street address 2", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("Street address 2", { exact: false }),
           "111 greendale dr,"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("Street 2 contains invalid symbols")
         ).toBeInTheDocument();
@@ -125,11 +118,11 @@ describe("PersonalDetailsForm", () => {
     });
     describe("On submitting an invalid zip code", () => {
       it("shows an error", async () => {
-        userEvent.type(
+        await userEvent.type(
           screen.getByLabelText("ZIP code", { exact: false }),
           "1234"
         );
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         expect(
           await screen.findByText("A valid ZIP code is required")
         ).toBeInTheDocument();
@@ -138,7 +131,7 @@ describe("PersonalDetailsForm", () => {
     describe("On submitting an incomplete form", () => {
       it("shows an error", async () => {
         fillInText("Email", "bob@bob.bob");
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         await waitFor(() => {
           expect(
             screen.queryAllByText("is required", { exact: false }).length
@@ -150,10 +143,7 @@ describe("PersonalDetailsForm", () => {
 
   describe("Completed form", () => {
     beforeEach(() => {
-      userEvent.click(screen.getByTestId("date-picker-button"));
-      const dateButton = screen.getByText("15");
-      expect(dateButton).toHaveClass("usa-date-picker__calendar__date");
-      userEvent.click(dateButton);
+      fillInText("Date of birth", "09/15/2022");
       fillInText("Email", "bob@bob.bob");
       fillInText("Phone number", "530-867-5309");
       fillInText("Street address 1", "123 Bob St");
@@ -164,7 +154,7 @@ describe("PersonalDetailsForm", () => {
 
     describe("On submit", () => {
       it("does not shows an error", async () => {
-        userEvent.click(screen.getByText("Submit"));
+        await userEvent.click(screen.getByText("Submit"));
         await waitFor(() => {
           expect(screen.queryAllByText("is required").length).toBe(0);
         });

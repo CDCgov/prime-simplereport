@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 
 import Page from "../commonComponents/Page/Page";
@@ -7,6 +7,7 @@ import PageNotFound from "../commonComponents/PageNotFound";
 import CardBackground from "../commonComponents/CardBackground/CardBackground";
 import Card from "../commonComponents/Card/Card";
 import { getActivationTokenFromUrl } from "../utils/url";
+import { getAppInsights } from "../TelemetryService";
 
 import { SecurityQuestion } from "./SecurityQuestion/SecurityQuestion";
 import { MfaSelect } from "./MfaSelect/MfaSelect";
@@ -26,6 +27,7 @@ import { AccountCreationApi } from "./AccountCreationApiService";
 import { routeFromStatus, UserAccountStatus } from "./UserAccountStatus";
 
 const AccountCreationApp = () => {
+  const appInsights = getAppInsights();
   // Initialize to loading state on app load
   const [userAccountStatus, setUserAccountStatus] = useState(
     UserAccountStatus.LOADING
@@ -35,8 +37,26 @@ const AccountCreationApp = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  /**
+   * Token activation
+   */
+  const initializeToken = useRef(true);
+
   // Runs once on app load
   useEffect(() => {
+    if (window?.visualViewport?.width) {
+      appInsights?.trackMetric(
+        {
+          name: "userViewport_accountCreation",
+          average: window.visualViewport.width,
+        },
+        {
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
+        }
+      );
+    }
+
     const getStatusAndActivate = async (
       activationToken: string | null = null
     ) => {
@@ -63,10 +83,13 @@ const AccountCreationApp = () => {
       // Set the userAccountStatus state, triggering a rerender w/ the Router
       setUserAccountStatus(status);
     };
-    const token = getActivationTokenFromUrl();
-    getStatusAndActivate(token);
-    /* eslint-disable react-hooks/exhaustive-deps */
-  }, []);
+
+    if (initializeToken.current) {
+      initializeToken.current = false;
+      const token = getActivationTokenFromUrl();
+      getStatusAndActivate(token);
+    }
+  }, [location.pathname, navigate, appInsights]);
 
   // Show loading card while useEffect func is running
   if (userAccountStatus === UserAccountStatus.LOADING) {

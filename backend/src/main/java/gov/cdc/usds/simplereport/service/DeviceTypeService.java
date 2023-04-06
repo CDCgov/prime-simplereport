@@ -1,19 +1,16 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
-
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
+import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
-import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import java.util.ArrayList;
@@ -21,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,79 +27,47 @@ import org.springframework.transaction.annotation.Transactional;
  * specific facility or organization).
  */
 @Service
+@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class DeviceTypeService {
 
   public static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
-  private DeviceTypeRepository _repo;
-  private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
-  private SpecimenTypeRepository _specimenTypeRepo;
-  private FacilityRepository _facilityRepo;
-  private SupportedDiseaseRepository _supportedDiseaseRepo;
+  private final DeviceTypeRepository deviceTypeRepository;
+  private final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
+  private final SpecimenTypeRepository specimenTypeRepository;
+  private final SupportedDiseaseRepository supportedDiseaseRepository;
 
-  public DeviceTypeService(
-      DeviceTypeRepository repo,
-      DeviceSpecimenTypeRepository deviceSpecimenRepo,
-      SpecimenTypeRepository specimenTypeRepo,
-      FacilityRepository facilityRepo,
-      SupportedDiseaseRepository supportedDiseaseRepo) {
-    _repo = repo;
-    _deviceSpecimenRepo = deviceSpecimenRepo;
-    _specimenTypeRepo = specimenTypeRepo;
-    _facilityRepo = facilityRepo;
-    _supportedDiseaseRepo = supportedDiseaseRepo;
-  }
-
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public void removeDeviceType(DeviceType d) {
-    _repo.delete(d);
+    deviceTypeRepository.delete(d);
   }
 
   public List<DeviceType> fetchDeviceTypes() {
-    return _repo.findAll();
+    return deviceTypeRepository.findAll();
   }
 
   public DeviceType getDeviceType(UUID internalId) {
-    return _repo
+    return deviceTypeRepository
         .findById(internalId)
         .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device type ID"));
   }
 
-  public List<DeviceSpecimenType> getDeviceSpecimenTypesByIds(List<UUID> deviceSpecimenTypeIds) {
-    return StreamSupport.stream(
-            _deviceSpecimenRepo.findAllById(deviceSpecimenTypeIds).spliterator(), false)
-        .collect(Collectors.toList());
+  public DeviceType getDeviceType(String name) {
+    return deviceTypeRepository.findDeviceTypeByName(name);
   }
 
-  public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
-    return _deviceSpecimenRepo.findAll();
-  }
-
-  public DeviceSpecimenType getDeviceSpecimenType(UUID deviceSpecimenTypeId) {
-    return _deviceSpecimenRepo
-        .findById(deviceSpecimenTypeId)
-        .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device specimen type ID"));
-  }
-
-  public DeviceSpecimenType getFirstDeviceSpecimenTypeForDeviceTypeId(UUID deviceId) {
-    return _deviceSpecimenRepo
-        .findFirstByDeviceTypeInternalIdOrderByCreatedAt(deviceId)
-        .orElseThrow(
-            () ->
-                new IllegalGraphqlArgumentException(
-                    "Device is not configured with a specimen type"));
-  }
-
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(UpdateDeviceType updateDevice) {
 
     DeviceType device = getDeviceType(updateDevice.getInternalId());
     if (updateDevice.getName() != null) {
       device.setName(updateDevice.getName());
-      device.setTestLength((determineTestLength(updateDevice.getName())));
+    }
+    if (updateDevice.getTestLength() > 0) {
+      device.setTestLength(updateDevice.getTestLength());
     }
     if (updateDevice.getManufacturer() != null) {
       device.setManufacturer(updateDevice.getManufacturer());
@@ -110,13 +75,10 @@ public class DeviceTypeService {
     if (updateDevice.getModel() != null) {
       device.setModel(updateDevice.getModel());
     }
-    if (updateDevice.getLoincCode() != null) {
-      device.setLoincCode(updateDevice.getLoincCode());
-    }
     if (updateDevice.getSwabTypes() != null) {
       List<SpecimenType> updatedSpecimenTypes =
           updateDevice.getSwabTypes().stream()
-              .map(uuid -> _specimenTypeRepo.findById(uuid))
+              .map(specimenTypeRepository::findById)
               .filter(Optional::isPresent)
               .map(Optional::get)
               .collect(Collectors.toList());
@@ -128,52 +90,45 @@ public class DeviceTypeService {
             }
           });
 
-      List<DeviceSpecimenType> newDeviceSpecimenTypes =
+      List<DeviceTypeSpecimenTypeMapping> newDeviceSpecimenTypes =
           updatedSpecimenTypes.stream()
-              .map(specimenType -> new DeviceSpecimenType(device, specimenType))
+              .map(
+                  specimenType ->
+                      new DeviceTypeSpecimenTypeMapping(
+                          device.getInternalId(), specimenType.getInternalId()))
               .collect(Collectors.toList());
 
-      List<DeviceSpecimenType> exitingDeviceSpecimenTypes =
-          _deviceSpecimenRepo.findAllByDeviceType(device);
+      List<DeviceTypeSpecimenTypeMapping> exitingDeviceSpecimenTypes =
+          deviceSpecimenTypeNewRepository.findAllByDeviceTypeId(device.getInternalId());
 
       // delete old ones
-      ArrayList<DeviceSpecimenType> toBeDeletedDeviceSpecimenTypes =
+      ArrayList<DeviceTypeSpecimenTypeMapping> toBeDeletedDeviceSpecimenTypes =
           new ArrayList<>(exitingDeviceSpecimenTypes);
       toBeDeletedDeviceSpecimenTypes.removeAll(newDeviceSpecimenTypes);
-
-      // Null out facilities' default device specimen if it was deleted
-      List<Facility> facilitiesToRemoveDefaultDeviceSpecimen =
-          _facilityRepo.findAllByDefaultDeviceSpecimenIn(toBeDeletedDeviceSpecimenTypes);
-
-      facilitiesToRemoveDefaultDeviceSpecimen.forEach(Facility::removeDefaultDeviceSpecimen);
-
-      _deviceSpecimenRepo.deleteAll(toBeDeletedDeviceSpecimenTypes);
+      deviceSpecimenTypeNewRepository.deleteAll(toBeDeletedDeviceSpecimenTypes);
 
       // create new ones
-      ArrayList<DeviceSpecimenType> toBeAddedDeviceSpecimenTypes =
+      ArrayList<DeviceTypeSpecimenTypeMapping> toBeAddedDeviceSpecimenTypes =
           new ArrayList<>(newDeviceSpecimenTypes);
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
-      _deviceSpecimenRepo.saveAll(toBeAddedDeviceSpecimenTypes);
+      deviceSpecimenTypeNewRepository.saveAll(toBeAddedDeviceSpecimenTypes);
     }
-    if (updateDevice.getSupportedDiseases() != null) {
-      List<SupportedDisease> supportedDiseases =
-          updateDevice.getSupportedDiseases().stream()
-              .map(uuid -> _supportedDiseaseRepo.findById(uuid))
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .collect(Collectors.toList());
-      device.setSupportedDiseases(supportedDiseases);
+    if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
+      var deviceTypeDiseaseList =
+          createDeviceTypeDiseaseList(updateDevice.getSupportedDiseaseTestPerformed(), device);
+      device.getSupportedDiseaseTestPerformed().clear();
+      device.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
     }
-    return _repo.save(device);
+    return deviceTypeRepository.save(device);
   }
 
-  @Transactional(readOnly = false)
+  @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType createDeviceType(CreateDeviceType createDevice) {
 
     List<SpecimenType> specimenTypes =
         createDevice.getSwabTypes().stream()
-            .map(uuid -> _specimenTypeRepo.findById(uuid).get())
+            .map(uuid -> specimenTypeRepository.findById(uuid).get())
             .collect(Collectors.toList());
 
     specimenTypes.forEach(
@@ -183,30 +138,47 @@ public class DeviceTypeService {
           }
         });
 
-    List<SupportedDisease> supportedDiseases =
-        createDevice.getSupportedDiseases().stream()
-            .map(uuid -> _supportedDiseaseRepo.findById(uuid))
-            .filter(Optional::isPresent)
-            .map(Optional::get)
-            .collect(Collectors.toList());
-
     DeviceType dt =
-        _repo.save(
+        deviceTypeRepository.save(
             new DeviceType(
                 createDevice.getName(),
                 createDevice.getManufacturer(),
                 createDevice.getModel(),
-                createDevice.getLoincCode(),
-                null,
-                determineTestLength(createDevice.getName())));
+                createDevice.getTestLength()));
 
     specimenTypes.stream()
-        .map(specimenType -> new DeviceSpecimenType(dt, specimenType))
-        .forEach(_deviceSpecimenRepo::save);
+        .map(
+            specimenType ->
+                new DeviceTypeSpecimenTypeMapping(dt.getInternalId(), specimenType.getInternalId()))
+        .forEach(deviceSpecimenTypeNewRepository::save);
 
-    dt.setSupportedDiseases(supportedDiseases);
-    _repo.save(dt);
+    var deviceTypeDiseaseList =
+        createDeviceTypeDiseaseList(createDevice.getSupportedDiseaseTestPerformed(), dt);
+    dt.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
+    deviceTypeRepository.save(dt);
 
     return dt;
+  }
+
+  private ArrayList<DeviceTypeDisease> createDeviceTypeDiseaseList(
+      List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
+      DeviceType device) {
+    var deviceTypeDiseaseList = new ArrayList<DeviceTypeDisease>();
+    supportedDiseaseTestPerformedInput.forEach(
+        input -> {
+          var supportedDisease = supportedDiseaseRepository.findById(input.getSupportedDisease());
+          supportedDisease.ifPresent(
+              disease ->
+                  deviceTypeDiseaseList.add(
+                      DeviceTypeDisease.builder()
+                          .deviceTypeId(device.getInternalId())
+                          .supportedDisease(disease)
+                          .testPerformedLoincCode(input.getTestPerformedLoincCode())
+                          .equipmentUid(input.getEquipmentUid())
+                          .testkitNameId(input.getTestkitNameId())
+                          .testOrderedLoincCode(input.getTestOrderedLoincCode())
+                          .build()));
+        });
+    return deviceTypeDiseaseList;
   }
 }

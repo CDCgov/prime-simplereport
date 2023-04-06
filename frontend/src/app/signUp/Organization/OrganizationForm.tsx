@@ -1,16 +1,18 @@
-import { ReactElement, useState } from "react";
+import React, { ReactElement, useEffect, useRef, useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button/Button";
-import { showNotification } from "../../utils";
-import Alert from "../../commonComponents/Alert";
+import { showError } from "../../utils/srToast";
+import { useDocumentTitle } from "../../utils/hooks";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 import Input from "../../commonComponents/Input";
 import {
   organizationCreationSteps,
   stateCodes,
+  liveJurisdictions,
 } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
@@ -27,8 +29,8 @@ import {
   organizationSchema as schema,
   organizationBackendErrors,
 } from "./utils";
-
 import "./OrganizationForm.scss";
+import { UnsupportedStateModal } from "./UnsupportedStateModal";
 
 export interface OrganizationCreateRequest {
   name: string;
@@ -51,19 +53,22 @@ const OrganizationForm = () => {
   const [organization, setOrganization] = useState<OrganizationCreateRequest>(
     initOrg()
   );
+  const [stateModalOpen, setStateModalOpen] = useState(false);
   const [errors, setErrors] = useState<OrganizationFormErrors>(initOrgErrors());
+  const focusOnce = useRef(false);
   const [backendError, setBackendError] = useState<ReactElement>();
 
   const [loading, setLoading] = useState(false);
   const [formChanged, setFormChanged] = useState(false);
   const [orgExternalId, setOrgExternalId] = useState("");
+  useDocumentTitle("Sign up - organization information");
 
-  const onDetailChange = (field: keyof OrganizationCreateRequest) => (
-    value: OrganizationCreateRequest[typeof field]
-  ) => {
-    setFormChanged(true);
-    setOrganization({ ...organization, [field]: value });
-  };
+  const onDetailChange =
+    (field: keyof OrganizationCreateRequest) =>
+    (value: OrganizationCreateRequest[typeof field]) => {
+      setFormChanged(true);
+      setOrganization({ ...organization, [field]: value });
+    };
 
   const validateField = async (field: keyof OrganizationCreateRequest) => {
     setErrors(
@@ -95,16 +100,44 @@ const OrganizationForm = () => {
       return;
     }
     setErrors(validation.errors);
-    const alert = (
-      <Alert
-        type="error"
-        title="Form Errors"
-        body="Please check the form to make sure you complete all of the required fields."
-      />
+    focusOnce.current = true;
+    showError(
+      "Please check the form to make sure you complete all of the required fields.",
+      "Form Errors"
     );
-    window.scrollTo(0, 0);
-    showNotification(alert);
     setLoading(false);
+  };
+  /**
+   * Place focus after errors are displayed
+   */
+  useEffect(() => {
+    if (
+      focusOnce.current &&
+      (errors.name ||
+        errors.state ||
+        errors.type ||
+        errors.firstName ||
+        errors.lastName ||
+        errors.email ||
+        errors.workPhoneNumber)
+    ) {
+      focusOnFirstInputWithError();
+      focusOnce.current = false;
+    }
+  }, [
+    errors.name,
+    errors.state,
+    errors.type,
+    errors.firstName,
+    errors.lastName,
+    errors.email,
+    errors.workPhoneNumber,
+  ]);
+
+  const validateSupportedJurisdiction = async () => {
+    if (organization.state && !liveJurisdictions.includes(organization.state)) {
+      setStateModalOpen(true);
+    }
   };
 
   if (orgExternalId) {
@@ -148,6 +181,7 @@ const OrganizationForm = () => {
             onChange={onDetailChange("state")}
             onBlur={() => {
               validateField("state");
+              validateSupportedJurisdiction();
             }}
             validationStatus={getValidationStatus("state")}
             errorMessage={errors.state}
@@ -160,9 +194,9 @@ const OrganizationForm = () => {
             label={label}
             name="type"
             value={organization.type || ""}
-            options={Object.entries(
-              OrganizationTypeEnum
-            ).map(([key, value]) => ({ label: value, value: key }))}
+            options={Object.entries(OrganizationTypeEnum).map(
+              ([key, value]) => ({ label: value, value: key })
+            )}
             defaultSelect
             onChange={onDetailChange("type")}
             onBlur={() => {
@@ -216,33 +250,42 @@ const OrganizationForm = () => {
 
   return (
     <CardBackground>
-      <Card logo>
+      <Card logo cardIsForm>
         <div className="margin-bottom-2 organization-form usa-prose">
-          <h4 className="margin-top-2 margin-bottom-0">
+          <h1 className="margin-top-2 margin-bottom-0">
             Sign up for SimpleReport
-          </h4>
+          </h1>
           <StepIndicator
             steps={organizationCreationSteps}
             currentStepValue={"0"}
             noLabels={true}
             segmentIndicatorOnBottom={true}
+            headingLevel="h2"
           />
           <div className="gray-background padding-y-05 padding-x-3">
             <p className="font-ui-2xs line-height-sans-5 margin-bottom-1">
               <strong>Sign up for SimpleReport in three steps:</strong>
             </p>
-            <div className="margin-y-1">
-              <span className="circled-number margin-right-05">1</span>
-              Fill out your organization information
-            </div>
-            <div className="margin-y-1">
-              <span className="circled-number margin-right-05">2</span>
-              Enter your personal contact details
-            </div>
-            <div className="margin-y-1">
-              <span className="circled-number margin-right-05">3</span>
-              Verify your identity
-            </div>
+            <ol className="prime-ul">
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">1</span>
+                  Fill out your organization information
+                </div>
+              </li>
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">2</span>
+                  Enter your personal contact details
+                </div>
+              </li>
+              <li>
+                <div className="margin-y-1">
+                  <span className="circled-number margin-right-05">3</span>
+                  Verify your identity
+                </div>
+              </li>
+            </ol>
             <p className="font-ui-2xs margin-top-2 line-height-sans-5">
               Each organization only needs one account. After you sign up you
               can add staff and testing locations. Learn more about our{" "}
@@ -255,6 +298,7 @@ const OrganizationForm = () => {
           {backendError ? backendError : null}
           {/* By mapping over organizationFields (found in utils.tsx), we reduce */}
           {/* duplication of input fields in JSX */}
+
           {Object.entries(organizationFields).map(
             ([key, { label, required, hintText }]) => {
               const field = key as keyof OrganizationCreateRequest;
@@ -280,6 +324,16 @@ const OrganizationForm = () => {
           label={"Continue"}
         />
       </Card>
+      <UnsupportedStateModal
+        showModal={stateModalOpen}
+        state={organization.state}
+        onClose={(clearField: boolean) => {
+          if (clearField) {
+            setOrganization({ ...organization, state: "" });
+          }
+          setStateModalOpen(false);
+        }}
+      />
     </CardBackground>
   );
 };

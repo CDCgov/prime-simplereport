@@ -22,3 +22,4 @@
 - [ ] Any changes to tables that have custom no-PHI views are accompanied by changes to those views (including re-granting permission to the no-PHI user if need be)
 - [ ] Each new changeset has a corresponding [tag](https://docs.liquibase.com/change-types/community/tag-database.html)
 - [ ] Rollback has been verifed locally and in a deployed environment
+- [ ] Update anonymizer to reflect database changes

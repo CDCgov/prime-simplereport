@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -18,10 +17,5 @@ public class TestEventService {
 
   public TestEvent getLastTestResultsForPatient(Person patient) {
     return _terepo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
-  }
-
-  @AuthorizationConfiguration.RequirePermissionStartTestForPatient
-  public TestEvent getLastTestResultsForPatientPermRestricted(Person patient) {
-    return getLastTestResultsForPatient(patient);
   }
 }

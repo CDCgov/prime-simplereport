@@ -7,6 +7,7 @@ build/
 *.orig
 *.rej
 /db-setup/snapshots
+/db-setup/anon_dump.*
 out.log
 .env.local
 
@@ -44,3 +45,4 @@ out/
 
 ### VS Code ###
 .vscode/
+/*.log

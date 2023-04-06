@@ -1,10 +1,9 @@
 import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { gql, useLazyQuery, useQuery } from "@apollo/client";
-import React, {
+import { useLazyQuery } from "@apollo/client";
+import {
   ChangeEventHandler,
-  SetStateAction,
   useCallback,
   useEffect,
   useMemo,
@@ -12,16 +11,13 @@ import React, {
   useState,
 } from "react";
 import moment from "moment";
-import classnames from "classnames";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import { DatePicker, Label } from "@trussworks/react-uswds";
+import { Label } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 
-import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, facilityDisplayName } from "../utils";
-import { formatDateWithTimeOption, isValidDate } from "../utils/date";
-import { ActionsMenu } from "../commonComponents/ActionsMenu";
-import { getParameterFromUrl, getUrl } from "../utils/url";
+import { isValidDate } from "../utils/date";
+import { getParameterFromUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import {
@@ -31,7 +27,10 @@ import {
 } from "../constants";
 import "./TestResultsList.scss";
 import Button from "../commonComponents/Button/Button";
-import { useDebounce } from "../testQueue/addToQueue/useDebounce";
+import {
+  useDebounce,
+  useDebouncedEffect,
+} from "../testQueue/addToQueue/useDebounce";
 import {
   MIN_SEARCH_CHARACTER_COUNT,
   SEARCH_DEBOUNCE_TIME,
@@ -43,7 +42,12 @@ import SearchResults from "../testQueue/addToQueue/SearchResults";
 import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
-import { useGetAllFacilitiesQuery } from "../../generated/graphql";
+import {
+  GetFacilityResultsMultiplexWithCountQuery,
+  useGetAllFacilitiesQuery,
+  useGetFacilityResultsMultiplexWithCountQuery,
+} from "../../generated/graphql";
+import { waitForElement } from "../utils/elements";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -51,6 +55,9 @@ import EmailTestResultModal from "./EmailTestResultModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
+import ResultsTable, {
+  generateTableHeaders,
+} from "./resultsTable/ResultsTable";
 
 export const ALL_FACILITIES_ID = "all";
 
@@ -64,159 +71,12 @@ export const byDateTested = (a: any, b: any) => {
 };
 
 /**
- * Results Table
- */
-const tableHeaders = (
-  <tr>
-    <th scope="col" className="patient-name-cell">
-      {PATIENT_TERM_CAP}
-    </th>
-    <th scope="col" className="test-date-cell">
-      Test date
-    </th>
-    <th scope="col" className="test-result-cell">
-      COVID-19
-    </th>
-    <th scope="col" className="test-facility-cell">
-      Testing facility
-    </th>
-    <th scope="col" className="test-device-cell">
-      Test device
-    </th>
-    <th scope="col" className="submitted-by-cell">
-      Submitted by
-    </th>
-    <th scope="col" className="actions-cell">
-      Actions
-    </th>
-  </tr>
-);
-
-function testResultRows(
-  testResults: any,
-  setPrintModalId: SetStateAction<any>,
-  setMarkCorrectionId: SetStateAction<any>,
-  setDetailsModalId: SetStateAction<any>,
-  setTextModalId: SetStateAction<any>,
-  setEmailModalTestResultId: SetStateAction<any>
-) {
-  if (testResults.length === 0) {
-    return (
-      <tr>
-        <td>No results</td>
-      </tr>
-    );
-  }
-
-  // `sort` mutates the array, so make a copy
-  return [...testResults].sort(byDateTested).map((r) => {
-    const actionItems = [];
-    actionItems.push({
-      name: "Print result",
-      action: () => setPrintModalId(r.internalId),
-    });
-    if (r.patient.email) {
-      actionItems.push({
-        name: "Email result",
-        action: () => setEmailModalTestResultId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "Text result",
-      action: () => setTextModalId(r.internalId),
-    });
-
-    const removed = r.correctionStatus === "REMOVED";
-    if (!removed) {
-      actionItems.push({
-        name: "Correct result",
-        action: () => setMarkCorrectionId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
-    return (
-      <tr
-        key={r.internalId}
-        title={removed ? "Marked as error" : ""}
-        className={classnames(
-          "sr-test-result-row",
-          removed && "sr-test-result-row--removed"
-        )}
-        data-patient-link={
-          r.patientLink
-            ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
-            : null
-        }
-      >
-        <td className="patient-name-cell">
-          {displayFullName(
-            r.patient.firstName,
-            r.patient.middleName,
-            r.patient.lastName
-          )}
-          <span className="display-block text-base font-ui-2xs">
-            DOB: {formatDateWithTimeOption(r.patient.birthDate)}
-          </span>
-        </td>
-        <td className="test-date-cell">
-          {formatDateWithTimeOption(r.dateTested, true)}
-        </td>
-        <td className="test-result-cell">
-          {TEST_RESULT_DESCRIPTIONS[r.result as Results]}
-        </td>
-        <td className="test-facility-cell">
-          {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
-        </td>
-        <td className="test-device-cell">{r.deviceType.name}</td>
-        <td className="submitted-by-cell">
-          {displayFullName(
-            r.createdBy.nameInfo.firstName,
-            null,
-            r.createdBy.nameInfo.lastName
-          )}
-        </td>
-        <td className="actions-cell">
-          <ActionsMenu items={actionItems} />
-        </td>
-      </tr>
-    );
-  });
-}
-
-interface ResultsTableListProps {
-  rows: JSX.Element | JSX.Element[];
-}
-
-const ResultsTable = ({ rows }: ResultsTableListProps) => {
-  return (
-    <table className="usa-table usa-table--borderless width-full">
-      <thead className="sr-element__sr-only">{tableHeaders}</thead>
-      <tbody>{rows}</tbody>
-    </table>
-  );
-};
-
-/**
  * DetachedTestResultsList
  */
 
-export type FilterParams = {
-  patientId?: string | null;
-  startDate?: string | null;
-  endDate?: string | null;
-  role?: string | null;
-  result?: string | null;
-  filterFacilityId?: string | null;
-};
-
 interface DetachedTestResultsListProps {
-  data: any;
-  refetch: () => void;
+  data: GetFacilityResultsMultiplexWithCountQuery | undefined;
   loading: boolean;
-  loadingTotalResults: boolean;
   pageNumber: number;
   entriesPerPage: number;
   totalEntries: number;
@@ -224,6 +84,7 @@ interface DetachedTestResultsListProps {
   setFilterParams: (filter: keyof FilterParams) => (val: string | null) => void;
   clearFilterParams: () => void;
   activeFacilityId: string;
+  maxDate?: string;
 }
 
 const getResultCountText = (
@@ -237,8 +98,13 @@ const getResultCountText = (
   return `Showing ${from}-${to} of ${totalEntries}`;
 };
 
-const getFilteredPatientName = (params: FilterParams, data: any) => {
-  const person = data?.testResults[0]?.patient;
+const getFilteredPatientName = (
+  params: FilterParams,
+  data: GetFacilityResultsMultiplexWithCountQuery
+) => {
+  const firstLoadedContentEntry =
+    data?.testResultsPage?.content && data?.testResultsPage?.content[0];
+  const person = firstLoadedContentEntry && firstLoadedContentEntry.patient;
   if (params.patientId && person) {
     return displayFullName(
       person.firstName,
@@ -249,31 +115,46 @@ const getFilteredPatientName = (params: FilterParams, data: any) => {
   return null;
 };
 
+const setFocusOnActionMenu = (id: string, actionName: string) => {
+  const buttonSelector = `#action_${id}`;
+  const printButtonSelector = `#${actionName}_${id}`;
+  waitForElement(buttonSelector).then((actionButton) => {
+    (actionButton as HTMLElement)?.click();
+    waitForElement(printButtonSelector).then((printButton) => {
+      (printButton as HTMLElement)?.focus();
+      const event = new MouseEvent("mouseover", {
+        view: window,
+        bubbles: true,
+        cancelable: true,
+      });
+      printButton?.dispatchEvent(event);
+    });
+  });
+};
+
 export const DetachedTestResultsList = ({
   data,
-  refetch,
   pageNumber,
   entriesPerPage,
   loading,
-  loadingTotalResults,
   totalEntries,
   activeFacilityId,
   filterParams,
   setFilterParams,
   clearFilterParams,
+  maxDate = moment().format("YYYY-MM-DD"),
 }: DetachedTestResultsListProps) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markCorrectionId, setMarkCorrectionId] = useState(undefined);
   const [detailsModalId, setDetailsModalId] = useState<string>();
   const [textModalId, setTextModalId] = useState<string>();
-  const [
-    emailModalTestResultId,
-    setEmailModalTestResultId,
-  ] = useState<string>();
+  const [emailModalTestResultId, setEmailModalTestResultId] =
+    useState<string>();
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
-  const [resetCount, setResetCount] = useState<number>(0);
+  const [startDate, setStartDate] = useState<string | null>("0");
+  const [endDate, setEndDate] = useState<string | null>("0");
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
@@ -287,20 +168,19 @@ export const DetachedTestResultsList = ({
     appPermissions.settings.canView
   );
 
-  const [
-    queryPatients,
-    { data: patientData, loading: patientLoading },
-  ] = useLazyQuery(QUERY_PATIENT, {
-    fetchPolicy: "no-cache",
-    variables: {
-      facilityId:
-        filterParams.filterFacilityId === ALL_FACILITIES_ID
-          ? null
-          : filterParams.filterFacilityId || activeFacilityId,
-      namePrefixMatch: queryString,
-      includeArchivedFacilities: isOrgAdmin,
-    },
-  });
+  const [queryPatients, { data: patientData, loading: patientLoading }] =
+    useLazyQuery(QUERY_PATIENT, {
+      fetchPolicy: "no-cache",
+      variables: {
+        includeArchived: isOrgAdmin,
+        facilityId:
+          filterParams.filterFacilityId === ALL_FACILITIES_ID
+            ? null
+            : filterParams.filterFacilityId || activeFacilityId,
+        namePrefixMatch: queryString,
+        includeArchivedFacilities: isOrgAdmin,
+      },
+    });
 
   const { data: facilitiesData } = useGetAllFacilitiesQuery({
     fetchPolicy: "no-cache",
@@ -322,12 +202,33 @@ export const DetachedTestResultsList = ({
   }, [filterParams, setDebounced]);
 
   useEffect(() => {
-    const patientName = getFilteredPatientName(filterParams, data);
-    if (patientName) {
-      setDebounced(patientName);
-      setShowSuggestion(false);
+    if (data) {
+      const patientName = getFilteredPatientName(filterParams, data);
+      if (patientName) {
+        setDebounced(patientName);
+        setShowSuggestion(false);
+      }
     }
   }, [filterParams, data, setDebounced]);
+
+  useDebouncedEffect(
+    () => {
+      if (startDate !== "0") {
+        setFilterParams("startDate")(startDate);
+      }
+    },
+    [startDate],
+    SEARCH_DEBOUNCE_TIME
+  );
+  useDebouncedEffect(
+    () => {
+      if (endDate !== "0") {
+        setFilterParams("endDate")(endDate);
+      }
+    },
+    [endDate],
+    SEARCH_DEBOUNCE_TIME
+  );
 
   const onInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     if (event.target.value === "") {
@@ -348,10 +249,10 @@ export const DetachedTestResultsList = ({
   };
 
   const dropDownRef = useRef(null);
-  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
-    allowQuery,
-    showSuggestion,
-  ]);
+  const showDropdown = useMemo(
+    () => allowQuery && showSuggestion,
+    [allowQuery, showSuggestion]
+  );
   const hideOnOutsideClick = useCallback(() => {
     setShowSuggestion(false);
   }, []);
@@ -362,7 +263,10 @@ export const DetachedTestResultsList = ({
     return (
       <TestResultPrintModal
         testResultId={printModalId}
-        closeModal={() => setPrintModalId(undefined)}
+        closeModal={() => {
+          setFocusOnActionMenu(printModalId, "print");
+          setPrintModalId(undefined);
+        }}
       />
     );
   }
@@ -370,7 +274,10 @@ export const DetachedTestResultsList = ({
     return (
       <TestResultTextModal
         testResultId={textModalId}
-        closeModal={() => setTextModalId(undefined)}
+        closeModal={() => {
+          setFocusOnActionMenu(textModalId, "text");
+          setTextModalId(undefined);
+        }}
       />
     );
   }
@@ -378,7 +285,10 @@ export const DetachedTestResultsList = ({
     return (
       <EmailTestResultModal
         testResultId={emailModalTestResultId}
-        closeModal={() => setEmailModalTestResultId(undefined)}
+        closeModal={() => {
+          setFocusOnActionMenu(emailModalTestResultId, "email");
+          setEmailModalTestResultId(undefined);
+        }}
       />
     );
   }
@@ -387,22 +297,33 @@ export const DetachedTestResultsList = ({
       <TestResultCorrectionModal
         testResultId={markCorrectionId}
         closeModal={() => {
+          setFocusOnActionMenu(markCorrectionId, "correct");
           setMarkCorrectionId(undefined);
-          refetch();
+        }}
+      />
+    );
+  }
+  if (detailsModalId) {
+    return (
+      <TestResultDetailsModal
+        testResultId={detailsModalId}
+        closeModal={() => {
+          setFocusOnActionMenu(detailsModalId, "view");
+          setDetailsModalId(undefined);
         }}
       />
     );
   }
 
-  const testResults = data?.testResults || [];
+  const testResults = data?.testResultsPage?.content || [];
+  const displayFacilityColumn =
+    filterParams.filterFacilityId === ALL_FACILITIES_ID ||
+    activeFacilityId === ALL_FACILITIES_ID;
 
-  const rows = testResultRows(
-    testResults,
-    setPrintModalId,
-    setMarkCorrectionId,
-    setDetailsModalId,
-    setTextModalId,
-    setEmailModalTestResultId
+  const hasMultiplexResults = testResults.some(
+    (result: any) =>
+      result.results?.length &&
+      result.results.some((r: any) => r.disease.name !== "COVID-19")
   );
 
   const processStartDate = (value: string | undefined) => {
@@ -410,12 +331,12 @@ export const DetachedTestResultsList = ({
       if (!isValidDate(value, true)) {
         setStartDateError("Date must be in format MM/DD/YYYY");
       } else {
-        const startDate = moment(value, "MM/DD/YYYY").startOf("day");
+        const startDate = moment(value, "YYYY-MM-DD").startOf("day");
         setStartDateError(undefined);
-        setFilterParams("startDate")(startDate.toISOString());
+        setStartDate(startDate.toISOString());
       }
     } else {
-      setFilterParams("startDate")("");
+      setStartDate("");
     }
   };
 
@@ -424,20 +345,20 @@ export const DetachedTestResultsList = ({
       if (!isValidDate(value)) {
         setEndDateError("Date must be in format MM/DD/YYYY");
       } else {
-        const endDate = moment(value, "MM/DD/YYYY").endOf("day");
+        const endDate = moment(value, "YYYY-MM-DD").endOf("day");
         if (
           isValidDate(filterParams.startDate || "") &&
           endDate.isBefore(moment(filterParams.startDate))
         ) {
           setEndDateError("End date cannot be before start date");
-          setFilterParams("endDate")("");
+          setEndDate("");
         } else {
           setEndDateError(undefined);
-          setFilterParams("endDate")(endDate.toISOString());
+          setEndDate(endDate.toISOString());
         }
       }
     } else {
-      setFilterParams("endDate")("");
+      setEndDate("");
     }
   };
 
@@ -445,14 +366,15 @@ export const DetachedTestResultsList = ({
     (e) => e != null
   );
 
-  const facilityOptions = (isOrgAdmin
-    ? [
-        {
-          label: "All facilities",
-          value: ALL_FACILITIES_ID,
-        },
-      ]
-    : []
+  const facilityOptions = (
+    isOrgAdmin
+      ? [
+          {
+            label: "All facilities",
+            value: ALL_FACILITIES_ID,
+          },
+        ]
+      : []
   ).concat(
     viewableFacilities
       .sort((a, b) => {
@@ -467,262 +389,197 @@ export const DetachedTestResultsList = ({
   );
 
   return (
-    <main className="prime-home">
-      {detailsModalId && (
-        <TestResultDetailsModal
-          testResultId={detailsModalId}
-          closeModal={() => {
-            setDetailsModalId(undefined);
-          }}
-        />
-      )}
-      <div className="grid-container results-wide-container">
-        <div className="grid-row">
-          <div className="prime-container card-container sr-test-results-list">
-            <div className="sticky-heading">
-              <div className="usa-card__header">
-                <h2>
-                  Test results
-                  {!loadingTotalResults && (
-                    <span className="sr-showing-results-on-page">
-                      {getResultCountText(
-                        totalEntries,
-                        pageNumber,
-                        entriesPerPage
-                      )}
-                    </span>
-                  )}
-                </h2>
-                <div>
-                  <DownloadResultsCSVButton
-                    filterParams={filterParams}
-                    totalEntries={totalEntries}
-                    activeFacilityId={activeFacilityId}
-                  />
-                  <Button
-                    className="sr-active-button"
-                    icon={faSlidersH}
-                    onClick={() => {
-                      setDebounced("");
-                      clearFilterParams();
-                      // The DatePicker component contains bits of state that represent the selected date
-                      // as represented internally to the component and displayed externally to the DOM. Directly
-                      // changing the value of the date via props does not cause the internal state to be updated.
-                      // This hack forces the DatePicker component to be fully re-mounted whenever the filters are
-                      // cleared, therefore resetting the external date display.
-                      setResetCount(resetCount + 1);
-                    }}
-                  >
-                    Clear filters
-                  </Button>
-                </div>
-              </div>
-              <div
-                id="test-results-search-by-patient-input"
-                className="position-relative bg-base-lightest"
-              >
-                <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
-                  <div className="person-search">
-                    <SearchInput
-                      onInputChange={onInputChange}
-                      queryString={debounced}
-                      disabled={!allowQuery}
-                      label={"Search by name"}
-                      placeholder={""}
-                      className="usa-form-group search-input_without_submit_button"
-                      showSubmitButton={false}
-                    />
-                    <SearchResults
-                      page="test-results"
-                      patients={patientData?.patients || []}
-                      onPatientSelect={onPatientSelect}
-                      shouldShowSuggestions={showDropdown}
-                      loading={debounced !== queryString || patientLoading}
-                      dropDownRef={dropDownRef}
-                    />
-                  </div>
-                  <div className="usa-form-group date-filter-group">
-                    <Label htmlFor="start-date">Date range (start)</Label>
-                    {startDateError && (
-                      <span className="usa-error-message" role="alert">
-                        <span className="usa-sr-only">Error: </span>
-                        {startDateError}
-                      </span>
-                    )}
-                    <DatePicker
-                      id="start-date"
-                      key={resetCount}
-                      name="start-date"
-                      defaultValue={filterParams.startDate || ""}
-                      data-testid="start-date"
-                      minDate="2000-01-01T00:00"
-                      maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                      onChange={processStartDate}
-                    />
-                  </div>
-                  <div className="usa-form-group date-filter-group">
-                    <Label htmlFor="end-date">Date range (end)</Label>
-                    {endDateError && (
-                      <span className="usa-error-message" role="alert">
-                        <span className="usa-sr-only">Error: </span>
-                        {endDateError}
-                      </span>
-                    )}
-                    <DatePicker
-                      id="end-date"
-                      key={resetCount + 1}
-                      name="end-date"
-                      defaultValue={filterParams.endDate || ""}
-                      data-testid="end-date"
-                      minDate={filterParams.startDate || "2000-01-01T00:00"}
-                      maxDate={moment().format("YYYY-MM-DDThh:mm")}
-                      onChange={processEndDate}
-                    />
-                  </div>
-                  <Select
-                    label="Test result"
-                    name="result"
-                    value={filterParams.result || ""}
-                    options={[
-                      {
-                        value: COVID_RESULTS.POSITIVE,
-                        label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
-                      },
-                      {
-                        value: COVID_RESULTS.NEGATIVE,
-                        label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
-                      },
-                      {
-                        value: COVID_RESULTS.INCONCLUSIVE,
-                        label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
-                      },
-                    ]}
-                    defaultSelect
-                    onChange={setFilterParams("result")}
-                  />
-                  <Select
-                    label="Role"
-                    name="role"
-                    value={filterParams.role || ""}
-                    options={ROLE_VALUES}
-                    defaultSelect
-                    onChange={setFilterParams("role")}
-                  />
-                  {facilityOptions && facilityOptions.length > 1 ? (
-                    <Select
-                      label="Testing facility"
-                      name="facility"
-                      value={filterParams.filterFacilityId || activeFacilityId}
-                      options={facilityOptions}
-                      onChange={setFilterParams("filterFacilityId")}
-                    />
-                  ) : null}
-                </div>
-              </div>
-              <table
-                className="usa-table usa-table--borderless width-full"
-                aria-hidden="true"
-              >
-                <thead>{tableHeaders}</thead>
-              </table>
-            </div>
-            <div title="filtered-result">
-              <ResultsTable rows={rows} />
-            </div>
-            <div className="usa-card__footer">
-              {loading ? (
-                <p>Loading...</p>
-              ) : (
-                <Pagination
-                  baseRoute="/results"
-                  currentPage={pageNumber}
-                  entriesPerPage={entriesPerPage}
-                  totalEntries={totalEntries}
-                />
+    <div className="grid-row">
+      <div className="prime-container card-container sr-test-results-list">
+        <div className="sticky-heading">
+          <div className="usa-card__header">
+            <h1 className="font-sans-lg">
+              Test results
+              {!loading && (
+                <span className="sr-showing-results-on-page">
+                  {getResultCountText(totalEntries, pageNumber, entriesPerPage)}
+                </span>
               )}
+            </h1>
+            <div>
+              <DownloadResultsCSVButton
+                filterParams={filterParams}
+                totalEntries={totalEntries}
+                activeFacilityId={activeFacilityId}
+              />
+              <Button
+                className="sr-active-button"
+                icon={faSlidersH}
+                onClick={() => {
+                  setDebounced("");
+                  clearFilterParams();
+                  (
+                    document.getElementById("start-date") as HTMLInputElement
+                  ).value = "";
+                  (
+                    document.getElementById("end-date") as HTMLInputElement
+                  ).value = "";
+                  setStartDateError("");
+                  setEndDateError("");
+                }}
+                disabled={
+                  Object.keys(filterParams).length === 0 ||
+                  (Object.keys(filterParams).length === 1 &&
+                    filterParams.filterFacilityId === activeFacilityId)
+                }
+              >
+                Clear filters
+              </Button>
             </div>
           </div>
+          <div
+            id="test-results-search-by-patient-input"
+            className="position-relative bg-base-lightest"
+          >
+            <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
+              <div className="person-search">
+                <SearchInput
+                  onSearchClick={(e) => e.preventDefault()}
+                  onInputChange={onInputChange}
+                  queryString={debounced}
+                  disabled={!allowQuery}
+                  label={"Search by name"}
+                  className="usa-form-group search-input_without_submit_button"
+                  showSubmitButton={false}
+                />
+                <SearchResults
+                  page="test-results"
+                  patients={patientData?.patients || []}
+                  onPatientSelect={onPatientSelect}
+                  shouldShowSuggestions={showDropdown}
+                  loading={debounced !== queryString || patientLoading}
+                  dropDownRef={dropDownRef}
+                />
+              </div>
+              <div className="usa-form-group date-filter-group">
+                <Label htmlFor="start-date">Date range (start)</Label>
+                {startDateError && (
+                  <span className="usa-error-message" role="alert">
+                    <span className="usa-sr-only">Error: </span>
+                    {startDateError}
+                  </span>
+                )}
+                <input
+                  id="start-date"
+                  type="date"
+                  className="usa-input"
+                  min="2000-01-01"
+                  max={maxDate}
+                  aria-label="Start Date"
+                  onChange={(e) => processStartDate(e.target.value)}
+                  defaultValue={
+                    filterParams.startDate
+                      ? moment(filterParams.startDate).format("YYYY-MM-DD")
+                      : ""
+                  }
+                />
+              </div>
+              <div className="usa-form-group date-filter-group">
+                <Label htmlFor="end-date">Date range (end)</Label>
+                {endDateError && (
+                  <span className="usa-error-message" role="alert">
+                    <span className="usa-sr-only">Error: </span>
+                    {endDateError}
+                  </span>
+                )}
+                <input
+                  id="end-date"
+                  type="date"
+                  className="usa-input"
+                  min="2000-01-01"
+                  max={maxDate}
+                  aria-label="End Date"
+                  onChange={(e) => processEndDate(e.target.value)}
+                  defaultValue={
+                    filterParams.endDate
+                      ? moment(filterParams.endDate).format("YYYY-MM-DD")
+                      : ""
+                  }
+                />
+              </div>
+              <Select
+                label="Test result"
+                name="result"
+                value={filterParams.result || ""}
+                options={[
+                  {
+                    value: COVID_RESULTS.POSITIVE,
+                    label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
+                  },
+                  {
+                    value: COVID_RESULTS.NEGATIVE,
+                    label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
+                  },
+                  {
+                    value: COVID_RESULTS.INCONCLUSIVE,
+                    label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
+                  },
+                ]}
+                defaultSelect
+                onChange={setFilterParams("result")}
+              />
+              <Select
+                label="Role"
+                name="role"
+                value={filterParams.role || ""}
+                options={ROLE_VALUES}
+                defaultSelect
+                onChange={setFilterParams("role")}
+              />
+              {facilityOptions && facilityOptions.length > 1 ? (
+                <Select
+                  label="Testing facility"
+                  name="facility"
+                  value={filterParams.filterFacilityId || activeFacilityId}
+                  options={facilityOptions}
+                  onChange={setFilterParams("filterFacilityId")}
+                  selectClassName={"usa-select-narrow"}
+                />
+              ) : null}
+            </div>
+          </div>
+          <table
+            className="usa-table usa-table--borderless width-full"
+            aria-hidden="true"
+          >
+            <thead>
+              {generateTableHeaders(hasMultiplexResults, displayFacilityColumn)}
+            </thead>
+          </table>
+        </div>
+        <div title="filtered-result">
+          <ResultsTable
+            results={testResults}
+            setPrintModalId={setPrintModalId}
+            setMarkCorrectionId={setMarkCorrectionId}
+            setDetailsModalId={setDetailsModalId}
+            setTextModalId={setTextModalId}
+            setEmailModalTestResultId={setEmailModalTestResultId}
+            hasMultiplexResults={hasMultiplexResults}
+            hasFacility={displayFacilityColumn}
+          />
+        </div>
+        <div className="usa-card__footer">
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <Pagination
+              baseRoute="/results"
+              currentPage={pageNumber}
+              entriesPerPage={entriesPerPage}
+              totalEntries={totalEntries}
+            />
+          )}
         </div>
       </div>
-    </main>
+    </div>
   );
 };
-
-export const resultsCountQuery = gql`
-  query GetResultsCountByFacility(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-  ) {
-    testResultsCount(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-    )
-  }
-`;
-
-export const testResultQuery = gql`
-  query GetFacilityResults(
-    $facilityId: ID
-    $patientId: ID
-    $result: String
-    $role: String
-    $startDate: DateTime
-    $endDate: DateTime
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
-    testResults(
-      facilityId: $facilityId
-      patientId: $patientId
-      result: $result
-      role: $role
-      startDate: $startDate
-      endDate: $endDate
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-        email
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      facility {
-        name
-        isDeleted
-      }
-    }
-  }
-`;
 
 export interface ResultsQueryVariables {
   patientId?: string | null;
@@ -780,8 +637,6 @@ const TestResultsList = () => {
     filter({ [key]: val });
   };
 
-  const refetch = () => navigate(0);
-
   const clearFilterParams = () =>
     navigate({
       pathname: "/results/1",
@@ -800,26 +655,8 @@ const TestResultsList = () => {
     pageSize: entriesPerPage,
     ...queryParams,
   };
-  const countQueryVariables: {
-    patientId?: string | null;
-    facilityId: string | null;
-    result?: string | null;
-    role?: string | null;
-    startDate?: string | null;
-    endDate?: string | null;
-  } = {
-    facilityId:
-      filterFacilityId === ALL_FACILITIES_ID
-        ? null
-        : filterFacilityId || activeFacilityId,
-    ...queryParams,
-  };
 
-  const count = useQuery(resultsCountQuery, {
-    fetchPolicy: "no-cache",
-    variables: countQueryVariables,
-  });
-  const results = useQuery(testResultQuery, {
+  const results = useGetFacilityResultsMultiplexWithCountQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });
@@ -828,25 +665,22 @@ const TestResultsList = () => {
     return <div>"No facility selected"</div>;
   }
 
-  if (results.error || count.error) {
-    throw results.error || count.error;
+  if (results.error) {
+    throw results.error;
   }
-
-  const totalEntries = count.data?.testResultsCount || 0;
+  const totalEntries = results.data?.testResultsPage?.totalElements || 0;
 
   return (
     <DetachedTestResultsList
       data={results.data}
       loading={results.loading}
       pageNumber={pageNumber}
-      loadingTotalResults={count.loading}
       entriesPerPage={entriesPerPage}
       totalEntries={totalEntries}
       filterParams={filterParams}
       setFilterParams={setFilterParams}
       clearFilterParams={clearFilterParams}
       activeFacilityId={activeFacilityId}
-      refetch={refetch}
     />
   );
 };

@@ -1,6 +1,5 @@
 import "./PendingOrganizationsList.scss";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showSuccess } from "../../utils/srToast";
 import {
   useGetPendingOrganizationsQuery,
   useMarkPendingOrganizationAsDeletedMutation,
@@ -27,13 +26,7 @@ const PendingOrganizationsContainer = () => {
       })
     )
       .then(() => {
-        showNotification(
-          <Alert
-            type="success"
-            title={`Identity verified for ${name}`}
-            body=""
-          />
-        );
+        showSuccess("", `Identity verified for ${name}`);
       })
       .finally(() => {
         refetch();
@@ -57,13 +50,7 @@ const PendingOrganizationsContainer = () => {
       })
     )
       .then(() => {
-        showNotification(
-          <Alert
-            type="success"
-            title={`${name} successfully deleted`}
-            body=""
-          />
-        );
+        showSuccess("", `${name} successfully deleted`);
       })
       .finally(() => {
         refetch();
@@ -80,7 +67,6 @@ const PendingOrganizationsContainer = () => {
       submitDeletion={submitDeletion}
       loading={loading}
       refetch={refetch}
-      showNotification={showNotification}
     />
   );
 };

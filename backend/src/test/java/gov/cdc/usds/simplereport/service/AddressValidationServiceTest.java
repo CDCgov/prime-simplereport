@@ -22,7 +22,7 @@ class AddressValidationServiceTest {
   private AddressValidationService s;
 
   @BeforeEach
-  public void setup() throws SmartyException, IOException {
+  public void setup() throws SmartyException, IOException, InterruptedException {
     Client client = mock(Client.class);
     doNothing().when(client).send(isA(Lookup.class));
     s = new AddressValidationService(client);

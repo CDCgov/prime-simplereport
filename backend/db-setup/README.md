@@ -47,3 +47,32 @@ restores from the last-modified SQL file in that directory. If that is not the
 desired behavior, you can explicitly tell it which snapshot file to use:
 
    SNAPSHOT=db-setup/snapshots/custom-snapshot.sql db-setup/restore-db.sh
+
+## Anonymize a database (WIP)
+
+1. Check for sensitive fields using the detect script from PostgreSQL Anonymizer (Our script is working, but PostgreSQL Anonymizer is not, I've reported a bug (here)[https://gitlab.com/dalibo/postgresql_anonymizer/-/issues/300])
+1. Generate fake data (if needed)
+1. Create a db_dump from your source database using the steps described below
+1. Restore anonymized database to a new database
+1. Sync/Create users in Okta and Non-production testing environment
+
+For now, to ensure access to any database created from an anonymized dump, please ensure you have an account in the source database. In the future we can use the Okta API to grant proper permissions based on need. https://github.com/CDCgov/prime-simplereport/issues/3962
+
+Create an anonymized local database
+1. run db
+   1. Docker: yarn start or yarn build
+1. restore the snapshot
+   1. Docker db: `yarn anon:dump`
+   1. Local db: `yarn anon:dump:localdb`
+
+Restore an anonymized local postgresql dump
+1. run db
+   1. Docker: yarn start or yarn build
+1. restore the snapshot
+   1. Docker db: `yarn anon:restore`
+   1. Local db: `yarn anon:restore:localdb`
+1. Restart your apps
+
+Display a list of potentially sensitive tables and columns
+1. `yarn anon:detect`
+1. `yarn anon:detect:localdb

@@ -5,7 +5,11 @@ import { formatFullName } from "../utils/user";
 
 import "./FacilitySelect.scss";
 
-const FacilityPopup: React.FC = ({ children }) => {
+type FacilityPopupProps = {
+  children: React.ReactNode;
+};
+
+const FacilityPopup: React.FC<FacilityPopupProps> = ({ children }) => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );

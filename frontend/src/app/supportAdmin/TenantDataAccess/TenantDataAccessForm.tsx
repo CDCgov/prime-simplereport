@@ -86,13 +86,13 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
   };
 
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">Organization Data Access</h2>
+                <h1 className="font-heading-lg">Organization Data Access</h1>
                 <p className="text-base">
                   This page allows you to reproduce a specific user's issues by
                   accessing their account. Access automatically expires after an
@@ -174,7 +174,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

@@ -15,41 +15,11 @@ import {
 } from "@apollo/client";
 
 import { exampleQuestionSet } from "../app/signUp/IdentityVerification/constants";
+import { UploadResponse, UploadSubmissionPage } from "../generated/graphql";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 
 const mocks = {
-  EditQueueItem: graphql.mutation("EditQueueItem", (req, res, ctx) => {
-    return res(
-      ctx.data({
-        editQueueItem: {
-          result: req.body?.variables.result || null,
-          dateTested: req.body?.variables.dateTested || null,
-          deviceType: {
-            internalId: null,
-            testLength: "0.1",
-            ...req.body?.variables.deviceType,
-          },
-        },
-      })
-    );
-  }),
-  SubmitTestResult: graphql.mutation(
-    "SubmitTestResult",
-    async (req, res, ctx) => {
-      await new Promise((res) => setTimeout(res, 200));
-
-      const data =
-        req.body?.variables.patientId === "this-should-fail"
-          ? {}
-          : {
-              addTestResultNew: {
-                internalId: req.body?.variables.patientId,
-              },
-            };
-      return res(ctx.data(data));
-    }
-  ),
   GetPatientsLastResult: graphql.query(
     "GetPatientsLastResult",
     (req, res, ctx) => {
@@ -75,6 +45,71 @@ const mocks = {
             positiveTestCount: 64,
             totalTestCount: 562,
           },
+        })
+      )
+  ),
+  GetUploadSubmission: graphql.query("GetUploadSubmission", (req, res, ctx) =>
+    res(
+      ctx.data({
+        uploadSubmission: {
+          internalId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+          reportId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+          createdAt: "2022-05-05T13:47:09Z",
+          status: "SUCCESS",
+          recordsCount: 15,
+          errors: [],
+          warnings: [],
+        } as UploadResponse,
+      })
+    )
+  ),
+  GetUploadSubmissions: graphql.query("GetUploadSubmissions", (req, res, ctx) =>
+    res(
+      ctx.data({
+        uploadSubmissions: {
+          content: [
+            {
+              internalId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+              reportId: "e70c3110-15b7-43a1-9014-f07b81c5fce1",
+              createdAt: "2022-05-05T13:47:09Z",
+              status: "PENDING",
+              recordsCount: 15,
+              errors: [],
+              warnings: [],
+            },
+            {
+              internalId: "21bc0220-30d7-47a7-a22f-dfede0c04f19",
+              reportId: "21bc0220-30d7-47a7-a22f-dfede0c04f19",
+              createdAt: "2022-05-03T13:47:09Z",
+              status: "SUCCESS",
+              recordsCount: 10,
+              errors: [],
+              warnings: [],
+            },
+            {
+              internalId: "1e0c8e80-52e9-4f80-9973-841ecebc297a",
+              reportId: "1e0c8e80-52e9-4f80-9973-841ecebc297a",
+              createdAt: "2022-05-02T13:47:09Z",
+              status: "FAILURE",
+              recordsCount: 2,
+              errors: null,
+              warnings: null,
+            },
+          ],
+          totalElements: 3,
+        } as UploadSubmissionPage,
+      })
+    )
+  ),
+  GetEmptyUploadSubmissions: graphql.query(
+    "GetUploadSubmissions",
+    (req, res, ctx) =>
+      res(
+        ctx.data({
+          uploadSubmissions: {
+            content: [],
+            totalElements: 0,
+          } as UploadSubmissionPage,
         })
       )
   ),
@@ -144,6 +179,11 @@ const client = new ApolloClient({
   cache,
   link,
 });
-export const StoryGraphQLProvider: React.FC = ({ children }) => (
-  <ApolloProvider client={client}>{children}</ApolloProvider>
-);
+
+type StoryGraphQLProviderProps = {
+  children: React.ReactNode;
+};
+
+export const StoryGraphQLProvider: React.FC<StoryGraphQLProviderProps> = ({
+  children,
+}) => <ApolloProvider client={client}>{children}</ApolloProvider>;

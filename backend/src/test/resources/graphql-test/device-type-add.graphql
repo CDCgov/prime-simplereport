@@ -1,0 +1,12 @@
+mutation addDevice(
+    $input: CreateDeviceType!
+) {
+    createDeviceType(
+      input: $input
+    ) {
+      internalId
+      name
+      model
+      manufacturer
+    }
+}

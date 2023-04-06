@@ -58,13 +58,15 @@ describe("VersionEnforcer", () => {
         </Routes>
       </MemoryRouter>
     );
-    expect(screen.getByText("This is the first page")).toBeInTheDocument();
+    expect(await screen.findByText("This is the first page", { exact: false }));
 
     // WHEN
-    userEvent.click(screen.getByText("Go to a new page"));
+    await userEvent.click(
+      screen.getByText("Go to a new page", { exact: false })
+    );
 
     // THEN
-    expect(screen.getByText("Went to a new page!")).toBeInTheDocument();
+    expect(await screen.findByText("Went to a new page!", { exact: false }));
     expect(VersionService.enforce).toHaveBeenCalledTimes(2);
   });
 });

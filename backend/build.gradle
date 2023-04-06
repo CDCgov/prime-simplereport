@@ -1,121 +1,134 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.1'
+    id 'org.springframework.boot' version '2.7.10'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
     id 'checkstyle'
     id 'jacoco'
-    id 'org.sonarqube' version '3.0'
-    id 'com.gorylenko.gradle-git-properties' version '2.2.0'
-    id "com.diffplug.spotless" version "5.14.0"
+    id 'org.sonarqube' version '4.0.0.2929'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.1'
+    id "com.diffplug.spotless" version "6.16.0"
 }
 
 group = 'gov.cdc.usds'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '17'
 
 ext {
-    kickstartVersion = '11.0.0'
-    set('springCloudVersion', "Hoxton.SR11")
+    set('springCloudVersion', "2021.0.3")
 }
 repositories {
     mavenCentral()
 }
 
+jar {
+    enabled = false
+}
+
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-actuator'
+    implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
-    // log4j vulnerability fixes (Dec 2021)
-    implementation 'org.apache.logging.log4j:log4j-api:2.17.0'
-    implementation 'org.apache.logging.log4j:log4j-to-slf4j:2.17.0'
+    // graphql
+    implementation 'org.springframework.boot:spring-boot-starter-graphql'
+    testImplementation 'org.springframework:spring-webflux'
+    testImplementation 'org.springframework.graphql:spring-graphql-test'
+
+    //Feign HTTP Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+
+    // Security Pins (Sept 2022)
+    implementation 'org.yaml:snakeyaml:1.33'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
+    implementation 'com.vladmihalcea:hibernate-types-55:2.19.2'
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
-    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.7.2'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
+    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.0'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     // UI layer dependencies
-    implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
-    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:4.0.0"
-    implementation 'org.json:json:20201115'
+    implementation 'org.json:json:20230227'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
-    implementation 'com.okta.sdk:okta-sdk-api:3.0.2'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.2'
-    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.2'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
+    implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
+    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:2.6.3'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.4.9'
 
     // Twilio for SMS
-    implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
+    implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
 
     // SendGrid for Email
-    implementation 'com.sendgrid:sendgrid-java:4.7.2'
+    implementation 'com.sendgrid:sendgrid-java:4.9.3'
 
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    compile 'org.hibernate:hibernate-jpamodelgen:5.4.27.Final'
+    implementation 'org.hibernate.orm:hibernate-jpamodelgen:6.1.7.Final'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
-    compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
+    implementation 'com.graphql-java:graphql-java-extended-validation:18.1-hibernate-validator-6.2.0.Final'
+    // graphql-java-extended-scalars
+    implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.8.+'
+    implementation 'com.azure:azure-storage-queue:12.15.+'
+    implementation 'com.azure:azure-core-http-netty:1.11.9'
+    implementation 'com.azure:azure-core:1.27.0'
+    implementation 'com.azure:azure-storage-common:12.15.1'
+
+    // RandomStringUtils to generate PatientSelfRegistrationLink
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+
+    // Shedlock for scheduler synchronization
+    implementation 'net.javacrumbs.shedlock:shedlock-core:4.42.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.42.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-jdbc-template:4.42.0'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-    testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
+    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:2.0.0'
 
     // used to autoconfigure WireMock for testing
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
-    testImplementation 'org.awaitility:awaitility:4.1.0'
 
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
-    testCompileOnly 'org.projectlombok:lombok:1.18.20'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
     // WireMock (only used for testing)
-    testCompile "com.github.tomakehurst:wiremock-jre8:2.28.1"
+    testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    // Forcing these version resolutions over the BOM of spring-cloud-dependencies below
-    runtimeOnly 'com.azure:azure-core-http-netty:1.10.2'
-    runtimeOnly 'com.azure:azure-core:1.19.0'
-    runtimeOnly 'com.azure:azure-storage-common:12.12.0'
-    runtimeOnly "com.azure:azure-storage-queue:12.9.1"
-
-    runtimeOnly "io.zipkin.brave:brave-instrumentation-http:5.13.2"
-    runtimeOnly "io.zipkin.brave:brave:5.13.2"
-    runtimeOnly "io.zipkin.reporter2:zipkin-reporter-brave:2.16.3"
-    runtimeOnly "io.zipkin.reporter2:zipkin-reporter:2.16.1"
-    runtimeOnly "io.zipkin.zipkin2:zipkin:2.23.0"
-
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.4.3'
+    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:5.6.109' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://app.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3358779.
 }
 
 dependencyManagement {
@@ -179,8 +192,8 @@ sonarqube {
         property "sonar.host.url", "https://sonarcloud.io"
         // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
         property "sonar.sources", "backend/src/main/java,frontend/src,ops/services/app_functions/"
-        property "sonar.exclusions", "backend/src/**/*Config*.java,frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/generated/*.tsx,ops/services/app_functions/**/*.test.*,ops/services/app_functions/**/*config*"
-        property "sonar.coverage.exclusions", "frontend/src/setupTests.js"
+        property "sonar.exclusions", "backend/src/**/*Config*.java,frontend/src/**/*.test.*,frontend/src/stories/**/*,frontend/src/**/*.stories.tsx,frontend/src/**/*.mock.tsx,frontend/src/generated/*.tsx,ops/services/app_functions/**/*.test.*,ops/services/app_functions/**/*config*"
+        property "sonar.coverage.exclusions", "frontend/src/setupTests.js,frontend/src/index.tsx"
         property "sonar.cpd.exclusions", "frontend/src/lang/*.ts"
         property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info,ops/services/app_functions/report_stream_batched_publisher/functions/coverage/lcov.info"
     }
@@ -201,7 +214,7 @@ task testDbStart(type: Exec) {
 }
 
 task testDbStop(type: Exec) {
-    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down"
+    commandLine "docker", "compose", "--env-file", "../.env.test", "-p", "simple-report-tests", "-f", "../docker-compose.yml", "down", "-v"
 }
 
 task testDbReset(type: Exec) {
@@ -209,7 +222,7 @@ task testDbReset(type: Exec) {
     commandLine "db-setup/nuke-db.sh"
 }
 
-test {
+tasks.named('test') {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
     // For some reason, setting this in application-default doesn't work, but it's needed
@@ -228,5 +241,6 @@ test {
         dependsOn testDbStart
         finalizedBy testDbStop
     }
+    maxHeapSize = "1024m"
 }
 

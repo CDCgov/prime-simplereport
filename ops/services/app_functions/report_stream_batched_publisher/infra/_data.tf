@@ -1,5 +1,5 @@
 locals {
-  token_env_suffix = var.environment == "prod" ? "prod" : "test"
+  token_env_suffix = (var.environment == "prod" || var.environment == "stg") ? "prod" : "test"
 }
 
 data "azurerm_resource_group" "rg_global" {
@@ -12,6 +12,16 @@ data "azurerm_key_vault" "sr_global" {
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
   name         = "datahub-api-key-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_fhir_key" {
+  name         = "datahub-fhir-key-${local.token_env_suffix}"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_url" {
+  name         = "datahub-url-${local.token_env_suffix}"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
@@ -33,8 +43,8 @@ data "azurerm_storage_account" "app" {
 data "azurerm_storage_account_sas" "sas" {
   connection_string = data.azurerm_storage_account.app.primary_connection_string
   https_only        = true
-  start             = "2021-09-01"
-  expiry            = "2022-12-31"
+  start             = formatdate("YYYY-MM-DD", timeadd(timestamp(), "-24h"))
+  expiry            = formatdate("YYYY-MM-DD", timeadd(timestamp(), "2880h"))
   resource_types {
     object    = true
     container = false
@@ -47,6 +57,8 @@ data "azurerm_storage_account_sas" "sas" {
     file  = false
   }
   permissions {
+    tag     = false
+    filter  = false
     read    = true
     write   = false
     delete  = false

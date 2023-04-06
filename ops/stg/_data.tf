@@ -190,3 +190,56 @@ data "azurerm_key_vault_secret" "db_password_no_phi" {
   name         = "simple-report-${local.env}-db-password-no-phi"
   key_vault_id = data.azurerm_key_vault.global.id
 }
+
+data "azurerm_key_vault_secret" "datahub_api_key" {
+  name         = "datahub-api-key-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_fhir_key" {
+  name         = "datahub-fhir-key-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_url" {
+  name         = "datahub-url-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_signing_key" {
+  name         = "datahub-signing-key-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_user" {
+  name         = "simple-report-${local.env}-db-username"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_password" {
+  name         = "simple-report-${local.env}-db-password"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_nophi_user" {
+  name         = "simple-report-${local.env}-db-username-no-phi"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_nophi_password" {
+  name         = "simple-report-${local.env}-db-password-no-phi"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_storage_account" "app" {
+  name                = "simplereport${local.env}app"
+  resource_group_name = data.azurerm_resource_group.rg.name
+  depends_on = [
+    azurerm_storage_account.app
+  ]
+}
+
+data "azurerm_key_vault_secret" "report_stream_exception_callback_token" {
+  name         = "report-stream-exception-callback-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}

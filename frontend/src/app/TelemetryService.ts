@@ -1,8 +1,14 @@
 import {
   ApplicationInsights,
+  ITelemetryItem,
   SeverityLevel,
 } from "@microsoft/applicationinsights-web";
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
+
+import {
+  stripIdTokenFromOktaRedirectUri,
+  stripIdTokenFromOperationName,
+} from "./utils/url";
 
 let reactPlugin: ReactPlugin | null = null;
 let appInsights: ApplicationInsights | null = null;
@@ -14,7 +20,7 @@ const createTelemetryService = () => {
 
     if (!connectionString) {
       if (process.env.NODE_ENV !== "test") {
-        console.warn("Connection string not provided");
+        console.warn("App Insights connection string not provided");
       }
       return;
     }
@@ -33,6 +39,12 @@ const createTelemetryService = () => {
       },
     });
 
+    appInsights.addTelemetryInitializer(function (envelope: ITelemetryItem) {
+      if (isStaticFileToSkip(envelope)) return false; //skips logging when returning false
+      // for all remaining logs
+      sanitizeOktaToken(envelope);
+    });
+
     appInsights.loadAppInsights();
   };
 
@@ -41,6 +53,60 @@ const createTelemetryService = () => {
 
 export const ai = createTelemetryService();
 export const getAppInsights = () => appInsights;
+
+export function isStaticFileToSkip(envelope: ITelemetryItem) {
+  try {
+    const regexRemoteDependency =
+      /Microsoft.ApplicationInsights.(.*).RemoteDependency/;
+
+    const staticFilesToIgnore = [
+      "GET /maintenance.json",
+      "GET /app/static/commit.txt",
+    ];
+
+    if (
+      regexRemoteDependency.test(envelope.name) &&
+      staticFilesToIgnore.includes((envelope as any).baseData.name)
+    ) {
+      return true; // file should be skipped
+    }
+  } catch (e) {
+    /* do nothing and don't disrupt logging*/
+  }
+}
+
+export function sanitizeOktaToken(envelope: ITelemetryItem): void {
+  try {
+    // Okta redirects only come from page views events
+    const eventIsPageView = envelope?.baseType === "PageviewData";
+    if (!eventIsPageView) return;
+
+    const telemetryItem = envelope?.baseData;
+
+    const telemetryItemNeedsIdSanitization =
+      telemetryItem?.uri.includes("#id_token");
+
+    if (
+      telemetryItemNeedsIdSanitization &&
+      telemetryItem?.refUri &&
+      envelope?.ext?.trace.name
+    ) {
+      // possible properties that need replacing
+      const urlWithoutIdToken = stripIdTokenFromOktaRedirectUri(
+        telemetryItem.uri
+      );
+      telemetryItem.uri = urlWithoutIdToken;
+      telemetryItem.refUri = urlWithoutIdToken;
+
+      envelope.ext.trace.name = stripIdTokenFromOperationName(
+        envelope.ext.trace.name
+      );
+    }
+  } catch (e) {
+    /* do nothing and don't disrupt logging*/
+  }
+  return;
+}
 
 const logSeverityMap = {
   log: SeverityLevel.Information,
@@ -62,19 +128,28 @@ export function withInsights(console: Console) {
       originalConsole[method](...data);
 
       if (method === "error" || method === "warn") {
-        const exception = data[0] instanceof Error ? data[0] : undefined;
+        let exception = data[0] instanceof Error ? data[0] : undefined;
         const id = (() => {
-          if (exception) {
-            return exception.message;
+          let message = exception ? exception.message : data[0];
+          if (typeof message === "string") {
+            const messageNeedsSanitation = message.includes("#id_token");
+            if (messageNeedsSanitation) {
+              message = stripIdTokenFromOktaRedirectUri(message);
+            }
           }
+          if (exception) {
+            exception = new Error(message);
+            return message;
+          }
+
           if (typeof data[0] === "string") {
-            return data[0];
+            data[0] = message;
+            return message;
           }
           return JSON.stringify(data[0]);
         })();
-
         appInsights?.trackException({
-          exception,
+          exception: exception,
           id,
           severityLevel,
           properties: {
@@ -88,7 +163,6 @@ export function withInsights(console: Console) {
 
       const message =
         typeof data[0] === "string" ? data[0] : JSON.stringify(data[0]);
-
       appInsights?.trackEvent({
         name: `${method.toUpperCase()} - ${message}`,
         properties: {
@@ -111,5 +185,5 @@ export function getAppInsightsHeaders(): { [key: string]: string } {
 }
 
 function getAppInsightsSessionId(): string {
-  return appInsights?.context.sessionManager.automaticSession.id ?? "";
+  return appInsights?.context.getSessionId() ?? "";
 }

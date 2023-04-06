@@ -1,6 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { UIDConsumer } from "react-uid";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 import Required from "./Required";
 import Optional from "./Optional";
@@ -21,6 +22,7 @@ export type HTMLInputElementType =
 
 interface Props {
   name: string;
+  idString?: string;
   type?: HTMLInputElementType;
   label?: React.ReactNode;
   labelSrOnly?: boolean;
@@ -36,18 +38,20 @@ interface Props {
   ariaDescribedBy?: string;
   hintText?: string | React.ReactNode;
   inputRef?: React.RefObject<HTMLInputElement>;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   format?: string;
   formatMessage?: string;
   labelClassName?: string;
   min?: number | string;
   max?: number | string;
+  registrationProps?: UseFormRegisterReturn<any>;
 }
 
 type InputProps = JSX.IntrinsicElements["input"];
 
 export const TextInput = ({
   name,
+  idString,
   type,
   label,
   labelSrOnly,
@@ -70,6 +74,7 @@ export const TextInput = ({
   labelClassName,
   min,
   max,
+  registrationProps,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
   return (
@@ -81,6 +86,7 @@ export const TextInput = ({
             className,
             validationStatus === "error" && "usa-form-group--error"
           )}
+          id={idString}
         >
           <label
             className={classnames(
@@ -107,6 +113,7 @@ export const TextInput = ({
               validationStatus === "error" && "usa-input--error"
             )}
             id={id}
+            data-testid={idString}
             name={name}
             value={value || ""}
             type={type || "text"}
@@ -125,8 +132,9 @@ export const TextInput = ({
             data-format-message={formatMessage}
             {...inputProps}
             {...(validationStatus === "error"
-              ? { "aria-describedby": `error_${id}` }
+              ? { "aria-describedby": `error_${id}`, "aria-invalid": true }
               : null)}
+            {...registrationProps}
           />
         </div>
       )}

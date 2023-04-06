@@ -1,18 +1,21 @@
 package gov.cdc.usds.simplereport.api.directives;
 
+import static gov.cdc.usds.simplereport.logging.GraphQlInterceptor.SUBJECT_KEY;
+
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
-import gov.cdc.usds.simplereport.config.GraphQlSchemaDirectiveConfig;
+import gov.cdc.usds.simplereport.config.GraphQlConfig;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
+import graphql.GraphQLContext;
 import graphql.execution.DataFetcherResult;
 import graphql.execution.ResultPath;
-import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import graphql.schema.FieldCoordinates;
+import graphql.schema.GraphQLAppliedDirective;
+import graphql.schema.GraphQLAppliedDirectiveArgument;
 import graphql.schema.GraphQLArgument;
-import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLNonNull;
@@ -112,7 +115,8 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
       DataFetchingEnvironment dfe, GraphQLArgument argument) {
     var argValue = dfe.getArgument(argument.getName());
 
-    return argValue == null || Objects.equals(argValue, argument.getDefaultValue());
+    return argValue == null
+        || Objects.equals(argValue, GraphQLArgument.getArgumentDefaultValue(argument));
   }
 
   private static boolean requesterHasRequisitePermissions(
@@ -126,10 +130,8 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
   }
 
   private static Optional<Subject> getSubjectFrom(DataFetchingEnvironment dfe) {
-    return Optional.ofNullable(dfe.getContext())
-        .filter(GraphQLContext.class::isInstance)
-        .map(GraphQLContext.class::cast)
-        .flatMap(GraphQLContext::getSubject);
+    GraphQLContext graphQLContext = dfe.getGraphQlContext();
+    return Optional.ofNullable(graphQLContext.get(SUBJECT_KEY));
   }
 
   private static boolean satisfiesRequiredPermissions(
@@ -161,14 +163,13 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
   private static void gatherRequiredPermissions(
       RequiredPermissions.Builder permissionsAccumulator, GraphQLDirectiveContainer queryElement) {
-    Optional.ofNullable(
-            queryElement.getDirective(
-                GraphQlSchemaDirectiveConfig.REQUIRED_PERMISSIONS_DIRECTIVE_NAME))
-        .ifPresent(
-            d -> {
-              fromStringListArgument(d, "allOf").ifPresent(permissionsAccumulator::withAllOf);
-              fromStringListArgument(d, "anyOf").ifPresent(permissionsAccumulator::withAnyOf);
-            });
+    GraphQLAppliedDirective directive =
+        queryElement.getAppliedDirective(GraphQlConfig.REQUIRED_PERMISSIONS_DIRECTIVE_NAME);
+
+    if (directive != null) {
+      fromStringListArgument(directive, "allOf").ifPresent(permissionsAccumulator::withAllOf);
+      fromStringListArgument(directive, "anyOf").ifPresent(permissionsAccumulator::withAnyOf);
+    }
   }
 
   private static void overwriteOriginalDataFetcher(
@@ -181,9 +182,9 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
 
   @SuppressWarnings("unchecked")
   private static Optional<Set<UserPermission>> fromStringListArgument(
-      GraphQLDirective directive, String argumentName) {
+      GraphQLAppliedDirective directive, String argumentName) {
     return Optional.ofNullable(directive.getArgument(argumentName))
-        .map(GraphQLArgument::getValue)
+        .map(GraphQLAppliedDirectiveArgument::getValue)
         .filter(Collection.class::isInstance)
         .map(c -> (Collection<String>) c)
         .map(

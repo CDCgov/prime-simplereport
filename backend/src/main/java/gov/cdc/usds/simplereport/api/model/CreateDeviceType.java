@@ -11,7 +11,7 @@ public class CreateDeviceType {
   private String name;
   private String manufacturer;
   private String model;
-  private String loincCode;
   private List<UUID> swabTypes;
-  private List<UUID> supportedDiseases;
+  private List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformed;
+  private int testLength;
 }

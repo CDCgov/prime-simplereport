@@ -12,9 +12,8 @@ import { useState, useEffect, useRef, LegacyRef } from "react";
  */
 
 const useComponentVisible = (initialIsVisible: boolean) => {
-  const [isComponentVisible, setIsComponentVisible] = useState(
-    initialIsVisible
-  );
+  const [isComponentVisible, setIsComponentVisible] =
+    useState(initialIsVisible);
   const ref: LegacyRef<HTMLDivElement> | null = useRef(null);
 
   const handleClickOutside = (event: any) => {

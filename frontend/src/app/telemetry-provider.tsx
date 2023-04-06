@@ -2,7 +2,11 @@ import React, { useEffect } from "react";
 
 import { ai } from "./TelemetryService";
 
-const TelemetryProvider: React.FC = ({ children }) => {
+type TelemetryProviderProps = {
+  children: React.ReactNode;
+};
+
+const TelemetryProvider: React.FC<TelemetryProviderProps> = ({ children }) => {
   useEffect(() => {
     ai.initialize();
   });

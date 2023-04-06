@@ -43,6 +43,22 @@ export function toLowerStripWhitespace(s: string | null): string {
   return s.toLocaleLowerCase().replace(/\s/g, "");
 }
 
+export function toLowerCaseHyphenate(string: string) {
+  return string.toLocaleLowerCase().replace(/\s+/g, "-");
+}
+
+export function get512Characters(s: string) {
+  return s.substring(0, 512);
+}
+
+export function getSubStrAfterChar(
+  s: string,
+  strToSplitOn: string,
+  subStrLimit: number = 2
+): string {
+  return s.split(strToSplitOn, subStrLimit).pop() || s;
+}
+
 // From Okta: https://github.com/okta/okta-signin-widget/blob/master/src/util/CryptoUtil.js
 
 /**

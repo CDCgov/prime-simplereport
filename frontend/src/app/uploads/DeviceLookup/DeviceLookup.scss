@@ -1,0 +1,26 @@
+.device-lookup-container {
+  .copy-button {
+    margin-left: 1em;
+  }
+
+  .text-field {
+    position: relative;
+    max-width: 36em;
+  }
+
+  .usa-table {
+    margin-top: 0.5rem;
+  }
+
+  .copy-button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .copy-button-tooltip {
+    bottom: 12px;
+    right: 15px;
+    position: absolute;
+  }
+}

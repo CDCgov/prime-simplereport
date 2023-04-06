@@ -41,52 +41,52 @@ describe("TenantDataAccessForm", () => {
 
   it("Submits a valid access form", async () => {
     // using the default test id that comes with the trusswork component
-    userEvent.selectOptions(
+    await userEvent.selectOptions(
       screen.getByTestId("combo-box-select"),
       "Org 1 Name"
     );
-    userEvent.type(
+    await userEvent.type(
       screen.getByLabelText("Justification", { exact: false }),
       "sample justification text"
     );
     const saveButton = screen.getAllByText("Access data")[0];
     expect(saveButton).toBeEnabled();
-    userEvent.click(saveButton);
+    await userEvent.click(saveButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
-  it("selecting/clearing org enables/disables access", () => {
-    userEvent.click(screen.getByTestId("combo-box-select"));
-    userEvent.click(screen.getByTestId("combo-box-option-ORG_2"));
+  it("selecting/clearing org enables/disables access", async () => {
+    await userEvent.click(screen.getByTestId("combo-box-select"));
+    await userEvent.click(screen.getByTestId("combo-box-option-ORG_2"));
     const saveButton = screen.getAllByText("Access data")[0];
-    userEvent.type(
+    await userEvent.type(
       screen.getByLabelText("Justification", { exact: false }),
       "sample justification text"
     );
     expect(saveButton).toBeEnabled();
-    userEvent.click(screen.getByTestId("combo-box-clear-button"));
+    await userEvent.click(screen.getByTestId("combo-box-clear-button"));
     expect(saveButton).toBeDisabled();
   });
 
   it("Submits a cancellation form", async () => {
     // using the default test id that comes with the trusswork component
-    userEvent.selectOptions(
+    await userEvent.selectOptions(
       screen.getByTestId("combo-box-select"),
       "Org 1 Name"
     );
-    userEvent.type(
+    await userEvent.type(
       screen.getByLabelText("Justification", { exact: false }),
       "sample justification text"
     );
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
-    userEvent.click(cancelButton);
+    await userEvent.click(cancelButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
 
   it("Cancel button always enabled", async () => {
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
-    userEvent.click(cancelButton);
+    await userEvent.click(cancelButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
 });

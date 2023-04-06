@@ -25,7 +25,8 @@ class PermissionHolderTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST);
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPLOAD_RESULTS_SPREADSHEET);
     assertEquals(expected, permissions);
   }
 

@@ -33,8 +33,7 @@ describe("SignUpApi", () => {
       expect(fetch).toHaveBeenCalledWith(
         `${backendUrl}/identity-verification/get-questions`,
         {
-          body:
-            '{"firstName":"John","lastName":"Doe","dateOfBirth":"08/30/1983","email":"john.doe@test.com","phoneNumber":"0123456789","streetAddress1":"Test Street","city":"Test City","state":"CA","zip":"TEST POSTCODE","orgExternalId":"1123-12213"}',
+          body: '{"firstName":"John","lastName":"Doe","dateOfBirth":"08/30/1983","email":"john.doe@test.com","phoneNumber":"0123456789","streetAddress1":"Test Street","city":"Test City","state":"CA","zip":"TEST POSTCODE","orgExternalId":"1123-12213"}',
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",
@@ -88,8 +87,7 @@ describe("SignUpApi", () => {
       expect(fetch).toHaveBeenCalledWith(
         `${backendUrl}/account-request/organization-add-to-queue`,
         {
-          body:
-            '{"firstName":"Laslo","lastName":"Dickens","email":"laslo@shadow.corp","name":"Shadow","type":"treatment_center","state":"NY","workPhoneNumber":"665-452-5484"}',
+          body: '{"firstName":"Laslo","lastName":"Dickens","email":"laslo@shadow.corp","name":"Shadow","type":"treatment_center","state":"NY","workPhoneNumber":"665-452-5484"}',
           headers: {
             Accept: "application/json, text/plain",
             "Content-Type": "application/json",

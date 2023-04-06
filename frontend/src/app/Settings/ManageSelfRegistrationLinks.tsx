@@ -1,5 +1,6 @@
 import { faCheck, faCopy } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { useEffect, useMemo, useState } from "react";
 
 import "./ManageSelfRegistrationLinks.scss";
@@ -45,11 +46,9 @@ export const ManageSelfRegistrationLinks = ({
 
   return (
     <div className="grid-row position-relative">
-      <div className="prime-container card-container">
+      <div className="prime-container card-container settings-tab">
         <div className="usa-card__header">
-          <h2 className="display-flex flex-row flex-align-center">
-            <span>Patient self-registration</span>
-          </h2>
+          <h1>Patient self-registration</h1>
         </div>
         <div className="usa-card__body maxw-prose padding-y-3">
           <p>
@@ -58,7 +57,7 @@ export const ManageSelfRegistrationLinks = ({
           </p>
           <p>
             <a
-              href={makeLink(baseUrl, howItWorksPath)}
+              href={makeStaticSiteLink(baseUrl, howItWorksPath)}
               target="_blank"
               rel="noreferrer"
             >
@@ -116,7 +115,7 @@ function OrganizationLink({ slug, copySlug, copied, baseUrl }: OrgLinkProps) {
         >
           <FontAwesomeIcon
             className="margin-right-1"
-            icon={copied ? faCheck : faCopy}
+            icon={copied ? (faCheck as IconProp) : (faCopy as IconProp)}
           />
           {copied ? "Copied!" : "Copy link"}
         </button>
@@ -170,10 +169,16 @@ function FacilityLinks({
                   <button
                     className="usa-button margin-left-1 usa-button--unstyled"
                     onClick={() => copySlug(slug)}
-                    arial-label={`Copy patient self-registration link for ${name}`}
+                    aria-label={
+                      "Copy patient self registration link for " + name
+                    }
                   >
                     <FontAwesomeIcon
-                      icon={copiedSlug === slug ? faCheck : faCopy}
+                      icon={
+                        copiedSlug === slug
+                          ? (faCheck as IconProp)
+                          : (faCopy as IconProp)
+                      }
                     />
                   </button>
                   {copiedSlug === slug && <CopyTooltip />}
@@ -200,6 +205,10 @@ function getRegistrationLink(
 
 function makeLink(...parts: string[]) {
   return parts.map((part) => part.replace(/(^\/|\/$)/, "")).join("/");
+}
+
+function makeStaticSiteLink(baseUrl: string, staticReference: string) {
+  return makeLink(baseUrl.replace("/app", ""), staticReference);
 }
 
 const TOOLTIP_OFFSET = 7;

@@ -1,0 +1,7 @@
+.usa-table {
+  tr {
+    &:hover {
+      @include u-bg('gray-cool-3');
+    }
+  }
+}

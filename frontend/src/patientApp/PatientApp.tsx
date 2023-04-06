@@ -9,6 +9,7 @@ import { setInitialState } from "../app/store";
 import PageNotFound from "../app/commonComponents/PageNotFound";
 import Alert from "../app/commonComponents/Alert";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
+import { getAppInsights } from "../app/TelemetryService";
 
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
@@ -18,6 +19,7 @@ import GuardedRoute from "./GuardedRoute";
 
 interface WrapperProps {
   plid: string;
+  children: React.ReactNode;
 }
 const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
   plid,
@@ -34,24 +36,43 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
 
 const PatientApp = () => {
   const { t } = useTranslation();
+  const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
   const testResult = useSelector((state: any) => state.testResult);
   const auth = !!testResult.testEventId;
 
   useEffect(() => {
+    if (typeof plid === "string") {
+      appInsights?.clearAuthenticatedUserContext();
+      appInsights?.setAuthenticatedUserContext(plid, undefined, true);
+    }
+
+    if (window?.visualViewport?.width) {
+      appInsights?.trackMetric(
+        {
+          name: "userViewport_patientExp",
+          average: window.visualViewport.width,
+        },
+        {
+          width: window.visualViewport.width,
+          height: window.visualViewport.height,
+        }
+      );
+    }
+
     dispatch(
       setInitialState({
         plid: getPatientLinkIdFromUrl(),
       })
     );
-  });
+  }, [plid, dispatch, appInsights]);
 
   if (!isValidUUID(plid)) {
     return (
-      <Page>
-        <PatientHeader />
-        <main>
+      <Page
+        header={<PatientHeader />}
+        children={
           <div className="grid-container maxw-tablet">
             <p></p>
             <Alert
@@ -60,26 +81,32 @@ const PatientApp = () => {
               body={t("testResult.dob.linkNotFound")}
             />
           </div>
-        </main>
-      </Page>
+        }
+        isPatientApp={true}
+      />
     );
   }
 
   return (
-    <Page>
-      <PatientHeader />
-      <PatientLinkURL404Wrapper plid={plid}>
-        <Routes>
-          <Route path="/" element={<TermsOfService />} />
-          <Route path="terms-of-service" element={<TermsOfService />} />
-          <Route path="birth-date-confirmation" element={<DOB />} />
-          <Route
-            path="test-result"
-            element={<GuardedRoute auth={auth} element={<TestResult />} />}
-          />
-        </Routes>
-      </PatientLinkURL404Wrapper>
-    </Page>
+    <Page
+      header={<PatientHeader />}
+      children={
+        <PatientLinkURL404Wrapper plid={plid}>
+          <Routes>
+            <Route path="/" element={<TermsOfService asPage={true} />} />
+            <Route
+              path="terms-of-service"
+              element={<TermsOfService asPage={true} />}
+            />
+            <Route path="birth-date-confirmation" element={<DOB />} />
+            <Route
+              path="test-result"
+              element={<GuardedRoute auth={auth} element={<TestResult />} />}
+            />
+          </Routes>
+        </PatientLinkURL404Wrapper>
+      }
+    />
   );
 };
 

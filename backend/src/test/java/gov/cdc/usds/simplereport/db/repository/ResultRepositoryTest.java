@@ -31,7 +31,7 @@ class ResultRepositoryTest extends BaseRepositoryTest {
   // creating auditable entities like org and facility.
   @BeforeEach
   void setUp() {
-    ORG = _factory.createValidOrg();
+    ORG = _factory.saveValidOrganization();
     FACILITY = _factory.createValidFacility(ORG);
     PATIENT = _factory.createFullPerson(ORG);
   }

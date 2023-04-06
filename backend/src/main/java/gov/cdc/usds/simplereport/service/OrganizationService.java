@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,12 +52,16 @@ public class OrganizationService {
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-    if (organizationRolesContext.hasBeenPopulated()) {
-      return organizationRolesContext.getOrganizationRoles();
+    try {
+      if (organizationRolesContext.hasBeenPopulated()) {
+        return organizationRolesContext.getOrganizationRoles();
+      }
+      var result = fetchCurrentOrganizationRoles();
+      organizationRolesContext.setOrganizationRoles(result);
+      return result;
+    } catch (ScopeNotActiveException e) {
+      return fetchCurrentOrganizationRoles();
     }
-    var result = fetchCurrentOrganizationRoles();
-    organizationRolesContext.setOrganizationRoles(result);
-    return result;
   }
 
   private Optional<OrganizationRoles> fetchCurrentOrganizationRoles() {
@@ -121,6 +126,14 @@ public class OrganizationService {
                 "An organization with external_id=" + externalId + " does not exist"));
   }
 
+  public Organization getOrganizationById(UUID internalId) {
+    Optional<Organization> found = organizationRepository.findById(internalId);
+    return found.orElseThrow(
+        () ->
+            new IllegalGraphqlArgumentException(
+                "An organization with internal_id=" + internalId + " does not exist"));
+  }
+
   public List<Organization> getOrganizationsByName(String name) {
     return organizationRepository.findAllByName(name);
   }
@@ -144,6 +157,11 @@ public class OrganizationService {
 
   public List<Facility> getFacilities(Organization org) {
     return facilityRepository.findByOrganizationOrderByFacilityName(org);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Set<Facility> getFacilitiesIncludeArchived(Organization org, Boolean includeArchived) {
+    return facilityRepository.findAllByOrganizationAndDeleted(org, includeArchived);
   }
 
   public Set<Facility> getFacilities(Organization org, Collection<UUID> facilityIds) {

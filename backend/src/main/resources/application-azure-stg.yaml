@@ -1,6 +1,11 @@
 spring:
   profiles.include: okta-stg
 simple-report:
+  azure-reporting-queue:
+    enabled: true
+    fhir-queue-enabled: true
+    exception-webhook-enabled: true
+  processing-mode-code: T
   patient-link-url: https://stg.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://stg.simplereport.gov/api/pxp/callback
   cors:

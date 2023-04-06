@@ -11,7 +11,9 @@ import { useSelectedFacility } from "./useSelectedFacility";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
 
-interface Props {}
+interface Props {
+  children: React.ReactNode;
+}
 
 const WithFacility: React.FC<Props> = ({ children }) => {
   const isAdmin = useSelector<RootState, boolean>(

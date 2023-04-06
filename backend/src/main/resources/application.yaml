@@ -47,27 +47,19 @@ spring:
     store-type: jdbc
     timeout: 15m
     jdbc:
-        initialize-schema: never
-        table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
-management:
-  health.probes.enabled: true
-graphql:
+      initialize-schema: never
+      table-name: ${spring.jpa.properties.hibernate.default_schema}.spring_session
   servlet:
-    mapping: /graphql
-    enabled: true
-    corsEnabled: true
-    exception-handlers-enabled: true
-  playground:
-    enabled: false
-  tools:
-    schema-location-pattern: "**/*.graphqls"
-  datetime:
-    scalars:
-      Date:
-        scalar-name: DateTime
-        format: yyyy-MM-dd'T'HH:MM:ss'Z'
-      localDate:
-        scalarName: MyLocalDate # graphql-datetime injects the LocalDate scalar no matter what. this rename allows us to reuse the LocalDate in FlexibleDateScalar
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 60MB
+server:
+  error:
+    include-stacktrace: never
+management:
+  endpoint.health.probes.enabled: true
+  endpoint.info.enabled: true
+  endpoints.web.exposure.include: health, info
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
@@ -108,6 +100,8 @@ simple-report:
       ID_VERIFICATION_FAILED: d-b629fce77d604a31a2872746674cf08e
       ORGANIZATION_ID_VERIFICATION_REMINDER: d-609321a63983416face1b032599202a4
       SIMPLE_REPORT_TEST_RESULT: d-5ce0fdd4d4614ea498026a54ec28b529
+      SIMPLE_REPORT_PATIENT_UPLOAD: d-80f49f78c1ab4c88bf71b187e5d5f64b
+      SIMPLE_REPORT_PATIENT_UPLOAD_ERROR: d-e7c9f285539b49fab70c6dc185a5246c
   experian:
     enabled: false
     token-endpoint: ${EXPERIAN_TOKEN_ENDPOINT}
@@ -124,15 +118,18 @@ simple-report:
     preciseid-password: ${EXPERIAN_PID_PASSWORD}
   azure-reporting-queue:
     enabled: false
+    fhir-queue-enabled: false
     exception-webhook-enabled: false
     exception-webhook-token: ${RS_QUEUE_CALLBACK_TOKEN}
     name: ${AZ_REPORTING_QUEUE_NAME:test-event-publishing}
+    fhir-queue-name: ${AZ_FHIR_REPORTING_QUEUE_NAME:fhir-data-publishing}
     connection-string: ${AZ_REPORTING_QUEUE_CXN_STRING}
   cors:
     allowed-methods:
       - GET
       - HEAD
       - POST
+  batch-size: 1000
 twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:
@@ -141,3 +138,11 @@ logging:
     console: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": \"%replace(%m%wEx){'[\r\n]+', '\\n'}%nopex\"}%n"
     json-log: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": %replace(%m%wEx){'[\r\n]+', '\\n'}%nopex}%n"
 hibernate.query.interceptor.error-level: ERROR
+datahub:
+  url: ${DATAHUB_URL:http://localhost:9561}
+  api-key: ${DATAHUB_API_KEY:super-secret-api-key}
+  api-version: "2021-09-21"
+  jwt-scope: "simple_report.*.report"
+  signing-key: ${DATAHUB_SIGNING_KEY:super-secret-signing-key}
+  csv-upload-api-client: "simple_report.csvuploader"
+

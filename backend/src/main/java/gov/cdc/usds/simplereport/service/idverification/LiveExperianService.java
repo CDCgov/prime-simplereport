@@ -28,6 +28,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -48,6 +49,9 @@ public class LiveExperianService
       "/responseHeader/overallResponse/decision";
   private static final String PID_FINAL_DECISION_PATH =
       "/clientResponsePayload/decisionElements/0/decisions/2/value";
+
+  private static final int RETRY_SERVER_ERROR_CODE = 500;
+  private static final int MAX_REFETCH_TRIES = 2;
 
   private static final String SUCCESS_DECISION = "ACCEPT";
   private static final String SUCCESS_DECISION_SHORT = "ACC";
@@ -91,16 +95,39 @@ public class LiveExperianService
     requestBody.put("client_secret", _experianProperties.getClientSecret());
 
     HttpEntity<ObjectNode> entity = new HttpEntity<>(requestBody, headers);
-    try {
-      ObjectNode responseBody =
-          _restTemplate.postForObject(
-              _experianProperties.getTokenEndpoint(), entity, ObjectNode.class);
-      if (responseBody == null) {
-        throw new ExperianAuthException("The Experian token request returned a null response.");
+    int retryOn500AuthCounter = 0;
+    while (true) {
+      try {
+        ObjectNode responseBody =
+            _restTemplate.postForObject(
+                _experianProperties.getTokenEndpoint(), entity, ObjectNode.class);
+
+        if (responseBody == null) {
+          log.error("EXPERIAN TOKEN FETCH RETURNED NULL", requestBody);
+          throw new ExperianAuthException("The Experian token request returned a null response.");
+        }
+
+        return responseBody.path("access_token").asText();
+      } catch (RestClientResponseException e) {
+        // Experian token fetching intermittently throws 500 errors that resolve themselves on
+        // retry.
+        // For more details:
+        // https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response#prod-alert-when-an-experianauthexception-is-seen
+        if (e.getRawStatusCode() == RETRY_SERVER_ERROR_CODE) {
+          log.error("EXPERIAN TOKEN FETCH RETURNED 500 ERROR", e);
+
+          if (retryOn500AuthCounter >= MAX_REFETCH_TRIES) {
+            String description =
+                String.format(
+                    "The activation token could not be retrieved after %d attempts.",
+                    MAX_REFETCH_TRIES);
+            throw new ExperianAuthException(description, e);
+          }
+          retryOn500AuthCounter++;
+        } else {
+          throw new ExperianAuthException("The activation token could not be retrieved.", e);
+        }
       }
-      return responseBody.path("access_token").asText();
-    } catch (RestClientException e) {
-      throw new ExperianAuthException("The activation token could not be retrieved.", e);
     }
   }
 

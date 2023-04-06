@@ -6,6 +6,8 @@ import React, {
 } from "react";
 import classnames from "classnames";
 
+import iconSearch from "../../../img/search--white.svg";
+
 type Props = {
   onSearchClick?: MouseEventHandler<HTMLButtonElement>;
   onInputChange: ChangeEventHandler<HTMLInputElement>;
@@ -16,6 +18,7 @@ type Props = {
   placeholder?: string;
   focusOnMount?: boolean;
   showSubmitButton?: boolean;
+  labeledBy?: string;
 };
 
 const SearchInput = ({
@@ -28,6 +31,7 @@ const SearchInput = ({
   placeholder,
   focusOnMount,
   showSubmitButton = true,
+  labeledBy,
 }: Props) => {
   const classes = classnames(
     "usa-search",
@@ -50,35 +54,36 @@ const SearchInput = ({
           className={label ? "display-block" : "usa-sr-only"}
           htmlFor="search-field-small"
         >
-          {label || "Search"}
+          {label || placeholder || "Search"}
         </label>
         <div>
           <input
             autoComplete="off"
             className="usa-input"
             id="search-field-small"
-            placeholder={
-              placeholder !== undefined
-                ? placeholder
-                : "Search for a person to start their test"
-            }
+            placeholder={placeholder}
             type="search"
             name="search"
             value={queryString}
             onChange={onInputChange}
             ref={inputRef}
             onFocus={onInputChange}
+            aria-labelledby={labeledBy}
+            style={!showSubmitButton ? { borderRight: "solid 1px" } : undefined}
           />
-          {showSubmitButton && (
-            <button
-              type="submit"
-              className="usa-button"
-              disabled={disabled}
-              onClick={onSearchClick}
-            >
-              <span className="usa-sr-only">Search</span>
-            </button>
-          )}
+          <button
+            type="submit"
+            className="usa-button"
+            disabled={disabled}
+            onClick={onSearchClick}
+            style={!showSubmitButton ? { display: "none" } : undefined}
+          >
+            <img
+              src={iconSearch}
+              className="usa-search__submit-icon"
+              alt="Search"
+            />
+          </button>
         </div>
       </form>
     </div>

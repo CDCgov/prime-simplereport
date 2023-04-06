@@ -1,41 +1,30 @@
 import { render, RenderResult, screen } from "@testing-library/react";
 import MockDate from "mockdate";
-import ReactDOM from "react-dom";
+import userEvent from "@testing-library/user-event";
 
 import AoEModalForm from "./AoEModalForm";
 
 jest.mock("./AoEForm", () => () => <></>);
-jest.mock("react-modal", () => (props: any) => <>{props.children}</>);
 
 describe("AoEModalForm", () => {
-  let component: RenderResult["container"];
-
-  beforeAll(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-  });
+  let component: RenderResult;
+  let mockOnClose = jest.fn();
 
   beforeEach(() => {
     MockDate.set("2021-02-06");
     component = render(
       <AoEModalForm
-        onClose={jest.fn()}
+        isOpen={true}
+        onClose={mockOnClose}
         patient={{
           internalId: "123",
           gender: "male",
           firstName: "Steve",
           lastName: "Jobs",
         }}
-        loadState={{
-          noSymptoms: false,
-          symptoms: '{"426000000":"true","49727002":false}',
-          symptomOnset: "",
-          pregnancy: "",
-        }}
         saveCallback={jest.fn()}
       />
-    ).container;
+    );
   });
 
   describe("on data loaded", () => {
@@ -46,6 +35,12 @@ describe("AoEModalForm", () => {
 
     it("renders", async () => {
       expect(component).toMatchSnapshot();
+    });
+
+    it("closes on esc key", async () => {
+      expect(mockOnClose).not.toHaveBeenCalled();
+      await userEvent.keyboard("{Escape}");
+      expect(mockOnClose).toHaveBeenCalled();
     });
   });
 });

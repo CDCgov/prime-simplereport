@@ -18,7 +18,7 @@ variable "resource_group_location" {
   description = "App Service Location"
 }
 
-variable "app_service_plan_id" {
+variable "service_plan_id" {
   type        = string
   description = "App Service Plan ID"
 }
@@ -69,6 +69,13 @@ variable "ai_instrumentation_key" {
   type        = string
   description = "Application Insights Instrumentation Key"
   sensitive   = true
+}
+
+variable "lb_subnet_id" {}
+
+variable "metabase_url" {
+  type        = string
+  description = "Metabase URL"
 }
 
 # Secret Access

@@ -2,27 +2,24 @@ import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
 import {
+  CreateDeviceTypeMutationVariables,
+  UpdateDeviceType,
   useCreateDeviceTypeMutation,
   useGetSpecimenTypesQuery,
   useGetSupportedDiseasesQuery,
 } from "../../../generated/graphql";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showError, showSuccess } from "../../utils/srToast";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+import { useDocumentTitle } from "../../utils/hooks";
 
-import DeviceTypeForm from "./DeviceTypeForm";
-
-export interface Device {
-  name: string;
-  manufacturer: string;
-  model: string;
-  loincCode: string;
-  swabTypes: Array<string>;
-  supportedDiseases: Array<string>;
-}
+import DeviceForm from "./DeviceForm";
 
 const DeviceTypeFormContainer = () => {
+  useDocumentTitle("Device type");
+
   const [submitted, setSubmitted] = useState(false);
+  const [activeFacility] = useSelectedFacility();
   const [createDeviceType] = useCreateDeviceTypeMutation();
   const { data: specimenTypesResults } = useGetSpecimenTypesQuery({
     fetchPolicy: "no-cache",
@@ -31,25 +28,31 @@ const DeviceTypeFormContainer = () => {
     fetchPolicy: "no-cache",
   });
 
-  const saveDeviceType = (device: Device) => {
-    createDeviceType({
-      variables: device,
-      fetchPolicy: "no-cache",
-    }).then(() => {
-      const alert = (
-        <Alert
-          type="success"
-          title="Created Device"
-          body="The device has been created"
-        />
+  const saveDeviceType = (device: UpdateDeviceType) => {
+    if (device.testLength <= 0 || device.testLength > 999) {
+      showError(
+        "Failed to create device. Invalid test length",
+        "Create device failed"
       );
-      showNotification(alert);
-      setSubmitted(true);
-    });
+    } else {
+      if (!device.internalId) {
+        createDeviceType({
+          variables: device as CreateDeviceTypeMutationVariables,
+          fetchPolicy: "no-cache",
+        }).then(() => {
+          showSuccess("The device has been created", "Created Device");
+          setSubmitted(true);
+        });
+      } else {
+        console.log(
+          "Invalid attempt to create a device with an already defined internal ID; aborting"
+        );
+      }
+    }
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Navigate to={`/admin?facility=${activeFacility?.id}`} />;
   }
 
   if (specimenTypesResults && supportedDiseaseResults) {
@@ -66,7 +69,8 @@ const DeviceTypeFormContainer = () => {
       }))
     );
     return (
-      <DeviceTypeForm
+      <DeviceForm
+        formTitle="Device type"
         saveDeviceType={saveDeviceType}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}

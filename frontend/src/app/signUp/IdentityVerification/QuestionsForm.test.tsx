@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { exampleQuestionSet } from "./constants";
@@ -21,21 +21,41 @@ describe("QuestionsForm", () => {
       />
     );
   });
+
   it("initializes with the submit button disabled", () => {
     expect(screen.getByText("Submit")).toBeDisabled();
   });
-  it("initializes with a counter and starts counting down", async () => {
-    expect(screen.getByText("5:00")).toBeInTheDocument();
-    expect(await screen.findByText("4:59")).toBeInTheDocument();
+
+  describe("tests with fake timers", () => {
+    beforeAll(() => {
+      jest.useFakeTimers();
+    });
+
+    it("initializes with a counter and starts counting down", async () => {
+      expect(screen.getByText("5:00")).toBeInTheDocument();
+      await act(async () => {
+        jest.advanceTimersByTime(1000);
+      });
+      expect(screen.getByText("4:59")).toBeInTheDocument();
+      await act(async () => {
+        jest.advanceTimersByTime(2000);
+      });
+    });
+
+    afterAll(() => {
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    });
   });
   describe("One field entered", () => {
-    it("enables the submit button", () => {
-      userEvent.click(screen.getByLabelText("2002", { exact: false }));
-      expect(screen.getByText("Submit")).toBeEnabled();
+    it("enables the submit button", async () => {
+      await userEvent.click(screen.getByLabelText("2002", { exact: false }));
+      await waitFor(() => expect(screen.getByText("Submit")).toBeEnabled());
     });
+
     describe("focusing and not adding a value", () => {
       it("shows a single error", async () => {
-        userEvent.click(screen.getByLabelText("2002", { exact: false }));
+        await userEvent.click(screen.getByLabelText("2002", { exact: false }));
         screen.getByLabelText("ELECTRICIAN", { exact: false }).focus();
         screen.getByText("Submit", { exact: false }).focus();
         await waitFor(() => {
@@ -47,8 +67,8 @@ describe("QuestionsForm", () => {
     });
     describe("On submit", () => {
       it("shows an error", async () => {
-        userEvent.click(screen.getByLabelText("2002", { exact: false }));
-        userEvent.click(
+        await userEvent.click(screen.getByLabelText("2002", { exact: false }));
+        await userEvent.click(
           screen.queryAllByText("Submit", {
             exact: false,
           })[0]
@@ -59,9 +79,10 @@ describe("QuestionsForm", () => {
           );
         });
       });
+
       it("does not call the onSubmit callback", async () => {
-        userEvent.click(screen.getByLabelText("2002", { exact: false }));
-        userEvent.click(
+        await userEvent.click(screen.getByLabelText("2002", { exact: false }));
+        await userEvent.click(
           screen.queryAllByText("Submit", {
             exact: false,
           })[0]
@@ -72,21 +93,22 @@ describe("QuestionsForm", () => {
       });
     });
   });
+
   describe("Completed form", () => {
     describe("On submit", () => {
       it("does not show an error", async () => {
-        userEvent.click(screen.getByLabelText("2002", { exact: false }));
-        userEvent.click(
+        await userEvent.click(screen.getByLabelText("2002", { exact: false }));
+        await userEvent.click(
           screen.getByLabelText("OPTICIAN / OPTOMETRIST", { exact: false })
         );
-        userEvent.click(
+        await userEvent.click(
           screen.getByLabelText("MID AMERICA MORTGAGE", { exact: false })
         );
-        userEvent.click(screen.getByLabelText("TWO", { exact: false }));
-        userEvent.click(
+        await userEvent.click(screen.getByLabelText("TWO", { exact: false }));
+        await userEvent.click(
           screen.getByLabelText("AGUA DULCE HIGH SCHOOL", { exact: false })
         );
-        userEvent.click(
+        await userEvent.click(
           screen.queryAllByText("Submit", {
             exact: false,
           })[0]
@@ -98,18 +120,18 @@ describe("QuestionsForm", () => {
         });
       });
       it("calls the onSubmit callback", async () => {
-        userEvent.click(screen.getByLabelText("2002", { exact: false }));
-        userEvent.click(
+        await userEvent.click(screen.getByLabelText("2002", { exact: false }));
+        await userEvent.click(
           screen.getByLabelText("OPTICIAN / OPTOMETRIST", { exact: false })
         );
-        userEvent.click(
+        await userEvent.click(
           screen.getByLabelText("MID AMERICA MORTGAGE", { exact: false })
         );
-        userEvent.click(screen.getByLabelText("TWO", { exact: false }));
-        userEvent.click(
+        await userEvent.click(screen.getByLabelText("TWO", { exact: false }));
+        await userEvent.click(
           screen.getByLabelText("AGUA DULCE HIGH SCHOOL", { exact: false })
         );
-        userEvent.click(
+        await userEvent.click(
           screen.queryAllByText("Submit", {
             exact: false,
           })[0]

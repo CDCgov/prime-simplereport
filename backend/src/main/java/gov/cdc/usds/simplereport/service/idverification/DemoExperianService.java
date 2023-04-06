@@ -42,6 +42,7 @@ public class DemoExperianService implements ExperianService {
   public IdentityVerificationQuestionsResponse getQuestions(
       IdentityVerificationQuestionsRequest userData) {
     try {
+
       if (USER_EMAIL_NOT_FOUND.equals(userData.getEmail())) {
         throw new ExperianPersonMatchException("No questions returned due to consumer not found");
       } else if (USER_EMAIL_GENERATE_REST_EXCEPTION.equals(userData.getEmail())) {

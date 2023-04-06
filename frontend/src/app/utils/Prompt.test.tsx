@@ -5,7 +5,7 @@ import userEvent from "@testing-library/user-event";
 import Prompt from "./Prompt";
 
 describe("A <Prompt>", () => {
-  it("calls window.confirm with the prompt message", () => {
+  it("calls window.confirm with the prompt message", async () => {
     const confirmMock = jest
       .spyOn(window, "confirm")
       .mockImplementation((_message) => false);
@@ -42,7 +42,7 @@ describe("A <Prompt>", () => {
     expect(screen.getByText("This is the first page")).toBeInTheDocument();
 
     // WHEN
-    userEvent.click(screen.getByText("Go to a new page"));
+    await userEvent.click(screen.getByText("Go to a new page"));
 
     // THEN
     expect(screen.queryByText("Went to a new page!")).not.toBeInTheDocument();
@@ -52,7 +52,7 @@ describe("A <Prompt>", () => {
     );
   });
 
-  it("calls window.confirm with the prompt message, and redirects when confirmed", () => {
+  it("calls window.confirm with the prompt message, and redirects when confirmed", async () => {
     const confirmMock = jest
       .spyOn(window, "confirm")
       .mockImplementation((_message) => true);
@@ -89,7 +89,7 @@ describe("A <Prompt>", () => {
     expect(screen.getByText("This is the first page")).toBeInTheDocument();
 
     // WHEN
-    userEvent.click(screen.getByText("Go to a new page"));
+    await userEvent.click(screen.getByText("Go to a new page"));
 
     // THEN
     expect(confirmMock).toHaveBeenCalledWith(
@@ -99,7 +99,7 @@ describe("A <Prompt>", () => {
     expect(screen.getByText("Went to a new page!")).toBeInTheDocument();
   });
 
-  it("does not call window.confirm with when=false", () => {
+  it("does not call window.confirm with when=false", async () => {
     const confirmMock = jest
       .spyOn(window, "confirm")
       .mockImplementation((_message) => true);
@@ -136,7 +136,7 @@ describe("A <Prompt>", () => {
     expect(screen.getByText("This is the first page")).toBeInTheDocument();
 
     // WHEN
-    userEvent.click(screen.getByText("Go to a new page"));
+    await userEvent.click(screen.getByText("Go to a new page"));
 
     // THEN
     expect(screen.getByText("Went to a new page!")).toBeInTheDocument();

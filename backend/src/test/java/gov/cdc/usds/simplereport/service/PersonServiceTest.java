@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -87,7 +89,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Fosbury",
         "Sr.",
         LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         TestDataFactory.getListOfOnePhoneNumber(),
         PersonRole.STAFF,
@@ -108,7 +110,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Barnacle",
         "4th",
         LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         TestDataFactory.getListOfOnePhoneNumber(),
         PersonRole.STAFF,
@@ -129,7 +131,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Pizzazz",
         null,
         LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         TestDataFactory.getListOfOnePhoneNumber(),
         PersonRole.STAFF,
@@ -167,7 +169,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Flintstone",
         "Sr.",
         LocalDate.of(1990, 1, 1),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         null,
         PersonRole.RESIDENT,
@@ -192,7 +194,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 "Flintstone",
                 "Jr.",
                 LocalDate.of(1950, 1, 1),
-                _dataFactory.getAddress(),
+                getAddress(),
                 "USA",
                 null,
                 PersonRole.RESIDENT,
@@ -215,7 +217,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Flintstone",
         "Jr.",
         LocalDate.of(1950, 1, 1),
-        _dataFactory.getAddress(),
+        getAddress(),
         "USA",
         null,
         PersonRole.RESIDENT,
@@ -243,7 +245,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 "Flintstone",
                 "Jr.",
                 LocalDate.of(1950, 1, 1),
-                _dataFactory.getAddress(),
+                getAddress(),
                 "USA",
                 null,
                 PersonRole.RESIDENT,
@@ -268,7 +270,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342344"));
 
     LocalDate birthDate = LocalDate.of(1865, 12, 25);
-    StreetAddress address = _dataFactory.getAddress();
+    StreetAddress address = getAddress();
 
     IllegalGraphqlArgumentException e =
         assertThrows(
@@ -299,6 +301,86 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   }
 
   @Test
+  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+  void assignPhoneNumberToPatient_noDuplicates_success() {
+    Facility facility = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
+    UUID facilityId = facility.getInternalId();
+
+    Person person =
+        _service.addPatient(
+            facilityId,
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
+            "USA",
+            null,
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+    UUID personInternalId = person.getInternalId();
+
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
+    phoneNumbers.add(new PhoneNumber(PhoneType.MOBILE, "2342342344"));
+    phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342345"));
+    phoneNumbers.add(new PhoneNumber(PhoneType.LANDLINE, "2342342346"));
+
+    List<PhoneNumber> assignedPhoneNumbers =
+        _service.assignPhoneNumbersToPatient(person, phoneNumbers);
+
+    assertEquals(assignedPhoneNumbers.get(0).getPersonInternalID(), personInternalId);
+    assertEquals(assignedPhoneNumbers.get(1).getPersonInternalID(), personInternalId);
+    assertEquals(assignedPhoneNumbers.get(2).getPersonInternalID(), personInternalId);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+  void assignPhoneNumberToPatient_noNumbers_success() {
+    Facility facility = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
+    UUID facilityId = facility.getInternalId();
+
+    Person person =
+        _service.addPatient(
+            facilityId,
+            null,
+            "John",
+            null,
+            "Doe",
+            null,
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
+            "USA",
+            null,
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+
+    List<PhoneNumber> phoneNumbers = new ArrayList<>();
+
+    List<PhoneNumber> assignedPhoneNumbers =
+        _service.assignPhoneNumbersToPatient(person, phoneNumbers);
+
+    assertEquals(0, assignedPhoneNumbers.size());
+  }
+
+  @Test
   @WithSimpleReportStandardUser
   void deletePatient_standardUser_successDependsOnFacilityAccess() {
     Facility fac = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
@@ -314,7 +396,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -355,7 +437,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -407,7 +489,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -467,7 +549,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -581,9 +663,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     patients = _service.getPatients(site2Id, 0, 100, false, "ma", false);
     assertPatientList(patients, JANNELLE, KACEY);
 
-    // site1, IS deleted, "ma"
+    // site1, includes deleted, "ma"
     patients = _service.getPatients(site1Id, 0, 100, true, "ma", false);
-    assertPatientList(patients, CHARLES);
+    assertPatientList(patients, CHARLES, GALE, ELIZABETH, HEINRICK);
 
     // all facilities, not deleted, "mar"
     patients = _service.getPatients(null, 0, 100, false, "mar", false);
@@ -642,14 +724,14 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     _service.setIsDeleted(patients_site2.get(0).getInternalId(), true);
 
     assertEquals(10, _service.getPatientsCount(null, false, null, false));
+    assertEquals(12, _service.getPatientsCount(null, true, null, false));
     assertEquals(6, _service.getPatientsCount(site2Id, false, null, false));
-    assertEquals(2, _service.getPatientsCount(null, true, null, false));
-    assertEquals(1, _service.getPatientsCount(site2Id, true, null, false));
+    assertEquals(7, _service.getPatientsCount(site2Id, true, null, false));
 
     // counts for name filtering
     assertEquals(5, _service.getPatientsCount(null, false, "ma", false));
     assertEquals(2, _service.getPatientsCount(site2Id, false, "ma", false));
-    assertEquals(1, _service.getPatientsCount(site1Id, true, "ma", false));
+    assertEquals(4, _service.getPatientsCount(site1Id, true, "ma", false));
     assertEquals(4, _service.getPatientsCount(null, false, "mar", false));
     assertEquals(2, _service.getPatientsCount(null, false, "MARTHA", false));
 
@@ -763,7 +845,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     var result =
         _service.isDuplicatePatient(
-            "John", "Doe", LocalDate.parse("1990-01-01"), org, Optional.ofNullable(null));
+            "John", "Doe", LocalDate.parse("1990-01-01"), org, Optional.empty());
 
     assertFalse(result);
   }
@@ -783,8 +865,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -804,7 +886,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getLastName(),
             person.getBirthDate(),
             org,
-            Optional.ofNullable(null));
+            Optional.empty());
 
     assertTrue(result);
   }
@@ -825,8 +907,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -846,7 +928,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             person.getLastName(),
             person.getBirthDate(),
             org,
-            Optional.ofNullable(null));
+            Optional.empty());
 
     assertTrue(result);
   }
@@ -882,8 +964,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -927,8 +1009,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,
@@ -972,8 +1054,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             "Doe",
             null,
-            LocalDate.of(1990, 01, 01),
-            _dataFactory.getAddress(),
+            LocalDate.of(1990, 1, 1),
+            getAddress(),
             "USA",
             TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.STAFF,

@@ -1,11 +1,17 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 
 import * as clia from "../../utils/clia";
 import * as state from "../../utils/state";
 import * as smartyStreets from "../../utils/smartyStreets";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import FacilityForm from "./FacilityForm";
 
@@ -14,8 +20,14 @@ import "../../../i18n";
 let saveFacility: jest.Mock;
 
 const devices: DeviceType[] = [
-  { internalId: "device-1", name: "Device 1" },
-  { internalId: "device-2", name: "Device 2" },
+  {
+    internalId: "device-1",
+    name: "Device 1",
+  },
+  {
+    internalId: "device-2",
+    name: "Device 2",
+  },
 ];
 
 const validFacility: Facility = {
@@ -51,7 +63,7 @@ const addresses = [
     bad: {
       street: "123 Main St",
       streetTwo: "Unit 05",
-      city: "Wasington",
+      city: "Washington",
       state: "AZ",
       zipCode: "13345",
       county: "",
@@ -120,6 +132,23 @@ describe("FacilityForm", () => {
   });
 
   describe("form submission", () => {
+    it("has a link to return to all facilities page", () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      expect(screen.getByText("Back to all facilities")).toBeInTheDocument();
+      expect(screen.getByText("Back to all facilities")).toHaveAttribute(
+        "href",
+        "/settings/facilities"
+      );
+    });
+
     it("submits a valid form", async () => {
       render(
         <MemoryRouter>
@@ -131,11 +160,11 @@ describe("FacilityForm", () => {
         </MemoryRouter>
       );
       const saveButton = await screen.getAllByText("Save changes")[0];
-      userEvent.type(
+      await userEvent.type(
         screen.getByLabelText("Testing facility name", { exact: false }),
         "Bar Facility"
       );
-      userEvent.click(saveButton);
+      await userEvent.click(saveButton);
       await validateAddress(saveFacility);
     });
 
@@ -152,10 +181,35 @@ describe("FacilityForm", () => {
       const facilityNameInput = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
-      userEvent.clear(facilityNameInput);
-      userEvent.tab();
-      const warning = await screen.findByText("Facility name is missing");
-      expect(warning).toBeInTheDocument();
+      await userEvent.clear(facilityNameInput);
+      await userEvent.tab();
+      const nameWarning = await screen.findByText("Facility name is missing");
+      expect(nameWarning).toBeInTheDocument();
+      await userEvent.type(facilityNameInput, "Test facility A");
+
+      const facilityStreetAddressInput = screen.getAllByLabelText(
+        "Street address 1",
+        {
+          exact: false,
+        }
+      )[0];
+      await userEvent.clear(facilityStreetAddressInput);
+      await userEvent.tab();
+      const streetAddressWarning = await screen.findByText(
+        "Facility street is missing"
+      );
+      expect(streetAddressWarning).toBeInTheDocument();
+      await userEvent.type(facilityStreetAddressInput, "123 Main Street");
+
+      const facilityZipCodeInput = screen.getAllByLabelText("ZIP code", {
+        exact: false,
+      })[0];
+      await userEvent.clear(facilityZipCodeInput);
+      await userEvent.tab();
+      const facilityZipCodeWarning = await screen.findByText(
+        "Facility zip code is missing"
+      );
+      expect(facilityZipCodeWarning).toBeInTheDocument();
     });
 
     it("prevents submit for invalid form", async () => {
@@ -172,8 +226,8 @@ describe("FacilityForm", () => {
       const facilityNameInput = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
-      userEvent.clear(facilityNameInput);
-      userEvent.click(saveButton);
+      await userEvent.clear(facilityNameInput);
+      await userEvent.click(saveButton);
       await waitFor(async () => expect(saveButton).toBeEnabled());
       expect(saveFacility).toBeCalledTimes(0);
     });
@@ -192,8 +246,8 @@ describe("FacilityForm", () => {
       const emailInput = screen.getByLabelText("Email", {
         exact: false,
       });
-      userEvent.type(emailInput, "123-456-7890");
-      userEvent.tab();
+      await userEvent.type(emailInput, "123-456-7890");
+      await userEvent.tab();
 
       expect(
         await screen.findByText("Email is incorrectly formatted", {
@@ -201,11 +255,11 @@ describe("FacilityForm", () => {
         })
       ).toBeInTheDocument();
 
-      userEvent.click(saveButton);
+      await userEvent.click(saveButton);
       expect(saveFacility).toBeCalledTimes(0);
 
-      userEvent.type(emailInput, "foofacility@example.com");
-      userEvent.click(saveButton);
+      await userEvent.type(emailInput, "foofacility@example.com");
+      await userEvent.click(saveButton);
       await waitFor(async () => expect(saveButton).toBeEnabled());
       await validateAddress(saveFacility);
     });
@@ -223,8 +277,8 @@ describe("FacilityForm", () => {
       const stateDropdownElement = screen.getByTestId(
         "facility-state-dropdown"
       );
-      userEvent.selectOptions(stateDropdownElement, "PW");
-      userEvent.tab();
+      await userEvent.selectOptions(stateDropdownElement, "PW");
+      await userEvent.tab();
       // There's a line break between these two statements, so they have to be separated
       const warning = await screen.findByText(
         "SimpleReport isn’t currently supported in",
@@ -233,6 +287,28 @@ describe("FacilityForm", () => {
       expect(warning).toBeInTheDocument();
       const state = await screen.findByText("Palau", { exact: false });
       expect(state).toBeInTheDocument();
+    });
+
+    it("focuses on error with facility name", async () => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+      const saveButton = screen.getAllByText("Save changes")[0];
+      await userEvent.clear(
+        screen.getByLabelText("Testing facility name", { exact: false })
+      );
+      await userEvent.click(saveButton);
+      await waitFor(() =>
+        expect(
+          screen.getByLabelText("Testing facility name", { exact: false })
+        ).toHaveFocus()
+      );
     });
   });
 
@@ -263,8 +339,8 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        userEvent.type(cliaInput, "12F3456789");
-        userEvent.tab();
+        await userEvent.type(cliaInput, "12F3456789");
+        await userEvent.tab();
 
         const expectedError = "CLIA number should be 10 characters";
 
@@ -275,7 +351,7 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
@@ -306,11 +382,11 @@ describe("FacilityForm", () => {
         const cliaInput = screen.getByLabelText("CLIA number", {
           exact: false,
         });
-        userEvent.type(cliaInput, "invalid-clia-number");
-        userEvent.tab();
+        await userEvent.type(cliaInput, "invalid-clia-number");
+        await userEvent.tab();
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -345,12 +421,12 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        userEvent.clear(cliaInput);
-        userEvent.type(cliaInput, "12Z3456789");
-        userEvent.tab();
+        await userEvent.clear(cliaInput);
+        await userEvent.type(cliaInput, "12Z3456789");
+        await userEvent.tab();
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -372,9 +448,9 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        userEvent.clear(cliaInput);
-        userEvent.type(cliaInput, "12Z3456789");
-        userEvent.tab();
+        await userEvent.clear(cliaInput);
+        await userEvent.type(cliaInput, "12Z3456789");
+        await userEvent.tab();
 
         const expectedError =
           "Special temporary CLIAs are only valid in CA, IL, VT, WA, and WY.";
@@ -386,7 +462,7 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
@@ -409,12 +485,12 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        userEvent.clear(cliaInput);
-        userEvent.type(cliaInput, "CPDH000006");
-        userEvent.tab();
+        await userEvent.clear(cliaInput);
+        await userEvent.type(cliaInput, "CPDH000006");
+        await userEvent.tab();
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -437,12 +513,12 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        userEvent.clear(cliaInput);
-        userEvent.type(cliaInput, "47Z1234567");
-        userEvent.tab();
+        await userEvent.clear(cliaInput);
+        await userEvent.type(cliaInput, "47Z1234567");
+        await userEvent.tab();
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -465,12 +541,12 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        userEvent.clear(cliaInput);
-        userEvent.type(cliaInput, "32Z1234567");
-        userEvent.tab();
+        await userEvent.clear(cliaInput);
+        await userEvent.type(cliaInput, "32Z1234567");
+        await userEvent.tab();
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -504,10 +580,11 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        userEvent.clear(npiInput);
-        userEvent.tab();
+        await userEvent.clear(npiInput);
+        await userEvent.tab();
 
-        const expectedError = "Ordering provider NPI is incorrectly formatted";
+        const expectedError =
+          "NPI should be a 10-digit numerical value (##########)";
 
         // The mock function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
@@ -518,7 +595,7 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
@@ -538,11 +615,12 @@ describe("FacilityForm", () => {
           exact: false,
         });
 
-        userEvent.clear(npiInput);
-        userEvent.type(npiInput, "Facility name");
-        userEvent.tab();
+        await userEvent.clear(npiInput);
+        await userEvent.type(npiInput, "Facility name");
+        await userEvent.tab();
 
-        const expectedError = "Ordering provider NPI is incorrectly formatted";
+        const expectedError =
+          "NPI should be a 10-digit numerical value (##########)";
         // The mock function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
         expect(
@@ -552,7 +630,7 @@ describe("FacilityForm", () => {
         ).toBeInTheDocument();
 
         const saveButton = screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
@@ -584,17 +662,77 @@ describe("FacilityForm", () => {
         const npiInput = screen.getByLabelText("NPI", {
           exact: false,
         });
-        userEvent.clear(npiInput);
-        userEvent.tab();
+        await userEvent.clear(npiInput);
+        await userEvent.tab();
 
         // The spy function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
 
         const saveButton = await screen.getAllByText("Save changes")[0];
-        userEvent.click(saveButton);
+        await userEvent.click(saveButton);
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
+    });
+  });
+
+  describe("Device validation", () => {
+    beforeEach(() => {
+      render(
+        <MemoryRouter>
+          <FacilityForm
+            facility={validFacility}
+            deviceTypes={devices}
+            saveFacility={saveFacility}
+          />
+        </MemoryRouter>
+      );
+    });
+
+    it("warns about missing device selection", async () => {
+      await deleteAllDevices();
+
+      await screen.findByText("There are currently no devices", {
+        exact: false,
+      });
+
+      await attemptSaveDevices();
+
+      await screen.findByText("There must be at least one device", {
+        exact: false,
+      });
+    });
+
+    it("resolves the error when a device is selected", async () => {
+      await deleteAllDevices();
+
+      await screen.findByText("There are currently no devices", {
+        exact: false,
+      });
+
+      await attemptSaveDevices();
+
+      await screen.findByText("There must be at least one device", {
+        exact: false,
+      });
+
+      // Select Device
+      const deviceInput = screen.getByTestId("multi-select-toggle");
+      const deviceList = screen.getByTestId("multi-select-option-list");
+      await userEvent.click(deviceInput);
+      await userEvent.click(within(deviceList).getByText("Device 1"));
+
+      // Expect no errors
+      expect(
+        screen.queryByText("There are currently no devices", {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("There must be at least one device", {
+          exact: false,
+        })
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -621,9 +759,9 @@ describe("FacilityForm", () => {
       const facilityName = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
-      userEvent.clear(facilityName);
-      userEvent.type(facilityName, "La Croix Facility");
-      userEvent.click(saveButton);
+      await userEvent.clear(facilityName);
+      await userEvent.type(facilityName, "La Croix Facility");
+      await userEvent.click(saveButton);
       await validateAddress(saveFacility, "suggested address");
       expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
       expect(saveFacility).toBeCalledWith({
@@ -638,96 +776,49 @@ describe("FacilityForm", () => {
     });
 
     it("blocks submission of facility on invalid ZIP code for state", async () => {
-      // GIVEN
-      getIsValidZipForStateSpy.mockRestore();
-      getIsValidZipForStateSpy = jest
-        .spyOn(smartyStreets, "isValidZipCodeForState")
-        .mockReturnValue(false);
+      getIsValidZipForStateSpy.mockReturnValueOnce(false);
 
-      const facility = validFacility;
-
-      // WHEN
       render(
         <>
           <MemoryRouter>
             <FacilityForm
-              facility={facility}
+              facility={validFacility}
               deviceTypes={devices}
               saveFacility={saveFacility}
             />
           </MemoryRouter>
-          <ToastContainer
-            autoClose={5000}
-            closeButton={false}
-            limit={2}
-            position="bottom-center"
-            hideProgressBar={true}
-          />
+          <SRToastContainer />
         </>
       );
+      const saveButton = screen.getAllByText("Save changes")[0];
+      const facilityName = screen.getByLabelText("Testing facility name", {
+        exact: false,
+      });
+      await userEvent.clear(facilityName);
+      await userEvent.type(facilityName, "La Croix Facility");
+      await userEvent.click(saveButton);
 
-      const facilityName = await screen.findByLabelText(
-        "Testing facility name",
-        {
-          exact: false,
-        }
-      );
-      userEvent.clear(facilityName);
-      userEvent.type(facilityName, "La Croix Facility");
-      const saveButton = (await screen.findAllByText("Save changes"))[0];
-      userEvent.click(saveButton);
-
-      // THEN
-      // Toast alert appears
-      expect(
-        await screen.findByText("Invalid ZIP code for this state", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
-
-      expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
-
+      await waitFor(() => expect(getIsValidZipForStateSpy).toBeCalledTimes(1));
       // Does not perform further address validation on invalid ZIP code for state
       expect(getBestSuggestionSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe("Device validation", () => {
-    it("warns about missing device selection", async () => {
-      render(
-        <MemoryRouter>
-          <FacilityForm
-            facility={validFacility}
-            deviceTypes={devices}
-            saveFacility={saveFacility}
-          />
-        </MemoryRouter>
-      );
-
-      // Delete devices
-      const deleteButtons = await screen.findAllByLabelText("Delete device");
-      expect(deleteButtons).toHaveLength(2);
-      userEvent.click(deleteButtons[0]);
-      userEvent.click(deleteButtons[0]);
-
-      expect(
-        await screen.findByText("There are currently no devices", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
-
-      // Attempt save
-      const saveButtons = await screen.findAllByText("Save changes");
-      userEvent.click(saveButtons[0]);
-      await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
-      const warning = await screen.findByText(
-        "There must be at least one device",
-        { exact: false }
-      );
-      expect(warning).toBeInTheDocument();
+      // Toast alert appears
+      expect(await screen.findByText(/Invalid ZIP code for this state/i));
+      getIsValidZipForStateSpy.mockRestore();
     });
   });
 });
+
+async function attemptSaveDevices() {
+  const saveButtons = await screen.findAllByText("Save changes");
+  await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
+  await userEvent.click(saveButtons[0]);
+}
+
+async function deleteAllDevices() {
+  const pillContainer = screen.getByTestId("pill-container");
+  const deleteButtons = within(pillContainer).getAllByRole("button");
+  deleteButtons.forEach((button) => fireEvent.click(button));
+}
 
 async function validateAddress(
   saveFacility: (facility: Facility) => void,
@@ -735,9 +826,9 @@ async function validateAddress(
 ) {
   await screen.findByText("Address validation");
   const radios = screen.getAllByLabelText(selection, { exact: false });
-  radios.forEach((r) => userEvent.click(r));
+  await Promise.all(radios.map(async (r) => await userEvent.click(r)));
   const button = screen.getAllByText("Save changes")[2];
   expect(button).toBeEnabled();
-  userEvent.click(button);
+  await userEvent.click(button);
   expect(saveFacility).toBeCalledTimes(1);
 }

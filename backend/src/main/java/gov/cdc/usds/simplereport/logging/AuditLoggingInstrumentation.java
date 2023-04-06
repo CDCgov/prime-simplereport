@@ -1,5 +1,9 @@
 package gov.cdc.usds.simplereport.logging;
 
+import static gov.cdc.usds.simplereport.logging.GraphQlInterceptor.HTTP_SERVLET_REQUEST_KEY;
+import static gov.cdc.usds.simplereport.logging.GraphQlInterceptor.SUBJECT_KEY;
+
+import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
@@ -8,29 +12,27 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.service.AuditService;
 import graphql.ExecutionResult;
+import graphql.GraphQLContext;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.InstrumentationState;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
-import graphql.kickstart.servlet.context.GraphQLServletContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.security.auth.Subject;
+import javax.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class AuditLoggingInstrumentation extends SimpleInstrumentation {
-
   private final AuditService _auditService;
-
-  public AuditLoggingInstrumentation(AuditService service) {
-    _auditService = service;
-  }
 
   @Override
   public InstrumentationState createState() {
@@ -46,14 +48,20 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
     log.trace("Instrumenting query executionId={} for audit", executionId);
     try {
-      GraphQLServletContext context = parameters.getContext();
+      GraphQLContext graphQLContext = parameters.getGraphQLContext();
+      Subject subject = graphQLContext.get(SUBJECT_KEY);
       GraphqlQueryState state = parameters.getInstrumentationState();
       state.setRequestId(executionId);
-      state.setHttpDetails(new HttpRequestDetails(context.getHttpServletRequest()));
+
+      HttpServletRequest httpServletRequest = graphQLContext.get(HTTP_SERVLET_REQUEST_KEY);
+      if (httpServletRequest != null) {
+        state.setHttpDetails(new HttpRequestDetails(httpServletRequest));
+      }
+
       state.setGraphqlDetails(
           new GraphQlInputs(
               parameters.getOperation(), parameters.getQuery(), parameters.getVariables()));
-      return new ExecutionResultContext(state, context.getSubject().orElseThrow());
+      return new ExecutionResultContext(state, subject);
     } catch (Exception e) {
       // we don't 100% trust this error not to get swallowed by graphql-java
       log.error("Extremely unexpected error creating instrumentation state for audit", e);
@@ -99,7 +107,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       } catch (Exception e) {
         // we don't 100% trust this error not to get swallowed by graphql-java
         log.error("Unexpected error saving audit event", e);
-        throw e;
+        throw new GenericGraphqlException();
       }
     }
   }

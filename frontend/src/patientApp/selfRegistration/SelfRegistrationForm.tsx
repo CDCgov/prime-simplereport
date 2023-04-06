@@ -12,6 +12,7 @@ import {
   IdentifyingData,
 } from "../../app/patients/Components/DuplicatePatientModal";
 import { PxpApi } from "../PxpApiService";
+import { useDocumentTitle } from "../../app/utils/hooks";
 
 type Props = {
   savePerson: (data: any) => void;
@@ -31,6 +32,8 @@ export const SelfRegistrationForm = ({
     Nullable<IdentifyingData>
   >({ firstName: null, lastName: null, birthDate: null });
   const [isDuplicate, setIsDuplicate] = useState<boolean>();
+
+  useDocumentTitle(t("selfRegistration.title"));
 
   const onBlur = ({
     firstName,

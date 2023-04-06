@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 import static graphql.Assert.assertNull;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,12 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
-import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -61,9 +60,26 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
+  void getOrganizationById_success() {
+    Organization createdOrg = _dataFactory.saveValidOrganization();
+    Organization foundOrg = _service.getOrganizationById(createdOrg.getInternalId());
+    assertNotNull(foundOrg);
+    assertEquals(createdOrg.getExternalId(), foundOrg.getExternalId());
+  }
+
+  @Test
+  void getOrganizationById_failure() {
+    UUID fakeUUID = UUID.randomUUID();
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class, () -> _service.getOrganizationById(fakeUUID));
+    assertEquals(
+        "An organization with internal_id=" + fakeUUID + " does not exist", caught.getMessage());
+  }
+
+  @Test
   void createOrganizationAndFacility_success() {
     // GIVEN
-    DeviceSpecimenType dst = getDeviceConfig();
     PersonName orderingProviderName = new PersonName("Bill", "Foo", "Nye", "");
 
     // WHEN
@@ -74,12 +90,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
-            testDataFactory.getAddress(),
+            getAddress(),
             "123-456-7890",
             "test@foo.com",
-            List.of(dst.getDeviceType().getInternalId()),
+            List.of(getDeviceConfig().getInternalId()),
             orderingProviderName,
-            testDataFactory.getAddress(),
+            getAddress(),
             "123-456-7890",
             "547329472");
     // THEN
@@ -102,45 +118,40 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertEquals(5, facLink.getLink().length());
   }
 
-  private DeviceSpecimenType getDeviceConfig() {
-    DeviceType device =
-        testDataFactory.createDeviceType("Abbott ID Now", "Abbott", "1", "12345-6", "E");
-    SpecimenType specimen = testDataFactory.getGenericSpecimen();
-    return testDataFactory.createDeviceSpecimen(device, specimen);
+  private DeviceType getDeviceConfig() {
+    return testDataFactory.createDeviceType("Abbott ID Now", "Abbott", "1");
   }
 
   @Test
   void createOrganizationAndFacility_orderingProviderRequired_failure() {
     // GIVEN
-    DeviceSpecimenType dst = getDeviceConfig();
     PersonName orderProviderName = new PersonName("Bill", "Foo", "Nye", "");
     // THEN
     assertThrows(
         OrderingProviderRequiredException.class,
-        () -> {
-          _service.createOrganizationAndFacility(
-              "Adam's org",
-              "urgent_care",
-              "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
-              "Facility 1",
-              "12345",
-              _dataFactory.getAddress(),
-              "123-456-7890",
-              "test@foo.com",
-              List.of(dst.getDeviceType().getInternalId()),
-              orderProviderName,
-              _dataFactory.getAddress(),
-              null,
-              null);
-        });
+        () ->
+            _service.createOrganizationAndFacility(
+                "Adam's org",
+                "urgent_care",
+                "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
+                "Facility 1",
+                "12345",
+                getAddress(),
+                "123-456-7890",
+                "test@foo.com",
+                List.of(getDeviceConfig().getInternalId()),
+                orderProviderName,
+                getAddress(),
+                null,
+                null));
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
   void getOrganizationsAndFacility_filterByIdentityVerified_success() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.createValidOrg();
-    Organization unverifiedOrg = testDataFactory.createUnverifiedOrg();
+    Organization verifiedOrg = testDataFactory.saveValidOrganization();
+    Organization unverifiedOrg = testDataFactory.saveUnverifiedOrganization();
 
     // WHEN
     List<Organization> allOrgs = _service.getOrganizations(null);
@@ -168,9 +179,39 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilitiesIncludeArchived_includeArchived_success() {
+    Organization org = testDataFactory.saveValidOrganization();
+    Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
+    testDataFactory.createValidFacility(org, "Not deleted");
+
+    Set<Facility> archivedFacilities = _service.getFacilitiesIncludeArchived(org, true);
+
+    assertEquals(1, archivedFacilities.size());
+    assertTrue(
+        archivedFacilities.stream()
+            .anyMatch(f -> f.getInternalId().equals(deletedFacility.getInternalId())));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilitiesIncludeArchived_excludeArchived_success() {
+    Organization org = testDataFactory.saveValidOrganization();
+    testDataFactory.createArchivedFacility(org, "Delete me");
+    Facility activeFacility = testDataFactory.createValidFacility(org, "Not deleted");
+
+    Set<Facility> facilities = _service.getFacilitiesIncludeArchived(org, false);
+
+    assertEquals(1, facilities.size());
+    assertTrue(
+        facilities.stream()
+            .anyMatch(f -> f.getInternalId().equals(activeFacility.getInternalId())));
+  }
+
+  @Test
   @WithSimpleReportOrgAdminUser
   void viewArchivedFacilities_success() {
-    Organization org = testDataFactory.createValidOrg();
+    Organization org = testDataFactory.saveValidOrganization();
     Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
 
     Set<Facility> archivedFacilities = _service.getArchivedFacilities(org);
@@ -183,8 +224,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportStandardUser
   void viewArchivedFacilities_standardUser_failure() {
-    Organization org = testDataFactory.createValidOrg();
-    Facility deletedFacility = testDataFactory.createArchivedFacility(org, "Delete me");
+    Organization org = testDataFactory.saveValidOrganization();
+    testDataFactory.createArchivedFacility(org, "Delete me");
 
     assertThrows(AccessDeniedException.class, () -> _service.getArchivedFacilities());
   }
@@ -194,7 +235,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void deleteFacilityTest_successful() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.createValidOrg();
+    Organization verifiedOrg = testDataFactory.saveValidOrganization();
     Facility mistakeFacility =
         testDataFactory.createValidFacility(verifiedOrg, "This facility is a mistake");
     // WHEN
@@ -221,7 +262,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void deleteOrganizationTest_successful() {
     // GIVEN
-    Organization verifiedOrg = testDataFactory.createValidOrg();
+    Organization verifiedOrg = testDataFactory.saveValidOrganization();
     // WHEN
     Organization deletedOrganization =
         _service.markOrganizationAsDeleted(verifiedOrg.getInternalId(), true);
@@ -252,7 +293,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void verifyOrganizationNoPermissions_noUser_success() {
-    Organization org = testDataFactory.createUnverifiedOrg();
+    Organization org = testDataFactory.saveUnverifiedOrganization();
     _service.verifyOrganizationNoPermissions(org.getExternalId());
 
     org = _service.getOrganization(org.getExternalId());
@@ -261,7 +302,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Test
   void verifyOrganizationNoPermissions_orgAlreadyVerified_failure() {
-    Organization org = testDataFactory.createValidOrg();
+    Organization org = testDataFactory.saveValidOrganization();
     String orgExternalId = org.getExternalId();
     IllegalStateException e =
         assertThrows(
@@ -275,7 +316,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @DisplayName("When updating a facility")
   class UpdateFacilityTest {
     private Facility facility;
-    private List<DeviceType> devices;
     private StreetAddress newFacilityAddress;
     private StreetAddress newOrderingProviderAddress;
 
@@ -289,7 +329,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
       facility =
           facilityRepository.findByOrganizationAndFacilityName(disOrg, "Injection Site").get();
       assertThat(facility).isNotNull();
-      devices = deviceTypeRepository.findAll();
+      List<DeviceType> devices = deviceTypeRepository.findAll();
 
       newFacilityAddress = new StreetAddress("0", "1", "2", "3", "4", "5");
       newOrderingProviderAddress = new StreetAddress("6", "7", "8", "9", "10", "11");

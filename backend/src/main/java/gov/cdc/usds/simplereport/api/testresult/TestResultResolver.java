@@ -4,29 +4,38 @@ import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.TestOrderService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import gov.cdc.usds.simplereport.service.TestResultUploadService;
+import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
+import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
+import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
-@Component
-public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutationResolver {
+@Controller
+@RequiredArgsConstructor
+public class TestResultResolver {
 
-  @Autowired private TestOrderService tos;
+  private final TestOrderService tos;
+  private final TestResultUploadService testResultUploadService;
 
-  public List<TestEvent> getTestResults(
-      UUID facilityId,
-      UUID patientId,
-      String result,
-      String role,
-      Date startDate,
-      Date endDate,
-      int pageNumber,
-      int pageSize) {
+  @QueryMapping
+  public Page<TestEvent> testResultsPage(
+      @Argument UUID facilityId,
+      @Argument UUID patientId,
+      @Argument String result,
+      @Argument String role,
+      @Argument Date startDate,
+      @Argument Date endDate,
+      @Argument int pageNumber,
+      @Argument int pageSize) {
     if (pageNumber < 0) {
       pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
     }
@@ -35,7 +44,7 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     }
 
     if (facilityId == null) {
-      return tos.getAllFacilityTestEventsResults(
+      return tos.getOrganizationTestEventsResults(
           patientId,
           Translators.parseTestResult(result),
           Translators.parsePersonRole(role, true),
@@ -44,7 +53,7 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
           pageNumber,
           pageSize);
     }
-    return tos.getTestEventsResults(
+    return tos.getFacilityTestEventsResults(
         facilityId,
         patientId,
         Translators.parseTestResult(result),
@@ -55,8 +64,14 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
         pageSize);
   }
 
+  @QueryMapping
   public int testResultsCount(
-      UUID facilityId, UUID patientId, String result, String role, Date startDate, Date endDate) {
+      @Argument UUID facilityId,
+      @Argument UUID patientId,
+      @Argument String result,
+      @Argument String role,
+      @Argument Date startDate,
+      @Argument Date endDate) {
     return tos.getTestResultsCount(
         facilityId,
         patientId,
@@ -66,25 +81,45 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
         endDate);
   }
 
-  public TestEvent correctTestMarkAsError(UUID id, String reasonForCorrection) {
-    return tos.markAsError(id, reasonForCorrection);
+  @MutationMapping
+  public TestEvent correctTestMarkAsError(@Argument UUID id, @Argument String reason) {
+    return tos.markAsError(id, reason);
   }
 
-  public TestEvent correctTestMarkAsCorrection(UUID id, String reasonForCorrection) {
-    return tos.markAsCorrection(id, reasonForCorrection);
+  @MutationMapping
+  public TestEvent correctTestMarkAsCorrection(@Argument UUID id, @Argument String reason) {
+    return tos.markAsCorrection(id, reason);
   }
 
-  public TestEvent getTestResult(UUID id) {
+  @QueryMapping
+  public TestEvent testResult(@Argument UUID id) {
     return tos.getTestResult(id);
   }
 
-  public OrganizationLevelDashboardMetrics getOrganizationLevelDashboardMetrics(
-      Date startDate, Date endDate) {
+  @QueryMapping
+  public OrganizationLevelDashboardMetrics organizationLevelDashboardMetrics(
+      @Argument Date startDate, @Argument Date endDate) {
     return tos.getOrganizationLevelDashboardMetrics(startDate, endDate);
   }
 
-  public TopLevelDashboardMetrics getTopLevelDashboardMetrics(
-      UUID facilityId, Date startDate, Date endDate) {
+  @QueryMapping
+  public TopLevelDashboardMetrics topLevelDashboardMetrics(
+      @Argument UUID facilityId, @Argument Date startDate, @Argument Date endDate) {
     return tos.getTopLevelDashboardMetrics(facilityId, startDate, endDate);
+  }
+
+  @QueryMapping
+  public UploadResponse uploadSubmission(@Argument UUID id)
+      throws InvalidBulkTestResultUploadException, InvalidRSAPrivateKeyException {
+    return testResultUploadService.getUploadSubmission(id);
+  }
+
+  @QueryMapping
+  public Page<TestResultUpload> uploadSubmissions(
+      @Argument Date startDate,
+      @Argument Date endDate,
+      @Argument int pageNumber,
+      @Argument int pageSize) {
+    return testResultUploadService.getUploadSubmissions(startDate, endDate, pageNumber, pageSize);
   }
 }

@@ -2,19 +2,20 @@ package gov.cdc.usds.simplereport.api.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.graphql.BaseGraphqlTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.MultiplexResultInput;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,6 @@ import org.springframework.test.context.TestPropertySource;
     })
 @WithSimpleReportStandardUser
 class TestEventExportIntegrationTest extends BaseGraphqlTest {
-  @Autowired protected TestDataFactory _dataFactory;
   @Autowired private TestEventService _testEventService;
   @Autowired private OrganizationService _orgService;
   @MockBean private CurrentTenantDataAccessContextHolder _tenantDataAccessContextHolder;
@@ -47,13 +47,18 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
     Person patient = _dataFactory.createFullPerson(organization);
     _dataFactory.createTestOrder(patient, facility);
     // create testEvent via the API to test the view layer hibernate session
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("deviceId", facility.getDefaultDeviceType().getInternalId().toString())
-            .put("patientId", patient.getInternalId().toString())
-            .put("result", TestResult.NEGATIVE.toString())
-            .put("dateTested", "2021-09-01T10:31:30.001Z");
+
+    Map<String, Object> variables =
+        Map.of(
+            "deviceId", facility.getDefaultDeviceType().getInternalId().toString(),
+            "specimenId", facility.getDefaultSpecimenType().getInternalId().toString(),
+            "patientId", patient.getInternalId().toString(),
+            "results",
+                List.of(
+                    new MultiplexResultInput(
+                        _diseaseService.covid().getName(), TestResult.NEGATIVE)),
+            "dateTested", "2021-09-01T10:31:30.001Z");
+
     submitTestResult(variables, Optional.empty());
     // getting the testEvent can be improve to use the same context as used by the uploader
     testEvent = _testEventService.getLastTestResultsForPatient(patient);
@@ -86,7 +91,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + ","
             + "\"Patient_role\":\"RESIDENT\","
             + "\"Patient_tribal_affiliation\":\"\","
-            + "\"Patient_preferred_language\":\"English\","
+            + "\"Patient_preferred_language\":\"eng\","
             + "\"Employed_in_healthcare\":\"N\","
             + "\"Resident_congregate_setting\":\"N\","
             + "\"Result_ID\":"
@@ -135,6 +140,10 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Ordered_test_code\":\"95209-3\","
             + "\"Specimen_source_site_code\":\"71836000\","
             + "\"Specimen_type_code\":\"445297001\","
+            + "\"Observation_result_status\":\"F\","
+            + "\"Order_result_status\":\"F\","
+            + "\"Test_Kit_Name_ID\":\"LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd.\","
+            + "\"Equipment_Model_ID\":\"LumiraDx Platform_LumiraDx\","
             + "\"Instrument_ID\":"
             + testEventExport.getInstrumentID()
             + ","
@@ -151,12 +160,13 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Site_of_care\":\"university\""
             + "}",
         objectMapper.writeValueAsString(testEventExport),
-        false);
+        true);
   }
 
   @Test
   void testCorrectedEventSerialization() throws Exception {
-    TestEvent correctedTestEvent = _dataFactory.createTestEventCorrected(testEvent);
+    TestEvent correctedTestEvent =
+        _dataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.CORRECTED);
     TestEventExport correctedTestEventExport = new TestEventExport(correctedTestEvent);
 
     String actualStr = objectMapper.writeValueAsString(correctedTestEventExport);
@@ -184,7 +194,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + ","
             + "\"Patient_role\":\"RESIDENT\","
             + "\"Patient_tribal_affiliation\":\"\","
-            + "\"Patient_preferred_language\":\"English\","
+            + "\"Patient_preferred_language\":\"eng\","
             + "\"Employed_in_healthcare\":\"N\","
             + "\"Resident_congregate_setting\":\"N\","
             + "\"Result_ID\":"
@@ -236,6 +246,9 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Ordered_test_code\":\"95209-3\","
             + "\"Specimen_source_site_code\":\"71836000\","
             + "\"Specimen_type_code\":\"445297001\","
+            + "\"Test_result_status\":\"C\","
+            + "\"Test_Kit_Name_ID\":\"LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd.\","
+            + "\"Equipment_Model_ID\":\"LumiraDx Platform_LumiraDx\","
             + "\"Instrument_ID\":"
             + correctedTestEventExport.getInstrumentID()
             + ","
@@ -252,12 +265,13 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Site_of_care\":\"university\""
             + "}",
         actualStr,
-        false);
+        true);
   }
 
   @Test
   void testRemovedEventSerialization() throws Exception {
-    TestEvent correctedTestEvent = _dataFactory.createTestEventRemoval(testEvent);
+    TestEvent correctedTestEvent =
+        _dataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.REMOVED);
     TestEventExport correctedTestEventExport = new TestEventExport(correctedTestEvent);
 
     String actualStr = objectMapper.writeValueAsString(correctedTestEventExport);
@@ -285,7 +299,7 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + ","
             + "\"Patient_role\":\"RESIDENT\","
             + "\"Patient_tribal_affiliation\":\"\","
-            + "\"Patient_preferred_language\":\"English\","
+            + "\"Patient_preferred_language\":\"eng\","
             + "\"Employed_in_healthcare\":\"N\","
             + "\"Resident_congregate_setting\":\"N\","
             + "\"Result_ID\":"
@@ -337,6 +351,9 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Ordered_test_code\":\"95209-3\","
             + "\"Specimen_source_site_code\":\"71836000\","
             + "\"Specimen_type_code\":\"445297001\","
+            + "\"Test_result_status\":\"W\","
+            + "\"Test_Kit_Name_ID\":\"LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd.\","
+            + "\"Equipment_Model_ID\":\"LumiraDx Platform_LumiraDx\","
             + "\"Instrument_ID\":"
             + correctedTestEventExport.getInstrumentID()
             + ","
@@ -353,10 +370,10 @@ class TestEventExportIntegrationTest extends BaseGraphqlTest {
             + "\"Site_of_care\":\"university\""
             + "}",
         actualStr,
-        false);
+        true);
   }
 
-  private JsonNode submitTestResult(ObjectNode variables, Optional<String> expectedError) {
-    return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
+  private JsonNode submitTestResult(Map<String, Object> variables, Optional<String> expectedError) {
+    return runQuery("submit-queue-item", variables, expectedError.orElse(null));
   }
 }

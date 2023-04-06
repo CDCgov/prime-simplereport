@@ -1,6 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { UIDConsumer } from "react-uid";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 import Required from "../commonComponents/Required";
 
@@ -27,6 +28,7 @@ interface Props {
   validationStatus?: "error" | "success";
   selectClassName?: string;
   hintText?: string;
+  registrationProps?: UseFormRegisterReturn<any>;
 }
 
 type SelectProps = JSX.IntrinsicElements["select"];
@@ -46,6 +48,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   errorMessage,
   selectClassName,
   hintText,
+  registrationProps,
   ...inputProps
 }) => {
   return (
@@ -74,7 +77,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             </label>
           )}
           {validationStatus === "error" && (
-            <div className="usa-error-message" role="alert">
+            <div className="usa-error-message" id={`error_${id}`} role="alert">
               <span className="usa-sr-only">Error: </span>
               {errorMessage}
             </div>
@@ -82,8 +85,8 @@ const Dropdown: React.FC<Props & SelectProps> = ({
           {hintText && <span className="usa-hint">{hintText}</span>}
           <select
             className={classnames(
-              "usa-select",
               selectClassName,
+              "usa-select",
               validationStatus === "error" && "usa-input--error"
             )}
             name={name}
@@ -93,10 +96,19 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             value={selectedValue || defaultOption || ""}
             disabled={disabled}
             {...inputProps}
+            {...(validationStatus === "error"
+              ? { "aria-describedby": `error_${id}`, "aria-invalid": true }
+              : null)}
+            {...registrationProps}
           >
             {defaultSelect && <option value="">{defaultOption}</option>}
             {options.map(({ value, label, disabled }) => (
-              <option key={value} value={value} disabled={disabled}>
+              <option
+                key={value}
+                value={value}
+                disabled={disabled}
+                aria-selected={selectedValue === value}
+              >
                 {label}
               </option>
             ))}

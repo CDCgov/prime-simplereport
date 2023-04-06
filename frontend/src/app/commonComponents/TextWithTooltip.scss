@@ -1,4 +1,14 @@
 .usa-text-with-tooltip {
+  .usa-button--unstyled {
+    text-decoration: none;
+    color: #1b1b1b;
+
+    &:hover {
+      text-decoration: none;
+      color: #1b1b1b;
+    }
+  }
+
   .usa-tooltip__body {
     white-space: pre-wrap;
     min-width: 300px;
@@ -10,6 +20,7 @@
   }
 
   svg {
+    color: #005ea2;
     display: inline-block !important;
     overflow: visible !important;
     vertical-align: -0.125em !important;

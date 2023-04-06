@@ -17,7 +17,7 @@ import FacilityFormContainer, {
   UPDATE_FACILITY_MUTATION,
 } from "./FacilityFormContainer";
 
-export const deviceTypes: DeviceType[] = [
+export const deviceTypes: FacilityFormDeviceType[] = [
   {
     internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
     name: "Fake Device 1",
@@ -75,9 +75,6 @@ const getFacilityRequest: any = {
             zipCode: "90000",
             phone: "(516) 432-1390",
             email: "testingsite@disorg.com",
-            defaultDeviceSpecimen: {
-              internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
-            },
             deviceTypes,
             orderingProvider: {
               firstName: "Fred",
@@ -204,15 +201,15 @@ describe("FacilityFormContainer", () => {
     (getAppInsights as jest.Mock).mockReset();
   });
 
-  it("redirects on successful facilty update", async () => {
+  it("redirects on successful facility update", async () => {
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-    userEvent.click(screen.getByRole("button"));
+    await userEvent.click(screen.getByRole("button"));
     expect(await screen.findByText("Redirected")).toBeInTheDocument();
   });
 
   it("tracks custom telemetry event on successful facility update", async () => {
     await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-    userEvent.click(screen.getByRole("button"));
+    await userEvent.click(screen.getByRole("button"));
     expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
   });
 });

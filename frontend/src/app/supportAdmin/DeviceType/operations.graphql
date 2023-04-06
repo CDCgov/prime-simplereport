@@ -2,18 +2,18 @@ mutation createDeviceType(
   $name: String!
   $manufacturer: String!
   $model: String!
-  $loincCode: String!
   $swabTypes: [ID!]!
-  $supportedDiseases: [ID!]!
+  $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
+  $testLength: Int!
 ) {
   createDeviceType(
     input: {
       name: $name
       manufacturer: $manufacturer
       model: $model
-      loincCode: $loincCode
       swabTypes: $swabTypes
-      supportedDiseases: $supportedDiseases
+      supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
+      testLength: $testLength
     }
   ) {
     internalId
@@ -25,9 +25,9 @@ mutation updateDeviceType(
   $name: String!
   $manufacturer: String!
   $model: String!
-  $loincCode: String!
   $swabTypes: [ID!]!
-  $supportedDiseases: [ID!]!
+  $supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
+  $testLength: Int!
 ) {
   updateDeviceType(
     input: {
@@ -35,12 +35,37 @@ mutation updateDeviceType(
       name: $name
       manufacturer: $manufacturer
       model: $model
-      loincCode: $loincCode
       swabTypes: $swabTypes
-      supportedDiseases: $supportedDiseases
+      supportedDiseaseTestPerformed: $supportedDiseaseTestPerformed
+      testLength: $testLength
     }
   ) {
     internalId
+  }
+}
+
+query getDeviceTypeList{
+  deviceTypes {
+    internalId,
+    name,
+    manufacturer,
+    model,
+    testLength,
+    swabTypes {
+      internalId,
+      name
+    }
+    supportedDiseaseTestPerformed {
+      supportedDisease {
+        internalId
+        name
+      }
+      testPerformedLoincCode
+      testkitNameId
+      equipmentUid
+      testOrderedLoincCode
+    }
+    testLength
   }
 }
 
@@ -49,24 +74,6 @@ query getSpecimenTypes{
     internalId,
     name,
     typeCode
-  }
-}
-
-query getDeviceTypeList{
-  deviceTypes {
-    internalId,
-    name,
-    loincCode,
-    manufacturer,
-    model,
-    swabTypes {
-      internalId,
-      name
-    }
-    supportedDiseases {
-      internalId,
-      name
-    }
   }
 }
 

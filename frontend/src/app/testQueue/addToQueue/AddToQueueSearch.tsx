@@ -7,18 +7,18 @@ import React, {
 } from "react";
 import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
 
-import Alert from "../../commonComponents/Alert";
 import {
   QUEUE_NOTIFICATION_TYPES,
   ALERT_CONTENT,
   MIN_SEARCH_CHARACTER_COUNT,
   SEARCH_DEBOUNCE_TIME,
 } from "../constants";
-import { showNotification } from "../../utils";
+import { showAlertNotification } from "../../utils/srToast";
 import { useOutsideClick } from "../../utils/hooks";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getAppInsights } from "../../TelemetryService";
+import { PATIENT_TERM } from "../../../config/constants";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
@@ -43,6 +43,7 @@ export const QUERY_SINGLE_PATIENT = gql`
         type
         number
       }
+      emails
       testResultDelivery
     }
   }
@@ -52,13 +53,14 @@ export const QUERY_PATIENT = gql`
   query GetPatientsByFacilityForQueue(
     $facilityId: ID
     $namePrefixMatch: String
+    $includeArchived: Boolean = false
     $includeArchivedFacilities: Boolean
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
       pageSize: 100
-      showDeleted: false
+      includeArchived: $includeArchived
       namePrefixMatch: $namePrefixMatch
       includeArchivedFacilities: $includeArchivedFacilities
     ) {
@@ -148,10 +150,13 @@ const AddToQueueSearchBox = ({
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
-  const [queryPatients, { data, error }] = useLazyQuery(QUERY_PATIENT, {
-    fetchPolicy: "no-cache",
-    variables: { facilityId, namePrefixMatch: queryString },
-  });
+  const [queryPatients, { data, error, loading }] = useLazyQuery(
+    QUERY_PATIENT,
+    {
+      fetchPolicy: "no-cache",
+      variables: { facilityId, namePrefixMatch: queryString },
+    }
+  );
 
   const [mutationError, updateMutationError] = useState(null);
   const [showSuggestion, setShowSuggestion] = useState(true);
@@ -161,10 +166,10 @@ const AddToQueueSearchBox = ({
   const [updateAoe] = useMutation(UPDATE_AOE);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
-  const showDropdown = useMemo(() => allowQuery && showSuggestion, [
-    allowQuery,
-    showSuggestion,
-  ]);
+  const showDropdown = useMemo(
+    () => allowQuery && showSuggestion,
+    [allowQuery, showSuggestion]
+  );
 
   const dropDownRef = useRef(null);
   const hideOnOutsideClick = useCallback(() => {
@@ -242,8 +247,7 @@ const AddToQueueSearchBox = ({
             patient
           ),
         };
-        const alert = <Alert type={type} title={title} body={body} />;
-        showNotification(alert);
+        showAlertNotification(type, title, body);
         refetchQueue();
         setStartTestPatientId(null);
         if (createOrUpdate === "create") {
@@ -262,6 +266,7 @@ const AddToQueueSearchBox = ({
         onInputChange={onInputChange}
         queryString={debounced}
         disabled={!allowQuery}
+        placeholder={`Search for a ${PATIENT_TERM} to start their test`}
       />
       <SearchResults
         page="queue"
@@ -270,7 +275,7 @@ const AddToQueueSearchBox = ({
         onAddToQueue={onAddToQueue}
         patientsInQueue={patientsInQueue}
         shouldShowSuggestions={showDropdown}
-        loading={debounced !== queryString}
+        loading={debounced !== queryString || loading}
         dropDownRef={dropDownRef}
       />
     </React.Fragment>

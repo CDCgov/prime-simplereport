@@ -10,15 +10,15 @@ import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoAuthorization;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
@@ -27,35 +27,37 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class OrganizationInitializingService {
-
-  @Autowired private InitialSetupProperties _props;
-  @Autowired private OrganizationRepository _orgRepo;
-  @Autowired private ProviderRepository _providerRepo;
-  @Autowired private DeviceTypeRepository _deviceTypeRepo;
-  @Autowired private SpecimenTypeRepository _specimenTypeRepo;
-  @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
-  @Autowired private FacilityRepository _facilityRepo;
-  @Autowired private ApiUserRepository _apiUserRepo;
-  @Autowired private OktaRepository _oktaRepo;
-  @Autowired private ApiUserService _userService;
-  @Autowired private DemoUserConfiguration _demoUserConfiguration;
-  @Autowired private PatientRegistrationLinkRepository _prlRepository;
+  private static final int STANDARD_TEST_LENGTH = 15;
+  private final InitialSetupProperties _props;
+  private final OrganizationRepository _orgRepo;
+  private final ProviderRepository _providerRepo;
+  private final DeviceTypeRepository _deviceTypeRepo;
+  private final SpecimenTypeRepository _specimenTypeRepo;
+  private final DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
+  private final FacilityRepository _facilityRepo;
+  private final ApiUserRepository _apiUserRepo;
+  private final OktaRepository _oktaRepo;
+  private final ApiUserService _userService;
+  private final DemoUserConfiguration _demoUserConfiguration;
+  private final PatientRegistrationLinkRepository _prlRepository;
+  private final DiseaseService diseaseService;
 
   public void initAll() {
 
@@ -66,13 +68,18 @@ public class OrganizationInitializingService {
     log.debug("Organization init called (again?)");
     Provider savedProvider = _providerRepo.save(_props.getProvider());
 
-    Map<String, DeviceSpecimenType> dsByDeviceName = initDevices();
-
-    List<DeviceSpecimenType> configuredDs =
-        _props.getConfiguredDeviceTypeNames().stream()
-            .map(dsByDeviceName::get)
+    List<DeviceType> deviceTypes = initDevices();
+    List<DeviceType> facilityDeviceTypes =
+        deviceTypes.stream()
+            .filter(d -> _props.getConfiguredDeviceTypes().contains(d.getName()))
             .collect(Collectors.toList());
-    DeviceSpecimenType defaultDeviceSpecimen = configuredDs.get(0);
+
+    DeviceType defaultDeviceType =
+        deviceTypes.stream()
+            .filter(deviceType -> "LumiraDX".equals(deviceType.getName()))
+            .findFirst()
+            .orElse(deviceTypes.get(0));
+    SpecimenType defaultSpecimenType = defaultDeviceType.getSwabTypes().get(0);
 
     List<Organization> emptyOrgs = _props.getOrganizations();
     Map<String, Organization> orgsByExternalId =
@@ -107,15 +114,14 @@ public class OrganizationInitializingService {
                         : f.makeRealFacility(
                             orgsByExternalId.get(f.getOrganizationExternalId()),
                             savedProvider,
-                            defaultDeviceSpecimen,
-                            configuredDs.stream()
-                                .map(DeviceSpecimenType::getDeviceType)
-                                .collect(Collectors.toList())))
+                            defaultDeviceType,
+                            defaultSpecimenType,
+                            facilityDeviceTypes))
             .collect(Collectors.toList());
     log.info(
         "Creating facilities {} with {} devices configured",
         facilitiesByName.keySet(),
-        configuredDs.size());
+        deviceTypes.size());
     // All existing facilities in the DB which aren't reflected in config properties should
     // still be reflected in demo Okta environment
     _facilityRepo.findAll().stream()
@@ -218,9 +224,8 @@ public class OrganizationInitializingService {
     _userService.getCurrentApiUserInContainedTransaction();
   }
 
-  public Map<String, DeviceSpecimenType> initDevices() {
-    Map<String, DeviceType> deviceTypesByName =
-        _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(d -> d.getName(), d -> d));
+  public List<DeviceType> initDevices() {
+
     Map<String, SpecimenType> specimenTypesByCode =
         _specimenTypeRepo.findAll().stream()
             .collect(Collectors.toMap(SpecimenType::getTypeCode, s -> s));
@@ -233,30 +238,74 @@ public class OrganizationInitializingService {
       }
     }
 
-    Map<String, DeviceSpecimenType> dsByDeviceName = new HashMap<>();
-    for (DeviceType d : _props.getDeviceTypes()) {
-      DeviceType deviceType = deviceTypesByName.get(d.getName());
-      if (null == deviceType) {
+    Map<String, DeviceType> deviceTypesByName =
+        _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(DeviceType::getName, d -> d));
+    for (DeviceType d : getDeviceTypes(specimenTypesByCode)) {
+      if (!deviceTypesByName.containsKey(d.getName())) {
         log.info("Creating device type {}", d.getName());
-        deviceType = _deviceTypeRepo.save(d);
+        DeviceType deviceType = _deviceTypeRepo.save(d);
         deviceTypesByName.put(deviceType.getName(), deviceType);
       }
-      SpecimenType defaultTypeForDevice = specimenTypesByCode.get(deviceType.getSwabType());
-      if (defaultTypeForDevice == null) {
-        throw new RuntimeException(
-            "specimen type " + deviceType.getSwabType() + " was not initialized");
-      }
-      Optional<DeviceSpecimenType> deviceSpecimen =
-          _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
-      if (deviceSpecimen.isEmpty()) {
-        dsByDeviceName.put(
-            deviceType.getName(),
-            _deviceSpecimenRepo.save(new DeviceSpecimenType(deviceType, defaultTypeForDevice)));
-      } else {
-        dsByDeviceName.put(deviceType.getName(), deviceSpecimen.get());
+    }
+
+    Map<String, DeviceTypeDisease> deviceExtraInfoByLoincTestkitEquipmentId =
+        deviceTypeDiseaseRepository.findAll().stream()
+            .collect(Collectors.toMap(d -> deviceExtraInfoKey(d), d -> d));
+    for (DeviceTypeDisease d : getDeviceTypeDiseaseCode(deviceTypesByName)) {
+      if (!deviceExtraInfoByLoincTestkitEquipmentId.containsKey(deviceExtraInfoKey(d))) {
+        log.info("Creating device test performed loinc code {}", d.getTestPerformedLoincCode());
+        DeviceTypeDisease deviceTypeDisease = deviceTypeDiseaseRepository.save(d);
+        deviceExtraInfoByLoincTestkitEquipmentId.put(
+            deviceTypeDisease.getTestPerformedLoincCode(), deviceTypeDisease);
       }
     }
-    return dsByDeviceName;
+
+    return new ArrayList<>(deviceTypesByName.values());
+  }
+
+  private static String deviceExtraInfoKey(DeviceTypeDisease d) {
+    return d.getTestPerformedLoincCode() + d.getTestkitNameId() + d.getEquipmentUid();
+  }
+
+  private List<DeviceType> getDeviceTypes(Map<String, SpecimenType> specimenTypesByCode) {
+    return _props.getDeviceTypes().stream()
+        .map(
+            d ->
+                DeviceType.builder()
+                    .name(d.getName())
+                    .model(d.getModel())
+                    .manufacturer(d.getManufacturer())
+                    .swabTypes(
+                        d.getSpecimenTypes().stream()
+                            .map(specimenTypesByCode::get)
+                            .collect(Collectors.toList()))
+                    .testLength(Optional.ofNullable(d.getTestLength()).orElse(STANDARD_TEST_LENGTH))
+                    .build())
+        .collect(Collectors.toList());
+  }
+
+  private List<DeviceTypeDisease> getDeviceTypeDiseaseCode(
+      Map<String, DeviceType> deviceTypesByName) {
+    List<List<DeviceTypeDisease>> collect =
+        _props.getDeviceTypes().stream()
+            .map(
+                device ->
+                    device.getTestPerformedLoincs().stream()
+                        .map(
+                            c ->
+                                DeviceTypeDisease.builder()
+                                    .deviceTypeId(
+                                        deviceTypesByName.get(device.getName()).getInternalId())
+                                    .equipmentUid(c.getEquipmentUid())
+                                    .testkitNameId(c.getTestkitNameId())
+                                    .testPerformedLoincCode(c.getTestPerformedLoincCode())
+                                    .supportedDisease(
+                                        diseaseService.getDiseaseByName(c.getSupportedDisease()))
+                                    .testOrderedLoincCode(c.getTestOrderedLoincCode())
+                                    .build())
+                        .collect(Collectors.toList()))
+            .collect(Collectors.toList());
+    return collect.stream().flatMap(List::stream).collect(Collectors.toList());
   }
 
   private void initOktaOrg(Organization org) {
@@ -273,7 +322,7 @@ public class OrganizationInitializingService {
       log.info("Creating facility={} in Okta", facility.getFacilityName());
       _oktaRepo.createFacility(facility);
     } catch (ResourceException e) {
-      log.info("Facility={} already exists in Okta", facility.getFacilityName());
+      log.info("Facility {} already exists in Okta", facility.getFacilityName());
     }
   }
 

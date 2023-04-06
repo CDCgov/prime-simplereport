@@ -20,12 +20,12 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       LoggerFactory.getLogger(PatientExperienceLoggingInterceptor.class);
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-      throws Exception {
+  public boolean preHandle(
+      HttpServletRequest request, HttpServletResponse response, Object handler) {
     log.trace(
         "Pre-handling a method={} request for uri={} using handler={}",
         request.getMethod(),
-        request.getRequestURI(),
+        sanitizeRequestURI(request.getRequestURI()),
         handler);
     String requestId = UUID.randomUUID().toString();
     MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, requestId);
@@ -51,5 +51,9 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       throws Exception {
     log.trace("Final logging cleanup step.");
     MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
+  }
+
+  private String sanitizeRequestURI(String requestURI) {
+    return requestURI.matches("\\w*") ? requestURI : "request contained invalid characters";
   }
 }

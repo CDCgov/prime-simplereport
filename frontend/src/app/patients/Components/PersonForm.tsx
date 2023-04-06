@@ -16,7 +16,7 @@ import {
 } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-import { showError } from "../../utils";
+import { showError } from "../../utils/srToast";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
   PersonErrors,
@@ -72,6 +72,7 @@ interface Props {
     formChanged: boolean
   ) => React.ReactNode;
   view?: PersonFormView;
+  headerClassName?: string;
 }
 
 const PersonForm = (props: Props) => {
@@ -162,31 +163,31 @@ const PersonForm = (props: Props) => {
     });
   }, [errors, schema, patient, getValidationError]);
 
-  const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
-    value: PersonFormData[K]
-  ) => {
-    if (value === patient[field]) {
-      return;
-    }
-    // If a patient has an international address, use special values for state and zip code
-    if (field === "country") {
-      setFormChanged(true);
-
-      if (value !== "USA") {
-        setPatient({
-          ...patient,
-          [field]: value,
-          state: "NA",
-          zipCode: "00000",
-        });
-      } else {
-        setPatient({ ...patient, [field]: value, state: "", zipCode: "" });
+  const onPersonChange =
+    <K extends keyof PersonFormData>(field: K) =>
+    (value: PersonFormData[K]) => {
+      if (value === patient[field]) {
+        return;
       }
-      return;
-    }
-    setFormChanged(true);
-    setPatient({ ...patient, [field]: value });
-  };
+      // If a patient has an international address, use special values for state and zip code
+      if (field === "country") {
+        setFormChanged(true);
+
+        if (value !== "USA") {
+          setPatient({
+            ...patient,
+            [field]: value,
+            state: "NA",
+            zipCode: "00000",
+          });
+        } else {
+          setPatient({ ...patient, [field]: value, state: "", zipCode: "" });
+        }
+        return;
+      }
+      setFormChanged(true);
+      setPatient({ ...patient, [field]: value });
+    };
 
   /**
    * This function checks the current validation status of an input
@@ -202,14 +203,14 @@ const PersonForm = (props: Props) => {
     return {
       street: p.street || "",
       streetTwo: p.streetTwo,
-      city: p.city,
+      city: p.city || "",
       state: p.state || "",
       zipCode: p.zipCode || "",
       county: p.county || "",
     };
   };
 
-  const validatePatientAddress = async () => {
+  const validatePatientAddress = async (shouldStartTest = false) => {
     const originalAddress = getAddress(patient);
 
     const zipCodeData = await getZipCodeData(originalAddress.zipCode);
@@ -228,11 +229,19 @@ const PersonForm = (props: Props) => {
 
     const suggestedAddress = await getBestSuggestion(originalAddress);
     if (suggestionIsCloseEnough(originalAddress, suggestedAddress)) {
-      onSave(suggestedAddress, startTest);
+      onSave(suggestedAddress, shouldStartTest);
     } else {
       setAddressSuggestion(suggestedAddress);
       setAddressModalOpen(true);
     }
+  };
+  const getSchemaNameOrder = () => {
+    const schemaInfo = schema.describe();
+    const schemaOrder: { [key: string]: number } = {};
+    Object.keys(schemaInfo.fields).forEach((schemaName, idx) => {
+      schemaOrder[schemaName] = idx;
+    });
+    return schemaOrder;
   };
 
   const validateForm = async (shouldStartTest: boolean = false) => {
@@ -258,21 +267,54 @@ const PersonForm = (props: Props) => {
         {} as PersonErrors
       );
       setErrors(newErrors);
-      let focusedOnError = false;
-
-      Object.entries(newErrors).forEach(([name, error]) => {
+      const schemaOrder = getSchemaNameOrder();
+      Object.values(newErrors).forEach((error) => {
         if (!error) {
           return;
-        }
-        if (!focusedOnError) {
-          document.getElementsByName(name)[0]?.focus();
-          focusedOnError = true;
         }
         showError(t("patient.form.errors.validationMsg"), error);
       });
 
+      let earliestErrorIndex = Number.POSITIVE_INFINITY;
+      let earliestErrorName = "";
+      Object.keys(newErrors).forEach((name) => {
+        const errorOrder = schemaOrder[name];
+        if (earliestErrorIndex > errorOrder) {
+          earliestErrorIndex = errorOrder;
+          earliestErrorName = name;
+        }
+      });
+
+      // phone/email fields might have multiple entries, so handle those elements
+      // via their field ID's
+      if (
+        earliestErrorName === "phoneNumbers" ||
+        earliestErrorName === "emails"
+      ) {
+        const elementClassPrefix =
+          earliestErrorName === "phoneNumbers" ? "phoneNumber" : "email";
+        const elementsToCheck = Array.from(
+          document.getElementsByClassName(`${elementClassPrefix}FormElement`)
+        ) as HTMLElement[];
+        for (let i = 0; i < elementsToCheck.length; i++) {
+          const errorContent = elementsToCheck[i].textContent;
+          if (errorContent && errorContent.match("Error")) {
+            // the parent div element isn't in the tabindex and
+            // therefore isn't focusable, so grab the closest input child element
+            document
+              .getElementById(elementsToCheck[i].id)
+              ?.getElementsByTagName("input")[0]
+              .focus();
+            break;
+          }
+        }
+      } else {
+        document.getElementsByName(earliestErrorName)[0]?.focus();
+      }
+
       return;
     }
+
     if (
       JSON.stringify(getAddress(patient)) ===
         JSON.stringify(getAddress(props.patient)) ||
@@ -280,7 +322,7 @@ const PersonForm = (props: Props) => {
     ) {
       onSave(undefined, shouldStartTest);
     } else {
-      validatePatientAddress();
+      validatePatientAddress(shouldStartTest);
     }
   };
 
@@ -289,6 +331,10 @@ const PersonForm = (props: Props) => {
     shouldStartTest: boolean = false
   ) => {
     const person = address ? { ...patient, ...address } : patient;
+    // in the case where we have an empty additional phone number, filter it out
+    person.phoneNumbers = person.phoneNumbers
+      ? person.phoneNumbers.filter((pn) => pn.number && pn.type)
+      : person.phoneNumbers;
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
@@ -310,12 +356,11 @@ const PersonForm = (props: Props) => {
     ROLE_VALUES,
     TEST_RESULT_DELIVERY_PREFERENCE_VALUES_EMAIL,
   } = useTranslatedConstants();
-
   return (
     <>
       <Prompt when={formChanged} message={t("patient.form.errors.unsaved")} />
       {view === PersonFormView.APP && props.getHeader && (
-        <div className="patient__header">
+        <div className={`patient__header ${props.headerClassName || ""}`}>
           {props.getHeader(patient, validateForm, formChanged)}
         </div>
       )}
@@ -377,7 +422,7 @@ const PersonForm = (props: Props) => {
               {t("patient.form.general.preferredLanguage")}
             </label>
             <ComboBox
-              id="preferred-language-wrapper"
+              id="preferred-language"
               defaultValue={patient.preferredLanguage || undefined}
               inputProps={{ id: "preferred-language" }}
               name="preferredLanguage"
@@ -487,6 +532,7 @@ const PersonForm = (props: Props) => {
             {...commonInputProps}
             field="city"
             label={t("patient.form.contact.city")}
+            required
           />
           {view !== PersonFormView.SELF_REGISTRATION && (
             <Input
@@ -568,8 +614,9 @@ const PersonForm = (props: Props) => {
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
-          required={true}
+          required
           validationStatus={validationStatus("race")}
+          errorMessage={errors.race}
         />
         <div className="usa-form-group">
           <label className="usa-legend" htmlFor="tribal-affiliation">
@@ -591,8 +638,9 @@ const PersonForm = (props: Props) => {
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
-          required={true}
+          required
           validationStatus={validationStatus("ethnicity")}
+          errorMessage={errors.ethnicity}
         />
         <RadioGroup
           legend={t("patient.form.demographics.gender")}
@@ -603,12 +651,13 @@ const PersonForm = (props: Props) => {
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
           onChange={onPersonChange("gender")}
+          errorMessage={errors.gender}
         />
       </FormGroup>
-      <FormGroup title={t("patient.form.other.heading")}>
+      <FormGroup title={t("patient.form.housingAndWork.heading")}>
         <YesNoNotSureRadioGroup
-          legend={t("patient.form.other.congregateLiving.heading")}
-          hintText={t("patient.form.other.congregateLiving.helpText")}
+          legend={t("patient.form.housingAndWork.congregateLiving.heading")}
+          hintText={t("patient.form.housingAndWork.congregateLiving.helpText")}
           name="residentCongregateSetting"
           value={boolToYesNoNotSure(patient.residentCongregateSetting)}
           onChange={(v) =>
@@ -621,7 +670,7 @@ const PersonForm = (props: Props) => {
           errorMessage={errors.residentCongregateSetting}
         />
         <YesNoNotSureRadioGroup
-          legend={t("patient.form.other.healthcareWorker")}
+          legend={t("patient.form.housingAndWork.healthcareWorker")}
           name="employedInHealthcare"
           value={boolToYesNoNotSure(patient.employedInHealthcare)}
           onChange={(v) =>

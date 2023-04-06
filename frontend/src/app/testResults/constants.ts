@@ -1,0 +1,12 @@
+export enum MULTIPLEX_DISEASES {
+  COVID_19 = "COVID-19",
+  FLU_A = "Flu A",
+  FLU_B = "Flu B",
+}
+
+export enum TEST_RESULTS {
+  POSITIVE = "POSITIVE",
+  NEGATIVE = "NEGATIVE",
+  UNDETERMINED = "UNDETERMINED",
+  UNKNOWN = "UNKNOWN",
+}

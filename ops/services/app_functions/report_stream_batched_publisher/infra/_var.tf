@@ -1,6 +1,6 @@
 variable "prefix" {
   type    = string
-  default = "reportstream-batched-publisher"
+  default = "rs-batch-publisher"
 }
 
 variable "location" {
@@ -35,9 +35,24 @@ variable "test_event_queue_name" {
   default = "test-event-publishing"
 }
 
+variable "publishing_error_queue_name" {
+  type    = string
+  default = "test-event-publishing-error"
+}
+
 variable "reporting_exception_queue_name" {
   type    = string
   default = "test-event-publishing-exceptions"
+}
+
+variable "fhir_test_event_queue_name" {
+  type    = string
+  default = "fhir-data-publishing"
+}
+
+variable "fhir_publishing_error_queue_name" {
+  type    = string
+  default = "fhir-data-publishing-error"
 }
 
 variable "report_stream_batch_minimum" {
@@ -49,3 +64,5 @@ variable "report_stream_batch_maximum" {
   type    = string
   default = "300"
 }
+
+variable "lb_subnet_id" {}

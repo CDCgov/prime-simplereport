@@ -27,7 +27,27 @@ variable "fqdns" {
   default = []
 }
 
+variable "metabase_fqdns" {
+  type    = list(string)
+  default = []
+}
+
+variable "staging_fqdns" {
+  type    = list(string)
+  default = []
+}
+
 variable "ip_addresses" {
+  type    = list(string)
+  default = []
+}
+
+variable "metabase_ip_addresses" {
+  type    = list(string)
+  default = []
+}
+
+variable "staging_ip_addresses" {
   type    = list(string)
   default = []
 }
@@ -43,4 +63,9 @@ variable "firewall_policy_id" {
   description = "Identifier corresponding to existing WAF policy to be associated with this application gateway."
   type        = string
   default     = null
+}
+
+variable "zones" {
+  type    = list(string)
+  default = ["1", "2", "3"]
 }

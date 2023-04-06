@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showSuccess } from "../../utils/srToast";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import {
   useGetOrganizationsQuery,
   useSetCurrentUserTenantDataAccessOpMutation,
 } from "../../../generated/graphql";
 import { getAppInsights } from "../../TelemetryService";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
 const TenantDataAccessFormContainer = () => {
+  useDocumentTitle("Organization data access");
+
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
     fetchPolicy: "no-cache",
@@ -45,14 +47,10 @@ const TenantDataAccessFormContainer = () => {
         justification: justification,
       },
     }).then(() => {
-      const alert = (
-        <Alert
-          type="success"
-          title="Tenant Data Access Updated"
-          body="You now have access to tenant data for the requested organization."
-        />
+      showSuccess(
+        "You now have access to tenant data for the requested organization.",
+        "Tenant Data Access Updated"
       );
-      showNotification(alert);
       setSubmitted(true);
     });
   };

@@ -8,17 +8,18 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.springframework.stereotype.Component;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.stereotype.Controller;
 
 /** Resolver for {@link Organization} related queries */
-@Component
-public class OrganizationResolver implements GraphQLQueryResolver {
+@Controller
+public class OrganizationResolver {
 
   private OrganizationService _organizationService;
   private OrganizationQueueService _organizationQueueService;
@@ -28,7 +29,8 @@ public class OrganizationResolver implements GraphQLQueryResolver {
     _organizationQueueService = oqs;
   }
 
-  public Optional<ApiOrganization> getOrganization() {
+  @QueryMapping
+  public Optional<ApiOrganization> organization() {
     Optional<OrganizationRoles> roles = _organizationService.getCurrentOrganizationRoles();
     return roles.map(
         r -> {
@@ -45,7 +47,8 @@ public class OrganizationResolver implements GraphQLQueryResolver {
    *     no filter is applied and all organizations are returned
    * @return a list of organizations
    */
-  public List<ApiOrganization> getOrganizations(Boolean identityVerified) {
+  @QueryMapping
+  public List<ApiOrganization> organizations(@Argument Boolean identityVerified) {
     // This is used to populate the list of organizations in a dropdown on some frontend admin
     // pages (such as tenant data access).  The only uses of it so far query for the org name and
     // external id.  To get around some n+1 problems, for now this will not return facilities even
@@ -65,18 +68,10 @@ public class OrganizationResolver implements GraphQLQueryResolver {
    *
    * @return a list of pending organizations
    */
-  public List<ApiPendingOrganization> getPendingOrganizations() {
-    List<ApiPendingOrganization> pendingOrgsAlreadyCreated =
-        _organizationService.getOrganizations(false).stream()
-            .map(ApiPendingOrganization::new)
-            .collect(Collectors.toList());
-
-    List<ApiPendingOrganization> pendingOrgsInQueue =
-        _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
-            .map(ApiPendingOrganization::new)
-            .collect(Collectors.toList());
-
-    return Stream.concat(pendingOrgsAlreadyCreated.stream(), pendingOrgsInQueue.stream())
+  @QueryMapping
+  public List<ApiPendingOrganization> pendingOrganizations() {
+    return _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
+        .map(ApiPendingOrganization::new)
         .collect(Collectors.toList());
   }
 
@@ -86,11 +81,20 @@ public class OrganizationResolver implements GraphQLQueryResolver {
    * @param showArchived whether or not to include archived facilities
    * @return set of facilities
    */
-  public Set<ApiFacility> getFacilities(Boolean showArchived) {
+  @QueryMapping
+  public Set<ApiFacility> facilities(@Argument Boolean showArchived) {
     Set<Facility> facilities = _organizationService.getAccessibleFacilities();
     if (showArchived) {
       facilities.addAll(_organizationService.getArchivedFacilities());
     }
     return facilities.stream().map(ApiFacility::new).collect(Collectors.toSet());
+  }
+
+  @QueryMapping
+  public Optional<ApiFacility> facility(@Argument UUID id) {
+    Set<Facility> facilities = _organizationService.getAccessibleFacilities();
+    Optional<Facility> facility =
+        facilities.stream().filter(f -> f.getInternalId().equals(id)).findFirst();
+    return facility.map(ApiFacility::new);
   }
 }

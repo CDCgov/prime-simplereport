@@ -12,18 +12,21 @@ import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
-import gov.cdc.usds.simplereport.service.ScheduledTasksService;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.info.GitProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Slf4j
 @SpringBootApplication
@@ -39,10 +42,19 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   CorsProperties.class,
   AzureStorageQueueReportingProperties.class
 })
+@EnableAsync
 @EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
+@EnableFeignClients
 public class SimpleReportApplication {
   public static void main(String[] args) {
     SpringApplication.run(SimpleReportApplication.class, args);
+  }
+
+  @Bean
+  public InitializingBean initializingBean() {
+    return () ->
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
   }
 
   @Bean
@@ -60,12 +72,6 @@ public class SimpleReportApplication {
   @Profile(BeanProfiles.CREATE_SAMPLE_DEVICES)
   public CommandLineRunner initDevicesOnStartup(OrganizationInitializingService initService) {
     return args -> initService.initDevices();
-  }
-
-  @Bean
-  @ConditionalOnProperty("simple-report.id-verification-reminders.enabled")
-  public CommandLineRunner scheduleAccountReminderEmails(ScheduledTasksService scheduler) {
-    return args -> scheduler.scheduleAccountReminderEmails("0 0 1 * * *", "America/New_York");
   }
 
   @Bean

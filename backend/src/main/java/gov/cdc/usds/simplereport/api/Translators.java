@@ -8,10 +8,13 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.SnomedConceptRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,19 +33,34 @@ import org.json.JSONObject;
  * ways.
  */
 public class Translators {
-  private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
-      DateTimeFormatter.ofPattern("M/d/yyyy");
+  private static final long LOOK_BACK_YEARS = 99;
+
+  // Accepts either two-digit or four-digit years.
+  // Two-digit years will always resolve to years past.
+  // (e.g., if today is Jan. 1, 2023, and the formatter is passed 11/4/24, it will resolve to Nov 4,
+  // 1924).
+  public static final DateTimeFormatter PAST_DATE_FLEXIBLE_FORMATTER =
+      new DateTimeFormatterBuilder()
+          .appendPattern("M/d/")
+          .optionalStart()
+          .appendPattern("uuuu")
+          .optionalEnd()
+          .optionalStart()
+          .appendValueReduced(ChronoField.YEAR, 2, 2, LocalDate.now().minusYears(LOOK_BACK_YEARS))
+          .optionalEnd()
+          .toFormatter();
+
   private static final int MAX_STRING_LENGTH = 500;
 
-  public static final LocalDate parseUserShortDate(String d) {
-    String date = parseString(d);
+  public static final LocalDate parseUserShortDate(String input) {
+    String date = parseString(input);
     if (date == null) {
       return null;
     }
     try {
-      return LocalDate.parse(date, US_SLASHDATE_SHORT_FORMATTER);
+      return LocalDate.parse(date, PAST_DATE_FLEXIBLE_FORMATTER);
     } catch (DateTimeParseException e) {
-      throw IllegalGraphqlArgumentException.invalidInput(d, "date");
+      throw IllegalGraphqlArgumentException.invalidInput(input, "date");
     }
   }
 
@@ -75,7 +93,7 @@ public class Translators {
         .collect(Collectors.toList());
   }
 
-  private static PhoneType parsePhoneType(String t) {
+  public static PhoneType parsePhoneType(String t) {
     String type = parseString(t);
     if (type == null) {
       // When we no longer require backwards compatibility with an old UI, we can parse this
@@ -260,10 +278,11 @@ public class Translators {
 
   private static final Map<String, Boolean> YES_NO =
       Map.of("y", true, "yes", true, "n", false, "no", false, "true", true, "false", false);
+  private static final Set<String> UNK = Set.of("unk", "u");
 
-  public static Boolean parseYesNo(String v) {
+  public static Boolean parseYesNoUnk(String v) {
     String stringValue = parseString(v);
-    if (stringValue == null) {
+    if (stringValue == null || UNK.contains(stringValue.toLowerCase())) {
       return null;
     }
     Boolean boolValue = YES_NO.get(stringValue.toLowerCase());
@@ -274,15 +293,39 @@ public class Translators {
   }
 
   // "NA" is used for international addresses
-  private static final Set<String> STATE_CODES =
+  public static final Set<String> STATE_CODES =
       Set.of(
           "AK", "AL", "AR", "AS", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "FM", "GA", "GU", "HI",
           "IA", "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MH", "MI", "MN", "MO", "MP",
           "MS", "MT", "NC", "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR",
           "PW", "RI", "SC", "SD", "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY", "NA");
 
-  private static final Set<String> CANADIAN_STATE_CODES =
+  public static final Set<String> CANADIAN_STATE_CODES =
       Set.of("AB", "BC", "MB", "NB", "NL", "NT", "NS", "NU", "ON", "PE", "QC", "SK", "YT");
+
+  public static final Set<String> COUNTRY_CODES =
+      Set.of(
+          "AFG", "ALB", "DZA", "AND", "AGO", "ATG", "ARG", "ARM", "AUS", "AUT", "AZE", "BHS", "BHR",
+          "BGD", "BRB", "BLR", "BEL", "BLZ", "BEN", "BTN", "BOL", "BIH", "BWA", "BRA", "BRN", "BGR",
+          "BFA", "MMR", "BDI", "CPV", "KHM", "CMR", "CAN", "CAF", "TCD", "CHL", "CHN", "COL", "COM",
+          "COG", "COD", "CRI", "CIV", "HRV", "CUB", "CYP", "CZE", "DNK", "DJI", "DOM", "DMA", "ECU",
+          "EGY", "SLV", "GNQ", "ERI", "EST", "SWZ", "ETH", "FJI", "FIN", "FRA", "GAB", "GMB", "GEO",
+          "DEU", "GHA", "GRC", "GRD", "GTM", "GIN", "GNB", "GUY", "HTI", "VAT", "HND", "HUN", "ISL",
+          "IND", "IDN", "IRN", "IRQ", "IRL", "ISR", "ITA", "JAM", "JPN", "JOR", "KAZ", "KEN", "KIR",
+          "PRK", "KOR", "XKS", "KWT", "KGZ", "LAO", "LVA", "LBN", "LSO", "LBR", "LBY", "LIE", "LTU",
+          "LUX", "MDG", "MWI", "MYS", "MDV", "MLI", "MLT", "MHL", "MRT", "MUS", "MEX", "FSM", "MDA",
+          "MCO", "MNG", "MNE", "MAR", "MOZ", "NAM", "NRU", "NPL", "NLD", "NZL", "NIC", "NER", "NGA",
+          "MKD", "NOR", "OMN", "PAK", "PLW", "PAN", "PNG", "PRY", "PER", "PHL", "POL", "PRT", "QAT",
+          "ROU", "RUS", "RWA", "KNA", "LCA", "VCT", "WSM", "SMR", "STP", "SAU", "SEN", "SRB", "SYC",
+          "SLE", "SGP", "SVK", "SVN", "SLB", "SOM", "ZAF", "SSD", "ESP", "LKA", "SDN", "SUR", "SWE",
+          "CHE", "SYR", "TJK", "TZA", "THA", "TLS", "TGO", "TON", "TTO", "TUN", "TUR", "TKM", "TUV",
+          "UGA", "UKR", "ARE", "GBR", "USA", "URY", "UZB", "VUT", "VEN", "VNM", "YEM", "ZMB", "ZWE",
+          "TWN", "XQZ", "ASM", "AIA", "ATA", "ABW", "XAC", "XBK", "BMU", "BVT", "IOT", "CYM", "CXR",
+          "CPT", "CCK", "COK", "XCS", "CUW", "XXD", "FLK", "FRO", "GUF", "PYF", "ATF", "GIB", "GRL",
+          "GLP", "GUM", "GGY", "HMD", "HKG", "XHO", "IMN", "XJM", "XJV", "JEY", "XJA", "XKR", "MAC",
+          "MTQ", "MYT", "XMW", "MSR", "XNV", "NCL", "NIU", "NFK", "MNP", "XPL", "XPR", "PCN", "PRI",
+          "REU", "BLM", "SHN", "MAF", "SPM", "SXM", "SGS", "XSP", "XSV", "TKL", "TCA", "VGB", "VIR",
+          "XWK", "WLF");
 
   public static String parseState(String s) {
     String state = parseString(s);
@@ -354,8 +397,16 @@ public class Translators {
           Map.entry("camp", "Camp"),
           Map.entry("lab", "Lab"),
           Map.entry("other", "Other"));
-
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
+
+  public static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =
+      new SnomedConceptRecord("Detected", "260373001", TestResult.POSITIVE);
+  private static final SnomedConceptRecord NOT_DETECTED_SNOMED_CONCEPT =
+      new SnomedConceptRecord("Not detected", "260415000", TestResult.NEGATIVE);
+  private static final SnomedConceptRecord INVALID_SNOMED_CONCEPT =
+      new SnomedConceptRecord("Invalid result", "455371000124106", TestResult.UNDETERMINED);
+  private static final List<SnomedConceptRecord> RESULTS_SNOMED_CONCEPTS =
+      List.of(DETECTED_SNOMED_CONCEPT, NOT_DETECTED_SNOMED_CONCEPT, INVALID_SNOMED_CONCEPT);
 
   public static String parseOrganizationType(String t) {
     String type = parseString(t);
@@ -377,24 +428,29 @@ public class Translators {
   }
 
   public static TestResult convertLoincToResult(String loinc) {
-    switch (loinc) {
-      case "260373001":
-        return TestResult.POSITIVE;
-      case "260415000":
-        return TestResult.NEGATIVE;
-      default:
-        return TestResult.UNDETERMINED;
-    }
+    SnomedConceptRecord concept =
+        RESULTS_SNOMED_CONCEPTS.stream()
+            .filter(snomedConcept -> loinc.equals(snomedConcept.code()))
+            .findFirst()
+            .orElse(INVALID_SNOMED_CONCEPT);
+    return concept.displayName();
   }
 
   public static String convertTestResultToLoinc(TestResult result) {
-    switch (result) {
-      case POSITIVE:
-        return "260373001";
-      case NEGATIVE:
-        return "260415000";
-      default:
-        return "455371000124106";
-    }
+    SnomedConceptRecord concept =
+        RESULTS_SNOMED_CONCEPTS.stream()
+            .filter(snomedConcept -> result.equals(snomedConcept.displayName()))
+            .findFirst()
+            .orElse(INVALID_SNOMED_CONCEPT);
+    return concept.code();
+  }
+
+  public static String convertConceptCodeToConceptName(String snomedCode) {
+    SnomedConceptRecord concept =
+        RESULTS_SNOMED_CONCEPTS.stream()
+            .filter(snomedConcept -> snomedCode.equals(snomedConcept.code()))
+            .findFirst()
+            .orElse(INVALID_SNOMED_CONCEPT);
+    return concept.name();
   }
 }

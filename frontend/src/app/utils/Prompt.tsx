@@ -4,7 +4,7 @@
 
 import { useContext, useEffect, useCallback } from "react";
 import { UNSAFE_NavigationContext as NavigationContext } from "react-router-dom";
-import type { History } from "history";
+import type { History, Transition } from "history";
 
 declare type Navigator = Pick<
   History,
@@ -50,7 +50,7 @@ export function useBlocker(blocker: any, when = true) {
  */
 export function usePrompt(message: string, when = true) {
   const blocker = useCallback(
-    (tx) => {
+    (tx: Transition) => {
       // eslint-disable-next-line no-alert
       if (window.confirm(message)) {
         tx.retry();

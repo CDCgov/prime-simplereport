@@ -162,3 +162,23 @@ data "azurerm_key_vault_secret" "db_password_no_phi" {
   name         = "simple-report-${local.env}-db-password-no-phi"
   key_vault_id = data.azurerm_key_vault.global.id
 }
+
+data "azurerm_key_vault_secret" "datahub_api_key" {
+  name         = "datahub-api-key-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_fhir_key" {
+  name         = "datahub-fhir-key-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_url" {
+  name         = "datahub-url-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "datahub_signing_key" {
+  name         = "datahub-signing-key-test"
+  key_vault_id = data.azurerm_key_vault.global.id
+}

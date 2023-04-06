@@ -626,7 +626,7 @@ type Language =
   | "Aromanian; Arumanian; Macedo-Romanian"
   | "Bantu (other)"
   | "Bengali"
-  | "Braile"
+  | "Braille"
   | "Burmese"
   | "Cambodian"
   | "Cantonese"

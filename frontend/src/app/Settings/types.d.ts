@@ -1,6 +1,7 @@
 type Nullable<T> = { [P in keyof T]: T[P] | null };
 
-type ISODate = `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
+type ISODate =
+  `${number}${number}${number}${number}-${number}${number}-${number}${number}`;
 
 type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
   T,
@@ -8,24 +9,15 @@ type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
 > &
   Partial<T>;
 
-interface DeviceType {
+interface FacilityFormDeviceType {
   internalId: string;
   name: string;
   testLength?: number | undefined;
 }
 
-interface DeviceTypes {
-  deviceType: [DeviceType];
-}
 interface SpecimenType {
   internalId: string;
   name: string;
-}
-
-interface DeviceSpecimenType {
-  internalId: ID;
-  deviceType: DeviceType;
-  specimenType: SpecimenType;
 }
 
 interface Address {
@@ -46,7 +38,7 @@ interface Facility extends Address {
   name: string;
   phone: string;
   email: string | null;
-  deviceTypes: DeviceType[];
+  deviceTypes: FacilityFormDeviceType[];
   orderingProvider: Provider;
 }
 
@@ -115,12 +107,7 @@ interface FacilityData {
         zipCode: string;
         phone: string;
         email: string;
-        deviceTypes: [
-          {
-            name: string;
-            internalId: string;
-          }
-        ];
+        deviceTypes: FacilityFormDeviceType[];
         orderingProvider: {
           firstName: string;
           middleName: string;
@@ -138,7 +125,7 @@ interface FacilityData {
       }
     ];
   };
-  deviceTypes: DeviceType[];
+  deviceTypes: FacilityFormDeviceType[];
 }
 
 type TestCorrectionStatus = "ORIGINAL" | "CORRECTED" | "REMOVED";

@@ -45,7 +45,7 @@ describe("PatientHeader", () => {
 
       expect(screen.getByText("Español")).toBeInTheDocument();
 
-      userEvent.click(screen.getByRole("button"));
+      await userEvent.click(screen.getByRole("button"));
 
       expect(screen.queryByText("Español")).not.toBeInTheDocument();
       expect(screen.getByText("English")).toBeInTheDocument();
@@ -88,6 +88,20 @@ describe("PatientHeader", () => {
 
       expect(
         await screen.findByText("Test Org, Test Facility", { exact: false })
+      ).toBeInTheDocument();
+    });
+
+    it("correctly displays the SimpleReport logo", async () => {
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <PatientHeader />
+          </Provider>
+        </MemoryRouter>
+      );
+
+      expect(
+        await screen.findByAltText("SimpleReport", { exact: false })
       ).toBeInTheDocument();
     });
   });

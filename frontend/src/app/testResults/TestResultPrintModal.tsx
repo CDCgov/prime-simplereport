@@ -1,58 +1,62 @@
 import React from "react";
-import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
+import { useFeature } from "flagged";
 
 import Button from "../commonComponents/Button/Button";
-import { displayFullName } from "../utils";
+import MultiplexResultsGuidance from "../commonComponents/MultiplexResultsGuidance";
+import TestResultsList from "../commonComponents/TestResultsList";
 import "./TestResultPrintModal.scss";
 import logo from "../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import LanguageToggler from "../../patientApp/LanguageToggler";
+import { GetTestResultForPrintDocument } from "../../generated/graphql";
+import { displayFullName } from "../utils";
 import { formatDateWithTimeOption } from "../utils/date";
+import { hasMultiplexResults } from "../utils/testResults";
+import { setLanguage } from "../utils/languages";
 
-export const testQuery = gql`
-  query getTestResultForPrint($id: ID!) {
-    testResult(id: $id) {
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        name
-        model
-      }
-      patient {
-        firstName
-        middleName
-        lastName
-        birthDate
-      }
-      facility {
-        name
-        cliaNumber
-        phone
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          NPI
-        }
-      }
-    }
-  }
-`;
+interface OrderingProvider {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  npi?: string | null;
+  NPI?: string | null;
+}
+
+interface Patient {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  birthDate: string;
+}
+
+interface Facility extends Address {
+  name: string;
+  phone: string;
+  cliaNumber: string;
+  orderingProvider: OrderingProvider;
+}
+
+export interface TestResult {
+  correctionStatus: string;
+  dateTested: string;
+  deviceType: {
+    model: string;
+    name: string;
+  };
+  facility: Facility;
+  patient: Patient;
+  results: MultiplexResults;
+}
 
 interface StaticTestResultModalProps {
   testResultId: string | undefined;
-  testResult: any;
+  testResult: TestResult;
   hardcodedPrintDate?: string;
 }
+
 export const StaticTestResultModal = ({
   testResultId,
   testResult,
@@ -64,9 +68,11 @@ export const StaticTestResultModal = ({
     facility,
     deviceType,
     correctionStatus,
-    result,
+    results,
     dateTested,
   } = testResult;
+  const multiplexEnabled = useFeature("multiplexEnabled") as boolean;
+  const isPatientApp = false;
 
   return (
     <div
@@ -76,8 +82,17 @@ export const StaticTestResultModal = ({
       )}
     >
       <header className="display-flex flex-align-end flex-justify margin-bottom-1">
-        <h1>{t("testResult.result")}</h1>
-        <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
+        <h1>
+          {multiplexEnabled && hasMultiplexResults(results)
+            ? t("testResult.multiplexResultHeader")
+            : t("testResult.covidResultHeader")}
+        </h1>
+        <img
+          alt="SimpleReport logo"
+          src={logo}
+          className="sr-print-logo dont-print"
+        />
+        <h2 className="display-none sr-show-on-print">SimpleReport</h2>
       </header>
       <main>
         <section className="sr-result-section sr-result-patient-details">
@@ -138,7 +153,9 @@ export const StaticTestResultModal = ({
             </li>
             <li>
               <b>{t("testResult.testingFacility.npi")}</b>
-              <div>{facility.orderingProvider.NPI}</div>
+              <div>
+                {facility.orderingProvider.NPI || facility.orderingProvider.npi}
+              </div>
             </li>
           </ul>
         </section>
@@ -157,99 +174,23 @@ export const StaticTestResultModal = ({
               <b>{t("testResult.testDevice")}</b>
               <div>{deviceType.model}</div>
             </li>
-            <li>
+            <li className="sr-margin-bottom-28px">
               <b>{t("testResult.testDate")}</b>
               <div>{formatDateWithTimeOption(dateTested, true)}</div>
             </li>
-            <li>
-              <b>{t("testResult.testResult")}</b>
-              <div>
-                <strong>
-                  {result === "POSITIVE" && t("constants.testResults.POSITIVE")}
-                  {result === "NEGATIVE" && t("constants.testResults.NEGATIVE")}
-                  {result === "UNDETERMINED" &&
-                    t("constants.testResults.UNDETERMINED")}
-                </strong>
-              </div>
-            </li>
+            <TestResultsList
+              results={results}
+              isPatientApp={isPatientApp}
+              multiplexEnabled={multiplexEnabled}
+            />
           </ul>
         </section>
         <section className="sr-result-section sr-result-next-steps">
           <h2>{t("testResult.moreInformation")}</h2>
-          {result === "UNDETERMINED" && (
-            <p>{t("testResult.notes.inconclusive.p0")}</p>
-          )}
-          {result !== "POSITIVE" && (
-            <>
-              <p>{t("testResult.notes.negative.p0")}</p>
-              <ul className="sr-multi-column">
-                <li>{t("testResult.notes.negative.symptoms.li2")}</li>
-                <li>{t("testResult.notes.negative.symptoms.li3")}</li>
-                <li>{t("testResult.notes.negative.symptoms.li4")}</li>
-                <li>{t("testResult.notes.negative.symptoms.li5")}</li>
-                <li>{t("testResult.notes.negative.symptoms.li6")}</li>
-                <li>{t("testResult.notes.negative.symptoms.li7")}</li>
-                <li>{t("testResult.notes.negative.symptoms.li8")}</li>
-                <li>{t("testResult.notes.negative.symptoms.li9")}</li>
-                <li>{t("testResult.notes.negative.symptoms.li10")}</li>
-              </ul>
-            </>
-          )}
-          {result === "POSITIVE" && (
-            <>
-              <p>{t("testResult.notes.positive.p1")}</p>
-              <ul>
-                <li>{t("testResult.notes.positive.guidelines.li0")}</li>
-                <li>{t("testResult.notes.positive.guidelines.li1")}</li>
-                <li>{t("testResult.notes.positive.guidelines.li2")}</li>
-                <li>{t("testResult.notes.positive.guidelines.li3")}</li>
-                <li>{t("testResult.notes.positive.guidelines.li4")}</li>
-                <li>{t("testResult.notes.positive.guidelines.li5")}</li>
-              </ul>
-              <Trans
-                t={t}
-                parent="p"
-                i18nKey="testResult.notes.positive.p2"
-                components={[
-                  <a
-                    href={t("testResult.notes.positive.symptomsLink")}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    symptoms link
-                  </a>,
-                ]}
-              />
-              <ul>
-                <li>{t("testResult.notes.positive.emergency.li0")}</li>
-                <li>{t("testResult.notes.positive.emergency.li1")}</li>
-                <li>{t("testResult.notes.positive.emergency.li2")}</li>
-                <li>{t("testResult.notes.positive.emergency.li3")}</li>
-                <li>{t("testResult.notes.positive.emergency.li4")}</li>
-              </ul>
-              <p>{t("testResult.notes.positive.p3")}</p>
-            </>
-          )}
-          <Trans
-            t={t}
-            parent="p"
-            i18nKey="testResult.information"
-            components={[
-              <a
-                href={t("testResult.cdcLink")}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                cdc.gov
-              </a>,
-              <a
-                href={t("testResult.countyCheckToolLink")}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                county check tool
-              </a>,
-            ]}
+          <MultiplexResultsGuidance
+            results={results}
+            isPatientApp={isPatientApp}
+            multiplexEnabled={multiplexEnabled}
           />
         </section>
       </main>
@@ -283,7 +224,10 @@ export const DetachedTestResultPrintModal = ({
       <Button
         variant="unstyled"
         label={t("testResult.close")}
-        onClick={closeModal}
+        onClick={() => {
+          closeModal();
+          setLanguage("en");
+        }}
       />
       <Button label={t("testResult.print")} onClick={() => window.print()} />
     </div>
@@ -295,6 +239,7 @@ export const DetachedTestResultPrintModal = ({
       className="sr-test-results-modal-content"
       overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
+      onRequestClose={closeModal}
     >
       <div className="display-flex flex-align-center maxw-tablet grid-container patient-header padding-x-0 dont-print">
         <LanguageToggler />
@@ -314,7 +259,7 @@ const TestResultPrintModal = (
   props: Omit<TestResultPrintModalProps, "data">
 ) => (
   <QueryWrapper<TestResultPrintModalProps>
-    query={testQuery}
+    query={GetTestResultForPrintDocument}
     queryOptions={{ variables: { id: props.testResultId } }}
     Component={DetachedTestResultPrintModal}
     componentProps={{ ...props }}

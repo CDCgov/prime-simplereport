@@ -58,26 +58,6 @@ export const answersToArray = (answers: Answers): number[] =>
     .sort()
     .map((key) => parseInt(answers[key]));
 
-export const personalDetailsFields = [
-  ["dateOfBirth", "Date of birth", true, ""],
-  ["preheader1", "Personal contact information", false, ""],
-  ["email", "Email", true, "Enter your non-work email address."],
-  ["phoneNumber", "Phone number", true, "Enter your non-work phone number."],
-  ["preheader2", "Home address", false, ""],
-  ["streetAddress1", "Street address 1", true, ""],
-  ["streetAddress2", "Street address 2", false, ""],
-  ["city", "City", true, ""],
-  ["state", "State", true, ""],
-  ["zip", "ZIP code", true, ""],
-].reduce((fields, field) => {
-  fields[field[0] as keyof IdentityVerificationRequest] = {
-    label: field[1] as string,
-    required: field[2] as boolean,
-    hintText: field[3] as string,
-  };
-  return fields;
-}, {} as { [key: string]: { label: string; required: boolean; hintText: string } });
-
 export const initPersonalDetails = (
   orgExternalId: string,
   firstName: string,
@@ -124,9 +104,8 @@ const experianStreetRegex = new RegExp(
 // this is the regex experian uses for zip validation
 const experianZipRegex = new RegExp("^([\\d]{5}([\\-]?[\\d]{4})?){1}$", "m");
 
-export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> = yup
-  .object()
-  .shape({
+export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> =
+  yup.object().shape({
     firstName: yup.string().required("First name is required"),
     middleName: yup.string().nullable(),
     lastName: yup.string().required("Last name is required"),

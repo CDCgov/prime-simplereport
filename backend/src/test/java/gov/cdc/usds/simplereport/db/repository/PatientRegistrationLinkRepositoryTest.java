@@ -19,7 +19,7 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void testFindFacilityByLink() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Facility fac = _dataFactory.createValidFacility(org, "Foo Facility");
     Facility otherFac = _dataFactory.createValidFacility(org, "Bar Facility");
 
@@ -34,7 +34,7 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void testFindOrganizationByLink() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Facility fac = _dataFactory.createValidFacility(org, "Foo Facility");
 
     _repo.save(new PatientSelfRegistrationLink(fac, "foo-facility"));
@@ -48,7 +48,7 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void testBadLink() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Facility fac = _dataFactory.createValidFacility(org, "Foo Facility");
 
     _repo.save(new PatientSelfRegistrationLink(org, "happy-org"));
@@ -61,7 +61,7 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void testUniqueLinks() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Facility fac = _dataFactory.createValidFacility(org, "Foo Facility");
     _repo.save(new PatientSelfRegistrationLink(fac, "the-link"));
 

@@ -1,11 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { showError } from "../../utils/srToast";
 import { stateCodes, urls } from "../../../config/constants";
 import { getStateNameFromCode, requiresOrderProvider } from "../../utils/state";
 import {
@@ -19,6 +18,7 @@ import {
   AddressSuggestionConfig,
 } from "../../commonComponents/AddressConfirmationModal";
 import Prompt from "../../utils/Prompt";
+import { focusOnFirstInputWithError } from "../../utils/formValidation";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
@@ -29,6 +29,7 @@ export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
 export const useFacilityValidation = (facility: Facility) => {
   const [errors, setErrors] = useState<FacilityErrors>({});
+  const focusOnce = useRef(false);
 
   const clearError = useCallback(
     (field: keyof FacilityErrors) => {
@@ -84,19 +85,39 @@ export const useFacilityValidation = (facility: Facility) => {
         {} as FacilityErrors
       );
       setErrors(errors);
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Please check the form to make sure you complete all of the required fields."
-        />
+      focusOnce.current = true;
+      showError(
+        "Please check the form to make sure you complete all of the required fields.",
+        "Form Errors"
       );
-      showNotification(alert);
       return "error";
     }
   };
 
-  return { errors, validateField, validateFacility };
+  /**
+   * Focus on fields with errors
+   */
+  useEffect(() => {
+    if (
+      focusOnce.current &&
+      (errors.name ||
+        errors.phone ||
+        errors.street ||
+        errors.zipCode ||
+        errors.state ||
+        errors.cliaNumber ||
+        errors.deviceTypes ||
+        errors["orderingProvider.firstName"] ||
+        errors["orderingProvider.lastName"] ||
+        errors["orderingProvider.NPI"] ||
+        errors["orderingProvider.phone"])
+    ) {
+      focusOnFirstInputWithError();
+      focusOnce.current = false;
+    }
+  }, [errors]);
+
+  return { errors, clearError, validateField, validateFacility };
 };
 
 const createStateError = (stateCode: string | number) => {
@@ -122,7 +143,7 @@ type AddressOptions = "facility" | "provider";
 
 export interface Props {
   facility: Facility;
-  deviceTypes: DeviceType[];
+  deviceTypes: FacilityFormDeviceType[];
   saveFacility: (facility: Facility) => void;
   newOrg?: boolean;
 }
@@ -161,9 +182,8 @@ const FacilityForm: React.FC<Props> = (props) => {
     }));
   };
 
-  const { errors, validateField, validateFacility } = useFacilityValidation(
-    facility
-  );
+  const { errors, clearError, validateField, validateFacility } =
+    useFacilityValidation(facility);
 
   const getFacilityAddress = (f: Nullable<Facility>): AddressWithMetaData => {
     return {
@@ -215,16 +235,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     );
 
     if (!isValidZipForState) {
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Invalid ZIP code for this state"
-        />
-      );
-
-      showNotification(alert);
-
+      showError("Invalid ZIP code for this state", "Form Errors");
       return;
     }
 
@@ -237,9 +248,8 @@ const FacilityForm: React.FC<Props> = (props) => {
     );
     let providerCloseEnough = true;
     let suggestedOrderingProviderAddress: AddressWithMetaData | undefined;
-    const originalOrderingProviderAddress = getOrderingProviderAddress(
-      facility
-    );
+    const originalOrderingProviderAddress =
+      getOrderingProviderAddress(facility);
     if (originalOrderingProviderAddress) {
       suggestedOrderingProviderAddress = await getBestSuggestion(
         originalOrderingProviderAddress
@@ -295,7 +305,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     if ((await validateFacility()) === "error") {
       return;
     }
-    validateFacilityAddresses();
+    await validateFacilityAddresses();
   };
 
   return (
@@ -327,12 +337,14 @@ const FacilityForm: React.FC<Props> = (props) => {
                       to={`/settings/facilities`}
                       className="margin-left-05"
                     >
-                      All facilities
+                      Back to all facilities
                     </LinkWithQuery>
                   </>
                 )}
               </div>
-              <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
+              <h1 className="font-heading-lg margin-y-1">
+                {facility.name || "Add facility"}
+              </h1>
             </div>
             <div
               style={{
@@ -360,6 +372,7 @@ const FacilityForm: React.FC<Props> = (props) => {
               updateFacility={updateFacility}
               errors={errors}
               validateField={validateField}
+              newOrg={props.newOrg}
             />
           </div>
         </div>
@@ -368,12 +381,15 @@ const FacilityForm: React.FC<Props> = (props) => {
           updateProvider={updateProvider}
           errors={errors}
           validateField={validateField}
+          newOrg={props.newOrg}
         />
         <ManageDevices
           deviceTypes={props.deviceTypes}
           selectedDevices={facility.deviceTypes}
           updateSelectedDevices={updateSelectedDevices}
           errors={errors}
+          clearError={clearError}
+          newOrg={props.newOrg}
         />
         <div className="float-right margin-bottom-4 margin-top-4">
           <Button

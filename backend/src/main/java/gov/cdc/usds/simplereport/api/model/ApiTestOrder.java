@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
@@ -16,15 +15,12 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
     return wrapped.getCreatedAt();
   }
 
-  public String getResult() {
-    if (wrapped.getTestResult() == null) {
-      return "";
-    }
-    return wrapped.getTestResult().toString();
-  }
-
   public Date getDateTested() {
     return wrapped.getDateTestedBackdate();
+  }
+
+  public Date getDateUpdated() {
+    return wrapped.getUpdatedAt();
   }
 
   public TestCorrectionStatus getCorrectionStatus() {
@@ -33,9 +29,5 @@ public class ApiTestOrder extends WrappedEntity<TestOrder> {
 
   public String getReasonForCorrection() {
     return wrapped.getReasonForCorrection();
-  }
-
-  public DeviceSpecimenType getDeviceSpecimenType() {
-    return wrapped.getDeviceSpecimen();
   }
 }

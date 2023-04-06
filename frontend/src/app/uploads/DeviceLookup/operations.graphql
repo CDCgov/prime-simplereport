@@ -1,0 +1,30 @@
+query getDeviceTypesForLookup {
+    deviceTypes {
+        internalId
+        name
+        manufacturer
+        model
+        swabTypes {
+            internalId
+            name
+            typeCode
+        }
+        supportedDiseaseTestPerformed {
+            supportedDisease {
+                internalId
+                name
+                loinc
+            }
+        }
+        supportedDiseaseTestPerformed {
+            supportedDisease {
+                internalId
+                name
+            }
+            testPerformedLoincCode
+            testkitNameId
+            equipmentUid
+            testOrderedLoincCode
+        }
+    }
+}

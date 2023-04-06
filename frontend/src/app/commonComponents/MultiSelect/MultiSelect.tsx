@@ -6,9 +6,11 @@ import _ from "lodash";
 
 import Required from "../Required";
 import Optional from "../Optional";
+import Button from "../Button/Button";
 
 import MultiSelectDropdown, {
   MultiSelectDropdownOption,
+  RegistrationProps,
 } from "./MultiSelectDropdown/MultiSelectDropdown";
 
 import "./MultiSelect.scss";
@@ -29,6 +31,8 @@ export type MultiSelectProps = {
   initialSelectedValues?: string[];
   disabled?: boolean;
   inputProps?: JSX.IntrinsicElements["input"];
+  placeholder?: string;
+  registrationProps?: RegistrationProps;
 };
 
 type PillProps = {
@@ -39,18 +43,19 @@ type PillProps = {
 const Pill = (props: PillProps) => (
   <div className="pill">
     {props.option.label}
-    <div
-      className="close-button"
-      data-testid={`${props.option.label}-pill-delete`}
+    <Button
+      className="close-button usa-button--unstyled"
       onClick={() => props.onDelete(props.option)}
     >
-      <FontAwesomeIcon fontSize={24} icon={"times"} />
-    </div>
+      <FontAwesomeIcon
+        aria-hidden={false}
+        fontSize={24}
+        icon={"times"}
+        aria-label={`Delete ${props.option.label}`}
+      />
+    </Button>
   </div>
 );
-
-const getSortedOptions = (options: MultiSelectDropdownOption[]) =>
-  _.orderBy(options, ["label"], ["asc"]);
 
 export const MultiSelect = ({
   name,
@@ -67,12 +72,27 @@ export const MultiSelect = ({
   options,
   disabled,
   initialSelectedValues,
+  placeholder,
+  registrationProps,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
+  const getInitialOptions = (options: MultiSelectDropdownOption[]) => {
+    const alreadySelected = initialSelectedValues || [];
+
+    return options.filter((option) => {
+      return !alreadySelected.includes(option.value);
+    });
+  };
+
+  const getSortedOptions = (options: MultiSelectDropdownOption[]) => {
+    const sortedOptions = _.orderBy(options, ["label"], ["asc"]);
+    return _.uniqBy(sortedOptions, "value");
+  };
+
   const [availableOptions, setAvailableOptions] = useState<
     MultiSelectDropdownOption[]
-  >(getSortedOptions(options));
+  >(getSortedOptions(getInitialOptions(options)));
 
   const [selectedItems, setSelectedItems] = useState<string[] | undefined>(
     initialSelectedValues
@@ -92,14 +112,10 @@ export const MultiSelect = ({
     const selectedItemsSet = new Set(selectedItems);
     selectedItemsSet.delete(option.value);
     setSelectedItems(Array.from(selectedItemsSet));
+
     const sortedOptions = getSortedOptions([...availableOptions, option]);
     setAvailableOptions(sortedOptions);
   };
-
-  useEffect(() => {
-    const sortedOptions = getSortedOptions([...options]);
-    setAvailableOptions(sortedOptions);
-  }, [options, setAvailableOptions]);
 
   useEffect(() => {
     if (selectedItems) {
@@ -118,6 +134,7 @@ export const MultiSelect = ({
         labelClassName
       )}
       htmlFor={id}
+      id={`label-for-${id}`}
       aria-describedby={ariaDescribedBy}
     >
       {required ? <Required label={label} /> : <Optional label={label} />}
@@ -160,8 +177,19 @@ export const MultiSelect = ({
             onChange={onItemSelected}
             className="multi-select-dropdown"
             disabled={isDisabled}
+            placeholder={placeholder}
+            ariaInvalid={validationStatus === "error"}
+            registrationProps={registrationProps}
           />
-          <div className="pill-container" data-testid="pill-container">
+          <fieldset
+            className={`fieldset--unstyled pill-container${
+              selectedItems && selectedItems.length < 1
+                ? " pill-container--hidden"
+                : ""
+            }`}
+            data-testid="pill-container"
+          >
+            <legend className="usa-sr-only">{`Selected ${label}`}</legend>
             {selectedItems &&
               selectedItems.map((value) => {
                 const option = options.find((item) => item.value === value);
@@ -175,7 +203,7 @@ export const MultiSelect = ({
                   )
                 );
               })}
-          </div>
+          </fieldset>
         </div>
       )}
     </UIDConsumer>

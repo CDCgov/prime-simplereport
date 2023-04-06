@@ -8,6 +8,7 @@ import { displayFullName } from "../../utils";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getFacilityIdFromUrl } from "../../utils/url";
+import { PATIENT_TERM } from "../../../config/constants";
 
 interface SearchResultsProps {
   patients: Patient[];
@@ -53,6 +54,18 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       setCanAddToQueue(true);
     }
   }, [selectedPatient]);
+
+  function handleSaveCallback(a: any) {
+    if (props.page === "queue" && dialogPatient !== null) {
+      return props.onAddToQueue(
+        dialogPatient,
+        a,
+        canAddToQueue ? "create" : "update"
+      );
+    }
+
+    return Promise.resolve();
+  }
 
   if (redirect) {
     return <Navigate to={redirect} />;
@@ -104,7 +117,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
           Check for spelling errors or
           <Button
             className="margin-left-1"
-            label="Add new patient"
+            label={`Add new ${PATIENT_TERM}`}
             onClick={() => {
               setRedirect(`/add-patient?facility=${activeFacilityId}`);
             }}
@@ -149,21 +162,14 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
 
   return (
     <>
-      {props.page === "queue" && dialogPatient !== null && (
-        <AoEModalForm
-          patient={dialogPatient}
-          onClose={() => {
-            setDialogPatient(null);
-          }}
-          saveCallback={(a: any) =>
-            props.onAddToQueue(
-              dialogPatient,
-              a,
-              canAddToQueue ? "create" : "update"
-            )
-          }
-        />
-      )}
+      <AoEModalForm
+        isOpen={props.page === "queue" && dialogPatient !== null}
+        patient={dialogPatient}
+        onClose={() => {
+          setDialogPatient(null);
+        }}
+        saveCallback={handleSaveCallback}
+      />
       {shouldShowSuggestions && results}
     </>
   );

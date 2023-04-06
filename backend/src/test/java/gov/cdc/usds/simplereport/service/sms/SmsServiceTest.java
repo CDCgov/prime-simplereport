@@ -36,7 +36,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
@@ -76,8 +75,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Captor ArgumentCaptor<PhoneNumber> toNumber;
 
   @Captor ArgumentCaptor<String> message;
-
-  private OngoingStubbing<String> thenAnswer;
 
   @Test
   @WithSimpleReportEntryOnlyAllFacilitiesUser

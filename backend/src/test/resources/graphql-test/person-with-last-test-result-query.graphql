@@ -1,0 +1,19 @@
+query getPatientsWithLastTestResult($namePrefixMatch: String = null) {
+  patients(namePrefixMatch: $namePrefixMatch) {
+    firstName
+    lastName
+    birthDate
+    telephone
+    lastTest {
+      dateAdded
+      results{
+        disease{
+            internalId
+            name
+            loinc
+        }
+        testResult
+      }
+    }
+  }
+}

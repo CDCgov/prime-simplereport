@@ -28,10 +28,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   private Facility facility;
 
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn(name = "device_specimen_type_id")
-  private DeviceSpecimenType deviceSpecimen;
-
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "device_type_id")
   private DeviceType deviceType;
 
@@ -39,6 +35,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @JoinColumn(name = "specimen_type_id")
   private SpecimenType specimenType;
 
+  @Deprecated
   @Column(nullable = true)
   @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
@@ -59,25 +56,22 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   }
 
   protected BaseTestInfo(BaseTestInfo orig) {
-    this(orig.getPatient(), orig.getFacility(), orig.getDeviceSpecimen(), orig.getResult());
+    this(orig.getPatient(), orig.getFacility());
+  }
+
+  protected BaseTestInfo(Person patient, Facility facility) {
+    this(patient, facility, facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
   }
 
   protected BaseTestInfo(
-      Person patient, Facility facility, DeviceSpecimenType deviceSpecimen, TestResult result) {
+      Person patient, Facility facility, DeviceType deviceType, SpecimenType specimenType) {
     super();
     this.patient = patient;
     this.facility = facility;
     this.organization = facility.getOrganization();
-    this.deviceSpecimen = deviceSpecimen;
-    this.deviceType = deviceSpecimen.getDeviceType();
-    this.specimenType = deviceSpecimen.getSpecimenType();
-    // Remove this call as part of #3664
-    this.result = result;
+    this.deviceType = deviceType;
+    this.specimenType = specimenType;
     this.correctionStatus = TestCorrectionStatus.ORIGINAL;
-  }
-
-  protected BaseTestInfo(Person patient, Facility facility) {
-    this(patient, facility, facility.getDefaultDeviceSpecimen(), null);
   }
 
   protected BaseTestInfo(
@@ -108,14 +102,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     return specimenType;
   }
 
-  public DeviceSpecimenType getDeviceSpecimen() {
-    return deviceSpecimen;
-  }
-
-  public TestResult getResult() {
-    return result;
-  }
-
   // FYI Setters shouldn't be allowed in TestEvent, so they are always *protected*
   // in this base class
   // and exposed only in TestOrder.
@@ -128,14 +114,9 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     this.dateTestedBackdate = dateTestedBackdate;
   }
 
-  protected void setTestResult(TestResult newResult) {
-    this.result = newResult;
-  }
-
-  protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {
-    this.deviceSpecimen = deviceSpecimen;
-    this.deviceType = deviceSpecimen.getDeviceType();
-    this.specimenType = deviceSpecimen.getSpecimenType();
+  protected void setDeviceTypeAndSpecimenType(DeviceType device, SpecimenType specimen) {
+    this.deviceType = device;
+    this.specimenType = specimen;
   }
 
   public TestCorrectionStatus getCorrectionStatus() {

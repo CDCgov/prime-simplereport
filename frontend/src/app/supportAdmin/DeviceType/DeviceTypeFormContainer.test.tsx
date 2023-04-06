@@ -1,12 +1,16 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { SpecimenType } from "../../../generated/graphql";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import DeviceTypeFormContainer from "./DeviceTypeFormContainer";
-import { addValue } from "./DeviceTypeForm.test";
 
 const mockCreateDeviceType = jest.fn();
+
+const addValue = async (name: string, value: string) => {
+  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+};
 
 jest.mock("../../../generated/graphql", () => {
   return {
@@ -53,48 +57,81 @@ jest.mock("react-router-dom", () => {
   };
 });
 
-describe("DeviceTypeFormContainer", () => {
-  it("should show the device type form", async () => {
-    render(<DeviceTypeFormContainer />);
+const mockFacility: any = {
+  id: "12345",
+};
 
-    expect(await screen.findByText("Device type")).toBeInTheDocument();
+jest.mock("../../facilitySelect/useSelectedFacility", () => {
+  return {
+    useSelectedFacility: () => {
+      return [mockFacility, () => {}];
+    },
+  };
+});
+
+let container: any;
+
+describe("DeviceTypeFormContainer", () => {
+  beforeEach(() => {
+    container = render(
+      <>
+        <DeviceTypeFormContainer />
+        <SRToastContainer />
+      </>
+    );
+  });
+  it("should render the device type form", async () => {
+    expect(container).toMatchSnapshot();
   });
 
   it("should save the new device", async () => {
-    render(<DeviceTypeFormContainer />);
+    await addValue("Device name", "Accula");
+    await addValue("Manufacturer", "Mesa Biotech");
+    await addValue("Model", "Accula SARS-Cov-2 Test*");
+    await addValue("Test length (minutes) ", "15");
 
-    addValue("Device name", "Accula");
-    addValue("Manufacturer", "Mesa Biotech");
-    addValue("Model", "Accula SARS-Cov-2 Test*");
-    addValue("LOINC code", "95409-9");
+    await userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
+    await userEvent.click(screen.getByText("Cotton (5309)"));
 
-    userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
+    await userEvent.click(screen.getAllByTestId("multi-select-input")[1]);
+    await userEvent.click(screen.getAllByText("COVID-19")[0]);
 
-    userEvent.click(screen.getByText("Cotton (5309)"));
+    await userEvent.selectOptions(
+      screen.getByLabelText("Supported disease *"),
+      "COVID-19"
+    );
+    await userEvent.type(
+      screen.getByLabelText("Test performed code *"),
+      "1920-12"
+    );
+    await userEvent.type(
+      screen.getByLabelText("Test ordered code *"),
+      "2102-91"
+    );
+    await userEvent.click(screen.getByText("Save changes"));
 
-    userEvent.click(screen.getAllByTestId("multi-select-input")[1]);
-
-    userEvent.click(screen.getByText("COVID-19"));
-
-    userEvent.click(screen.getByText("Save changes"));
-
-    await screen.findByText("Redirected to /admin");
-
+    await waitFor(() =>
+      expect(mockCreateDeviceType).toHaveBeenCalledWith({
+        fetchPolicy: "no-cache",
+        variables: {
+          internalId: undefined,
+          manufacturer: "Mesa Biotech",
+          model: "Accula SARS-Cov-2 Test*",
+          name: "Accula",
+          swabTypes: ["887799"],
+          testLength: 15,
+          supportedDiseaseTestPerformed: [
+            {
+              supportedDisease: "294729",
+              testPerformedLoincCode: "1920-12",
+              testOrderedLoincCode: "2102-91",
+            },
+          ],
+        },
+      })
+    );
     expect(mockCreateDeviceType).toBeCalledTimes(1);
-    expect(mockCreateDeviceType).toHaveBeenCalledWith({
-      fetchPolicy: "no-cache",
-      variables: {
-        loincCode: "95409-9",
-        manufacturer: "Mesa Biotech",
-        model: "Accula SARS-Cov-2 Test*",
-        name: "Accula",
-        swabTypes: ["887799"],
-        supportedDiseases: ["294729"],
-      },
-    });
 
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    await screen.findByText("Redirected to /admin");
+    await screen.findByText("Redirected to /admin?facility=12345");
   });
 });

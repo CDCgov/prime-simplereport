@@ -1,11 +1,11 @@
 module "metric_alerts" {
-  source              = "../services/alerts/app_service_metrics"
-  env                 = local.env
-  app_insights_id     = data.azurerm_application_insights.app_insights.id
-  app_service_plan_id = module.simple_report_api.app_service_plan_id
-  app_service_id      = module.simple_report_api.app_service_id
-  rg_name             = data.azurerm_resource_group.rg.name
-  tags                = local.management_tags
+  source          = "../services/alerts/app_service_metrics"
+  env             = local.env
+  app_insights_id = data.azurerm_application_insights.app_insights.id
+  service_plan_id = module.simple_report_api.service_plan_id
+  app_service_id  = module.simple_report_api.app_service_id
+  rg_name         = data.azurerm_resource_group.rg.name
+  tags            = local.management_tags
   disabled_alerts = [
     "http_2xx_failed_requests",
     "http_4xx_errors",
@@ -15,13 +15,15 @@ module "metric_alerts" {
     "account_request_failures",
     "experian_auth_failures",
     "frontend_error_boundary",
-    "batched_uploader_single_failure_detected",
-    "batched_uploader_function_not_triggering",
+    "fhir_batched_uploader_single_failure_detected",
+    "fhir_batched_uploader_function_not_triggering",
+    "function_app_memory_alert",
+    "fhir_function_app_duration_alert",
     "mem_util"
   ]
 
   action_group_ids = [
-    data.terraform_remote_state.global.outputs.pagerduty_prod_action_id
+    data.terraform_remote_state.global.outputs.pagerduty_stg_action_id
   ]
 
   database_id = data.terraform_remote_state.persistent_stg.outputs.postgres_server_id

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -9,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.Person.SpecField;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +23,6 @@ class PersonRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private PersonRepository _repo;
   @Autowired private OrganizationRepository _orgRepo;
-  @Autowired private TestDataFactory _dataFactory;
 
   private Specification<Person> inWholeOrganizationFilter(Organization org) {
     return (root, query, cb) ->
@@ -44,7 +43,7 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             "Schmoe",
             null,
             LocalDate.now(),
-            _dataFactory.getAddress(),
+            getAddress(),
             "USA",
             PersonRole.VISITOR,
             List.of("joe@shmoe.com"),

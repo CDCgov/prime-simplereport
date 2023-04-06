@@ -2,12 +2,13 @@ import { PhoneNumberUtil, PhoneNumberFormat } from "google-libphonenumber";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button/Button";
 import {
   PendingOrganization,
   useEditPendingOrganizationMutation,
 } from "../../../generated/graphql";
+import { showSuccess } from "../../utils/srToast";
+import { useDocumentTitle } from "../../utils/hooks";
 
 import {
   PendingOrganizationFormValues,
@@ -27,7 +28,6 @@ interface Props {
   ) => Promise<void>;
   loading: boolean;
   refetch: () => void;
-  showNotification: (notif: JSX.Element) => void;
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -38,8 +38,9 @@ const PendingOrganizations = ({
   submitDeletion,
   loading,
   refetch,
-  showNotification,
 }: Props) => {
+  useDocumentTitle("Edit or verify organization identity");
+
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
   );
@@ -98,7 +99,7 @@ const PendingOrganizations = ({
     setIsUpdating(false);
     setOrgToVerify(null);
     const updateMessage = `${org.name} details updated`;
-    showNotification(<Alert type="success" title={updateMessage} body="" />);
+    showSuccess("", updateMessage);
     return Promise.resolve(updatedOrg);
   };
 
@@ -182,7 +183,7 @@ const PendingOrganizations = ({
     if (organizations.length === 0) {
       return (
         <tr>
-          <td>No results</td>
+          <td colSpan={7}>No results</td>
         </tr>
       );
     }
@@ -211,6 +212,7 @@ const PendingOrganizations = ({
         <td className="verify-button-container">
           <Button
             className="sr-pending-org-edit-verify"
+            ariaLabel={`Edit or verify ${o.name}`}
             onClick={() => {
               setOrgToVerify(o);
             }}
@@ -221,6 +223,7 @@ const PendingOrganizations = ({
         <td>
           <button
             className="sr-pending-org-delete-button"
+            aria-label={`Delete ${o.name}`}
             data-testid="delete-org-button"
             onClick={() => {
               setOrgToDelete(o);
@@ -233,7 +236,7 @@ const PendingOrganizations = ({
     ));
   };
   return (
-    <main className="prime-home">
+    <div className="prime-home flex-1">
       <div className="grid-container pending-orgs-wide-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
@@ -257,9 +260,12 @@ const PendingOrganizations = ({
               />
             ) : null}
             <div className="usa-card__header">
-              <h2 data-cy="pending-orgs-title">
+              <h1
+                data-cy="pending-orgs-title"
+                className="font-heading-lg margin-top-0 margin-bottom-0"
+              >
                 Edit or verify organization identity
-              </h2>
+              </h1>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -270,16 +276,17 @@ const PendingOrganizations = ({
                     <th scope="row">Contact information</th>
                     <th scope="row">Created</th>
                     <th scope="col">External ID</th>
-                    <th scope="col"></th>
+                    <th scope="col" aria-hidden></th>
+                    <th scope="col" aria-hidden></th>
                   </tr>
                 </thead>
-                <tbody>{orgRows()}</tbody>
+                <tbody aria-live={"polite"}>{orgRows()}</tbody>
               </table>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 

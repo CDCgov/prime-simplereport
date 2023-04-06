@@ -12,14 +12,16 @@ locals {
 
 # Frontend React App
 resource "azurerm_storage_account" "app" {
-  account_replication_type  = "GRS" # Cross-regional redundancy
-  account_tier              = "Standard"
-  account_kind              = "StorageV2"
-  name                      = "simplereport${local.env}app"
-  resource_group_name       = data.azurerm_resource_group.rg.name
-  location                  = data.azurerm_resource_group.rg.location
-  enable_https_traffic_only = false
-  min_tls_version           = "TLS1_2"
+  account_replication_type         = "GRS" # Cross-regional redundancy
+  account_tier                     = "Standard"
+  account_kind                     = "StorageV2"
+  name                             = "simplereport${local.env}app"
+  resource_group_name              = data.azurerm_resource_group.rg.name
+  location                         = data.azurerm_resource_group.rg.location
+  enable_https_traffic_only        = true
+  min_tls_version                  = "TLS1_2"
+  allow_nested_items_to_be_public  = false
+  cross_tenant_replication_enabled = false
 
   static_website {
     index_document     = "index.html"
@@ -35,6 +37,21 @@ resource "azurerm_storage_queue" "test_event_queue" {
 
 resource "azurerm_storage_queue" "test_event_exceptions_queue" {
   name                 = "test-event-publishing-exceptions"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
+resource "azurerm_storage_queue" "test-event-publishing-error" {
+  name                 = "test-event-publishing-error"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
+resource "azurerm_storage_queue" "fhir_data_queue" {
+  name                 = "fhir-data-publishing"
+  storage_account_name = azurerm_storage_account.app.name
+}
+
+resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
+  name                 = "fhir-data-publishing-error"
   storage_account_name = azurerm_storage_account.app.name
 }
 
@@ -55,7 +72,16 @@ module "app_gateway" {
     module.simple_report_api.app_hostname
   ]
 
-  tags = local.management_tags
+  staging_fqdns = [
+    module.simple_report_api.staging_hostname
+  ]
+
+  metabase_fqdns = [
+    module.metabase_service.app_hostname
+  ]
+
+  firewall_policy_id = module.web_application_firewall.web_application_firewall_id
+  tags               = local.management_tags
 }
 
 module "nat_gateway" {
@@ -70,7 +96,7 @@ module "nat_gateway" {
   tags                    = local.management_tags
 }
 
-/* module "web_application_firewall" {
+module "web_application_firewall" {
   source                  = "../services/web_application_firewall"
   name                    = local.name
   env                     = local.env
@@ -78,7 +104,7 @@ module "nat_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   tags = local.management_tags
-} */
+}
 
 module "app_service_autoscale" {
   source                  = "../services/app_service_autoscale"
@@ -86,7 +112,7 @@ module "app_service_autoscale" {
   env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
-  target_resource_id      = module.simple_report_api.app_service_plan_id
+  target_resource_id      = module.simple_report_api.service_plan_id
 
   tags = local.management_tags
 }

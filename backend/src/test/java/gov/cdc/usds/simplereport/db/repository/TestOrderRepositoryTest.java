@@ -37,8 +37,9 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void runChanges() {
-    Organization gwu = _dataFactory.createValidOrg("George Washington", "university", "gwu", true);
-    Organization gtown = _dataFactory.createValidOrg("Georgetown", "university", "gt", true);
+    Organization gwu =
+        _dataFactory.saveOrganization("George Washington", "university", "gwu", true);
+    Organization gtown = _dataFactory.saveOrganization("Georgetown", "university", "gt", true);
     Facility site = _dataFactory.createValidFacility(gtown);
     Facility otherSite = _dataFactory.createValidFacility(gwu);
     Person hoya =
@@ -84,7 +85,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void testLifeCycle() {
-    Organization gtown = _dataFactory.createValidOrg("Georgetown", "university", "gt", true);
+    Organization gtown = _dataFactory.saveOrganization("Georgetown", "university", "gt", true);
     Person hoya =
         _personRepo.save(
             new Person(
@@ -118,7 +119,6 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     flush();
     Result result = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
     _resultRepo.save(result);
-    order.setResultColumn(TestResult.POSITIVE);
     TestEvent ev = _events.save(new TestEvent(order));
     assertNotNull(ev);
     order.setTestEventRef(ev);
@@ -138,7 +138,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void createOrder_duplicatesFound_error() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Person patient0 = _dataFactory.createMinimalPerson(org);
     Facility site = _dataFactory.createValidFacility(org);
     TestOrder order1 = new TestOrder(patient0, site);
@@ -157,7 +157,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void createOrder_duplicateCanceled_ok() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Person patient0 = _dataFactory.createMinimalPerson(org);
     Facility site = _dataFactory.createValidFacility(org);
     TestOrder order1 = new TestOrder(patient0, site);
@@ -179,7 +179,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void createOrder_duplicateSubmitted_ok() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Person patient0 = _dataFactory.createMinimalPerson(org);
     Facility site = _dataFactory.createValidFacility(org);
     TestOrder order1 = new TestOrder(patient0, site);
@@ -187,7 +187,6 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     flush();
     Result result = new Result(order1, _diseaseService.covid(), TestResult.NEGATIVE);
     _resultRepo.save(result);
-    order1.setResultColumn(TestResult.NEGATIVE);
     TestEvent didit = _events.save(new TestEvent(order1));
     order1.setTestEventRef(didit);
     order1.markComplete();
@@ -206,7 +205,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void fetchQueue_multipleEntries_sortedFifo() {
-    Organization org = _dataFactory.createValidOrg();
+    Organization org = _dataFactory.saveValidOrganization();
     Person adam = _dataFactory.createMinimalPerson(org, null, "Adam", "A.", "Astaire", "Jr.");
     Person brad = _dataFactory.createMinimalPerson(org, null, "Bradley", "B.", "Bones", null);
     Person charlie =

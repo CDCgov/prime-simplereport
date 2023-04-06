@@ -2,8 +2,6 @@ import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { Story, Meta } from "@storybook/react";
 
-import { TestResult } from "../QueueItem";
-
 import SearchResults, { QueueProps, TestResultsProps } from "./SearchResults";
 
 const patient = {
@@ -24,9 +22,9 @@ const patient = {
   },
 };
 
-const RouterWithFacility: React.FC = ({ children }) => (
-  <MemoryRouter>{children}</MemoryRouter>
-);
+const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
+  children,
+}) => <MemoryRouter>{children}</MemoryRouter>;
 
 export default {
   title: "Search Results",
@@ -34,16 +32,18 @@ export default {
   argTypes: {},
 } as Meta;
 
-const TestResultsTemplate = (): Story<TestResultsProps> => (args) => (
-  <RouterWithFacility>
-    <SearchResults {...args} />
-  </RouterWithFacility>
-);
-const QueueTemplate = (): Story<QueueProps> => (args) => (
-  <RouterWithFacility>
-    <SearchResults {...args} />
-  </RouterWithFacility>
-);
+const TestResultsTemplate = (): Story<TestResultsProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <SearchResults {...args} />
+    </RouterWithFacility>
+  );
+const QueueTemplate = (): Story<QueueProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <SearchResults {...args} />
+    </RouterWithFacility>
+  );
 
 export const NoResults = TestResultsTemplate();
 NoResults.args = {

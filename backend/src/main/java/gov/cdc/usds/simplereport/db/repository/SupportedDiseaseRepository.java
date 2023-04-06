@@ -10,4 +10,7 @@ public interface SupportedDiseaseRepository extends CrudRepository<SupportedDise
   List<SupportedDisease> findAllByName(String name);
 
   Optional<SupportedDisease> findByName(String name);
+
+  @Override
+  List<SupportedDisease> findAll();
 }

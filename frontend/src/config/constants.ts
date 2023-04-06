@@ -1,7 +1,7 @@
-export const PATIENT_TERM = "person";
-export const PATIENT_TERM_CAP = "Person";
-export const PATIENT_TERM_PLURAL = "people";
-export const PATIENT_TERM_PLURAL_CAP = "People";
+export const PATIENT_TERM = "patient";
+export const PATIENT_TERM_CAP = "Patient";
+export const PATIENT_TERM_PLURAL = "patients";
+export const PATIENT_TERM_PLURAL_CAP = "Patients";
 
 // NOTE: Any time SimpleReport goes live in a new state, this file must be updated.
 // Otherwise, organizations will not be able to create facilities in the new state.
@@ -17,10 +17,12 @@ export const liveJurisdictions = [
   "IA",
   "ID",
   "IL",
+  "IN",
   "LA",
   "MA",
   "MD",
   "MN",
+  "MO",
   "MS",
   "MT",
   "ND",
@@ -28,11 +30,15 @@ export const liveJurisdictions = [
   "NJ",
   "NM",
   "NV",
+  "NY",
   "OH",
+  "OK",
   "OR",
   "PA",
+  "RI",
   "TN",
   "TX",
+  "UT",
   "VT",
   "WA",
   "WI",
@@ -412,7 +418,7 @@ export const languages: Language[] = [
   "Aromanian; Arumanian; Macedo-Romanian",
   "Bantu (other)",
   "Bengali",
-  "Braile",
+  "Braille",
   "Burmese",
   "Cambodian",
   "Cantonese",
@@ -521,3 +527,6 @@ export const organizationCreationSteps = [
   { label: "Personal details", value: "1", order: 1 },
   { label: "Experian identity verification", value: "2", order: 2 },
 ];
+
+export const MAX_CSV_UPLOAD_BYTES = 50 * 1000 * 1000;
+export const MAX_CSV_UPLOAD_ROW_COUNT = 10000;

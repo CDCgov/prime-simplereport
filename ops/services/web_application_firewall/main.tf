@@ -64,21 +64,126 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
   }
 
   managed_rules {
+
+    /*
+     * Exclusions for specific request components.
+     * Azure supports three specific values for match_variable:
+     *  - RequestArgNames
+     *  - RequestCookieNames
+     *  - RequestHeaderNames
+     */
     exclusion {
       match_variable          = "RequestCookieNames"
-      selector                = "ai_session"
+      selector                = "ai_session" //Part of Azure Application Insights
       selector_match_operator = "StartsWith"
     }
+    exclusion {
+      match_variable          = "RequestCookieNames"
+      selector                = "ai_user" //Part of Azure Application Insights
+      selector_match_operator = "StartsWith"
+    }
+    exclusion {
+      match_variable          = "RequestCookieNames"
+      selector                = "iss"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestCookieNames"
+      selector                = "ssm_au"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestCookieNames"
+      selector                = "ssm_au_c"
+      selector_match_operator = "Equals"
+    }
+
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "iss"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "variables.testResultList"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "variables.namePrefixMatch"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "variables.street"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "variables.orderingProviderStreet"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "operations"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "map"
+      selector_match_operator = "Equals"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "phoneNumbers.number"
+      selector_match_operator = "Contains"
+    }
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "variables.model"
+      selector_match_operator = "Equals"
+    }
+
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "query"
+      selector_match_operator = "Equals"
+    }
+
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "visualization_settings"
+      selector_match_operator = "Equals"
+    }
+
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "query.filters"
+      selector_match_operator = "Contains"
+    }
+
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "variables.email"
+      selector_match_operator = "Contains"
+    }
+
     managed_rule_set {
       type    = "OWASP"
       version = "3.2"
 
+      /*
+       * Each rule group in the OWASP ruleset can be overridden. These blocks contain a list of
+       * rules within each specific group that we've chosen to override, due to how the application
+       * is structured.
+       *
+       * These rules should be periodically reviewed for relevance.
+       */
       rule_group_override {
-        rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
+        rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT" //TODO: add exception for whoami
         disabled_rules = [
-          "942430",
-          "942260",
-          "942200"
+          "920300",
+          "920320"
         ]
       }
 
@@ -90,12 +195,29 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
           "932115"
         ]
       }
+
+      rule_group_override {
+        rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
+        disabled_rules = [
+          "942110",
+          "942150",
+          "942190",
+          "942200",
+          "942260",
+          "942330",
+          "942361",
+          "942370",
+          "942410",
+          "942430",
+          "942440"
+        ]
+      }
     }
   }
 
   policy_settings {
     enabled                     = true
-    mode                        = "Detection" //Can use "Detection" for testing, to see which requests would be blocked. "Prevention" turns on active blocking.
+    mode                        = "Prevention" //Can use "Detection" for testing, to see which requests would be blocked. "Prevention" turns on active blocking.
     request_body_check          = true
     file_upload_limit_in_mb     = 100
     max_request_body_size_in_kb = 128 //Can go to 2000 in modern provider version. Proposed is 1024.

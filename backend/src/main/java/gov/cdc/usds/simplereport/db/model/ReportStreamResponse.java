@@ -27,12 +27,25 @@ public class ReportStreamResponse extends IdentifiedEntity {
 
   private String resolutionNote;
 
+  private String queueName;
+
   @Column(updatable = false)
   @CreatedDate
   private Date createdAt;
 
+  public ReportStreamResponse(
+      UUID testEventInternalId, Boolean isError, String details, String queueName) {
+    this.testEventInternalId = testEventInternalId;
+    this.isError = isError;
+    this.details = details;
+    this.queueName = queueName;
+  }
+
   public static ReportStreamResponse from(ReportStreamCallbackRequest request) {
     return new ReportStreamResponse(
-        request.getTestEventInternalId(), request.getIsError(), request.getDetails());
+        request.getTestEventInternalId(),
+        request.getIsError(),
+        request.getDetails(),
+        request.getQueueName());
   }
 }

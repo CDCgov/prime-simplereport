@@ -1,0 +1,128 @@
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
+import { MultiplexResultInput } from "../../generated/graphql";
+
+import CovidResultInputForm from "./CovidResultInputForm";
+import { MULTIPLEX_DISEASES, TEST_RESULTS } from "./constants";
+
+describe("TestResultInputForm", () => {
+  const positiveResult: MultiplexResultInput[] = [
+    {
+      diseaseName: MULTIPLEX_DISEASES.COVID_19,
+      testResult: TEST_RESULTS.POSITIVE,
+    },
+  ];
+
+  const onChangeFn = jest.fn();
+  const onSubmitFn = jest.fn();
+
+  it("should render with a value", () => {
+    render(
+      <CovidResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={positiveResult}
+        isSubmitDisabled={undefined}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+
+    expect(screen.getByLabelText("Positive (+)")).toBeChecked();
+    expect(screen.getByLabelText("Negative (-)")).not.toBeChecked();
+    expect(screen.getByLabelText("Inconclusive")).not.toBeChecked();
+  });
+
+  it("should render without a value", () => {
+    render(
+      <CovidResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[]}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+
+    expect(screen.getByLabelText("Positive (+)")).not.toBeChecked();
+    expect(screen.getByLabelText("Negative (-)")).not.toBeChecked();
+    expect(screen.getByLabelText("Inconclusive")).not.toBeChecked();
+  });
+
+  it("should pass back the result value when clicked", async () => {
+    render(
+      <CovidResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[]}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+
+    await userEvent.click(screen.getByLabelText("Negative (-)"));
+    expect(onChangeFn).toBeCalledWith([
+      {
+        diseaseName: MULTIPLEX_DISEASES.COVID_19,
+        testResult: TEST_RESULTS.NEGATIVE,
+      },
+    ]);
+  });
+
+  it("should not submit when there is no value", async () => {
+    render(
+      <CovidResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[]}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+    expect(screen.getByText("Submit")).toBeDisabled();
+    await userEvent.click(screen.getByText("Submit"));
+    expect(onSubmitFn).toHaveBeenCalledTimes(0);
+  });
+
+  it("should not submit when there is a value but isSubmit is disabled", async () => {
+    render(
+      <CovidResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={positiveResult}
+        isSubmitDisabled={true}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+    expect(screen.getByText("Submit")).toBeDisabled();
+    await userEvent.click(screen.getByText("Submit"));
+    expect(onSubmitFn).toHaveBeenCalledTimes(0);
+  });
+
+  it("should submit when there is a value but isSubmit is enabled", async () => {
+    render(
+      <CovidResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={positiveResult}
+        isSubmitDisabled={false}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+    expect(screen.getByText("Submit")).toBeEnabled();
+    await userEvent.click(screen.getByText("Submit"));
+    expect(onSubmitFn).toHaveBeenCalledTimes(1);
+  });
+
+  it("should submit when isSubmitDisabled is not passed as prop", async () => {
+    render(
+      <CovidResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={positiveResult}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+    expect(screen.getByText("Submit")).toBeEnabled();
+    await userEvent.click(screen.getByText("Submit"));
+    expect(onSubmitFn).toHaveBeenCalledTimes(1);
+  });
+});
