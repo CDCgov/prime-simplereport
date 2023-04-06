@@ -151,7 +151,7 @@ public class UserAuthorizationVerifier {
     if (testOrder.isEmpty()) {
       throw new NonexistentQueueItemException();
     }
-    return testOrder.isPresent() && userCanViewQueueItem(testOrder.get());
+    return userCanViewQueueItem(testOrder.get());
   }
 
   public boolean userCanViewQueueItem(TestOrder testOrder) {
@@ -218,8 +218,7 @@ public class UserAuthorizationVerifier {
     } else if (patient.getFacility() == null) {
       return true;
     } else {
-      return currentOrgRoles.isPresent()
-          && currentOrgRoles.get().containsFacility(patient.getFacility());
+      return currentOrgRoles.get().containsFacility(patient.getFacility());
     }
   }
 
