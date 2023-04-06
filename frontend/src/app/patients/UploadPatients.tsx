@@ -104,6 +104,13 @@ const UploadPatients = () => {
       if (response.status === "FAILURE") {
         setStatus("fail");
         if (response?.errors?.length) {
+          appInsights?.trackTrace(
+            { message: "patientUpload_validationError", severityLevel: 1 },
+            Object.assign(
+              {},
+              ...response?.errors.map((error: any) => ({ [error.message]: "" }))
+            )
+          );
           setErrorMessage({
             header: "Error: File not accepted",
             body: (
