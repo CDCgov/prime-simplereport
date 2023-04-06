@@ -327,12 +327,22 @@ const UploadPatients = () => {
                 <a
                   href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
                   className={"usa-button margin-right-105"}
+                  onClick={() =>
+                    appInsights?.trackEvent({
+                      name: "viewPatientBulkUploadGuide",
+                    })
+                  }
                 >
                   View patient bulk upload guide
                 </a>
                 <a
                   href="/assets/resources/patient_upload_example.csv"
                   className={"usa-button usa-button--outline"}
+                  onClick={() =>
+                    appInsights?.trackEvent({
+                      name: "downloadPatientBulkUploadSample",
+                    })
+                  }
                 >
                   Download spreadsheet template
                 </a>
