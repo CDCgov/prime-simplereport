@@ -13,7 +13,6 @@ import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PatientSelfRegistration;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
-import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.model.ExistingPatientCheckRequestBody;
@@ -21,6 +20,7 @@ import gov.cdc.usds.simplereport.service.model.PatientEmailsHolder;
 import java.util.List;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,20 +38,11 @@ import org.springframework.web.bind.annotation.RestController;
 @PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @Validated
 @Slf4j
+@RequiredArgsConstructor
 public class PatientSelfRegistrationController {
   private final PatientSelfRegistrationLinkService _patientRegLinkService;
   private final PersonService _personService;
   private final CurrentPatientContextHolder _currentPatientContextHolder;
-
-  public PatientSelfRegistrationController(
-      PersonService personService,
-      OrganizationService orgService,
-      PatientSelfRegistrationLinkService patientSelfRegistrationLinkService,
-      CurrentPatientContextHolder currentPatientContextHolder) {
-    _personService = personService;
-    _patientRegLinkService = patientSelfRegistrationLinkService;
-    _currentPatientContextHolder = currentPatientContextHolder;
-  }
 
   @PostMapping("")
   public void register(@RequestBody PatientSelfRegistration body, HttpServletRequest request) {
