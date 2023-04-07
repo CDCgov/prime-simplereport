@@ -5,8 +5,6 @@ simple-report:
     enabled: true
     fhir-queue-enabled: true
     exception-webhook-enabled: true
-  device-sync-livd:
-    enabled: true
   patient-link-url: https://dev6.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://dev6.simplereport.gov/api/pxp/callback
   sendgrid:

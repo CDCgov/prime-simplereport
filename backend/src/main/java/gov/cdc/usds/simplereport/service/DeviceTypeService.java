@@ -25,15 +25,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,8 +126,6 @@ public class DeviceTypeService {
       new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
   private static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
-  private static final int DEVICE_SYNC_INITIAL_DELAY_MINUTES = 5;
-  private static final int DEVICE_SYNC_INTERVAL_MINUTES = 60;
 
   private final DeviceTypeRepository deviceTypeRepository;
   private final DataHubClient client;
@@ -140,9 +134,6 @@ public class DeviceTypeService {
   private final SupportedDiseaseRepository supportedDiseaseRepository;
   private final DiseaseService diseaseService;
   private final SpecimenTypeService specimenTypeService;
-
-  @Value("${simple-report.device-sync-livd.enabled:false}")
-  private boolean deviceSyncEnabled;
 
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -302,25 +293,6 @@ public class DeviceTypeService {
         .map(Optional::get)
         .map(SpecimenType::getInternalId)
         .toList();
-  }
-
-  /**
-   * Wrapper method for syncing devices from LIVD table so automation can call the inner method
-   * without hitting the lock or conditions.
-   */
-  @Scheduled(
-      initialDelay = DEVICE_SYNC_INITIAL_DELAY_MINUTES,
-      fixedRate = DEVICE_SYNC_INTERVAL_MINUTES,
-      timeUnit = TimeUnit.MINUTES)
-  @SchedulerLock(
-      name = "DeviceTypeService_syncDevices",
-      lockAtLeastFor = "PT30S",
-      lockAtMostFor = "PT30M")
-  @Transactional
-  public void scheduledSyncDevices() {
-    if (deviceSyncEnabled) {
-      syncDevices();
-    }
   }
 
   @Transactional

@@ -5,8 +5,6 @@ simple-report:
   twilio-callback-url: https://training.simplereport.gov/api/pxp/callback
   sendgrid:
     enabled: false
-  device-sync-livd:
-    enabled: true
   cors:
     allowed-origins:
       - https://simple-report-api-training.azurewebsites.net

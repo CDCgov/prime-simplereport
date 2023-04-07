@@ -5,8 +5,6 @@ simple-report:
     enabled: true
     fhir-queue-enabled: true
     exception-webhook-enabled: true
-  device-sync-livd:
-    enabled: true
   processing-mode-code: T
   patient-link-url: https://stg.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://stg.simplereport.gov/api/pxp/callback
