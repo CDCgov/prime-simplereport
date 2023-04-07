@@ -293,4 +293,27 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     var createdDevice = deviceTypeRepo.findDeviceTypeByName("Shiny New Manufacturer Device A");
     assertNotNull(createdDevice);
   }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void syncDevices_skipsConfiguredDevices() {
+    LIVDResponse device =
+        new LIVDResponse(
+            "Applied BioCode, Inc.",
+            "BioCode CoV-2 Flu Plus Assay",
+            List.of(SPECIMEN_DESCRIPTION_ONE),
+            "fluA",
+            "000000000",
+            "000000000",
+            "TestKit Uid",
+            "Equipment Uid");
+
+    List<LIVDResponse> devices = List.of(device);
+
+    when(dataHubClient.getLIVDTable()).thenReturn(devices);
+    _service.syncDevices();
+
+    var createdDevice = deviceTypeRepo.findDeviceTypeByName("BioCode CoV-2 Flu Plus Assay");
+    assertNull(createdDevice);
+  }
 }
