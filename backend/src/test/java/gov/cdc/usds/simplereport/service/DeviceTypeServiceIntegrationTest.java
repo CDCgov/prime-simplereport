@@ -32,7 +32,7 @@ import org.springframework.test.context.TestPropertySource;
       "hibernate.query.interceptor.error-level=ERROR",
       "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
     })
-class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService> {
+class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncService> {
   @Autowired private DeviceTypeService deviceTypeService;
   @Autowired private DeviceTypeRepository deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
@@ -44,11 +44,11 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
   private SpecimenType swab3;
   private DeviceType devA;
   private DeviceType devB;
-  private String SPECIMEN_DESCRIPTION_ONE =
+  private final String SPECIMEN_DESCRIPTION_ONE =
       "anterior nasal swabs (697989009^Anterior nares swab^SCT)\r";
-  private String SPECIMEN_DESCRIPTION_TWO =
+  private final String SPECIMEN_DESCRIPTION_TWO =
       "nasopharyngeal swabs (258500001^Nasopharyngeal swab^SCT)\r";
-  private String SPECIMEN_DESCRIPTION_THREE = "to be added (999999999^To Be Added^SCT)\r";
+  private final String SPECIMEN_DESCRIPTION_THREE = "to be added (999999999^To Be Added^SCT)\r";
 
   @BeforeEach
   void setup() {
@@ -115,7 +115,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     List<LIVDResponse> devices = List.of(newDevice);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    deviceTypeService.syncDevices();
+    _service.syncDevices();
     var updatedDevice =
         deviceTypeRepo.findDeviceTypeByManufacturerAndModel(
             newDevice.getManufacturer(), newDevice.getModel());
@@ -148,7 +148,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     List<LIVDResponse> devices = List.of(newDevice);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    deviceTypeService.syncDevices();
+    _service.syncDevices();
     var createdDevice =
         deviceTypeRepo.findDeviceTypeByManufacturerAndModel(
             newDevice.getManufacturer(), newDevice.getModel());
@@ -189,7 +189,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
 
-    deviceTypeService.syncDevices();
+    _service.syncDevices();
 
     // Brand-new specimen type from response added to DB
     var newSpecimenType = specimenTypeRepository.findByTypeCodeAndIsDeletedFalse("999999999");
@@ -240,7 +240,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     List<LIVDResponse> devices = List.of(device);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    deviceTypeService.syncDevices();
+    _service.syncDevices();
     var updatedDevice = deviceTypeRepo.findDeviceTypeByName(devA.getName());
 
     // Device was not updated
@@ -264,7 +264,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     List<LIVDResponse> devices = List.of(device);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    assertDoesNotThrow(() -> deviceTypeService.syncDevices());
+    assertDoesNotThrow(() -> _service.syncDevices());
 
     var createdDevice = deviceTypeRepo.findDeviceTypeByName("Some model");
     assertNull(createdDevice);
@@ -288,7 +288,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeService
     List<LIVDResponse> devices = List.of(device);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    deviceTypeService.syncDevices();
+    _service.syncDevices();
 
     var createdDevice = deviceTypeRepo.findDeviceTypeByName("Shiny New Manufacturer Device A");
     assertNotNull(createdDevice);

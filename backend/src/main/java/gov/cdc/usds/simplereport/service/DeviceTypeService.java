@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
-import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -10,23 +9,17 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
-import gov.cdc.usds.simplereport.service.model.reportstream.LIVDResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -258,222 +251,7 @@ public class DeviceTypeService {
     return dt;
   }
 
-  public String extractSpecimenTypeCode(String specimenDescription) {
-    Pattern specimenCode = Pattern.compile("^(.*?)\\^");
-    return extractSpecimenDetails(specimenDescription, specimenCode);
-  }
-
-  public String extractSpecimenTypeName(String specimenDescription) {
-    Pattern specimenName = Pattern.compile("\\^(.*?)\\^");
-    return extractSpecimenDetails(specimenDescription, specimenName);
-  }
-
-  private String extractSpecimenDetails(String specimenDescription, Pattern specimenName) {
-    Pattern specimenDetails = Pattern.compile("\\(([^)]*)\\)[^(]*$");
-
-    Matcher matcher = specimenDetails.matcher(specimenDescription);
-
-    if (!matcher.find()) {
-      return "";
-    }
-
-    var result = specimenName.matcher(matcher.group(1));
-
-    if (!result.find()) {
-      return "";
-    }
-
-    return result.group(1);
-  }
-
-  public List<UUID> getSpecimenTypeIdsFromDescription(LIVDResponse device) {
-    return device.getVendorSpecimenDescription().stream()
-        .map(this::parseVendorSpecimenDescription)
-        .filter(Optional::isPresent)
-        .map(Optional::get)
-        .map(SpecimenType::getInternalId)
-        .toList();
-  }
-
-  @Transactional
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public void syncDevices() {
-    List<LIVDResponse> devices = client.getLIVDTable();
-
-    var devicesToSync = new HashMap<DeviceType, ArrayList<SupportedDiseaseTestPerformedInput>>();
-    var deviceSpecimens = new HashMap<String, List<UUID>>();
-
-    devices.forEach(
-        device -> {
-          // Skip sync for any device entries with incomplete data
-          if (device == null
-              || device.getManufacturer() == null
-              || device.getModel() == null
-              || device.getVendorAnalyteName() == null) {
-            log.info("One or more required values are not present in the LIVD entry");
-
-            return;
-          }
-          String deviceIdentifier = device.getModel() + "|" + device.getManufacturer();
-          if (COVID19_DEVICE_SYNC_BLOCK_LIST.contains(deviceIdentifier)
-              || FluA_DEVICE_SYNC_BLOCK_LIST.contains(deviceIdentifier)) {
-            log.info("Blocking the sync of " + device.getModel());
-            return;
-          }
-
-          // Does the device exist at all in the DB?
-          var foundDevice =
-              deviceTypeRepository.findDeviceTypeByManufacturerAndModel(
-                  device.getManufacturer(), device.getModel());
-
-          DeviceType deviceToSync =
-              foundDevice.orElseGet(
-                  () -> {
-                    // Have we seen this device before? Gets its specimens
-                    if (!deviceSpecimens.containsKey(
-                        device.getModel() + device.getManufacturer())) {
-
-                      deviceSpecimens.put(
-                          device.getModel() + device.getManufacturer(),
-                          getSpecimenTypeIdsFromDescription(device));
-                    }
-
-                    var specimensForDevice =
-                        deviceSpecimens.get(device.getModel() + device.getManufacturer());
-                    var supportedDisease =
-                        getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
-
-                    if (supportedDisease.isEmpty()) {
-                      // Skip this device
-                      log.info(
-                          "Device {} does not contain required disease data", device.getModel());
-                      return null;
-                    }
-
-                    // Device name should be the same as the model name, unless a device
-                    // with that name already exists.
-                    // If so, prepend with the manufacturer name before creation
-                    var existingDeviceWithName =
-                        deviceTypeRepository.findDeviceTypeByName(device.getModel());
-                    var deviceName =
-                        existingDeviceWithName == null
-                            ? device.getModel()
-                            : String.join(" ", device.getManufacturer(), device.getModel());
-
-                    DeviceType newlyCreatedDeviceType =
-                        createDeviceType(
-                            CreateDeviceType.builder()
-                                .name(deviceName)
-                                .manufacturer(device.getManufacturer())
-                                .model(device.getModel())
-                                .swabTypes(specimensForDevice)
-                                .supportedDiseaseTestPerformed(
-                                    List.of(
-                                        SupportedDiseaseTestPerformedInput.builder()
-                                            .supportedDisease(
-                                                supportedDisease.get().getInternalId())
-                                            .testPerformedLoincCode(
-                                                device.getTestPerformedLoincCode())
-                                            .testOrderedLoincCode(device.getTestOrderedLoincCode())
-                                            .testkitNameId(device.getTestKitNameId())
-                                            .equipmentUid(device.getEquipmentUid())
-                                            .build()))
-                                .build());
-
-                    log.info("Device {} created", newlyCreatedDeviceType.getName());
-
-                    return newlyCreatedDeviceType;
-                  });
-
-          if (!devicesToSync.containsKey(deviceToSync)) {
-            devicesToSync.put(deviceToSync, new ArrayList<>());
-          }
-
-          if (!deviceSpecimens.containsKey(device.getModel() + device.getManufacturer())) {
-            Set<UUID> allSpecimenTypes =
-                deviceToSync.getSwabTypes().stream()
-                    .map(SpecimenType::getInternalId)
-                    .collect(Collectors.toSet());
-
-            var incomingSpecimenTypes = getSpecimenTypeIdsFromDescription(device);
-
-            if (!incomingSpecimenTypes.isEmpty()) {
-              allSpecimenTypes.addAll(incomingSpecimenTypes);
-            }
-
-            List<UUID> specimenTypesToAdd = new ArrayList<>(allSpecimenTypes);
-
-            deviceSpecimens.put(device.getModel() + device.getManufacturer(), specimenTypesToAdd);
-          }
-
-          var supportedDisease =
-              getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
-
-          if (supportedDisease.isEmpty()) {
-            // Skip this device
-            log.info("Device {} does not contain required disease data", device.getModel());
-
-            return;
-          }
-
-          devicesToSync
-              .get(deviceToSync)
-              .add(
-                  SupportedDiseaseTestPerformedInput.builder()
-                      .supportedDisease(supportedDisease.get().getInternalId())
-                      .testPerformedLoincCode(device.getTestPerformedLoincCode())
-                      .testOrderedLoincCode(device.getTestOrderedLoincCode())
-                      .equipmentUid(device.getEquipmentUid())
-                      .testkitNameId(device.getTestKitNameId())
-                      .build());
-        });
-
-    devicesToSync.forEach(
-        (device, testsPerformed) -> {
-          if (device == null) {
-            return;
-          }
-
-          UpdateDeviceType input =
-              UpdateDeviceType.builder()
-                  // Update does not alter the device name
-                  .internalId(device.getInternalId())
-                  .manufacturer(device.getManufacturer())
-                  .model(device.getModel())
-                  .supportedDiseaseTestPerformed(testsPerformed)
-                  .swabTypes(deviceSpecimens.get(device.getModel() + device.getManufacturer()))
-                  .build();
-
-          if (hasUpdates(input, device)) {
-            try {
-              updateDeviceType(input);
-            } catch (IllegalGraphqlArgumentException ignored) {
-              log.info("No updates for device {}, skipping sync", device.getName());
-            }
-          }
-        });
-  }
-
-  private Optional<SpecimenType> parseVendorSpecimenDescription(String specimenDescription) {
-    var specimenCode = extractSpecimenTypeCode(specimenDescription);
-
-    if (Objects.equals(specimenCode, "")) {
-      return Optional.empty();
-    }
-
-    var specimenType = specimenTypeRepository.findByTypeCode(specimenCode);
-
-    return Optional.of(
-        specimenType.orElseGet(
-            () ->
-                specimenTypeService.createSpecimenType(
-                    CreateSpecimenType.builder()
-                        .name(extractSpecimenTypeName(specimenDescription))
-                        .typeCode(specimenCode)
-                        .build())));
-  }
-
-  private ArrayList<DeviceTypeDisease> createDeviceTypeDiseaseList(
+  public ArrayList<DeviceTypeDisease> createDeviceTypeDiseaseList(
       List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
       DeviceType device) {
     var deviceTypeDiseaseList = new ArrayList<DeviceTypeDisease>();
@@ -494,53 +272,5 @@ public class DeviceTypeService {
                           .build()));
         });
     return deviceTypeDiseaseList;
-  }
-
-  private Optional<SupportedDisease> getSupportedDiseaseFromVendorAnalyte(String vendorAnalyte) {
-    if (vendorAnalyte == null) {
-      return Optional.empty();
-    }
-
-    String input = vendorAnalyte.toLowerCase();
-
-    if (COVID_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
-      return Optional.of(diseaseService.covid());
-    } else if (FLU_A_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
-      return Optional.of(diseaseService.fluA());
-    } else if (FLU_B_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
-      return Optional.of(diseaseService.fluB());
-    } else {
-      return Optional.empty();
-    }
-  }
-
-  private boolean hasUpdates(UpdateDeviceType update, DeviceType existing) {
-    ArrayList<DeviceTypeDisease> incomingDiseases =
-        createDeviceTypeDiseaseList(update.getSupportedDiseaseTestPerformed(), existing);
-    List<UUID> incomingSwabs = update.getSwabTypes();
-
-    if (existing.getSwabTypes() == null) {
-      return true;
-    }
-
-    if (existing.getSupportedDiseaseTestPerformed() == null) {
-      return true;
-    }
-
-    boolean hasDiseaseUpdates =
-        !incomingDiseases.stream()
-            .allMatch(
-                d ->
-                    existing.getSupportedDiseaseTestPerformed().stream()
-                        .anyMatch(b -> b.equals(d)));
-    boolean hasSwabUpdates =
-        !incomingSwabs.stream()
-            .allMatch(
-                d ->
-                    existing.getSwabTypes().stream()
-                        .map(SpecimenType::getInternalId)
-                        .anyMatch(b -> b.equals(d)));
-
-    return hasDiseaseUpdates || hasSwabUpdates;
   }
 }
