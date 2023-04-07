@@ -35,9 +35,9 @@ type ErrorMessage = {
 };
 
 type ValidationError = {
-  scope: "item";
+  scope?: "item";
   message: string;
-  indices: number[] | null;
+  indices?: number[] | null;
 };
 
 const UploadPatients = () => {
@@ -229,6 +229,7 @@ const UploadPatients = () => {
           includeGuide: true,
         });
         setFileValid(false);
+        trackValidationErrors([{ message: "File missing or empty." }]);
         return;
       }
 
@@ -246,6 +247,7 @@ const UploadPatients = () => {
           includeGuide: false,
         });
         setFileValid(false);
+        trackValidationErrors([{ message: "File too large (size)." }]);
         return;
       }
 
@@ -264,6 +266,9 @@ const UploadPatients = () => {
           includeGuide: false,
         });
         setFileValid(false);
+        trackValidationErrors([
+          { message: "File too large (number of rows)." },
+        ]);
         return;
       }
 
