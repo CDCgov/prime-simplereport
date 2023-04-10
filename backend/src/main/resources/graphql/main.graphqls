@@ -57,7 +57,6 @@ input CreateDeviceType {
   manufacturer: String!
   model: String!
   swabTypes: [ID!]!
-  supportedDiseases: [ID!]
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
   testLength: Int!
 }
@@ -68,7 +67,6 @@ input UpdateDeviceType {
   manufacturer: String!
   model: String!
   swabTypes: [ID!]!
-  supportedDiseases: [ID!]
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
   testLength: Int!
 }
@@ -86,10 +84,7 @@ type DeviceType {
   name: String!
   manufacturer: String!
   model: String!
-  loincCode: String @deprecated(reason: "loincCode is deprecated. Use supportedDiseaseTestPerformed instead.")
-  swabType: String @deprecated(reason: "swabType is deprecated. Use swabTypes instead.")
   swabTypes: [SpecimenType!]!
-  supportedDiseases: [SupportedDisease!]!
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]!
   testLength: Int!
 }
@@ -121,11 +116,6 @@ type SpecimenType {
   typeCode: String!
   collectionLocationName: String
   collectionLocationCode: String
-}
-
-type TestDescription {
-  name(nameType: String = "long"): String!
-  loincCode: String!
 }
 
 type PhoneNumber {
@@ -265,7 +255,6 @@ type TestResult {
   result: String @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
-  testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser

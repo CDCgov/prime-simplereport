@@ -313,6 +313,9 @@ describe("FacilityForm", () => {
   });
 
   describe("CLIA number validation", () => {
+    const expectedError =
+      "CLIA numbers must be 10 characters (##D#######), or a special temporary number from CA, IL, VT, WA, WY, or the Department of Defense";
+
     describe("when validation is required for state", () => {
       beforeEach(() => {
         jest
@@ -341,8 +344,6 @@ describe("FacilityForm", () => {
 
         await userEvent.type(cliaInput, "12F3456789");
         await userEvent.tab();
-
-        const expectedError = "CLIA number should be 10 characters";
 
         expect(
           await screen.findByText(expectedError, {
@@ -451,9 +452,6 @@ describe("FacilityForm", () => {
         await userEvent.clear(cliaInput);
         await userEvent.type(cliaInput, "12Z3456789");
         await userEvent.tab();
-
-        const expectedError =
-          "Special temporary CLIAs are only valid in CA, IL, VT, WA, and WY.";
 
         expect(
           await screen.findByText(expectedError, {

@@ -87,6 +87,7 @@ import org.hl7.fhir.r4.model.Practitioner;
 import org.hl7.fhir.r4.model.PractitionerRole;
 import org.hl7.fhir.r4.model.PrimitiveType;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ResourceType;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
@@ -332,8 +333,8 @@ class FhirConverterTest {
     return Stream.of(
         arguments("hispanic", ethnicitySystem, "H", "Hispanic or Latino"),
         arguments("not_hispanic", ethnicitySystem, "N", "Not Hispanic or Latino"),
-        arguments("refused", unknownSystem, "U", "unknown"),
-        arguments("shark", unknownSystem, "U", "unknown"));
+        arguments("refused", ethnicitySystem, "U", "unknown"),
+        arguments("shark", ethnicitySystem, "U", "unknown"));
   }
 
   @Test
@@ -483,7 +484,7 @@ class FhirConverterTest {
   @Test
   void convertToDevice_DeviceType_valid() {
     var internalId = UUID.randomUUID();
-    var deviceType = new DeviceType("name", "manufacturer", "model", "loinc", "swab type", 15);
+    var deviceType = new DeviceType("name", "manufacturer", "model", 15);
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
     var actual = convertToDevice(deviceType);
@@ -500,12 +501,7 @@ class FhirConverterTest {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     DeviceType deviceType =
         new DeviceType(
-            "name",
-            "BioFire Diagnostics",
-            "BioFire Respiratory Panel 2.1 (RP2.1)*@",
-            "loinc",
-            "swab type",
-            15);
+            "name", "BioFire Diagnostics", "BioFire Respiratory Panel 2.1 (RP2.1)*@", 15);
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
     var actual = convertToDevice(deviceType);
@@ -527,9 +523,11 @@ class FhirConverterTest {
             "Nasopharyngeal swab",
             "53342003",
             "Internal nose structure (body structure)",
-            "id-123");
+            "id-123",
+            "uuid-123");
 
     assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getIdentifierFirstRep().getValue()).isEqualTo("uuid-123");
     assertThat(actual.getType().getCoding()).hasSize(1);
     assertThat(actual.getType().getCodingFirstRep().getSystem()).isEqualTo(snomedCode);
     assertThat(actual.getType().getCodingFirstRep().getCode()).isEqualTo("258500001");
@@ -546,7 +544,7 @@ class FhirConverterTest {
 
   @Test
   void convertToSpecimen_Strings_null() {
-    var actual = convertToSpecimen(null, null, null, null, null);
+    var actual = convertToSpecimen(null, null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
@@ -597,6 +595,9 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/specimen.json")),
             StandardCharsets.UTF_8);
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$SPECIMEN_IDENTIFIER", actual.getIdentifierFirstRep().getValue());
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
 
@@ -738,22 +739,6 @@ class FhirConverterTest {
             "modelName");
 
     assertThat(actual).isNull();
-  }
-
-  @Test
-  void convertToObservation_Result_defaultsToDeviceLoinc() {
-    var covidId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var testOrder = TestDataBuilder.createTestOrderWithDevice();
-    var covidResult =
-        new Result(testOrder, new SupportedDisease("COVID-19", "96741-4"), TestResult.POSITIVE);
-    ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
-
-    var actual =
-        convertToObservation(
-            Set.of(covidResult), DeviceType.builder().build(), TestCorrectionStatus.ORIGINAL, null);
-
-    assertThat(actual).hasSize(1);
-    assertThat(actual.get(0).getCode().getCodingFirstRep().getCode()).isEqualTo("54321-BOOM");
   }
 
   @Test
@@ -900,6 +885,8 @@ class FhirConverterTest {
   @Test
   void convertToDiagnosticReport_TestEvent_valid() {
     var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
+    ReflectionTestUtils.setField(
+        testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
     var actual = convertToDiagnosticReport(testEvent);
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -939,6 +926,8 @@ class FhirConverterTest {
     var date = new Date();
     ReflectionTestUtils.setField(testEvent, "internalId", UUID.fromString(internalId));
     ReflectionTestUtils.setField(testEvent, "createdAt", date);
+    ReflectionTestUtils.setField(
+        testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
 
     var actual = convertToDiagnosticReport(testEvent);
 
@@ -1345,8 +1334,7 @@ class FhirConverterTest {
     supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluADisease));
     supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluBDisease));
     var deviceType =
-        new DeviceType(
-            "name", "manufacturer", "model", "loinc", 0, new ArrayList<>(), supportedTestOrders);
+        new DeviceType("name", "manufacturer", "model", 0, new ArrayList<>(), supportedTestOrders);
 
     var specimenType = new SpecimenType("name", "typeCode");
     var provider =
@@ -1470,6 +1458,19 @@ class FhirConverterTest {
             "$BUNDLE_TIMESTAMP",
             OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$SPECIMEN_IDENTIFIER",
+            ((Specimen)
+                    actual.getEntry().stream()
+                        .filter(
+                            entry -> entry.getFullUrl().contains(ResourceType.Specimen.toString()))
+                        .findFirst()
+                        .get()
+                        .getResource())
+                .getIdentifierFirstRep()
+                .getValue());
+
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, JSONCompareMode.NON_EXTENSIBLE);
   }
 }

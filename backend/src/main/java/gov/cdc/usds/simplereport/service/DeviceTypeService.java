@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
@@ -117,20 +116,8 @@ public class DeviceTypeService {
     if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
       var deviceTypeDiseaseList =
           createDeviceTypeDiseaseList(updateDevice.getSupportedDiseaseTestPerformed(), device);
-      device.setSupportedDiseases(
-          deviceTypeDiseaseList.stream()
-              .map(DeviceTypeDisease::getSupportedDisease)
-              .collect(Collectors.toList()));
       device.getSupportedDiseaseTestPerformed().clear();
       device.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
-    } else if (updateDevice.getSupportedDiseases() != null) {
-      List<SupportedDisease> supportedDiseases =
-          updateDevice.getSupportedDiseases().stream()
-              .map(supportedDiseaseRepository::findById)
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .collect(Collectors.toList());
-      device.setSupportedDiseases(supportedDiseases);
     }
     return deviceTypeRepository.save(device);
   }
@@ -157,8 +144,6 @@ public class DeviceTypeService {
                 createDevice.getName(),
                 createDevice.getManufacturer(),
                 createDevice.getModel(),
-                null,
-                null,
                 createDevice.getTestLength()));
 
     specimenTypes.stream()
@@ -167,23 +152,9 @@ public class DeviceTypeService {
                 new DeviceTypeSpecimenTypeMapping(dt.getInternalId(), specimenType.getInternalId()))
         .forEach(deviceSpecimenTypeNewRepository::save);
 
-    if (createDevice.getSupportedDiseaseTestPerformed() != null) {
-      var deviceTypeDiseaseList =
-          createDeviceTypeDiseaseList(createDevice.getSupportedDiseaseTestPerformed(), dt);
-      dt.setSupportedDiseases(
-          deviceTypeDiseaseList.stream()
-              .map(DeviceTypeDisease::getSupportedDisease)
-              .collect(Collectors.toList()));
-      dt.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
-    } else {
-      List<SupportedDisease> supportedDiseases =
-          createDevice.getSupportedDiseases().stream()
-              .map(supportedDiseaseRepository::findById)
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .collect(Collectors.toList());
-      dt.setSupportedDiseases(supportedDiseases);
-    }
+    var deviceTypeDiseaseList =
+        createDeviceTypeDiseaseList(createDevice.getSupportedDiseaseTestPerformed(), dt);
+    dt.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
     deviceTypeRepository.save(dt);
 
     return dt;
