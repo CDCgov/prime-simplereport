@@ -228,6 +228,5 @@ public class PatientBulkUploadServiceAsync {
     this.appInsights
         .getTelemetryClient()
         .trackTrace(errorMessage, SeverityLevel.Error, customProperties);
-    // log.error(errorMessage + " for organization " + externalId + " and facility " + facilityId);
   }
 }
