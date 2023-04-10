@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
@@ -218,6 +219,8 @@ public class PatientBulkUploadServiceAsync {
   }
 
   private void logProcessingFailure(String errorMessage, String externalId, UUID facilityId) {
+    MDC.put("orgId", externalId);
+    MDC.put("facilityId", facilityId.toString());
     log.error(errorMessage + " for organization " + externalId + " and facility " + facilityId);
   }
 }
