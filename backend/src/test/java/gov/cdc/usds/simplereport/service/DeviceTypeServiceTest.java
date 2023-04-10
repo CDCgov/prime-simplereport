@@ -52,12 +52,9 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     this.deviceTypeServiceWithMock =
         new DeviceTypeService(
             _deviceTypeRepoMock,
-            mock(DataHubClient.class),
             mock(DeviceSpecimenTypeNewRepository.class),
             mock(SpecimenTypeRepository.class),
-            mock(SupportedDiseaseRepository.class),
-            mock(DiseaseService.class),
-            mock(SpecimenTypeService.class));
+            mock(SupportedDiseaseRepository.class));
   }
 
   @Test
