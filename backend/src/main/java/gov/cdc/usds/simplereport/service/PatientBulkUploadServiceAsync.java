@@ -9,8 +9,10 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertRace
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexToDatabaseValue;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.microsoft.applicationinsights.telemetry.SeverityLevel;
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.AzureTelemetryConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -32,7 +34,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.MDC;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.scheduling.annotation.Async;
@@ -55,6 +57,8 @@ public class PatientBulkUploadServiceAsync {
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;
+
+  @Autowired private AzureTelemetryConfiguration appInsights;
 
   @Async
   @Transactional
@@ -84,6 +88,9 @@ public class PatientBulkUploadServiceAsync {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
 
       try {
+        // ToDo remove after testing is done for upload
+        throw new IllegalArgumentException();
+
         PatientUploadRow extractedData = new PatientUploadRow(row);
 
         // Fetch address information
@@ -219,8 +226,11 @@ public class PatientBulkUploadServiceAsync {
   }
 
   private void logProcessingFailure(String errorMessage, String externalId, UUID facilityId) {
-    MDC.put("orgId", externalId);
-    MDC.put("facilityId", facilityId.toString());
-    log.error(errorMessage + " for organization " + externalId + " and facility " + facilityId);
+    Map<String, String> customProperties =
+        Map.of("orgId", externalId, "facilityId", facilityId.toString());
+    this.appInsights
+        .getTelemetryClient()
+        .trackTrace(errorMessage, SeverityLevel.Error, customProperties);
+    // log.error(errorMessage + " for organization " + externalId + " and facility " + facilityId);
   }
 }

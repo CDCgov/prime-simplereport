@@ -11,7 +11,7 @@ public class AzureTelemetryConfiguration {
 
   @Bean
   @Scope("singleton")
-  TelemetryClient getTelemetryClient() {
+  public TelemetryClient getTelemetryClient() {
     return new TelemetryClient();
   }
 }
