@@ -88,8 +88,6 @@ public class PatientBulkUploadServiceAsync {
       final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
 
       try {
-        // ToDo remove after testing is done for upload
-        throw new IllegalArgumentException();
 
         PatientUploadRow extractedData = new PatientUploadRow(row);
 
@@ -168,6 +166,9 @@ public class PatientBulkUploadServiceAsync {
           patientsList.clear();
           phoneNumbersList.clear();
         }
+        // ToDo remove after testing is done for upload
+        throw new IllegalArgumentException();
+
       } catch (IllegalArgumentException | NullPointerException e) {
         sendEmail(
             uploaderEmail,
