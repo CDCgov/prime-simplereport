@@ -166,9 +166,6 @@ public class PatientBulkUploadServiceAsync {
           patientsList.clear();
           phoneNumbersList.clear();
         }
-        // ToDo remove after testing is done for upload
-        throw new IllegalArgumentException();
-
       } catch (IllegalArgumentException | NullPointerException e) {
         sendEmail(
             uploaderEmail,
@@ -178,7 +175,6 @@ public class PatientBulkUploadServiceAsync {
 
         String errorMessage = "Error uploading patient roster";
         logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
-
         throw new IllegalArgumentException(errorMessage);
       }
     }
