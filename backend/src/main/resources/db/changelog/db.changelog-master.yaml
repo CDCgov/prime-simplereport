@@ -2056,6 +2056,8 @@ databaseChangeLog:
                   remarks: Tracks the individual's preference for receiving test results
   - changeSet:
       id: add-no-phi-role
+      validCheckSum:
+        - "8:72023246fb745cc71d61b962ebc095f0"
       author: josh@skylight.digital
       comment: Add a role for a user with reduced DB permissions (e.g., for Metabase)
       changes:

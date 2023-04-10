@@ -29,6 +29,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,45 +40,20 @@ import org.springframework.transaction.annotation.Transactional;
 @Component(AuthorizationConfiguration.AUTHORIZER_BEAN)
 @Transactional(readOnly = true)
 @Slf4j
+@RequiredArgsConstructor
 public class UserAuthorizationVerifier {
 
-  private IdentitySupplier _supplier;
-  private OrganizationService _orgService;
-  private ApiUserRepository _userRepo;
-  private PersonRepository _personRepo;
-  private FacilityRepository _facilityRepo;
-  private TestEventRepository _testEventRepo;
-  private TestOrderRepository _testOrderRepo;
-  private PatientLinkRepository _patientLinkRepo;
-  private OktaRepository _oktaRepo;
-  private AuthorizationService _authService;
-  private CurrentAccountRequestContextHolder _contextHolder;
-
-  public UserAuthorizationVerifier(
-      IdentitySupplier supplier,
-      OrganizationService orgService,
-      ApiUserRepository userRepo,
-      PersonRepository personRepo,
-      FacilityRepository facilityRepo,
-      TestEventRepository testEventRepo,
-      TestOrderRepository testOrderRepo,
-      PatientLinkRepository patientLinkRepo,
-      OktaRepository oktaRepo,
-      AuthorizationService authService,
-      CurrentAccountRequestContextHolder contextHolder) {
-    super();
-    this._supplier = supplier;
-    this._orgService = orgService;
-    this._userRepo = userRepo;
-    this._personRepo = personRepo;
-    this._facilityRepo = facilityRepo;
-    this._testEventRepo = testEventRepo;
-    this._testOrderRepo = testOrderRepo;
-    this._patientLinkRepo = patientLinkRepo;
-    this._oktaRepo = oktaRepo;
-    this._authService = authService;
-    this._contextHolder = contextHolder;
-  }
+  private final IdentitySupplier _supplier;
+  private final OrganizationService _orgService;
+  private final ApiUserRepository _userRepo;
+  private final PersonRepository _personRepo;
+  private final FacilityRepository _facilityRepo;
+  private final TestEventRepository _testEventRepo;
+  private final TestOrderRepository _testOrderRepo;
+  private final PatientLinkRepository _patientLinkRepo;
+  private final OktaRepository _oktaRepo;
+  private final AuthorizationService _authService;
+  private final CurrentAccountRequestContextHolder _contextHolder;
 
   public boolean userHasSiteAdminRole() {
     return _authService.isSiteAdmin();
@@ -151,7 +127,7 @@ public class UserAuthorizationVerifier {
     if (testOrder.isEmpty()) {
       throw new NonexistentQueueItemException();
     }
-    return testOrder.isPresent() && userCanViewQueueItem(testOrder.get());
+    return userCanViewQueueItem(testOrder.get());
   }
 
   public boolean userCanViewQueueItem(TestOrder testOrder) {
@@ -218,8 +194,7 @@ public class UserAuthorizationVerifier {
     } else if (patient.getFacility() == null) {
       return true;
     } else {
-      return currentOrgRoles.isPresent()
-          && currentOrgRoles.get().containsFacility(patient.getFacility());
+      return currentOrgRoles.get().containsFacility(patient.getFacility());
     }
   }
 
@@ -278,7 +253,7 @@ public class UserAuthorizationVerifier {
       throw new UnidentifiedUserException();
     }
     Optional<ApiUser> found = _userRepo.findByLoginEmail(id.getUsername());
-    if (!found.isPresent()) {
+    if (found.isEmpty()) {
       throw new NonexistentUserException();
     }
 

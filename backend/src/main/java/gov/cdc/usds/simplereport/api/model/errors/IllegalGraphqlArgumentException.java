@@ -5,6 +5,7 @@ import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -22,7 +23,7 @@ public class IllegalGraphqlArgumentException extends IllegalArgumentException
 
   @Override // probably this could have been defaulted folks
   public List<SourceLocation> getLocations() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override // this can be customized, but is not discernably used in the output, so we might not

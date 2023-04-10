@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -72,7 +72,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
             Optional.empty());
 
     // external id changed because name changed
-    assertFalse(editedItem.getExternalId().equals(createdQueueItem.getExternalId()));
+    assertNotEquals(createdQueueItem.getExternalId(), editedItem.getExternalId());
 
     Optional<OrganizationQueueItem> optFetchedQueueItem =
         _service.getUnverifiedQueuedOrganizationByExternalId(editedItem.getExternalId());

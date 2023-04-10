@@ -4,6 +4,7 @@ import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
+import java.util.Collections;
 import java.util.List;
 
 public class AuditLogFailureException extends RuntimeException implements GraphQLError {
@@ -16,7 +17,7 @@ public class AuditLogFailureException extends RuntimeException implements GraphQ
 
   @Override
   public List<SourceLocation> getLocations() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override

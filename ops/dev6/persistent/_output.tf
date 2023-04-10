@@ -35,6 +35,6 @@ output "postgres_server_id" {
   value = module.db.server_id
 }
 
-output "network_profile_id" {
-  value = module.vnet.network_profile_id
+output "subnet_container_instances_id" {
+  value = module.vnet.subnet_container_instances_id
 }
