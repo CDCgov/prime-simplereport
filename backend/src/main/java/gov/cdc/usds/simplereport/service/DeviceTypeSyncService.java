@@ -170,7 +170,7 @@ public class DeviceTypeSyncService {
     List<LIVDResponse> devices = client.getLIVDTable();
 
     var devicesToSync = new HashMap<DeviceType, ArrayList<SupportedDiseaseTestPerformedInput>>();
-    var deviceSpecimens = new HashMap<String, List<UUID>>();
+    var specimenIdsByDevice = new HashMap<String, List<UUID>>();
 
     devices.forEach(
         device -> {
@@ -202,16 +202,12 @@ public class DeviceTypeSyncService {
               foundDevice.orElseGet(
                   () -> {
                     // Have we seen this device before? Gets its specimens
-                    if (!deviceSpecimens.containsKey(
-                        device.getModel() + device.getManufacturer())) {
-
-                      deviceSpecimens.put(
-                          device.getModel() + device.getManufacturer(),
-                          getSpecimenTypeIdsFromDescription(device));
+                    if (!specimenIdsByDevice.containsKey(deviceIdentifier)) {
+                      specimenIdsByDevice.put(
+                          deviceIdentifier, getSpecimenTypeIdsFromDescription(device));
                     }
 
-                    var specimensForDevice =
-                        deviceSpecimens.get(device.getModel() + device.getManufacturer());
+                    var specimensForDevice = specimenIdsByDevice.get(deviceIdentifier);
                     var supportedDisease =
                         getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
 
@@ -261,7 +257,7 @@ public class DeviceTypeSyncService {
             devicesToSync.put(deviceToSync, new ArrayList<>());
           }
 
-          if (!deviceSpecimens.containsKey(device.getModel() + device.getManufacturer())) {
+          if (!specimenIdsByDevice.containsKey(deviceIdentifier)) {
             Set<UUID> allSpecimenTypes =
                 deviceToSync.getSwabTypes().stream()
                     .map(SpecimenType::getInternalId)
@@ -275,7 +271,7 @@ public class DeviceTypeSyncService {
 
             List<UUID> specimenTypesToAdd = new ArrayList<>(allSpecimenTypes);
 
-            deviceSpecimens.put(device.getModel() + device.getManufacturer(), specimenTypesToAdd);
+            specimenIdsByDevice.put(deviceIdentifier, specimenTypesToAdd);
           }
 
           var supportedDisease =
@@ -313,7 +309,8 @@ public class DeviceTypeSyncService {
                   .manufacturer(device.getManufacturer())
                   .model(device.getModel())
                   .supportedDiseaseTestPerformed(testsPerformed)
-                  .swabTypes(deviceSpecimens.get(device.getModel() + device.getManufacturer()))
+                  .swabTypes(
+                      specimenIdsByDevice.get(device.getModel() + "|" + device.getManufacturer()))
                   .build();
 
           if (hasUpdates(input, device)) {
