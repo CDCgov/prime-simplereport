@@ -222,9 +222,9 @@ public class DeviceTypeSyncService {
                       return null;
                     }
 
-                    // Device name should be the same as the model name, unless a device
-                    // with that name already exists.
-                    // If so, prepend with the manufacturer name before creation
+                    // Device name should be the same as the model name, unless a device with that
+                    // name already exists. If so, prepend with the manufacturer name before
+                    // creation
                     var existingDeviceWithName =
                         deviceTypeRepository.findDeviceTypeByName(device.getModel());
                     var deviceName =
