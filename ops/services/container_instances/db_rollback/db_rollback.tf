@@ -2,7 +2,8 @@ resource "azurerm_container_group" "db_rollback" {
   name                = "${var.name}-${var.env}-db-rollback"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
-  ip_address_type     = "None"
+  ip_address_type     = "Private"
+  subnet_ids          = [var.subnet_id]
   os_type             = "Linux"
   restart_policy      = "Never"
 
