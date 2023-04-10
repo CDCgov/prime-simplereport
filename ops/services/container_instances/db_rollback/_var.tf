@@ -31,6 +31,11 @@ variable "acr_server" {
   type        = string
   default     = "simplereportacr.azurecr.io"
 }
+variable "image_action" {
+  description = "The action of the image to deploy"
+  type        = string
+  default     = "validate"
+}
 
 # Rollback info
 variable "rollback_tag" {
