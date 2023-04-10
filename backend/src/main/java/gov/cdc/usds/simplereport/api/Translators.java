@@ -33,6 +33,10 @@ import org.json.JSONObject;
  * ways.
  */
 public class Translators {
+  private Translators() {
+    throw new IllegalStateException("Utility class");
+  }
+
   private static final long LOOK_BACK_YEARS = 99;
 
   // Accepts either two-digit or four-digit years.
