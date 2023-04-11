@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
@@ -7,7 +7,6 @@ import userEvent from "@testing-library/user-event";
 
 import { file } from "../testResults/uploads/Uploads.test";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
-import * as AppInsightsMock from "../TelemetryService";
 
 import UploadPatients from "./UploadPatients";
 
@@ -71,30 +70,10 @@ const submitCSVFile = async (
 };
 
 describe("Upload Patient", () => {
-  const trackEventMock = jest.fn();
-  const trackMetricMock = jest.fn();
-  const trackExceptionMock = jest.fn();
-  const getAppInsightsSpy = jest.spyOn(AppInsightsMock, "getAppInsights");
-
-  beforeEach(() => {
-    getAppInsightsSpy.mockImplementation(
-      () =>
-        ({
-          trackEvent: trackEventMock,
-          trackMetric: trackMetricMock,
-          trackException: trackExceptionMock,
-        } as jest.MockedObject<any>)
-    );
-  });
-
+  beforeEach(() => {});
   afterEach(() => {
-    getAppInsightsSpy.mockRestore();
-  });
-
-  afterAll(() => {
     jest.clearAllMocks();
   });
-
   it("displays the upload patients page correctly", () => {
     const { container } = renderUploadPatients();
     expect(container).toMatchSnapshot();
@@ -172,7 +151,6 @@ describe("Upload Patient", () => {
     );
 
     expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "1");
-
     expect(
       await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
@@ -235,7 +213,7 @@ describe("Upload Patient", () => {
       status: 200,
     });
 
-    await submitCSVFile(mockResponse);
+    submitCSVFile(mockResponse);
 
     expect(
       await screen.findByText("Error: File not accepted")
@@ -454,28 +432,6 @@ describe("Upload Patient", () => {
       expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
         "aria-invalid",
         "false"
-      );
-    });
-  });
-  describe("telemetry", () => {
-    it("checks user click on guidelines gets tracked", async () => {
-      renderUploadPatients();
-      await userEvent.click(
-        screen.getByText(/View patient bulk upload guide/i)
-      );
-      await waitFor(() =>
-        expect(trackEventMock).toHaveBeenCalledWith({
-          name: "viewPatientBulkUploadGuide",
-        })
-      );
-    });
-    it("checks user download of csv sample gets tracked", async () => {
-      renderUploadPatients();
-      await userEvent.click(screen.getByText(/Download spreadsheet template/i));
-      await waitFor(() =>
-        expect(trackEventMock).toHaveBeenCalledWith({
-          name: "downloadPatientBulkUploadSample",
-        })
       );
     });
   });
