@@ -31,7 +31,7 @@ public class GenericGraphqlException extends RuntimeException implements GraphQL
 
   @Override
   public List<SourceLocation> getLocations() {
-    return Collections.emptyList();
+    return List.of();
   }
 
   @Override

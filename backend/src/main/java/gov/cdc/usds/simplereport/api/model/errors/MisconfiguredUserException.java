@@ -4,7 +4,6 @@ import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +22,7 @@ public class MisconfiguredUserException extends RuntimeException implements Grap
 
   @Override // should-be-defaulted unused interface method
   public List<SourceLocation> getLocations() {
-    return Collections.emptyList();
+    return null;
   }
 
   @Override

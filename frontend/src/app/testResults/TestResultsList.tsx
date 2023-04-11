@@ -365,11 +365,7 @@ export const DetachedTestResultsList = ({
   const viewableFacilities: any[] = (facilitiesData?.facilities || []).filter(
     (e) => e != null
   );
-  viewableFacilities.sort((a, b) => {
-    if (a.isDeleted && !b.isDeleted) return 1;
-    if (!a.isDeleted && b.isDeleted) return -1;
-    return 0;
-  });
+
   const facilityOptions = (
     isOrgAdmin
       ? [
@@ -380,10 +376,16 @@ export const DetachedTestResultsList = ({
         ]
       : []
   ).concat(
-    viewableFacilities.map((f) => ({
-      label: facilityDisplayName(f.name, !!f.isDeleted),
-      value: f.id,
-    }))
+    viewableFacilities
+      .sort((a, b) => {
+        if (a.isDeleted && !b.isDeleted) return 1;
+        if (!a.isDeleted && b.isDeleted) return -1;
+        return 0;
+      })
+      .map((f) => ({
+        label: facilityDisplayName(f.name, !!f.isDeleted),
+        value: f.id,
+      }))
   );
 
   return (

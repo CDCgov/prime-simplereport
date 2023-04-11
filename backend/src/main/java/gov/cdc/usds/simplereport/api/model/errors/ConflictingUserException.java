@@ -4,7 +4,6 @@ import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
-import java.util.Collections;
 import java.util.List;
 
 /** Exception to throw when a user can't be added because of a conflict */
@@ -18,7 +17,7 @@ public class ConflictingUserException extends RuntimeException implements GraphQ
 
   @Override // should-be-defaulted unused interface method
   public List<SourceLocation> getLocations() {
-    return Collections.emptyList();
+    return null;
   }
 
   @Override
