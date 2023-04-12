@@ -184,16 +184,11 @@ describe("TestResultInputForm", () => {
     expect(screen.getByText("Submit")).toBeEnabled();
   });
 
-  it("should display submit button as disabled when diseases have unset values", async () => {
+  it("should display submit button as disabled when no diseases have set values", async () => {
     render(
       <MultiplexResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
-        testResults={[
-          {
-            diseaseName: MULTIPLEX_DISEASES.COVID_19,
-            testResult: TEST_RESULTS.POSITIVE,
-          },
-        ]}
+        testResults={[]}
         onChange={onChangeFn}
         onSubmit={onSubmitFn}
       />

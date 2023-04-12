@@ -153,6 +153,21 @@ const MultiplexResultInputForm: React.FC<Props> = ({
    * */
   const validateForm = () => {
     if (
+      resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED ||
+      resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
+      resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED
+    ) {
+      if (
+        !(
+          resultsMultiplexFormat.covid === resultsMultiplexFormat.fluA &&
+          resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB
+        )
+      ) {
+        return false;
+      }
+    }
+
+    return (
       inconclusiveCheck ||
       resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
       resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE ||
@@ -160,11 +175,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
         resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE) &&
         (resultsMultiplexFormat.fluB === TEST_RESULTS.POSITIVE ||
           resultsMultiplexFormat.fluB === TEST_RESULTS.NEGATIVE))
-    ) {
-      return true;
-    }
-
-    return false;
+    );
   };
 
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
