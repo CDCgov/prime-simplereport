@@ -22,8 +22,6 @@ public class DeviceMigrationService {
           new Pair(
               "Abbott Alinity M - Flu + COVID-19 (RT-PCR)", "Abbott Alinity M - COVID-19 (RT-PCR)"),
           new Pair(
-              "Abbott Alinity M - Flu + COVID-19 (RT-PCR)", "Abbott Alinity M - COVID-19 (RT-PCR)"),
-          new Pair(
               "BD Veritor System - Flu + COVID-19 Antigen",
               "BD Veritor System - COVID-19 (Antigen)"),
           new Pair("Access Bio CareStart Home Test (Antigen)", "On/Go COVID-19 Antigen Self-Test"),
