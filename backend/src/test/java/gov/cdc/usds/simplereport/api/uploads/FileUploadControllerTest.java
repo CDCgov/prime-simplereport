@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
-import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 @ExtendWith(SpringExtension.class)
 class FileUploadControllerTest {
 
-  @Mock private PatientBulkUploadService patientBulkUploadService;
   @Mock private TestResultUploadService testResultUploadService;
   @Mock private FeatureFlagsConfig featureFlagsConfig;
   @InjectMocks private FileUploadController fileUploadController;
@@ -47,7 +45,6 @@ class FileUploadControllerTest {
     when(file.getContentType()).thenReturn("text/csv");
     when(file.getInputStream()).thenThrow(IOException.class);
 
-    fileUploadController.handleHIVResultsUpload(file);
     assertThrows(
         CsvProcessingException.class, () -> fileUploadController.handleHIVResultsUpload(file));
   }
