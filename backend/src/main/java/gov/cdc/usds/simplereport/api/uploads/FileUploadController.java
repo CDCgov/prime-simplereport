@@ -1,12 +1,14 @@
 package gov.cdc.usds.simplereport.api.uploads;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
+import static gov.cdc.usds.simplereport.config.WebConfiguration.HIV_RESULT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.PATIENT_UPLOAD;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
@@ -26,6 +28,7 @@ public class FileUploadController {
   public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
   private final PatientBulkUploadService patientBulkUploadService;
   private final TestResultUploadService testResultUploadService;
+  private final FeatureFlagsConfig featureFlagsConfig;
 
   @PostMapping(PATIENT_UPLOAD)
   public PatientBulkUploadResponse handlePatientsUpload(
@@ -44,6 +47,20 @@ public class FileUploadController {
       log.error("Patient CSV upload failed", e);
       throw new CsvProcessingException("Unable to complete patient CSV upload");
     }
+  }
+
+  @PostMapping(HIV_RESULT_UPLOAD)
+  public TestResultUpload handleHIVResultsUpload(@RequestParam("file") MultipartFile file) {
+    if (featureFlagsConfig.isHivEnabled()) {
+      assertCsvFileType(file);
+      try (InputStream resultsUpload = file.getInputStream()) {
+        return testResultUploadService.processUniversalResultCSV(resultsUpload);
+      } catch (IOException e) {
+        log.error("Test result CSV encountered an unexpected error", e);
+        throw new CsvProcessingException("Unable to process test result CSV upload");
+      }
+    }
+    throw new UnsupportedOperationException();
   }
 
   @PostMapping(RESULT_UPLOAD)
