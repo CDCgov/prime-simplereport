@@ -37,7 +37,7 @@ class FileUploadControllerTest {
 
     fileUploadController.handleHIVResultsUpload(file);
 
-    verify(testResultUploadService, times(1)).processUniversalResultCSV(stream);
+    verify(testResultUploadService, times(1)).processHIVResultCSV(stream);
   }
 
   @Test

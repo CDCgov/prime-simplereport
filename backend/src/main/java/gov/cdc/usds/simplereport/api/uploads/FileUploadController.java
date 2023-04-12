@@ -54,7 +54,7 @@ public class FileUploadController {
     if (featureFlagsConfig.isHivEnabled()) {
       assertCsvFileType(file);
       try (InputStream resultsUpload = file.getInputStream()) {
-        return testResultUploadService.processUniversalResultCSV(resultsUpload);
+        return testResultUploadService.processHIVResultCSV(resultsUpload);
       } catch (IOException e) {
         log.error("Test result CSV encountered an unexpected error", e);
         throw new CsvProcessingException("Unable to process test result CSV upload");

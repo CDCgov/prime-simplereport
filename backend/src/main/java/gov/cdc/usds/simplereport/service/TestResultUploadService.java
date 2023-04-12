@@ -183,4 +183,9 @@ public class TestResultUploadService {
 
     return _client.getSubmission(result.getReportId(), r.getAccessToken());
   }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public TestResultUpload processHIVResultCSV(InputStream csvStream) {
+    return null;
+  }
 }
