@@ -154,10 +154,10 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   const validateForm = () => {
     if (
       inconclusiveCheck ||
-      ((resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
-        resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE) &&
-        (resultsMultiplexFormat.fluA === TEST_RESULTS.POSITIVE ||
-          resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE) &&
+      resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
+      resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE ||
+      ((resultsMultiplexFormat.fluA === TEST_RESULTS.POSITIVE ||
+        resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE) &&
         (resultsMultiplexFormat.fluB === TEST_RESULTS.POSITIVE ||
           resultsMultiplexFormat.fluB === TEST_RESULTS.NEGATIVE))
     ) {

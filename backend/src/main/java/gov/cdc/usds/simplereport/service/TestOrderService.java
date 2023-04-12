@@ -342,8 +342,13 @@ public class TestOrderService {
 
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
-      _testEventReportingService.report(savedEvent);
-      _fhirQueueReportingService.report(testEvent);
+      if (savedEvent.hasCovidResult()) {
+        _testEventReportingService.report(savedEvent);
+      }
+
+      if (savedEvent.hasFluResult()) {
+        _fhirQueueReportingService.report(testEvent);
+      }
     } finally {
       unlockOrder(order.getInternalId());
     }
