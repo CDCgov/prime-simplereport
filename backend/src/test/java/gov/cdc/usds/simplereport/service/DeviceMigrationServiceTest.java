@@ -39,7 +39,7 @@ class DeviceMigrationServiceTest extends BaseServiceTest<DeviceMigrationService>
   void setup() {}
 
   @Test
-  public void mergeDuplicateDevicesTest() {
+  void mergeDuplicateDevicesTest() {
 
     // GIVEN
     org = organizationRepository.save(new Organization("My Office", "other", "650Mass", true));
