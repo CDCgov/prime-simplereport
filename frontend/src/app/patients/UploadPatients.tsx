@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useLocation } from "react-router-dom";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+import { IAutoExceptionTelemetry } from "@microsoft/applicationinsights-common/src/Interfaces/IExceptionTelemetry";
 
 import { useDocumentTitle } from "../utils/hooks";
 import Button from "../commonComponents/Button/Button";
@@ -17,6 +18,7 @@ import { showError } from "../utils/srToast";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
 import iconLoader from "../../img/loader.svg";
 import { getFacilityIdFromUrl } from "../utils/url";
+import { maskPatientUploadValidationError } from "../utils/dataMasking";
 import {
   MAX_CSV_UPLOAD_BYTES,
   MAX_CSV_UPLOAD_ROW_COUNT,
@@ -26,13 +28,19 @@ import { AddPatientHeader } from "./Components/AddPatientsHeader";
 
 import "./UploadPatients.scss";
 
-const UploadPatients = () => {
-  type ErrorMessage = {
-    header: string;
-    body: ReactElement | null;
-    includeGuide: boolean;
-  };
+type ErrorMessage = {
+  header: string;
+  body: ReactElement | null;
+  includeGuide: boolean;
+};
 
+type ValidationError = {
+  scope?: "item";
+  message: string;
+  indices?: number[] | null;
+};
+
+const UploadPatients = () => {
   useDocumentTitle("Import patients from spreadsheet");
   const [facilityAmount, setFacilityAmount] = useState<string>();
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
@@ -89,6 +97,30 @@ const UploadPatients = () => {
     };
   }
 
+  function trackValidationErrors(validationErrors: ValidationError[]): void {
+    const trackErrors: Promise<any>[] = validationErrors.map(
+      (error) =>
+        new Promise<any>((res) => {
+          const exception: IAutoExceptionTelemetry = {
+            columnNumber: 0,
+            error: null,
+            lineNumber: 0,
+            url: "/app/upload-patients",
+            message: maskPatientUploadValidationError(error.message),
+          };
+          appInsights?.trackException(
+            { id: crypto.randomUUID(), exception, severityLevel: 1 },
+            { exceptionType: "patientUploadValidationError" }
+          );
+          return res;
+        })
+    );
+
+    Promise.allSettled(trackErrors).then(() => {
+      /* do nothing*/
+    });
+  }
+
   const handleResponseStatus = async (res: Response) => {
     if (res.status !== 200) {
       setStatus("fail");
@@ -104,6 +136,7 @@ const UploadPatients = () => {
       if (response.status === "FAILURE") {
         setStatus("fail");
         if (response?.errors?.length) {
+          trackValidationErrors(response.errors);
           setErrorMessage({
             header: "Error: File not accepted",
             body: (
@@ -196,6 +229,7 @@ const UploadPatients = () => {
           includeGuide: true,
         });
         setFileValid(false);
+        trackValidationErrors([{ message: "File missing or empty." }]);
         return;
       }
 
@@ -213,6 +247,7 @@ const UploadPatients = () => {
           includeGuide: false,
         });
         setFileValid(false);
+        trackValidationErrors([{ message: "File too large (size)." }]);
         return;
       }
 
@@ -231,6 +266,9 @@ const UploadPatients = () => {
           includeGuide: false,
         });
         setFileValid(false);
+        trackValidationErrors([
+          { message: "File too large (number of rows)." },
+        ]);
         return;
       }
 
@@ -327,12 +365,22 @@ const UploadPatients = () => {
                 <a
                   href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
                   className={"usa-button margin-right-105"}
+                  onClick={() =>
+                    appInsights?.trackEvent({
+                      name: "viewPatientBulkUploadGuide",
+                    })
+                  }
                 >
                   View patient bulk upload guide
                 </a>
                 <a
                   href="/assets/resources/patient_upload_example.csv"
                   className={"usa-button usa-button--outline"}
+                  onClick={() =>
+                    appInsights?.trackEvent({
+                      name: "downloadPatientBulkUploadSample",
+                    })
+                  }
                 >
                   Download spreadsheet template
                 </a>
