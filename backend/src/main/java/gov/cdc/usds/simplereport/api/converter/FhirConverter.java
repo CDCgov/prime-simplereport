@@ -15,10 +15,12 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ID
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NPI_PREFIX;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTICIONER_IDENTIFIER_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
@@ -67,6 +69,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -314,17 +317,29 @@ public class FhirConverter {
         provider.getNameInfo(),
         provider.getTelephone(),
         provider.getAddress(),
-        DEFAULT_COUNTRY);
+        DEFAULT_COUNTRY,
+        provider.getProviderId());
   }
 
   public static Practitioner convertToPractitioner(
-      String id, PersonName name, String telephone, StreetAddress addr, String country) {
+      String id,
+      PersonName name,
+      String telephone,
+      StreetAddress addr,
+      String country,
+      String npi) {
     var practitioner =
         new Practitioner()
             .addName(convertToHumanName(name))
             .addAddress(convertToAddress(addr, country))
             .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
     practitioner.setId(id);
+
+    LuhnCheckDigit NPIValidator = new LuhnCheckDigit();
+    if (StringUtils.isNotEmpty(npi) && NPIValidator.isValid(NPI_PREFIX.concat(npi))) {
+      practitioner.addIdentifier().setSystem(PRACTICIONER_IDENTIFIER_SYSTEM).setValue(npi);
+    }
+
     return practitioner;
   }
 

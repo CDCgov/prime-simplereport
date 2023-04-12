@@ -206,7 +206,8 @@ public class BulkUploadResultsToFhir {
                 null),
             row.getOrderingProviderPhoneNumber().value,
             providerAddr,
-            DEFAULT_COUNTRY);
+            DEFAULT_COUNTRY,
+            row.getOrderingProviderId().value);
 
     var additionalDeviceData =
         deviceTypeRepository.findDeviceTypeByModelIgnoreCase(row.getEquipmentModelName().value);

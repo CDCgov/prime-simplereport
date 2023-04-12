@@ -61,4 +61,7 @@ public class FhirConstants {
       "http://terminology.hl7.org/CodeSystem/v2-0078";
   public static final CodingRecord ABNORMAL_FLAG_NORMAL = new CodingRecord("N", "Normal");
   public static final CodingRecord ABNORMAL_FLAG_ABNORMAL = new CodingRecord("A", "Abnormal");
+
+  public static final String PRACTICIONER_IDENTIFIER_SYSTEM = "http://hl7.org/fhir/sid/us-npi";
+  public static final String NPI_PREFIX = "80840";
 }
