@@ -11,10 +11,10 @@ COPY ./backend/*.gradle ./
 COPY ./backend/config ./config
 COPY ./backend/src ./src
 COPY ./backend/gradle.properties gradle.properties
-COPY ./backend/db_rollback.sh db_rollback.sh
+COPY ./backend/db_liquibase.sh db_liquibase.sh
 
 RUN chown -R gradle:gradle .
 
 USER gradle
 
-ENTRYPOINT ["./db_rollback.sh"]
+ENTRYPOINT ["./db_liquibase.sh"]

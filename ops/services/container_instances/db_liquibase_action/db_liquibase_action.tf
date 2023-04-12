@@ -27,7 +27,8 @@ resource "azurerm_container_group" "db_action" {
     }
 
     environment_variables = {
-      LIQUIBASE_ROLLBACK_TAG = var.image_action == "rollback" ? var.rollback_tag : ""
+      LIQUIBASE_ROLLBACK_TAG    = var.rollback_tag
+      LIQUIBASE_ACTION          = var.image_action
     }
 
     secure_environment_variables = {

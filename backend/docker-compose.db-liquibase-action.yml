@@ -1,11 +1,11 @@
 version: "3.2"
 services:
-  rollback:
+  action:
     build:
       context: ..
-      dockerfile: backend/Dockerfile.db-rollback
+      dockerfile: backend/Dockerfile.db-liquibase-action
     image: simple-report-api-build
-    container_name: db_rollback
+    container_name: db_liquibase_action
     environment:
       LIQUIBASE_ROLLBACK_TAG: ${LIQUIBASE_ROLLBACK_TAG:-}
       LIQUIBASE_ROLLBACK_COUNT: ${LIQUIBASE_ROLLBACK_COUNT:-}

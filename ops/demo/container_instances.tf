@@ -1,8 +1,5 @@
-module "db_rollback" {
-  # Only create this resource if we're actually doing a rollback
-  count = var.liquibase_rollback_tag == null ? 0 : 1
-
-  source                  = "../services/container_instances/db_rollback"
+module "db_liquibase_action" {
+  source                  = "../services/container_instances/db_liquibase_action"
   name                    = local.name
   env                     = local.env
   resource_group_name     = data.azurerm_resource_group.rg.name

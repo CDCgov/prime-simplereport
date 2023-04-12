@@ -1,21 +1,31 @@
-name: Validate DB Checksums
+name: Run Liquibase Action
 
 on:
   workflow_dispatch:
-  workflow_call:
     inputs:
       environment:
         description: 'The environment of the DB that should be validated. Options: (demo dev dev2 dev3 dev4 dev5 dev6 dev7 pentest test training stg prod)'
         required: true
         type: string
+      action:
+        description: 'The action to take. Options: (validate, clear_checksums, rollback)'
+        required: true
+        type: choice
+        options: [validate, clear_checksums, rollback]
+        default: "validate"
+      tag:
+        description: 'The Liquibase tag to roll back to'
+        type: string
+        default: ""
 
 env:
   DEPLOY_ENV: ${{ github.event.inputs.environment }}
   DOCKER_COMPOSE_FILE: docker-compose.db.yml
-  GIT_SHA: validate
+  GIT_SHA: ${{ github.event.inputs.action }}
+  LIQUIBASE_ROLLBACK_TAG: ${{ github.event.inputs.tag }}
 
 jobs:
-  build-validate-image:
+  build-image:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -33,13 +43,13 @@ jobs:
       - name: Login to ACR
         run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
 
-      - name: Delete existing validate image
+      - name: Delete existing $GIT_SHA image
         run: |
-          if [ "$(az acr repository show --name simplereportacr --image api/simple-report-api-build:validate | jq -r '.name')" == "validate" ]; then
-            echo "Deleting validate image"
-            az acr repository delete --name simplereportacr --image api/simple-report-api-build:validate --yes
+          if [ "$(az acr repository show --name simplereportacr --image api/simple-report-api-build:$GIT_SHA | jq -r '.name')" == "$GIT_SHA" ]; then
+            echo "Deleting $GIT_SHA image"
+            az acr repository delete --name simplereportacr --image api/simple-report-api-build:$GIT_SHA --yes
           else
-            echo "No validate image to delete"
+            echo "No $GIT_SHA image to delete"
           fi
 
       - name: Set up Docker Buildx
@@ -48,9 +58,9 @@ jobs:
       - name: Build and push Docker images
         run: ./build_and_push.sh
 
-  validate:
+  action:
     runs-on: ubuntu-latest
-    needs: build-validate-image
+    needs: build-image
     defaults:
       run:
         working-directory: ./ops
@@ -78,13 +88,13 @@ jobs:
       - name: Terraform init
         run: make init-${{ env.DEPLOY_ENV }}
       
-      - name: Terraform apply DB Rollback Container Instance
+      - name: Terraform apply DB db_liquibase_action Container Instance
         run: |
           terraform -chdir=$DEPLOY_ENV apply \
           -var acr_image_tag=dummy \
-          -var liquibase_rollback_tag="" \
-          -var image_action=validate \
-          -target module.db_rollback[0] --auto-approve
+          -var liquibase_rollback_tag="$LIQUIBASE_ROLLBACK_TAG" \
+          -var image_action=$GIT_SHA \
+          -target module.db_liquibase_action[0] --auto-approve
       
       - name: Display container logs
         if: always()
@@ -92,20 +102,19 @@ jobs:
           RESOURCE_GROUP=$DEPLOY_ENV
           if [[ "$DEPLOY_ENV" == *dev* ]]; then RESOURCE_GROUP=dev; fi;
           echo "Resource Group: $RESOURCE_GROUP"
-          az container logs --follow -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-validate"
-          if [ "$(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-validate" | jq '.containers[].instanceView.currentState.exitCode')" != "null" ]; then
-            exit $(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-validate" | jq '.containers[].instanceView.currentState.exitCode')
+          az container logs --follow -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-$GIT_SHA"
+          if [ "$(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-$GIT_SHA" | jq '.containers[].instanceView.currentState.exitCode')" != "null" ]; then
+            exit $(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-$GIT_SHA" | jq '.containers[].instanceView.currentState.exitCode')
           else
             echo "No instance view available for the specified container group."
             exit 1
           fi;
 
-      - name: Terraform destroy DB Rollback Container Instance
+      - name: Terraform destroy DB db_liquibase_action Container Instance
         if: always()
         run: |
           terraform -chdir=$DEPLOY_ENV destroy \
           -var acr_image_tag=dummy \
           -var liquibase_rollback_tag="" \
-          -var image_action=validate \
-          -target module.db_rollback[0] --auto-approve
-
+          -var image_action=$GIT_SHA \
+          -target module.db_liquibase_action[0] --auto-approve
