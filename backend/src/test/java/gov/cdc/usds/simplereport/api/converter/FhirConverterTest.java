@@ -377,6 +377,7 @@ class FhirConverterTest {
     ",fhir/practitioner.json",
     "1588029771, fhir/practitionerNPI.json",
     "0000001009, fhir/practitioner.json",
+    "\"\", fhir/practitioner.json",
   })
   void convertToPractitioner_Provider_matchesJson(String npi, String jsonPath) throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
