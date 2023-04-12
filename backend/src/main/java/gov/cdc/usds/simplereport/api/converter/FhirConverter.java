@@ -335,8 +335,8 @@ public class FhirConverter {
             .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
     practitioner.setId(id);
 
-    LuhnCheckDigit NPIValidator = new LuhnCheckDigit();
-    if (StringUtils.isNotEmpty(npi) && NPIValidator.isValid(NPI_PREFIX.concat(npi))) {
+    LuhnCheckDigit npiValidator = new LuhnCheckDigit();
+    if (StringUtils.isNotEmpty(npi) && npiValidator.isValid(NPI_PREFIX.concat(npi))) {
       practitioner.addIdentifier().setSystem(PRACTICIONER_IDENTIFIER_SYSTEM).setValue(npi);
     }
 

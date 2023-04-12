@@ -97,6 +97,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -371,13 +372,18 @@ class FhirConverterTest {
     assertThat(actual).isEmpty();
   }
 
-  @Test
-  void convertToPractitioner_Provider_NO_NPI_matchesJson() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    ",fhir/practitioner.json",
+    "1588029771, fhir/practitionerNPI.json",
+    "0000001009, fhir/practitioner.json",
+  })
+  void convertToPractitioner_Provider_matchesJson(String npi, String jsonPath) throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var provider =
         new Provider(
             new PersonName("Amelia", "Mary", "Earhart", null),
-            null,
+            npi,
             new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
             "248 555 1234");
     ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
@@ -387,52 +393,7 @@ class FhirConverterTest {
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
         IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getClassLoader().getResourceAsStream("fhir/practitioner.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
-  void convertToPractitioner_Provider_WITH_NPI_matchesJson() throws IOException {
-    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var provider =
-        new Provider(
-            new PersonName("Amelia", "Mary", "Earhart", null),
-            "1588029771", // valid NPI
-            new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
-            "248 555 1234");
-    ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
-
-    var actual = convertToPractitioner(provider);
-
-    String actualSerialized = parser.encodeResourceToString(actual);
-    var expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getClassLoader().getResourceAsStream("fhir/practitionerNPI.json")),
-            StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
-  }
-
-  @Test
-  void convertToPractitioner_Provider_WITH_INVALID_NPI_matchesJson() throws IOException {
-    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
-    var provider =
-        new Provider(
-            new PersonName("Amelia", "Mary", "Earhart", null),
-            "0000001009", // invalid NPI
-            new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
-            "248 555 1234");
-    ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
-
-    var actual = convertToPractitioner(provider);
-
-    String actualSerialized = parser.encodeResourceToString(actual);
-    var expectedSerialized =
-        IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getClassLoader().getResourceAsStream("fhir/practitioner.json")),
+            Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(jsonPath)),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
