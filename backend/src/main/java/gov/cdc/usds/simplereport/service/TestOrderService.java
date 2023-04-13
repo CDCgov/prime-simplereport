@@ -280,6 +280,9 @@ public class TestOrderService {
 
       if (!results.isEmpty()) {
         editMultiplexResult(order, results);
+      } else {
+        _resultRepo.deleteAll(order.getResults());
+        order.getResults().clear();
       }
       order.setDateTestedBackdate(dateTested);
       return _testOrderRepo.save(order);
