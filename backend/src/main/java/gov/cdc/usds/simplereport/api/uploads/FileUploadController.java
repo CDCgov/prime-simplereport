@@ -8,7 +8,6 @@ import static gov.cdc.usds.simplereport.config.WebConfiguration.RESULT_UPLOAD;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
@@ -16,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,7 +28,6 @@ public class FileUploadController {
   public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
   private final PatientBulkUploadService patientBulkUploadService;
   private final TestResultUploadService testResultUploadService;
-  private final FeatureFlagsConfig featureFlagsConfig;
 
   @PostMapping(PATIENT_UPLOAD)
   public PatientBulkUploadResponse handlePatientsUpload(
@@ -50,17 +49,15 @@ public class FileUploadController {
   }
 
   @PostMapping(HIV_RESULT_UPLOAD)
+  @PreAuthorize("@featureFlagsConfig.isHivEnabled()")
   public TestResultUpload handleHIVResultsUpload(@RequestParam("file") MultipartFile file) {
-    if (featureFlagsConfig.isHivEnabled()) {
-      assertCsvFileType(file);
-      try (InputStream resultsUpload = file.getInputStream()) {
-        return testResultUploadService.processHIVResultCSV(resultsUpload);
-      } catch (IOException e) {
-        log.error("Test result CSV encountered an unexpected error", e);
-        throw new CsvProcessingException("Unable to process test result CSV upload");
-      }
+    assertCsvFileType(file);
+    try (InputStream resultsUpload = file.getInputStream()) {
+      return testResultUploadService.processHIVResultCSV(resultsUpload);
+    } catch (IOException e) {
+      log.error("Test result CSV encountered an unexpected error", e);
+      throw new CsvProcessingException("Unable to process test result CSV upload");
     }
-    throw new UnsupportedOperationException();
   }
 
   @PostMapping(RESULT_UPLOAD)
