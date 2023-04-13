@@ -66,7 +66,6 @@ export const HivUploadForm = () => {
               <h1>Upload HIV CSV</h1>
             </div>
             <div className="usa-card__body padding-y-2 maxw-prose">
-              <pre>{JSON.stringify(response, null, 2)}</pre>
               <FormGroup className="margin-bottom-3">
                 <SingleFileInput
                   key={fileInputResetValue}
@@ -90,6 +89,7 @@ export const HivUploadForm = () => {
                 )}
                 {!isSubmitting && <span>Upload your CSV</span>}
               </Button>
+              <pre>{JSON.stringify(response, null, 2)}</pre>
             </div>
           </div>
         </div>
