@@ -238,7 +238,9 @@ public class TestDataFactory {
   @Transactional
   public Person createMinimalPerson(
       Organization org, Facility fac, PersonName names, PersonRole role) {
-    Person p = new Person(names, org, fac, role);
+    Person p =
+        new Person(names, org, fac, role, "female", LocalDate.now(), getFullAddress(), "black");
+
     personRepository.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
     phoneNumberRepository.save(pn);

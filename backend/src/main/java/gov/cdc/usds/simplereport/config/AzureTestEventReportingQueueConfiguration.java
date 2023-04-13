@@ -163,7 +163,6 @@ class AzureTestEventReportingQueueConfiguration {
       if (printSerializedTestEvent) {
         log.info("TestEvent bundled as: {}", toBuffer(testEvent));
       }
-
       return CompletableFuture.completedFuture(null);
     }
 
