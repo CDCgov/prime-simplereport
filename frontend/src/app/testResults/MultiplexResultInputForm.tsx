@@ -110,7 +110,14 @@ const MultiplexResultInputForm: React.FC<Props> = ({
     diseaseName: "covid" | "fluA" | "fluB",
     value: TestResult
   ) => {
-    const newResults: MultiplexResultState = { ...resultsMultiplexFormat };
+    let newResults: MultiplexResultState = resultsMultiplexFormat;
+    if (inconclusiveCheck) {
+      newResults = {
+        covid: TEST_RESULTS.UNKNOWN,
+        fluA: TEST_RESULTS.UNKNOWN,
+        fluB: TEST_RESULTS.UNKNOWN,
+      };
+    }
     newResults[diseaseName] = value;
     convertAndSendResults(newResults);
   };
