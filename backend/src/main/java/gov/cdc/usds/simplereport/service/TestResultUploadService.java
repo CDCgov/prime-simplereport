@@ -186,6 +186,7 @@ public class TestResultUploadService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public TestResultUpload processHIVResultCSV(InputStream csvStream) {
-    return null;
+    FeedbackMessage[] empty = {};
+    return new TestResultUpload(UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
   }
 }
