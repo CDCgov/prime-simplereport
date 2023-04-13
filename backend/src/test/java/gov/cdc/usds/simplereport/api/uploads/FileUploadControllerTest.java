@@ -48,12 +48,4 @@ class FileUploadControllerTest {
     assertThrows(
         CsvProcessingException.class, () -> fileUploadController.handleHIVResultsUpload(file));
   }
-
-  @Test
-  void handleHIVResultsUpload_throwsUnsupportedOperationException_whenHivIsDisabled() {
-    when(featureFlagsConfig.isHivEnabled()).thenReturn(false);
-    assertThrows(
-        UnsupportedOperationException.class,
-        () -> fileUploadController.handleHIVResultsUpload(null));
-  }
 }
