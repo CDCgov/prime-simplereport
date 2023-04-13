@@ -278,12 +278,12 @@ public class TestOrderService {
       // test as facility default
       order.getFacility().setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
 
+      _resultRepo.deleteAll(order.getResults());
+      order.getResults().clear();
       if (!results.isEmpty()) {
         editMultiplexResult(order, results);
-      } else {
-        _resultRepo.deleteAll(order.getResults());
-        order.getResults().clear();
       }
+
       order.setDateTestedBackdate(dateTested);
       return _testOrderRepo.save(order);
     } finally {
@@ -374,24 +374,14 @@ public class TestOrderService {
     return newResults.stream()
         .map(
             newResult -> {
-              Optional<Result> pendingResult =
-                  _resultRepo.getPendingResult(
-                      order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
-              if (pendingResult.isPresent()) {
-                pendingResult.get().setResult(newResult.getTestResult());
-                order.addResult(pendingResult.get());
-                _resultRepo.save(pendingResult.get());
-                return pendingResult.get();
-              } else {
-                Result result =
-                    new Result(
-                        order,
-                        _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                        newResult.getTestResult());
-                order.addResult(result);
-                _resultRepo.save(result);
-                return result;
-              }
+              Result result =
+                  new Result(
+                      order,
+                      _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
+                      newResult.getTestResult());
+              order.addResult(result);
+              _resultRepo.save(result);
+              return result;
             })
         .collect(Collectors.toSet());
   }

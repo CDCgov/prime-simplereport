@@ -21,10 +21,10 @@ public interface ResultRepository extends EternalAuditedEntityRepository<Result>
 
   Result findResultByTestOrderAndDisease(TestOrder testOrder, SupportedDisease disease);
 
-  @Query(
-      EternalAuditedEntityRepository.BASE_QUERY
-          + "and e.testOrder = :order and e.disease = :disease and e.testEvent is null")
-  Optional<Result> getPendingResult(TestOrder order, SupportedDisease disease);
+  //  @Query(
+  //      EternalAuditedEntityRepository.BASE_QUERY
+  //          + "and e.testOrder = :order and e.disease = :disease and e.testEvent is null")
+  //  Optional<Result> getPendingResult(TestOrder order, SupportedDisease disease);
 
   @Query(
       EternalAuditedEntityRepository.BASE_QUERY

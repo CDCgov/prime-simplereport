@@ -30,6 +30,7 @@ import {
   TestCorrectionReasons,
 } from "../testResults/TestResultCorrectionModal";
 import MultiplexResultInputForm from "../testResults/MultiplexResultInputForm";
+import { MULTIPLEX_DISEASES } from "../testResults/constants";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -295,6 +296,18 @@ const QueueItem = ({
     // eslint-disable-next-line
   }, [deviceId]);
 
+  const doesDeviceSupportMultiPlex = (deviceId: string) => {
+    if (devicesMap.has(deviceId)) {
+      let supportedDiseases = devicesMap
+        .get(deviceId)!
+        .supportedDiseaseTestPerformed.map((supportedDisease) => {
+          return supportedDisease.supportedDisease;
+        });
+      return supportedDiseases.length > 1;
+    }
+    return false;
+  };
+
   useEffect(() => {
     if (deviceTypeIsInvalid()) {
       setDeviceTypeErrorMessage("Please select a device");
@@ -316,7 +329,11 @@ const QueueItem = ({
           deviceId,
           dateTested,
           specimenTypeId: specimenId,
-          results: cacheTestResults,
+          results: doesDeviceSupportMultiPlex(deviceId)
+            ? cacheTestResults
+            : cacheTestResults.filter(
+                (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
+              ),
         });
         setSaveState("idle");
       }, DEBOUNCE_TIME);
