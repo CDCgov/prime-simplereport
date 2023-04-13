@@ -278,11 +278,7 @@ public class TestOrderService {
       // test as facility default
       order.getFacility().setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
 
-      _resultRepo.deleteAll(order.getResults());
-      order.getResults().clear();
-      if (!results.isEmpty()) {
-        editMultiplexResult(order, results);
-      }
+      editMultiplexResult(order, results);
 
       order.setDateTestedBackdate(dateTested);
       return _testOrderRepo.save(order);
@@ -369,21 +365,25 @@ public class TestOrderService {
   }
 
   private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
-    // For new results, check if there's already a pending result for the same test.
-    // If so, update it, if not, create a new one.
-    return newResults.stream()
-        .map(
-            newResult -> {
-              Result result =
-                  new Result(
-                      order,
-                      _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                      newResult.getTestResult());
-              order.addResult(result);
-              _resultRepo.save(result);
-              return result;
-            })
-        .collect(Collectors.toSet());
+    // delete all results
+    _resultRepo.deleteAll(order.getResults());
+    order.getResults().clear();
+
+    // create new ones
+    if (!newResults.isEmpty()) {
+      newResults.forEach(
+          newResult -> {
+            Result result =
+                new Result(
+                    order,
+                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
+                    newResult.getTestResult());
+            order.addResult(result);
+            _resultRepo.save(result);
+          });
+    }
+
+    return order.getResults();
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
