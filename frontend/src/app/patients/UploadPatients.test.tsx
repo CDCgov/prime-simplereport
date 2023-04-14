@@ -310,13 +310,13 @@ describe("Upload Patient", () => {
       "true"
     );
   });
-  it("should show error for emtpy file", async () => {
+  it("should show error for empty file", async () => {
     renderUploadPatients();
     const emptyFile = file("");
 
     await userEventUpload(emptyFile, "One facility");
     expect(await screen.findByText("Error: Invalid file")).toBeInTheDocument();
-    expect(screen.queryByText(/"/)).not.toBeInTheDocument();
+    expect(screen.getByText("File is missing or empty.")).toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",
       "true"
@@ -330,7 +330,11 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File too large")
     ).toBeInTheDocument();
-    expect(screen.queryByText(/\$/)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "values.csv is too large for SimpleReport to process. Please limit each upload to less than 50 MB."
+      )
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",
       "true"
