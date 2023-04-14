@@ -599,7 +599,14 @@ public class TestOrderService {
         var results =
             latestResultsPerDisease.values().stream()
                 .filter(Optional::isPresent)
-                .map(result -> new Result(result.get()))
+                .map(Optional::get)
+                .map(
+                    result ->
+                        Result.builder()
+                            .disease(result.getDisease())
+                            .resultLOINC(result.getResultLOINC())
+                            .testResult(result.getTestResult())
+                            .build())
                 .collect(Collectors.toSet());
         var newRemoveEvent =
             new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
