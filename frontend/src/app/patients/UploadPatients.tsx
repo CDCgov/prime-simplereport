@@ -258,9 +258,9 @@ const UploadPatients = () => {
           header: "Error: File too large",
           body: (
             <>
-              ${file.name} has too many rows for SimpleReport to process. Please
-              limit each upload to less than $
-              {MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`
+              {file.name} has too many rows for SimpleReport to process. Please
+              limit each upload to less than{" "}
+              {MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.
             </>
           ),
           includeGuide: false,
