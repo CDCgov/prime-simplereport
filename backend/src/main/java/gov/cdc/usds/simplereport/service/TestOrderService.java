@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -38,7 +37,6 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -543,6 +541,7 @@ public class TestOrderService {
     // For corrections, re-open the original test order
     switch (status) {
       case CORRECTED -> {
+        ensureBackwardCompatibility(event, order);
         order.setCorrectionStatus(status);
         order.setReasonForCorrection(reasonForCorrection);
         order.markPending();
@@ -550,56 +549,13 @@ public class TestOrderService {
           order.setDateTestedBackdate(event.getDateTested());
         }
 
-        // Backward compatibility shim
-        // we know if we are using the older version when the result have both testevent and
-        // testorder will be populated.
-        // so here it makes sense to copy the results to the old TestEvent,
-        // and remove the TestEvent from the TestOrder results (aka the old results will be only
-        // attached to testorder)
-        // TestOrder links to its own Results (both are mutable)
-        // TestEvent links to its own Results (both are immutable)
-        boolean hasResultsWithTestOrderAndTestEvent =
-            order.getResults().stream().anyMatch(result -> null != result.getTestEvent());
-        if (hasResultsWithTestOrderAndTestEvent) {
-          // remove the link to the TestEvent for the existing results
-          order.getResults().forEach(result -> result.setTestEvent(null));
-          _resultRepo.saveAll(order.getResults());
-
-          // copy results for the existing TestEvent
-          List<Result> resultsForTestEvent =
-              order.getResults().stream()
-                  .map(
-                      result ->
-                          Result.builder()
-                              .disease(result.getDisease())
-                              .resultLOINC(result.getResultLOINC())
-                              .testResult(result.getTestResult())
-                              .testEvent(event)
-                              .build())
-                  .toList();
-          event.getResults().clear();
-          event.getResults().addAll(resultsForTestEvent);
-          _resultRepo.saveAll(resultsForTestEvent);
-        }
-
-        _testOrderRepo.save(order);
         return event;
       }
       case REMOVED -> {
-        // generate a duplicate test_event that just has a status of REMOVED and the
-        // reason
-
-        // Get the most recent results for each disease
-        Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
-            order.getResults().stream()
-                .collect(
-                    Collectors.groupingBy(
-                        Result::getDisease,
-                        Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
+        ensureBackwardCompatibility(event, order);
+        // copy the event results to new removal Event
         var results =
-            latestResultsPerDisease.values().stream()
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+            event.getResults().stream()
                 .map(
                     result ->
                         Result.builder()
@@ -611,13 +567,12 @@ public class TestOrderService {
         var newRemoveEvent =
             new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
         _testEventRepo.save(newRemoveEvent);
-        results.forEach(
-            result -> {
-              result.setTestEvent(newRemoveEvent);
-            });
+        results.forEach(result -> result.setTestEvent(newRemoveEvent));
         _resultRepo.saveAll(results);
+
         _testEventReportingService.report(newRemoveEvent);
         _fhirQueueReportingService.report(newRemoveEvent);
+
         order.setReasonForCorrection(reasonForCorrection);
         order.setTestEventRef(newRemoveEvent);
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
@@ -625,6 +580,38 @@ public class TestOrderService {
         return newRemoveEvent;
       }
       default -> throw new IllegalGraphqlArgumentException("Invalid TestCorrectionStatus");
+    }
+  }
+
+  private void ensureBackwardCompatibility(TestEvent event, TestOrder order) {
+    // Backward compatibility shim
+    // we know if we are using the older version when the result has both TestEvent and TestOrder
+    // so here we grab all the results and remove the test order
+    // then we grab the results from the TestEvent being corrected
+    // and make copies for the TestOrder
+    boolean hasResultsWithTestOrderAndTestEvent =
+        event.getResults().stream().anyMatch(result -> null != result.getTestEvent());
+    if (hasResultsWithTestOrderAndTestEvent) {
+      // remove the link to the TestOrder for all the existing results
+      Set<Result> orderResults = order.getResults();
+      orderResults.forEach(result -> result.setTestOrder(null));
+      order.getResults().clear();
+      _resultRepo.saveAll(orderResults);
+
+      // copy results for the existing TestEvent and make link to the TestOrder
+      List<Result> resultsFromTestEvent =
+          event.getResults().stream()
+              .map(
+                  result ->
+                      Result.builder()
+                          .disease(result.getDisease())
+                          .resultLOINC(result.getResultLOINC())
+                          .testResult(result.getTestResult())
+                          .testOrder(order)
+                          .build())
+              .toList();
+      order.getResults().addAll(resultsFromTestEvent);
+      _resultRepo.saveAll(resultsFromTestEvent);
     }
   }
 

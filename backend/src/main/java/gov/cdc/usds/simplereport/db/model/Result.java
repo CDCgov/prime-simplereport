@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 @AllArgsConstructor
@@ -25,10 +26,12 @@ public class Result extends EternalAuditedEntity {
 
   @ManyToOne
   @JoinColumn(name = "test_event_id")
+  @Setter
   private TestEvent testEvent;
 
   @ManyToOne
-  @JoinColumn(name = "test_order_id", nullable = false, updatable = false)
+  @JoinColumn(name = "test_order_id")
+  @Setter
   private TestOrder testOrder;
 
   @ManyToOne(optional = false)
@@ -65,10 +68,6 @@ public class Result extends EternalAuditedEntity {
     this.disease = originalResult.disease;
     this.resultLOINC = originalResult.resultLOINC;
     this.testResult = originalResult.testResult;
-  }
-
-  public void setTestEvent(TestEvent event) {
-    this.testEvent = event;
   }
 
   public void setResult(TestResult testResult) {
