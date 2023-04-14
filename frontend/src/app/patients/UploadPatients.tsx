@@ -240,8 +240,8 @@ const UploadPatients = () => {
           header: "Error: File too large",
           body: (
             <>
-              ${file.name} is too large for SimpleReport to process. Please
-              limit each upload to less than 50 MB.
+              {file.name} is too large for SimpleReport to process. Please limit
+              each upload to less than 50 MB.
             </>
           ),
           includeGuide: false,

@@ -318,6 +318,7 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File too large")
     ).toBeInTheDocument();
+    expect(screen.queryByText(/\$/)).not.toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",
       "true"
