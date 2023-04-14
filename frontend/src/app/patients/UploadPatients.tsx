@@ -225,7 +225,7 @@ const UploadPatients = () => {
         setButtonIsDisabled(false);
         setErrorMessage({
           header: "Error: Invalid file",
-          body: <>"File is missing or empty."</>,
+          body: <>File is missing or empty.</>,
           includeGuide: true,
         });
         setFileValid(false);

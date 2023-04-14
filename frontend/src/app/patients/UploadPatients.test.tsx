@@ -117,7 +117,7 @@ describe("Upload Patient", () => {
         await screen.findByText(
           "3. Upload your spreadsheet for Rosa Parks High School."
         )
-      );
+      ).toBeInTheDocument();
     });
     it("should remove facility name when all facilities is selected", async () => {
       renderUploadPatients();
@@ -305,6 +305,18 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Error: File not accepted")
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+  });
+  it("should show error for emtpy file", async () => {
+    renderUploadPatients();
+    const emptyFile = file("");
+
+    await userEventUpload(emptyFile, "One facility");
+    expect(await screen.findByText("Error: Invalid file")).toBeInTheDocument();
+    expect(screen.queryByText(/"/)).not.toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",
       "true"
