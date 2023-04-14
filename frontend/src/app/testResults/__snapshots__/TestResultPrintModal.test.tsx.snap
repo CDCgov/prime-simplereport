@@ -290,8 +290,13 @@ Object {
                   More information
                 </h2>
                 <div
-                  class=""
+                  class="sr-margin-bottom-28px"
                 >
+                  <p
+                    class="text-bold sr-guidance-heading"
+                  >
+                    For COVID-19:
+                  </p>
                   <p>
                     Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
                   </p>
@@ -661,8 +666,13 @@ your local health department.
                 More information
               </h2>
               <div
-                class=""
+                class="sr-margin-bottom-28px"
               >
+                <p
+                  class="text-bold sr-guidance-heading"
+                >
+                  For COVID-19:
+                </p>
                 <p>
                   Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
                 </p>
@@ -1962,8 +1972,13 @@ Object {
                   More information
                 </h2>
                 <div
-                  class=""
+                  class="sr-margin-bottom-28px"
                 >
+                  <p
+                    class="text-bold sr-guidance-heading"
+                  >
+                    For COVID-19:
+                  </p>
                   <p>
                     Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
                   </p>
@@ -2297,8 +2312,13 @@ your local health department.
                 More information
               </h2>
               <div
-                class=""
+                class="sr-margin-bottom-28px"
               >
+                <p
+                  class="text-bold sr-guidance-heading"
+                >
+                  For COVID-19:
+                </p>
                 <p>
                   Contact your health care provider to decide if additional testing is needed, especially if you experience any of these symptoms:
                 </p>
