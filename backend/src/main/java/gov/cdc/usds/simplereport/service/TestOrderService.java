@@ -331,9 +331,23 @@ public class TestOrderService {
       // towards the new
       // TestEvent.
       // Doing so would break the corrections/removal flow.
-      Set<Result> resultsForTestOrder = _resultRepo.getAllPendingResults(order);
-      resultsForTestOrder.forEach(result -> result.setTestEvent(savedEvent));
-      _resultRepo.saveAll(resultsForTestOrder);
+      //      Set<Result> resultsForTestOrder = _resultRepo.getAllPendingResults(order);
+      //      resultsForTestOrder.forEach(result -> result.setTestEvent(savedEvent));
+
+      List<Result> resultsForTestEvent =
+          order.getResults().stream()
+              .map(
+                  result ->
+                      Result.builder()
+                          .disease(result.getDisease())
+                          .resultLOINC(result.getResultLOINC())
+                          .testResult(result.getTestResult())
+                          .testEvent(savedEvent)
+                          .build())
+              .toList();
+      savedEvent.getResults().addAll(resultsForTestEvent);
+
+      _resultRepo.saveAll(resultsForTestEvent);
 
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
@@ -527,53 +541,84 @@ public class TestOrderService {
     }
 
     // For corrections, re-open the original test order
-    if (status == TestCorrectionStatus.CORRECTED) {
-      order.setCorrectionStatus(status);
-      order.setReasonForCorrection(reasonForCorrection);
-      order.markPending();
+    switch (status) {
+      case CORRECTED -> {
+        order.setCorrectionStatus(status);
+        order.setReasonForCorrection(reasonForCorrection);
+        order.markPending();
+        if (order.getDateTestedBackdate() == null) {
+          order.setDateTestedBackdate(event.getDateTested());
+        }
 
-      if (order.getDateTestedBackdate() == null) {
-        order.setDateTestedBackdate(event.getDateTested());
+        // Backward compatibility shim
+        // we know if we are using the older version when the result have both testevent and
+        // testorder will be populated.
+        // so here it makes sense to copy the results to the old TestEvent,
+        // and remove the TestEvent from the TestOrder results (aka the old results will be only
+        // attached to testorder)
+        // TestOrder links to its own Results (both are mutable)
+        // TestEvent links to its own Results (both are immutable)
+        boolean hasResultsWithTestOrderAndTestEvent =
+            order.getResults().stream().anyMatch(result -> null != result.getTestEvent());
+        if (hasResultsWithTestOrderAndTestEvent) {
+          // remove the link to the TestEvent for the existing results
+          order.getResults().forEach(result -> result.setTestEvent(null));
+          _resultRepo.saveAll(order.getResults());
+
+          // copy results for the existing TestEvent
+          List<Result> resultsForTestEvent =
+              order.getResults().stream()
+                  .map(
+                      result ->
+                          Result.builder()
+                              .disease(result.getDisease())
+                              .resultLOINC(result.getResultLOINC())
+                              .testResult(result.getTestResult())
+                              .testEvent(event)
+                              .build())
+                  .toList();
+          event.getResults().clear();
+          event.getResults().addAll(resultsForTestEvent);
+          _resultRepo.saveAll(resultsForTestEvent);
+        }
+
+        _testOrderRepo.save(order);
+        return event;
       }
-      _testOrderRepo.save(order);
+      case REMOVED -> {
+        // generate a duplicate test_event that just has a status of REMOVED and the
+        // reason
 
-      return event;
+        // Get the most recent results for each disease
+        Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
+            order.getResults().stream()
+                .collect(
+                    Collectors.groupingBy(
+                        Result::getDisease,
+                        Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
+        var results =
+            latestResultsPerDisease.values().stream()
+                .filter(Optional::isPresent)
+                .map(result -> new Result(result.get()))
+                .collect(Collectors.toSet());
+        var newRemoveEvent =
+            new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
+        _testEventRepo.save(newRemoveEvent);
+        results.forEach(
+            result -> {
+              result.setTestEvent(newRemoveEvent);
+            });
+        _resultRepo.saveAll(results);
+        _testEventReportingService.report(newRemoveEvent);
+        _fhirQueueReportingService.report(newRemoveEvent);
+        order.setReasonForCorrection(reasonForCorrection);
+        order.setTestEventRef(newRemoveEvent);
+        order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
+        _testOrderRepo.save(order);
+        return newRemoveEvent;
+      }
+      default -> throw new IllegalGraphqlArgumentException("Invalid TestCorrectionStatus");
     }
-
-    // generate a duplicate test_event that just has a status of REMOVED and the
-    // reason
-
-    // Get the most recent results for each disease
-    Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
-        order.getResults().stream()
-            .collect(
-                Collectors.groupingBy(
-                    Result::getDisease,
-                    Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
-    var results =
-        latestResultsPerDisease.values().stream()
-            .filter(Optional::isPresent)
-            .map(result -> new Result(result.get()))
-            .collect(Collectors.toSet());
-    var newRemoveEvent =
-        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
-    _testEventRepo.save(newRemoveEvent);
-    results.forEach(
-        result -> {
-          result.setTestEvent(newRemoveEvent);
-        });
-    _resultRepo.saveAll(results);
-    _testEventReportingService.report(newRemoveEvent);
-    _fhirQueueReportingService.report(newRemoveEvent);
-
-    order.setReasonForCorrection(reasonForCorrection);
-    order.setTestEventRef(newRemoveEvent);
-
-    order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
-
-    _testOrderRepo.save(order);
-
-    return newRemoveEvent;
   }
 
   @Transactional

@@ -100,6 +100,6 @@ public class ApiTestOrderDataResolver {
 
   @SchemaMapping(typeName = "TestOrder", field = "results")
   public Set<Result> results(ApiTestOrder apiTestOrder) {
-    return apiTestOrder.getWrapped().getPendingResultSet();
+    return apiTestOrder.getWrapped().getResults();
   }
 }

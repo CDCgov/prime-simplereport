@@ -11,6 +11,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
@@ -19,13 +20,14 @@ import org.hibernate.annotations.Type;
 @NoArgsConstructor
 @Getter
 @Entity
+@Builder
 public class Result extends EternalAuditedEntity {
 
   @ManyToOne
   @JoinColumn(name = "test_event_id")
   private TestEvent testEvent;
 
-  @ManyToOne(optional = false)
+  @ManyToOne
   @JoinColumn(name = "test_order_id", nullable = false, updatable = false)
   private TestOrder testOrder;
 

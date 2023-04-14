@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -110,13 +109,6 @@ public class TestOrder extends BaseTestInfo {
               .collect(Collectors.toSet());
     }
     return pendingResults;
-  }
-
-  public Optional<Result> getResultForDisease(SupportedDisease disease) {
-    if (results != null) {
-      return results.stream().filter(r -> r.getDisease().equals(disease)).findFirst();
-    }
-    return Optional.empty();
   }
 
   public void markComplete() {
