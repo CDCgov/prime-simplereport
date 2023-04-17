@@ -21,7 +21,7 @@ simple-report-initialization:
     #     street-1: 2797 N Cerrada de Beto
     #   organization-external-id: DIS_ORG
     - name: Testing Site
-      clia-number: "999888777-6"
+      clia-number: "12D1234567"
       address:
         street-1: 1001 Rodeo Dr
         city: Los Angeles
@@ -52,7 +52,7 @@ simple-report-initialization:
   provider:
     first-name: Fred
     last-name: Flintstone
-    provider-id: PEBBLES
+    provider-id: "0000000000"
     telephone: (202) 555-1212
     address:
       street-1: 123 Main Street
@@ -62,6 +62,7 @@ simple-report-initialization:
   configured-device-types:
     - LumiraDX
     - Quidel Sofia 2
+    - Abbott Alinity M
   specimen-types:
     - name: Swab of internal nose
       type-code: "445297001"
