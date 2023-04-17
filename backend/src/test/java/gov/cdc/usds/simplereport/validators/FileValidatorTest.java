@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -77,8 +76,7 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
     assertThat(errors).hasSize(1);
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     assertThat(errorMessages).contains("File is missing headers and other required data");
     assertThat(errors.get(0).getIndices()).isNull();
   }
@@ -91,8 +89,7 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
     assertThat(errors).hasSize(1);
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     assertThat(errorMessages)
         .contains(
             "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
@@ -107,8 +104,7 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
     assertThat(errors).hasSize(26);
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     errors.forEach(
         error -> {
           String errorMessage = error.getMessage();
@@ -136,10 +132,8 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
     assertThat(errors).hasSize(2);
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
-    List<List<Integer>> indices =
-        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
+    List<List<Integer>> indices = errors.stream().map(FeedbackMessage::getIndices).toList();
     assertThat(errorMessages)
         .contains(
             "File is missing data in the race column.",
@@ -155,10 +149,8 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
     assertThat(errors).hasSize(13);
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
-    List<List<Integer>> indices =
-        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
+    List<List<Integer>> indices = errors.stream().map(FeedbackMessage::getIndices).toList();
     assertThat(errorMessages)
         .contains(
             "11/3/8 is not an acceptable value for the date_of_birth column.",
@@ -207,8 +199,7 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
     assertThat(errors).hasSize(1);
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     assertThat(errorMessages)
         .contains(
             "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
@@ -223,10 +214,8 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
     // THEN
     assertThat(errors).hasSize(13);
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
-    List<List<Integer>> indices =
-        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
+    List<List<Integer>> indices = errors.stream().map(FeedbackMessage::getIndices).toList();
     patientBulkUploadRequiredFields.forEach(
         fieldName ->
             assertThat(errorMessages)
@@ -268,8 +257,7 @@ class FileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     assertThat(errors).hasSize(66);
     errors.forEach(
         error -> {
@@ -299,10 +287,8 @@ class FileValidatorTest {
     // THEN
     assertThat(errors).hasSize(34);
 
-    List<String> errorMessages =
-        errors.stream().map(FeedbackMessage::getMessage).collect(Collectors.toList());
-    List<List<Integer>> indices =
-        errors.stream().map(FeedbackMessage::getIndices).collect(Collectors.toList());
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
+    List<List<Integer>> indices = errors.stream().map(FeedbackMessage::getIndices).toList();
     assertThat(errorMessages)
         .contains(
             "x is not an acceptable value for the patient_state column.",
