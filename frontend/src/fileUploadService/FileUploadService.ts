@@ -50,4 +50,8 @@ export class FileUploadService {
   static uploadResults(csvFile: File) {
     return fetch(api.getURL("/upload/results"), getInitOptions(csvFile));
   }
+
+  static uploadHIVResults(csvFile: File) {
+    return fetch(api.getURL("/upload/hiv-results"), getInitOptions(csvFile));
+  }
 }

@@ -183,4 +183,10 @@ public class TestResultUploadService {
 
     return _client.getSubmission(result.getReportId(), r.getAccessToken());
   }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public TestResultUpload processHIVResultCSV(InputStream csvStream) {
+    FeedbackMessage[] empty = {};
+    return new TestResultUpload(UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
+  }
 }
