@@ -5,5 +5,3 @@ simple-report:
     allowed-origins:
       - https://www.simplereport.gov
       - https://simplereport.gov
-features:
-  hivEnabled: false
