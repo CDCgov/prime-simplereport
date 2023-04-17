@@ -66,7 +66,7 @@ interface Props {
 }
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
-function getUserStatusText(user: SettingsUser) {
+function displayUserStatusText(user: SettingsUser) {
   switch (user.status) {
     case "ACTIVE":
       return (
@@ -95,6 +95,67 @@ function getUserStatusText(user: SettingsUser) {
     default:
       return "";
   }
+}
+
+function displayUserSelf(isUserSelf: () => boolean) {
+  if (isUserSelf()) {
+    return (
+      <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
+        YOU
+      </span>
+    );
+  }
+  return null;
+}
+
+function displayUserSuspendedInfo(
+  user: SettingsUser,
+  updateShowReactivateUserModal: (showReactivateUserModal: boolean) => void,
+  isUpdating: boolean
+) {
+  if (user.status === "SUSPENDED") {
+    return (
+      <>
+        <div className="status-tagline">
+          Users are deactivated after 60 days of inactivity.
+        </div>
+        <Button
+          variant="outline"
+          className="margin-left-auto margin-bottom-1"
+          onClick={() => updateShowReactivateUserModal(true)}
+          label="Activate user"
+          disabled={isUpdating}
+        />
+      </>
+    );
+  }
+  return null;
+}
+
+function displayUserProvisionedInfo(
+  user: SettingsUser,
+  updateShowResendUserActivationEmailModal: (
+    showResendUserActivationEmail: boolean
+  ) => void,
+  isUpdating: boolean
+) {
+  if (user.status === "PROVISIONED") {
+    return (
+      <>
+        <div className="status-tagline">
+          This user hasn’t set up their account.
+        </div>
+        <Button
+          variant="outline"
+          className="margin-left-auto margin-bottom-1"
+          onClick={() => updateShowResendUserActivationEmailModal(true)}
+          label="Send account setup email"
+          disabled={isUpdating}
+        />
+      </>
+    );
+  }
+  return null;
 }
 
 const UserDetail: React.FC<Props> = ({
@@ -137,7 +198,7 @@ const UserDetail: React.FC<Props> = ({
 
   const isUserSelf = () => user.id === loggedInUser.id;
 
-  let statusText = getUserStatusText(user);
+  let statusText = displayUserStatusText(user);
 
   return (
     <div
@@ -148,43 +209,21 @@ const UserDetail: React.FC<Props> = ({
       <div>
         <h2 className="display-inline-block margin-top-1 margin-bottom-0 user-name-header">
           {displayFullName(user.firstName, user.middleName, user.lastName)}
-          {user?.id === loggedInUser.id ? (
-            <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
-              YOU
-            </span>
-          ) : null}
+          {displayUserSelf(isUserSelf)}
         </h2>
         <div className="user-status-subheader">{statusText}</div>
       </div>
       <div className="user-header grid-row flex-row flex-align-center">
-        {user.status === "SUSPENDED" ? (
-          <>
-            <div className="status-tagline">
-              Users are deactivated after 60 days of inactivity.
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowReactivateUserModal(true)}
-              label="Activate user"
-              disabled={isUpdating}
-            />
-          </>
-        ) : null}
-        {user.status === "PROVISIONED" ? (
-          <>
-            <div className="status-tagline">
-              This user hasn’t set up their acccount.
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowResendUserActivationEmailModal(true)}
-              label="Send account setup email"
-              disabled={isUpdating}
-            />
-          </>
-        ) : null}
+        {displayUserSuspendedInfo(
+          user,
+          updateShowReactivateUserModal,
+          isUpdating
+        )}
+        {displayUserProvisionedInfo(
+          user,
+          updateShowResendUserActivationEmailModal,
+          isUpdating
+        )}
       </div>
       <nav
         className="prime-secondary-nav margin-top-4 padding-bottom-0"
