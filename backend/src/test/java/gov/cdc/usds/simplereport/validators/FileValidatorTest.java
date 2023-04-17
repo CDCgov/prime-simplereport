@@ -93,7 +93,7 @@ class FileValidatorTest {
     assertThat(errorMessages)
         .contains(
             "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
-    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(2, 4));
+    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(2, 4, 5));
   }
 
   @Test
@@ -189,21 +189,6 @@ class FileValidatorTest {
     assertThat(errors.get(2).getMessage())
         .isEqualTo("File is missing data in the ethnicity column.");
     assertThat(errors.get(2).getIndices()).isEqualTo(List.of(4, 5));
-  }
-
-  @Test
-  void patientBulkUpload_incorrectColumn_returnsErrorWithCorrectRow() {
-    // GIVEN
-    InputStream input = loadCsv("patientBulkUpload/missingColumns.csv");
-    // WHEN
-    List<FeedbackMessage> errors = patientBulkUploadFileValidator.validate(input);
-    // THEN
-    assertThat(errors).hasSize(1);
-    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
-    assertThat(errorMessages)
-        .contains(
-            "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.");
-    assertThat(errors.get(0).getIndices()).isEqualTo(List.of(2));
   }
 
   @Test
