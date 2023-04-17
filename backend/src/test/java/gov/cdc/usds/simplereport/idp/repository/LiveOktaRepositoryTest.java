@@ -801,6 +801,14 @@ class LiveOktaRepositoryTest {
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
     when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
         .thenReturn(mockGroupList);
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () ->
+                _repo.updateUserPrivileges(userName, org, Set.of(), Set.of(OrganizationRole.USER)));
+    assertEquals(
+        "Cannot add Okta user to nonexistent group=" + groupOrgPrefix + ":" + OrganizationRole.USER,
+        caught.getMessage());
   }
 
   @Test
