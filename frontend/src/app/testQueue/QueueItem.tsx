@@ -9,12 +9,11 @@ import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
 
 import {
-  MultiplexResultInput,
-  useRemovePatientFromQueueMutation,
-  useEditQueueItemMutation,
-  useSubmitQueueItemMutation,
   GetFacilityQueueQuery,
-  SupportedDisease,
+  MultiplexResultInput,
+  useEditQueueItemMutation,
+  useRemovePatientFromQueueMutation,
+  useSubmitQueueItemMutation,
 } from "../../generated/graphql";
 import Button from "../commonComponents/Button/Button";
 import Dropdown from "../commonComponents/Dropdown";
@@ -236,16 +235,6 @@ const QueueItem = ({
       .catch(updateMutationError);
   };
 
-  const updateDeviceMultiplexSupport = (
-    supportedDiseases: SupportedDisease[]
-  ) => {
-    const updatedDiseaseSupport =
-      supportedDiseases.filter((d: any) => d.name !== "COVID-19").length > 0;
-    if (supportsMultipleDiseases !== updatedDiseaseSupport) {
-      updateSupportsMultipleDiseases(updatedDiseaseSupport);
-    }
-  };
-
   useEffect(() => {
     // Update test card changes from server
 
@@ -286,24 +275,32 @@ const QueueItem = ({
 
   useEffect(() => {
     if (devicesMap.has(deviceId)) {
-      let supportedDiseases = devicesMap
-        .get(deviceId)!
-        .supportedDiseaseTestPerformed.map((supportedDisease) => {
-          return supportedDisease.supportedDisease;
-        });
-      updateDeviceMultiplexSupport(supportedDiseases);
+      let deviceSupportsMultiPlex = doesDeviceSupportMultiPlex(deviceId);
+      if (supportsMultipleDiseases !== deviceSupportsMultiPlex) {
+        updateSupportsMultipleDiseases(deviceSupportsMultiPlex);
+      }
+      if (!deviceSupportsMultiPlex) {
+        // filter out non covid results
+        setCacheTestResults(
+          cacheTestResults.filter(
+            (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
+          )
+        );
+      }
     }
     // eslint-disable-next-line
   }, [deviceId]);
 
   const doesDeviceSupportMultiPlex = (deviceId: string) => {
     if (devicesMap.has(deviceId)) {
-      let supportedDiseases = devicesMap
-        .get(deviceId)!
-        .supportedDiseaseTestPerformed.map((supportedDisease) => {
-          return supportedDisease.supportedDisease;
-        });
-      return supportedDiseases.length > 1;
+      return (
+        devicesMap
+          .get(deviceId)!
+          .supportedDiseaseTestPerformed.filter(
+            (disease) =>
+              disease.supportedDisease.name !== MULTIPLEX_DISEASES.COVID_19
+          ).length > 0
+      );
     }
     return false;
   };
