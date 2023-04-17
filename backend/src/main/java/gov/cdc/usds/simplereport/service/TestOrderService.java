@@ -325,13 +325,6 @@ public class TestOrderService {
 
       TestEvent savedEvent = _testEventRepo.save(testEvent);
 
-      // Only edit/save the pending results - don't change all Results to point
-      // towards the new
-      // TestEvent.
-      // Doing so would break the corrections/removal flow.
-      //      Set<Result> resultsForTestOrder = _resultRepo.getAllPendingResults(order);
-      //      resultsForTestOrder.forEach(result -> result.setTestEvent(savedEvent));
-
       List<Result> resultsForTestEvent =
           order.getResults().stream()
               .map(
