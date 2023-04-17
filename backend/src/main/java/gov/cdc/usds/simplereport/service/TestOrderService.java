@@ -583,7 +583,7 @@ public class TestOrderService {
     // then we grab the results from the TestEvent being corrected
     // and make copies for the TestOrder
     boolean hasResultsWithTestOrderAndTestEvent =
-        event.getResults().stream().anyMatch(result -> null != result.getTestEvent());
+        event.getResults().stream().anyMatch(result -> null != result.getTestOrder());
     if (hasResultsWithTestOrderAndTestEvent) {
       // remove the link to the TestOrder for all the existing results
       Set<Result> orderResults = order.getResults();
