@@ -22,3 +22,5 @@ simple-report:
 twilio:
   enabled: true
   from-number: "+14045312484"
+features:
+  hivEnabled: false
