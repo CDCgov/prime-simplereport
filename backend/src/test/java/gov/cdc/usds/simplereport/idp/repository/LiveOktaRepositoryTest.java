@@ -802,8 +802,12 @@ class LiveOktaRepositoryTest {
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
     when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
         .thenReturn(mockGroupList);
+
+    Set<Facility> userFacilities = Set.of();
+    Set<OrganizationRole> userOrgRoles = Set.of(OrganizationRole.USER);
+
     try {
-      _repo.updateUserPrivileges(userName, org, Set.of(), Set.of(OrganizationRole.USER));
+      _repo.updateUserPrivileges(userName, org, userFacilities, userOrgRoles);
       Assert.fail("Expected an IllegalGraphqlArgumentException to be thrown");
     } catch (IllegalGraphqlArgumentException e) {
       assertEquals(
