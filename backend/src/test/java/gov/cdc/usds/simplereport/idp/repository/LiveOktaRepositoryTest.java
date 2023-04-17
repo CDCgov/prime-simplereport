@@ -14,7 +14,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ibm.icu.impl.Assert;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.error.Error;
 import com.okta.sdk.error.ErrorCause;
@@ -806,13 +805,13 @@ class LiveOktaRepositoryTest {
     Set<Facility> userFacilities = Set.of();
     Set<OrganizationRole> userOrgRoles = Set.of(OrganizationRole.USER);
 
-    try {
-      _repo.updateUserPrivileges(userName, org, userFacilities, userOrgRoles);
-      Assert.fail("Expected an IllegalGraphqlArgumentException to be thrown");
-    } catch (IllegalGraphqlArgumentException e) {
-      assertEquals(
-          "Cannot add Okta user to nonexistent group=" + groupOrgPrefix + ":USER", e.getMessage());
-    }
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.updateUserPrivileges(userName, org, userFacilities, userOrgRoles));
+    assertEquals(
+        "Cannot add Okta user to nonexistent group=" + groupOrgPrefix + ":USER",
+        caught.getMessage());
   }
 
   @Test
