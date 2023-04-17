@@ -67,6 +67,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.data.domain.Page;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
@@ -1174,8 +1175,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createMinimalPerson(org, facility);
     _dataFactory.createTestEvent(p, facility);
 
-    _service.getFacilityTestEventsResults(
-        facility.getInternalId(), null, null, null, null, null, 0, 10);
+    Page<TestEvent> testEventsByFacility =
+        _service.getFacilityTestEventsResults(
+            facility.getInternalId(), null, null, null, null, null, 0, 10);
+    assertThat(testEventsByFacility.getTotalElements()).isEqualTo(1);
+    assertThat(testEventsByFacility.getTotalPages()).isEqualTo(1);
   }
 
   @Test
@@ -1201,7 +1205,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createMinimalPerson(org, facility);
     _dataFactory.createTestEvent(p, facility);
 
-    _service.getOrganizationTestEventsResults(null, null, null, null, null, 0, 10);
+    Page<TestEvent> testEventsByOrg =
+        _service.getOrganizationTestEventsResults(null, null, null, null, null, 0, 10);
+    assertThat(testEventsByOrg.getTotalElements()).isEqualTo(1);
+    assertThat(testEventsByOrg.getTotalPages()).isEqualTo(1);
   }
 
   @Test
