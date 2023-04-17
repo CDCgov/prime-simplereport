@@ -534,7 +534,7 @@ public class TestOrderService {
     // For corrections, re-open the original test order
     switch (status) {
       case CORRECTED -> {
-        ensureBackwardCompatibility(event, order);
+        ensureCorrectionFlowBackwardCompatibility(event);
         order.setCorrectionStatus(status);
         order.setReasonForCorrection(reasonForCorrection);
         order.markPending();
@@ -545,7 +545,7 @@ public class TestOrderService {
         return event;
       }
       case REMOVED -> {
-        ensureBackwardCompatibility(event, order);
+        ensureCorrectionFlowBackwardCompatibility(event);
         // copy the event results to new removal Event
         var results =
             event.getResults().stream()
@@ -576,7 +576,7 @@ public class TestOrderService {
     }
   }
 
-  private void ensureBackwardCompatibility(TestEvent event, TestOrder order) {
+  private void ensureCorrectionFlowBackwardCompatibility(TestEvent event) {
     // Backward compatibility shim
     // we know if we are using the older version when the result has both TestEvent and TestOrder
     // so here we grab all the results and remove the test order
@@ -584,7 +584,10 @@ public class TestOrderService {
     // and make copies for the TestOrder
     boolean hasResultsWithTestOrderAndTestEvent =
         event.getResults().stream().anyMatch(result -> null != result.getTestOrder());
+
     if (hasResultsWithTestOrderAndTestEvent) {
+      TestOrder order = event.getOrder();
+
       // remove the link to the TestOrder for all the existing results
       Set<Result> orderResults = order.getResults();
       orderResults.forEach(result -> result.setTestOrder(null));
