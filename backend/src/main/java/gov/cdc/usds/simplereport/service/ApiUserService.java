@@ -22,7 +22,6 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
-import gov.cdc.usds.simplereport.logging.LoggingMessages;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -70,6 +69,10 @@ public class ApiUserService {
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
+  private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
+    log.info("User with id={} updated by user with id={}", authorId, updatedUserId);
+  }
+
   public boolean userExists(String username) {
     Optional<ApiUser> found =
         _apiUserRepo.findByLoginEmailIncludeArchived(username.toLowerCase().strip());
@@ -101,7 +104,7 @@ public class ApiUserService {
       IdentityAttributes userIdentity = new IdentityAttributes(email, name);
       ApiUser apiUser = _apiUserRepo.save(new ApiUser(email, userIdentity));
       log.info(
-          LoggingMessages.AUDIT_UPDATED_USER_MSG,
+          "User with id={} created by user with id={}",
           apiUser.getInternalId(),
           getCurrentApiUser().getInternalId().toString());
 
@@ -141,7 +144,7 @@ public class ApiUserService {
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
     log.info(
-        LoggingMessages.AUDIT_REPROVISIONED_USER_MSG,
+        "User with id={} re-provisioned by user with id={}",
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId());
 
@@ -163,7 +166,7 @@ public class ApiUserService {
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
     log.info(
-        LoggingMessages.AUDIT_CREATED_USER_MSG,
+        "User with id={} created by user with id={}",
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId().toString());
 
@@ -188,10 +191,8 @@ public class ApiUserService {
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
-    log.info(
-        LoggingMessages.AUDIT_UPDATED_USER_MSG,
-        apiUser.getInternalId(),
-        getCurrentApiUser().getInternalId().toString());
+    createUserUpdatedAuditLog(
+        apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
 
     return user;
   }
@@ -214,10 +215,7 @@ public class ApiUserService {
         newOrgClaims.map(c -> _orgService.getOrganizationRoles(org, c));
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
 
-    log.info(
-        LoggingMessages.AUDIT_UPDATED_USER_MSG,
-        apiUser.getInternalId(),
-        getCurrentApiUser().getInternalId());
+    createUserUpdatedAuditLog(apiUser.getInternalId(), getCurrentApiUser().getInternalId());
 
     return user;
   }
@@ -241,10 +239,8 @@ public class ApiUserService {
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
 
-    log.info(
-        LoggingMessages.AUDIT_UPDATED_USER_MSG,
-        apiUser.getInternalId(),
-        getCurrentApiUser().getInternalId().toString());
+    createUserUpdatedAuditLog(
+        apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
 
     return new UserInfo(apiUser, orgRoles, isAdmin);
   }

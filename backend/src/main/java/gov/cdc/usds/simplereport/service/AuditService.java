@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
-import gov.cdc.usds.simplereport.logging.LoggingMessages;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +22,6 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Slf4j
 public class AuditService {
-
   private static final String FIELD_USER_ID = "userId";
   private final ApiUserService _userService;
   private final AuditLoggerService auditLoggerService;
@@ -31,6 +29,10 @@ public class AuditService {
   public AuditService(ApiUserService userService, AuditLoggerService auditLoggerService) {
     this._userService = userService;
     this.auditLoggerService = auditLoggerService;
+  }
+
+  private void createEventAuditLog(String requestId) {
+    log.trace("Saving audit event for {}", requestId);
   }
 
   @Transactional(readOnly = false)
@@ -41,7 +43,7 @@ public class AuditService {
       List<UserPermission> permissions,
       boolean isAdmin,
       Organization organization) {
-    log.trace(LoggingMessages.AUDIT_EVENT_MSG, state.getRequestId());
+    createEventAuditLog(state.getRequestId());
     auditLoggerService.logEvent(
         new ConsoleApiAuditEvent(
             state.getRequestId(),
@@ -61,7 +63,7 @@ public class AuditService {
       int responseCode,
       Organization org,
       PatientLink patientLink) {
-    log.trace(LoggingMessages.AUDIT_EVENT_MSG, requestId);
+    createEventAuditLog(requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
     auditLoggerService.logEvent(
@@ -71,7 +73,7 @@ public class AuditService {
   @Transactional(readOnly = false)
   public void logAnonymousRestEvent(
       String requestId, HttpServletRequest request, int responseCode) {
-    log.trace(LoggingMessages.AUDIT_EVENT_MSG, requestId);
+    createEventAuditLog(requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     Object userIdObj = request.getSession(true).getAttribute(FIELD_USER_ID);
     JsonNode userId =
@@ -85,7 +87,7 @@ public class AuditService {
 
   @Transactional(readOnly = false)
   public void logWebhookRestEvent(String requestId, HttpServletRequest request, int responseCode) {
-    log.trace(LoggingMessages.AUDIT_WEBHOOK_EVENT_MSG, requestId);
+    log.trace("Saving webhook REST audit event for {}", requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     Object userIdObj = request.getSession(true).getAttribute(FIELD_USER_ID);
     JsonNode userId =
