@@ -188,6 +188,167 @@ const UserDetail: React.FC<Props> = ({
     return null;
   }
 
+  const userInfoTab = (
+    <>
+      <div
+        role="tabpanel"
+        aria-labelledby="user-info-tab-id"
+        className="padding-left-1"
+      >
+        <h3 className="basic-info-header">Basic information</h3>
+        <div
+          className={classnames(
+            "user-header grid-row flex-row flex-align-center",
+            { "disabled-dark": !isUserActive() }
+          )}
+        >
+          <div>
+            <div className="userinfo-subheader">Name</div>
+            <p className="userinfo-text">
+              {user.firstName +
+                (user.middleName ? ` ${user.middleName} ` : " ") +
+                user.lastName}
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateEditUserNameModal(true)}
+            label={"Edit name"}
+            disabled={isUpdating || !isUserActive()}
+          />
+        </div>
+        <div
+          className={classnames(
+            "user-header grid-row flex-row flex-align-center",
+            { "disabled-dark": !isUserActive() }
+          )}
+        >
+          <div>
+            <div className="userinfo-subheader">Email</div>
+            <p className="userinfo-text">{user.email}</p>
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateEditUserEmailModal(true)}
+            label={"Edit email"}
+            disabled={isUpdating || !isUserActive()}
+          />
+        </div>
+        <div className="userinfo-divider"></div>
+        <h3 className="user-controls-header">User controls</h3>
+        <div
+          className={classnames(
+            "user-header grid-row flex-row flex-align-center",
+            { "disabled-dark": !isUserActive() }
+          )}
+        >
+          <div className="grid-col margin-right-8">
+            <div className="userinfo-subheader">Password</div>
+            <p className="usercontrols-text">
+              Send a link to reset user password. Users must answer a password
+              recovery question to access their account.
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowResetPasswordModal(true)}
+            label={"Send password reset email"}
+            disabled={isUpdating || !isUserActive()}
+          />
+        </div>
+        <div
+          className={classnames(
+            "user-header grid-row flex-row flex-align-center",
+            { "disabled-dark": !isUserActive() }
+          )}
+        >
+          <div className="grid-col">
+            <div className="userinfo-subheader">
+              Reset multi-factor authentication (MFA)
+            </div>
+            <p className="usercontrols-text">
+              Reset user MFA account access settings
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowResetMfaModal(true)}
+            label={"Reset MFA"}
+            disabled={isUpdating || !isUserActive()}
+          />
+        </div>
+        <div
+          className={classnames(
+            "user-header grid-row flex-row flex-align-center",
+            { "disabled-dark": isUserSelf() }
+          )}
+        >
+          <div>
+            <div className="userinfo-subheader">Delete user</div>
+            <p className="usercontrols-text">
+              Permanently delete user account and data
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowDeleteUserModal(true)}
+            label={"Delete user"}
+            disabled={isUpdating || isUserSelf()}
+          />
+        </div>
+      </div>
+    </>
+  );
+  const facilityAccessTab = (
+    <>
+      <div
+        role="tabpanel"
+        aria-labelledby="facility-access-tab-id"
+        className="padding-left-1"
+      >
+        <h3 className="basic-info-header margin-bottom-1">User role</h3>
+        <div className="userrole-subtext">
+          Admins have full access to use and change settings on SimpleReport.
+          Standard and testing-only users have limited access for specific
+          tasks, as described below.
+        </div>
+        <UserRoleSettingsForm
+          activeUser={user}
+          loggedInUser={loggedInUser}
+          onUpdateUser={updateUser}
+        />
+        <UserFacilitiesSettingsForm
+          activeUser={user}
+          allFacilities={allFacilities}
+          onUpdateUser={updateUser}
+        />
+        <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
+          <Button
+            type="button"
+            variant="outline"
+            className="margin-left-auto"
+            onClick={handleUpdateUser}
+            label={isUpdating ? "Saving..." : "Save changes"}
+            disabled={
+              !user.role ||
+              !roles.includes(user.role) ||
+              user?.organization?.testingFacility.length === 0 ||
+              !isUserEdited ||
+              !["Admin user", "Admin user (SU)"].includes(
+                loggedInUser.roleDescription
+              ) ||
+              isUpdating
+            }
+          />
+        </div>
+      </div>
+    </>
+  );
   return (
     <div
       role="tabpanel"
@@ -246,162 +407,7 @@ const UserDetail: React.FC<Props> = ({
           </div>
         </div>
       </nav>
-      {navItemSelected === "userInfo" ? (
-        <div
-          role="tabpanel"
-          aria-labelledby="user-info-tab-id"
-          className="padding-left-1"
-        >
-          <h3 className="basic-info-header">Basic information</h3>
-          <div
-            className={classnames(
-              "user-header grid-row flex-row flex-align-center",
-              { "disabled-dark": !isUserActive() }
-            )}
-          >
-            <div>
-              <div className="userinfo-subheader">Name</div>
-              <p className="userinfo-text">
-                {user.firstName +
-                  (user.middleName ? ` ${user.middleName} ` : " ") +
-                  user.lastName}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateEditUserNameModal(true)}
-              label={"Edit name"}
-              disabled={isUpdating || !isUserActive()}
-            />
-          </div>
-          <div
-            className={classnames(
-              "user-header grid-row flex-row flex-align-center",
-              { "disabled-dark": !isUserActive() }
-            )}
-          >
-            <div>
-              <div className="userinfo-subheader">Email</div>
-              <p className="userinfo-text">{user.email}</p>
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateEditUserEmailModal(true)}
-              label={"Edit email"}
-              disabled={isUpdating || !isUserActive()}
-            />
-          </div>
-          <div className="userinfo-divider"></div>
-          <h3 className="user-controls-header">User controls</h3>
-          <div
-            className={classnames(
-              "user-header grid-row flex-row flex-align-center",
-              { "disabled-dark": !isUserActive() }
-            )}
-          >
-            <div className="grid-col margin-right-8">
-              <div className="userinfo-subheader">Password</div>
-              <p className="usercontrols-text">
-                Send a link to reset user password. Users must answer a password
-                recovery question to access their account.
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowResetPasswordModal(true)}
-              label={"Send password reset email"}
-              disabled={isUpdating || !isUserActive()}
-            />
-          </div>
-          <div
-            className={classnames(
-              "user-header grid-row flex-row flex-align-center",
-              { "disabled-dark": !isUserActive() }
-            )}
-          >
-            <div className="grid-col">
-              <div className="userinfo-subheader">
-                Reset multi-factor authentication (MFA)
-              </div>
-              <p className="usercontrols-text">
-                Reset user MFA account access settings
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowResetMfaModal(true)}
-              label={"Reset MFA"}
-              disabled={isUpdating || !isUserActive()}
-            />
-          </div>
-          <div
-            className={classnames(
-              "user-header grid-row flex-row flex-align-center",
-              { "disabled-dark": isUserSelf() }
-            )}
-          >
-            <div>
-              <div className="userinfo-subheader">Delete user</div>
-              <p className="usercontrols-text">
-                Permanently delete user account and data
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowDeleteUserModal(true)}
-              label={"Delete user"}
-              disabled={isUpdating || isUserSelf()}
-            />
-          </div>
-        </div>
-      ) : (
-        <div
-          role="tabpanel"
-          aria-labelledby="facility-access-tab-id"
-          className="padding-left-1"
-        >
-          <h3 className="basic-info-header margin-bottom-1">User role</h3>
-          <div className="userrole-subtext">
-            Admins have full access to use and change settings on SimpleReport.
-            Standard and testing-only users have limited access for specific
-            tasks, as described below.
-          </div>
-          <UserRoleSettingsForm
-            activeUser={user}
-            loggedInUser={loggedInUser}
-            onUpdateUser={updateUser}
-          />
-          <UserFacilitiesSettingsForm
-            activeUser={user}
-            allFacilities={allFacilities}
-            onUpdateUser={updateUser}
-          />
-          <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
-            <Button
-              type="button"
-              variant="outline"
-              className="margin-left-auto"
-              onClick={handleUpdateUser}
-              label={isUpdating ? "Saving..." : "Save changes"}
-              disabled={
-                !user.role ||
-                !roles.includes(user.role) ||
-                user?.organization?.testingFacility.length === 0 ||
-                !isUserEdited ||
-                !["Admin user", "Admin user (SU)"].includes(
-                  loggedInUser.roleDescription
-                ) ||
-                isUpdating
-              }
-            />
-          </div>
-        </div>
-      )}
+      {navItemSelected === "userInfo" ? userInfoTab : facilityAccessTab}
       {showInProgressModal && (
         <InProgressModal
           onClose={() => updateShowInProgressModal(false)}
