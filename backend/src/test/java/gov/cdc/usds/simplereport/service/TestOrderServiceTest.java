@@ -56,10 +56,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -95,8 +95,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   TestEventReportingService fhirQueueReportingService;
 
   @Captor ArgumentCaptor<TestEvent> testEventArgumentCaptor;
-
-  @Autowired private EntityManager entityManager;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -667,7 +665,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         LocalDate.of(1865, 12, 25),
         LocalDate.ofInstant(
             correctionTestEvent.getDateTested().toInstant(), ZoneId.systemDefault()));
-    assertEquals(2, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
     assertEquals(1, _resultRepository.findAllByTestEvent(correctionTestEvent).size());
     assertEquals(1, _resultRepository.findAllByTestEvent(originalTestEvent).size());
   }
@@ -947,16 +945,29 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null);
 
     // THEN
-    List<Result> results = _resultRepository.findAllByTestOrder(res.getTestOrder());
-    assertEquals(1, results.size());
+    List<Result> testOrderResults = _resultRepository.findAllByTestOrder(res.getTestOrder());
+    List<Result> testEventResults =
+        _resultRepository.findAllByTestEvent(res.getTestOrder().getTestEvent());
+    assertEquals(1, testOrderResults.size());
+    assertEquals(1, testEventResults.size());
 
-    Result covidResult =
-        _resultRepository.findResultByTestOrderAndDisease(
-            res.getTestOrder(), _diseaseService.covid());
-    assertEquals(TestResult.POSITIVE, covidResult.getTestResult());
-    assertEquals(
-        covidResult.getTestEvent().getInternalId(),
-        res.getTestOrder().getTestEvent().getInternalId());
+    Result testOrderResult = testOrderResults.get(0);
+    Result testEventResult = testEventResults.get(0);
+
+    // we create two different results, 1 mutable for the testOrder, 1 immutable for the testEvent
+    assertThat(testOrderResult).isNotEqualTo(testEventResult);
+
+    // verify the testOrder Result
+    assertThat(testOrderResult.getTestOrder()).isNotNull();
+    assertThat(testOrderResult.getTestEvent()).isNull();
+    assertThat(testOrderResult.getTestResult()).isEqualTo(TestResult.POSITIVE);
+    assertThat(testOrderResult.getDisease()).isEqualTo(_diseaseService.covid());
+
+    // verify the testEvent Result
+    assertThat(testEventResult.getTestOrder()).isNull();
+    assertThat(testEventResult.getTestEvent()).isNotNull();
+    assertThat(testEventResult.getTestResult()).isEqualTo(TestResult.POSITIVE);
+    assertThat(testEventResult.getDisease()).isEqualTo(_diseaseService.covid());
   }
 
   @Test
@@ -974,8 +985,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             List.of(covidResult),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertEquals(
-        1, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+    assertEquals(1, _service.getTestOrder(updatedOrder.getInternalId()).getResults().size());
   }
 
   @Test
@@ -991,8 +1001,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             makeMultiplexTestResult(TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertEquals(
-        3, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+    assertEquals(3, _service.getTestOrder(updatedOrder.getInternalId()).getResults().size());
   }
 
   @Test
@@ -1008,7 +1017,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             List.of(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertTrue(_service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().isEmpty());
+    assertTrue(_service.getTestOrder(updatedOrder.getInternalId()).getResults().isEmpty());
   }
 
   @Test
@@ -1037,8 +1046,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             List.of(updatedCovidResult, fluAResult, fluBResult),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertEquals(
-        3, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+    assertEquals(3, _service.getTestOrder(updatedOrder.getInternalId()).getResults().size());
 
     AddTestResultResponse response =
         _service.addMultiplexResult(
@@ -1075,7 +1083,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             order.getPatient().getInternalId(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertEquals(2, _resultRepository.findAllByTestOrder(order).size());
+    assertEquals(1, _resultRepository.findAllByTestOrder(order).size());
     assertEquals(
         1,
         _resultRepository
@@ -1115,7 +1123,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             order.getPatient().getInternalId(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertEquals(6, _resultRepository.findAllByTestOrder(order).size());
+    assertEquals(3, _resultRepository.findAllByTestOrder(order).size());
     assertEquals(
         3,
         _resultRepository
@@ -1143,7 +1151,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     TestEvent removedEvent = _service.markAsError(originalEvent.getInternalId(), "Duplicate test");
 
-    assertEquals(6, _resultRepository.findAllByTestOrder(order).size());
+    assertEquals(3, _resultRepository.findAllByTestOrder(order).size());
     assertEquals(3, _resultRepository.findAllByTestEvent(removedEvent).size());
     assertEquals(3, _resultRepository.findAllByTestEvent(originalEvent).size());
   }
@@ -1423,8 +1431,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         deleteMarkerEvent.getInternalId().toString(),
         events_after.get(0).getInternalId().toString());
 
-    // verify that a Result object is created for both the original and new TestEvent
-    assertEquals(2, _resultRepository.findAllByTestOrder(onlySavedOrder).size());
+    // verify that a Result object is created for the original and new TestEvent and one for the
+    // TestOrder
+    assertEquals(1, _resultRepository.findAllByTestOrder(onlySavedOrder).size());
     assertEquals(1, _resultRepository.findAllByTestEvent(mostRecentEvent).size());
     assertEquals(1, _resultRepository.findAllByTestEvent(deleteMarkerEvent).size());
 
@@ -1464,6 +1473,125 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // Does not report to ReportStream
     verify(testEventReportingService, times(0)).report(e);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void markAsErrorTest_backwardCompatible() {
+    // GIVEN
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.setDefaultDeviceTypeSpecimenType(
+        _dataFactory.getGenericDevice(), _dataFactory.getGenericSpecimen());
+    Person person = _dataFactory.createFullPerson(org);
+    TestEvent testEvent = _dataFactory.createTestEvent(person, facility);
+
+    // ensure the Result will have both testEvent and testOrder populated
+    _resultRepository.deleteAll(testEvent.getOrder().getResults());
+    Set<Result> results = testEvent.getResults();
+    results.forEach(result -> result.setTestOrder(testEvent.getTestOrder()));
+    _resultRepository.saveAll(results);
+
+    // assert that we have the same Result object for both testEvent and testOrder
+    List<Result> allOldResultsByTestOrder =
+        _resultRepository.findAllByTestOrder(testEvent.getTestOrder());
+    List<Result> allOldResultsByTestEvent = _resultRepository.findAllByTestEvent(testEvent);
+    assertEquals(1, allOldResultsByTestEvent.size());
+    assertEquals(1, allOldResultsByTestOrder.size());
+    Result testOrderOldResult = allOldResultsByTestOrder.get(0);
+    Result testEventOldResult = allOldResultsByTestEvent.get(0);
+    assertThat(testOrderOldResult.getInternalId()).isEqualTo(testEventOldResult.getInternalId());
+
+    // WHEN
+    TestEvent deleteMarkerEvent = _service.markAsError(testEvent.getInternalId(), reasonMsg);
+
+    // THEN
+    assertNotNull(deleteMarkerEvent);
+
+    assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
+    assertEquals(reasonMsg, deleteMarkerEvent.getReasonForCorrection());
+
+    assertEquals(testEvent.getTestOrder().getInternalId(), testEvent.getTestOrderId());
+
+    // assert that we have two Result objects for both testEvent and testOrder
+    List<Result> allResultsByTestOrder =
+        _resultRepository.findAllByTestOrder(testEvent.getTestOrder());
+    List<Result> allResultsByTestEvent = _resultRepository.findAllByTestEvent(testEvent);
+    assertEquals(1, allResultsByTestOrder.size());
+    assertEquals(1, allResultsByTestEvent.size());
+
+    Result testOrderResult = allResultsByTestOrder.get(0);
+    Result testEventResult = allResultsByTestEvent.get(0);
+    assertThat(testEventResult.getInternalId()).isNotEqualTo(testOrderResult.getInternalId());
+
+    assertThat(testEventResult.getTestOrder()).isNull();
+    assertThat(testEventResult.getTestEvent()).isNotNull();
+
+    assertThat(testOrderResult.getTestOrder()).isNotNull();
+    assertThat(testOrderResult.getTestEvent()).isNull();
+
+    assertThat(testEventResult.getTestResult()).isEqualTo(TestResult.NEGATIVE);
+    assertThat(testOrderResult.getTestResult()).isEqualTo(TestResult.NEGATIVE);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void correctionsTest_backwardCompatible() {
+    // GIVEN
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.setDefaultDeviceTypeSpecimenType(
+        _dataFactory.getGenericDevice(), _dataFactory.getGenericSpecimen());
+    Person person = _dataFactory.createFullPerson(org);
+    TestEvent testEvent = _dataFactory.createTestEvent(person, facility);
+
+    // ensure the Result will have both testEvent and testOrder populated
+    _resultRepository.deleteAll(testEvent.getOrder().getResults());
+    Set<Result> results = testEvent.getResults();
+    results.forEach(result -> result.setTestOrder(testEvent.getTestOrder()));
+    _resultRepository.saveAll(results);
+
+    // assert that we have the same Result object for both testEvent and testOrder
+    List<Result> allOldResultsByTestOrder =
+        _resultRepository.findAllByTestOrder(testEvent.getTestOrder());
+    List<Result> allOldResultsByTestEvent = _resultRepository.findAllByTestEvent(testEvent);
+    assertEquals(1, allOldResultsByTestEvent.size());
+    assertEquals(1, allOldResultsByTestOrder.size());
+    Result testOrderOldResult = allOldResultsByTestOrder.get(0);
+    Result testEventOldResult = allOldResultsByTestEvent.get(0);
+    assertThat(testOrderOldResult.getInternalId()).isEqualTo(testEventOldResult.getInternalId());
+
+    // WHEN
+    TestEvent originalEvent = _service.markAsCorrection(testEvent.getInternalId(), reasonMsg);
+
+    // THEN
+    TestOrder updatedOrder = originalEvent.getTestOrder();
+    assertEquals(TestCorrectionStatus.CORRECTED, updatedOrder.getCorrectionStatus());
+    assertEquals(reasonMsg, updatedOrder.getReasonForCorrection());
+    assertEquals(testEvent.getInternalId(), updatedOrder.getTestEvent().getInternalId());
+    assertEquals(OrderStatus.PENDING, updatedOrder.getOrderStatus());
+
+    // assert that we have two Result objects for both testEvent and testOrder
+    List<Result> allResultsByTestOrder =
+        _resultRepository.findAllByTestOrder(testEvent.getTestOrder());
+    List<Result> allResultsByTestEvent = _resultRepository.findAllByTestEvent(testEvent);
+    assertEquals(1, allResultsByTestOrder.size());
+    assertEquals(1, allResultsByTestEvent.size());
+
+    Result testOrderResult = allResultsByTestOrder.get(0);
+    Result testEventResult = allResultsByTestEvent.get(0);
+    assertThat(testEventResult.getInternalId()).isNotEqualTo(testOrderResult.getInternalId());
+
+    assertThat(testEventResult.getTestOrder()).isNull();
+    assertThat(testEventResult.getTestEvent()).isNotNull();
+
+    assertThat(testOrderResult.getTestOrder()).isNotNull();
+    assertThat(testOrderResult.getTestEvent()).isNull();
+
+    assertThat(testEventResult.getTestResult()).isEqualTo(TestResult.NEGATIVE);
+    assertThat(testOrderResult.getTestResult()).isEqualTo(TestResult.NEGATIVE);
   }
 
   @Test
@@ -1514,11 +1642,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     SpecimenType specimen = _dataFactory.getGenericSpecimen();
     facility.setDefaultDeviceTypeSpecimenType(device, specimen);
     Person p = _dataFactory.createFullPerson(org);
-    TestEvent e = _dataFactory.createTestEvent(p, facility);
+    TestEvent originalEvent = _dataFactory.createTestEvent(p, facility);
 
     // Re-open the original test as a correction
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
-    _service.markAsCorrection(e.getInternalId(), reasonMsg);
+    _service.markAsCorrection(originalEvent.getInternalId(), reasonMsg);
 
     // Re-submit the corrected test
     List<MultiplexResultInput> correctedTestResult = makeCovidOnlyResult(TestResult.UNDETERMINED);
@@ -1542,11 +1670,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // There should only be a single TestOrder, but three TestEvents - the original, the corrected,
     // and the removed
-    // There should also be exactly 3 Result objects for the order, 1 per TestEvent
+    // There should also be exactly 4 Result objects, 1 for the order, and 1 per each TestEvent
     assertEquals(
         3, _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility)).size());
     assertEquals(1, _testOrderRepository.fetchPastResults(org, facility).size());
-    assertEquals(3, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestOrder(response.getTestOrder()).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(originalEvent).size());
+    assertEquals(1, _resultRepository.findAllByTestEvent(correctedEvent).size());
     assertEquals(1, _resultRepository.findAllByTestEvent(deleteCorrectedEvent).size());
 
     TestOrder order = deleteCorrectedEvent.getTestOrder();
