@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.logging.LoggingMessages;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -100,7 +101,7 @@ public class ApiUserService {
       IdentityAttributes userIdentity = new IdentityAttributes(email, name);
       ApiUser apiUser = _apiUserRepo.save(new ApiUser(email, userIdentity));
       log.info(
-          "User with id={} created by user with id={}",
+          LoggingMessages.AUDIT_UPDATED_USER_MSG,
           apiUser.getInternalId(),
           getCurrentApiUser().getInternalId().toString());
 
@@ -140,7 +141,7 @@ public class ApiUserService {
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
     log.info(
-        "User with id={} re-provisioned by user with id={}",
+        LoggingMessages.AUDIT_REPROVISIONED_USER_MSG,
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId());
 
@@ -162,7 +163,7 @@ public class ApiUserService {
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
     log.info(
-        "User with id={} created by user with id={}",
+        LoggingMessages.AUDIT_CREATED_USER_MSG,
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId().toString());
 
@@ -188,7 +189,7 @@ public class ApiUserService {
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
     log.info(
-        "User with id={} updated by user with id={}",
+        LoggingMessages.AUDIT_UPDATED_USER_MSG,
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId().toString());
 
@@ -214,7 +215,7 @@ public class ApiUserService {
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
 
     log.info(
-        "User with id={} updated by user with id={}",
+        LoggingMessages.AUDIT_UPDATED_USER_MSG,
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId());
 
@@ -241,7 +242,7 @@ public class ApiUserService {
     boolean isAdmin = isAdmin(apiUser);
 
     log.info(
-        "User with id={} updated by user with id={}",
+        LoggingMessages.AUDIT_UPDATED_USER_MSG,
         apiUser.getInternalId(),
         getCurrentApiUser().getInternalId().toString());
 
