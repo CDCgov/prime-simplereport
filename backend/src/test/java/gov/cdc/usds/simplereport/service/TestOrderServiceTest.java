@@ -56,6 +56,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -1471,6 +1472,125 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // Does not report to ReportStream
     verify(testEventReportingService, times(0)).report(e);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void markAsErrorTest_backwardCompatible() {
+    // GIVEN
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.setDefaultDeviceTypeSpecimenType(
+        _dataFactory.getGenericDevice(), _dataFactory.getGenericSpecimen());
+    Person person = _dataFactory.createFullPerson(org);
+    TestEvent testEvent = _dataFactory.createTestEvent(person, facility);
+
+    // ensure the Result will have both testEvent and testOrder populated
+    _resultRepository.deleteAll(testEvent.getOrder().getResults());
+    Set<Result> results = testEvent.getResults();
+    results.forEach(result -> result.setTestOrder(testEvent.getTestOrder()));
+    _resultRepository.saveAll(results);
+
+    // assert that we have the same Result object for both testEvent and testOrder
+    List<Result> allOldResultsByTestOrder =
+        _resultRepository.findAllByTestOrder(testEvent.getTestOrder());
+    List<Result> allOldResultsByTestEvent = _resultRepository.findAllByTestEvent(testEvent);
+    assertEquals(1, allOldResultsByTestEvent.size());
+    assertEquals(1, allOldResultsByTestOrder.size());
+    Result testOrderOldResult = allOldResultsByTestOrder.get(0);
+    Result testEventOldResult = allOldResultsByTestEvent.get(0);
+    assertThat(testOrderOldResult.getInternalId()).isEqualTo(testEventOldResult.getInternalId());
+
+    // WHEN
+    TestEvent deleteMarkerEvent = _service.markAsError(testEvent.getInternalId(), reasonMsg);
+
+    // THEN
+    assertNotNull(deleteMarkerEvent);
+
+    assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
+    assertEquals(reasonMsg, deleteMarkerEvent.getReasonForCorrection());
+
+    assertEquals(testEvent.getTestOrder().getInternalId(), testEvent.getTestOrderId());
+
+    // assert that we have two Result objects for both testEvent and testOrder
+    List<Result> allResultsByTestOrder =
+        _resultRepository.findAllByTestOrder(testEvent.getTestOrder());
+    List<Result> allResultsByTestEvent = _resultRepository.findAllByTestEvent(testEvent);
+    assertEquals(1, allResultsByTestOrder.size());
+    assertEquals(1, allResultsByTestEvent.size());
+
+    Result testOrderResult = allResultsByTestOrder.get(0);
+    Result testEventResult = allResultsByTestEvent.get(0);
+    assertThat(testEventResult.getInternalId()).isNotEqualTo(testOrderResult.getInternalId());
+
+    assertThat(testEventResult.getTestOrder()).isNull();
+    assertThat(testEventResult.getTestEvent()).isNotNull();
+
+    assertThat(testOrderResult.getTestOrder()).isNotNull();
+    assertThat(testOrderResult.getTestEvent()).isNull();
+
+    assertThat(testEventResult.getTestResult()).isEqualTo(TestResult.NEGATIVE);
+    assertThat(testOrderResult.getTestResult()).isEqualTo(TestResult.NEGATIVE);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void correctionsTest_backwardCompatible() {
+    // GIVEN
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    facility.setDefaultDeviceTypeSpecimenType(
+        _dataFactory.getGenericDevice(), _dataFactory.getGenericSpecimen());
+    Person person = _dataFactory.createFullPerson(org);
+    TestEvent testEvent = _dataFactory.createTestEvent(person, facility);
+
+    // ensure the Result will have both testEvent and testOrder populated
+    _resultRepository.deleteAll(testEvent.getOrder().getResults());
+    Set<Result> results = testEvent.getResults();
+    results.forEach(result -> result.setTestOrder(testEvent.getTestOrder()));
+    _resultRepository.saveAll(results);
+
+    // assert that we have the same Result object for both testEvent and testOrder
+    List<Result> allOldResultsByTestOrder =
+        _resultRepository.findAllByTestOrder(testEvent.getTestOrder());
+    List<Result> allOldResultsByTestEvent = _resultRepository.findAllByTestEvent(testEvent);
+    assertEquals(1, allOldResultsByTestEvent.size());
+    assertEquals(1, allOldResultsByTestOrder.size());
+    Result testOrderOldResult = allOldResultsByTestOrder.get(0);
+    Result testEventOldResult = allOldResultsByTestEvent.get(0);
+    assertThat(testOrderOldResult.getInternalId()).isEqualTo(testEventOldResult.getInternalId());
+
+    // WHEN
+    TestEvent originalEvent = _service.markAsCorrection(testEvent.getInternalId(), reasonMsg);
+
+    // THEN
+    TestOrder updatedOrder = originalEvent.getTestOrder();
+    assertEquals(TestCorrectionStatus.CORRECTED, updatedOrder.getCorrectionStatus());
+    assertEquals(reasonMsg, updatedOrder.getReasonForCorrection());
+    assertEquals(testEvent.getInternalId(), updatedOrder.getTestEvent().getInternalId());
+    assertEquals(OrderStatus.PENDING, updatedOrder.getOrderStatus());
+
+    // assert that we have two Result objects for both testEvent and testOrder
+    List<Result> allResultsByTestOrder =
+        _resultRepository.findAllByTestOrder(testEvent.getTestOrder());
+    List<Result> allResultsByTestEvent = _resultRepository.findAllByTestEvent(testEvent);
+    assertEquals(1, allResultsByTestOrder.size());
+    assertEquals(1, allResultsByTestEvent.size());
+
+    Result testOrderResult = allResultsByTestOrder.get(0);
+    Result testEventResult = allResultsByTestEvent.get(0);
+    assertThat(testEventResult.getInternalId()).isNotEqualTo(testOrderResult.getInternalId());
+
+    assertThat(testEventResult.getTestOrder()).isNull();
+    assertThat(testEventResult.getTestEvent()).isNotNull();
+
+    assertThat(testOrderResult.getTestOrder()).isNotNull();
+    assertThat(testOrderResult.getTestEvent()).isNull();
+
+    assertThat(testEventResult.getTestResult()).isEqualTo(TestResult.NEGATIVE);
+    assertThat(testOrderResult.getTestResult()).isEqualTo(TestResult.NEGATIVE);
   }
 
   @Test
