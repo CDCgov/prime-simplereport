@@ -137,6 +137,17 @@ const UserDetail: React.FC<Props> = ({
     }
   }
 
+  function displayYou() {
+    if (isUserSelf()) {
+      return (
+        <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
+          YOU
+        </span>
+      );
+    }
+    return null;
+  }
+
   return (
     <div
       role="tabpanel"
@@ -146,11 +157,7 @@ const UserDetail: React.FC<Props> = ({
       <div>
         <h2 className="display-inline-block margin-top-1 margin-bottom-0 user-name-header">
           {displayFullName(user.firstName, user.middleName, user.lastName)}
-          {user?.id === loggedInUser.id ? (
-            <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
-              YOU
-            </span>
-          ) : null}
+          {displayYou()}
         </h2>
         <div className="user-status-subheader">{getUserStatusText()}</div>
       </div>
