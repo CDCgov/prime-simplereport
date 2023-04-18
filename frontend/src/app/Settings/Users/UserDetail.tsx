@@ -106,37 +106,35 @@ const UserDetail: React.FC<Props> = ({
 
   const isUserSelf = () => user.id === loggedInUser.id;
 
-  let statusText;
-  switch (user.status) {
-    case "ACTIVE":
-      statusText = (
-        <span className="top-user-status padding-left-0">
-          {capitalizeText(user.role || "")}
-        </span>
-      );
-      break;
-    case "PROVISIONED":
-      statusText = (
-        <>
-          <PendingIcon />
-          <span className="top-user-status">
-            {formatUserStatus(user.status)}
+  function getUserStatusText() {
+    switch (user.status) {
+      case "ACTIVE":
+        return (
+          <span className="top-user-status padding-left-0">
+            {capitalizeText(user.role || "")}
           </span>
-        </>
-      );
-      break;
-    case "SUSPENDED":
-      statusText = (
-        <>
-          <DeactivatedIcon />
-          <span className="top-user-status">
-            {formatUserStatus(user.status)}
-          </span>
-        </>
-      );
-      break;
-    default:
-      statusText = "";
+        );
+      case "PROVISIONED":
+        return (
+          <>
+            <PendingIcon />
+            <span className="top-user-status">
+              {formatUserStatus(user.status)}
+            </span>
+          </>
+        );
+      case "SUSPENDED":
+        return (
+          <>
+            <DeactivatedIcon />
+            <span className="top-user-status">
+              {formatUserStatus(user.status)}
+            </span>
+          </>
+        );
+      default:
+        return "";
+    }
   }
 
   return (
@@ -154,7 +152,7 @@ const UserDetail: React.FC<Props> = ({
             </span>
           ) : null}
         </h2>
-        <div className="user-status-subheader">{statusText}</div>
+        <div className="user-status-subheader">{getUserStatusText()}</div>
       </div>
       <div className="user-header grid-row flex-row flex-align-center">
         {user.status === "SUSPENDED" ? (
