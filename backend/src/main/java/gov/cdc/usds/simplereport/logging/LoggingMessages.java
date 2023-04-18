@@ -1,11 +1,6 @@
 package gov.cdc.usds.simplereport.logging;
 
-public class LoggingMessages {
-
-  private LoggingMessages() {
-    throw new IllegalStateException("Utility class");
-  }
-
+public abstract class LoggingMessages {
   public static final String AUDIT_UPDATED_USER_MSG = "User with id={} updated by user with id={}";
   public static final String AUDIT_CREATED_USER_MSG = "User with id={} created by user with id={}";
   public static final String AUDIT_REPROVISIONED_USER_MSG =
