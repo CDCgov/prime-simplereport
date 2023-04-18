@@ -60,7 +60,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -95,8 +94,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   TestEventReportingService fhirQueueReportingService;
 
   @Captor ArgumentCaptor<TestEvent> testEventArgumentCaptor;
-
-  @Autowired private EntityManager entityManager;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -987,8 +984,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             List.of(covidResult),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertEquals(
-        1, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+    assertEquals(1, _service.getTestOrder(updatedOrder.getInternalId()).getResults().size());
   }
 
   @Test
@@ -1004,8 +1000,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             makeMultiplexTestResult(TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertEquals(
-        3, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+    assertEquals(3, _service.getTestOrder(updatedOrder.getInternalId()).getResults().size());
   }
 
   @Test
@@ -1021,7 +1016,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             List.of(),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertTrue(_service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().isEmpty());
+    assertTrue(_service.getTestOrder(updatedOrder.getInternalId()).getResults().isEmpty());
   }
 
   @Test
@@ -1050,8 +1045,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             List.of(updatedCovidResult, fluAResult, fluBResult),
             convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
 
-    assertEquals(
-        3, _service.getTestOrder(updatedOrder.getInternalId()).getPendingResultSet().size());
+    assertEquals(3, _service.getTestOrder(updatedOrder.getInternalId()).getResults().size());
 
     AddTestResultResponse response =
         _service.addMultiplexResult(
