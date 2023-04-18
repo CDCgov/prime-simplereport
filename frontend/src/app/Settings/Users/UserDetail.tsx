@@ -148,6 +148,26 @@ const UserDetail: React.FC<Props> = ({
     return null;
   }
 
+  function displayUserSuspended() {
+    if (user.status === "SUSPENDED") {
+      return (
+        <>
+          <div className="status-tagline">
+            Users are deactivated after 60 days of inactivity.
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowReactivateUserModal(true)}
+            label="Activate user"
+            disabled={isUpdating}
+          />
+        </>
+      );
+    }
+    return null;
+  }
+
   return (
     <div
       role="tabpanel"
@@ -162,20 +182,7 @@ const UserDetail: React.FC<Props> = ({
         <div className="user-status-subheader">{getUserStatusText()}</div>
       </div>
       <div className="user-header grid-row flex-row flex-align-center">
-        {user.status === "SUSPENDED" ? (
-          <>
-            <div className="status-tagline">
-              Users are deactivated after 60 days of inactivity.
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowReactivateUserModal(true)}
-              label="Activate user"
-              disabled={isUpdating}
-            />
-          </>
-        ) : null}
+        {displayUserSuspended()}
         {user.status === "PROVISIONED" ? (
           <>
             <div className="status-tagline">
