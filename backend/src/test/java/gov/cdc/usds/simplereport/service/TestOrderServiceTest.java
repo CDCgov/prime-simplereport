@@ -2030,7 +2030,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(correctedTestEvent);
-    verify(fhirQueueReportingService).report(correctedTestEvent);
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   private List<TestEvent> makedata() {
