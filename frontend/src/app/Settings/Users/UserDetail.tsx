@@ -67,6 +67,41 @@ interface Props {
 }
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
+const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
+  function getUserStatusText() {
+    switch (user.status) {
+      case OktaUserStatus.ACTIVE:
+        return (
+          <span className="top-user-status padding-left-0">
+            {capitalizeText(user.role || "")}
+          </span>
+        );
+      case OktaUserStatus.PROVISIONED:
+        return (
+          <>
+            <PendingIcon />
+            <span className="top-user-status">
+              {formatUserStatus(user.status)}
+            </span>
+          </>
+        );
+      case OktaUserStatus.SUSPENDED:
+        return (
+          <>
+            <DeactivatedIcon />
+            <span className="top-user-status">
+              {formatUserStatus(user.status)}
+            </span>
+          </>
+        );
+      default:
+        return "";
+    }
+  }
+
+  return <div className="user-status-subheader">{getUserStatusText()}</div>;
+};
+
 const UserDetail: React.FC<Props> = ({
   user,
   loggedInUser,
@@ -107,37 +142,6 @@ const UserDetail: React.FC<Props> = ({
     user.status !== OktaUserStatus.PROVISIONED;
 
   const isUserSelf = () => user.id === loggedInUser.id;
-
-  function getUserStatusText() {
-    switch (user.status) {
-      case OktaUserStatus.ACTIVE:
-        return (
-          <span className="top-user-status padding-left-0">
-            {capitalizeText(user.role || "")}
-          </span>
-        );
-      case OktaUserStatus.PROVISIONED:
-        return (
-          <>
-            <PendingIcon />
-            <span className="top-user-status">
-              {formatUserStatus(user.status)}
-            </span>
-          </>
-        );
-      case OktaUserStatus.SUSPENDED:
-        return (
-          <>
-            <DeactivatedIcon />
-            <span className="top-user-status">
-              {formatUserStatus(user.status)}
-            </span>
-          </>
-        );
-      default:
-        return "";
-    }
-  }
 
   function displayYou() {
     if (isUserSelf()) {
@@ -362,7 +366,7 @@ const UserDetail: React.FC<Props> = ({
           {displayFullName(user.firstName, user.middleName, user.lastName)}
           {displayYou()}
         </h2>
-        <div className="user-status-subheader">{getUserStatusText()}</div>
+        <UserStatusSubheading user={user} />
       </div>
       <div className="user-header grid-row flex-row flex-align-center">
         {displayUserSuspended()}
