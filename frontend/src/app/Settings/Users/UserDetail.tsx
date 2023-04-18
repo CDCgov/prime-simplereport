@@ -168,6 +168,26 @@ const UserDetail: React.FC<Props> = ({
     return null;
   }
 
+  function displayUserProvisioned() {
+    if (user.status === "PROVISIONED") {
+      return (
+        <>
+          <div className="status-tagline">
+            This user hasn’t set up their acccount.
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowResendUserActivationEmailModal(true)}
+            label="Send account setup email"
+            disabled={isUpdating}
+          />
+        </>
+      );
+    }
+    return null;
+  }
+
   return (
     <div
       role="tabpanel"
@@ -183,20 +203,7 @@ const UserDetail: React.FC<Props> = ({
       </div>
       <div className="user-header grid-row flex-row flex-align-center">
         {displayUserSuspended()}
-        {user.status === "PROVISIONED" ? (
-          <>
-            <div className="status-tagline">
-              This user hasn’t set up their acccount.
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowResendUserActivationEmailModal(true)}
-              label="Send account setup email"
-              disabled={isUpdating}
-            />
-          </>
-        ) : null}
+        {displayUserProvisioned()}
       </div>
       <nav
         className="prime-secondary-nav margin-top-4 padding-bottom-0"
