@@ -5,6 +5,7 @@ import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactiva
 import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
 import { displayFullName } from "../../utils";
 import { formatUserStatus } from "../../utils/text";
+import { OktaUserStatus } from "../../utils/user";
 
 import { LimitedUser } from "./ManageUsersContainer";
 
@@ -37,12 +38,12 @@ const UsersSideNav: React.FC<Props> = ({
           {users.map((user: LimitedUser) => {
             let statusText;
             switch (user.status) {
-              case "ACTIVE":
+              case OktaUserStatus.ACTIVE:
                 statusText = (
                   <span className="sidenav-user-status padding-left-0"></span>
                 );
                 break;
-              case "PROVISIONED":
+              case OktaUserStatus.PROVISIONED:
                 statusText = (
                   <>
                     <PendingIcon />
@@ -52,7 +53,7 @@ const UsersSideNav: React.FC<Props> = ({
                   </>
                 );
                 break;
-              case "SUSPENDED":
+              case OktaUserStatus.SUSPENDED:
                 statusText = (
                   <>
                     <DeactivatedIcon />

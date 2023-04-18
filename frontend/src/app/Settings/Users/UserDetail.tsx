@@ -8,6 +8,7 @@ import { capitalizeText, formatUserStatus } from "../../utils/text";
 import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactivated.svg";
 import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
 import Prompt from "../../utils/Prompt";
+import { OktaUserStatus } from "../../utils/user";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
@@ -102,19 +103,20 @@ const UserDetail: React.FC<Props> = ({
   const [navItemSelected, setNavItemSelected] = useState("userInfo");
 
   const isUserActive = () =>
-    user.status !== "SUSPENDED" && user.status !== "PROVISIONED";
+    user.status !== OktaUserStatus.SUSPENDED &&
+    user.status !== OktaUserStatus.PROVISIONED;
 
   const isUserSelf = () => user.id === loggedInUser.id;
 
   function getUserStatusText() {
     switch (user.status) {
-      case "ACTIVE":
+      case OktaUserStatus.ACTIVE:
         return (
           <span className="top-user-status padding-left-0">
             {capitalizeText(user.role || "")}
           </span>
         );
-      case "PROVISIONED":
+      case OktaUserStatus.PROVISIONED:
         return (
           <>
             <PendingIcon />
@@ -123,7 +125,7 @@ const UserDetail: React.FC<Props> = ({
             </span>
           </>
         );
-      case "SUSPENDED":
+      case OktaUserStatus.SUSPENDED:
         return (
           <>
             <DeactivatedIcon />
@@ -149,7 +151,7 @@ const UserDetail: React.FC<Props> = ({
   }
 
   function displayUserSuspended() {
-    if (user.status === "SUSPENDED") {
+    if (user.status === OktaUserStatus.SUSPENDED) {
       return (
         <>
           <div className="status-tagline">
@@ -169,7 +171,7 @@ const UserDetail: React.FC<Props> = ({
   }
 
   function displayUserProvisioned() {
-    if (user.status === "PROVISIONED") {
+    if (user.status === OktaUserStatus.PROVISIONED) {
       return (
         <>
           <div className="status-tagline">
