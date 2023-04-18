@@ -1440,7 +1440,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
     verify(testEventReportingService).report(deleteMarkerEvent);
-    verify(fhirQueueReportingService).report(deleteMarkerEvent);
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test

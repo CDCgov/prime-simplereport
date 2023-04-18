@@ -307,14 +307,6 @@ describe("TestResultInputForm", () => {
         diseaseName: MULTIPLEX_DISEASES.COVID_19,
         testResult: TEST_RESULTS.POSITIVE,
       },
-      {
-        diseaseName: MULTIPLEX_DISEASES.FLU_A,
-        testResult: TEST_RESULTS.UNDETERMINED,
-      },
-      {
-        diseaseName: MULTIPLEX_DISEASES.FLU_B,
-        testResult: TEST_RESULTS.UNDETERMINED,
-      },
     ]);
   });
   it("should trigger submit for parent component when submit button is clicked", () => {
