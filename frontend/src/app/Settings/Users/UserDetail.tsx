@@ -102,6 +102,63 @@ const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
   return <div className="user-status-subheader">{getUserStatusText()}</div>;
 };
 
+const SpecialStatusNotice: React.FC<{
+  userStatus: string;
+  isUpdating: boolean;
+  updateShowReactivateUserModal: (showReactivateUserModal: boolean) => void;
+  updateShowResendUserActivationEmailModal: (
+    showResendUserActivationEmail: boolean
+  ) => void;
+}> = ({
+  userStatus,
+  isUpdating,
+  updateShowReactivateUserModal,
+  updateShowResendUserActivationEmailModal,
+}) => {
+  function userStatusInfo() {
+    switch (userStatus) {
+      case OktaUserStatus.SUSPENDED:
+        return (
+          <>
+            <div className="status-tagline">
+              Users are deactivated after 60 days of inactivity.
+            </div>
+            <Button
+              variant="outline"
+              className="margin-left-auto margin-bottom-1"
+              onClick={() => updateShowReactivateUserModal(true)}
+              label="Activate user"
+              disabled={isUpdating}
+            />
+          </>
+        );
+      case OktaUserStatus.PROVISIONED:
+        return (
+          <>
+            <div className="status-tagline">
+              This user hasn’t set up their acccount.
+            </div>
+            <Button
+              variant="outline"
+              className="margin-left-auto margin-bottom-1"
+              onClick={() => updateShowResendUserActivationEmailModal(true)}
+              label="Send account setup email"
+              disabled={isUpdating}
+            />
+          </>
+        );
+      default:
+        return null;
+    }
+  }
+
+  return (
+    <div className="user-header grid-row flex-row flex-align-center">
+      {userStatusInfo()}
+    </div>
+  );
+};
+
 const UserDetail: React.FC<Props> = ({
   user,
   loggedInUser,
@@ -149,46 +206,6 @@ const UserDetail: React.FC<Props> = ({
         <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
           YOU
         </span>
-      );
-    }
-    return null;
-  }
-
-  function displayUserSuspended() {
-    if (user.status === OktaUserStatus.SUSPENDED) {
-      return (
-        <>
-          <div className="status-tagline">
-            Users are deactivated after 60 days of inactivity.
-          </div>
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateShowReactivateUserModal(true)}
-            label="Activate user"
-            disabled={isUpdating}
-          />
-        </>
-      );
-    }
-    return null;
-  }
-
-  function displayUserProvisioned() {
-    if (user.status === OktaUserStatus.PROVISIONED) {
-      return (
-        <>
-          <div className="status-tagline">
-            This user hasn’t set up their acccount.
-          </div>
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateShowResendUserActivationEmailModal(true)}
-            label="Send account setup email"
-            disabled={isUpdating}
-          />
-        </>
       );
     }
     return null;
@@ -368,10 +385,14 @@ const UserDetail: React.FC<Props> = ({
         </h2>
         <UserStatusSubheading user={user} />
       </div>
-      <div className="user-header grid-row flex-row flex-align-center">
-        {displayUserSuspended()}
-        {displayUserProvisioned()}
-      </div>
+      <SpecialStatusNotice
+        userStatus={user.status || ""}
+        isUpdating={isUpdating}
+        updateShowReactivateUserModal={updateShowReactivateUserModal}
+        updateShowResendUserActivationEmailModal={
+          updateShowResendUserActivationEmailModal
+        }
+      />
       <nav
         className="prime-secondary-nav margin-top-4 padding-bottom-0"
         aria-label="User action navigation"
