@@ -740,6 +740,50 @@ const QueueItem = ({
 
   let specimenTypeOptions = getSpecimenTypeOptions();
 
+  function displayDateTimeInput() {
+    if (!shouldUseCurrentDateTime) {
+      return (
+        <>
+          <input
+            hidden={shouldUseCurrentDateTime}
+            className={classnames(
+              "card-test-input",
+              saveState === "error" && "card-test-input__error",
+              dateBeforeWarnThreshold && "card-correction-input"
+            )}
+            aria-label="Test date"
+            id={`test-date-${queueItem.patient.internalId}`}
+            data-testid="test-date"
+            name="test-date"
+            type="date"
+            min={formatDate(new Date("Jan 1, 2020"))}
+            max={formatDate(moment().toDate())}
+            value={formatDate(moment(dateTested).toDate())}
+            onChange={(event) => handleDateChange(event.target.value)}
+            disabled={deviceTypeIsInvalid() || specimenTypeIsInvalid()}
+          />
+          <input
+            hidden={shouldUseCurrentDateTime}
+            className={classnames(
+              "card-test-input",
+              saveState === "error" && "card-test-input__error",
+              dateBeforeWarnThreshold && "card-correction-input"
+            )}
+            name={"test-time"}
+            aria-label="Test time"
+            data-testid="test-time"
+            type="time"
+            step="60"
+            value={moment(dateTested).format("HH:mm")}
+            onChange={(e) => handleTimeChange(e.target.value)}
+            disabled={deviceTypeIsInvalid() || specimenTypeIsInvalid()}
+          />
+        </>
+      );
+    }
+    return null;
+  }
+
   return (
     <React.Fragment>
       <div
@@ -837,50 +881,7 @@ const QueueItem = ({
                       Test date and time
                     </div>
                     <div className="test-date-time-container">
-                      {!shouldUseCurrentDateTime && (
-                        <>
-                          <input
-                            hidden={shouldUseCurrentDateTime}
-                            className={classnames(
-                              "card-test-input",
-                              saveState === "error" && "card-test-input__error",
-                              dateBeforeWarnThreshold && "card-correction-input"
-                            )}
-                            aria-label="Test date"
-                            id={`test-date-${queueItem.patient.internalId}`}
-                            data-testid="test-date"
-                            name="test-date"
-                            type="date"
-                            min={formatDate(new Date("Jan 1, 2020"))}
-                            max={formatDate(moment().toDate())}
-                            value={formatDate(moment(dateTested).toDate())}
-                            onChange={(event) =>
-                              handleDateChange(event.target.value)
-                            }
-                            disabled={
-                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
-                            }
-                          />
-                          <input
-                            hidden={shouldUseCurrentDateTime}
-                            className={classnames(
-                              "card-test-input",
-                              saveState === "error" && "card-test-input__error",
-                              dateBeforeWarnThreshold && "card-correction-input"
-                            )}
-                            name={"test-time"}
-                            aria-label="Test time"
-                            data-testid="test-time"
-                            type="time"
-                            step="60"
-                            value={moment(dateTested).format("HH:mm")}
-                            onChange={(e) => handleTimeChange(e.target.value)}
-                            disabled={
-                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
-                            }
-                          />
-                        </>
-                      )}
+                      {displayDateTimeInput()}
                       <div className="check-box-container">
                         <div className="usa-checkbox">
                           <input
