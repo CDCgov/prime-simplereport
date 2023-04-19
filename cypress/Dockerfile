@@ -9,7 +9,31 @@ RUN apt-get install -y wget apt-transport-https; \
     apt-get upgrade; \
     apt-get install -y temurin-17-jdk; \
     apt-get install -y ant; \
-    apt-get clean;
+    apt-get clean; \
+
+RUN apt-get install -y libwoff1 \
+                           libopus0 \
+                           libwebp6 \
+                           libwebpdemux2 \
+                           libenchant1c2a \
+                           libgudev-1.0-0 \
+                           libsecret-1-0 \
+                           libhyphen0 \
+                           libgdk-pixbuf2.0-0 \
+                           libegl1 \
+                           libnotify4 \
+                           libxslt1.1 \
+                           libevent-2.1-6 \
+                           libgles2 \
+                           libgl1 \
+                           libvpx5 \
+                           # for chromium
+                           libnss3 \
+                           libxss1 \
+                           libasound2 \
+                           # for firefox
+                           libdbus-glib-1-2 \
+                           libxt6
 
 ADD ./cypress /app/cypress
 RUN mkdir -p /app/cypress/screenshots
@@ -20,8 +44,7 @@ COPY ./cypress/yarn.lock /app/yarn.lock
 
 WORKDIR /app
 
-RUN rm -rf node_modules && yarn install --frozen-lockfile
-RUN cd /app && yarn playwright install-deps webkit
+RUN yarn install
 
 COPY ./cypress/e2e.sh /app/e2e.sh
 
