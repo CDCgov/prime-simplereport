@@ -386,6 +386,10 @@ export const DetachedTestResultsList = ({
     }))
   );
 
+  function getDateOrEmptyString(date: string | null | undefined) {
+    return date ? moment(date).format("YYYY-MM-DD") : "";
+  }
+
   return (
     <div className="grid-row">
       <div className="prime-container card-container sr-test-results-list">
@@ -470,11 +474,7 @@ export const DetachedTestResultsList = ({
                   max={maxDate}
                   aria-label="Start Date"
                   onChange={(e) => processStartDate(e.target.value)}
-                  defaultValue={
-                    filterParams.startDate
-                      ? moment(filterParams.startDate).format("YYYY-MM-DD")
-                      : ""
-                  }
+                  defaultValue={getDateOrEmptyString(filterParams.startDate)}
                 />
               </div>
               <div className="usa-form-group date-filter-group">
@@ -493,11 +493,7 @@ export const DetachedTestResultsList = ({
                   max={maxDate}
                   aria-label="End Date"
                   onChange={(e) => processEndDate(e.target.value)}
-                  defaultValue={
-                    filterParams.endDate
-                      ? moment(filterParams.endDate).format("YYYY-MM-DD")
-                      : ""
-                  }
+                  defaultValue={getDateOrEmptyString(filterParams.endDate)}
                 />
               </div>
               <Select
