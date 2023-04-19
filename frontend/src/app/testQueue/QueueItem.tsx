@@ -106,13 +106,10 @@ export type QueriedFacility = GetFacilityQueueQuery["facility"];
 const convertFromMultiplexResponse = (
   responseResult: QueriedTestOrder["results"]
 ): MultiplexResultInput[] => {
-  const multiplexResultInputs: MultiplexResultInput[] = responseResult.map(
-    (result) => ({
-      diseaseName: result.disease?.name,
-      testResult: result.testResult,
-    })
-  );
-  return multiplexResultInputs;
+  return responseResult.map((result) => ({
+    diseaseName: result.disease?.name,
+    testResult: result.testResult,
+  }));
 };
 
 export type DevicesMap = Map<string, QueriedDeviceType>;
@@ -152,6 +149,39 @@ const CorrectionStatusBanner: React.FC<{
   }
   return null;
 };
+
+function getAreYouSure(
+  confirmationType: "submitResult" | "removeFromQueue" | "none",
+  patientFullName: string,
+  isCorrection: boolean
+) {
+  if (confirmationType === "submitResult") {
+    return (
+      <p className="usa-prose">
+        The test questionnaire for <b> {` ${patientFullName} `} </b> has not
+        been completed. Do you want to submit results anyway?
+      </p>
+    );
+  } else if (isCorrection) {
+    return (
+      <p>
+        Are you sure you want to cancel <b>{patientFullName}'s</b> test
+        correction? The original test result won’t be changed.
+      </p>
+    );
+  }
+  return (
+    <>
+      <p className="usa-prose">
+        Are you sure you want to stop <b>{patientFullName}'s</b> test?
+      </p>
+      <p className="usa-prose">
+        Doing so will remove this person from the list. You can use the search
+        bar to start their test again later.
+      </p>
+    </>
+  );
+}
 
 const QueueItem = ({
   refetchQueue,
@@ -949,29 +979,7 @@ const QueueItem = ({
                     : removeFromQueue
                 }
               >
-                {confirmationType === "submitResult" ? (
-                  <p className="usa-prose">
-                    The test questionnaire for <b> {` ${patientFullName} `} </b>{" "}
-                    has not been completed. Do you want to submit results
-                    anyway?
-                  </p>
-                ) : isCorrection ? (
-                  <p>
-                    Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
-                    test correction? The original test result won’t be changed.
-                  </p>
-                ) : (
-                  <>
-                    <p className="usa-prose">
-                      Are you sure you want to stop <b>{patientFullName}'s</b>{" "}
-                      test?
-                    </p>
-                    <p className="usa-prose">
-                      Doing so will remove this person from the list. You can
-                      use the search bar to start their test again later.
-                    </p>
-                  </>
-                )}
+                {getAreYouSure(confirmationType, patientFullName, isCorrection)}
               </AreYouSure>
 
               {supportsMultipleDiseases ? (
