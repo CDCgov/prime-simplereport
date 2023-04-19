@@ -36,6 +36,7 @@ const secret = Cypress.env("OKTA_SECRET");
 const scope = Cypress.env("OKTA_SCOPE") || "simple_report_dev";
 const clientId = Cypress.env("OKTA_CLIENT_ID") || "0oa1k0163nAwfVxNW1d7";
 const redirectUri = Cypress.env("OKTA_REDIRECT_URI") || "https%3A%2F%2Flocalhost.simplereport.gov%2F";
+const isLocalRun = Cypress.env("IS_LOCAL_RUN") || false;
 
 Cypress.Commands.add("login", () => {
   cy.task("getAuth").then(({ id_token, access_token }) => {
@@ -131,4 +132,8 @@ Cypress.Commands.add("makePOSTRequest", (requestBody) => {
       }
     ))
   )
+});
+
+Cypress.Commands.add("injectSRAxe", () => {
+  return isLocalRun ? cy.injectAxe({ axeCorePath: './cypress/node_modules/axe-core/axe.min.js'}) : cy.injectAxe();
 });

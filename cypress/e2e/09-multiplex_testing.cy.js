@@ -1,5 +1,5 @@
 import { aliasMutation, aliasQuery } from "../utils/graphql-test-utils";
-import { loginHooks } from "../support";
+import { loginHooks } from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 
 describe("Testing with multiplex devices", () => {
@@ -61,7 +61,7 @@ describe("Testing with multiplex devices", () => {
       cy.wait("@gqlgetSupportedDiseasesQuery");
       cy.contains("Device type");
       cy.contains("Save changes").should("be.not.enabled");
-      cy.injectAxe();
+      cy.injectSRAxe();
       cy.checkA11y();
       cy.get('input[name="name"]').type(deviceName);
       cy.get('input[name="model"]').type("1RX");
@@ -96,7 +96,7 @@ describe("Testing with multiplex devices", () => {
         .contains(deviceName)
         .click();
       cy.get('input[name="name"]').should("have.value", deviceName);
-      cy.injectAxe();
+      cy.injectSRAxe();
       cy.checkA11y();
       cy.get('input[name="model"]').should("have.value", "1RX");
       cy.get('input[name="manufacturer"]').should("have.value", "acme");
@@ -113,7 +113,7 @@ describe("Testing with multiplex devices", () => {
       cy.visit(`/settings/facility/${facility.id}`);
       cy.wait("@gqlGetFacilitiesQuery");
       cy.contains("Manage devices");
-      cy.injectAxe();
+      cy.injectSRAxe();
       cy.checkA11y();
       cy.get('input[role="combobox"]').first().type(deviceName);
       cy.get('li[id="multi-select-deviceTypes-list--option-0"]').click();
@@ -161,7 +161,7 @@ describe("Testing with multiplex devices", () => {
       cy.get(".Toastify").contains(`was added to the queue`);
 
       cy.contains(`${patient.lastName}, ${patient.firstName}`);
-      cy.injectAxe();
+      cy.injectSRAxe();
       cy.checkA11y();
       cy.get(`div[data-testid="test-card-${patient.internalId}"]`).within(
         () => {

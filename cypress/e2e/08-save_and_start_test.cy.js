@@ -1,4 +1,4 @@
-import { generatePatient, loginHooks } from "../support";
+import { generatePatient, loginHooks } from "../support/e2e";
 
 loginHooks();
 let patientName, lastName, phoneNumber;
@@ -23,7 +23,7 @@ describe("edit patient and save and start test", () => {
     cy.get(".sr-patient-list").contains(patientName).should('exist').click();
     cy.contains("General information").should('exist');
 
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // Edit Patient page
   });
   it("edits the patient and clicks save and start test and verifies AoE form is correctly filled in", () => {
@@ -70,7 +70,7 @@ describe("add patient and save and start test", () => {
     cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");
 
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // New Patient page
   });
   it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
