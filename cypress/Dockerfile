@@ -20,7 +20,7 @@ COPY ./cypress/yarn.lock /app/yarn.lock
 
 WORKDIR /app
 
-RUN yarn install
+RUN rm -rf node_modules && yarn install --frozen-lockfile
 
 COPY ./cypress/e2e.sh /app/e2e.sh
 
