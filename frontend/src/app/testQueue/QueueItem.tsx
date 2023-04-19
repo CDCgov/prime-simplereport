@@ -150,7 +150,7 @@ const CorrectionStatusBanner: React.FC<{
   return null;
 };
 
-function getAreYouSure(
+function getCloseMessage(
   confirmationType: "submitResult" | "removeFromQueue" | "none",
   patientFullName: string,
   isCorrection: boolean
@@ -979,7 +979,11 @@ const QueueItem = ({
                     : removeFromQueue
                 }
               >
-                {getAreYouSure(confirmationType, patientFullName, isCorrection)}
+                {getCloseMessage(
+                  confirmationType,
+                  patientFullName,
+                  isCorrection
+                )}
               </AreYouSure>
 
               {supportsMultipleDiseases ? (
