@@ -21,6 +21,7 @@ COPY ./cypress/yarn.lock /app/yarn.lock
 WORKDIR /app
 
 RUN rm -rf node_modules && yarn install --frozen-lockfile
+RUN yarn playwright install-deps webkit
 
 COPY ./cypress/e2e.sh /app/e2e.sh
 
