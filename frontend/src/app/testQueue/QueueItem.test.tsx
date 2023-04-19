@@ -232,7 +232,7 @@ describe("QueueItem", () => {
   ) => {
     props = props || testProps;
 
-    render(
+    let { container } = render(
       <PrimeErrorBoundary>
         <Provider store={store}>
           <MemoryRouter>
@@ -252,6 +252,7 @@ describe("QueueItem", () => {
       </PrimeErrorBoundary>
     );
     await new Promise((resolve) => setTimeout(resolve, 501));
+    return container;
   };
 
   beforeEach(() => {
@@ -271,6 +272,10 @@ describe("QueueItem", () => {
     Date.now = nowFn;
     (getAppInsights as jest.Mock).mockReset();
     jest.spyOn(console, "error").mockRestore();
+  });
+
+  it("matches snapshot", async () => {
+    expect(await renderQueueItem()).toMatchSnapshot();
   });
 
   it("correctly renders the test queue", async () => {
