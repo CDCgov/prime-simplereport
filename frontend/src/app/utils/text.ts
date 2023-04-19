@@ -1,3 +1,5 @@
+import { OktaUserStatus } from "./user";
+
 export function capitalizeText(text: string | null): string {
   // capitalizes first letter
   let result = (text || "").toLowerCase();
@@ -128,9 +130,9 @@ export function formatUserStatus(status?: string | null) {
   if (!status) {
     return "Unknown";
   }
-  if (status === "SUSPENDED") {
+  if (status === OktaUserStatus.SUSPENDED) {
     return "Account deactivated";
-  } else if (status === "PROVISIONED") {
+  } else if (status === OktaUserStatus.PROVISIONED) {
     return "Account pending";
   } else {
     return capitalizeText(status);
