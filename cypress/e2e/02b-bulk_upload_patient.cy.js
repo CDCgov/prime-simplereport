@@ -1,4 +1,4 @@
-import {generatePatient, loginHooks} from "../support";
+import {generatePatient, loginHooks} from "../support/e2e";
 
 const patients = [generatePatient(), generatePatient()];
 
@@ -16,7 +16,7 @@ describe("Bulk upload patients", () => {
     cy.get("#add-patient").click();
     cy.get("#upload_add-patient").click();
     cy.get(".prime-edit-patient").contains("Set up your spreadsheet");
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // Bulk upload patient form
   });
   it("uploads csv file of patients", () => {

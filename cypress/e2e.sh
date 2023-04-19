@@ -19,7 +19,7 @@ OPTIONS:
 EOF
 }
 
-SPEC_PATH="cypress/integration/**"
+SPEC_PATH="cypress/e2e/**"
 TEST_ENV="https://localhost.simplereport.gov"
 CHECK_COMMIT="$(git rev-parse HEAD)"
 BACKEND_URL_PATH="/api/health"
@@ -121,5 +121,5 @@ if [[ $RUN_OPEN = true ]]; then
   export CYPRESS_CHECK_URL="$FRONTEND_URL_PATH"
   yarn run cypress open
 else
-  yarn run cypress run --browser "$BROWSER" --spec "$SPEC_PATH" --config baseUrl="$TEST_ENV$PUBLIC_URL" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
+  yarn run cypress run --browser "$BROWSER" --e2e --config-file cypress.config.js --config baseUrl="$TEST_ENV$PUBLIC_URL" --env CHECK_COMMIT="$CHECK_COMMIT",CHECK_URL="$FRONTEND_URL_PATH"
 fi;
