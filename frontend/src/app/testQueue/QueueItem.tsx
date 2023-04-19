@@ -136,6 +136,23 @@ interface updateQueueItemProps {
 
 type SaveState = "idle" | "editing" | "saving" | "error";
 
+const CorrectionStatusBanner: React.FC<{
+  isCorrection: boolean;
+  reasonForCorrection: TestCorrectionReason;
+}> = ({ isCorrection, reasonForCorrection }) => {
+  if (isCorrection && reasonForCorrection) {
+    return (
+      <div className={classnames("tablet:grid-col-12", "card-correction")}>
+        <strong>Correction:</strong>{" "}
+        {reasonForCorrection in TestCorrectionReasons
+          ? TestCorrectionReasons[reasonForCorrection]
+          : reasonForCorrection}
+      </div>
+    );
+  }
+  return null;
+};
+
 const QueueItem = ({
   refetchQueue,
   queueItem,
@@ -716,16 +733,10 @@ const QueueItem = ({
                 submitting.
               </div>
             )}
-            {isCorrection && reasonForCorrection && (
-              <div
-                className={classnames("tablet:grid-col-12", "card-correction")}
-              >
-                <strong>Correction:</strong>{" "}
-                {reasonForCorrection in TestCorrectionReasons
-                  ? TestCorrectionReasons[reasonForCorrection]
-                  : reasonForCorrection}
-              </div>
-            )}
+            <CorrectionStatusBanner
+              isCorrection={isCorrection}
+              reasonForCorrection={reasonForCorrection}
+            />
             <div
               className={
                 supportsMultipleDiseases
