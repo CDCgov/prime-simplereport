@@ -18,7 +18,9 @@ module.exports = {
     runMode: 2,
     openMode: 1,
   },
+  experimentalWebKitSupport: true,
   e2e: {
+    experimentalWebKitSupport: true,
     supportFile: 'cypress/support/e2e.js',
     setupNodeEvents(on, config) {
       on("task", {
@@ -111,6 +113,10 @@ module.exports = {
         }
 
         if (browser.name === "firefox" && browser.isHeadless) {
+          launchOptions.args.push("--width=1200");
+          launchOptions.args.push("--height=800");
+        }
+        if (browser.name === "webkit" && browser.isHeadless) {
           launchOptions.args.push("--width=1200");
           launchOptions.args.push("--height=800");
         }

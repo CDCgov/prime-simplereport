@@ -26,7 +26,7 @@ BACKEND_URL_PATH="/api/health"
 PUBLIC_URL="/app"
 FRONTEND_URL_PATH="/health/commit"
 RUN_OPEN=false
-BROWSER="firefox"
+BROWSER="webkit"
 
 while getopts "hs:r:c:a:p:f:o:b:" OPTION; do
   case $OPTION in

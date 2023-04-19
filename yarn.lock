@@ -6,3 +6,20 @@
   version "0.7.7"
   resolved "https://registry.yarnpkg.com/@arkweid/lefthook/-/lefthook-0.7.7.tgz#12951b09b955d8054885ffe929aa07a49f39027c"
   integrity sha512-Eq30OXKmjxIAIsTtbX2fcF3SNZIXS8yry1u8yty7PQFYRctx04rVlhOJCEB2UmfTh8T2vrOMC9IHHUvvo5zbaQ==
+
+playwright-core@1.32.3:
+  version "1.32.3"
+  resolved "https://registry.yarnpkg.com/playwright-core/-/playwright-core-1.32.3.tgz#e6dc7db0b49e9b6c0b8073c4a2d789a96f519c48"
+  integrity sha512-SB+cdrnu74ZIn5Ogh/8278ngEh9NEEV0vR4sJFmK04h2iZpybfbqBY0bX6+BLYWVdV12JLLI+JEFtSnYgR+mWg==
+
+playwright-webkit@^1.32.3:
+  version "1.32.3"
+  resolved "https://registry.yarnpkg.com/playwright-webkit/-/playwright-webkit-1.32.3.tgz#05053bc66e48095730f7d6c11cd4caf031aebc60"
+  integrity sha512-jILWOI9PoZio8/c58J4jDctrhkWOL1W5k/aoK1C0q2Clu6sADraYpPvRcGfehCqPGlBWcFDgL235kGuIPdm3Ow==
+  dependencies:
+    playwright-core "1.32.3"
+
+webkit@^0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/webkit/-/webkit-0.0.0.tgz#3ab2afb17115c2a394a16c3f367f34cee19fcefb"
+  integrity sha512-YVSDLyRsq0oQkIDHMTV6HbZOjq691WIQGQZPOsyptx85DDJN4cnqYWWSaQQjLwniVMdAfgfFrcgezdJdHmvcDQ==
