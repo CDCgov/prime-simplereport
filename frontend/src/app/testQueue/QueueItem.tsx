@@ -126,7 +126,7 @@ export interface QueueItemProps {
   devicesMap: DevicesMap;
 }
 
-interface updateQueueItemProps {
+interface UpdateQueueItemProps {
   deviceId?: string;
   specimenTypeId?: string;
   testLength?: number;
@@ -230,7 +230,7 @@ const QueueItem = ({
   // this tracks if the ui made any edits, this needs to publish update to backend
   const [dirtyState, setDirtyState] = useState(false);
 
-  const updateQueueItem = (props: updateQueueItemProps) => {
+  const updateQueueItem = (props: UpdateQueueItemProps) => {
     return editQueueItem({
       variables: {
         id: queueItem.internalId,
