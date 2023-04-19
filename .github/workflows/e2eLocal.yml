@@ -98,6 +98,7 @@ jobs:
         PUBLIC_URL: /app/
         REACT_APP_OKTA_ENABLED: "true"
         REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+        ELECTRON_EXTRA_LAUNCH_ARGS: '--disable-gpu'
       shell: bash
       run: |
         echo "::group::Run Cypress locally"
