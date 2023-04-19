@@ -266,12 +266,14 @@ describe("QueueItem", () => {
       trackEvent: trackEventMock,
     }));
     jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(global.Math, "random").mockReturnValue(1);
   });
 
   afterEach(() => {
     Date.now = nowFn;
     (getAppInsights as jest.Mock).mockReset();
     jest.spyOn(console, "error").mockRestore();
+    jest.spyOn(global.Math, "random").mockRestore();
   });
 
   it("matches snapshot", async () => {

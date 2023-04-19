@@ -207,7 +207,7 @@ exports[`QueueItem matches snapshot 1`] = `
                       data-testid="tooltipWrapper"
                     >
                       <button
-                        aria-describedby="tooltip-981925"
+                        aria-describedby="tooltip-1000000"
                         aria-label=""
                         class="usa-button usa-button--unstyled usa-tooltip__trigger"
                         data-testid="triggerElement"
@@ -238,7 +238,7 @@ exports[`QueueItem matches snapshot 1`] = `
                         aria-hidden="true"
                         class="usa-tooltip__body"
                         data-testid="tooltipBody"
-                        id="tooltip-981925"
+                        id="tooltip-1000000"
                         role="tooltip"
                         title="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
                       >
