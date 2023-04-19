@@ -656,32 +656,42 @@ const QueueItem = ({
     testOrderId: queueItem.internalId,
   };
 
-  let deviceTypeOptions = [...facility!.deviceTypes]
-    .sort(alphabetizeByName)
-    .map((d) => ({
-      label: d.name,
-      value: d.internalId,
-    }));
+  function getDeviceTypeOptions() {
+    let deviceTypeOptions = [...facility!.deviceTypes]
+      .sort(alphabetizeByName)
+      .map((d) => ({
+        label: d.name,
+        value: d.internalId,
+      }));
 
-  if (!devicesMap.has(deviceId)) {
-    // this adds an empty option for when the device has been deleted from the facility, but it's on the test order
-    deviceTypeOptions = [{ label: "", value: "" }, ...deviceTypeOptions];
+    if (!devicesMap.has(deviceId)) {
+      // this adds an empty option for when the device has been deleted from the facility, but it's on the test order
+      deviceTypeOptions = [{ label: "", value: "" }, ...deviceTypeOptions];
+    }
+    return deviceTypeOptions;
   }
 
-  let specimenTypeOptions =
-    deviceId && devicesMap.has(deviceId)
-      ? [...devicesMap.get(deviceId)!.swabTypes]
-          .sort(alphabetizeByName)
-          .map((s: SpecimenType) => ({
-            label: s.name,
-            value: s.internalId,
-          }))
-      : [];
+  let deviceTypeOptions = getDeviceTypeOptions();
 
-  if (specimenTypeIsInvalid()) {
-    // this adds a empty option for when the specimen has been deleted from the device, but it's on the test order
-    specimenTypeOptions = [{ label: "", value: "" }, ...specimenTypeOptions];
+  function getSpecimenTypeOptions() {
+    let specimenTypeOptions =
+      deviceId && devicesMap.has(deviceId)
+        ? [...devicesMap.get(deviceId)!.swabTypes]
+            .sort(alphabetizeByName)
+            .map((s: SpecimenType) => ({
+              label: s.name,
+              value: s.internalId,
+            }))
+        : [];
+
+    if (specimenTypeIsInvalid()) {
+      // this adds a empty option for when the specimen has been deleted from the device, but it's on the test order
+      specimenTypeOptions = [{ label: "", value: "" }, ...specimenTypeOptions];
+    }
+    return specimenTypeOptions;
   }
+
+  let specimenTypeOptions = getSpecimenTypeOptions();
 
   return (
     <React.Fragment>
