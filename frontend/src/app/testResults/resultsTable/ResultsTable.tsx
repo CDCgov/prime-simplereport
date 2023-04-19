@@ -93,9 +93,7 @@ const generateResultRows = (
     }
 
     if (
-      (r.patient?.phoneNumbers || []).some(
-        (pn: PhoneNumber) => pn.type === "MOBILE"
-      )
+      r.patient?.phoneNumbers?.some((pn: PhoneNumber) => pn.type === "MOBILE")
     ) {
       actionItems.push({
         name: "Text result",
