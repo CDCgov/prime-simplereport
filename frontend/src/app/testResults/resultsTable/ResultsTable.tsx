@@ -56,8 +56,51 @@ export const generateTableHeaders = (
   </tr>
 );
 
+function createActionItemList(
+  setPrintModalId: any,
+  r: any,
+  setEmailModalTestResultId: any,
+  setTextModalId: any,
+  removed: boolean,
+  setMarkCorrectionId: any,
+  setDetailsModalId: any
+) {
+  const actionItems = [];
+  actionItems.push({
+    name: "Print result",
+    action: () => setPrintModalId(r.internalId),
+  });
+  if (r.patient.email) {
+    actionItems.push({
+      name: "Email result",
+      action: () => setEmailModalTestResultId(r.internalId),
+    });
+  }
+
+  if (
+    r.patient?.phoneNumbers?.some((pn: PhoneNumber) => pn.type === "MOBILE")
+  ) {
+    actionItems.push({
+      name: "Text result",
+      action: () => setTextModalId(r.internalId),
+    });
+  }
+
+  if (!removed) {
+    actionItems.push({
+      name: "Correct result",
+      action: () => setMarkCorrectionId(r.internalId),
+    });
+  }
+  actionItems.push({
+    name: "View details",
+    action: () => setDetailsModalId(r.internalId),
+  });
+  return actionItems;
+}
+
 const generateResultRows = (
-  testResults: any,
+  testResults: Array<any>,
   setPrintModalId: SetStateAction<any>,
   setMarkCorrectionId: SetStateAction<any>,
   setDetailsModalId: SetStateAction<any>,
@@ -80,38 +123,16 @@ const generateResultRows = (
     if (hasMultiplexResults) {
       testResultOrder.push(MULTIPLEX_DISEASES.FLU_A, MULTIPLEX_DISEASES.FLU_B);
     }
-    const actionItems = [];
-    actionItems.push({
-      name: "Print result",
-      action: () => setPrintModalId(r.internalId),
-    });
-    if (r.patient.email) {
-      actionItems.push({
-        name: "Email result",
-        action: () => setEmailModalTestResultId(r.internalId),
-      });
-    }
-
-    if (
-      r.patient?.phoneNumbers?.some((pn: PhoneNumber) => pn.type === "MOBILE")
-    ) {
-      actionItems.push({
-        name: "Text result",
-        action: () => setTextModalId(r.internalId),
-      });
-    }
-
     const removed = r.correctionStatus === "REMOVED";
-    if (!removed) {
-      actionItems.push({
-        name: "Correct result",
-        action: () => setMarkCorrectionId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
+    const actionItems = createActionItemList(
+      setPrintModalId,
+      r,
+      setEmailModalTestResultId,
+      setTextModalId,
+      removed,
+      setMarkCorrectionId,
+      setDetailsModalId
+    );
     const getResultCell = (disease: string) => {
       let result = getResultObjByDiseaseName(r.results, disease);
       return result ? TEST_RESULT_DESCRIPTIONS[result.testResult] : "N/A";
