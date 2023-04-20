@@ -6,7 +6,7 @@
     "func": "func",
     "coverage": "jest --coverage",
     "clean": "rimraf build",
-    "build:compile": "tsc --showConfig",
+    "build:compile": "tsc",
     "build:production": "yarn coverage && yarn prestart && npm prune --production && yarn build:zip",
     "prebuild:zip": "mkdir -m700 -p build",
     "build:zip": "zip -r build/batched-rs-publisher.zip . -x \"*.zip\" -x \".terraform\" -x \"terraform.*\" -x \"*.tf\" -x \"local.settings.json\" -x \"*.map\"",
@@ -18,7 +18,7 @@
     "test": "jest --watch"
   },
   "dependencies": {
-    "@azure/functions": "1.2.3",
+    "@azure/functions": "^3.5.1",
     "@azure/storage-queue": "^12.6.0",
     "applicationinsights": "^2.1.6",
     "csv-stringify": "^5.6.5",
@@ -29,7 +29,7 @@
     "@types/jest": "^28.1.6",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
     "@typescript-eslint/parser": "^5.43.0",
-    "azure-functions-core-tools": "^3.0.3734",
+    "azure-functions-core-tools": "^4.0.5095",
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",
     "jest": "^28.1.3",
