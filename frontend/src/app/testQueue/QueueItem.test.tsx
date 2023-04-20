@@ -276,6 +276,10 @@ describe("QueueItem", () => {
     jest.spyOn(global.Math, "random").mockRestore();
   });
 
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
   it("matches snapshot", async () => {
     expect(await renderQueueItem()).toMatchSnapshot();
   });
