@@ -1056,10 +1056,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-azure-functions-core-tools@^4.0.5095:
-  version "4.0.5095"
-  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-4.0.5095.tgz#b125d26992bc581f65467774fce933bdb8ec3aa6"
-  integrity sha512-BGBzxa03NnOz6hdTRYrBvYwVvKK14emsFCz3oj0buAaE91BiKo4KozzjYNGc9G1tB/cjBr7JU+B21dm+FHVfkA==
+azure-functions-core-tools@^3.0.3734:
+  version "3.0.4868"
+  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-3.0.4868.tgz#19064d0798932091edc57e6a589fda717b2f61f0"
+  integrity sha512-LJ3B9jXVbJg/LRMyTt3Y0e+ceLYwVdIrHXU2VzM2ZaM1f0Ya70f+oTpmwnwvBqKGN49HfbnewurlBby0P+vY1A==
   dependencies:
     chalk "3.0.0"
     https-proxy-agent "5.0.0"
