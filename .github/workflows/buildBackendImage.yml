@@ -27,7 +27,6 @@ jobs:
 
   build_and_push_backend_image:
     # We want to build the image if there are changes in the backend folder, or if we are forcing a build, or if we are on the main branch
-    # This is quick and dirty to resolve not detecting changes in the backend folder on main
     if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
     needs: [backend_changes]
     runs-on: ubuntu-latest

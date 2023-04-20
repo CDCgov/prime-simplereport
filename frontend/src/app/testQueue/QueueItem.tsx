@@ -326,14 +326,6 @@ const QueueItem = ({
       if (supportsMultipleDiseases !== deviceSupportsMultiPlex) {
         updateSupportsMultipleDiseases(deviceSupportsMultiPlex);
       }
-      if (!deviceSupportsMultiPlex) {
-        // filter out non covid results
-        setCacheTestResults(
-          cacheTestResults.filter(
-            (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
-          )
-        );
-      }
     }
     // eslint-disable-next-line
   }, [deviceId]);
@@ -488,8 +480,12 @@ const QueueItem = ({
           patientId: queueItem.patient?.internalId,
           deviceTypeId: deviceId,
           specimenTypeId: specimenId,
-          results: cacheTestResults,
           dateTested: dateTested,
+          results: doesDeviceSupportMultiPlex(deviceId)
+            ? cacheTestResults
+            : cacheTestResults.filter(
+                (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
+              ),
         },
       });
       testResultsSubmitted(result);
