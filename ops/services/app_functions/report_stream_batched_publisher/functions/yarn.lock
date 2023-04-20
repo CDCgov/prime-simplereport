@@ -69,7 +69,7 @@
     "@azure/abort-controller" "^1.0.0"
     tslib "^2.2.0"
 
-"@azure/functions@^1.2.3":
+"@azure/functions@1.2.3":
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/@azure/functions/-/functions-1.2.3.tgz#65765837e7319eedffbf8a971cb2f78d4e043d54"
   integrity sha512-dZITbYPNg6ay6ngcCOjRUh1wDhlFITS0zIkqplyH5KfKEAVPooaoaye5mUFnR+WP9WdGRjlNXyl/y2tgWKHcRg==
@@ -1089,9 +1089,9 @@ asynckit@^0.4.0:
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
 azure-functions-core-tools@^3.0.3734:
-  version "3.0.4868"
-  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-3.0.4868.tgz#19064d0798932091edc57e6a589fda717b2f61f0"
-  integrity sha512-LJ3B9jXVbJg/LRMyTt3Y0e+ceLYwVdIrHXU2VzM2ZaM1f0Ya70f+oTpmwnwvBqKGN49HfbnewurlBby0P+vY1A==
+  version "3.0.4899"
+  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-3.0.4899.tgz#b5fb18bc600f157412610a79bf8b10af22918a52"
+  integrity sha512-XpkdTs7r6Ie6t6I9bm7/SX8kl4YemXWfHS5HEvG/pEeFBL57aQUAfDJhAtcjaRzfU7j5BrsrR93/ASmCu4a1FA==
   dependencies:
     chalk "3.0.0"
     https-proxy-agent "5.0.0"
@@ -1890,7 +1890,12 @@ globby@^11.1.0:
     merge2 "^1.4.1"
     slash "^3.0.0"
 
-graceful-fs@^4.1.2, graceful-fs@^4.2.2, graceful-fs@^4.2.9:
+graceful-fs@^4.1.2, graceful-fs@^4.2.2:
+  version "4.2.11"
+  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
+  integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
+
+graceful-fs@^4.2.9:
   version "4.2.10"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.10.tgz#147d3a006da4ca3ce14728c7aefc287c367d7a6c"
   integrity sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==
@@ -2661,9 +2666,9 @@ minimatch@^3.0.4, minimatch@^3.0.5, minimatch@^3.1.1, minimatch@^3.1.2:
     brace-expansion "^1.1.7"
 
 minimist@^1.2.6:
-  version "1.2.7"
-  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.7.tgz#daa1c4d91f507390437c6a8bc01078e7000c4d18"
-  integrity sha512-bzfL1YUZsP41gmu/qjrEk0Q6i2ix/cVeAhbCbqH9u3zYutS1cLg00qhrD0M2MVdCcx4Sc0UpP2eBWo9rotpq6g==
+  version "1.2.8"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.8.tgz#c1a464e7693302e082a075cee0c057741ac4772c"
+  integrity sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA==
 
 "mkdirp@>=0.5 0":
   version "0.5.6"
@@ -2925,9 +2930,9 @@ react-is@^18.0.0:
   integrity sha512-xWGDIW6x921xtzPkhiULtthJHoJvBbF3q26fzloPCK0hsvxtPVelvftw3zjbHWSkR2km9Z+4uxbDDK/6Zw9B8w==
 
 readable-stream@^2.0.2, readable-stream@~2.3.6:
-  version "2.3.7"
-  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.7.tgz#1eca1cf711aef814c04f62252a36a62f6cb23b57"
-  integrity sha512-Ebho8K4jIbHAxnuxi7o42OrZgF/ZTNcsZj6nRKyUmkhLFq8CHItp/fy6hQZuZmP/n3yZ9VBUbp4zz/mX8hmYPw==
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.8.tgz#91125e8042bba1b9887f49345f6277027ce8be9b"
+  integrity sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==
   dependencies:
     core-util-is "~1.0.0"
     inherits "~2.0.3"
