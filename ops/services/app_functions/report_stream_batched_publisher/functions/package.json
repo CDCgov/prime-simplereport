@@ -6,7 +6,7 @@
     "func": "func",
     "coverage": "jest --coverage",
     "clean": "rimraf build",
-    "build:compile": "tsc",
+    "build:compile": "tsc --showConfig",
     "build:production": "yarn coverage && yarn prestart && npm prune --production && yarn build:zip",
     "prebuild:zip": "mkdir -m700 -p build",
     "build:zip": "zip -r build/batched-rs-publisher.zip . -x \"*.zip\" -x \".terraform\" -x \"terraform.*\" -x \"*.tf\" -x \"local.settings.json\" -x \"*.map\"",
