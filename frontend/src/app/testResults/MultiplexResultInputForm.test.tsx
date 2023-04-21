@@ -223,6 +223,25 @@ describe("TestResultInputForm", () => {
     await userEvent.click(screen.getByText("Submit"));
     expect(onSubmitFn).toHaveBeenCalledTimes(0);
   });
+  it("should display submit button as enabled when POSITIVE covid and multiplex device that supports covid only", async () => {
+    render(
+      <MultiplexResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[
+          {
+            diseaseName: MULTIPLEX_DISEASES.COVID_19,
+            testResult: TEST_RESULTS.POSITIVE,
+          },
+        ]}
+        deviceSupportsCovidOnlyResult={true}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+      />
+    );
+    expect(screen.getByText("Submit")).toBeEnabled();
+    await userEvent.click(screen.getByText("Submit"));
+    expect(onSubmitFn).toHaveBeenCalledTimes(1);
+  });
   it("should send results marked as inconclusive when checkbox is checked", async () => {
     render(
       <MultiplexResultInputForm

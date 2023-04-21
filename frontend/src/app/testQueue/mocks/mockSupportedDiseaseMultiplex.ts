@@ -2,14 +2,16 @@ import mockSupportedDiseaseTestPerformedMultiplex from "../../supportAdmin/Devic
 
 import mockSupportedDiseaseCovid from "./mockSupportedDiseaseCovid";
 
-let mockSupportedDiseaseFlu = [
+export const mockSupportedDiseaseFlu = [
   {
     supportedDisease:
       mockSupportedDiseaseTestPerformedMultiplex[1].supportedDisease,
+    testPerformedLoincCode: "456789",
   },
   {
     supportedDisease:
       mockSupportedDiseaseTestPerformedMultiplex[2].supportedDisease,
+    testPerformedLoincCode: "789123",
   },
 ];
 

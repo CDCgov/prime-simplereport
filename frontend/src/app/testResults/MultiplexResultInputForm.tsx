@@ -83,6 +83,7 @@ interface Props {
   queueItemId: string;
   testResults: MultiplexResultInput[];
   isSubmitDisabled?: boolean;
+  deviceSupportsCovidOnlyResult?: boolean;
   onChange: (value: MultiplexResult[]) => void;
   onSubmit: () => void;
 }
@@ -91,6 +92,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   queueItemId,
   testResults,
   isSubmitDisabled,
+  deviceSupportsCovidOnlyResult,
   onSubmit,
   onChange,
 }) => {
@@ -159,29 +161,34 @@ const MultiplexResultInputForm: React.FC<Props> = ({
    * Form Validation
    * */
   const validateForm = () => {
-    if (
+    const anyResultIsInconclusive =
       resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED ||
       resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
-      resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED
-    ) {
-      if (
-        !(
-          resultsMultiplexFormat.covid === resultsMultiplexFormat.fluA &&
-          resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB
-        )
-      ) {
-        return false;
-      }
-    }
+      resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
 
+    const allResultsAreEqual =
+      resultsMultiplexFormat.covid === resultsMultiplexFormat.fluA &&
+      resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
+
+    const covidIsFilled =
+      resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
+      resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE;
+
+    const fluAIsFilled =
+      resultsMultiplexFormat.fluA === TEST_RESULTS.POSITIVE ||
+      resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE;
+
+    const fluBIsFilled =
+      resultsMultiplexFormat.fluB === TEST_RESULTS.POSITIVE ||
+      resultsMultiplexFormat.fluB === TEST_RESULTS.NEGATIVE;
+
+    if (anyResultIsInconclusive && !allResultsAreEqual) {
+      return false;
+    }
     return (
       inconclusiveCheck ||
-      resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
-      resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE ||
-      ((resultsMultiplexFormat.fluA === TEST_RESULTS.POSITIVE ||
-        resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE) &&
-        (resultsMultiplexFormat.fluB === TEST_RESULTS.POSITIVE ||
-          resultsMultiplexFormat.fluB === TEST_RESULTS.NEGATIVE))
+      (deviceSupportsCovidOnlyResult && covidIsFilled) ||
+      (covidIsFilled && fluAIsFilled && fluBIsFilled)
     );
   };
 
@@ -193,7 +200,10 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   return (
     <form className="usa-form maxw-none multiplex-result-form">
       <div className="grid-row grid-gap-2">
-        <div className="grid-col-4">
+        <div
+          className="grid-col-4"
+          data-testid={`covid-test-result-${queueItemId}`}
+        >
           <h2 className="prime-radio__title">COVID-19</h2>
           <RadioGroup
             legend="COVID-19 result"
@@ -217,7 +227,10 @@ const MultiplexResultInputForm: React.FC<Props> = ({
             disabled={isSubmitDisabled}
           />
         </div>
-        <div className="grid-col-4">
+        <div
+          className="grid-col-4"
+          data-testid={`flu-a-test-result-${queueItemId}`}
+        >
           <h2 className="prime-radio__title">Flu A</h2>
           <RadioGroup
             legend="Flu A result"
@@ -241,7 +254,10 @@ const MultiplexResultInputForm: React.FC<Props> = ({
             disabled={isSubmitDisabled}
           />
         </div>
-        <div className="grid-col-4">
+        <div
+          className="grid-col-4"
+          data-testid={`flu-b-test-result-${queueItemId}`}
+        >
           <h2 className="prime-radio__title">Flu B</h2>
           <RadioGroup
             legend="Flu B result"
