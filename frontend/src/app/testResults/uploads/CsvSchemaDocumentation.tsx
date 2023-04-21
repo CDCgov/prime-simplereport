@@ -82,9 +82,11 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         >
           <div className="grid-col-4 text-base">Description</div>
           <div className="grid-col-8">
-            {item.description?.map((line, noteIndex) => (
+            {item.description?.map((line) => (
               <div
-                key={`${item.colHeader}-note-${noteIndex}`}
+                key={`${item.colHeader}-description-${Buffer.from(
+                  line
+                ).toString("base64")}`}
                 dangerouslySetInnerHTML={{ __html: `${line}` }}
               />
             ))}
