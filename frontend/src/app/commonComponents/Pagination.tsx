@@ -24,7 +24,7 @@ interface Props {
 
 // Always make this odd, so current page is in the middle
 const defaultGroupSize = 7;
-
+type PageListType = number | "firstEllipses" | "lastEllipses";
 const Pagination = ({
   baseRoute,
   currentPage: rawCurrentPage,
@@ -36,7 +36,7 @@ const Pagination = ({
   const totalPages = Math.ceil(totalEntries / entriesPerPage);
   const currentPage = Math.min(Math.max(+rawCurrentPage || 0, 1), totalPages);
   const groupGutter = Math.floor(pageGroupSize / 2);
-  const pageList = [];
+  const pageList: PageListType[] = [];
 
   // Ensure that the first, last, and at least groupGutter pages show
   let minGroupPage = currentPage - groupGutter;
@@ -70,13 +70,13 @@ const Pagination = ({
     pageList.push(1);
   }
   if (minGroupPage > 2) {
-    pageList.push(0);
+    pageList.push("firstEllipses");
   }
   for (let pn = minGroupPage; pn <= maxGroupPage; pn++) {
     pageList.push(pn);
   }
   if (maxGroupPage < totalPages - 1) {
-    pageList.push(0);
+    pageList.push("lastEllipses");
   }
   if (maxGroupPage !== totalPages) {
     pageList.push(totalPages);
@@ -96,15 +96,15 @@ const Pagination = ({
             </Link>
           </li>
         )}
-        {pageList.map((pn, index) =>
-          pn ? (
+        {pageList.map((pn) =>
+          typeof pn === "number" ? (
             <li key={pn}>
               <Link to={pn} label={`Page ${pn}`} active={pn === currentPage}>
                 <span>{pn}</span>
               </Link>
             </li>
           ) : (
-            <li key={`dots${index}`} aria-hidden="true">
+            <li key={pn} aria-hidden="true">
               …
             </li>
           )
