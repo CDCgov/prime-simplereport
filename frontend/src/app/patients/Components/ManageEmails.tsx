@@ -118,52 +118,49 @@ const ManageEmails: React.FC<Props> = ({
 
   return (
     <div className="usa-form">
-      {emailsOrDefault.map((email, idx) => {
-        const key = `email-${idx}-${encodeURIComponent(email)}`;
-        return (
-          <div key={key}>
-            <div
-              className={`display-flex ${
-                idx === 0 ? "" : "patient-form-deletion-field "
-              }`}
-            >
-              <TextInput
-                name={`email-${idx}`}
-                idString={`email-${idx}`}
-                className="flex-fill emailFormElement"
-                value={emailsOrDefault[idx] || ""}
-                errorMessage={errors[idx]}
-                label={
-                  idx > 0
-                    ? t("patient.form.contact.additionalEmail")
-                    : t("patient.form.contact.email")
-                }
-                onBlur={() => {
-                  validateField(idx);
-                }}
-                validationStatus={validationStatus(idx)}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  onEmailChange(idx, e.target.value)
-                }
-              />
-              {idx > 0 ? (
-                <div className="flex-align-self-end">
-                  <button
-                    className="usa-button--unstyled padding-105 height-5 cursor-pointer"
-                    data-testid={`delete-email-${idx}`}
-                    onClick={() => onEmailRemove(idx)}
-                    aria-label={`Delete email ${email.trim()}`}
-                  >
-                    <FontAwesomeIcon icon={"trash"} className={"text-error"} />
-                  </button>
-                </div>
-              ) : (
-                <></>
-              )}
-            </div>
+      {emailsOrDefault.map((email, idx) => (
+        <div key={idx}>
+          <div
+            className={`display-flex ${
+              idx === 0 ? "" : "patient-form-deletion-field "
+            }`}
+          >
+            <TextInput
+              name={`email-${idx}`}
+              idString={`email-${idx}`}
+              className="flex-fill emailFormElement"
+              value={emailsOrDefault[idx] || ""}
+              errorMessage={errors[idx]}
+              label={
+                idx > 0
+                  ? t("patient.form.contact.additionalEmail")
+                  : t("patient.form.contact.email")
+              }
+              onBlur={() => {
+                validateField(idx);
+              }}
+              validationStatus={validationStatus(idx)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                onEmailChange(idx, e.target.value)
+              }
+            />
+            {idx > 0 ? (
+              <div className="flex-align-self-end">
+                <button
+                  className="usa-button--unstyled padding-105 height-5 cursor-pointer"
+                  data-testid={`delete-email-${idx}`}
+                  onClick={() => onEmailRemove(idx)}
+                  aria-label={`Delete email ${email.trim()}`}
+                >
+                  <FontAwesomeIcon icon={"trash"} className={"text-error"} />
+                </button>
+              </div>
+            ) : (
+              <></>
+            )}
           </div>
-        );
-      })}
+        </div>
+      ))}
       <Button
         className="margin-top-2"
         onClick={onAddEmail}
