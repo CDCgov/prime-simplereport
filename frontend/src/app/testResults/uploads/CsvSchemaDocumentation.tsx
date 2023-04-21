@@ -337,18 +337,22 @@ const CsvSchemaDocumentation = () => {
 
         <section className="margin-top-5">
           <h3>Data elements</h3>
-          {schema.fields.map((field, fieldIndex) => {
-            const fieldTitles = field?.sections
+          {schema.fields.map((field) => {
+            const sectionTitles = field?.sections
               .map((val) => val.title)
               .reduce((acc, cur) => acc + cur);
             return (
               <ul
-                key={`toc-${Buffer.from(fieldTitles).toString("base64")}`}
+                key={`toc-${Buffer.from(sectionTitles).toString("base64")}`}
                 className=""
               >
-                {field.sections?.map((section, sectionIndex) => {
+                {field.sections?.map((section) => {
                   return (
-                    <li key={`toc-${fieldIndex}-${sectionIndex}`}>
+                    <li
+                      key={`${Buffer.from(sectionTitles).toString(
+                        "base64"
+                      )}-link-${Buffer.from(section.title).toString("base64")}`}
+                    >
                       <a href={`#${section.slug}`} className="usa-link">
                         {section.title}
                       </a>
