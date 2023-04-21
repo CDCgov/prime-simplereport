@@ -364,17 +364,24 @@ const CsvSchemaDocumentation = () => {
           })}
         </section>
 
-        {schema.fields.map((field, fieldIndex) => {
+        {schema.fields.map((field) => {
+          const sectionTitles = field?.sections
+            .map((val) => val.title)
+            .reduce((acc, cur) => acc + cur);
           return (
             <div
               data-testid="fieldDiv"
-              key={`field-${fieldIndex}`}
+              key={`field-${Buffer.from(sectionTitles).toString("base64")}`}
               className="margin-bottom-5"
             >
-              {field.sections?.map((section, sectionIndex) => {
+              {field.sections?.map((section) => {
                 return (
                   <div
-                    key={`section-${fieldIndex}-${sectionIndex}`}
+                    key={`${Buffer.from(sectionTitles).toString(
+                      "base64"
+                    )}-section-${Buffer.from(section.title).toString(
+                      "base64"
+                    )}`}
                     className="margin-top-9"
                   >
                     <h4 id={`${section.slug}`}>{section.title}</h4>
