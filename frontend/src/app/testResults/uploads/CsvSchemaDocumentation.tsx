@@ -114,10 +114,12 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
             Example{item.examples.length > 1 && "s"}
           </div>
           <ul className="grid-col-8 prime-ul margin-top-0">
-            {item.examples?.map((value, valueIndex) => (
+            {item.examples?.map((value) => (
               <li
                 className={item.examples!.length > 1 ? "bullet-list" : ""}
-                key={`${item.colHeader}-value-${valueIndex}`}
+                key={`${item.colHeader}-examples-${Buffer.from(value).toString(
+                  "base64"
+                )}`}
                 dangerouslySetInnerHTML={{ __html: `<em>${value}</em>` }}
               />
             ))}
@@ -131,10 +133,12 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         >
           <div className="grid-col-4 text-base">Accepted values</div>
           <ul className="grid-col-8 prime-ul margin-top-0">
-            {item.acceptedValues?.map((value, valueIndex) => (
+            {item.acceptedValues?.map((value) => (
               <li
                 className={item.acceptedValues!.length > 1 ? "bullet-list" : ""}
-                key={`${item.colHeader}-value-${valueIndex}`}
+                key={`${item.colHeader}-accepted-values-${Buffer.from(
+                  value
+                ).toString("base64")}`}
                 dangerouslySetInnerHTML={{ __html: `${value}` }}
               />
             ))}
