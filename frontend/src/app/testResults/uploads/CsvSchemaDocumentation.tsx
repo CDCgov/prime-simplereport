@@ -10,6 +10,8 @@ import { getFacilityIdFromUrl } from "../../utils/url";
 
 import { schemaBuilder } from "./schemaBuilder";
 
+import { Buffer } from "buffer";
+
 export type CsvSchemaItem = {
   name: string;
   colHeader: string;
@@ -58,9 +60,11 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         )}
       </h5>
       <div data-testid="subheader" className="margin-bottom-3">
-        {item.subHeader?.map((subHeader, subHeaderIndex) => (
+        {item.subHeader?.map((subHeader) => (
           <p
-            key={`${item.colHeader}-note-${subHeaderIndex}`}
+            key={`${item.colHeader}-subheader-${Buffer.from(subHeader).toString(
+              "base64"
+            )}`}
             dangerouslySetInnerHTML={{ __html: `${subHeader}` }}
           />
         ))}
