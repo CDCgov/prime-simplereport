@@ -195,9 +195,9 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const generatePhoneNumberRows = () => {
     return phoneNumbersOrDefault.map((phoneNumber, idx) => {
       const isPrimary = idx === 0;
-      const key = `phoneNumber-${idx}-${phoneNumber.number}`;
+
       return (
-        <div key={key}>
+        <div key={idx}>
           <div
             className={`display-flex ${
               isPrimary ? "" : "patient-form-deletion-field "
