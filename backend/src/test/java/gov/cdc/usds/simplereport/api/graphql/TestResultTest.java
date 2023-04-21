@@ -206,8 +206,6 @@ class TestResultTest extends BaseGraphqlTest {
         p1, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
     _dataFactory.createTestOrder(
         p2, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
-    //    _dataFactory.createTestOrder(p1, _site);
-    //    _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     // The test default standard user is configured to access _site by default,

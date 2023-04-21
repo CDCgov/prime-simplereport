@@ -187,7 +187,10 @@ const MultiplexResultInputForm: React.FC<Props> = ({
     }
     return (
       inconclusiveCheck ||
-      (deviceSupportsCovidOnlyResult && covidIsFilled) ||
+      (deviceSupportsCovidOnlyResult &&
+        covidIsFilled &&
+        !fluAIsFilled &&
+        !fluBIsFilled) ||
       (covidIsFilled && fluAIsFilled && fluBIsFilled)
     );
   };
