@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -9,8 +11,6 @@ import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { getFacilityIdFromUrl } from "../../utils/url";
 
 import { schemaBuilder } from "./schemaBuilder";
-
-import { Buffer } from "buffer";
 
 export type CsvSchemaItem = {
   name: string;
