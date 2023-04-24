@@ -15,5 +15,7 @@ simple-report:
       - https://simple-report-api-dev2.azurewebsites.net
       - https://simple-report-dev2.azureedge.net
       - https://dev2.simplereport.gov
+  experian:
+    enabled: true
 twilio:
   enabled: true
