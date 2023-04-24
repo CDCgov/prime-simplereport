@@ -2,6 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from "react";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
 import { ComboBox } from "@trussworks/react-uswds";
+import { cloneDeep, uniqueId } from "lodash";
 
 import {
   canadianProvinceCodes,
@@ -73,6 +74,20 @@ interface Props {
   ) => React.ReactNode;
   view?: PersonFormView;
   headerClassName?: string;
+}
+export interface IdentifiablePhoneNumber extends PhoneNumber {
+  id: string;
+}
+function addIdToPhoneNumbers(phoneNumbers: PhoneNumber[] | null) {
+  if (phoneNumbers === null) return null;
+  const identifiablePhoneNumbers: IdentifiablePhoneNumber[] = phoneNumbers.map(
+    (pn) => {
+      const idablePn = cloneDeep(pn) as IdentifiablePhoneNumber;
+      idablePn["id"] = uniqueId("phoneNumber_");
+      return idablePn;
+    }
+  );
+  return identifiablePhoneNumbers;
 }
 
 const PersonForm = (props: Props) => {
@@ -461,7 +476,7 @@ const PersonForm = (props: Props) => {
           {t("patient.form.contact.helpText")}
         </p>
         <ManagePhoneNumbers
-          phoneNumbers={patient.phoneNumbers || []}
+          phoneNumbers={addIdToPhoneNumbers(patient.phoneNumbers) || []}
           testResultDelivery={patient.testResultDelivery}
           updatePhoneNumbers={onPersonChange("phoneNumbers")}
           updateTestResultDelivery={onPersonChange("testResultDelivery")}

@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
+import { uniqueId } from "lodash";
 
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
@@ -13,16 +14,17 @@ import { useTranslatedConstants } from "../../constants";
 import { PhoneNumberErrors, usePersonSchemata } from "../personSchema";
 import { TestResultDeliveryPreference } from "../TestResultDeliveryPreference";
 
+import { IdentifiablePhoneNumber } from "./PersonForm";
+
 interface Props {
-  phoneNumbers: PhoneNumber[];
+  phoneNumbers: IdentifiablePhoneNumber[];
   testResultDelivery: TestResultDeliveryPreference | null;
-  updatePhoneNumbers: (phoneNumbers: PhoneNumber[]) => void;
+  updatePhoneNumbers: (phoneNumbers: IdentifiablePhoneNumber[]) => void;
   updateTestResultDelivery: (
     testResultDelivery: TestResultDeliveryPreference
   ) => void;
   phoneNumberValidator: React.MutableRefObject<Function | null>;
 }
-
 const ManagePhoneNumbers: React.FC<Props> = ({
   phoneNumbers,
   testResultDelivery,
@@ -46,6 +48,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
             {
               type: "",
               number: "",
+              id: "",
             },
           ],
     [phoneNumbers]
@@ -82,13 +85,14 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   };
 
   const validateField = useCallback(
-    async (idx: number, field: keyof PhoneNumber) => {
+    async (idx: number, field: keyof IdentifiablePhoneNumber) => {
+      const fieldWithoutId = field as keyof PhoneNumber;
       try {
         await phoneNumberUpdateSchema.validateAt(
-          field,
+          fieldWithoutId,
           phoneNumbersOrDefault[idx]
         );
-        clearError(idx, field);
+        clearError(idx, fieldWithoutId);
       } catch (e: any) {
         setErrors((existingErrors) => {
           const newErrors = [...existingErrors];
@@ -188,6 +192,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     newPhoneNumbers.push({
       type: "",
       number: "",
+      id: uniqueId("phoneNumber_"),
     });
     updatePhoneNumbers(newPhoneNumbers);
   };
@@ -197,7 +202,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       const isPrimary = idx === 0;
 
       return (
-        <div key={idx}>
+        <div key={phoneNumber.id}>
           <div
             className={`display-flex ${
               isPrimary ? "" : "patient-form-deletion-field "
