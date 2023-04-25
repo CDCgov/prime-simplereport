@@ -106,13 +106,10 @@ export type QueriedFacility = GetFacilityQueueQuery["facility"];
 const convertFromMultiplexResponse = (
   responseResult: QueriedTestOrder["results"]
 ): MultiplexResultInput[] => {
-  const multiplexResultInputs: MultiplexResultInput[] = responseResult.map(
-    (result) => ({
-      diseaseName: result.disease?.name,
-      testResult: result.testResult,
-    })
-  );
-  return multiplexResultInputs;
+  return responseResult.map((result) => ({
+    diseaseName: result.disease?.name,
+    testResult: result.testResult,
+  }));
 };
 
 export type DevicesMap = Map<string, QueriedDeviceType>;
@@ -126,7 +123,7 @@ export interface QueueItemProps {
   devicesMap: DevicesMap;
 }
 
-interface updateQueueItemProps {
+interface UpdateQueueItemProps {
   deviceId?: string;
   specimenTypeId?: string;
   testLength?: number;
@@ -135,6 +132,56 @@ interface updateQueueItemProps {
 }
 
 type SaveState = "idle" | "editing" | "saving" | "error";
+
+const CorrectionStatusBanner: React.FC<{
+  isCorrection: boolean;
+  reasonForCorrection: TestCorrectionReason;
+}> = ({ isCorrection, reasonForCorrection }) => {
+  if (isCorrection && reasonForCorrection) {
+    return (
+      <div className={classnames("tablet:grid-col-12", "card-correction")}>
+        <strong>Correction:</strong>{" "}
+        {reasonForCorrection in TestCorrectionReasons
+          ? TestCorrectionReasons[reasonForCorrection]
+          : reasonForCorrection}
+      </div>
+    );
+  }
+  return null;
+};
+
+function getCloseMessage(
+  confirmationType: "submitResult" | "removeFromQueue" | "none",
+  patientFullName: string,
+  isCorrection: boolean
+) {
+  if (confirmationType === "submitResult") {
+    return (
+      <p className="usa-prose">
+        The test questionnaire for <b> {` ${patientFullName} `} </b> has not
+        been completed. Do you want to submit results anyway?
+      </p>
+    );
+  } else if (isCorrection) {
+    return (
+      <p>
+        Are you sure you want to cancel <b>{patientFullName}'s</b> test
+        correction? The original test result won’t be changed.
+      </p>
+    );
+  }
+  return (
+    <>
+      <p className="usa-prose">
+        Are you sure you want to stop <b>{patientFullName}'s</b> test?
+      </p>
+      <p className="usa-prose">
+        Doing so will remove this person from the list. You can use the search
+        bar to start their test again later.
+      </p>
+    </>
+  );
+}
 
 const QueueItem = ({
   refetchQueue,
@@ -213,7 +260,7 @@ const QueueItem = ({
   // this tracks if the ui made any edits, this needs to publish update to backend
   const [dirtyState, setDirtyState] = useState(false);
 
-  const updateQueueItem = (props: updateQueueItemProps) => {
+  const updateQueueItem = (props: UpdateQueueItemProps) => {
     return editQueueItem({
       variables: {
         id: queueItem.internalId,
@@ -683,31 +730,85 @@ const QueueItem = ({
     testOrderId: queueItem.internalId,
   };
 
-  let deviceTypeOptions = [...facility!.deviceTypes]
-    .sort(alphabetizeByName)
-    .map((d) => ({
-      label: d.name,
-      value: d.internalId,
-    }));
+  function getDeviceTypeOptions() {
+    let deviceTypeOptions = [...facility!.deviceTypes]
+      .sort(alphabetizeByName)
+      .map((d) => ({
+        label: d.name,
+        value: d.internalId,
+      }));
 
-  if (!devicesMap.has(deviceId)) {
-    // this adds an empty option for when the device has been deleted from the facility, but it's on the test order
-    deviceTypeOptions = [{ label: "", value: "" }, ...deviceTypeOptions];
+    if (!devicesMap.has(deviceId)) {
+      // this adds an empty option for when the device has been deleted from the facility, but it's on the test order
+      deviceTypeOptions = [{ label: "", value: "" }, ...deviceTypeOptions];
+    }
+    return deviceTypeOptions;
   }
 
-  let specimenTypeOptions =
-    deviceId && devicesMap.has(deviceId)
-      ? [...devicesMap.get(deviceId)!.swabTypes]
-          .sort(alphabetizeByName)
-          .map((s: SpecimenType) => ({
-            label: s.name,
-            value: s.internalId,
-          }))
-      : [];
+  let deviceTypeOptions = getDeviceTypeOptions();
 
-  if (specimenTypeIsInvalid()) {
-    // this adds a empty option for when the specimen has been deleted from the device, but it's on the test order
-    specimenTypeOptions = [{ label: "", value: "" }, ...specimenTypeOptions];
+  function getSpecimenTypeOptions() {
+    let specimenTypeOptions =
+      deviceId && devicesMap.has(deviceId)
+        ? [...devicesMap.get(deviceId)!.swabTypes]
+            .sort(alphabetizeByName)
+            .map((s: SpecimenType) => ({
+              label: s.name,
+              value: s.internalId,
+            }))
+        : [];
+
+    if (specimenTypeIsInvalid()) {
+      // this adds a empty option for when the specimen has been deleted from the device, but it's on the test order
+      specimenTypeOptions = [{ label: "", value: "" }, ...specimenTypeOptions];
+    }
+    return specimenTypeOptions;
+  }
+
+  let specimenTypeOptions = getSpecimenTypeOptions();
+
+  function displayDateTimeInput() {
+    if (!shouldUseCurrentDateTime) {
+      return (
+        <>
+          <input
+            hidden={shouldUseCurrentDateTime}
+            className={classnames(
+              "card-test-input",
+              saveState === "error" && "card-test-input__error",
+              dateBeforeWarnThreshold && "card-correction-input"
+            )}
+            aria-label="Test date"
+            id={`test-date-${queueItem.patient.internalId}`}
+            data-testid="test-date"
+            name="test-date"
+            type="date"
+            min={formatDate(new Date("Jan 1, 2020"))}
+            max={formatDate(moment().toDate())}
+            value={formatDate(moment(dateTested).toDate())}
+            onChange={(event) => handleDateChange(event.target.value)}
+            disabled={deviceTypeIsInvalid() || specimenTypeIsInvalid()}
+          />
+          <input
+            hidden={shouldUseCurrentDateTime}
+            className={classnames(
+              "card-test-input",
+              saveState === "error" && "card-test-input__error",
+              dateBeforeWarnThreshold && "card-correction-input"
+            )}
+            name={"test-time"}
+            aria-label="Test time"
+            data-testid="test-time"
+            type="time"
+            step="60"
+            value={moment(dateTested).format("HH:mm")}
+            onChange={(e) => handleTimeChange(e.target.value)}
+            disabled={deviceTypeIsInvalid() || specimenTypeIsInvalid()}
+          />
+        </>
+      );
+    }
+    return null;
   }
 
   return (
@@ -733,16 +834,10 @@ const QueueItem = ({
                 submitting.
               </div>
             )}
-            {isCorrection && reasonForCorrection && (
-              <div
-                className={classnames("tablet:grid-col-12", "card-correction")}
-              >
-                <strong>Correction:</strong>{" "}
-                {reasonForCorrection in TestCorrectionReasons
-                  ? TestCorrectionReasons[reasonForCorrection]
-                  : reasonForCorrection}
-              </div>
-            )}
+            <CorrectionStatusBanner
+              isCorrection={isCorrection}
+              reasonForCorrection={reasonForCorrection}
+            />
             <div
               className={
                 supportsMultipleDiseases
@@ -813,50 +908,7 @@ const QueueItem = ({
                       Test date and time
                     </div>
                     <div className="test-date-time-container">
-                      {!shouldUseCurrentDateTime && (
-                        <>
-                          <input
-                            hidden={shouldUseCurrentDateTime}
-                            className={classnames(
-                              "card-test-input",
-                              saveState === "error" && "card-test-input__error",
-                              dateBeforeWarnThreshold && "card-correction-input"
-                            )}
-                            aria-label="Test date"
-                            id={`test-date-${queueItem.patient.internalId}`}
-                            data-testid="test-date"
-                            name="test-date"
-                            type="date"
-                            min={formatDate(new Date("Jan 1, 2020"))}
-                            max={formatDate(moment().toDate())}
-                            value={formatDate(moment(dateTested).toDate())}
-                            onChange={(event) =>
-                              handleDateChange(event.target.value)
-                            }
-                            disabled={
-                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
-                            }
-                          />
-                          <input
-                            hidden={shouldUseCurrentDateTime}
-                            className={classnames(
-                              "card-test-input",
-                              saveState === "error" && "card-test-input__error",
-                              dateBeforeWarnThreshold && "card-correction-input"
-                            )}
-                            name={"test-time"}
-                            aria-label="Test time"
-                            data-testid="test-time"
-                            type="time"
-                            step="60"
-                            value={moment(dateTested).format("HH:mm")}
-                            onChange={(e) => handleTimeChange(e.target.value)}
-                            disabled={
-                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
-                            }
-                          />
-                        </>
-                      )}
+                      {displayDateTimeInput()}
                       <div className="check-box-container">
                         <div className="usa-checkbox">
                           <input
@@ -955,28 +1007,10 @@ const QueueItem = ({
                     : removeFromQueue
                 }
               >
-                {confirmationType === "submitResult" ? (
-                  <p className="usa-prose">
-                    The test questionnaire for <b> {` ${patientFullName} `} </b>{" "}
-                    has not been completed. Do you want to submit results
-                    anyway?
-                  </p>
-                ) : isCorrection ? (
-                  <p>
-                    Are you sure you want to cancel <b>{patientFullName}'s</b>{" "}
-                    test correction? The original test result won’t be changed.
-                  </p>
-                ) : (
-                  <>
-                    <p className="usa-prose">
-                      Are you sure you want to stop <b>{patientFullName}'s</b>{" "}
-                      test?
-                    </p>
-                    <p className="usa-prose">
-                      Doing so will remove this person from the list. You can
-                      use the search bar to start their test again later.
-                    </p>
-                  </>
+                {getCloseMessage(
+                  confirmationType,
+                  patientFullName,
+                  isCorrection
                 )}
               </AreYouSure>
 

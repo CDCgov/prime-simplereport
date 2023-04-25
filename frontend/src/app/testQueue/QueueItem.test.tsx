@@ -266,7 +266,7 @@ describe("QueueItem", () => {
   ) => {
     props = props || testProps;
 
-    render(
+    const { container } = render(
       <PrimeErrorBoundary>
         <Provider store={store}>
           <MemoryRouter>
@@ -286,6 +286,7 @@ describe("QueueItem", () => {
       </PrimeErrorBoundary>
     );
     await new Promise((resolve) => setTimeout(resolve, 501));
+    return container;
   };
 
   beforeEach(() => {
@@ -299,12 +300,22 @@ describe("QueueItem", () => {
       trackEvent: trackEventMock,
     }));
     jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(global.Math, "random").mockReturnValue(1);
   });
 
   afterEach(() => {
     Date.now = nowFn;
     (getAppInsights as jest.Mock).mockReset();
     jest.spyOn(console, "error").mockRestore();
+    jest.spyOn(global.Math, "random").mockRestore();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("matches snapshot", async () => {
+    expect(await renderQueueItem()).toMatchSnapshot();
   });
 
   it("correctly renders the test queue", async () => {

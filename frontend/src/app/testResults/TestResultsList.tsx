@@ -2,7 +2,7 @@ import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-import {
+import React, {
   ChangeEventHandler,
   useCallback,
   useEffect,
@@ -130,6 +130,20 @@ const setFocusOnActionMenu = (id: string, actionName: string) => {
       printButton?.dispatchEvent(event);
     });
   });
+};
+
+const ErrorMessage: React.FC<{ message: string | undefined }> = ({
+  message,
+}) => {
+  if (message) {
+    return (
+      <span className="usa-error-message" role="alert">
+        <span className="usa-sr-only">Error: </span>
+        {message}
+      </span>
+    );
+  }
+  return null;
 };
 
 export const DetachedTestResultsList = ({
@@ -386,6 +400,10 @@ export const DetachedTestResultsList = ({
     }))
   );
 
+  function getDateOrEmptyString(date: string | null | undefined) {
+    return date ? moment(date).format("YYYY-MM-DD") : "";
+  }
+
   return (
     <div className="grid-row">
       <div className="prime-container card-container sr-test-results-list">
@@ -456,12 +474,7 @@ export const DetachedTestResultsList = ({
               </div>
               <div className="usa-form-group date-filter-group">
                 <Label htmlFor="start-date">Date range (start)</Label>
-                {startDateError && (
-                  <span className="usa-error-message" role="alert">
-                    <span className="usa-sr-only">Error: </span>
-                    {startDateError}
-                  </span>
-                )}
+                <ErrorMessage message={startDateError} />
                 <input
                   id="start-date"
                   type="date"
@@ -470,21 +483,12 @@ export const DetachedTestResultsList = ({
                   max={maxDate}
                   aria-label="Start Date"
                   onChange={(e) => processStartDate(e.target.value)}
-                  defaultValue={
-                    filterParams.startDate
-                      ? moment(filterParams.startDate).format("YYYY-MM-DD")
-                      : ""
-                  }
+                  defaultValue={getDateOrEmptyString(filterParams.startDate)}
                 />
               </div>
               <div className="usa-form-group date-filter-group">
                 <Label htmlFor="end-date">Date range (end)</Label>
-                {endDateError && (
-                  <span className="usa-error-message" role="alert">
-                    <span className="usa-sr-only">Error: </span>
-                    {endDateError}
-                  </span>
-                )}
+                <ErrorMessage message={endDateError} />
                 <input
                   id="end-date"
                   type="date"
@@ -493,11 +497,7 @@ export const DetachedTestResultsList = ({
                   max={maxDate}
                   aria-label="End Date"
                   onChange={(e) => processEndDate(e.target.value)}
-                  defaultValue={
-                    filterParams.endDate
-                      ? moment(filterParams.endDate).format("YYYY-MM-DD")
-                      : ""
-                  }
+                  defaultValue={getDateOrEmptyString(filterParams.endDate)}
                 />
               </div>
               <Select
@@ -529,7 +529,7 @@ export const DetachedTestResultsList = ({
                 defaultSelect
                 onChange={setFilterParams("role")}
               />
-              {facilityOptions && facilityOptions.length > 1 ? (
+              {facilityOptions?.length > 1 ? (
                 <Select
                   label="Testing facility"
                   name="facility"

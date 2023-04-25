@@ -97,28 +97,37 @@ export function areUniquePhoneNumbers(phoneNumbers: any) {
 
   return new Set(validPhoneNumbers).size === validPhoneNumbers.length;
 }
+function isIncompletePhoneNumber(phoneNumber: any) {
+  return !phoneNumber || !phoneNumber.number || !phoneNumber.type;
+}
 
+function isFullyBlankPhoneNumber(phoneNumber: any) {
+  return !phoneNumber || (!phoneNumber.number && !phoneNumber.type);
+}
+
+function isPartiallyBlankPhoneNumber(phoneNumber: any) {
+  return !phoneNumber.number || !phoneNumber.type;
+}
 export function areValidPhoneNumbers(phoneNumbers: any) {
   // At least one phone number is required
   if (!phoneNumbers || phoneNumbers.length === 0) {
     return false;
   }
-
   return phoneNumbers.every((phoneNumber: any, idx: number) => {
     // The first phone number is considered the "primary" phone number and must
     // be provided
     if (idx === 0) {
-      if (!phoneNumber || !phoneNumber.number || !phoneNumber.type) {
+      if (isIncompletePhoneNumber(phoneNumber)) {
         return false;
       }
     } else {
       // Subsequent phone numbers are optional and may be fully blank...
-      if (!phoneNumber || (!phoneNumber.number && !phoneNumber.type)) {
+      if (isFullyBlankPhoneNumber(phoneNumber)) {
         return true;
       }
 
       // ...but not partially blank...
-      if (!phoneNumber.number || !phoneNumber.type) {
+      if (isPartiallyBlankPhoneNumber(phoneNumber)) {
         return false;
       }
     }

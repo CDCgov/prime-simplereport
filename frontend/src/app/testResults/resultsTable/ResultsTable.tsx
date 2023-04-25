@@ -11,6 +11,7 @@ import { ActionsMenu } from "../../commonComponents/ActionsMenu";
 import { byDateTested } from "../TestResultsList";
 import { MULTIPLEX_DISEASES } from "../constants";
 import { toLowerCaseHyphenate } from "../../utils/text";
+import { TestResult, PhoneNumber } from "../../../generated/graphql";
 import { getResultObjByDiseaseName } from "../../utils/testResults";
 
 export const generateTableHeaders = (
@@ -56,13 +57,56 @@ export const generateTableHeaders = (
   </tr>
 );
 
+function createActionItemList(
+  setPrintModalId: SetStateAction<String>,
+  r: TestResult,
+  setEmailModalTestResultId: SetStateAction<String>,
+  setTextModalId: SetStateAction<String>,
+  removed: boolean,
+  setMarkCorrectionId: SetStateAction<String>,
+  setDetailsModalId: SetStateAction<String>
+) {
+  const actionItems = [];
+  actionItems.push({
+    name: "Print result",
+    action: () => setPrintModalId(r.internalId as String),
+  });
+  if (r.patient?.email) {
+    actionItems.push({
+      name: "Email result",
+      action: () => setEmailModalTestResultId(r.internalId as String),
+    });
+  }
+
+  if (
+    r.patient?.phoneNumbers?.some((pn: PhoneNumber) => pn.type === "MOBILE")
+  ) {
+    actionItems.push({
+      name: "Text result",
+      action: () => setTextModalId(r.internalId as String),
+    });
+  }
+
+  if (!removed) {
+    actionItems.push({
+      name: "Correct result",
+      action: () => setMarkCorrectionId(r.internalId as String),
+    });
+  }
+  actionItems.push({
+    name: "View details",
+    action: () => setDetailsModalId(r.internalId as String),
+  });
+  return actionItems;
+}
+
 const generateResultRows = (
-  testResults: any,
-  setPrintModalId: SetStateAction<any>,
-  setMarkCorrectionId: SetStateAction<any>,
-  setDetailsModalId: SetStateAction<any>,
-  setTextModalId: SetStateAction<any>,
-  setEmailModalTestResultId: SetStateAction<any>,
+  testResults: Array<TestResult>,
+  setPrintModalId: SetStateAction<String>,
+  setMarkCorrectionId: SetStateAction<String>,
+  setDetailsModalId: SetStateAction<String>,
+  setTextModalId: SetStateAction<String>,
+  setEmailModalTestResultId: SetStateAction<String>,
   hasMultiplexResults: boolean,
   hasFacility: boolean
 ) => {
@@ -75,47 +119,26 @@ const generateResultRows = (
   }
 
   // `sort` mutates the array, so make a copy
-  return [...testResults].sort(byDateTested).map((r) => {
+  return [...testResults].sort(byDateTested).map((r: TestResult) => {
     const testResultOrder = [MULTIPLEX_DISEASES.COVID_19];
     if (hasMultiplexResults) {
       testResultOrder.push(MULTIPLEX_DISEASES.FLU_A, MULTIPLEX_DISEASES.FLU_B);
     }
-    const actionItems = [];
-    actionItems.push({
-      name: "Print result",
-      action: () => setPrintModalId(r.internalId),
-    });
-    if (r.patient.email) {
-      actionItems.push({
-        name: "Email result",
-        action: () => setEmailModalTestResultId(r.internalId),
-      });
-    }
-
-    if (
-      (r.patient?.phoneNumbers || []).some(
-        (pn: PhoneNumber) => pn.type === "MOBILE"
-      )
-    ) {
-      actionItems.push({
-        name: "Text result",
-        action: () => setTextModalId(r.internalId),
-      });
-    }
-
     const removed = r.correctionStatus === "REMOVED";
-    if (!removed) {
-      actionItems.push({
-        name: "Correct result",
-        action: () => setMarkCorrectionId(r.internalId),
-      });
-    }
-    actionItems.push({
-      name: "View details",
-      action: () => setDetailsModalId(r.internalId),
-    });
+    const actionItems = createActionItemList(
+      setPrintModalId,
+      r,
+      setEmailModalTestResultId,
+      setTextModalId,
+      removed,
+      setMarkCorrectionId,
+      setDetailsModalId
+    );
     const getResultCell = (disease: string) => {
-      let result = getResultObjByDiseaseName(r.results, disease);
+      let result = getResultObjByDiseaseName(
+        r.results as MultiplexResults,
+        disease
+      );
       return result ? TEST_RESULT_DESCRIPTIONS[result.testResult] : "N/A";
     };
     const getResultCellHTML = () => {
@@ -151,38 +174,41 @@ const generateResultRows = (
           <Button
             variant="unstyled"
             label={displayFullName(
-              r.patient.firstName,
-              r.patient.middleName,
-              r.patient.lastName
+              r.patient?.firstName,
+              r.patient?.middleName,
+              r.patient?.lastName
             )}
-            onClick={() => setDetailsModalId(r.internalId)}
+            onClick={() => setDetailsModalId(r.internalId as String)}
             className="sr-link__primary"
           />
           <span className="display-block text-base font-ui-2xs">
-            DOB: {formatDateWithTimeOption(r.patient.birthDate)}
+            DOB: {formatDateWithTimeOption(r.patient?.birthDate)}
           </span>
         </td>
         <td className="test-date-cell">
           {formatDateWithTimeOption(r.dateTested, true)}
         </td>
         {getResultCellHTML()}
-        <td className="test-device-cell">{r.deviceType.name}</td>
+        <td className="test-device-cell">{r.deviceType?.name}</td>
         {hasMultiplexResults && hasFacility ? null : (
           <td className="submitted-by-cell">
             {displayFullName(
-              r.createdBy.nameInfo.firstName,
+              r.createdBy?.nameInfo?.firstName,
               null,
-              r.createdBy.nameInfo.lastName
+              r.createdBy?.nameInfo?.lastName
             )}
           </td>
         )}
         {hasFacility && (
           <td className="test-facility-cell">
-            {facilityDisplayName(r.facility.name, r.facility.isDeleted)}
+            {facilityDisplayName(
+              r.facility?.name as String,
+              r.facility?.isDeleted as boolean
+            )}
           </td>
         )}
         <td className="actions-cell">
-          <ActionsMenu items={actionItems} id={r.internalId} />
+          <ActionsMenu items={actionItems} id={r.internalId as String} />
         </td>
       </tr>
     );
@@ -190,12 +216,12 @@ const generateResultRows = (
 };
 
 interface ResultsTableListProps {
-  results: Array<any>;
-  setPrintModalId: SetStateAction<any>;
-  setMarkCorrectionId: SetStateAction<any>;
-  setDetailsModalId: SetStateAction<any>;
-  setTextModalId: SetStateAction<any>;
-  setEmailModalTestResultId: SetStateAction<any>;
+  results: Array<TestResult>;
+  setPrintModalId: SetStateAction<String>;
+  setMarkCorrectionId: SetStateAction<String>;
+  setDetailsModalId: SetStateAction<String>;
+  setTextModalId: SetStateAction<String>;
+  setEmailModalTestResultId: SetStateAction<String>;
   hasMultiplexResults: boolean;
   hasFacility: boolean;
 }
