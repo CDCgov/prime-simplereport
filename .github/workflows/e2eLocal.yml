@@ -91,7 +91,7 @@ jobs:
         CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
         CYPRESS_BACKEND_URL: "https://localhost.simplereport.gov/api"
         WIREMOCK_URL: "http://cypress:8088"
-        SPEC_PATH: "cypress/e2e/0*"
+        SPEC_PATH: "cypress/e2e/**"
         TEST_ENV: "https://localhost.simplereport.gov"
         # frontend settings
         REACT_APP_OKTA_URL: "http://cypress:8088"
