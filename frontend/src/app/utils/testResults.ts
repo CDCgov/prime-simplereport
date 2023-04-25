@@ -53,7 +53,6 @@ export function hasPositiveFluResults(results: MultiplexResults): boolean {
 }
 
 export function haCovidResults(results: MultiplexResults): boolean {
-  console.log(results);
   return (
     results.filter((multiplexResult: MultiplexResult) =>
       multiplexResult.disease.name.includes("COVID-19")
