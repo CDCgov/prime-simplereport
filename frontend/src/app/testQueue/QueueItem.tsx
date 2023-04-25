@@ -297,6 +297,37 @@ const QueueItem = ({
     return false;
   };
 
+  const doesDeviceSupportMultiplexAndCovidOnlyResult = (deviceId: string) => {
+    if (devicesMap.has(deviceId)) {
+      const deviceTypeCovidDiseases = devicesMap
+        .get(deviceId)!
+        .supportedDiseaseTestPerformed.filter(
+          (disease) =>
+            disease.supportedDisease.name === MULTIPLEX_DISEASES.COVID_19
+        );
+
+      if (deviceTypeCovidDiseases.length >= 1) {
+        const testPerformedLoincs = [
+          ...new Set(
+            deviceTypeCovidDiseases.map((value) => value.testPerformedLoincCode)
+          ),
+        ].filter((item): item is string => !!item);
+        const testOrderedLoincs = [
+          ...new Set(
+            deviceTypeCovidDiseases.map((value) => value.testOrderedLoincCode)
+          ),
+        ].filter((item): item is string => !!item);
+        const hasSingleCovidTestPerformedLoinc =
+          testPerformedLoincs.length === 1;
+        const hasMultipleCovidTestOrderedLoincs = testOrderedLoincs.length > 1;
+        return (
+          hasSingleCovidTestPerformedLoinc && hasMultipleCovidTestOrderedLoincs
+        );
+      }
+    }
+    return false;
+  };
+
   useEffect(() => {
     if (deviceTypeIsInvalid()) {
       setDeviceTypeErrorMessage("Please select a device");
@@ -960,6 +991,9 @@ const QueueItem = ({
                     deviceTypeIsInvalid() ||
                     specimenTypeIsInvalid()
                   }
+                  deviceSupportsCovidOnlyResult={doesDeviceSupportMultiplexAndCovidOnlyResult(
+                    deviceId
+                  )}
                   onSubmit={onTestResultSubmit}
                   onChange={onTestResultChange}
                 />

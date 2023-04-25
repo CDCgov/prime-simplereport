@@ -8,19 +8,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
 @Slf4j
+@RequiredArgsConstructor
 public class DiseaseService {
+  public static final String COVID19_NAME = "COVID-19";
+  public static final String FLU_A_NAME = "Flu A";
+  public static final String FLU_B_NAME = "Flu B";
 
-  SupportedDiseaseRepository _supportedDiseaseRepo;
-
-  DiseaseService(SupportedDiseaseRepository repo) {
-    this._supportedDiseaseRepo = repo;
-  }
+  private final SupportedDiseaseRepository _supportedDiseaseRepo;
 
   private SupportedDisease covid;
   private SupportedDisease fluA;
@@ -29,9 +30,9 @@ public class DiseaseService {
   private final Map<UUID, SupportedDisease> supportedDiseaseMap = new HashMap<>();
 
   public void initDiseases() {
-    covid = _supportedDiseaseRepo.findByName("COVID-19").orElse(null);
-    fluA = _supportedDiseaseRepo.findByName("Flu A").orElse(null);
-    fluB = _supportedDiseaseRepo.findByName("Flu B").orElse(null);
+    covid = _supportedDiseaseRepo.findByName(COVID19_NAME).orElse(null);
+    fluA = _supportedDiseaseRepo.findByName(FLU_A_NAME).orElse(null);
+    fluB = _supportedDiseaseRepo.findByName(FLU_B_NAME).orElse(null);
 
     Optional.ofNullable(covid).ifPresent(sd -> supportedDiseaseMap.put(sd.getInternalId(), sd));
     Optional.ofNullable(fluA).ifPresent(sd -> supportedDiseaseMap.put(sd.getInternalId(), sd));
@@ -47,18 +48,14 @@ public class DiseaseService {
   }
 
   public SupportedDisease getDiseaseByName(String name) {
-    switch (name) {
-      case "COVID-19":
-        return covid;
-      case "Flu A":
-        return fluA;
-      case "Flu B":
-        return fluB;
-      default:
-        return _supportedDiseaseRepo
-            .findByName(name)
-            .orElseThrow(() -> new IllegalArgumentException("Disease not found"));
-    }
+    return switch (name) {
+      case COVID19_NAME -> covid;
+      case FLU_A_NAME -> fluA;
+      case FLU_B_NAME -> fluB;
+      default -> _supportedDiseaseRepo
+          .findByName(name)
+          .orElseThrow(() -> new IllegalArgumentException("Disease not found"));
+    };
   }
 
   public SupportedDisease covid() {

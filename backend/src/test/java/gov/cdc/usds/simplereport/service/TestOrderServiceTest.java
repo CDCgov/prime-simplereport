@@ -180,7 +180,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(testEventArgumentCaptor.capture());
-    verify(fhirQueueReportingService).report(testEventArgumentCaptor.capture());
+    verifyNoInteractions(fhirQueueReportingService);
     TestEvent sentEvent = testEventArgumentCaptor.getValue();
     assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
     assertThat(sentEvent.getCovidTestResult().get()).isEqualTo(TestResult.POSITIVE);
@@ -226,7 +226,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         null);
 
     verify(testEventReportingService).report(any());
-    verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
 
     List<TestEvent> testEvents =
         _testEventRepository.findAllByPatientAndFacilities(p, List.of(facility));
@@ -247,7 +247,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertThat(testEvents.get(0).getPatientHasPriorTests()).isFalse();
     assertThat(testEvents.get(1).getPatientHasPriorTests()).isTrue();
     verify(testEventReportingService, times(2)).report(any());
-    verify(fhirQueueReportingService, times(2)).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -394,7 +394,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
     verify(testEventReportingService).report(any());
-    verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -438,7 +438,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
     verify(testEventReportingService).report(any());
-    verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -541,7 +541,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(any());
-    verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
 
     List<MultiplexResultInput> negativeCovidResult = makeCovidOnlyResult(TestResult.NEGATIVE);
 
@@ -553,7 +553,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the second event is sent to storage queue
     verify(testEventReportingService, times(2)).report(any());
-    verify(fhirQueueReportingService, times(2)).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -912,7 +912,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertTrue(res.getDeliverySuccess());
     verifyNoInteractions(testResultsDeliveryService);
     verify(testEventReportingService).report(any());
-    verify(fhirQueueReportingService).report(any());
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -1440,7 +1440,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue, which gets picked up to be delivered
     // to report stream
     verify(testEventReportingService).report(deleteMarkerEvent);
-    verify(fhirQueueReportingService).report(deleteMarkerEvent);
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   @Test
@@ -2030,7 +2030,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.getTestResult(_e.getInternalId()).getTestOrder();
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(correctedTestEvent);
-    verify(fhirQueueReportingService).report(correctedTestEvent);
+    verifyNoInteractions(fhirQueueReportingService);
   }
 
   private List<TestEvent> makedata() {

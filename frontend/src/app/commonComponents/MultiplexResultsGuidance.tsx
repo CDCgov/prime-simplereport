@@ -5,6 +5,7 @@ import CovidResultGuidance from "../commonComponents/CovidResultGuidance";
 import {
   hasPositiveFluResults,
   getResultByDiseaseName,
+  haCovidResults,
 } from "../utils/testResults";
 
 interface Props {
@@ -59,7 +60,8 @@ const MultiplexResultsGuidance = (props: Props) => {
   const isPatientApp = props.isPatientApp;
   const multiplexEnabled = props.multiplexEnabled;
   const { t } = useTranslation();
-  const needsHeading = multiplexEnabled && hasPositiveFluResults(results);
+  const needsCovidHeading = haCovidResults(results);
+  const needsFluHeading = multiplexEnabled && hasPositiveFluResults(results);
   const testGuidanceArray: any = [];
   const covidResult = getResultByDiseaseName(results, "COVID-19") as TestResult;
   let covidGuidanceElement;
@@ -68,24 +70,24 @@ const MultiplexResultsGuidance = (props: Props) => {
       <CovidResultGuidance
         result={covidResult}
         isPatientApp={isPatientApp}
-        needsHeading={needsHeading}
+        needsHeading={needsCovidHeading}
       />
     );
   } else {
     covidGuidanceElement = (
-      <div className={needsHeading ? "sr-margin-bottom-28px" : ""}>
+      <div className={needsCovidHeading ? "sr-margin-bottom-28px" : ""}>
         <CovidResultGuidance
           result={covidResult}
           isPatientApp={isPatientApp}
-          needsHeading={needsHeading}
+          needsHeading={needsCovidHeading}
         />
       </div>
     );
   }
   testGuidanceArray.push(covidGuidanceElement);
 
-  if (needsHeading) {
-    testGuidanceArray.push(setPositiveFluResultInfo(needsHeading, t));
+  if (needsFluHeading) {
+    testGuidanceArray.push(setPositiveFluResultInfo(needsFluHeading, t));
   }
   return testGuidanceArray;
 };

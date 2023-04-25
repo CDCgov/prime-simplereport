@@ -342,8 +342,7 @@ public class TestOrderService {
 
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
-      _testEventReportingService.report(savedEvent);
-      _fhirQueueReportingService.report(testEvent);
+      reportTestEventToRS(savedEvent);
     } finally {
       unlockOrder(order.getInternalId());
     }
@@ -367,6 +366,16 @@ public class TestOrderService {
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
     return new AddTestResultResponse(savedOrder, deliveryStatus);
+  }
+
+  private void reportTestEventToRS(TestEvent savedEvent) {
+    if (savedEvent.hasCovidResult()) {
+      _testEventReportingService.report(savedEvent);
+    }
+
+    if (savedEvent.hasFluResult()) {
+      _fhirQueueReportingService.report(savedEvent);
+    }
   }
 
   private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
@@ -563,8 +572,7 @@ public class TestOrderService {
         results.forEach(result -> result.setTestEvent(newRemoveEvent));
         _resultRepo.saveAll(results);
 
-        _testEventReportingService.report(newRemoveEvent);
-        _fhirQueueReportingService.report(newRemoveEvent);
+        reportTestEventToRS(newRemoveEvent);
 
         order.setReasonForCorrection(reasonForCorrection);
         order.setTestEventRef(newRemoveEvent);
