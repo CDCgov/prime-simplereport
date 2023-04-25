@@ -609,18 +609,21 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Strings_valid() {
+
     var actual =
         convertToObservation(
-            "diseaseCode",
-            "diseaseName",
-            "resultCode",
-            TestCorrectionStatus.ORIGINAL,
-            null,
-            "id-123",
-            TestResult.POSITIVE.toString(),
-            "testKitName",
-            "equipmentUid",
-            "modelName");
+            ConvertToObservationProps.builder()
+                .diseaseCode("diseaseCode")
+                .diseaseName("diseaseName")
+                .resultCode("resultCode")
+                .correctionStatus(TestCorrectionStatus.ORIGINAL)
+                .correctionReason(null)
+                .id("id-123")
+                .resultDescription(TestResult.POSITIVE.toString())
+                .testkitNameId("testKitName")
+                .equipmentUid("equipmentUid")
+                .deviceModel("modelName")
+                .build());
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -1183,19 +1186,21 @@ class FhirConverterTest {
 
     var actual =
         createFhirBundle(
-            patient,
-            organization,
-            null,
-            practitioner,
-            device,
-            specimen,
-            List.of(observation),
-            Set.of(aoeobservation1, aoeobservation2),
-            serviceRequest,
-            diagnosticReport,
-            date,
-            gitProperties,
-            "P");
+            CreateFhirBundleProps.builder()
+                .patient(patient)
+                .testingLab(organization)
+                .orderingFacility(null)
+                .practitioner(practitioner)
+                .device(device)
+                .specimen(specimen)
+                .resultObservations(List.of(observation))
+                .aoeObservations(Set.of(aoeobservation1, aoeobservation2))
+                .serviceRequest(serviceRequest)
+                .diagnosticReport(diagnosticReport)
+                .currentDate(date)
+                .gitProperties(gitProperties)
+                .processingId("P")
+                .build());
 
     var resourceUrls =
         actual.getEntry().stream()
@@ -1346,6 +1351,7 @@ class FhirConverterTest {
     var provider =
         new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
     var organization = new Organization("District", "school", "1", true);
+
     var facility =
         new Facility(
             organization,
