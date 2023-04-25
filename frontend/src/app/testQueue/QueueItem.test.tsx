@@ -232,7 +232,7 @@ describe("QueueItem", () => {
   ) => {
     props = props || testProps;
 
-    let { container } = render(
+    const { container } = render(
       <PrimeErrorBoundary>
         <Provider store={store}>
           <MemoryRouter>
