@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,17 +32,14 @@ class DeviceMigrationServiceTest extends BaseServiceTest<DeviceMigrationService>
   @Autowired private DeviceMigrationService deviceMigrationService;
 
   private Organization org;
-  private SpecimenType spec;
-
-  @BeforeEach
-  void setup() {}
+  private SpecimenType specimenType;
 
   @Test
   void mergeDuplicateDevicesTest() {
 
     // GIVEN
     org = organizationRepository.save(new Organization("My Office", "other", "650Mass", true));
-    spec = specimenTypeRepository.save(new SpecimenType("gum swab", "0001111234"));
+    specimenType = specimenTypeRepository.save(new SpecimenType("gum swab", "0001111234"));
 
     List<DeviceType> configuredDevices = new ArrayList<>();
     DeviceType other = deviceTypeRepository.save(new DeviceType("Other", "Weasleys", "1", 15));
@@ -104,7 +100,7 @@ class DeviceMigrationServiceTest extends BaseServiceTest<DeviceMigrationService>
             providerRepository.save(
                 new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222")),
             defaultDevice,
-            spec,
+            specimenType,
             configuredDevices));
   }
 }
