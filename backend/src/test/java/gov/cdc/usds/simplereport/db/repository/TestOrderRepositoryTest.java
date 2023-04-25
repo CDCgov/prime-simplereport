@@ -145,11 +145,11 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     _repo.save(order1);
     flush();
     TestOrder order2 = new TestOrder(patient0, site);
+    _repo.save(order2);
     PersistenceException caught =
         assertThrows(
             PersistenceException.class,
             () -> {
-              _repo.save(order2);
               flush();
             });
     assertEquals(ConstraintViolationException.class, caught.getCause().getClass());

@@ -56,8 +56,8 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   void getPatientLink() {
     PatientLink result = _service.getPatientLink(_patientLink.getInternalId());
     assertEquals(result.getInternalId(), _patientLink.getInternalId());
-    assertThrows(
-        InvalidPatientLinkException.class, () -> _service.getPatientLink(UUID.randomUUID()));
+    UUID internalId = UUID.randomUUID();
+    assertThrows(InvalidPatientLinkException.class, () -> _service.getPatientLink(internalId));
   }
 
   @Test
