@@ -82,13 +82,13 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     _resultRepo.save(positiveResult);
     HashSet positiveResults = new HashSet<>();
     positiveResults.add(positiveResult);
-    _repo.save(new TestEvent(order, false, positiveResults));
+    _repo.save(new TestEvent(order, false));
 
     Result negativeResult = new Result(order, _diseaseService.covid(), TestResult.NEGATIVE);
     _resultRepo.save(negativeResult);
     HashSet negativeResults = new HashSet<>();
     negativeResults.add(negativeResult);
-    _repo.save(new TestEvent(order, false, negativeResults));
+    _repo.save(new TestEvent(order, false));
     flush();
     List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));
     assertEquals(2, found.size());
@@ -108,7 +108,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder firstOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
     var firstResults = firstOrder.getResults();
-    var firstEvent = new TestEvent(firstOrder, false, firstResults);
+    var firstEvent = new TestEvent(firstOrder, false);
     firstResults.forEach(result -> result.setTestEvent(firstEvent));
     _resultRepo.saveAll(firstResults);
     _repo.save(firstEvent);
@@ -116,7 +116,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
     var secondResults = secondOrder.getResults();
-    var secondEvent = new TestEvent(secondOrder, false, secondResults);
+    var secondEvent = new TestEvent(secondOrder, false);
     secondResults.forEach(result -> result.setTestEvent(secondEvent));
     _resultRepo.saveAll(secondResults);
     _repo.save(secondEvent);
@@ -357,8 +357,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     // repo level test. Higher level tests done in TestOrderServiceTest
     String reason = "Unit Test Correction " + LocalDateTime.now().toString();
     var results = startingEvent.getResults().stream().map(Result::new).collect(Collectors.toSet());
-    var correctionEvent =
-        new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason, results);
+    var correctionEvent = new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason);
     results.forEach(result -> result.setTestEvent(correctionEvent));
     _resultRepo.saveAll(results);
     _repo.save(correctionEvent);

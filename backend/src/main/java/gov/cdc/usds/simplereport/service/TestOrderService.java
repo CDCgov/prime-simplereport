@@ -312,16 +312,15 @@ public class TestOrderService {
 
     try {
       order.setDeviceTypeAndSpecimenType(deviceType, specimenType);
-      var resultSet = editMultiplexResult(order, results);
+      editMultiplexResult(order, results);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
       boolean hasPriorTests = _testEventRepo.existsByPatient(person);
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests, resultSet)
-              : new TestEvent(
-                  order, order.getCorrectionStatus(), order.getReasonForCorrection(), resultSet);
+              ? new TestEvent(order, hasPriorTests)
+              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
       TestEvent savedEvent = _testEventRepo.save(testEvent);
 
@@ -567,7 +566,7 @@ public class TestOrderService {
                             .build())
                 .collect(Collectors.toSet());
         var newRemoveEvent =
-            new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
+            new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
         _testEventRepo.save(newRemoveEvent);
         results.forEach(result -> result.setTestEvent(newRemoveEvent));
         _resultRepo.saveAll(results);

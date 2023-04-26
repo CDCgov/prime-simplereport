@@ -908,8 +908,7 @@ class FhirConverterTest {
   void convertToDiagnosticReport_TestEvent_correctedTestEvent() {
     var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
-        new TestEvent(
-            invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo", Collections.emptySet());
+        new TestEvent(invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo");
 
     var actual = convertToDiagnosticReport(correctedTestEvent);
 
@@ -920,8 +919,7 @@ class FhirConverterTest {
   void convertToDiagnosticReport_TestEvent_removedTestEvent() {
     var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
-        new TestEvent(
-            invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person", Collections.emptySet());
+        new TestEvent(invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person");
 
     var actual = convertToDiagnosticReport(correctedTestEvent);
 
@@ -1393,7 +1391,7 @@ class FhirConverterTest {
     var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
     var fluAResult = new Result(testOrder, fluADisease, TestResult.NEGATIVE);
     var fluBResult = new Result(testOrder, fluBDisease, TestResult.UNDETERMINED);
-    var testEvent = new TestEvent(testOrder, false, Set.of(covidResult, fluAResult, fluBResult));
+    var testEvent = new TestEvent(testOrder, false);
 
     var providerId = UUID.fromString("ffc07f31-f2af-4728-a247-8cb3aa05ccd0");
     var facilityId = UUID.fromString("1c3d14b9-e222-4a16-9fb2-d9f173034a6a");

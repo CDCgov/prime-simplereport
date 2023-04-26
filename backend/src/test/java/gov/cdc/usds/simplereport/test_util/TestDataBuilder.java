@@ -24,7 +24,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public class TestDataBuilder {
@@ -81,14 +80,11 @@ public class TestDataBuilder {
   }
 
   public static TestEvent createEmptyTestEvent() {
-    return new TestEvent(createEmptyTestOrder(), false, Collections.emptySet());
+    return new TestEvent(createEmptyTestOrder(), false);
   }
 
   public static TestEvent createEmptyTestEventWithValidDevice() {
-    return new TestEvent(
-        new TestOrder(createEmptyPerson(false), createEmptyFacility(true)),
-        false,
-        Collections.emptySet());
+    return new TestEvent(new TestOrder(createEmptyPerson(false), createEmptyFacility(true)), false);
   }
 
   public static Person createPerson() {
@@ -234,13 +230,13 @@ public class TestDataBuilder {
         createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
     var fluAResult = createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
     var fluBResult = createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
-    return new TestEvent(createTestOrder(), false, Set.of(covidTestResult, fluAResult, fluBResult));
+    return new TestEvent(createTestOrder(), false);
   }
 
   public static TestEvent createCovidTestEvent() {
     var testOrder = createTestOrder();
     var covidTestResult =
         createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
-    return new TestEvent(createTestOrder(), false, Set.of(covidTestResult));
+    return new TestEvent(createTestOrder(), false);
   }
 }

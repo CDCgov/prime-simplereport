@@ -429,7 +429,7 @@ public class TestDataFactory {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
     Result result = new Result(o, diseaseService.covid(), r);
-    TestEvent e = testEventRepository.save(new TestEvent(o, false, Set.of(result)));
+    TestEvent e = testEventRepository.save(new TestEvent(o, false));
     o.setTestEventRef(e);
     o.markComplete();
 
@@ -449,7 +449,7 @@ public class TestDataFactory {
     resultRepository.save(result);
     o = testOrderRepository.save(o);
 
-    TestEvent e = new TestEvent(o, hasPriorTests, Set.of(result));
+    TestEvent e = new TestEvent(o, hasPriorTests);
     testEventRepository.save(e);
     result.setTestEvent(e);
     resultRepository.save(result);
@@ -475,7 +475,7 @@ public class TestDataFactory {
     resultRepository.save(fluB);
     order = testOrderRepository.save(order);
 
-    TestEvent event = new TestEvent(order, hasPriorTests, Set.of(covid, fluA, fluB));
+    TestEvent event = new TestEvent(order, hasPriorTests);
     testEventRepository.save(event);
     covid.setTestEvent(event);
     resultRepository.save(covid);
@@ -503,8 +503,7 @@ public class TestDataFactory {
     Set<Result> copiedResults =
         originalResults.stream().map(Result::new).collect(Collectors.toSet());
 
-    TestEvent newRemoveEvent =
-        new TestEvent(originalTestEvent, correctionStatus, "Cold feet", copiedResults);
+    TestEvent newRemoveEvent = new TestEvent(originalTestEvent, correctionStatus, "Cold feet");
     copiedResults.forEach(result -> result.setTestEvent(newRemoveEvent));
 
     order.setTestEventRef(newRemoveEvent);
