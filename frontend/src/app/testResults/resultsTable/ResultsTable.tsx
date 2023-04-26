@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import classnames from "classnames";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
@@ -58,13 +58,15 @@ export const generateTableHeaders = (
 );
 
 function createActionItemList(
-  setPrintModalId: Function,
+  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
   r: TestResult,
-  setEmailModalTestResultId: Function,
-  setTextModalId: Function,
+  setEmailModalTestResultId: Dispatch<
+    SetStateAction<Maybe<string> | undefined>
+  >,
+  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
   removed: boolean,
-  setMarkCorrectionId: Function,
-  setDetailsModalId: Function
+  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>
 ) {
   const actionItems = [];
   actionItems.push({
@@ -104,11 +106,13 @@ function createActionItemList(
 
 const generateResultRows = (
   testResults: Array<TestResult>,
-  setPrintModalId: Function,
-  setMarkCorrectionId: Function,
-  setDetailsModalId: Function,
-  setTextModalId: Function,
-  setEmailModalTestResultId: Function,
+  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setEmailModalTestResultId: Dispatch<
+    SetStateAction<Maybe<string> | undefined>
+  >,
   hasMultiplexResults: boolean,
   hasFacility: boolean
 ) => {
@@ -219,11 +223,13 @@ const generateResultRows = (
 
 interface ResultsTableListProps {
   results: Array<TestResult>;
-  setPrintModalId: Function;
-  setMarkCorrectionId: Function;
-  setDetailsModalId: Function;
-  setTextModalId: Function;
-  setEmailModalTestResultId: Function;
+  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
+  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
+  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
+  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
+  setEmailModalTestResultId: Dispatch<
+    SetStateAction<Maybe<string> | undefined>
+  >;
   hasMultiplexResults: boolean;
   hasFacility: boolean;
 }

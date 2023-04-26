@@ -47,6 +47,7 @@ import {
   GetFacilityResultsMultiplexWithCountQuery,
   useGetAllFacilitiesQuery,
   useGetFacilityResultsMultiplexWithCountQuery,
+  Maybe,
 } from "../../generated/graphql";
 import { waitForElement } from "../utils/elements";
 
@@ -159,12 +160,19 @@ export const DetachedTestResultsList = ({
   clearFilterParams,
   maxDate = moment().format("YYYY-MM-DD"),
 }: DetachedTestResultsListProps) => {
-  const [printModalId, setPrintModalId] = useState(undefined);
-  const [markCorrectionId, setMarkCorrectionId] = useState(undefined);
-  const [detailsModalId, setDetailsModalId] = useState<string>();
-  const [textModalId, setTextModalId] = useState<string>();
-  const [emailModalTestResultId, setEmailModalTestResultId] =
-    useState<string>();
+  const [printModalId, setPrintModalId] = useState<Maybe<string> | undefined>(
+    undefined
+  );
+  const [markCorrectionId, setMarkCorrectionId] = useState<
+    Maybe<string> | undefined
+  >(undefined);
+  const [detailsModalId, setDetailsModalId] = useState<
+    Maybe<string> | undefined
+  >();
+  const [textModalId, setTextModalId] = useState<Maybe<string> | undefined>();
+  const [emailModalTestResultId, setEmailModalTestResultId] = useState<
+    Maybe<string> | undefined
+  >();
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
