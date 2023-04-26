@@ -277,6 +277,12 @@ exports[`QueueItem matches snapshot 1`] = `
                     >
                       Multiplex
                     </option>
+                    <option
+                      aria-selected="false"
+                      value="da524a8e-672d-4ff4-a4ec-c1e14d0337db"
+                    >
+                      MultiplexAndCovidOnly
+                    </option>
                   </select>
                 </div>
               </div>
