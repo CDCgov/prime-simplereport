@@ -69,12 +69,12 @@ function createActionItemList(
   const actionItems = [];
   actionItems.push({
     name: "Print result",
-    action: () => setPrintModalId(r.internalId as String),
+    action: () => setPrintModalId(r.internalId),
   });
   if (r.patient?.email) {
     actionItems.push({
       name: "Email result",
-      action: () => setEmailModalTestResultId(r.internalId as String),
+      action: () => setEmailModalTestResultId(r.internalId),
     });
   }
 
@@ -85,19 +85,19 @@ function createActionItemList(
   ) {
     actionItems.push({
       name: "Text result",
-      action: () => setTextModalId(r.internalId as String),
+      action: () => setTextModalId(r.internalId),
     });
   }
 
   if (!removed) {
     actionItems.push({
       name: "Correct result",
-      action: () => setMarkCorrectionId(r.internalId as String),
+      action: () => setMarkCorrectionId(r.internalId),
     });
   }
   actionItems.push({
     name: "View details",
-    action: () => setDetailsModalId(r.internalId as String),
+    action: () => setDetailsModalId(r.internalId),
   });
   return actionItems;
 }
@@ -180,7 +180,7 @@ const generateResultRows = (
               r.patient?.middleName,
               r.patient?.lastName
             )}
-            onClick={() => setDetailsModalId(r.internalId as String)}
+            onClick={() => setDetailsModalId(r.internalId)}
             className="sr-link__primary"
           />
           <span className="display-block text-base font-ui-2xs">
@@ -204,7 +204,7 @@ const generateResultRows = (
         {hasFacility && (
           <td className="test-facility-cell">
             {facilityDisplayName(
-              r.facility?.name as String,
+              r.facility?.name as string,
               r.facility?.isDeleted as boolean
             )}
           </td>
