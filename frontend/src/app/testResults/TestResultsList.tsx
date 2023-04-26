@@ -43,6 +43,7 @@ import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
 import {
+  TestResult,
   GetFacilityResultsMultiplexWithCountQuery,
   useGetAllFacilitiesQuery,
   useGetFacilityResultsMultiplexWithCountQuery,
@@ -552,7 +553,7 @@ export const DetachedTestResultsList = ({
         </div>
         <div title="filtered-result">
           <ResultsTable
-            results={testResults}
+            results={testResults as TestResult[]}
             setPrintModalId={setPrintModalId}
             setMarkCorrectionId={setMarkCorrectionId}
             setDetailsModalId={setDetailsModalId}

@@ -1,4 +1,4 @@
-import React, { SetStateAction } from "react";
+import React from "react";
 import classnames from "classnames";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
@@ -11,7 +11,7 @@ import { ActionsMenu } from "../../commonComponents/ActionsMenu";
 import { byDateTested } from "../TestResultsList";
 import { MULTIPLEX_DISEASES } from "../constants";
 import { toLowerCaseHyphenate } from "../../utils/text";
-import { TestResult, PhoneNumber } from "../../../generated/graphql";
+import { TestResult, PhoneNumber, Maybe } from "../../../generated/graphql";
 import { getResultObjByDiseaseName } from "../../utils/testResults";
 
 export const generateTableHeaders = (
@@ -58,13 +58,13 @@ export const generateTableHeaders = (
 );
 
 function createActionItemList(
-  setPrintModalId: SetStateAction<String>,
+  setPrintModalId: Function,
   r: TestResult,
-  setEmailModalTestResultId: SetStateAction<String>,
-  setTextModalId: SetStateAction<String>,
+  setEmailModalTestResultId: Function,
+  setTextModalId: Function,
   removed: boolean,
-  setMarkCorrectionId: SetStateAction<String>,
-  setDetailsModalId: SetStateAction<String>
+  setMarkCorrectionId: Function,
+  setDetailsModalId: Function
 ) {
   const actionItems = [];
   actionItems.push({
@@ -79,7 +79,9 @@ function createActionItemList(
   }
 
   if (
-    r.patient?.phoneNumbers?.some((pn: PhoneNumber) => pn.type === "MOBILE")
+    r.patient?.phoneNumbers?.some(
+      (pn: Maybe<PhoneNumber>) => pn?.type === "MOBILE"
+    )
   ) {
     actionItems.push({
       name: "Text result",
@@ -102,11 +104,11 @@ function createActionItemList(
 
 const generateResultRows = (
   testResults: Array<TestResult>,
-  setPrintModalId: SetStateAction<String>,
-  setMarkCorrectionId: SetStateAction<String>,
-  setDetailsModalId: SetStateAction<String>,
-  setTextModalId: SetStateAction<String>,
-  setEmailModalTestResultId: SetStateAction<String>,
+  setPrintModalId: Function,
+  setMarkCorrectionId: Function,
+  setDetailsModalId: Function,
+  setTextModalId: Function,
+  setEmailModalTestResultId: Function,
   hasMultiplexResults: boolean,
   hasFacility: boolean
 ) => {
@@ -208,7 +210,7 @@ const generateResultRows = (
           </td>
         )}
         <td className="actions-cell">
-          <ActionsMenu items={actionItems} id={r.internalId as String} />
+          <ActionsMenu items={actionItems} id={r.internalId as string} />
         </td>
       </tr>
     );
@@ -217,11 +219,11 @@ const generateResultRows = (
 
 interface ResultsTableListProps {
   results: Array<TestResult>;
-  setPrintModalId: SetStateAction<String>;
-  setMarkCorrectionId: SetStateAction<String>;
-  setDetailsModalId: SetStateAction<String>;
-  setTextModalId: SetStateAction<String>;
-  setEmailModalTestResultId: SetStateAction<String>;
+  setPrintModalId: Function;
+  setMarkCorrectionId: Function;
+  setDetailsModalId: Function;
+  setTextModalId: Function;
+  setEmailModalTestResultId: Function;
   hasMultiplexResults: boolean;
   hasFacility: boolean;
 }
