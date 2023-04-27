@@ -35,6 +35,75 @@ class DeviceMigrationServiceTest extends BaseServiceTest<DeviceMigrationService>
   private SpecimenType specimenType;
 
   @Test
+  void updateSpecimenTypeTest() {
+
+    // GIVEN
+    specimenTypeRepository.deleteAll();
+    List<SpecimenType> prodSpecimenTypes =
+        List.of(
+            new SpecimenType("Plasma Specimen", "119361006"),
+            new SpecimenType("Serum Specimen", "119364003"),
+            new SpecimenType("Whole Blood Sample", "258580003"),
+            new SpecimenType("Nasopharyngeal Swab", "258500001"),
+            new SpecimenType("Mid-Turbinate Nasal Swab", "871810001"),
+            new SpecimenType("Anterior Nasal Swab", "697989009"),
+            new SpecimenType("Nasal Swab", "445297001"),
+            new SpecimenType("Oropharyngeal Swab", "258529004"),
+            new SpecimenType("Nasopharyngeal Wash", "258467004"),
+            new SpecimenType("Nasal and Throat Swab Combination", "433801000124107"),
+            new SpecimenType("Nasal Washings", "433871000124101"),
+            new SpecimenType("Bronchoalveolar Lavage", "258607008"),
+            new SpecimenType("Sputum", "119334006"),
+            new SpecimenType("Lower Respiratory Tract Aspirates", "309171007"),
+            new SpecimenType("Nasal Wash/Aspirate", "429931000124105"),
+            new SpecimenType("Saliva", "258560004"),
+            new SpecimenType("Nasopharyngeal aspirate", "258411007"),
+            new SpecimenType("Tracheal Aspirates", "445447003"),
+            new SpecimenType("Induced Sputum", "258610001"),
+            new SpecimenType("Expectorated Sputum", "119335007"));
+    specimenTypeRepository.saveAll(prodSpecimenTypes);
+    assertThat(specimenTypeRepository.findAll()).hasSize(20);
+
+    // WHEN
+    String log = deviceMigrationService.updateSpecimenTypes();
+
+    // THEN
+    assertThat(specimenTypeRepository.findAll()).hasSize(26);
+    assertThat(log)
+        .isEqualTo(
+            """
+      * setting specimenType name from: 'Anterior Nasal Swab' to: 'Anterior nares swab'
+      * setting specimenType name from: 'Mid-Turbinate Nasal Swab' to: 'Mid-turbinate nasal swab'
+      * setting specimenType name from: 'Nasopharyngeal Swab' to: 'Nasopharyngeal swab'
+      * setting specimenType name from: 'Oropharyngeal Swab' to: 'Throat swab'
+      * setting specimenType name from: 'Nasopharyngeal Wash' to: 'Nasopharyngeal washings'
+      = Nasopharyngeal aspirate was left unchanged
+      * setting specimenType name from: 'Nasal Wash/Aspirate' to: 'Nasal aspirate specimen'
+      * setting specimenType name from: 'Nasal Swab' to: 'Swab of internal nose'
+      * setting specimenType name from: 'Nasal and Throat Swab Combination' to: 'Nasopharyngeal and oropharyngeal swab'
+      * setting specimenType name from: 'Serum Specimen' to: 'Serum specimen'
+      * setting specimenType name from: 'Plasma Specimen' to: 'Plasma specimen'
+      + created specimenType name: Venous blood specimen typecode: 122555007
+      * setting specimenType name from: 'Bronchoalveolar Lavage' to: 'Bronchoalveolar lavage fluid sample'
+      * setting specimenType name from: 'Whole Blood Sample' to: 'Whole blood sample'
+      + created specimenType name: Capillary blood specimen typecode: 122554006
+      * setting specimenType name from: 'Sputum' to: 'Sputum specimen'
+      * setting specimenType name from: 'Nasal Washings' to: 'Nasal washings'
+      * setting specimenType name from: 'Saliva' to: 'Oral saliva sample'
+      * setting specimenType name from: 'Induced Sputum' to: 'Sputum specimen obtained by sputum induction'
+      * setting specimenType name from: 'Expectorated Sputum' to: 'Coughed sputum specimen'
+      * setting specimenType name from: 'Tracheal Aspirates' to: 'Specimen from trachea obtained by aspiration'
+      * setting specimenType name from: 'Lower Respiratory Tract Aspirates' to: 'Lower respiratory fluid sample'
+      + created specimenType name: Oral fluid specimen typecode: 441620008
+      + created specimenType name: Specimen obtained by bronchial aspiration typecode: 441903006
+      + created specimenType name: Exhaled air specimen typecode: 119336008
+      + created specimenType name: Dried blood spot specimen typecode: 440500007
+      """
+                .trim());
+    System.out.println(log);
+  }
+
+  @Test
   void mergeDuplicateDevicesTest() {
 
     // GIVEN

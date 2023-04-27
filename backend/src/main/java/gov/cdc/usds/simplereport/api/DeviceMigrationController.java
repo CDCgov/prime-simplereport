@@ -15,4 +15,9 @@ public class DeviceMigrationController {
     deviceMigrationService.mergeDuplicateDevices();
     return "Done";
   }
+
+  @GetMapping("/specimenTypes/updateSpecimenTypes")
+  public String updateSpecimenTypes() {
+    return deviceMigrationService.updateSpecimenTypes();
+  }
 }
