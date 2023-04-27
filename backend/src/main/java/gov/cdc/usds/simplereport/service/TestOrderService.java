@@ -32,7 +32,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
-import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
@@ -83,7 +82,6 @@ public class TestOrderService {
 
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
-  private final ResultRepository _resultRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -572,17 +570,7 @@ public class TestOrderService {
         event.getResults().stream().anyMatch(result -> null != result.getTestOrder());
 
     if (hasResultsWithTestOrderAndTestEvent) {
-      TestOrder order = event.getOrder();
-
-      // remove the link to the TestOrder for all the existing results
-      Set<Result> orderResults = order.getResults();
-      orderResults.forEach(result -> result.setTestOrder(null));
-      order.getResults().clear();
-      _resultRepo.saveAll(orderResults);
-
-      // copy results for the existing TestEvent and make link to the TestOrder
-      List<Result> resultsFromTestEvent = event.getResults().stream().map(Result::new).toList();
-      resultService.addResultsToTestOrder(order, resultsFromTestEvent);
+      resultService.separateCombinedResultsToTestEventResultsAndTestOrderResults(event);
     }
   }
 

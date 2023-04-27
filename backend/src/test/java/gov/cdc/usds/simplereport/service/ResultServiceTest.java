@@ -113,4 +113,78 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                 assertThat(result.getTestEvent().getInternalId())
                     .isEqualTo(testEvent.getInternalId()));
   }
+
+  @Test
+  void separateCombinedResultsToTestEventResultsAndTestOrderResults_test() {
+    // GIVEN
+    Organization org = testDataFactory.saveValidOrganization();
+    Facility facility = testDataFactory.createValidFacility(org);
+    Person patient = testDataFactory.createFullPerson(org);
+    TestOrder testOrder = testDataFactory.createTestOrder(patient, facility);
+    TestEvent testEvent = testEventRepository.save(new TestEvent(testOrder));
+    SupportedDisease covidDisease = testDataFactory.getCovidDisease();
+
+    Result covidResult = new Result(covidDisease, TestResult.POSITIVE);
+
+    assertThat(resultRepository.findAll()).isEmpty();
+    assertThat(testOrder.getResults()).isEmpty();
+    assertThat(testEvent.getResults()).isEmpty();
+
+    // add same test results for TestOrder & TestEvent
+    _service.addResultsToTestOrder(testOrder, List.of(covidResult));
+    testOrder
+        .getResults()
+        .forEach(
+            result -> {
+              result.setTestEvent(testEvent);
+              resultRepository.save(result);
+            });
+    testEvent.getResults().addAll(testOrder.getResults());
+
+    // ensure the Result will have both testEvent and testOrder populated
+    assertThat(resultRepository.findAll()).hasSize(1);
+    testOrder
+        .getResults()
+        .forEach(
+            result -> {
+              assertThat(result.getTestOrder()).isEqualTo(testOrder);
+              assertThat(result.getTestEvent()).isEqualTo(testEvent);
+            });
+    testEvent
+        .getResults()
+        .forEach(
+            result -> {
+              assertThat(result.getTestOrder()).isEqualTo(testOrder);
+              assertThat(result.getTestEvent()).isEqualTo(testEvent);
+            });
+
+    // WHEN
+    _service.separateCombinedResultsToTestEventResultsAndTestOrderResults(testEvent);
+
+    // verify all results
+    List<Result> resultsFromRepo = resultRepository.findAll();
+    assertThat(resultsFromRepo).hasSize(2);
+
+    // verify results on the TestEvent Object
+    assertThat(testEvent.getResults()).hasSize(1);
+    testEvent
+        .getResults()
+        .forEach(
+            result -> {
+              assertThat(result.getTestEvent().getInternalId())
+                  .isEqualTo(testEvent.getInternalId());
+              assertThat(result.getTestOrder()).isNull();
+            });
+
+    // verify results on the TestOrder Object
+    assertThat(testOrder.getResults()).hasSize(1);
+    testOrder
+        .getResults()
+        .forEach(
+            result -> {
+              assertThat(result.getTestOrder().getInternalId())
+                  .isEqualTo(testOrder.getInternalId());
+              assertThat(result.getTestEvent()).isNull();
+            });
+  }
 }
