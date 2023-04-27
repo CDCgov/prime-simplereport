@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:20-alpine
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 # Add bash and git

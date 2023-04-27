@@ -5,11 +5,12 @@ on:
     branches:
       - main
 
-concurrency:
-  group: test-deploy
 env:
   DEPLOY_ENV: test
-  NODE_VERSION: 18
+  NODE_VERSION: 20
+
+concurrency:
+  group: test-deploy
 
 jobs:
   build-docker:

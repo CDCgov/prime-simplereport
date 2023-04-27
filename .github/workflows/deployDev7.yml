@@ -5,7 +5,8 @@ on:
 
 env:
   DEPLOY_ENV: dev7
-  NODE_VERSION: 18
+  NODE_VERSION: 20
+
 concurrency:
   group: dev7-deploy
 
