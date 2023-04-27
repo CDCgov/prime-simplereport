@@ -28,6 +28,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.junit.jupiter.api.BeforeEach;
@@ -106,13 +107,12 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     // GIVEN
     _person = _dataFactory.createFullPerson(_org);
     createTestOrderAndPatientLink(_person);
+    UUID patientLinkId = _patientLink.getInternalId();
 
     // WHEN + THEN
     assertThrows(
         AccessDeniedException.class,
-        () ->
-            _smsService.sendToPatientLink(
-                _patientLink.getInternalId(), "yup here we are, testing stuff"));
+        () -> _smsService.sendToPatientLink(patientLinkId, "yup here we are, testing stuff"));
 
     // GIVEN
     TestUserIdentities.setFacilityAuthorities(_site);
