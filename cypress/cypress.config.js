@@ -58,6 +58,20 @@ module.exports = {
         getPatientPhone() {
           return global.patientPhone;
         },
+        setCovidOnlyDeviceName(name) {
+          global.covidOnlyDeviceName = name;
+          return null;
+        },
+        getCovidOnlyDeviceName() {
+          return global.covidOnlyDeviceName;
+        },
+        setMultiplexDeviceName(name) {
+          global.multiplexDeviceName = name;
+          return null;
+        },
+        getMultiplexDeviceName() {
+          return global.multiplexDeviceName;
+        },
         // These tasks are used to set up and run Wiremock
         downloadWiremock() {
           execSync(

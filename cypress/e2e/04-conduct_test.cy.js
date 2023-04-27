@@ -1,14 +1,19 @@
 import { loginHooks } from "../support/e2e";
 
 describe("Conducting a COVID test", () => {
-  let patientName, lastName, queueCard;
+  let patientName, lastName, covidOnlyDeviceName, queueCard;
   loginHooks();
-  before("retrieve the patient name", () => {
+
+  before("retrieve the patient name and covid device name", () => {
     cy.task("getPatientName").then((name) => {
       patientName = name;
       lastName = patientName.split(",")[0];
     });
+    cy.task("getCovidOnlyDeviceName").then((name) => {
+      covidOnlyDeviceName = name;
+    });
   });
+
   it("searches for the patient", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
@@ -46,6 +51,7 @@ describe("Conducting a COVID test", () => {
   });
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
+      cy.get('select[name="testDevice"]').select(covidOnlyDeviceName);
       cy.get('.prime-radios input[value="NEGATIVE"]+label').click();
       cy.get(".prime-test-result-submit button").last().click();
     });
