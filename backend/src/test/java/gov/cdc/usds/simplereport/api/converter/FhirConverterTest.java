@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -643,8 +644,13 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_valid() {
-    var result =
-        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    Result result =
+        Result.builder()
+            .testResult(TestResult.POSITIVE)
+            .disease(new SupportedDisease("covid-19", "96741-4"))
+            .resultLOINC(Translators.convertTestResultToLoinc(TestResult.POSITIVE))
+            .build();
+
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
@@ -675,8 +681,13 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_correction() {
-    var result =
-        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    Result result =
+        Result.builder()
+            .testResult(TestResult.POSITIVE)
+            .disease(new SupportedDisease("covid-19", "96741-4"))
+            .resultLOINC(Translators.convertTestResultToLoinc(TestResult.POSITIVE))
+            .build();
+
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
@@ -698,8 +709,13 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_removeWithoutReason() {
-    var result =
-        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    Result result =
+        Result.builder()
+            .testResult(TestResult.POSITIVE)
+            .disease(new SupportedDisease("covid-19", "96741-4"))
+            .resultLOINC(Translators.convertTestResultToLoinc(TestResult.POSITIVE))
+            .build();
+
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
@@ -737,9 +753,15 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_nullDisease() {
+    Result result =
+        Result.builder()
+            .testResult(TestResult.POSITIVE)
+            .resultLOINC(Translators.convertTestResultToLoinc(TestResult.POSITIVE))
+            .build();
+
     var actual =
         convertToObservation(
-            new Result(null, null, null, TestResult.POSITIVE),
+            result,
             "",
             TestCorrectionStatus.ORIGINAL,
             null,
@@ -1392,6 +1414,7 @@ class FhirConverterTest {
     var fluAResult = new Result(testOrder, fluADisease, TestResult.NEGATIVE);
     var fluBResult = new Result(testOrder, fluBDisease, TestResult.UNDETERMINED);
     var testEvent = new TestEvent(testOrder, false);
+    testEvent.getResults().addAll(List.of(covidResult, fluAResult, fluBResult));
 
     var providerId = UUID.fromString("ffc07f31-f2af-4728-a247-8cb3aa05ccd0");
     var facilityId = UUID.fromString("1c3d14b9-e222-4a16-9fb2-d9f173034a6a");

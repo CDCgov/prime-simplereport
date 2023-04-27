@@ -428,13 +428,18 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-    Result result = new Result(o, diseaseService.covid(), r);
-    TestEvent e = testEventRepository.save(new TestEvent(o, false));
+    Result orderResult = new Result(o, diseaseService.covid(), r);
+
+    TestEvent e = new TestEvent(o, false);
+    testEventRepository.save(e);
+
+    Result copiedResult = new Result(orderResult);
+    copiedResult.setTestEvent(e);
+    resultRepository.save(copiedResult);
+    e.getResults().add(copiedResult);
+
     o.setTestEventRef(e);
     o.markComplete();
-
-    result.setTestEvent(e);
-    resultRepository.save(result);
     testOrderRepository.save(o);
     return e;
   }
@@ -445,14 +450,19 @@ public class TestDataFactory {
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
-    Result result = new Result(o, diseaseService.covid(), r);
-    resultRepository.save(result);
+    Result orderResult = new Result(o, diseaseService.covid(), r);
+    resultRepository.save(orderResult);
     o = testOrderRepository.save(o);
+    o.getResults().add(orderResult);
 
     TestEvent e = new TestEvent(o, hasPriorTests);
     testEventRepository.save(e);
-    result.setTestEvent(e);
-    resultRepository.save(result);
+
+    Result copiedResult = new Result(orderResult);
+    copiedResult.setTestEvent(e);
+    resultRepository.save(copiedResult);
+    e.getResults().add(copiedResult);
+
     o.setTestEventRef(e);
     o.markComplete();
     testOrderRepository.save(o);
@@ -477,11 +487,15 @@ public class TestDataFactory {
 
     TestEvent event = new TestEvent(order, hasPriorTests);
     testEventRepository.save(event);
-    covid.setTestEvent(event);
+
+    Set<Result> copiedResults =
+        List.of(covid, fluA, fluB).stream().map(Result::new).collect(Collectors.toSet());
+    copiedResults.forEach(result -> result.setTestEvent(event));
+    resultRepository.saveAll(copiedResults);
+    event.getResults().addAll(copiedResults);
+
     resultRepository.save(covid);
-    fluA.setTestEvent(event);
     resultRepository.save(fluA);
-    fluB.setTestEvent(event);
     resultRepository.save(fluB);
 
     order.setTestEventRef(event);
@@ -494,22 +508,22 @@ public class TestDataFactory {
   public TestEvent createTestEventCorrection(
       TestEvent originalTestEvent, TestCorrectionStatus correctionStatus) {
 
-    TestOrder order = originalTestEvent.getTestOrder();
-
-    order.setReasonForCorrection("Cold feet");
-    order.setCorrectionStatus(correctionStatus);
-
-    List<Result> originalResults = resultRepository.findAllByTestOrder(order);
+    List<Result> originalResults = resultRepository.findAllByTestEvent(originalTestEvent);
     Set<Result> copiedResults =
         originalResults.stream().map(Result::new).collect(Collectors.toSet());
 
     TestEvent newRemoveEvent = new TestEvent(originalTestEvent, correctionStatus, "Cold feet");
-    copiedResults.forEach(result -> result.setTestEvent(newRemoveEvent));
-
-    order.setTestEventRef(newRemoveEvent);
     testEventRepository.save(newRemoveEvent);
-    testOrderRepository.save(order);
+
+    copiedResults.forEach(result -> result.setTestEvent(newRemoveEvent));
     resultRepository.saveAll(copiedResults);
+    newRemoveEvent.getResults().addAll(copiedResults);
+
+    TestOrder order = originalTestEvent.getTestOrder();
+    order.setReasonForCorrection("Cold feet");
+    order.setCorrectionStatus(correctionStatus);
+    order.setTestEventRef(newRemoveEvent);
+    testOrderRepository.save(order);
 
     Hibernate.initialize(newRemoveEvent.getOrganization());
     return newRemoveEvent;
@@ -517,8 +531,8 @@ public class TestDataFactory {
 
   public TestEvent doTest(TestOrder order, TestResult result) {
     TestEvent event = testEventRepository.save(new TestEvent(order));
-    Result resultEntity = new Result(event, order, diseaseService.covid(), result);
-    resultRepository.save(resultEntity);
+    createResults(event, order, diseaseService.covid(), result);
+
     order.setTestEventRef(event);
     order.markComplete();
     testOrderRepository.save(order);
@@ -596,9 +610,9 @@ public class TestDataFactory {
     return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
   }
 
-  public void createResult(
+  public void createResults(
       TestEvent testEvent, TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
-    var res = new Result(testEvent, testOrder, disease, testResult);
-    resultRepository.save(res);
+    resultRepository.save(new Result(testOrder, disease, testResult));
+    resultRepository.save(new Result(testEvent, disease, testResult));
   }
 }

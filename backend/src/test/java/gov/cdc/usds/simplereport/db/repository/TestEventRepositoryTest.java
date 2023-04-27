@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -109,17 +110,19 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
     var firstResults = firstOrder.getResults();
     var firstEvent = new TestEvent(firstOrder, false);
+    _repo.save(firstEvent);
     firstResults.forEach(result -> result.setTestEvent(firstEvent));
     _resultRepo.saveAll(firstResults);
-    _repo.save(firstEvent);
+    firstEvent.getResults().addAll(firstResults);
 
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
     var secondResults = secondOrder.getResults();
     var secondEvent = new TestEvent(secondOrder, false);
+    _repo.save(secondEvent);
     secondResults.forEach(result -> result.setTestEvent(secondEvent));
     _resultRepo.saveAll(secondResults);
-    _repo.save(secondEvent);
+    secondEvent.getResults().addAll(secondResults);
 
     flush();
     var savedSecondEvent = _repo.findById(secondEvent.getInternalId()).get();
@@ -304,14 +307,15 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder firstOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
     TestEvent firstEvent = new TestEvent(firstOrder);
-    _dataFactory.createResult(firstEvent, firstOrder, _diseaseService.covid(), TestResult.POSITIVE);
+    _dataFactory.createResults(
+        firstEvent, firstOrder, _diseaseService.covid(), TestResult.POSITIVE);
 
     TestOrder secondOrder =
         _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
     TestEvent secondEvent = new TestEvent(secondOrder);
-    _dataFactory.createResult(
+    _dataFactory.createResults(
         secondEvent, secondOrder, _diseaseService.covid(), TestResult.UNDETERMINED);
-    _dataFactory.createResult(
+    _dataFactory.createResults(
         secondEvent, secondOrder, _diseaseService.fluA(), TestResult.UNDETERMINED);
 
     _repo.save(firstEvent);
@@ -324,13 +328,13 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     TestOrder firstOrderOtherPlace =
         _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.NEGATIVE);
     TestEvent firstEventOtherPlace = new TestEvent(firstOrderOtherPlace);
-    _dataFactory.createResult(
+    _dataFactory.createResults(
         firstEventOtherPlace, firstOrderOtherPlace, _diseaseService.covid(), TestResult.NEGATIVE);
 
     TestOrder secondOrderOtherPlace =
         _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.POSITIVE);
     TestEvent secondEventOtherPlace = new TestEvent(secondOrderOtherPlace);
-    _dataFactory.createResult(
+    _dataFactory.createResults(
         secondEventOtherPlace, secondOrderOtherPlace, _diseaseService.covid(), TestResult.POSITIVE);
 
     _repo.save(firstEventOtherPlace);
@@ -361,10 +365,12 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     results.forEach(result -> result.setTestEvent(correctionEvent));
     _resultRepo.saveAll(results);
     _repo.save(correctionEvent);
+    correctionEvent.getResults().addAll(results);
 
     Optional<TestEvent> eventReloadOptional = _repo.findById(correctionEvent.getInternalId());
     assertTrue(eventReloadOptional.isPresent());
     TestEvent eventReloaded = eventReloadOptional.get();
+    assertThat(eventReloaded.getResults()).isNotEmpty();
 
     assertEquals(reason, eventReloaded.getReasonForCorrection());
     assertEquals(TestCorrectionStatus.REMOVED, eventReloaded.getCorrectionStatus());

@@ -570,6 +570,7 @@ public class TestOrderService {
         _testEventRepo.save(newRemoveEvent);
         results.forEach(result -> result.setTestEvent(newRemoveEvent));
         _resultRepo.saveAll(results);
+        newRemoveEvent.getResults().addAll(results);
 
         reportTestEventToRS(newRemoveEvent);
 

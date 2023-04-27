@@ -230,13 +230,17 @@ public class TestDataBuilder {
         createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
     var fluAResult = createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
     var fluBResult = createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
-    return new TestEvent(createTestOrder(), false);
+    TestEvent testEvent = new TestEvent(testOrder, false);
+    testEvent.getResults().addAll(List.of(covidTestResult, fluAResult, fluBResult));
+    return testEvent;
   }
 
   public static TestEvent createCovidTestEvent() {
     var testOrder = createTestOrder();
     var covidTestResult =
         createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
-    return new TestEvent(createTestOrder(), false);
+    TestEvent testEvent = new TestEvent(testOrder, false);
+    testEvent.getResults().add(covidTestResult);
+    return testEvent;
   }
 }
