@@ -73,6 +73,7 @@ public class TestOrderService {
   private final PatientAnswersRepository _patientAnswersRepo;
   private final TestEventRepository _testEventRepo;
   private final PatientLinkService _patientLinkService;
+  private final ResultService resultService;
 
   @Qualifier("csvQueueReportingService")
   private final TestEventReportingService _testEventReportingService;
@@ -324,20 +325,9 @@ public class TestOrderService {
 
       TestEvent savedEvent = _testEventRepo.save(testEvent);
 
-      List<Result> resultsForTestEvent =
-          order.getResults().stream()
-              .map(
-                  result ->
-                      Result.builder()
-                          .disease(result.getDisease())
-                          .resultLOINC(result.getResultLOINC())
-                          .testResult(result.getTestResult())
-                          .testEvent(savedEvent)
-                          .build())
-              .toList();
-      savedEvent.getResults().addAll(resultsForTestEvent);
+      List<Result> resultsForTestEvent = order.getResults().stream().map(Result::new).toList();
 
-      _resultRepo.saveAll(resultsForTestEvent);
+      savedEvent = resultService.addResultsToTestEvent(savedEvent, resultsForTestEvent);
 
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
@@ -379,21 +369,20 @@ public class TestOrderService {
 
   private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
     // delete all results
-    _resultRepo.deleteAll(order.getResults());
-    order.getResults().clear();
+    order = resultService.removeTestOrderResults(order);
 
     // create new ones
     if (!newResults.isEmpty()) {
-      newResults.forEach(
-          newResult -> {
-            Result result =
-                new Result(
-                    order,
-                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                    newResult.getTestResult());
-            order.addResult(result);
-            _resultRepo.save(result);
-          });
+      List<Result> results =
+          newResults.stream()
+              .map(
+                  input ->
+                      new Result(
+                          _diseaseService.getDiseaseByName(input.getDiseaseName()),
+                          input.getTestResult()))
+              .toList();
+
+      order = resultService.addResultsToTestOrder(order, results);
     }
 
     return order.getResults();
@@ -555,22 +544,11 @@ public class TestOrderService {
       case REMOVED -> {
         ensureCorrectionFlowBackwardCompatibility(event);
         // copy the event results to new removal Event
-        var results =
-            event.getResults().stream()
-                .map(
-                    result ->
-                        Result.builder()
-                            .disease(result.getDisease())
-                            .resultLOINC(result.getResultLOINC())
-                            .testResult(result.getTestResult())
-                            .build())
-                .collect(Collectors.toSet());
+        var results = event.getResults().stream().map(Result::new).collect(Collectors.toSet());
         var newRemoveEvent =
             new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
         _testEventRepo.save(newRemoveEvent);
-        results.forEach(result -> result.setTestEvent(newRemoveEvent));
-        _resultRepo.saveAll(results);
-        newRemoveEvent.getResults().addAll(results);
+        newRemoveEvent = resultService.addResultsToTestEvent(newRemoveEvent, results);
 
         reportTestEventToRS(newRemoveEvent);
 
@@ -603,19 +581,8 @@ public class TestOrderService {
       _resultRepo.saveAll(orderResults);
 
       // copy results for the existing TestEvent and make link to the TestOrder
-      List<Result> resultsFromTestEvent =
-          event.getResults().stream()
-              .map(
-                  result ->
-                      Result.builder()
-                          .disease(result.getDisease())
-                          .resultLOINC(result.getResultLOINC())
-                          .testResult(result.getTestResult())
-                          .testOrder(order)
-                          .build())
-              .toList();
-      order.getResults().addAll(resultsFromTestEvent);
-      _resultRepo.saveAll(resultsFromTestEvent);
+      List<Result> resultsFromTestEvent = event.getResults().stream().map(Result::new).toList();
+      resultService.addResultsToTestOrder(order, resultsFromTestEvent);
     }
   }
 

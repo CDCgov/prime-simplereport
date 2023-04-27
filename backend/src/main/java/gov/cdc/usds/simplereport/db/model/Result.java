@@ -60,16 +60,17 @@ public class Result extends EternalAuditedEntity {
     this.testResult = testResult;
   }
 
+  public Result(SupportedDisease disease, TestResult testResult) {
+    this.disease = disease;
+    this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
+    this.testResult = testResult;
+  }
+
   /* Copy constructor, used for corrections and removals */
   public Result(Result originalResult) {
     this.disease = originalResult.disease;
     this.resultLOINC = originalResult.resultLOINC;
     this.testResult = originalResult.testResult;
-  }
-
-  public void setResult(TestResult testResult) {
-    this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
-    this.testResult = testResult;
   }
 
   public SupportedDiseaseTestResult getDiseaseResult() {
