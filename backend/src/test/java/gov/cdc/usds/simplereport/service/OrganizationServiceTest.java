@@ -126,6 +126,9 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   void createOrganizationAndFacility_orderingProviderRequired_failure() {
     // GIVEN
     PersonName orderProviderName = new PersonName("Bill", "Foo", "Nye", "");
+    StreetAddress mockAddress = getAddress();
+    List<UUID> deviceTypeIds = List.of(getDeviceConfig().getInternalId());
+
     // THEN
     assertThrows(
         OrderingProviderRequiredException.class,
@@ -136,12 +139,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
                 "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
                 "Facility 1",
                 "12345",
-                getAddress(),
+                mockAddress,
                 "123-456-7890",
                 "test@foo.com",
-                List.of(getDeviceConfig().getInternalId()),
+                deviceTypeIds,
                 orderProviderName,
-                getAddress(),
+                mockAddress,
                 null,
                 null));
   }
@@ -249,11 +252,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @DisplayName("it should not delete nonexistent facilities")
   @WithSimpleReportSiteAdminUser
   void deletedFacilityTest_throwsErrorWhenFacilityNotFound() {
+    UUID orgId = UUID.randomUUID();
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
             // fake UUID
-            () -> _service.markFacilityAsDeleted(UUID.randomUUID(), true));
+            () -> _service.markFacilityAsDeleted(orgId, true));
     assertEquals("Facility not found.", caught.getMessage());
   }
 
@@ -274,11 +278,13 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @DisplayName("it should not delete nonexistent organizations")
   @WithSimpleReportSiteAdminUser
   void deletedOrganizationTest_throwsErrorWhenOrganizationyNotFound() {
+    UUID orgId = UUID.randomUUID();
+
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
             // fake UUID
-            () -> _service.markOrganizationAsDeleted(UUID.randomUUID(), true));
+            () -> _service.markOrganizationAsDeleted(orgId, true));
     assertEquals("Organization not found.", caught.getMessage());
   }
 

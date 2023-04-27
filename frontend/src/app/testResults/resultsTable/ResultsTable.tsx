@@ -1,4 +1,4 @@
-import React, { SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import classnames from "classnames";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
@@ -11,7 +11,7 @@ import { ActionsMenu } from "../../commonComponents/ActionsMenu";
 import { byDateTested } from "../TestResultsList";
 import { MULTIPLEX_DISEASES } from "../constants";
 import { toLowerCaseHyphenate } from "../../utils/text";
-import { TestResult, PhoneNumber } from "../../../generated/graphql";
+import { TestResult, PhoneNumber, Maybe } from "../../../generated/graphql";
 import { getResultObjByDiseaseName } from "../../utils/testResults";
 
 export const generateTableHeaders = (
@@ -58,55 +58,61 @@ export const generateTableHeaders = (
 );
 
 function createActionItemList(
-  setPrintModalId: SetStateAction<String>,
+  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
   r: TestResult,
-  setEmailModalTestResultId: SetStateAction<String>,
-  setTextModalId: SetStateAction<String>,
+  setEmailModalTestResultId: Dispatch<
+    SetStateAction<Maybe<string> | undefined>
+  >,
+  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
   removed: boolean,
-  setMarkCorrectionId: SetStateAction<String>,
-  setDetailsModalId: SetStateAction<String>
+  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>
 ) {
   const actionItems = [];
   actionItems.push({
     name: "Print result",
-    action: () => setPrintModalId(r.internalId as String),
+    action: () => setPrintModalId(r.internalId),
   });
   if (r.patient?.email) {
     actionItems.push({
       name: "Email result",
-      action: () => setEmailModalTestResultId(r.internalId as String),
+      action: () => setEmailModalTestResultId(r.internalId),
     });
   }
 
   if (
-    r.patient?.phoneNumbers?.some((pn: PhoneNumber) => pn.type === "MOBILE")
+    r.patient?.phoneNumbers?.some(
+      (pn: Maybe<PhoneNumber>) => pn?.type === "MOBILE"
+    )
   ) {
     actionItems.push({
       name: "Text result",
-      action: () => setTextModalId(r.internalId as String),
+      action: () => setTextModalId(r.internalId),
     });
   }
 
   if (!removed) {
     actionItems.push({
       name: "Correct result",
-      action: () => setMarkCorrectionId(r.internalId as String),
+      action: () => setMarkCorrectionId(r.internalId),
     });
   }
   actionItems.push({
     name: "View details",
-    action: () => setDetailsModalId(r.internalId as String),
+    action: () => setDetailsModalId(r.internalId),
   });
   return actionItems;
 }
 
 const generateResultRows = (
   testResults: Array<TestResult>,
-  setPrintModalId: SetStateAction<String>,
-  setMarkCorrectionId: SetStateAction<String>,
-  setDetailsModalId: SetStateAction<String>,
-  setTextModalId: SetStateAction<String>,
-  setEmailModalTestResultId: SetStateAction<String>,
+  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
+  setEmailModalTestResultId: Dispatch<
+    SetStateAction<Maybe<string> | undefined>
+  >,
   hasMultiplexResults: boolean,
   hasFacility: boolean
 ) => {
@@ -178,7 +184,7 @@ const generateResultRows = (
               r.patient?.middleName,
               r.patient?.lastName
             )}
-            onClick={() => setDetailsModalId(r.internalId as String)}
+            onClick={() => setDetailsModalId(r.internalId)}
             className="sr-link__primary"
           />
           <span className="display-block text-base font-ui-2xs">
@@ -202,13 +208,13 @@ const generateResultRows = (
         {hasFacility && (
           <td className="test-facility-cell">
             {facilityDisplayName(
-              r.facility?.name as String,
+              r.facility?.name as string,
               r.facility?.isDeleted as boolean
             )}
           </td>
         )}
         <td className="actions-cell">
-          <ActionsMenu items={actionItems} id={r.internalId as String} />
+          <ActionsMenu items={actionItems} id={r.internalId as string} />
         </td>
       </tr>
     );
@@ -217,11 +223,13 @@ const generateResultRows = (
 
 interface ResultsTableListProps {
   results: Array<TestResult>;
-  setPrintModalId: SetStateAction<String>;
-  setMarkCorrectionId: SetStateAction<String>;
-  setDetailsModalId: SetStateAction<String>;
-  setTextModalId: SetStateAction<String>;
-  setEmailModalTestResultId: SetStateAction<String>;
+  setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
+  setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
+  setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
+  setTextModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
+  setEmailModalTestResultId: Dispatch<
+    SetStateAction<Maybe<string> | undefined>
+  >;
   hasMultiplexResults: boolean;
   hasFacility: boolean;
 }
