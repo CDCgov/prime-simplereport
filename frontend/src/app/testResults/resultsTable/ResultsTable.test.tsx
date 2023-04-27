@@ -4,10 +4,12 @@ import userEvent from "@testing-library/user-event";
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
 import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
+import { TestResult } from "../../../generated/graphql";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
-const TEST_RESULTS_MULTIPLEX_CONTENT = TEST_RESULTS_MULTIPLEX.content;
+const TEST_RESULTS_MULTIPLEX_CONTENT =
+  TEST_RESULTS_MULTIPLEX.content as TestResult[];
 describe("Method generateTableHeaders", () => {
   const table = (headers: JSX.Element) => (
     <table>
@@ -100,7 +102,7 @@ describe("Component ResultsTable", () => {
   it("checks table with covid results", () => {
     render(
       <ResultsTable
-        results={[TEST_RESULT_COVID.content[0]]}
+        results={[TEST_RESULT_COVID.content[0]] as TestResult[]}
         setPrintModalId={setPrintModalIdFn}
         setMarkCorrectionId={setMarkCorrectionIdFn}
         setDetailsModalId={setDetailsModalIdFn}
@@ -202,7 +204,9 @@ describe("Component ResultsTable", () => {
     });
     describe("email result action", () => {
       it("includes `Email result` if patient email address", async () => {
-        const testResultPatientEmail = [TEST_RESULTS_MULTIPLEX_CONTENT[0]];
+        const testResultPatientEmail: TestResult[] = [
+          TEST_RESULTS_MULTIPLEX_CONTENT[0],
+        ];
 
         render(
           <ResultsTable
