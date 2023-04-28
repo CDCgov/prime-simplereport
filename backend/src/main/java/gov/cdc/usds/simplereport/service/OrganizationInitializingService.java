@@ -84,16 +84,7 @@ public class OrganizationInitializingService {
     List<Organization> emptyOrgs = _props.getOrganizations();
     Map<String, Organization> orgsByExternalId =
         emptyOrgs.stream()
-            .map(
-                o -> {
-                  Optional<Organization> orgProbe = _orgRepo.findByExternalId(o.getExternalId());
-                  if (orgProbe.isPresent()) {
-                    return orgProbe.get();
-                  } else {
-                    log.info("Creating organization {}", o.getOrganizationName());
-                    return _orgRepo.save(o);
-                  }
-                })
+            .map(this::setOrg)
             .collect(Collectors.toMap(Organization::getExternalId, Function.identity()));
     // All existing orgs in the DB which aren't reflected in config properties should
     // still be reflected in demo Okta environment
@@ -106,18 +97,14 @@ public class OrganizationInitializingService {
         _facilityRepo.findAll().stream()
             .collect(Collectors.toMap(Facility::getFacilityName, Function.identity()));
     List<Facility> facilities =
-        _props.getFacilities().stream()
-            .map(
-                f ->
-                    facilitiesByName.containsKey(f.getName())
-                        ? facilitiesByName.get(f.getName())
-                        : f.makeRealFacility(
-                            orgsByExternalId.get(f.getOrganizationExternalId()),
-                            savedProvider,
-                            defaultDeviceType,
-                            defaultSpecimenType,
-                            facilityDeviceTypes))
-            .collect(Collectors.toList());
+        setFacilities(
+            _props.getFacilities(),
+            facilitiesByName,
+            orgsByExternalId,
+            savedProvider,
+            defaultDeviceType,
+            defaultSpecimenType,
+            facilityDeviceTypes);
     log.info(
         "Creating facilities {} with {} devices configured",
         facilitiesByName.keySet(),
@@ -135,88 +122,12 @@ public class OrganizationInitializingService {
               initOktaFacility(facility);
             });
 
-    for (ConfigPatientRegistrationLink p : _props.getPatientRegistrationLinks()) {
-      String orgExternalId = p.getOrganizationExternalId();
-      String facilityName = p.getFacilityName();
-      if (null != orgExternalId) {
-        Optional<Organization> orgLookup = _orgRepo.findByExternalId(orgExternalId);
-        if (!orgLookup.isPresent()) {
-          continue;
-        }
-        Organization org = orgLookup.get();
-        Optional<PatientSelfRegistrationLink> link = _prlRepository.findByOrganization(org);
-        if (!link.isPresent()) {
-          log.info("Creating patient registration link {}", p.getLink());
-          PatientSelfRegistrationLink prl =
-              p.makePatientRegistrationLink(orgsByExternalId.get(orgExternalId), p.getLink());
-          _prlRepository.save(prl);
-        }
-      } else if (null != p.getFacilityName()) {
-        Facility facility = facilitiesByName.get(facilityName);
-        if (null == facility) {
-          continue;
-        }
-        Optional<PatientSelfRegistrationLink> link = _prlRepository.findByFacility(facility);
-        if (!link.isPresent()) {
-          log.info("Creating patient registration link {}", p.getLink());
-          PatientSelfRegistrationLink prl = p.makePatientRegistrationLink(facility, p.getLink());
-          _prlRepository.save(prl);
-        }
-      }
-    }
+    configurePatientRegistrationLinks(_props.getPatientRegistrationLinks(), facilitiesByName);
 
     // Abusing the class name "OrganizationInitializingService" a little, but the
     // users are in the org.
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
-    for (DemoUser user : users) {
-      IdentityAttributes identity = user.getIdentity();
-      Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
-      if (!userProbe.isPresent()) {
-        _apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
-      }
-      DemoAuthorization authorization = user.getAuthorization();
-      if (authorization != null) {
-        Set<OrganizationRole> roles = authorization.getGrantedRoles();
-        Organization org =
-            _orgRepo
-                .findByExternalId(authorization.getOrganizationExternalId())
-                .orElseThrow(MisconfiguredUserException::new);
-        log.info(
-            "User={} will have roles={} in organization={}",
-            identity.getUsername(),
-            roles,
-            authorization.getOrganizationExternalId());
-        Set<Facility> authorizedFacilities =
-            authorization.getFacilities().stream()
-                .map(
-                    f -> {
-                      Facility facility = facilitiesByName.get(f);
-                      if (facility == null) {
-                        throw new RuntimeException(
-                            "User's facility="
-                                + f
-                                + " was not initialized. Valid facilities="
-                                + facilitiesByName.keySet().toString());
-                      }
-                      return facility;
-                    })
-                .collect(Collectors.toSet());
-        if (PermissionHolder.grantsAllFacilityAccess(roles)) {
-          log.info(
-              "User={} will have access to all facilities in organization={}",
-              identity.getUsername(),
-              authorization.getOrganizationExternalId());
-        } else {
-          log.info(
-              "User={} will have access to facilities={} in organization={}",
-              identity.getUsername(),
-              authorization.getFacilities(),
-              authorization.getOrganizationExternalId());
-        }
-
-        initOktaUser(identity, org, authorizedFacilities, roles);
-      }
-    }
+    configureDemoUsers(users, facilitiesByName);
   }
 
   public void initCurrentUser() {
@@ -336,6 +247,144 @@ public class OrganizationInitializingService {
       _oktaRepo.createUser(user, org, facilities, roles, true);
     } catch (ResourceException e) {
       log.info("User {} already exists in Okta", user.getUsername());
+    }
+  }
+
+  private Organization setOrg(Organization o) {
+    Optional<Organization> orgProbe = _orgRepo.findByExternalId(o.getExternalId());
+    if (orgProbe.isPresent()) {
+      return orgProbe.get();
+    } else {
+      log.info("Creating organization {}", o.getOrganizationName());
+      return _orgRepo.save(o);
+    }
+  }
+
+  private List<Facility> setFacilities(
+      List<InitialSetupProperties.ConfigFacility> facilities,
+      Map<String, Facility> facilitiesByName,
+      Map<String, Organization> orgsByExternalId,
+      Provider savedProvider,
+      DeviceType defaultDeviceType,
+      SpecimenType defaultSpecimenType,
+      List<DeviceType> facilityDeviceTypes) {
+    return facilities.stream()
+        .map(
+            f ->
+                facilitiesByName.containsKey(f.getName())
+                    ? facilitiesByName.get(f.getName())
+                    : f.makeRealFacility(
+                        orgsByExternalId.get(f.getOrganizationExternalId()),
+                        savedProvider,
+                        defaultDeviceType,
+                        defaultSpecimenType,
+                        facilityDeviceTypes))
+        .collect(Collectors.toList());
+  }
+
+  private void configurePatientRegistrationLinks(
+      List<ConfigPatientRegistrationLink> patientRegistrationLinks,
+      Map<String, Facility> facilitiesByName) {
+    for (ConfigPatientRegistrationLink p : patientRegistrationLinks) {
+      String orgExternalId = p.getOrganizationExternalId();
+      String facilityName = p.getFacilityName();
+      if (null != orgExternalId) {
+        createPatientSelfRegistrationLinkWithOrg(p, orgExternalId);
+      } else if (null != p.getFacilityName()) {
+        createPatientSelfRegistrationLinkWithFacility(p, facilityName, facilitiesByName);
+      }
+    }
+  }
+
+  private void configureDemoUsers(List<DemoUser> users, Map<String, Facility> facilitiesByName) {
+    for (DemoUser user : users) {
+      IdentityAttributes identity = user.getIdentity();
+      Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
+      if (!userProbe.isPresent()) {
+        _apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
+      }
+      DemoAuthorization authorization = user.getAuthorization();
+      if (authorization != null) {
+        Set<OrganizationRole> roles = authorization.getGrantedRoles();
+        Organization org =
+            _orgRepo
+                .findByExternalId(authorization.getOrganizationExternalId())
+                .orElseThrow(MisconfiguredUserException::new);
+        log.info(
+            "User={} will have roles={} in organization={}",
+            identity.getUsername(),
+            roles,
+            authorization.getOrganizationExternalId());
+        Set<Facility> authorizedFacilities =
+            authorization.getFacilities().stream()
+                .map(
+                    f -> {
+                      Facility facility = facilitiesByName.get(f);
+                      if (facility == null) {
+                        throw new RuntimeException(
+                            "User's facility="
+                                + f
+                                + " was not initialized. Valid facilities="
+                                + facilitiesByName.keySet().toString());
+                      }
+                      return facility;
+                    })
+                .collect(Collectors.toSet());
+        if (PermissionHolder.grantsAllFacilityAccess(roles)) {
+          log.info(
+              "User={} will have access to all facilities in organization={}",
+              identity.getUsername(),
+              authorization.getOrganizationExternalId());
+        } else {
+          log.info(
+              "User={} will have access to facilities={} in organization={}",
+              identity.getUsername(),
+              authorization.getFacilities(),
+              authorization.getOrganizationExternalId());
+        }
+
+        initOktaUser(identity, org, authorizedFacilities, roles);
+      }
+    }
+  }
+
+  private void savePatientSelfRegistrationLink(
+      ConfigPatientRegistrationLink p, PatientSelfRegistrationLink prl) {
+    log.info("Creating patient registration link {}", p.getLink());
+    _prlRepository.save(prl);
+  }
+
+  private void createPatientSelfRegistrationLinkWithFacility(
+      ConfigPatientRegistrationLink p,
+      String facilityName,
+      Map<String, Facility> facilitiesByName) {
+    Facility facility = facilitiesByName.get(facilityName);
+    if (null == facility) {
+      return;
+    }
+
+    Optional<PatientSelfRegistrationLink> link = _prlRepository.findByFacility(facility);
+
+    if (!link.isPresent()) {
+      PatientSelfRegistrationLink prl = p.makePatientRegistrationLink(facility, p.getLink());
+      savePatientSelfRegistrationLink(p, prl);
+    }
+  }
+
+  private void createPatientSelfRegistrationLinkWithOrg(
+      ConfigPatientRegistrationLink p, String orgExternalId) {
+    Optional<Organization> orgLookup = _orgRepo.findByExternalId(orgExternalId);
+
+    if (!orgLookup.isPresent()) {
+      return;
+    }
+
+    Organization org = orgLookup.get();
+    Optional<PatientSelfRegistrationLink> link = _prlRepository.findByOrganization(org);
+
+    if (!link.isPresent()) {
+      PatientSelfRegistrationLink prl = p.makePatientRegistrationLink(org, p.getLink());
+      savePatientSelfRegistrationLink(p, prl);
     }
   }
 }
