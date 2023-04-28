@@ -64,12 +64,12 @@ class PatientRegistrationLinkRepositoryTest extends BaseRepositoryTest {
     Organization org = _dataFactory.saveValidOrganization();
     Facility fac = _dataFactory.createValidFacility(org, "Foo Facility");
     _repo.save(new PatientSelfRegistrationLink(fac, "the-link"));
-
+    PatientSelfRegistrationLink patientLink = new PatientSelfRegistrationLink(org, "the-link");
+    _repo.save(patientLink);
     PersistenceException caught =
         assertThrows(
             PersistenceException.class,
             () -> {
-              _repo.save(new PatientSelfRegistrationLink(org, "the-link"));
               flush();
             });
 

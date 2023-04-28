@@ -143,16 +143,19 @@ const CovidResultGuidance = (props: Props) => {
       </p>
     );
   }
-  if (result === "UNDETERMINED" || result === "UNKNOWN") {
-    covidGuidanceArray.push(
-      setCovidResultInfo("UNDETERMINED", isPatientApp, t)
-    );
-  }
-  if (result !== "POSITIVE") {
-    covidGuidanceArray.push(setCovidResultInfo("NEGATIVE", isPatientApp, t));
-  }
-  if (result === "POSITIVE") {
-    covidGuidanceArray.push(setCovidResultInfo("POSITIVE", isPatientApp, t));
+
+  switch (result) {
+    case "UNDETERMINED":
+      covidGuidanceArray.push(
+        setCovidResultInfo("UNDETERMINED", isPatientApp, t)
+      );
+      break;
+    case "NEGATIVE":
+      covidGuidanceArray.push(setCovidResultInfo("NEGATIVE", isPatientApp, t));
+      break;
+    case "POSITIVE":
+      covidGuidanceArray.push(setCovidResultInfo("POSITIVE", isPatientApp, t));
+      break;
   }
   return covidGuidanceArray;
 };

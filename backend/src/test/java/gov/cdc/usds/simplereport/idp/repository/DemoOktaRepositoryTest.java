@@ -274,10 +274,12 @@ class DemoOktaRepositoryTest {
         Set.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES),
         true);
 
+    String username = BRAD.getUsername();
+
     assertThrows(
         ConflictingUserException.class,
         () -> {
-          _repo.updateUserEmail(AMOS, BRAD.getUsername());
+          _repo.updateUserEmail(AMOS, username);
         });
   }
 

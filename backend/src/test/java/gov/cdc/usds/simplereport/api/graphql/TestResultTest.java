@@ -199,8 +199,13 @@ class TestResultTest extends BaseGraphqlTest {
     Person p2 = _dataFactory.createMinimalPerson(_org, _site);
     DeviceType d = _site.getDefaultDeviceType();
     SpecimenType s = _site.getDefaultSpecimenType();
-    _dataFactory.createTestOrder(p1, _site);
-    _dataFactory.createTestOrder(p2, _site);
+    Map<String, Boolean> symptoms = Map.of("25064002", true);
+    LocalDate symptomOnsetDate = LocalDate.of(2020, 9, 15);
+
+    _dataFactory.createTestOrder(
+        p1, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
+    _dataFactory.createTestOrder(
+        p2, _site, new AskOnEntrySurvey("77386006", symptoms, false, symptomOnsetDate));
     String dateTested = "2020-12-31T14:30:30.001Z";
 
     // The test default standard user is configured to access _site by default,

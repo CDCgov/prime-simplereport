@@ -14,7 +14,11 @@ import LanguageToggler from "../../patientApp/LanguageToggler";
 import { GetTestResultForPrintDocument } from "../../generated/graphql";
 import { displayFullName } from "../utils";
 import { formatDateWithTimeOption } from "../utils/date";
-import { hasMultiplexResults } from "../utils/testResults";
+import {
+  haCovidResults,
+  hasMultiplexResults,
+  hasPositiveFluResults,
+} from "../utils/testResults";
 import { setLanguage } from "../utils/languages";
 
 interface OrderingProvider {
@@ -185,14 +189,16 @@ export const StaticTestResultModal = ({
             />
           </ul>
         </section>
-        <section className="sr-result-section sr-result-next-steps">
-          <h2>{t("testResult.moreInformation")}</h2>
-          <MultiplexResultsGuidance
-            results={results}
-            isPatientApp={isPatientApp}
-            multiplexEnabled={multiplexEnabled}
-          />
-        </section>
+        {(haCovidResults(results) || hasPositiveFluResults(results)) && (
+          <section className="sr-result-section sr-result-next-steps">
+            <h2>{t("testResult.moreInformation")}</h2>
+            <MultiplexResultsGuidance
+              results={results}
+              isPatientApp={isPatientApp}
+              multiplexEnabled={multiplexEnabled}
+            />
+          </section>
+        )}
       </main>
       <footer>
         <p>

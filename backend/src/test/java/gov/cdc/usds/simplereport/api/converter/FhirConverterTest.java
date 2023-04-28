@@ -97,6 +97,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
@@ -371,13 +372,19 @@ class FhirConverterTest {
     assertThat(actual).isEmpty();
   }
 
-  @Test
-  void convertToPractitioner_Provider_matchesJson() throws IOException {
+  @ParameterizedTest
+  @CsvSource({
+    ",fhir/practitioner.json",
+    "1588029771, fhir/practitionerNPI.json",
+    "0000001009, fhir/practitioner.json",
+    "\"\", fhir/practitioner.json",
+  })
+  void convertToPractitioner_Provider_matchesJson(String npi, String jsonPath) throws IOException {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var provider =
         new Provider(
             new PersonName("Amelia", "Mary", "Earhart", null),
-            null,
+            npi,
             new StreetAddress(List.of("223 N Terrace St"), "Atchison", "KS", "66002", null),
             "248 555 1234");
     ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
@@ -387,8 +394,7 @@ class FhirConverterTest {
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
         IOUtils.toString(
-            Objects.requireNonNull(
-                getClass().getClassLoader().getResourceAsStream("fhir/practitioner.json")),
+            Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(jsonPath)),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
@@ -603,18 +609,21 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Strings_valid() {
+
     var actual =
         convertToObservation(
-            "diseaseCode",
-            "diseaseName",
-            "resultCode",
-            TestCorrectionStatus.ORIGINAL,
-            null,
-            "id-123",
-            TestResult.POSITIVE.toString(),
-            "testKitName",
-            "equipmentUid",
-            "modelName");
+            ConvertToObservationProps.builder()
+                .diseaseCode("diseaseCode")
+                .diseaseName("diseaseName")
+                .resultCode("resultCode")
+                .correctionStatus(TestCorrectionStatus.ORIGINAL)
+                .correctionReason(null)
+                .id("id-123")
+                .resultDescription(TestResult.POSITIVE.toString())
+                .testkitNameId("testKitName")
+                .equipmentUid("equipmentUid")
+                .deviceModel("modelName")
+                .build());
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -1177,19 +1186,21 @@ class FhirConverterTest {
 
     var actual =
         createFhirBundle(
-            patient,
-            organization,
-            null,
-            practitioner,
-            device,
-            specimen,
-            List.of(observation),
-            Set.of(aoeobservation1, aoeobservation2),
-            serviceRequest,
-            diagnosticReport,
-            date,
-            gitProperties,
-            "P");
+            CreateFhirBundleProps.builder()
+                .patient(patient)
+                .testingLab(organization)
+                .orderingFacility(null)
+                .practitioner(practitioner)
+                .device(device)
+                .specimen(specimen)
+                .resultObservations(List.of(observation))
+                .aoeObservations(Set.of(aoeobservation1, aoeobservation2))
+                .serviceRequest(serviceRequest)
+                .diagnosticReport(diagnosticReport)
+                .currentDate(date)
+                .gitProperties(gitProperties)
+                .processingId("P")
+                .build());
 
     var resourceUrls =
         actual.getEntry().stream()
@@ -1340,6 +1351,7 @@ class FhirConverterTest {
     var provider =
         new Provider(new PersonName("Michaela", null, "Quinn", ""), "1", address, "7735551235");
     var organization = new Organization("District", "school", "1", true);
+
     var facility =
         new Facility(
             organization,

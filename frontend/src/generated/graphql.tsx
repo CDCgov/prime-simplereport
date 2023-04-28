@@ -2139,6 +2139,8 @@ export type GetFacilityQueueQuery = {
           testLength: number;
           supportedDiseaseTestPerformed: Array<{
             __typename?: "SupportedDiseaseTestPerformed";
+            testPerformedLoincCode: string;
+            testOrderedLoincCode?: string | null | undefined;
             supportedDisease: {
               __typename?: "SupportedDisease";
               internalId: string;
@@ -6112,6 +6114,8 @@ export const GetFacilityQueueDocument = gql`
         name
         testLength
         supportedDiseaseTestPerformed {
+          testPerformedLoincCode
+          testOrderedLoincCode
           supportedDisease {
             internalId
             name

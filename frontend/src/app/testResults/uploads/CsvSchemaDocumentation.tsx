@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -58,9 +60,11 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         )}
       </h5>
       <div data-testid="subheader" className="margin-bottom-3">
-        {item.subHeader?.map((subHeader, subHeaderIndex) => (
+        {item.subHeader?.map((subHeader) => (
           <p
-            key={`${item.colHeader}-note-${subHeaderIndex}`}
+            key={`${item.colHeader}-subheader-${Buffer.from(subHeader).toString(
+              "base64"
+            )}`}
             dangerouslySetInnerHTML={{ __html: `${subHeader}` }}
           />
         ))}
@@ -78,9 +82,11 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         >
           <div className="grid-col-4 text-base">Description</div>
           <div className="grid-col-8">
-            {item.description?.map((line, noteIndex) => (
+            {item.description?.map((line) => (
               <div
-                key={`${item.colHeader}-note-${noteIndex}`}
+                key={`${item.colHeader}-description-${Buffer.from(
+                  line
+                ).toString("base64")}`}
                 dangerouslySetInnerHTML={{ __html: `${line}` }}
               />
             ))}
@@ -108,10 +114,12 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
             Example{item.examples.length > 1 && "s"}
           </div>
           <ul className="grid-col-8 prime-ul margin-top-0">
-            {item.examples?.map((value, valueIndex) => (
+            {item.examples?.map((value) => (
               <li
                 className={item.examples!.length > 1 ? "bullet-list" : ""}
-                key={`${item.colHeader}-value-${valueIndex}`}
+                key={`${item.colHeader}-examples-${Buffer.from(value).toString(
+                  "base64"
+                )}`}
                 dangerouslySetInnerHTML={{ __html: `<em>${value}</em>` }}
               />
             ))}
@@ -125,10 +133,12 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
         >
           <div className="grid-col-4 text-base">Accepted values</div>
           <ul className="grid-col-8 prime-ul margin-top-0">
-            {item.acceptedValues?.map((value, valueIndex) => (
+            {item.acceptedValues?.map((value) => (
               <li
                 className={item.acceptedValues!.length > 1 ? "bullet-list" : ""}
-                key={`${item.colHeader}-value-${valueIndex}`}
+                key={`${item.colHeader}-accepted-values-${Buffer.from(
+                  value
+                ).toString("base64")}`}
                 dangerouslySetInnerHTML={{ __html: `${value}` }}
               />
             ))}
@@ -327,12 +337,22 @@ const CsvSchemaDocumentation = () => {
 
         <section className="margin-top-5">
           <h3>Data elements</h3>
-          {schema.fields.map((field, fieldIndex) => {
+          {schema.fields.map((field) => {
+            const sectionTitles = field?.sections
+              .map((val) => val.title)
+              .reduce((acc, cur) => acc + cur);
             return (
-              <ul key={`toc-${fieldIndex}`} className="">
-                {field.sections?.map((section, sectionIndex) => {
+              <ul
+                key={`toc-${Buffer.from(sectionTitles).toString("base64")}`}
+                className=""
+              >
+                {field.sections?.map((section) => {
                   return (
-                    <li key={`toc-${fieldIndex}-${sectionIndex}`}>
+                    <li
+                      key={`${Buffer.from(sectionTitles).toString(
+                        "base64"
+                      )}-link-${Buffer.from(section.title).toString("base64")}`}
+                    >
                       <a href={`#${section.slug}`} className="usa-link">
                         {section.title}
                       </a>
@@ -344,17 +364,24 @@ const CsvSchemaDocumentation = () => {
           })}
         </section>
 
-        {schema.fields.map((field, fieldIndex) => {
+        {schema.fields.map((field) => {
+          const sectionTitles = field?.sections
+            .map((val) => val.title)
+            .reduce((acc, cur) => acc + cur);
           return (
             <div
               data-testid="fieldDiv"
-              key={`field-${fieldIndex}`}
+              key={`field-${Buffer.from(sectionTitles).toString("base64")}`}
               className="margin-bottom-5"
             >
-              {field.sections?.map((section, sectionIndex) => {
+              {field.sections?.map((section) => {
                 return (
                   <div
-                    key={`section-${fieldIndex}-${sectionIndex}`}
+                    key={`${Buffer.from(sectionTitles).toString(
+                      "base64"
+                    )}-section-${Buffer.from(section.title).toString(
+                      "base64"
+                    )}`}
                     className="margin-top-9"
                   >
                     <h4 id={`${section.slug}`}>{section.title}</h4>

@@ -183,6 +183,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "English",
         null);
 
+    LocalDate dob = LocalDate.of(1950, 1, 1);
+    StreetAddress address = getAddress();
+
     assertThrows(
         AccessDeniedException.class,
         () ->
@@ -193,8 +196,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 "Flintstone",
                 "Jr.",
-                LocalDate.of(1950, 1, 1),
-                getAddress(),
+                dob,
+                address,
                 "USA",
                 null,
                 PersonRole.RESIDENT,
@@ -410,8 +413,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Spanish",
             null);
     TestUserIdentities.setFacilityAuthorities();
+    UUID patientId = p.getInternalId();
 
-    assertThrows(AccessDeniedException.class, () -> _service.setIsDeleted(p.getInternalId(), true));
+    assertThrows(AccessDeniedException.class, () -> _service.setIsDeleted(patientId, true));
 
     TestUserIdentities.setFacilityAuthorities(fac);
     _service.setIsDeleted(p.getInternalId(), true);
@@ -576,12 +580,13 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   @Test
   void getPatientNoPermissionsCheck_error() {
     Organization org = _orgService.getCurrentOrganization();
+    UUID patientId = UUID.randomUUID();
 
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
             // fake UUID
-            () -> _service.getPatientNoPermissionsCheck(UUID.randomUUID(), org, true));
+            () -> _service.getPatientNoPermissionsCheck(patientId, org, true));
     assertEquals("No patient with that ID was found", caught.getMessage());
   }
 

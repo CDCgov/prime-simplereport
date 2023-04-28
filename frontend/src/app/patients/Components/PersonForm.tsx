@@ -244,6 +244,68 @@ const PersonForm = (props: Props) => {
     return schemaOrder;
   };
 
+  function handlePhoneNumberAndEmailErrorFocus(earliestErrorName: string) {
+    const elementClassPrefix =
+      earliestErrorName === "phoneNumbers" ? "phoneNumber" : "email";
+    const elementsToCheck = Array.from(
+      document.getElementsByClassName(`${elementClassPrefix}FormElement`)
+    ) as HTMLElement[];
+    for (const element of elementsToCheck) {
+      const errorContent = element.textContent;
+      if (errorContent && errorContent.match("Error")) {
+        // the parent div element isn't in the tabindex and
+        // therefore isn't focusable, so grab the closest input child element
+        document
+          .getElementById(element.id)
+          ?.getElementsByTagName("input")[0]
+          .focus();
+        break;
+      }
+    }
+  }
+
+  function handleValidationErrors(e: any) {
+    const newErrors: PersonErrors = e.inner.reduce(
+      (
+        acc: PersonErrors,
+        el: { path: keyof PersonErrors; message: string }
+      ) => {
+        acc[el.path] = el?.message || defaultValidationError;
+        return acc;
+      },
+      {} as PersonErrors
+    );
+    setErrors(newErrors);
+    const schemaOrder = getSchemaNameOrder();
+    Object.values(newErrors).forEach((error) => {
+      if (!error) {
+        return;
+      }
+      showError(t("patient.form.errors.validationMsg"), error);
+    });
+
+    let earliestErrorIndex = Number.POSITIVE_INFINITY;
+    let earliestErrorName = "";
+    Object.keys(newErrors).forEach((name) => {
+      const errorOrder = schemaOrder[name];
+      if (earliestErrorIndex > errorOrder) {
+        earliestErrorIndex = errorOrder;
+        earliestErrorName = name;
+      }
+    });
+
+    // phone/email fields might have multiple entries, so handle those elements
+    // via their field ID's
+    if (
+      earliestErrorName === "phoneNumbers" ||
+      earliestErrorName === "emails"
+    ) {
+      handlePhoneNumberAndEmailErrorFocus(earliestErrorName);
+    } else {
+      document.getElementsByName(earliestErrorName)[0]?.focus();
+    }
+  }
+
   const validateForm = async (shouldStartTest: boolean = false) => {
     // The `startTest` param here originates from a child Add/Edit Patient form,
     // but we must also track it in state here to preserve the redirect throughout
@@ -256,62 +318,7 @@ const PersonForm = (props: Props) => {
       phoneNumberValidator.current?.();
       await schema.validate(patient, { abortEarly: false });
     } catch (e: any) {
-      const newErrors: PersonErrors = e.inner.reduce(
-        (
-          acc: PersonErrors,
-          el: { path: keyof PersonErrors; message: string }
-        ) => {
-          acc[el.path] = el?.message || defaultValidationError;
-          return acc;
-        },
-        {} as PersonErrors
-      );
-      setErrors(newErrors);
-      const schemaOrder = getSchemaNameOrder();
-      Object.values(newErrors).forEach((error) => {
-        if (!error) {
-          return;
-        }
-        showError(t("patient.form.errors.validationMsg"), error);
-      });
-
-      let earliestErrorIndex = Number.POSITIVE_INFINITY;
-      let earliestErrorName = "";
-      Object.keys(newErrors).forEach((name) => {
-        const errorOrder = schemaOrder[name];
-        if (earliestErrorIndex > errorOrder) {
-          earliestErrorIndex = errorOrder;
-          earliestErrorName = name;
-        }
-      });
-
-      // phone/email fields might have multiple entries, so handle those elements
-      // via their field ID's
-      if (
-        earliestErrorName === "phoneNumbers" ||
-        earliestErrorName === "emails"
-      ) {
-        const elementClassPrefix =
-          earliestErrorName === "phoneNumbers" ? "phoneNumber" : "email";
-        const elementsToCheck = Array.from(
-          document.getElementsByClassName(`${elementClassPrefix}FormElement`)
-        ) as HTMLElement[];
-        for (let i = 0; i < elementsToCheck.length; i++) {
-          const errorContent = elementsToCheck[i].textContent;
-          if (errorContent && errorContent.match("Error")) {
-            // the parent div element isn't in the tabindex and
-            // therefore isn't focusable, so grab the closest input child element
-            document
-              .getElementById(elementsToCheck[i].id)
-              ?.getElementsByTagName("input")[0]
-              .focus();
-            break;
-          }
-        }
-      } else {
-        document.getElementsByName(earliestErrorName)[0]?.focus();
-      }
-
+      handleValidationErrors(e);
       return;
     }
 

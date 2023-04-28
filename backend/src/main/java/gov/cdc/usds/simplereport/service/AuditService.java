@@ -22,12 +22,17 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 @Slf4j
 public class AuditService {
+  private static final String FIELD_USER_ID = "userId";
   private final ApiUserService _userService;
   private final AuditLoggerService auditLoggerService;
 
   public AuditService(ApiUserService userService, AuditLoggerService auditLoggerService) {
     this._userService = userService;
     this.auditLoggerService = auditLoggerService;
+  }
+
+  private void createEventAuditLog(String requestId) {
+    log.trace("Saving audit event for {}", requestId);
   }
 
   @Transactional(readOnly = false)
@@ -38,7 +43,7 @@ public class AuditService {
       List<UserPermission> permissions,
       boolean isAdmin,
       Organization organization) {
-    log.trace("Saving audit event for {}", state.getRequestId());
+    createEventAuditLog(state.getRequestId());
     auditLoggerService.logEvent(
         new ConsoleApiAuditEvent(
             state.getRequestId(),
@@ -58,7 +63,7 @@ public class AuditService {
       int responseCode,
       Organization org,
       PatientLink patientLink) {
-    log.trace("Saving audit event for {}", requestId);
+    createEventAuditLog(requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
     auditLoggerService.logEvent(
@@ -68,13 +73,13 @@ public class AuditService {
   @Transactional(readOnly = false)
   public void logAnonymousRestEvent(
       String requestId, HttpServletRequest request, int responseCode) {
-    log.trace("Saving audit event for {}", requestId);
+    createEventAuditLog(requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
-    Object userIdObj = request.getSession(true).getAttribute("userId");
+    Object userIdObj = request.getSession(true).getAttribute(FIELD_USER_ID);
     JsonNode userId =
         (userIdObj == null)
             ? null
-            : JsonNodeFactory.instance.objectNode().put("userId", userIdObj.toString());
+            : JsonNodeFactory.instance.objectNode().put(FIELD_USER_ID, userIdObj.toString());
     ApiUser anonymousUser = _userService.getAnonymousApiUser();
     auditLoggerService.logEvent(
         new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userId, anonymousUser));
@@ -84,11 +89,11 @@ public class AuditService {
   public void logWebhookRestEvent(String requestId, HttpServletRequest request, int responseCode) {
     log.trace("Saving webhook REST audit event for {}", requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
-    Object userIdObj = request.getSession(true).getAttribute("userId");
+    Object userIdObj = request.getSession(true).getAttribute(FIELD_USER_ID);
     JsonNode userId =
         (userIdObj == null)
             ? null
-            : JsonNodeFactory.instance.objectNode().put("userId", userIdObj.toString());
+            : JsonNodeFactory.instance.objectNode().put(FIELD_USER_ID, userIdObj.toString());
     ApiUser webhookUser = _userService.getWebhookApiUser();
     auditLoggerService.logEvent(
         new ConsoleApiAuditEvent(requestId, reqDetails, responseCode, userId, webhookUser));
