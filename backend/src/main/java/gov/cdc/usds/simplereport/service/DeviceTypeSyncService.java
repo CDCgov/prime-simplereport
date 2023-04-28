@@ -119,6 +119,7 @@ public class DeviceTypeSyncService {
       new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
   private static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
+  public static final int DEFAULT_TEST_LENGTH = 15;
 
   private final DeviceTypeRepository deviceTypeRepository;
   private final DataHubClient client;
@@ -195,7 +196,7 @@ public class DeviceTypeSyncService {
 
           // Does the device exist at all in the DB?
           var foundDevice =
-              deviceTypeRepository.findDeviceTypeByManufacturerAndModel(
+              deviceTypeRepository.findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
                   device.getManufacturer(), device.getModel());
 
           DeviceType deviceToSync =
@@ -234,6 +235,7 @@ public class DeviceTypeSyncService {
                                 .name(deviceName)
                                 .manufacturer(device.getManufacturer())
                                 .model(device.getModel())
+                                .testLength(DEFAULT_TEST_LENGTH)
                                 .swabTypes(specimensForDevice)
                                 .supportedDiseaseTestPerformed(
                                     List.of(

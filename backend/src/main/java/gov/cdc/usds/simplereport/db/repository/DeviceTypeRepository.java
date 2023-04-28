@@ -13,12 +13,13 @@ public interface DeviceTypeRepository extends EternalAuditedEntityRepository<Dev
 
   DeviceType findDeviceTypeByName(String name);
 
-  Optional<DeviceType> findDeviceTypeByManufacturerAndModel(String manufacturer, String model);
+  Optional<DeviceType> findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
+      String manufacturer, String model);
 
   @EntityGraph(
       attributePaths = {
         "supportedDiseaseTestPerformed",
         "supportedDiseaseTestPerformed.supportedDisease"
       })
-  DeviceType findDeviceTypeByModelIgnoreCase(String model);
+  DeviceType findDeviceTypeByModelIgnoreCaseAndIsDeletedFalse(String model);
 }

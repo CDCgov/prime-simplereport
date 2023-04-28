@@ -117,7 +117,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
     _service.syncDevices();
     var updatedDevice =
-        deviceTypeRepo.findDeviceTypeByManufacturerAndModel(
+        deviceTypeRepo.findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
             newDevice.getManufacturer(), newDevice.getModel());
     assertTrue(updatedDevice.isPresent());
 
@@ -150,7 +150,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
     _service.syncDevices();
     var createdDevice =
-        deviceTypeRepo.findDeviceTypeByManufacturerAndModel(
+        deviceTypeRepo.findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
             newDevice.getManufacturer(), newDevice.getModel());
     assertTrue(createdDevice.isPresent());
     assertThat(createdDevice.get().getManufacturer()).isEqualTo("New Device Manufacturer");
