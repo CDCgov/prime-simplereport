@@ -15,10 +15,5 @@ public interface SpecimenTypeRepository extends EternalAuditedEntityRepository<S
 
   List<SpecimenType> findAllByInternalIdIn(List<UUID> uuids);
 
-  // this doesn't check for soft-deletion!
-  Optional<SpecimenType> findByTypeCode(String swabType);
-
   Optional<SpecimenType> findByTypeCodeAndIsDeletedFalse(String swabType);
-
-  List<SpecimenType> findAllByIsDeletedFalse();
 }
