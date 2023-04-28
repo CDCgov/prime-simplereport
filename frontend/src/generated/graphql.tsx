@@ -280,15 +280,14 @@ export type MutationAddPatientToQueueArgs = {
 };
 
 export type MutationAddUserArgs = {
-  email?: InputMaybe<Scalars["String"]>;
+  email: Scalars["String"];
   firstName?: InputMaybe<Scalars["String"]>;
   lastName?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  organizationExternalId?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Role>;
+  organizationExternalId: Scalars["String"];
+  role: Role;
   suffix?: InputMaybe<Scalars["String"]>;
-  user?: InputMaybe<UserInput>;
 };
 
 export type MutationAddUserToCurrentOrgArgs = {
@@ -1067,17 +1066,6 @@ export type User = {
   suffix?: Maybe<Scalars["String"]>;
 };
 
-export type UserInput = {
-  email: Scalars["String"];
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  name?: InputMaybe<NameInput>;
-  organizationExternalId: Scalars["String"];
-  role: Role;
-  suffix?: InputMaybe<Scalars["String"]>;
-};
-
 export enum UserPermission {
   AccessAllFacilities = "ACCESS_ALL_FACILITIES",
   ArchivePatient = "ARCHIVE_PATIENT",
@@ -1699,7 +1687,6 @@ export type AddUserMutationVariables = Exact<{
   email: Scalars["String"];
   organizationExternalId: Scalars["String"];
   role: Role;
-  user?: InputMaybe<UserInput>;
 }>;
 
 export type AddUserMutation = {
@@ -4825,7 +4812,6 @@ export const AddUserDocument = gql`
     $email: String!
     $organizationExternalId: String!
     $role: Role!
-    $user: UserInput
   ) {
     addUser(
       name: {
@@ -4837,7 +4823,6 @@ export const AddUserDocument = gql`
       email: $email
       organizationExternalId: $organizationExternalId
       role: $role
-      user: $user
     ) {
       id
     }
@@ -4868,7 +4853,6 @@ export type AddUserMutationFn = Apollo.MutationFunction<
  *      email: // value for 'email'
  *      organizationExternalId: // value for 'organizationExternalId'
  *      role: // value for 'role'
- *      user: // value for 'user'
  *   },
  * });
  */
