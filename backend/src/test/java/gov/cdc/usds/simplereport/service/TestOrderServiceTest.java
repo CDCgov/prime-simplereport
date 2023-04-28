@@ -183,7 +183,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     verifyNoInteractions(fhirQueueReportingService);
     TestEvent sentEvent = testEventArgumentCaptor.getValue();
     assertThat(sentEvent.getPatient().getInternalId()).isEqualTo(patient.getInternalId());
-    assertThat(TestResult.POSITIVE).isEqualTo(sentEvent.getCovidTestResult().get());
+    assertThat(sentEvent.getCovidTestResult().get()).isEqualTo(TestResult.POSITIVE);
   }
 
   @Test
