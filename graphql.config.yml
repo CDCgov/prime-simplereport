@@ -1,0 +1,2 @@
+schema: "./backend/src/main/resources/graphql/*.graphqls"
+documents: "./frontend/src/app/**/*.{ts,tsx,graphql}"
