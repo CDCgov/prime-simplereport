@@ -425,7 +425,7 @@ public class TestDataFactory {
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-    Result orderResult = new Result(o, diseaseService.covid(), r);
+    Result orderResult = new Result(diseaseService.covid(), r);
     resultService.addResultsToTestOrder(o, List.of(orderResult));
 
     TestEvent e = new TestEvent(o, false);
@@ -472,9 +472,9 @@ public class TestDataFactory {
 
     var results =
         List.of(
-            new Result(order, diseaseService.covid(), covidResult),
-            new Result(order, diseaseService.fluA(), fluAResult),
-            new Result(order, diseaseService.fluB(), fluBResult));
+            new Result(diseaseService.covid(), covidResult),
+            new Result(diseaseService.fluA(), fluAResult),
+            new Result(diseaseService.fluB(), fluBResult));
 
     resultService.addResultsToTestOrder(order, results);
     order = testOrderRepository.save(order);
@@ -493,22 +493,27 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEventCorrection(
-      TestEvent originalTestEvent, TestCorrectionStatus correctionStatus) {
+      TestEvent originalTestEvent, TestCorrectionStatus correctionStatus, String reason) {
     List<Result> copiedResults = originalTestEvent.getResults().stream().map(Result::new).toList();
 
-    TestEvent newRemoveEvent = new TestEvent(originalTestEvent, correctionStatus, "Cold feet");
+    TestEvent newRemoveEvent = new TestEvent(originalTestEvent, correctionStatus, reason);
     testEventRepository.save(newRemoveEvent);
 
     resultService.addResultsToTestEvent(newRemoveEvent, copiedResults);
 
     TestOrder order = originalTestEvent.getTestOrder();
-    order.setReasonForCorrection("Cold feet");
+    order.setReasonForCorrection(reason);
     order.setCorrectionStatus(correctionStatus);
     order.setTestEventRef(newRemoveEvent);
     testOrderRepository.save(order);
 
     Hibernate.initialize(newRemoveEvent.getOrganization());
     return newRemoveEvent;
+  }
+
+  public TestEvent createTestEventCorrection(
+      TestEvent originalTestEvent, TestCorrectionStatus correctionStatus) {
+    return createTestEventCorrection(originalTestEvent, correctionStatus, "Cold feet");
   }
 
   public TestEvent doTest(TestOrder order, TestResult result) {

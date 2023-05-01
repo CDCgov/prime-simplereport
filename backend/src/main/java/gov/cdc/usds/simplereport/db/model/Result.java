@@ -46,13 +46,6 @@ public class Result extends EternalAuditedEntity {
   @Enumerated(EnumType.STRING)
   private TestResult testResult;
 
-  public Result(TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
-    this.testOrder = testOrder;
-    this.disease = disease;
-    this.resultSNOMED = Translators.convertTestResultToSnomed(testResult);
-    this.testResult = testResult;
-  }
-
   public Result(SupportedDisease disease, TestResult testResult) {
     this.disease = disease;
     this.resultSNOMED = Translators.convertTestResultToSnomed(testResult);

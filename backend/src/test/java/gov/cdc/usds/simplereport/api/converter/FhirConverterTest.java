@@ -759,8 +759,9 @@ class FhirConverterTest {
     var covidDisease = new SupportedDisease("COVID-19", "96741-4");
     var fluDisease = new SupportedDisease("FLU A", "LP14239-5");
     var testOrder = TestDataBuilder.createTestOrderWithDevice();
-    var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
-    var fluResult = new Result(testOrder, fluDisease, TestResult.NEGATIVE);
+    var covidResult =
+        TestDataBuilder.createTestResult(testOrder, covidDisease, TestResult.POSITIVE);
+    var fluResult = TestDataBuilder.createTestResult(testOrder, fluDisease, TestResult.NEGATIVE);
     ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
     ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
     var device = DeviceType.builder().build();
@@ -816,7 +817,7 @@ class FhirConverterTest {
     var covidDisease = new SupportedDisease("COVID-19", "96741-4");
     var id = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testOrder = TestDataBuilder.createTestOrderWithDevice();
-    var result = new Result(testOrder, covidDisease, TestResult.NEGATIVE);
+    var result = TestDataBuilder.createTestResult(testOrder, covidDisease, TestResult.NEGATIVE);
     var device = DeviceType.builder().build();
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
@@ -1390,9 +1391,12 @@ class FhirConverterTest {
         new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));
     testOrder.setAskOnEntrySurvey(answers);
 
-    var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
-    var fluAResult = new Result(testOrder, fluADisease, TestResult.NEGATIVE);
-    var fluBResult = new Result(testOrder, fluBDisease, TestResult.UNDETERMINED);
+    var covidResult =
+        TestDataBuilder.createTestResult(testOrder, covidDisease, TestResult.POSITIVE);
+    var fluAResult = TestDataBuilder.createTestResult(testOrder, fluADisease, TestResult.NEGATIVE);
+    var fluBResult =
+        TestDataBuilder.createTestResult(testOrder, fluBDisease, TestResult.UNDETERMINED);
+
     var testEvent = new TestEvent(testOrder, false);
     testEvent.getResults().addAll(List.of(covidResult, fluAResult, fluBResult));
 

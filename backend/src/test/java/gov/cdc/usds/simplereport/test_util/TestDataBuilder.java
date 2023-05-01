@@ -221,7 +221,10 @@ public class TestDataBuilder {
 
   public static Result createTestResult(
       TestOrder testOrder, SupportedDisease supportedDisease, TestResult testResult) {
-    return new Result(testOrder, supportedDisease, testResult);
+    Result result = new Result(supportedDisease, testResult);
+    result.setTestOrder(testOrder);
+    testOrder.getResults().add(result);
+    return result;
   }
 
   public static TestEvent createMultiplexTestEvent() {

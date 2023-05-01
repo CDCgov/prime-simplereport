@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.DiseaseService;
+import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
@@ -30,10 +31,10 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
   @Autowired private TestOrderRepository _repo;
   @Autowired private PersonRepository _personRepo;
   @Autowired private PhoneNumberRepository _phoneRepo;
-  @Autowired private ResultRepository _resultRepo;
   @Autowired private TestEventRepository _events;
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private DiseaseService _diseaseService;
+  @Autowired private ResultService resultService;
 
   @Test
   void runChanges() {
@@ -117,8 +118,9 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     assertNotNull(order);
     flush();
-    Result result = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
-    _resultRepo.save(result);
+    Result result = new Result(_diseaseService.covid(), TestResult.POSITIVE);
+    resultService.addResultsToTestOrder(order, List.of(result));
+
     TestEvent ev = _events.save(new TestEvent(order));
     assertNotNull(ev);
     order.setTestEventRef(ev);
@@ -185,8 +187,9 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     TestOrder order1 = new TestOrder(patient0, site);
     _repo.save(order1);
     flush();
-    Result result = new Result(order1, _diseaseService.covid(), TestResult.NEGATIVE);
-    _resultRepo.save(result);
+    Result result = new Result(_diseaseService.covid(), TestResult.NEGATIVE);
+    resultService.addResultsToTestOrder(order1, List.of(result));
+
     TestEvent didit = _events.save(new TestEvent(order1));
     order1.setTestEventRef(didit);
     order1.markComplete();
