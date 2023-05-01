@@ -12,8 +12,6 @@ env:
   NODE_VERSION: 18
 
 jobs:
-  build-cypress:
-    uses: ./.github/workflows/buildCypressImage.yml
   build-docker:
     runs-on: ubuntu-latest
     defaults:

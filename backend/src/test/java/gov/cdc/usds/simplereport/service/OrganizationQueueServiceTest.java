@@ -119,17 +119,24 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
   @Test
   void editQueueItem_failsToFindValidOrg() {
+
+    Optional<String> editedOrgName = Optional.empty();
+    Optional<String> editedOrgAdminFirstName = Optional.empty();
+    Optional<String> editedOrgAdminLastName = Optional.empty();
+    Optional<String> editedOrgAdminEmail = Optional.of("foo@bar.com");
+    Optional<String> editedOrgAdminPhone = Optional.of("123-456-7890");
+
     Exception exception =
         assertThrows(
             IllegalStateException.class,
             () -> {
               _service.editQueueItem(
                   "nonsense id",
-                  Optional.empty(),
-                  Optional.empty(),
-                  Optional.empty(),
-                  Optional.of("foo@bar.com"),
-                  Optional.of("123-456-7890"));
+                  editedOrgName,
+                  editedOrgAdminFirstName,
+                  editedOrgAdminLastName,
+                  editedOrgAdminEmail,
+                  editedOrgAdminPhone);
             });
     assertEquals(
         exception.getMessage(), "Requesting edits on an organization that does not exist.");

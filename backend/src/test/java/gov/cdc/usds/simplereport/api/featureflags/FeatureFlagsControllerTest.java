@@ -7,14 +7,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/** ToDo Remove public modifiers from this test class once Spring for GraphQL migration is done */
 class FeatureFlagsControllerTest {
 
   private FeatureFlagsController featureFlagsController;
-  private FeatureFlagsConfig _mockFeatureFlagConfig = new FeatureFlagsConfig();
+  private final FeatureFlagsConfig _mockFeatureFlagConfig = new FeatureFlagsConfig(null);
 
   @BeforeEach
-  public void setup() {
+  void setup() {
     _mockFeatureFlagConfig.setMultiplexEnabled(true);
     this.featureFlagsController = new FeatureFlagsController();
     ReflectionTestUtils.setField(
@@ -22,7 +21,7 @@ class FeatureFlagsControllerTest {
   }
 
   @Test
-  public void endpointReturnsFeatureFlagsConfigObj() {
+  void endpointReturnsFeatureFlagsConfigObj() {
     assertEquals(this._mockFeatureFlagConfig, this.featureFlagsController.getFeatureFlags());
   }
 }

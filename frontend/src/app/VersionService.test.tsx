@@ -90,11 +90,13 @@ describe("VersionService", () => {
 
     beforeAll(() => {
       originalLocalStorage = global.localStorage;
-      global.localStorage = undefined as any;
+      Object.defineProperty(global, "localStorage", { value: undefined });
     });
 
     afterAll(() => {
-      global.localStorage = originalLocalStorage;
+      Object.defineProperty(global, "localStorage", {
+        value: originalLocalStorage,
+      });
     });
 
     it("doesn't do anything", async () => {

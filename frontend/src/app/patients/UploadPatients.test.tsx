@@ -117,7 +117,7 @@ describe("Upload Patient", () => {
         await screen.findByText(
           "3. Upload your spreadsheet for Rosa Parks High School."
         )
-      );
+      ).toBeInTheDocument();
     });
     it("should remove facility name when all facilities is selected", async () => {
       renderUploadPatients();
@@ -310,6 +310,18 @@ describe("Upload Patient", () => {
       "true"
     );
   });
+  it("should show error for empty file", async () => {
+    renderUploadPatients();
+    const emptyFile = file("");
+
+    await userEventUpload(emptyFile, "One facility");
+    expect(await screen.findByText("Error: Invalid file")).toBeInTheDocument();
+    expect(screen.getByText("File is missing or empty.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+  });
   it("should show size error for large files", async () => {
     renderUploadPatients();
     const tooBig = file("0".repeat(50 * 1000 * 1000 + 1));
@@ -317,6 +329,11 @@ describe("Upload Patient", () => {
     await userEventUpload(tooBig, "One facility");
     expect(
       await screen.findByText("Error: File too large")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "values.csv is too large for SimpleReport to process. Please limit each upload to less than 50 MB."
+      )
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",
@@ -330,6 +347,11 @@ describe("Upload Patient", () => {
     await userEventUpload(tooManyRows, "One facility");
     expect(
       await screen.findByText("Error: File too large")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "values.csv has too many rows for SimpleReport to process. Please limit each upload to less than 10,000 rows."
+      )
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",

@@ -28,3 +28,9 @@ export const formatRole = (role: string) => {
   }
   return result;
 };
+
+export enum OktaUserStatus {
+  ACTIVE = "ACTIVE",
+  PROVISIONED = "PROVISIONED",
+  SUSPENDED = "SUSPENDED",
+}

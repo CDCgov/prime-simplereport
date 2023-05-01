@@ -45,11 +45,15 @@ public class FileValidator<T extends FileRow> {
         row = getNextRow(valueIterator);
       } catch (CsvProcessingException ex) {
         log.error("Unable to parse csv.", ex);
+        var rowNumber = ex.getLineNumber();
+        if (ex.getMessage().contains("Not enough column values") && valueIterator.hasNext()) {
+          rowNumber--;
+        }
         var feedback =
             new FeedbackMessage(
                 CsvValidatorUtils.ITEM_SCOPE,
                 "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
-                new ArrayList<>(List.of(ex.getLineNumber())));
+                new ArrayList<>(List.of(rowNumber)));
         mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
         continue;
       }

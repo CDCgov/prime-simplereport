@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -33,6 +34,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
@@ -100,6 +102,7 @@ public class TestDataFactory {
   @Autowired private DemoOktaRepository oktaRepository;
   @Autowired private TestResultUploadRepository testResultUploadRepository;
   @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
+  @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
   @Autowired private ApiUserService apiUserService;
   @Autowired private DiseaseService diseaseService;
@@ -235,7 +238,9 @@ public class TestDataFactory {
   @Transactional
   public Person createMinimalPerson(
       Organization org, Facility fac, PersonName names, PersonRole role) {
-    Person p = new Person(names, org, fac, role);
+    Person p =
+        new Person(names, org, fac, role, "female", LocalDate.now(), getFullAddress(), "black");
+
     personRepository.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
     phoneNumberRepository.save(pn);
@@ -555,6 +560,17 @@ public class TestDataFactory {
   public DeviceType getGenericDevice() {
     initGenericDeviceTypeAndSpecimenType();
     return genericDeviceType;
+  }
+
+  public SupportedDisease getCovidDisease() {
+    return diseaseService.covid();
+  }
+
+  public DeviceType addDiseasesToDevice(
+      DeviceType deviceType, List<DeviceTypeDisease> deviceTypeDiseases) {
+    deviceTypeDiseaseRepository.saveAll(deviceTypeDiseases);
+    deviceType.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseases);
+    return deviceTypeRepository.save(deviceType);
   }
 
   public SpecimenType createSpecimenType(

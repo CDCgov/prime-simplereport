@@ -175,16 +175,26 @@ public class Translators {
     return emails.stream().map(Translators::parseEmail).collect(Collectors.toList());
   }
 
+  private static final String REFUSED = "refused";
+  private static final String OTHER = "other";
   private static final Map<String, String> RACES =
       Map.of(
-          "american indian or alaskan native", "native",
-          "asian", "asian",
-          "black or african american", "black",
-          "native hawaiian or other pacific islander", "pacific",
-          "white", "white",
-          "unknown", "unknown",
-          "prefer not to answer", "refused",
-          "other", "other");
+          "american indian or alaskan native",
+          "native",
+          "asian",
+          "asian",
+          "black or african american",
+          "black",
+          "native hawaiian or other pacific islander",
+          "pacific",
+          "white",
+          "white",
+          "unknown",
+          "unknown",
+          "prefer not to answer",
+          REFUSED,
+          OTHER,
+          OTHER);
 
   private static final Set<String> RACE_VALUES =
       RACES.values().stream().collect(Collectors.toSet());
@@ -218,7 +228,7 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(r, RACE_KEYS);
   }
 
-  private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic", "refused");
+  private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic", REFUSED);
 
   public static String parseEthnicity(String e) {
     String ethnicity = parseString(e);
@@ -249,7 +259,7 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(ta, TRIBAL_AFFILIATIONS);
   }
 
-  private static final Set<String> GENDERS = Set.of("male", "female", "other", "refused");
+  private static final Set<String> GENDERS = Set.of("male", "female", OTHER, REFUSED);
 
   public static String parseGender(String g) {
     String gender = parseString(g);
@@ -400,7 +410,7 @@ public class Translators {
           Map.entry("government_agency", "Government Agency"),
           Map.entry("camp", "Camp"),
           Map.entry("lab", "Lab"),
-          Map.entry("other", "Other"));
+          Map.entry(OTHER, "Other"));
   private static final Set<String> ORGANIZATION_TYPE_KEYS = ORGANIZATION_TYPES.keySet();
 
   public static final SnomedConceptRecord DETECTED_SNOMED_CONCEPT =

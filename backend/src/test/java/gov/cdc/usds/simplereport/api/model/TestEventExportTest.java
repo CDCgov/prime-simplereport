@@ -1,11 +1,15 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -17,6 +21,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -251,5 +256,70 @@ class TestEventExportTest extends BaseRepositoryTest {
 
     // THEN
     assertEquals("CAN", exportedEvent.getPatientCountry());
+  }
+
+  @Test
+  void sendPatientInfoWithCommonDeviceDiseaseInfo() {
+    // GIVEN
+    Organization org = dataFactory.saveValidOrganization();
+    Facility facility = dataFactory.createValidFacility(org);
+    DeviceType deviceType1 = dataFactory.createDeviceType("Abbott ID Now", "Abbott", "1");
+    DeviceType deviceType2 = dataFactory.createDeviceType("Abbott ID Later", "Abbott", "2");
+    dataFactory.addDiseasesToDevice(
+        deviceType1,
+        List.of(
+            new DeviceTypeDisease(
+                deviceType1.getInternalId(),
+                dataFactory.getCovidDisease(),
+                "94500-6",
+                "covidEquipmentUID",
+                "covidTestkitNameId1",
+                "94500-0"),
+            new DeviceTypeDisease(
+                deviceType1.getInternalId(),
+                dataFactory.getCovidDisease(),
+                "94500-6",
+                "covidEquipmentUID",
+                "covidTestkitNameId2",
+                "94500-0")));
+    dataFactory.addDiseasesToDevice(
+        deviceType2,
+        List.of(
+            new DeviceTypeDisease(
+                deviceType2.getInternalId(),
+                dataFactory.getCovidDisease(),
+                "94500-6",
+                "covidEquipmentUID1",
+                "covidTestkitNameId",
+                "94500-0"),
+            new DeviceTypeDisease(
+                deviceType2.getInternalId(),
+                dataFactory.getCovidDisease(),
+                "94500-6",
+                "covidEquipmentUID2",
+                "covidTestkitNameId",
+                "94500-0")));
+
+    Person person = dataFactory.createFullPerson(org);
+    TestOrder testOrder1 = dataFactory.createTestOrder(person, facility);
+    testOrder1.setDeviceTypeAndSpecimenType(deviceType1, dataFactory.getGenericSpecimen());
+    TestEvent testEvent1 = dataFactory.doTest(testOrder1, TestResult.NEGATIVE);
+
+    TestOrder testOrder2 = dataFactory.createTestOrder(person, facility);
+    testOrder2.setDeviceTypeAndSpecimenType(deviceType2, dataFactory.getGenericSpecimen());
+    TestEvent testEvent2 = dataFactory.doTest(testOrder2, TestResult.POSITIVE);
+
+    // WHEN
+    TestEventExport exportedEvent1 = new TestEventExport(testEvent1);
+    TestEventExport exportedEvent2 = new TestEventExport(testEvent2);
+
+    // THEN
+    assertNull(exportedEvent1.getTestKitNameId());
+    assertEquals("covidEquipmentUID", exportedEvent1.getEquipmentModelId());
+    assertEquals("94500-6", exportedEvent1.getOrderedTestCode());
+
+    assertNull(exportedEvent2.getEquipmentModelId());
+    assertEquals("covidTestkitNameId", exportedEvent2.getTestKitNameId());
+    assertEquals("94500-6", exportedEvent2.getOrderedTestCode());
   }
 }

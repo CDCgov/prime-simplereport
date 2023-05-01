@@ -106,6 +106,8 @@ query GetFacilityQueue($facilityId: ID!) {
       name
       testLength
       supportedDiseaseTestPerformed {
+        testPerformedLoincCode
+        testOrderedLoincCode
         supportedDisease {
           internalId
           name

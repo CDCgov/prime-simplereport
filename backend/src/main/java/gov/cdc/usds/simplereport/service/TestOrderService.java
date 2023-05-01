@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.Result_;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -38,7 +37,6 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -278,12 +276,8 @@ public class TestOrderService {
       // test as facility default
       order.getFacility().setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
 
-      if (!results.isEmpty()) {
-        editMultiplexResult(order, results);
-      } else {
-        _resultRepo.deleteAll(order.getResults());
-        order.getResults().clear();
-      }
+      editMultiplexResult(order, results);
+
       order.setDateTestedBackdate(dateTested);
       return _testOrderRepo.save(order);
     } finally {
@@ -331,18 +325,24 @@ public class TestOrderService {
 
       TestEvent savedEvent = _testEventRepo.save(testEvent);
 
-      // Only edit/save the pending results - don't change all Results to point
-      // towards the new
-      // TestEvent.
-      // Doing so would break the corrections/removal flow.
-      Set<Result> resultsForTestOrder = _resultRepo.getAllPendingResults(order);
-      resultsForTestOrder.forEach(result -> result.setTestEvent(savedEvent));
-      _resultRepo.saveAll(resultsForTestOrder);
+      List<Result> resultsForTestEvent =
+          order.getResults().stream()
+              .map(
+                  result ->
+                      Result.builder()
+                          .disease(result.getDisease())
+                          .resultLOINC(result.getResultLOINC())
+                          .testResult(result.getTestResult())
+                          .testEvent(savedEvent)
+                          .build())
+              .toList();
+      savedEvent.getResults().addAll(resultsForTestEvent);
+
+      _resultRepo.saveAll(resultsForTestEvent);
 
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
-      _testEventReportingService.report(savedEvent);
-      _fhirQueueReportingService.report(testEvent);
+      reportTestEventToRS(savedEvent);
     } finally {
       unlockOrder(order.getInternalId());
     }
@@ -368,32 +368,36 @@ public class TestOrderService {
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
+  private void reportTestEventToRS(TestEvent savedEvent) {
+    if (savedEvent.hasCovidResult()) {
+      _testEventReportingService.report(savedEvent);
+    }
+
+    if (savedEvent.hasFluResult()) {
+      _fhirQueueReportingService.report(savedEvent);
+    }
+  }
+
   private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
-    // For new results, check if there's already a pending result for the same test.
-    // If so, update it, if not, create a new one.
-    return newResults.stream()
-        .map(
-            newResult -> {
-              Optional<Result> pendingResult =
-                  _resultRepo.getPendingResult(
-                      order, _diseaseService.getDiseaseByName(newResult.getDiseaseName()));
-              if (pendingResult.isPresent()) {
-                pendingResult.get().setResult(newResult.getTestResult());
-                order.addResult(pendingResult.get());
-                _resultRepo.save(pendingResult.get());
-                return pendingResult.get();
-              } else {
-                Result result =
-                    new Result(
-                        order,
-                        _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                        newResult.getTestResult());
-                order.addResult(result);
-                _resultRepo.save(result);
-                return result;
-              }
-            })
-        .collect(Collectors.toSet());
+    // delete all results
+    _resultRepo.deleteAll(order.getResults());
+    order.getResults().clear();
+
+    // create new ones
+    if (!newResults.isEmpty()) {
+      newResults.forEach(
+          newResult -> {
+            Result result =
+                new Result(
+                    order,
+                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
+                    newResult.getTestResult());
+            order.addResult(result);
+            _resultRepo.save(result);
+          });
+    }
+
+    return order.getResults();
   }
 
   private boolean patientHasDeliveryPreference(TestOrder savedOrder) {
@@ -537,53 +541,82 @@ public class TestOrderService {
     }
 
     // For corrections, re-open the original test order
-    if (status == TestCorrectionStatus.CORRECTED) {
-      order.setCorrectionStatus(status);
-      order.setReasonForCorrection(reasonForCorrection);
-      order.markPending();
+    switch (status) {
+      case CORRECTED -> {
+        ensureCorrectionFlowBackwardCompatibility(event);
+        order.setCorrectionStatus(status);
+        order.setReasonForCorrection(reasonForCorrection);
+        order.markPending();
+        if (order.getDateTestedBackdate() == null) {
+          order.setDateTestedBackdate(event.getDateTested());
+        }
 
-      if (order.getDateTestedBackdate() == null) {
-        order.setDateTestedBackdate(event.getDateTested());
+        return event;
       }
-      _testOrderRepo.save(order);
+      case REMOVED -> {
+        ensureCorrectionFlowBackwardCompatibility(event);
+        // copy the event results to new removal Event
+        var results =
+            event.getResults().stream()
+                .map(
+                    result ->
+                        Result.builder()
+                            .disease(result.getDisease())
+                            .resultLOINC(result.getResultLOINC())
+                            .testResult(result.getTestResult())
+                            .build())
+                .collect(Collectors.toSet());
+        var newRemoveEvent =
+            new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
+        _testEventRepo.save(newRemoveEvent);
+        results.forEach(result -> result.setTestEvent(newRemoveEvent));
+        _resultRepo.saveAll(results);
 
-      return event;
+        reportTestEventToRS(newRemoveEvent);
+
+        order.setReasonForCorrection(reasonForCorrection);
+        order.setTestEventRef(newRemoveEvent);
+        order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
+        _testOrderRepo.save(order);
+        return newRemoveEvent;
+      }
+      default -> throw new IllegalGraphqlArgumentException("Invalid TestCorrectionStatus");
     }
+  }
 
-    // generate a duplicate test_event that just has a status of REMOVED and the
-    // reason
+  private void ensureCorrectionFlowBackwardCompatibility(TestEvent event) {
+    // Backward compatibility shim
+    // we know if we are using the older version when the result has both TestEvent and TestOrder
+    // so here we grab all the results and remove the test order
+    // then we grab the results from the TestEvent being corrected
+    // and make copies for the TestOrder
+    boolean hasResultsWithTestOrderAndTestEvent =
+        event.getResults().stream().anyMatch(result -> null != result.getTestOrder());
 
-    // Get the most recent results for each disease
-    Map<SupportedDisease, Optional<Result>> latestResultsPerDisease =
-        order.getResults().stream()
-            .collect(
-                Collectors.groupingBy(
-                    Result::getDisease,
-                    Collectors.maxBy(Comparator.comparing(Result::getUpdatedAt))));
-    var results =
-        latestResultsPerDisease.values().stream()
-            .filter(Optional::isPresent)
-            .map(result -> new Result(result.get()))
-            .collect(Collectors.toSet());
-    var newRemoveEvent =
-        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
-    _testEventRepo.save(newRemoveEvent);
-    results.forEach(
-        result -> {
-          result.setTestEvent(newRemoveEvent);
-        });
-    _resultRepo.saveAll(results);
-    _testEventReportingService.report(newRemoveEvent);
-    _fhirQueueReportingService.report(newRemoveEvent);
+    if (hasResultsWithTestOrderAndTestEvent) {
+      TestOrder order = event.getOrder();
 
-    order.setReasonForCorrection(reasonForCorrection);
-    order.setTestEventRef(newRemoveEvent);
+      // remove the link to the TestOrder for all the existing results
+      Set<Result> orderResults = order.getResults();
+      orderResults.forEach(result -> result.setTestOrder(null));
+      order.getResults().clear();
+      _resultRepo.saveAll(orderResults);
 
-    order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
-
-    _testOrderRepo.save(order);
-
-    return newRemoveEvent;
+      // copy results for the existing TestEvent and make link to the TestOrder
+      List<Result> resultsFromTestEvent =
+          event.getResults().stream()
+              .map(
+                  result ->
+                      Result.builder()
+                          .disease(result.getDisease())
+                          .resultLOINC(result.getResultLOINC())
+                          .testResult(result.getTestResult())
+                          .testOrder(order)
+                          .build())
+              .toList();
+      order.getResults().addAll(resultsFromTestEvent);
+      _resultRepo.saveAll(resultsFromTestEvent);
+    }
   }
 
   @Transactional

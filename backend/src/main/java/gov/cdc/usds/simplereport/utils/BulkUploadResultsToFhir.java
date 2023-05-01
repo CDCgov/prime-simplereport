@@ -7,6 +7,10 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.MappingIterator;
+import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.api.converter.ConvertToObservationProps;
+import gov.cdc.usds.simplereport.api.converter.ConvertToPatientProps;
+import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
@@ -142,23 +146,28 @@ public class BulkUploadResultsToFhir {
             row.getOrderingFacilityState().value,
             row.getOrderingProviderZipCode().value,
             null);
+
     var patient =
         FhirConverter.convertToPatient(
-            row.getPatientId().value,
-            new PersonName(
-                row.getPatientFirstName().value,
-                row.getPatientLastName().value,
-                row.getPatientMiddleName().value,
-                null),
-            List.of(new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().value)),
-            List.of(row.getPatientEmail().value),
-            row.getPatientGender().value,
-            LocalDate.parse(row.getPatientDob().value, dateTimeFormatter),
-            patientAddr,
-            DEFAULT_COUNTRY,
-            row.getPatientRace().value,
-            row.getPatientEthnicity().value,
-            new ArrayList<>());
+            ConvertToPatientProps.builder()
+                .id(row.getPatientId().value)
+                .name(
+                    new PersonName(
+                        row.getPatientFirstName().value,
+                        row.getPatientLastName().value,
+                        row.getPatientMiddleName().value,
+                        null))
+                .phoneNumbers(
+                    List.of(new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().value)))
+                .emails(List.of(row.getPatientEmail().value))
+                .gender(row.getPatientGender().value)
+                .dob(LocalDate.parse(row.getPatientDob().value, dateTimeFormatter))
+                .address(patientAddr)
+                .country(DEFAULT_COUNTRY)
+                .race(row.getPatientRace().value)
+                .ethnicity(row.getPatientEthnicity().value)
+                .tribalAffiliations(new ArrayList<>())
+                .build());
     var testingLabOrg =
         FhirConverter.convertToOrganization(
             orgId.toString(),
@@ -244,16 +253,20 @@ public class BulkUploadResultsToFhir {
     var observation =
         List.of(
             FhirConverter.convertToObservation(
-                row.getTestPerformedCode().value,
-                null,
-                getTestResultSnomed(row.getTestResult().value),
-                mapTestResultStatusToSRValue(row.getTestResultStatus().value),
-                null,
-                UUID.randomUUID().toString(),
-                getDescriptionValue(row.getTestResult().value),
-                testKitNameId,
-                equipmentUid,
-                row.getEquipmentModelName().value));
+                ConvertToObservationProps.builder()
+                    .diseaseCode(row.getTestPerformedCode().value)
+                    .diseaseName(null)
+                    .resultCode(getTestResultSnomed(row.getTestResult().value))
+                    .correctionStatus(mapTestResultStatusToSRValue(row.getTestResultStatus().value))
+                    .correctionReason(null)
+                    .id(UUID.randomUUID().toString())
+                    .resultDescription(
+                        Translators.convertConceptCodeToConceptName(
+                            getDescriptionValue(row.getTestResult().value)))
+                    .testkitNameId(testKitNameId)
+                    .equipmentUid(equipmentUid)
+                    .deviceModel(row.getEquipmentModelName().value)
+                    .build()));
 
     var serviceRequest =
         FhirConverter.convertToServiceRequest(
@@ -271,19 +284,21 @@ public class BulkUploadResultsToFhir {
             new Date());
 
     return FhirConverter.createFhirBundle(
-        patient,
-        testingLabOrg,
-        orderingFacility,
-        practitioner,
-        device,
-        specimen,
-        observation,
-        null,
-        serviceRequest,
-        diagnosticReport,
-        new Date(),
-        gitProperties,
-        processingModeCode);
+        CreateFhirBundleProps.builder()
+            .patient(patient)
+            .testingLab(testingLabOrg)
+            .orderingFacility(orderingFacility)
+            .practitioner(practitioner)
+            .device(device)
+            .specimen(specimen)
+            .resultObservations(observation)
+            .aoeObservations(null)
+            .serviceRequest(serviceRequest)
+            .diagnosticReport(diagnosticReport)
+            .currentDate(new Date())
+            .gitProperties(gitProperties)
+            .processingId(processingModeCode)
+            .build());
   }
 
   private String getTestResultSnomed(String input) {
