@@ -227,23 +227,34 @@ public class TestDataBuilder {
     return result;
   }
 
+  public static Result createTestResult(
+      TestEvent testEvent, SupportedDisease supportedDisease, TestResult testResult) {
+    Result result = new Result(supportedDisease, testResult);
+    result.setTestEvent(testEvent);
+    testEvent.getResults().add(result);
+    return result;
+  }
+
   public static TestEvent createMultiplexTestEvent() {
     var testOrder = createTestOrder();
-    var covidTestResult =
-        createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
-    var fluAResult = createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
-    var fluBResult = createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
+
     TestEvent testEvent = new TestEvent(testOrder, false);
-    testEvent.getResults().addAll(List.of(covidTestResult, fluAResult, fluBResult));
+    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
+
     return testEvent;
   }
 
   public static TestEvent createCovidTestEvent() {
     var testOrder = createTestOrder();
-    var covidTestResult =
-        createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
+
     TestEvent testEvent = new TestEvent(testOrder, false);
-    testEvent.getResults().add(covidTestResult);
+    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
     return testEvent;
   }
 }

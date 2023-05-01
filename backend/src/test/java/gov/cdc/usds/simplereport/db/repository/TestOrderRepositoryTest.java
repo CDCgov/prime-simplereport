@@ -75,7 +75,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
     assertEquals(0, queue.size());
     queue = _repo.fetchQueue(gtown, site);
     assertEquals(1, queue.size());
-    TestEvent event = _dataFactory.doTest(order, TestResult.NEGATIVE);
+    TestEvent event = _dataFactory.submitTest(order, TestResult.NEGATIVE);
     flush();
     TestOrder lookuporder = _repo.findByTestEvent(order.getOrganization(), event);
     assertNotNull(lookuporder);

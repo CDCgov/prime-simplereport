@@ -132,11 +132,11 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         _repo.findAll(filter(facility.getInternalId(), null), PageRequest.of(0, 10)).toList();
     assertEquals(0, results.size());
 
-    _dataFactory.doTest(bradleyOrder, TestResult.NEGATIVE);
+    _dataFactory.submitTest(bradleyOrder, TestResult.NEGATIVE);
     pause();
-    _dataFactory.doTest(charlieOrder, TestResult.POSITIVE);
+    _dataFactory.submitTest(charlieOrder, TestResult.POSITIVE);
     pause();
-    _dataFactory.doTest(adamOrder, TestResult.UNDETERMINED);
+    _dataFactory.submitTest(adamOrder, TestResult.UNDETERMINED);
 
     results = _repo.findAll(filter(facility.getInternalId(), null), PageRequest.of(0, 10)).toList();
     assertEquals(3, results.size());
@@ -283,40 +283,34 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Person patient = _dataFactory.createMinimalPerson(org);
 
     TestOrder firstOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
-    TestEvent firstEvent = new TestEvent(firstOrder);
-    _dataFactory.createResults(
-        firstEvent, firstOrder, _diseaseService.covid(), TestResult.POSITIVE);
+        _dataFactory.createTestOrderWithCovidResult(patient, place, TestResult.POSITIVE);
+    _dataFactory.createTestEvent(firstOrder);
+    flush();
 
     TestOrder secondOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
-    TestEvent secondEvent = new TestEvent(secondOrder);
-    _dataFactory.createResults(
-        secondEvent, secondOrder, _diseaseService.covid(), TestResult.UNDETERMINED);
-    _dataFactory.createResults(
-        secondEvent, secondOrder, _diseaseService.fluA(), TestResult.UNDETERMINED);
-
-    _repo.save(firstEvent);
-    _repo.save(secondEvent);
+        _dataFactory.createTestOrder(
+            patient,
+            place,
+            List.of(
+                new Result(_diseaseService.covid(), TestResult.UNDETERMINED),
+                new Result(_diseaseService.covid(), TestResult.UNDETERMINED)));
+    _dataFactory.createTestEvent(secondOrder);
+    flush();
 
     Facility otherPlace = _dataFactory.createValidFacility(org, "Other Place");
     Person otherPatient =
         _dataFactory.createMinimalPerson(org, otherPlace, "First", "Middle", "Last", "");
 
     TestOrder firstOrderOtherPlace =
-        _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.NEGATIVE);
-    TestEvent firstEventOtherPlace = new TestEvent(firstOrderOtherPlace);
-    _dataFactory.createResults(
-        firstEventOtherPlace, firstOrderOtherPlace, _diseaseService.covid(), TestResult.NEGATIVE);
+        _dataFactory.createTestOrderWithCovidResult(otherPatient, otherPlace, TestResult.NEGATIVE);
+    _dataFactory.createTestEvent(firstOrderOtherPlace);
+    flush();
 
     TestOrder secondOrderOtherPlace =
-        _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.POSITIVE);
-    TestEvent secondEventOtherPlace = new TestEvent(secondOrderOtherPlace);
-    _dataFactory.createResults(
-        secondEventOtherPlace, secondOrderOtherPlace, _diseaseService.covid(), TestResult.POSITIVE);
+        _dataFactory.createTestOrderWithCovidResult(otherPatient, otherPlace, TestResult.POSITIVE);
+    _dataFactory.createTestEvent(secondOrderOtherPlace);
+    flush();
 
-    _repo.save(firstEventOtherPlace);
-    _repo.save(secondEventOtherPlace);
     return place;
   }
 
