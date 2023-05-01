@@ -132,14 +132,7 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
 
     // add same test results for TestOrder & TestEvent
     _service.addResultsToTestOrder(testOrder, List.of(covidResult));
-    testOrder
-        .getResults()
-        .forEach(
-            result -> {
-              result.setTestEvent(testEvent);
-              resultRepository.save(result);
-            });
-    testEvent.getResults().addAll(testOrder.getResults());
+    _service.addResultsToTestEvent(testEvent, testOrder.getResults());
 
     // ensure the Result will have both testEvent and testOrder populated
     assertThat(resultRepository.findAll()).hasSize(1);

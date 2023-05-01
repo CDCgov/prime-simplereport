@@ -45,7 +45,6 @@ import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
-import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -53,6 +52,7 @@ import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
+import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.lang.reflect.Array;
@@ -61,9 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -98,12 +96,12 @@ public class TestDataFactory {
   @Autowired private PatientLinkRepository patientLinkRepository;
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
-  @Autowired private ResultRepository resultRepository;
   @Autowired private DemoOktaRepository oktaRepository;
   @Autowired private TestResultUploadRepository testResultUploadRepository;
   @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
+  @Autowired private ResultService resultService;
   @Autowired private ApiUserService apiUserService;
   @Autowired private DiseaseService diseaseService;
 
@@ -404,9 +402,8 @@ public class TestDataFactory {
     order.markComplete();
     TestOrder savedOrder = testOrderRepository.save(order);
 
-    Result resultEntity = new Result(order, diseaseService.covid(), result);
-    order.addResult(resultEntity);
-    resultRepository.save(resultEntity);
+    Result resultEntity = new Result(diseaseService.covid(), result);
+    resultService.addResultsToTestOrder(order, List.of(resultEntity));
     patientLinkRepository.save(new PatientLink(savedOrder));
     return order;
   }
@@ -429,14 +426,13 @@ public class TestDataFactory {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
     Result orderResult = new Result(o, diseaseService.covid(), r);
+    resultService.addResultsToTestOrder(o, List.of(orderResult));
 
     TestEvent e = new TestEvent(o, false);
     testEventRepository.save(e);
 
     Result copiedResult = new Result(orderResult);
-    copiedResult.setTestEvent(e);
-    resultRepository.save(copiedResult);
-    e.getResults().add(copiedResult);
+    resultService.addResultsToTestEvent(e, List.of(copiedResult));
 
     o.setTestEventRef(e);
     o.markComplete();
@@ -450,18 +446,14 @@ public class TestDataFactory {
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
-    Result orderResult = new Result(o, diseaseService.covid(), r);
-    resultRepository.save(orderResult);
-    o = testOrderRepository.save(o);
-    o.getResults().add(orderResult);
+    Result orderResult = new Result(diseaseService.covid(), r);
+    resultService.addResultsToTestOrder(o, List.of(orderResult));
 
     TestEvent e = new TestEvent(o, hasPriorTests);
     testEventRepository.save(e);
 
     Result copiedResult = new Result(orderResult);
-    copiedResult.setTestEvent(e);
-    resultRepository.save(copiedResult);
-    e.getResults().add(copiedResult);
+    resultService.addResultsToTestEvent(e, List.of(copiedResult));
 
     o.setTestEventRef(e);
     o.markComplete();
@@ -477,26 +469,21 @@ public class TestDataFactory {
       TestResult fluBResult,
       Boolean hasPriorTests) {
     TestOrder order = createTestOrder(person, facility);
-    Result covid = new Result(order, diseaseService.covid(), covidResult);
-    resultRepository.save(covid);
-    Result fluA = new Result(order, diseaseService.fluA(), fluAResult);
-    resultRepository.save(fluA);
-    Result fluB = new Result(order, diseaseService.fluB(), fluBResult);
-    resultRepository.save(fluB);
+
+    var results =
+        List.of(
+            new Result(order, diseaseService.covid(), covidResult),
+            new Result(order, diseaseService.fluA(), fluAResult),
+            new Result(order, diseaseService.fluB(), fluBResult));
+
+    resultService.addResultsToTestOrder(order, results);
     order = testOrderRepository.save(order);
 
     TestEvent event = new TestEvent(order, hasPriorTests);
     testEventRepository.save(event);
 
-    Set<Result> copiedResults =
-        List.of(covid, fluA, fluB).stream().map(Result::new).collect(Collectors.toSet());
-    copiedResults.forEach(result -> result.setTestEvent(event));
-    resultRepository.saveAll(copiedResults);
-    event.getResults().addAll(copiedResults);
-
-    resultRepository.save(covid);
-    resultRepository.save(fluA);
-    resultRepository.save(fluB);
+    var copiedResults = order.getResults().stream().map(Result::new).toList();
+    resultService.addResultsToTestEvent(event, copiedResults);
 
     order.setTestEventRef(event);
     order.markComplete();
@@ -507,17 +494,12 @@ public class TestDataFactory {
 
   public TestEvent createTestEventCorrection(
       TestEvent originalTestEvent, TestCorrectionStatus correctionStatus) {
-
-    List<Result> originalResults = resultRepository.findAllByTestEvent(originalTestEvent);
-    Set<Result> copiedResults =
-        originalResults.stream().map(Result::new).collect(Collectors.toSet());
+    List<Result> copiedResults = originalTestEvent.getResults().stream().map(Result::new).toList();
 
     TestEvent newRemoveEvent = new TestEvent(originalTestEvent, correctionStatus, "Cold feet");
     testEventRepository.save(newRemoveEvent);
 
-    copiedResults.forEach(result -> result.setTestEvent(newRemoveEvent));
-    resultRepository.saveAll(copiedResults);
-    newRemoveEvent.getResults().addAll(copiedResults);
+    resultService.addResultsToTestEvent(newRemoveEvent, copiedResults);
 
     TestOrder order = originalTestEvent.getTestOrder();
     order.setReasonForCorrection("Cold feet");
@@ -612,7 +594,7 @@ public class TestDataFactory {
 
   public void createResults(
       TestEvent testEvent, TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
-    resultRepository.save(new Result(testOrder, disease, testResult));
-    resultRepository.save(new Result(testEvent, disease, testResult));
+    resultService.addResultsToTestOrder(testOrder, List.of(new Result(disease, testResult)));
+    resultService.addResultsToTestEvent(testEvent, List.of(new Result(disease, testResult)));
   }
 }
