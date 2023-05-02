@@ -11,7 +11,7 @@ extend type Mutation {
   updateDeviceType(input: UpdateDeviceType!): DeviceType
   createSpecimenType(input: CreateSpecimenType!): SpecimenType
   addUser( # used in AddOrganizationAdminFormContainer
-    name: NameInput
+    name: NameInput @deprecated(reason: "use user parameter instead")
     firstName: String @deprecated(reason: "use user parameter instead")
     middleName: String @deprecated(reason: "use user parameter instead")
     lastName: String @deprecated(reason: "use user parameter instead")
