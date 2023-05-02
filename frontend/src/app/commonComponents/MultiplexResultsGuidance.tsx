@@ -32,6 +32,7 @@ const setPositiveFluResultInfo = (needsHeading: boolean, t: translateFn) => {
             href={t("testResult.fluNotes.positive.highRiskLink")}
             target="_blank"
             rel="noopener noreferrer"
+            key="flu-high-risk-link"
           >
             flu high risk link
           </a>,
@@ -46,6 +47,7 @@ const setPositiveFluResultInfo = (needsHeading: boolean, t: translateFn) => {
             href={t("testResult.fluNotes.positive.treatmentLink")}
             target="_blank"
             rel="noopener noreferrer"
+            key="flu-treatment-link"
           >
             flu treatment link
           </a>,

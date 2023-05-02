@@ -33,7 +33,10 @@ const setCovidResultInfo = (
               parent="p"
               i18nKey="testResult.notes.positive.p2"
               components={[
-                <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
+                <a
+                  href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html"
+                  key="covid-19-symptoms-info"
+                >
                   Watch for symptoms and learn when to seek emergency medical
                   attention
                 </a>,
@@ -49,6 +52,7 @@ const setCovidResultInfo = (
                   href={t("testResult.notes.positive.symptomsLink")}
                   target="_blank"
                   rel="noopener noreferrer"
+                  key="symptoms-link"
                 >
                   symptoms link
                 </a>,
@@ -72,6 +76,7 @@ const setCovidResultInfo = (
                 href={t("testResult.cdcLink")}
                 target="_blank"
                 rel="noopener noreferrer"
+                key="cdc-link-one"
               >
                 cdc.gov
               </a>,
@@ -79,6 +84,7 @@ const setCovidResultInfo = (
                 href={t("testResult.countyCheckToolLink")}
                 target="_blank"
                 rel="noopener noreferrer"
+                key="county-check-tool-link"
               >
                 county check tool
               </a>,
@@ -112,6 +118,7 @@ const setCovidResultInfo = (
                 href={t("testResult.cdcLink")}
                 target="_blank"
                 rel="noopener noreferrer"
+                key="cdc-link-two"
               >
                 cdc.gov
               </a>,
