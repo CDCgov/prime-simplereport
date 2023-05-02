@@ -94,7 +94,7 @@ function ToS() {
         ]}
       />
       <h3 id="other-responsibilities">
-        s{t("testResult.tos.document.otherResponsibilities.heading")}
+        {t("testResult.tos.document.otherResponsibilities.heading")}
       </h3>
       <h4>
         {t("testResult.tos.document.otherResponsibilities.ul.preheading1")}
