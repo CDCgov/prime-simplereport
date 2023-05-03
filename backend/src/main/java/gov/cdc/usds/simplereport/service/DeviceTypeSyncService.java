@@ -363,7 +363,7 @@ public class DeviceTypeSyncService {
   }
 
   private boolean hasUpdates(UpdateDeviceType update, DeviceType existing) {
-    ArrayList<DeviceTypeDisease> incomingDiseases =
+    List<DeviceTypeDisease> incomingDiseases =
         deviceTypeService.createDeviceTypeDiseaseList(
             update.getSupportedDiseaseTestPerformed(), existing);
     List<UUID> incomingSwabs = update.getSwabTypes();
