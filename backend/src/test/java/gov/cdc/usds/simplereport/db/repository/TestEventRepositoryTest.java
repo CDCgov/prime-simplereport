@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +29,6 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,7 +50,6 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;
   @Autowired private DiseaseService _diseaseService;
-  @Autowired private ResultRepository _resultRepo;
 
   private Specification<TestEvent> filter(UUID facilityId, TestResult result) {
     return (root, query, cb) -> {
@@ -77,19 +76,12 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Organization org = _dataFactory.saveValidOrganization();
     Facility place = _dataFactory.createValidFacility(org);
     Person patient = _dataFactory.createMinimalPerson(org);
-    TestOrder order = _dataFactory.createTestOrder(patient, place);
-    Result positiveResult = new Result(order, _diseaseService.covid(), TestResult.POSITIVE);
-    _resultRepo.save(positiveResult);
-    HashSet positiveResults = new HashSet<>();
-    positiveResults.add(positiveResult);
-    _repo.save(new TestEvent(order, false, positiveResults));
 
-    Result negativeResult = new Result(order, _diseaseService.covid(), TestResult.NEGATIVE);
-    _resultRepo.save(negativeResult);
-    HashSet negativeResults = new HashSet<>();
-    negativeResults.add(negativeResult);
-    _repo.save(new TestEvent(order, false, negativeResults));
+    _dataFactory.createTestEvent(patient, place, TestResult.POSITIVE);
     flush();
+    _dataFactory.createTestEvent(patient, place, TestResult.NEGATIVE);
+    flush();
+
     List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));
     assertEquals(2, found.size());
   }
@@ -105,31 +97,20 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Facility place = _dataFactory.createValidFacility(org);
     Person patient = _dataFactory.createMinimalPerson(org);
 
-    TestOrder firstOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
-    var firstResults = firstOrder.getResults();
-    var firstEvent = new TestEvent(firstOrder, false, firstResults);
-    firstResults.forEach(result -> result.setTestEvent(firstEvent));
-    _resultRepo.saveAll(firstResults);
-    _repo.save(firstEvent);
-
-    TestOrder secondOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
-    var secondResults = secondOrder.getResults();
-    var secondEvent = new TestEvent(secondOrder, false, secondResults);
-    secondResults.forEach(result -> result.setTestEvent(secondEvent));
-    _resultRepo.saveAll(secondResults);
-    _repo.save(secondEvent);
-
+    var firstEvent = _dataFactory.createTestEvent(patient, place, TestResult.POSITIVE);
     flush();
-    var savedSecondEvent = _repo.findById(secondEvent.getInternalId()).get();
+    var secondEvent = _dataFactory.createTestEvent(patient, place, TestResult.UNDETERMINED);
+    flush();
+
+    var savedSecondEvent = _repo.findById(secondEvent.getInternalId()).orElseThrow();
     assertEquals(TestResult.UNDETERMINED, savedSecondEvent.getCovidTestResult().orElseThrow());
     List<TestEvent> foundTestReports2 =
         _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
     assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
 
     testTestEventUnitTests(
-        firstOrder, firstEvent); // just leverage existing order, event to test on newer columns
+        firstEvent.getOrder(),
+        firstEvent); // just leverage existing order, event to test on newer columns
   }
 
   @Test
@@ -151,11 +132,11 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         _repo.findAll(filter(facility.getInternalId(), null), PageRequest.of(0, 10)).toList();
     assertEquals(0, results.size());
 
-    _dataFactory.doTest(bradleyOrder, TestResult.NEGATIVE);
+    _dataFactory.submitTest(bradleyOrder, TestResult.NEGATIVE);
     pause();
-    _dataFactory.doTest(charlieOrder, TestResult.POSITIVE);
+    _dataFactory.submitTest(charlieOrder, TestResult.POSITIVE);
     pause();
-    _dataFactory.doTest(adamOrder, TestResult.UNDETERMINED);
+    _dataFactory.submitTest(adamOrder, TestResult.UNDETERMINED);
 
     results = _repo.findAll(filter(facility.getInternalId(), null), PageRequest.of(0, 10)).toList();
     assertEquals(3, results.size());
@@ -302,39 +283,34 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     Person patient = _dataFactory.createMinimalPerson(org);
 
     TestOrder firstOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.POSITIVE);
-    TestEvent firstEvent = new TestEvent(firstOrder);
-    _dataFactory.createResult(firstEvent, firstOrder, _diseaseService.covid(), TestResult.POSITIVE);
+        _dataFactory.createTestOrderWithCovidResult(patient, place, TestResult.POSITIVE);
+    _dataFactory.createTestEvent(firstOrder);
+    flush();
 
     TestOrder secondOrder =
-        _dataFactory.createCompletedTestOrder(patient, place, TestResult.UNDETERMINED);
-    TestEvent secondEvent = new TestEvent(secondOrder);
-    _dataFactory.createResult(
-        secondEvent, secondOrder, _diseaseService.covid(), TestResult.UNDETERMINED);
-    _dataFactory.createResult(
-        secondEvent, secondOrder, _diseaseService.fluA(), TestResult.UNDETERMINED);
-
-    _repo.save(firstEvent);
-    _repo.save(secondEvent);
+        _dataFactory.createTestOrder(
+            patient,
+            place,
+            List.of(
+                new Result(_diseaseService.covid(), TestResult.UNDETERMINED),
+                new Result(_diseaseService.covid(), TestResult.UNDETERMINED)));
+    _dataFactory.createTestEvent(secondOrder);
+    flush();
 
     Facility otherPlace = _dataFactory.createValidFacility(org, "Other Place");
     Person otherPatient =
         _dataFactory.createMinimalPerson(org, otherPlace, "First", "Middle", "Last", "");
 
     TestOrder firstOrderOtherPlace =
-        _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.NEGATIVE);
-    TestEvent firstEventOtherPlace = new TestEvent(firstOrderOtherPlace);
-    _dataFactory.createResult(
-        firstEventOtherPlace, firstOrderOtherPlace, _diseaseService.covid(), TestResult.NEGATIVE);
+        _dataFactory.createTestOrderWithCovidResult(otherPatient, otherPlace, TestResult.NEGATIVE);
+    _dataFactory.createTestEvent(firstOrderOtherPlace);
+    flush();
 
     TestOrder secondOrderOtherPlace =
-        _dataFactory.createCompletedTestOrder(otherPatient, otherPlace, TestResult.POSITIVE);
-    TestEvent secondEventOtherPlace = new TestEvent(secondOrderOtherPlace);
-    _dataFactory.createResult(
-        secondEventOtherPlace, secondOrderOtherPlace, _diseaseService.covid(), TestResult.POSITIVE);
+        _dataFactory.createTestOrderWithCovidResult(otherPatient, otherPlace, TestResult.POSITIVE);
+    _dataFactory.createTestEvent(secondOrderOtherPlace);
+    flush();
 
-    _repo.save(firstEventOtherPlace);
-    _repo.save(secondEventOtherPlace);
     return place;
   }
 
@@ -355,17 +331,14 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         startingOrder.getAskOnEntrySurvey().getSurvey(), startingEvent.getSurveyData());
 
     // repo level test. Higher level tests done in TestOrderServiceTest
-    String reason = "Unit Test Correction " + LocalDateTime.now().toString();
-    var results = startingEvent.getResults().stream().map(Result::new).collect(Collectors.toSet());
+    String reason = "Unit Test Correction " + LocalDateTime.now();
     var correctionEvent =
-        new TestEvent(startingEvent, TestCorrectionStatus.REMOVED, reason, results);
-    results.forEach(result -> result.setTestEvent(correctionEvent));
-    _resultRepo.saveAll(results);
-    _repo.save(correctionEvent);
+        _dataFactory.createTestEventCorrection(startingEvent, TestCorrectionStatus.REMOVED, reason);
 
     Optional<TestEvent> eventReloadOptional = _repo.findById(correctionEvent.getInternalId());
     assertTrue(eventReloadOptional.isPresent());
     TestEvent eventReloaded = eventReloadOptional.get();
+    assertThat(eventReloaded.getResults()).isNotEmpty();
 
     assertEquals(reason, eventReloaded.getReasonForCorrection());
     assertEquals(TestCorrectionStatus.REMOVED, eventReloaded.getCorrectionStatus());
