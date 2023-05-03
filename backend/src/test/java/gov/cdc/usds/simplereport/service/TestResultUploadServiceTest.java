@@ -468,7 +468,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
     verify(dataHubMock).uploadFhir(stringCaptor.capture(), stringCaptor.capture());
 
-    assertEquals(output.getStatus(), UploadStatus.PENDING);
+    assertEquals(UploadStatus.PENDING, output.getStatus());
     assertEquals(output.getReportId(), csvReportId);
   }
 
@@ -533,7 +533,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     verify(dataHubMock).uploadFhir(stringCaptor.capture(), stringCaptor.capture());
 
     verify(repoMock, Mockito.times(1)).save(any());
-    assertEquals(output.getStatus(), UploadStatus.PENDING);
+    assertEquals(UploadStatus.PENDING, output.getStatus());
     assertEquals(output.getReportId(), csvReportId);
   }
 }
