@@ -163,7 +163,7 @@ public class DeviceTypeService {
     return dt;
   }
 
-  public ArrayList<DeviceTypeDisease> createDeviceTypeDiseaseList(
+  public List<DeviceTypeDisease> createDeviceTypeDiseaseList(
       List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
       DeviceType device) {
     var deviceTypeDiseaseList = new ArrayList<DeviceTypeDisease>();
