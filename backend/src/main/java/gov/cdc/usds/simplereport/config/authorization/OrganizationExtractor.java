@@ -39,6 +39,7 @@ public class OrganizationExtractor
   public List<OrganizationRoleClaims> convertClaims(Collection<String> claims) {
     // Map of orgs to facilities the user can access therein
     Map<String, Set<UUID>> facilitiesFound = new HashMap<>();
+
     // Map of orgs to roles the user has therein
     Map<String, EnumSet<OrganizationRole>> rolesFound = new HashMap<>();
     for (String claimed : claims) {
@@ -47,40 +48,9 @@ public class OrganizationExtractor
           continue;
         }
         if (claimed.contains(FACILITY_ACCESS_MARKER)) {
-          int facilityOffset = claimed.lastIndexOf(CLAIM_SEPARATOR);
-          String claimedFacility = claimed.substring(facilityOffset + CLAIM_SEPARATOR.length());
-          int facilityMarkerOffset = claimed.lastIndexOf(CLAIM_SEPARATOR + FACILITY_ACCESS_MARKER);
-          String claimedOrg =
-              claimed.substring(properties.getRolePrefix().length(), facilityMarkerOffset);
-          try {
-            UUID claimedFacilityValidated = UUID.fromString(claimedFacility);
-            Set<UUID> existingFacilities = facilitiesFound.get(claimedOrg);
-            if (existingFacilities == null) {
-              facilitiesFound.put(
-                  claimedOrg, new HashSet<>(Arrays.asList(claimedFacilityValidated)));
-            } else {
-              existingFacilities.add(claimedFacilityValidated);
-            }
-          } catch (IllegalArgumentException e) {
-            log.warn("Invalid facility_id={} for organization={}", claimedFacility, claimedOrg);
-          }
+          processClaimWithFacility(claimed, facilitiesFound);
         } else {
-          int roleOffset = claimed.lastIndexOf(CLAIM_SEPARATOR);
-          String claimedOrg = claimed.substring(properties.getRolePrefix().length(), roleOffset);
-          String claimedRole =
-              claimed.substring(
-                  roleOffset + CLAIM_SEPARATOR.length()); // the separator is part of neither string
-          try {
-            OrganizationRole claimedRoleValidated = OrganizationRole.valueOf(claimedRole);
-            EnumSet<OrganizationRole> existingRoles = rolesFound.get(claimedOrg);
-            if (existingRoles == null) {
-              rolesFound.put(claimedOrg, EnumSet.of(claimedRoleValidated));
-            } else {
-              existingRoles.add(claimedRoleValidated);
-            }
-          } catch (IllegalArgumentException e) {
-            log.warn("Unexpected role_constant={}", claimedRole);
-          }
+          processClaimWithRole(claimed, rolesFound);
         }
       } catch (IndexOutOfBoundsException e) {
         log.error("Cannot process unexpected claim={}", claimed);
@@ -111,5 +81,43 @@ public class OrganizationExtractor
   public List<OrganizationRoleClaims> convert(Collection<? extends GrantedAuthority> source) {
     return convertClaims(
         source.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
+  }
+
+  private void processClaimWithFacility(String claim, Map<String, Set<UUID>> facilitiesFound) {
+    int facilityOffset = claim.lastIndexOf(CLAIM_SEPARATOR);
+    String claimedFacility = claim.substring(facilityOffset + CLAIM_SEPARATOR.length());
+    int facilityMarkerOffset = claim.lastIndexOf(CLAIM_SEPARATOR + FACILITY_ACCESS_MARKER);
+    String claimedOrg = claim.substring(properties.getRolePrefix().length(), facilityMarkerOffset);
+    try {
+      UUID claimedFacilityValidated = UUID.fromString(claimedFacility);
+      Set<UUID> existingFacilities = facilitiesFound.get(claimedOrg);
+      if (existingFacilities == null) {
+        facilitiesFound.put(claimedOrg, new HashSet<>(Arrays.asList(claimedFacilityValidated)));
+      } else {
+        existingFacilities.add(claimedFacilityValidated);
+      }
+    } catch (IllegalArgumentException e) {
+      log.warn("Invalid facility_id={} for organization={}", claimedFacility, claimedOrg);
+    }
+  }
+
+  private void processClaimWithRole(
+      String claim, Map<String, EnumSet<OrganizationRole>> rolesFound) {
+    int roleOffset = claim.lastIndexOf(CLAIM_SEPARATOR);
+    String claimedOrg = claim.substring(properties.getRolePrefix().length(), roleOffset);
+    String claimedRole =
+        claim.substring(
+            roleOffset + CLAIM_SEPARATOR.length()); // the separator is part of neither string
+    try {
+      OrganizationRole claimedRoleValidated = OrganizationRole.valueOf(claimedRole);
+      EnumSet<OrganizationRole> existingRoles = rolesFound.get(claimedOrg);
+      if (existingRoles == null) {
+        rolesFound.put(claimedOrg, EnumSet.of(claimedRoleValidated));
+      } else {
+        existingRoles.add(claimedRoleValidated);
+      }
+    } catch (IllegalArgumentException e) {
+      log.warn("Unexpected role_constant={}", claimedRole);
+    }
   }
 }
