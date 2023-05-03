@@ -4826,15 +4826,17 @@ export const AddUserDocument = gql`
     $role: Role!
   ) {
     addUser(
-      name: {
-        firstName: $firstName
-        middleName: $middleName
-        lastName: $lastName
-        suffix: $suffix
+      user: {
+        name: {
+          firstName: $firstName
+          middleName: $middleName
+          lastName: $lastName
+          suffix: $suffix
+        }
+        email: $email
+        organizationExternalId: $organizationExternalId
+        role: $role
       }
-      email: $email
-      organizationExternalId: $organizationExternalId
-      role: $role
     ) {
       id
     }
