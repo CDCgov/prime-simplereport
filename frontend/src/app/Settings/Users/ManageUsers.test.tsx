@@ -118,6 +118,30 @@ const pendingActivationUsers: SettingsUsers[keyof SettingsUsers][] = [
   },
 ];
 
+const mockb1GetUserRequest = {
+  request: {
+    query: GetUserDocument,
+    variables: {
+      id: "b1",
+    },
+  },
+  result: {
+    data: {
+      user: {
+        id: "b1",
+        firstName: "Bob",
+        middleName: "",
+        lastName: "Bobberoo",
+        roleDescription: "admin",
+        role: "ADMIN",
+        permissions: [UserPermission.ReadPatientList],
+        email: "bob@bobberoo.org",
+        organization: { testingFacility: [] },
+      },
+    },
+  },
+};
+
 const mocks = [
   {
     request: {
@@ -142,29 +166,11 @@ const mocks = [
       },
     },
   },
-  {
-    request: {
-      query: GetUserDocument,
-      variables: {
-        id: "b1",
-      },
-    },
-    result: {
-      data: {
-        user: {
-          id: "b1",
-          firstName: "Bob",
-          middleName: "",
-          lastName: "Bobberoo",
-          roleDescription: "admin",
-          role: "ADMIN",
-          permissions: [UserPermission.ReadPatientList],
-          email: "bob@bobberoo.org",
-          organization: { testingFacility: [] },
-        },
-      },
-    },
-  },
+  // duplicating this for when we update the active user
+  // currently no elegant way to reuse mocks
+  // https://github.com/apollographql/apollo-feature-requests/issues/274
+  { ...mockb1GetUserRequest },
+  { ...mockb1GetUserRequest },
   {
     request: {
       query: GetUserDocument,
