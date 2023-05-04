@@ -8,16 +8,17 @@
     $role: Role!
   ) {
     addUser(
-      name: {
-        firstName: $firstName
-        middleName: $middleName
-        lastName: $lastName
-        suffix: $suffix
-      }
-      email: $email
-      organizationExternalId: $organizationExternalId
-      role: $role
-    ) {
-      id
+        user: {
+            name: {
+                firstName: $firstName
+                middleName: $middleName
+                lastName: $lastName
+                suffix: $suffix
+            }
+            email: $email
+            organizationExternalId: $organizationExternalId
+            role: $role
+        }) {
+        id
     }
   }

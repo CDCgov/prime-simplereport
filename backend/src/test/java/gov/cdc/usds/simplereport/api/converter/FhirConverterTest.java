@@ -643,8 +643,8 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_valid() {
-    var result =
-        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    Result result = new Result(new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
@@ -675,8 +675,8 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_correction() {
-    var result =
-        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    Result result = new Result(new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
@@ -698,8 +698,8 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_removeWithoutReason() {
-    var result =
-        new Result(null, null, new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+    Result result = new Result(new SupportedDisease("covid-19", "96741-4"), TestResult.POSITIVE);
+
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
@@ -737,9 +737,11 @@ class FhirConverterTest {
 
   @Test
   void convertToObservation_Result_nullDisease() {
+    Result result = new Result(null, TestResult.POSITIVE);
+
     var actual =
         convertToObservation(
-            new Result(null, null, null, TestResult.POSITIVE),
+            result,
             "",
             TestCorrectionStatus.ORIGINAL,
             null,
@@ -757,8 +759,9 @@ class FhirConverterTest {
     var covidDisease = new SupportedDisease("COVID-19", "96741-4");
     var fluDisease = new SupportedDisease("FLU A", "LP14239-5");
     var testOrder = TestDataBuilder.createTestOrderWithDevice();
-    var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
-    var fluResult = new Result(testOrder, fluDisease, TestResult.NEGATIVE);
+    var covidResult =
+        TestDataBuilder.createTestResult(testOrder, covidDisease, TestResult.POSITIVE);
+    var fluResult = TestDataBuilder.createTestResult(testOrder, fluDisease, TestResult.NEGATIVE);
     ReflectionTestUtils.setField(covidResult, "internalId", UUID.fromString(covidId));
     ReflectionTestUtils.setField(fluResult, "internalId", UUID.fromString(fluId));
     var device = DeviceType.builder().build();
@@ -814,7 +817,7 @@ class FhirConverterTest {
     var covidDisease = new SupportedDisease("COVID-19", "96741-4");
     var id = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var testOrder = TestDataBuilder.createTestOrderWithDevice();
-    var result = new Result(testOrder, covidDisease, TestResult.NEGATIVE);
+    var result = TestDataBuilder.createTestResult(testOrder, covidDisease, TestResult.NEGATIVE);
     var device = DeviceType.builder().build();
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
@@ -908,8 +911,7 @@ class FhirConverterTest {
   void convertToDiagnosticReport_TestEvent_correctedTestEvent() {
     var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
-        new TestEvent(
-            invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo", Collections.emptySet());
+        new TestEvent(invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo");
 
     var actual = convertToDiagnosticReport(correctedTestEvent);
 
@@ -920,8 +922,7 @@ class FhirConverterTest {
   void convertToDiagnosticReport_TestEvent_removedTestEvent() {
     var invalidTestEvent = TestDataBuilder.createEmptyTestEvent();
     var correctedTestEvent =
-        new TestEvent(
-            invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person", Collections.emptySet());
+        new TestEvent(invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person");
 
     var actual = convertToDiagnosticReport(correctedTestEvent);
 
@@ -1390,10 +1391,14 @@ class FhirConverterTest {
         new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));
     testOrder.setAskOnEntrySurvey(answers);
 
-    var covidResult = new Result(testOrder, covidDisease, TestResult.POSITIVE);
-    var fluAResult = new Result(testOrder, fluADisease, TestResult.NEGATIVE);
-    var fluBResult = new Result(testOrder, fluBDisease, TestResult.UNDETERMINED);
-    var testEvent = new TestEvent(testOrder, false, Set.of(covidResult, fluAResult, fluBResult));
+    var covidResult =
+        TestDataBuilder.createTestResult(testOrder, covidDisease, TestResult.POSITIVE);
+    var fluAResult = TestDataBuilder.createTestResult(testOrder, fluADisease, TestResult.NEGATIVE);
+    var fluBResult =
+        TestDataBuilder.createTestResult(testOrder, fluBDisease, TestResult.UNDETERMINED);
+
+    var testEvent = new TestEvent(testOrder, false);
+    testEvent.getResults().addAll(List.of(covidResult, fluAResult, fluBResult));
 
     var providerId = UUID.fromString("ffc07f31-f2af-4728-a247-8cb3aa05ccd0");
     var facilityId = UUID.fromString("1c3d14b9-e222-4a16-9fb2-d9f173034a6a");
