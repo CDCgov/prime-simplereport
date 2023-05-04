@@ -1,14 +1,19 @@
-import { loginHooks } from "../support";
+import { loginHooks } from "../support/e2e";
 
 describe("Conducting a COVID test", () => {
-  let patientName, lastName, queueCard;
+  let patientName, lastName, covidOnlyDeviceName, queueCard;
   loginHooks();
-  before("retrieve the patient name", () => {
+
+  before("retrieve the patient name and covid device name", () => {
     cy.task("getPatientName").then((name) => {
       patientName = name;
       lastName = patientName.split(",")[0];
     });
+    cy.task("getCovidOnlyDeviceName").then((name) => {
+      covidOnlyDeviceName = name;
+    });
   });
+
   it("searches for the patient", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
@@ -16,7 +21,7 @@ describe("Conducting a COVID test", () => {
     cy.get("#search-field-small").type(lastName);
     cy.get(".results-dropdown").contains(lastName)
 
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // Conduct Tests page
   });
   it("begins a test", () => {
@@ -46,8 +51,9 @@ describe("Conducting a COVID test", () => {
   });
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
+      cy.get('select[name="testDevice"]').select(covidOnlyDeviceName);
       cy.get('.prime-radios input[value="NEGATIVE"]+label').click();
-      cy.get(".prime-test-result-submit button").click();
+      cy.get(".prime-test-result-submit button").last().click();
     });
     cy.contains(`Result for ${patientName} was saved and reported.`);
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);

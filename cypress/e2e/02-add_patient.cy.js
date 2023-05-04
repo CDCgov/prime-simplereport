@@ -1,4 +1,4 @@
-import { generatePatient, loginHooks } from "../support";
+import { generatePatient, loginHooks } from "../support/e2e";
 
 const patient = generatePatient();
 
@@ -17,7 +17,7 @@ describe("Adding a single patient", () => {
     cy.get("#add-patient").click();
     cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // Patient form
   });
   it("fills out some of the form fields", () => {
