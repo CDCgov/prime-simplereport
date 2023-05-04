@@ -67,12 +67,7 @@ public class TestEvent extends BaseTestInfo {
     this(testOrder, false);
   }
 
-  public TestEvent(TestOrder testOrder, Boolean hasPriorTests, Set<Result> results) {
-    this(testOrder, hasPriorTests);
-    this.results.addAll(results);
-  }
-
-  private TestEvent(TestOrder order, Boolean hasPriorTests) {
+  public TestEvent(TestOrder order, Boolean hasPriorTests) {
     super(order.getPatient(), order.getFacility(), order.getDeviceType(), order.getSpecimenType());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
@@ -97,10 +92,7 @@ public class TestEvent extends BaseTestInfo {
 
   // Constructor for creating corrections. Copy the original event
   public TestEvent(
-      TestEvent event,
-      TestCorrectionStatus correctionStatus,
-      String reasonForCorrection,
-      Set<Result> results) {
+      TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(event, correctionStatus, reasonForCorrection);
 
     this.patientData = event.getPatientData();
@@ -109,14 +101,10 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
-    this.results.addAll(results);
   }
 
   public TestEvent(
-      TestOrder order,
-      TestCorrectionStatus correctionStatus,
-      String reasonForCorrection,
-      Set<Result> results) {
+      TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(order, correctionStatus, reasonForCorrection);
 
     TestEvent event = order.getTestEvent();
@@ -127,7 +115,6 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
-    this.results.addAll(results);
   }
 
   public UUID getPatientInternalID() {
