@@ -1,7 +1,7 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 
-import { COVID_RESULTS } from "../constants";
+import { TEST_RESULTS } from "../testResults/constants";
 
 type CovidResultInfoProps = {
   result: TestResult;
@@ -11,7 +11,7 @@ type CovidResultInfoProps = {
 
 const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
   switch (result) {
-    case COVID_RESULTS.POSITIVE:
+    case TEST_RESULTS.POSITIVE:
       return (
         <>
           <p>{t("testResult.notes.positive.p1")}</p>
@@ -88,7 +88,7 @@ const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
           />
         </>
       );
-    case COVID_RESULTS.NEGATIVE:
+    case TEST_RESULTS.NEGATIVE:
       return (
         <>
           <p>{t("testResult.notes.negative.p0")}</p>
@@ -122,7 +122,7 @@ const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
           />
         </>
       );
-    case "UNDETERMINED":
+    case TEST_RESULTS.UNDETERMINED:
       return (
         <>
           <p>{t("testResult.notes.inconclusive.p0")}</p>
