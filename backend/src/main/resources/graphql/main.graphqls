@@ -149,6 +149,17 @@ type User {
   status: String
 }
 
+input UserInput {
+  name: NameInput
+  firstName: String
+  middleName: String
+  lastName: String
+  suffix: String
+  email: String!
+  organizationExternalId: String!
+  role: Role!
+}
+
 type ApiUser {
   id: ID
   name: NameInfo!
@@ -222,6 +233,7 @@ type Patient
   preferredLanguage: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
+
 # TestResult and TestOrder should have the same properties
 type TestOrder {
   id: ID!
