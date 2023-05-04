@@ -441,16 +441,16 @@ public class Translators {
     }
   }
 
-  public static TestResult convertLoincToResult(String loinc) {
+  public static TestResult convertSnomedToResult(String snomed) {
     SnomedConceptRecord concept =
         RESULTS_SNOMED_CONCEPTS.stream()
-            .filter(snomedConcept -> loinc.equals(snomedConcept.code()))
+            .filter(snomedConcept -> snomed.equals(snomedConcept.code()))
             .findFirst()
             .orElse(INVALID_SNOMED_CONCEPT);
     return concept.displayName();
   }
 
-  public static String convertTestResultToLoinc(TestResult result) {
+  public static String convertTestResultToSnomed(TestResult result) {
     SnomedConceptRecord concept =
         RESULTS_SNOMED_CONCEPTS.stream()
             .filter(snomedConcept -> result.equals(snomedConcept.displayName()))
