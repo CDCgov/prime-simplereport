@@ -34,6 +34,8 @@ public class DeviceTypeService {
 
   private static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
+  private static final String DUPLICATE_DEVICE_MESSAGE =
+      "an active device type already exists with the same manufacturer and model";
 
   private final DeviceTypeRepository deviceTypeRepository;
   private final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
@@ -128,10 +130,11 @@ public class DeviceTypeService {
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType createDeviceType(CreateDeviceType createDevice) {
-
     List<SpecimenType> specimenTypes =
         createDevice.getSwabTypes().stream()
-            .map(uuid -> specimenTypeRepository.findById(uuid).get())
+            .map(specimenTypeRepository::findById)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
             .toList();
 
     specimenTypes.forEach(
@@ -140,6 +143,14 @@ public class DeviceTypeService {
             throw new IllegalGraphqlArgumentException(SWAB_TYPE_DELETED_MESSAGE);
           }
         });
+
+    deviceTypeRepository
+        .findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
+            createDevice.getManufacturer(), createDevice.getModel())
+        .ifPresent(
+            deviceType -> {
+              throw new IllegalGraphqlArgumentException(DUPLICATE_DEVICE_MESSAGE);
+            });
 
     DeviceType dt =
         deviceTypeRepository.save(
