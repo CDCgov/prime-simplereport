@@ -488,7 +488,7 @@ public class FhirConverter {
             result -> {
               Optional<DeviceTypeDisease> deviceTypeDisease =
                   deviceType.getSupportedDiseaseTestPerformed().stream()
-                      .filter(code -> code.getSupportedDisease() == result.getDisease())
+                      .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
                       .findFirst();
               String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease);
               String equipmentUid = getEquipmentUid(deviceTypeDisease);
@@ -531,12 +531,12 @@ public class FhirConverter {
           ConvertToObservationProps.builder()
               .diseaseCode(testPerformedCode)
               .diseaseName(result.getDisease().getName())
-              .resultCode(result.getResultLOINC())
+              .resultCode(result.getResultSNOMED())
               .correctionStatus(correctionStatus)
               .correctionReason(correctionReason)
               .id(result.getInternalId().toString())
               .resultDescription(
-                  Translators.convertConceptCodeToConceptName(result.getResultLOINC()))
+                  Translators.convertConceptCodeToConceptName(result.getResultSNOMED()))
               .testkitNameId(testkitNameId)
               .equipmentUid(equipmentUid)
               .deviceModel(deviceModel)

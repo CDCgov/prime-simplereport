@@ -303,11 +303,11 @@ class TestEventExportTest extends BaseRepositoryTest {
     Person person = dataFactory.createFullPerson(org);
     TestOrder testOrder1 = dataFactory.createTestOrder(person, facility);
     testOrder1.setDeviceTypeAndSpecimenType(deviceType1, dataFactory.getGenericSpecimen());
-    TestEvent testEvent1 = dataFactory.doTest(testOrder1, TestResult.NEGATIVE);
+    TestEvent testEvent1 = dataFactory.submitTest(testOrder1, TestResult.NEGATIVE);
 
     TestOrder testOrder2 = dataFactory.createTestOrder(person, facility);
     testOrder2.setDeviceTypeAndSpecimenType(deviceType2, dataFactory.getGenericSpecimen());
-    TestEvent testEvent2 = dataFactory.doTest(testOrder2, TestResult.POSITIVE);
+    TestEvent testEvent2 = dataFactory.submitTest(testOrder2, TestResult.POSITIVE);
 
     // WHEN
     TestEventExport exportedEvent1 = new TestEventExport(testEvent1);
