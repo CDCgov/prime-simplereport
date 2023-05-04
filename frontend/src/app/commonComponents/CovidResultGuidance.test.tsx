@@ -25,7 +25,7 @@ describe("CovidResultGuidance", () => {
       const { container: containerPXP } = render(
         <CovidResultGuidance
           result={testResult}
-          isPatientApp={false}
+          isPatientApp={true}
           needsHeading={false}
         />
       );

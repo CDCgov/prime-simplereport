@@ -56,7 +56,7 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "NEG
     testResult.notes.negative.p0
   </p>
   <ul
-    class="sr-multi-column"
+    class=""
   >
     <li>
       testResult.notes.negative.symptoms.li0
@@ -213,6 +213,9 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "UND
 <div>
   <p>
     testResult.notes.inconclusive.p0
+  </p>
+  <p>
+    testResult.notes.inconclusive.p1
   </p>
 </div>
 `;
