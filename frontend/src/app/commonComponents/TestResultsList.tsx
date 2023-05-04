@@ -56,7 +56,7 @@ const simpleReportAppResultList = (
   t: translateFn
 ) => {
   return (
-    <li>
+    <li key={`${diseaseName}-${result}`}>
       <b>{setDiseaseName(diseaseName, t)}</b>
       <div>
         <strong>

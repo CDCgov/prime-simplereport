@@ -3,17 +3,13 @@ import { Trans, useTranslation } from "react-i18next";
 
 import { COVID_RESULTS } from "../constants";
 
-interface Props {
+type CovidResultInfoProps = {
   result: TestResult;
   isPatientApp: boolean;
-  needsHeading: boolean;
-}
+  t: translateFn;
+};
 
-const setCovidResultInfo = (
-  result: TestResult,
-  isPatientApp: boolean,
-  t: translateFn
-) => {
+const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
   switch (result) {
     case COVID_RESULTS.POSITIVE:
       return (
@@ -126,44 +122,39 @@ const setCovidResultInfo = (
           />
         </>
       );
-    default:
+    case "UNDETERMINED":
       return (
         <>
           <p>{t("testResult.notes.inconclusive.p0")}</p>
           {isPatientApp && <p>{t("testResult.notes.inconclusive.p1")}</p>}
         </>
       );
+    default:
+      return null;
   }
 };
 
-const CovidResultGuidance = (props: Props) => {
-  const result = props.result;
-  const isPatientApp = props.isPatientApp;
-  const needsHeading = props.needsHeading;
+interface CovidResultGuidanceProps {
+  result: TestResult;
+  isPatientApp: boolean;
+  needsHeading: boolean;
+}
+const CovidResultGuidance = ({
+  result,
+  isPatientApp,
+  needsHeading,
+}: CovidResultGuidanceProps) => {
   const { t } = useTranslation();
-  const covidGuidanceArray: any = [];
 
-  if (needsHeading) {
-    covidGuidanceArray.push(
-      <p className="text-bold sr-guidance-heading">
-        {t("testResult.notes.h1")}
-      </p>
-    );
-  }
-
-  switch (result) {
-    case "UNDETERMINED":
-      covidGuidanceArray.push(
-        setCovidResultInfo("UNDETERMINED", isPatientApp, t)
-      );
-      break;
-    case "NEGATIVE":
-      covidGuidanceArray.push(setCovidResultInfo("NEGATIVE", isPatientApp, t));
-      break;
-    case "POSITIVE":
-      covidGuidanceArray.push(setCovidResultInfo("POSITIVE", isPatientApp, t));
-      break;
-  }
-  return covidGuidanceArray;
+  return (
+    <>
+      {needsHeading && (
+        <p className="text-bold sr-guidance-heading">
+          {t("testResult.notes.h1")}
+        </p>
+      )}
+      <CovidResultInfo result={result} isPatientApp={isPatientApp} t={t} />
+    </>
+  );
 };
 export default CovidResultGuidance;
