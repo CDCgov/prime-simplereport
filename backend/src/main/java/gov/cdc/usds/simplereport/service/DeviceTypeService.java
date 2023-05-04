@@ -17,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class DeviceTypeService {
 
-  public static final String SWAB_TYPE_DELETED_MESSAGE =
+  private static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
+
   private final DeviceTypeRepository deviceTypeRepository;
   private final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
@@ -81,7 +83,7 @@ public class DeviceTypeService {
               .map(specimenTypeRepository::findById)
               .filter(Optional::isPresent)
               .map(Optional::get)
-              .collect(Collectors.toList());
+              .toList();
 
       updatedSpecimenTypes.forEach(
           specimenType -> {
@@ -96,7 +98,7 @@ public class DeviceTypeService {
                   specimenType ->
                       new DeviceTypeSpecimenTypeMapping(
                           device.getInternalId(), specimenType.getInternalId()))
-              .collect(Collectors.toList());
+              .toList();
 
       List<DeviceTypeSpecimenTypeMapping> exitingDeviceSpecimenTypes =
           deviceSpecimenTypeNewRepository.findAllByDeviceTypeId(device.getInternalId());
@@ -113,6 +115,7 @@ public class DeviceTypeService {
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
       deviceSpecimenTypeNewRepository.saveAll(toBeAddedDeviceSpecimenTypes);
     }
+
     if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
       var deviceTypeDiseaseList =
           createDeviceTypeDiseaseList(updateDevice.getSupportedDiseaseTestPerformed(), device);
@@ -129,7 +132,7 @@ public class DeviceTypeService {
     List<SpecimenType> specimenTypes =
         createDevice.getSwabTypes().stream()
             .map(uuid -> specimenTypeRepository.findById(uuid).get())
-            .collect(Collectors.toList());
+            .toList();
 
     specimenTypes.forEach(
         specimenType -> {
@@ -160,7 +163,7 @@ public class DeviceTypeService {
     return dt;
   }
 
-  private ArrayList<DeviceTypeDisease> createDeviceTypeDiseaseList(
+  public List<DeviceTypeDisease> createDeviceTypeDiseaseList(
       List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
       DeviceType device) {
     var deviceTypeDiseaseList = new ArrayList<DeviceTypeDisease>();
@@ -174,6 +177,7 @@ public class DeviceTypeService {
                           .deviceTypeId(device.getInternalId())
                           .supportedDisease(disease)
                           .testPerformedLoincCode(input.getTestPerformedLoincCode())
+                          .testOrderedLoincCode(input.getTestOrderedLoincCode())
                           .equipmentUid(input.getEquipmentUid())
                           .testkitNameId(input.getTestkitNameId())
                           .testOrderedLoincCode(input.getTestOrderedLoincCode())
