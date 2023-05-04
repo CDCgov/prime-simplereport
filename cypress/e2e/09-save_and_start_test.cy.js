@@ -1,7 +1,7 @@
-import { generatePatient, loginHooks } from "../support";
+import { generatePatient, loginHooks } from "../support/e2e";
 
 loginHooks();
-let patientName, lastName, phoneNumber;
+let patientName, lastName, phoneNumber, covidOnlyDeviceName;
 before("retrieve the patient info", () => {
   cy.task("getPatientName").then((name) => {
     patientName = name;
@@ -10,9 +10,23 @@ before("retrieve the patient info", () => {
   cy.task("getPatientPhone").then((phone) => {
     phoneNumber = phone;
   });
+  cy.task("getCovidOnlyDeviceName").then((name) => {
+    covidOnlyDeviceName = name;
+  });
+});
+
+after(() => {
+  // delete the device if it exists
+  cy.makePOSTRequest({
+    operationName: "MarkDeviceTypeAsDeleted",
+    variables: {deviceName: covidOnlyDeviceName},
+    query:
+      "mutation MarkDeviceTypeAsDeleted($deviceName: String){\n  markDeviceTypeAsDeleted(deviceId: null, deviceName: $deviceName)\n{name}}",
+  });
 });
 
 describe("edit patient and save and start test", () => {
+
   it("searches for the patient and opens edit patient form", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
@@ -23,7 +37,7 @@ describe("edit patient and save and start test", () => {
     cy.get(".sr-patient-list").contains(patientName).should('exist').click();
     cy.contains("General information").should('exist');
 
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // Edit Patient page
   });
   it("edits the patient and clicks save and start test and verifies AoE form is correctly filled in", () => {
@@ -70,7 +84,7 @@ describe("add patient and save and start test", () => {
     cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");
 
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // New Patient page
   });
   it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
