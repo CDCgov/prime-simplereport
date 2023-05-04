@@ -2,14 +2,14 @@ const {
   loginHooks,
   generateFacility,
   generateOrganization,
-  generateUser,
-} = require("../support");
+  generateUser
+} = require("../support/e2e")
 
 const facility = generateFacility();
 const organization = generateOrganization();
 const user = generateUser();
 
-describe("Organization sign up", () => {
+describe("Organization sign up",() => {
   loginHooks();
   before(() => {
     // Since these tests interact with Okta, we need to use
@@ -22,7 +22,7 @@ describe("Organization sign up", () => {
   });
   it("navigates to the sign up form", () => {
     cy.visit("/sign-up");
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // Sign up page
 
     cy.contains("Sign up for SimpleReport");
@@ -52,7 +52,7 @@ describe("Organization sign up", () => {
 
     cy.contains("Support admin");
 
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y();
 
     cy.contains("Organizations pending identify verification").click();
@@ -81,7 +81,7 @@ describe("Organization sign up", () => {
     );
     cy.get('input[name="justification"]').type("I am a test user").blur();
 
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y();
 
     cy.contains("Access data").click();
@@ -95,7 +95,7 @@ describe("Organization sign up", () => {
     cy.contains("CLIA number");
 
     // Test a11y on Manage Facilities tab
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y();
 
     cy.contains("+ New facility").click();
@@ -131,7 +131,7 @@ describe("Organization sign up", () => {
     cy.contains("No results");
 
     // Test a11y on the People page
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y();
   });
 });

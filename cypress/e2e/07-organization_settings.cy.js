@@ -1,4 +1,4 @@
-import {loginHooks} from "../support";
+import {loginHooks} from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
 import {aliasQuery} from "../utils/graphql-test-utils";
 
@@ -16,7 +16,7 @@ describe("Updating organization settings", () => {
     cy.get(".prime-container.settings-tab").contains("Manage organization");
 
     // Test a11y on the Manage organization page
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y();
   });
   it("attempts an empty selection for organization type", () => {

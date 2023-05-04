@@ -2,8 +2,10 @@ package gov.cdc.usds.simplereport.service;
 
 import feign.Param;
 import gov.cdc.usds.simplereport.config.DataHubClientConfiguration;
+import gov.cdc.usds.simplereport.service.model.reportstream.LIVDResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -29,4 +31,7 @@ public interface DataHubClient {
   UploadResponse getSubmission(
       @PathVariable("id") UUID id,
       @RequestHeader(value = "Authorization", required = true) String authorizationHeader);
+
+  @GetMapping(value = "/api/metadata/livd", consumes = "application/text")
+  List<LIVDResponse> getLIVDTable();
 }
