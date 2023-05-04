@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "NEGATIVE" result 1`] = `
+exports[`CovidResultGuidance displays guidance for "NEGATIVE" result 1`] = `
 <div>
   <p
     class="text-bold sr-guidance-heading"
@@ -50,7 +50,7 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "NEG
 </div>
 `;
 
-exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "NEGATIVE" result 2`] = `
+exports[`CovidResultGuidance displays guidance for "NEGATIVE" result 2`] = `
 <div>
   <p>
     testResult.notes.negative.p0
@@ -95,7 +95,7 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "NEG
 </div>
 `;
 
-exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "POSITIVE" result 1`] = `
+exports[`CovidResultGuidance displays guidance for "POSITIVE" result 1`] = `
 <div>
   <p
     class="text-bold sr-guidance-heading"
@@ -148,7 +148,7 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "POS
 </div>
 `;
 
-exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "POSITIVE" result 2`] = `
+exports[`CovidResultGuidance displays guidance for "POSITIVE" result 2`] = `
 <div>
   <p>
     testResult.notes.positive.p1
@@ -196,7 +196,7 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "POS
 </div>
 `;
 
-exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "UNDETERMINED" result 1`] = `
+exports[`CovidResultGuidance displays guidance for "UNDETERMINED" result 1`] = `
 <div>
   <p
     class="text-bold sr-guidance-heading"
@@ -209,7 +209,7 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "UND
 </div>
 `;
 
-exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "UNDETERMINED" result 2`] = `
+exports[`CovidResultGuidance displays guidance for "UNDETERMINED" result 2`] = `
 <div>
   <p>
     testResult.notes.inconclusive.p0
@@ -220,7 +220,7 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "UND
 </div>
 `;
 
-exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "UNKNOWN" result 1`] = `
+exports[`CovidResultGuidance displays guidance for "UNKNOWN" result 1`] = `
 <div>
   <p
     class="text-bold sr-guidance-heading"
@@ -230,4 +230,4 @@ exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "UNK
 </div>
 `;
 
-exports[`CovidResultGuidance COVID-19 result guidance displays guidance for "UNKNOWN" result 2`] = `<div />`;
+exports[`CovidResultGuidance displays guidance for "UNKNOWN" result 2`] = `<div />`;
