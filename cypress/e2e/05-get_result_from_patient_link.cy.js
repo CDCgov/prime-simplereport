@@ -18,7 +18,7 @@ describe("Getting a test result from a patient link", () => {
     cy.visit(patientLink);
   });
   it("contains no accessibility issues", () => {
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // PXP page
   });
   it("accepts the terms of service", () => {

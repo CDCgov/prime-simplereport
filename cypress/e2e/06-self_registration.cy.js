@@ -1,4 +1,4 @@
-import { loginHooks, generatePatient } from "../support";
+import { loginHooks, generatePatient } from "../support/e2e";
 
 const patient = generatePatient();
 
@@ -11,7 +11,7 @@ describe("Patient self registration", () => {
 
 
     // Test a11y on the Patient self registration page
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y();
 
     cy.get("#org-link").then(($link) => cy.visit($link.val()));
@@ -19,7 +19,7 @@ describe("Patient self registration", () => {
   it("loads terms of service", () => {
     cy.contains("Terms of service");
 
-    cy.injectAxe();
+    cy.injectSRAxe();
     cy.checkA11y(); // Terms of Service
   });
   it("accepts the terms of service", () => {

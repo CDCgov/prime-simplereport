@@ -61,6 +61,20 @@ export const generateOrganization = () => {
   return organization;
 };
 
+export const generateMultiplexDevice = () => {
+  const multiplexDevice = {};
+  multiplexDevice.name = `${testNumber()}-${faker.company.companyName()}-multiplex-device`;
+  multiplexDevice.isMultiplex = true;
+  return multiplexDevice;
+}
+
+export const generateCovidOnlyDevice = () => {
+  const covidOnlyDevice = {};
+  covidOnlyDevice.name = `${testNumber()}-${faker.company.companyName()}-covid-device`;
+  covidOnlyDevice.isMultiplex = false
+  return covidOnlyDevice;
+}
+
 export const generateUser = () => {
   const user = {};
   user.email = `${testNumber()}-${faker.internet.email()}`;
