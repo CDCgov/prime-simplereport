@@ -136,8 +136,4 @@ public class TestOrder extends BaseTestInfo {
   public UUID getPatientAnswersId() {
     return patientAnswersId;
   }
-
-  public void addResult(Result result) {
-    this.results.add(result);
-  }
 }

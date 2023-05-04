@@ -280,14 +280,15 @@ export type MutationAddPatientToQueueArgs = {
 };
 
 export type MutationAddUserArgs = {
-  email: Scalars["String"];
+  email?: InputMaybe<Scalars["String"]>;
   firstName?: InputMaybe<Scalars["String"]>;
   lastName?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  organizationExternalId: Scalars["String"];
-  role: Role;
+  organizationExternalId?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Role>;
   suffix?: InputMaybe<Scalars["String"]>;
+  user?: InputMaybe<UserInput>;
 };
 
 export type MutationAddUserToCurrentOrgArgs = {
@@ -1064,6 +1065,17 @@ export type User = {
   roles: Array<Role>;
   status?: Maybe<Scalars["String"]>;
   suffix?: Maybe<Scalars["String"]>;
+};
+
+export type UserInput = {
+  email: Scalars["String"];
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName?: InputMaybe<Scalars["String"]>;
+  middleName?: InputMaybe<Scalars["String"]>;
+  name?: InputMaybe<NameInput>;
+  organizationExternalId: Scalars["String"];
+  role: Role;
+  suffix?: InputMaybe<Scalars["String"]>;
 };
 
 export enum UserPermission {
@@ -4814,15 +4826,17 @@ export const AddUserDocument = gql`
     $role: Role!
   ) {
     addUser(
-      name: {
-        firstName: $firstName
-        middleName: $middleName
-        lastName: $lastName
-        suffix: $suffix
+      user: {
+        name: {
+          firstName: $firstName
+          middleName: $middleName
+          lastName: $lastName
+          suffix: $suffix
+        }
+        email: $email
+        organizationExternalId: $organizationExternalId
+        role: $role
       }
-      email: $email
-      organizationExternalId: $organizationExternalId
-      role: $role
     ) {
       id
     }
