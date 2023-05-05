@@ -50,7 +50,7 @@ const setResultSymbol = (result: string, t: translateFn) => {
   }
 };
 
-const simpleReportAppResultList = (
+const reportingAppResultListItem = (
   diseaseName: MultiplexDisease,
   result: TestResult,
   t: translateFn
@@ -71,13 +71,13 @@ const simpleReportAppResultList = (
   );
 };
 
-const pxpAppResultList = (
+const pxpAppResultListItem = (
   diseaseName: MultiplexDisease,
   result: TestResult,
   t: translateFn
 ) => {
   return (
-    <>
+    <div key={`${diseaseName}-${result}`}>
       <h2 className="font-heading-sm">
         {setDiseaseName(diseaseName, t) + " " + t("testResult.resultLiteral")}
       </h2>
@@ -88,7 +88,7 @@ const pxpAppResultList = (
           {setResultSymbol(result, t)}
         </span>
       </p>
-    </>
+    </div>
   );
 };
 
@@ -102,22 +102,22 @@ const TestResultsList = (props: Props) => {
     multiplexEnabled && hasMultiplexResults(results)
       ? getSortedResults(results)
       : [getResultObjByDiseaseName(results, "COVID-19")];
-  const testResultsArray: any = [];
-  sortedTestResults.forEach((sortedTestResult: MultiplexResult) => {
-    const diseaseName = sortedTestResult.disease.name;
-    const sortedResult = getResultByDiseaseName(
-      sortedTestResults,
-      diseaseName
-    ) as TestResult;
-    let resultElement;
-    if (isPatientApp) {
-      resultElement = pxpAppResultList(diseaseName, sortedResult, t);
-    } else {
-      resultElement = simpleReportAppResultList(diseaseName, sortedResult, t);
-    }
-    testResultsArray.push(resultElement);
-  });
-  return testResultsArray;
+
+  return (
+    <>
+      {sortedTestResults.map((sortedTestResult: MultiplexResult) => {
+        const diseaseName = sortedTestResult.disease.name;
+        const sortedResult = getResultByDiseaseName(
+          sortedTestResults,
+          diseaseName
+        ) as TestResult;
+
+        return isPatientApp
+          ? pxpAppResultListItem(diseaseName, sortedResult, t)
+          : reportingAppResultListItem(diseaseName, sortedResult, t);
+      })}
+    </>
+  );
 };
 
 export default TestResultsList;

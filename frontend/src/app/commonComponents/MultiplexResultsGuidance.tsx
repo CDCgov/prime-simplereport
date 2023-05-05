@@ -68,13 +68,17 @@ const MultiplexResultsGuidance = (props: MultiplexResultsGuidanceProps) => {
   const isPatientApp = props.isPatientApp;
   const multiplexEnabled = props.multiplexEnabled;
   const { t } = useTranslation();
-  const needsCovidHeading = haCovidResults(results) && !isPatientApp;
+  const needsCovidHeading = haCovidResults(results);
   const needsFluGuidance = multiplexEnabled && hasPositiveFluResults(results);
   const covidResult = getResultByDiseaseName(results, "COVID-19") as TestResult;
 
   return (
     <>
-      <div className={needsCovidHeading ? "sr-margin-bottom-28px" : ""}>
+      <div
+        className={
+          needsCovidHeading && !isPatientApp ? "sr-margin-bottom-28px" : ""
+        }
+      >
         <CovidResultGuidance
           result={covidResult}
           isPatientApp={isPatientApp}
