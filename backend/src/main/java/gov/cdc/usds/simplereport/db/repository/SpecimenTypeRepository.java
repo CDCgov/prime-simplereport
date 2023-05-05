@@ -14,4 +14,6 @@ public interface SpecimenTypeRepository extends EternalAuditedEntityRepository<S
   Optional<SpecimenType> findByTypeCode(String typeCode);
 
   List<SpecimenType> findAllByInternalIdIn(List<UUID> uuids);
+
+  Optional<SpecimenType> findByTypeCodeAndIsDeletedFalse(String swabType);
 }
