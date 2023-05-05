@@ -46,8 +46,8 @@ jobs:
           export MAINTENANCE_ENV=${{ github.event.inputs.env }}
           echo "{\"active\": $MAINTENANCE_BOOLEAN, \"header\": \"$MAINTENANCE_HEADER\", \"message\": \"$MAINTENANCE_MESSAGE\"}" > maintenance.json
           yarn run maintenance:deploy
-      - name: notify support team
+      - name: Notify support team
         uses: ./.github/actions/banner-status-notification
-        if: ${{ success() && github.event.inputs.env == 'prod'}}
+        if: ${{ success() && github.event.inputs.env == 'stg'}}
         with:
           status-active: ${{ github.event.inputs.active == 'true' }}

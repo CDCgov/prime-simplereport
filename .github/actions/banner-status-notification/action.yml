@@ -33,27 +33,3 @@ runs:
         body: ${{ steps.generate-body.outputs.email-body }}
         to: ${{ secrets.SUPPORT_MAIL_ADDRESS }}
         from: ${{ secrets.APP_GMAIL_ADDRESS }}
-    - name: notify banner is ON
-      uses: dawidd6/action-send-mail@v3
-      if: ${{ inputs.status-active == true }}
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: ${{ secrets.GMAIL_USER }}
-        password: ${{ secrets.GMAIL_PASS }}
-        subject: Simple Report maintenance banner is ON
-        body: The maintenance banner is now being displayed in the Simple Report application.
-        to: ${{ secrets.SUPPORT_MAIL_ADDRESS }}
-        from: ${{ secrets.APP_GMAIL_ADDRESS }}
-    - name: notify banner is OFF
-      uses: dawidd6/action-send-mail@v3
-      if: ${{ inputs.status-active == false }}
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: ${{ secrets.GMAIL_USER }}
-        password: ${{ secrets.GMAIL_PASS }}
-        subject: Simple Report maintenance banner is OFF
-        body: The maintenance banner has been removed from the Simple Report application.
-        to: ${{ secrets.SUPPORT_MAIL_ADDRESS }}
-        from: ${{ secrets.APP_GMAIL_ADDRESS }}
