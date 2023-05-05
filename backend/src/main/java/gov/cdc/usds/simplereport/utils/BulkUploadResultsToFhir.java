@@ -219,7 +219,8 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderId().value);
 
     var additionalDeviceData =
-        deviceTypeRepository.findDeviceTypeByModelIgnoreCase(row.getEquipmentModelName().value);
+        deviceTypeRepository.findDeviceTypeByModelIgnoreCaseAndIsDeletedFalse(
+            row.getEquipmentModelName().value);
 
     String equipmentUid = null;
     String testKitNameId = null;

@@ -14,7 +14,7 @@ RUN apt-get install -y wget apt-transport-https; \
 ADD ./cypress /app/cypress
 RUN mkdir -p /app/cypress/screenshots
 RUN mkdir -p /app/cypress/videos
-COPY ./cypress.json /app/cypress.json
+COPY ./cypress/cypress.config.js /app/cypress.config.js
 COPY ./cypress/package.json /app/package.json
 COPY ./cypress/yarn.lock /app/yarn.lock
 

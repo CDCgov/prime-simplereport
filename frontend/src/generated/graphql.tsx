@@ -280,15 +280,7 @@ export type MutationAddPatientToQueueArgs = {
 };
 
 export type MutationAddUserArgs = {
-  email?: InputMaybe<Scalars["String"]>;
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  name?: InputMaybe<NameInput>;
-  organizationExternalId?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Role>;
-  suffix?: InputMaybe<Scalars["String"]>;
-  user?: InputMaybe<UserInput>;
+  user: UserInput;
 };
 
 export type MutationAddUserToCurrentOrgArgs = {

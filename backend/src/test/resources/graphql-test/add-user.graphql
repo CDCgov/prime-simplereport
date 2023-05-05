@@ -8,15 +8,17 @@ mutation addUserOp(
     $role: Role!
     ){
   addUser(
-    name: {
-      firstName: $firstName
-      middleName: $middleName
-      lastName: $lastName
-      suffix: $suffix
-    }
-    email: $email
-    organizationExternalId: $organizationExternalId
-    role: $role
+      user:{
+          name: {
+              firstName: $firstName
+              middleName: $middleName
+              lastName: $lastName
+              suffix: $suffix
+          }
+          email: $email
+          organizationExternalId: $organizationExternalId
+          role: $role
+      }
   ) {
       id
       name {
@@ -50,13 +52,15 @@ mutation addUserLegacy(
     $role: Role!,
     ){
   addUser(
-    firstName: $firstName
-    middleName: $middleName
-    lastName: $lastName
-    suffix: $suffix
-    email: $email
-    organizationExternalId: $organizationExternalId
-    role: $role
+      user:{
+          firstName: $firstName
+          middleName: $middleName
+          lastName: $lastName
+          suffix: $suffix
+          email: $email
+          organizationExternalId: $organizationExternalId
+          role: $role
+      }
   ) {
       id
       name {
@@ -89,11 +93,13 @@ mutation addUserNovel(
     $role: Role!
     ){
   addUser(
-    name: $name
-    lastName: $lastName
-    email: $email
-    organizationExternalId: $organizationExternalId
-    role: $role
+      user:{
+          name: $name
+          lastName: $lastName
+          email: $email
+          organizationExternalId: $organizationExternalId
+          role: $role
+      }
   ) {
       id
       name {
