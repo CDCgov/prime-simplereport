@@ -30,23 +30,7 @@ public class UserMutationResolver {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @MutationMapping
-  public User addUser(
-      @Argument PersonName name,
-      @Argument String firstName,
-      @Argument String middleName,
-      @Argument String lastName,
-      @Argument String suffix,
-      @Argument String email,
-      @Argument String organizationExternalId,
-      @Argument Role role,
-      @Argument UserInput user) {
-
-    if (user == null) {
-      name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-      UserInfo userInfo = _us.createUser(email, name, organizationExternalId, role);
-      return new User(userInfo);
-    }
-
+  public User addUser(@Argument UserInput user) {
     UserInfo userInfo =
         _us.createUser(
             user.getEmail(),
