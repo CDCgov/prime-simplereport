@@ -55,8 +55,8 @@ describe("Adding covid only and multiplex devices", () => {
       cy.get('input[name="name"]').should("have.value", multiplexDevice.name);
       cy.injectSRAxe();
       cy.checkA11y();
-      cy.get('input[name="model"]').should("have.value", "1RX");
-      cy.get('input[name="manufacturer"]').should("have.value", "acme");
+      cy.get('input[name="model"]').should("have.value", multiplexDevice.model);
+      cy.get('input[name="manufacturer"]').should("have.value", multiplexDevice.manufacturer);
       cy.get(".pill").should("have.length", 1);
       cy.get('select[name="supportedDiseases.0.supportedDisease"').find(":selected").should("have.text", "COVID-19")
       cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').should("have.value","123-456")
