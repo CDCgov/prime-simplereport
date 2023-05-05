@@ -115,8 +115,8 @@ Cypress.Commands.add("selectFacility", () => {
 
 Cypress.Commands.add("addDevice", (device) => {
   cy.get('input[name="name"]').type(device.name);
-  cy.get('input[name="model"]').type("1RX");
-  cy.get('input[name="manufacturer"]').type("acme");
+  cy.get('input[name="model"]').type(device.model);
+  cy.get('input[name="manufacturer"]').type(device.manufacturer);
   cy.get('input[name="testLength"]').type("15");
   cy.get('input[role="combobox"]').first().type("Swab");
   cy.get('li[id="multi-select-swabTypes-list--option-1"]').click();
