@@ -12,7 +12,7 @@ terraform {
     }
     okta = {
       source  = "okta/okta"
-      version = "~> 3.42"
+      version = "~> 4.0"
     }
     pagerduty = {
       source  = "pagerduty/pagerduty"
