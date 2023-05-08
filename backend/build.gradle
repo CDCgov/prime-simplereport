@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.10'
+    id 'org.springframework.boot' version '2.7.11'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
@@ -63,7 +63,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.7'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
