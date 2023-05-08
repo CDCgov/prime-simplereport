@@ -9,6 +9,8 @@ import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getFacilityIdFromUrl } from "../../utils/url";
 import { PATIENT_TERM } from "../../../config/constants";
+import { useTypedSelector } from "../../utils/hooks";
+import { appPermissions, hasPermission } from "../../permissions";
 
 interface SearchResultsProps {
   patients: Patient[];
@@ -42,6 +44,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     selectedPatient,
   } = props;
 
+  const user = useTypedSelector((state) => state.user);
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
@@ -54,6 +57,11 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       setCanAddToQueue(true);
     }
   }, [selectedPatient]);
+
+  const canEditPeople = hasPermission(
+    user.permissions,
+    appPermissions.people.canEdit
+  );
 
   function handleSaveCallback(a: any) {
     if (props.page === "queue" && dialogPatient !== null) {
@@ -114,14 +122,21 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       >
         <div className="margin-bottom-105">No results found.</div>
         <div>
-          Check for spelling errors or
-          <Button
-            className="margin-left-1"
-            label={`Add new ${PATIENT_TERM}`}
-            onClick={() => {
-              setRedirect(`/add-patient?facility=${activeFacilityId}`);
-            }}
-          />
+          Check for spelling errors
+          {canEditPeople ? (
+            <>
+              {" or "}
+              <Button
+                className="margin-left-1"
+                label={`Add new ${PATIENT_TERM}`}
+                onClick={() => {
+                  setRedirect(`/add-patient?facility=${activeFacilityId}`);
+                }}
+              />
+            </>
+          ) : (
+            "."
+          )}
         </div>
       </div>
     );

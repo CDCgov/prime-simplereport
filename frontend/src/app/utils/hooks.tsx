@@ -1,4 +1,7 @@
 import React, { useEffect, useRef } from "react";
+import { TypedUseSelectorHook, useSelector } from "react-redux";
+
+import { RootState } from "../store";
 
 const useOutsideClick = (
   ref: React.RefObject<HTMLDivElement>,
@@ -39,4 +42,6 @@ const useDocumentTitle = (title: string, retainOnUnmount = false) => {
   }, [retainOnUnmount, title]);
 };
 
-export { useOutsideClick, useDocumentTitle };
+const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
+
+export { useOutsideClick, useDocumentTitle, useTypedSelector };

@@ -2,9 +2,13 @@ import React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import createMockStore from "redux-mock-store";
+import { Provider } from "react-redux";
 
 import { Patient } from "../../patients/ManagePatients";
 import { PATIENT_TERM } from "../../../config/constants";
+import { initialState } from "../../store";
+import { UserPermission } from "../../../generated/graphql";
 
 import SearchResults from "./SearchResults";
 
@@ -52,6 +56,34 @@ const patients: Patient[] = [
 
 const mockFacilityID = "facility-id-101";
 
+const mockStore = createMockStore([]);
+
+const standardUser = {
+  id: "a123",
+  firstName: "Bob",
+  lastName: "Bobberoo",
+  middleName: "",
+  suffix: "",
+  email: "bob@example.com",
+  isAdmin: false,
+  roleDescription: "Standard user",
+  permissions: [UserPermission.SearchPatients, UserPermission.EditPatient],
+};
+
+const standardUserStore = mockStore({
+  ...initialState,
+  user: { ...standardUser },
+});
+
+const entryOnlyUserStore = mockStore({
+  ...initialState,
+  user: {
+    ...standardUser,
+    roleDescription: "Test-entry user",
+    permissions: [UserPermission.SearchPatients],
+  },
+});
+
 const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   children,
 }) => (
@@ -72,21 +104,23 @@ describe("SearchResults", () => {
   describe("No Results", () => {
     it("should say 'No Results' for no matches", () => {
       render(
-        <RouterWithFacility>
-          <Route
-            path="/queue"
-            element={
-              <SearchResults
-                page="queue"
-                patients={[]}
-                patientsInQueue={[]}
-                onAddToQueue={jest.fn()}
-                shouldShowSuggestions={true}
-                loading={false}
-              />
-            }
-          />
-        </RouterWithFacility>
+        <Provider store={standardUserStore}>
+          <RouterWithFacility>
+            <Route
+              path="/queue"
+              element={
+                <SearchResults
+                  page="queue"
+                  patients={[]}
+                  patientsInQueue={[]}
+                  onAddToQueue={jest.fn()}
+                  shouldShowSuggestions={true}
+                  loading={false}
+                />
+              }
+            />
+          </RouterWithFacility>
+        </Provider>
       );
 
       expect(screen.getByText("No results found.")).toBeInTheDocument();
@@ -94,21 +128,23 @@ describe("SearchResults", () => {
 
     it("should show add patient button", async () => {
       render(
-        <RouterWithFacility>
-          <Route
-            path="/queue"
-            element={
-              <SearchResults
-                page="queue"
-                patients={[]}
-                patientsInQueue={[]}
-                onAddToQueue={jest.fn()}
-                shouldShowSuggestions={true}
-                loading={false}
-              />
-            }
-          />
-        </RouterWithFacility>
+        <Provider store={standardUserStore}>
+          <RouterWithFacility>
+            <Route
+              path="/queue"
+              element={
+                <SearchResults
+                  page="queue"
+                  patients={[]}
+                  patientsInQueue={[]}
+                  onAddToQueue={jest.fn()}
+                  shouldShowSuggestions={true}
+                  loading={false}
+                />
+              }
+            />
+          </RouterWithFacility>
+        </Provider>
       );
 
       expect(screen.getByText(`Add new ${PATIENT_TERM}`)).toBeInTheDocument();
@@ -119,25 +155,53 @@ describe("SearchResults", () => {
         )
       ).toBeInTheDocument();
     });
+
+    it("should not show add patient button for entry only user", () => {
+      render(
+        <Provider store={entryOnlyUserStore}>
+          <RouterWithFacility>
+            <Route
+              path="/queue"
+              element={
+                <SearchResults
+                  page="queue"
+                  patients={[]}
+                  patientsInQueue={[]}
+                  onAddToQueue={jest.fn()}
+                  shouldShowSuggestions={true}
+                  loading={false}
+                />
+              }
+            />
+          </RouterWithFacility>
+        </Provider>
+      );
+
+      expect(
+        screen.queryByText(`Add new ${PATIENT_TERM}`)
+      ).not.toBeInTheDocument();
+    });
   });
 
   it("should show matching results", () => {
     render(
-      <RouterWithFacility>
-        <Route
-          path="/queue"
-          element={
-            <SearchResults
-              page="queue"
-              patients={patients}
-              patientsInQueue={[]}
-              onAddToQueue={jest.fn()}
-              shouldShowSuggestions={true}
-              loading={false}
-            />
-          }
-        />
-      </RouterWithFacility>
+      <Provider store={standardUserStore}>
+        <RouterWithFacility>
+          <Route
+            path="/queue"
+            element={
+              <SearchResults
+                page="queue"
+                patients={patients}
+                patientsInQueue={[]}
+                onAddToQueue={jest.fn()}
+                shouldShowSuggestions={true}
+                loading={false}
+              />
+            }
+          />
+        </RouterWithFacility>
+      </Provider>
     );
 
     expect(screen.getByText("Washington, George")).toBeInTheDocument();
@@ -146,21 +210,23 @@ describe("SearchResults", () => {
   it("links the non-duplicate patient", () => {
     const addToQueue = jest.fn();
     render(
-      <RouterWithFacility>
-        <Route
-          path="/queue"
-          element={
-            <SearchResults
-              page="queue"
-              patients={patients}
-              patientsInQueue={["a123", "c789"]}
-              onAddToQueue={addToQueue}
-              shouldShowSuggestions={true}
-              loading={false}
-            />
-          }
-        />
-      </RouterWithFacility>
+      <Provider store={standardUserStore}>
+        <RouterWithFacility>
+          <Route
+            path="/queue"
+            element={
+              <SearchResults
+                page="queue"
+                patients={patients}
+                patientsInQueue={["a123", "c789"]}
+                onAddToQueue={addToQueue}
+                shouldShowSuggestions={true}
+                loading={false}
+              />
+            }
+          />
+        </RouterWithFacility>
+      </Provider>
     );
 
     expect(screen.getAllByText("Test in progress")).toHaveLength(2);
@@ -170,22 +236,24 @@ describe("SearchResults", () => {
   it("opens a modal for selected patient", async () => {
     const addToQueue = jest.fn();
     render(
-      <RouterWithFacility>
-        <Route
-          path="/queue"
-          element={
-            <SearchResults
-              page="queue"
-              patients={[]}
-              patientsInQueue={[]}
-              onAddToQueue={addToQueue}
-              shouldShowSuggestions={true}
-              loading={false}
-              selectedPatient={patients[0]}
-            />
-          }
-        />
-      </RouterWithFacility>
+      <Provider store={standardUserStore}>
+        <RouterWithFacility>
+          <Route
+            path="/queue"
+            element={
+              <SearchResults
+                page="queue"
+                patients={[]}
+                patientsInQueue={[]}
+                onAddToQueue={addToQueue}
+                shouldShowSuggestions={true}
+                loading={false}
+                selectedPatient={patients[0]}
+              />
+            }
+          />
+        </RouterWithFacility>
+      </Provider>
     );
 
     expect(screen.getByText("Test questionnaire")).toBeInTheDocument();
