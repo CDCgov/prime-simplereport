@@ -568,6 +568,10 @@ public class TestDataFactory {
     return deviceTypeRepository.save(new DeviceType(name, manufacturer, model, 15));
   }
 
+  public DeviceType saveDeviceType(DeviceType deviceType) {
+    return deviceTypeRepository.save(deviceType);
+  }
+
   public DeviceType getGenericDevice() {
     initGenericDeviceTypeAndSpecimenType();
     return genericDeviceType;
