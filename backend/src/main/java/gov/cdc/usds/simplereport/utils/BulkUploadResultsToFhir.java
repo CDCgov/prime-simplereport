@@ -145,83 +145,84 @@ public class BulkUploadResultsToFhir {
     var testEventId = UUID.randomUUID().toString();
     var patientAddr =
         new StreetAddress(
-            row.getPatientStreet().value,
-            row.getPatientStreet2().value,
-            row.getPatientCity().value,
-            row.getPatientState().value,
-            row.getPatientZipCode().value,
-            row.getPatientCounty().value);
+            row.getPatientStreet().getValue(),
+            row.getPatientStreet2().getValue(),
+            row.getPatientCity().getValue(),
+            row.getPatientState().getValue(),
+            row.getPatientZipCode().getValue(),
+            row.getPatientCounty().getValue());
     var testingLabAddr =
         new StreetAddress(
-            row.getTestingLabStreet().value,
-            row.getTestingLabStreet2().value,
-            row.getTestingLabCity().value,
-            row.getTestingLabState().value,
-            row.getTestingLabZipCode().value,
+            row.getTestingLabStreet().getValue(),
+            row.getTestingLabStreet2().getValue(),
+            row.getTestingLabCity().getValue(),
+            row.getTestingLabState().getValue(),
+            row.getTestingLabZipCode().getValue(),
             null);
     var providerAddr =
         new StreetAddress(
-            row.getOrderingProviderStreet().value,
-            row.getOrderingProviderStreet2().value,
-            row.getOrderingProviderCity().value,
-            row.getOrderingProviderState().value,
-            row.getOrderingProviderZipCode().value,
+            row.getOrderingProviderStreet().getValue(),
+            row.getOrderingProviderStreet2().getValue(),
+            row.getOrderingProviderCity().getValue(),
+            row.getOrderingProviderState().getValue(),
+            row.getOrderingProviderZipCode().getValue(),
             null);
 
     var patient =
         FhirConverter.convertToPatient(
             ConvertToPatientProps.builder()
-                .id(row.getPatientId().value)
+                .id(row.getPatientId().getValue())
                 .name(
                     new PersonName(
-                        row.getPatientFirstName().value,
-                        row.getPatientLastName().value,
-                        row.getPatientMiddleName().value,
+                        row.getPatientFirstName().getValue(),
+                        row.getPatientLastName().getValue(),
+                        row.getPatientMiddleName().getValue(),
                         null))
                 .phoneNumbers(
-                    List.of(new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().value)))
-                .emails(List.of(row.getPatientEmail().value))
-                .gender(row.getPatientGender().value)
-                .dob(LocalDate.parse(row.getPatientDob().value, dateTimeFormatter))
+                    List.of(
+                        new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().getValue())))
+                .emails(List.of(row.getPatientEmail().getValue()))
+                .gender(row.getPatientGender().getValue())
+                .dob(LocalDate.parse(row.getPatientDob().getValue(), dateTimeFormatter))
                 .address(patientAddr)
                 .country(DEFAULT_COUNTRY)
-                .race(row.getPatientRace().value)
-                .ethnicity(row.getPatientEthnicity().value)
+                .race(row.getPatientRace().getValue())
+                .ethnicity(row.getPatientEthnicity().getValue())
                 .tribalAffiliations(new ArrayList<>())
                 .build());
 
     var testingLabOrg =
         FhirConverter.convertToOrganization(
             orgId.toString(),
-            row.getTestingLabName().value,
-            row.getTestingLabClia().value,
-            row.getTestingLabPhoneNumber().value,
+            row.getTestingLabName().getValue(),
+            row.getTestingLabClia().getValue(),
+            row.getTestingLabPhoneNumber().getValue(),
             null,
             testingLabAddr,
             DEFAULT_COUNTRY);
 
     Organization orderingFacility = null;
-    if (row.getOrderingFacilityStreet().value != null
-        || row.getOrderingFacilityStreet2().value != null
-        || row.getOrderingFacilityCity().value != null
-        || row.getOrderingFacilityState().value != null
-        || row.getOrderingFacilityZipCode().value != null
-        || row.getOrderingFacilityName().value != null
-        || row.getOrderingFacilityPhoneNumber().value != null) {
+    if (row.getOrderingFacilityStreet().getValue() != null
+        || row.getOrderingFacilityStreet2().getValue() != null
+        || row.getOrderingFacilityCity().getValue() != null
+        || row.getOrderingFacilityState().getValue() != null
+        || row.getOrderingFacilityZipCode().getValue() != null
+        || row.getOrderingFacilityName().getValue() != null
+        || row.getOrderingFacilityPhoneNumber().getValue() != null) {
       var orderingFacilityAddr =
           new StreetAddress(
-              row.getOrderingFacilityStreet().value,
-              row.getOrderingFacilityStreet2().value,
-              row.getOrderingFacilityCity().value,
-              row.getOrderingFacilityState().value,
-              row.getOrderingFacilityZipCode().value,
+              row.getOrderingFacilityStreet().getValue(),
+              row.getOrderingFacilityStreet2().getValue(),
+              row.getOrderingFacilityCity().getValue(),
+              row.getOrderingFacilityState().getValue(),
+              row.getOrderingFacilityZipCode().getValue(),
               null);
       orderingFacility =
           FhirConverter.convertToOrganization(
               UUID.randomUUID().toString(),
-              row.getOrderingFacilityName().value,
-              row.getTestingLabClia().value,
-              row.getOrderingFacilityPhoneNumber().value,
+              row.getOrderingFacilityName().getValue(),
+              row.getTestingLabClia().getValue(),
+              row.getOrderingFacilityPhoneNumber().getValue(),
               null,
               orderingFacilityAddr,
               DEFAULT_COUNTRY);
@@ -229,24 +230,24 @@ public class BulkUploadResultsToFhir {
 
     var practitioner =
         FhirConverter.convertToPractitioner(
-            row.getOrderingProviderId().value,
+            row.getOrderingProviderId().getValue(),
             new PersonName(
-                row.getOrderingProviderFirstName().value,
-                row.getOrderingProviderMiddleName().value,
-                row.getOrderingProviderLastName().value,
+                row.getOrderingProviderFirstName().getValue(),
+                row.getOrderingProviderMiddleName().getValue(),
+                row.getOrderingProviderLastName().getValue(),
                 null),
-            row.getOrderingProviderPhoneNumber().value,
+            row.getOrderingProviderPhoneNumber().getValue(),
             providerAddr,
             DEFAULT_COUNTRY,
-            row.getOrderingProviderId().value);
+            row.getOrderingProviderId().getValue());
 
     String equipmentUid = null;
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
     UUID deviceId = UUID.randomUUID();
-    var testPerformedCode = row.getTestPerformedCode().value;
-    var modelName = row.getEquipmentModelName().value;
+    var testPerformedCode = row.getTestPerformedCode().getValue();
+    var modelName = row.getEquipmentModelName().getValue();
     var matchingDevices =
         availableDevices.stream()
             .filter(device -> device.getModel().equalsIgnoreCase(modelName))
@@ -292,8 +293,8 @@ public class BulkUploadResultsToFhir {
 
     var specimen =
         FhirConverter.convertToSpecimen(
-            getSpecimenTypeSnomed(row.getSpecimenType().value),
-            getDescriptionValue(row.getSpecimenType().value),
+            getSpecimenTypeSnomed(row.getSpecimenType().getValue()),
+            getDescriptionValue(row.getSpecimenType().getValue()),
             null,
             null,
             UUID.randomUUID().toString(),
@@ -303,25 +304,26 @@ public class BulkUploadResultsToFhir {
         List.of(
             FhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
-                    .diseaseCode(row.getTestPerformedCode().value)
+                    .diseaseCode(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
-                    .resultCode(getTestResultSnomed(row.getTestResult().value))
-                    .correctionStatus(mapTestResultStatusToSRValue(row.getTestResultStatus().value))
+                    .resultCode(getTestResultSnomed(row.getTestResult().getValue()))
+                    .correctionStatus(
+                        mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
                     .correctionReason(null)
                     .id(UUID.randomUUID().toString())
                     .resultDescription(
                         Translators.convertConceptCodeToConceptName(
-                            getDescriptionValue(row.getTestResult().value)))
+                            getDescriptionValue(row.getTestResult().getValue())))
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
-                    .deviceModel(row.getEquipmentModelName().value)
+                    .deviceModel(row.getEquipmentModelName().getValue())
                     .build()));
 
     LocalDate symptomOnsetDate = null;
-    if (row.getIllnessOnsetDate().value != null
-        && !row.getIllnessOnsetDate().value.trim().isBlank()) {
+    if (row.getIllnessOnsetDate().getValue() != null
+        && !row.getIllnessOnsetDate().getValue().trim().isBlank()) {
       try {
-        symptomOnsetDate = LocalDate.parse(row.getIllnessOnsetDate().value, dateTimeFormatter);
+        symptomOnsetDate = LocalDate.parse(row.getIllnessOnsetDate().getValue(), dateTimeFormatter);
       } catch (DateTimeParseException e) {
         // empty values for optional fields come through as empty strings, not null
         log.error("Unable to parse date from CSV.");
@@ -329,8 +331,8 @@ public class BulkUploadResultsToFhir {
     }
 
     Boolean symptomatic = null;
-    if (row.getSymptomaticForDisease().value != null) {
-      symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().value.toLowerCase());
+    if (row.getSymptomaticForDisease().getValue() != null) {
+      symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().getValue().toLowerCase());
     }
 
     var aoeObservations = convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
@@ -341,10 +343,10 @@ public class BulkUploadResultsToFhir {
             testPerformedCode,
             UUID.randomUUID().toString());
 
-    var testDate = LocalDate.parse(row.getTestResultDate().value, dateTimeFormatter);
+    var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
     var diagnosticReport =
         FhirConverter.convertToDiagnosticReport(
-            mapTestResultStatusToFhirValue(row.getTestResultStatus().value),
+            mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
             Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.config;
 
 import feign.Request.HttpMethod;
 import feign.RequestInterceptor;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
@@ -36,15 +37,17 @@ public class DataHubClientConfiguration {
         template.body("{}");
       }
 
-      var contentType = template.headers().get("Content-Type");
-      if (contentType != null && contentType.contains("application/fhir+ndjson")) {
-        template.header("client", simpleReportCsvUploadFhirClientName);
-      } else {
-        template.header("client", simpleReportCsvUploadClientName);
-      }
+      template.header("client", getClientName(template.headers().get("Content-Type")));
 
       template.header("x-api-version", csvApiVersion);
       template.header("x-functions-key", apiKey);
     };
+  }
+
+  private String getClientName(Collection<String> contentType) {
+    if (contentType != null && contentType.contains("application/fhir+ndjson")) {
+      return simpleReportCsvUploadFhirClientName;
+    }
+    return simpleReportCsvUploadClientName;
   }
 }

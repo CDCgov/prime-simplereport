@@ -167,8 +167,7 @@ public class TestResultUploadService {
             .findByInternalIdAndOrganization(id, org)
             .orElseThrow(InvalidBulkTestResultUploadException::new);
 
-    var r = getRSAuthToken();
-    return _client.getSubmission(result.getReportId(), r.getAccessToken());
+    return _client.getSubmission(result.getReportId(), getRSAuthToken().getAccessToken());
   }
 
   public TokenResponse getRSAuthToken() {
