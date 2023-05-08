@@ -60,6 +60,7 @@ public class BulkUploadResultsToFhirTest {
     assertThat(serializedBundles).hasSize(2);
     assertThat(deserializedBundle.getEntry()).hasSize(14);
     assertThat(resourceUrls).hasSize(14);
+        
   }
 
   @Test
