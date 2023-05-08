@@ -81,16 +81,18 @@ class PersonSerializationTest extends BaseNonSpringBootTestConfiguration {
         new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
     p.setFacility(
         new Facility(
-            fakeOrg,
-            "Nice Place",
-            "YOUGOTHERE",
-            addy,
-            "555-867-5309",
-            "facility@test.com",
-            mccoy,
-            device,
-            specimenType,
-            List.of(device)));
+            FacilityInput.builder()
+                .org(fakeOrg)
+                .facilityName("Nice Place")
+                .cliaNumber("YOUGOTHERE")
+                .facilityAddress(addy)
+                .phone("555-867-5309")
+                .email("facility@test.com")
+                .orderingProvider(mccoy)
+                .defaultDeviceType(device)
+                .defaultSpecimenType(specimenType)
+                .configuredDevices(List.of(device))
+                .build()));
     JsonContent<Person> serialized = _tester.write(p);
     assertThat(serialized)
         .extractingJsonPathStringValue("lastName")

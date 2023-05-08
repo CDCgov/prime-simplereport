@@ -13,8 +13,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 public class Facility extends OrganizationScopedEternalEntity implements LocatedEntity {
 
   @Column(nullable = false, unique = false) // unique within an organization only
@@ -50,58 +54,14 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   protected Facility() {
     /* for hibernate */ }
 
-  public Facility(
-      Organization org,
-      String facilityName,
-      String cliaNumber,
-      StreetAddress facilityAddress,
-      String phone,
-      String email,
-      Provider orderingProvider,
-      DeviceType defaultDeviceType,
-      SpecimenType defaultSpecimenType,
-      List<DeviceType> configuredDevices) {
-    this(
-        org,
-        facilityName,
-        cliaNumber,
-        facilityAddress,
-        phone,
-        email,
-        orderingProvider,
-        configuredDevices);
+  public Facility(FacilityInput facilityInput) {
+
+    super(facilityInput.org);
     this.setDefaultDeviceTypeSpecimenType(defaultDeviceType, defaultSpecimenType);
   }
 
-  public Facility(
-      Organization org,
-      String facilityName,
-      String cliaNumber,
-      StreetAddress facilityAddress,
-      String phone,
-      String email,
-      Provider orderingProvider,
-      List<DeviceType> configuredDevices) {
-    super(org);
-    this.facilityName = facilityName;
-    this.cliaNumber = cliaNumber;
-    this.address = facilityAddress;
-    this.telephone = phone;
-    this.email = email;
-    this.orderingProvider = orderingProvider;
-    this.configuredDeviceTypes.addAll(configuredDevices);
-  }
-
-  public void setFacilityName(String facilityName) {
-    this.facilityName = facilityName;
-  }
-
-  public String getFacilityName() {
-    return facilityName;
-  }
-
-  public DeviceType getDefaultDeviceType() {
-    return this.defaultDeviceType;
+  public void addDeviceType(DeviceType device) {
+    configuredDeviceTypes.add(device);
   }
 
   public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {
@@ -117,14 +77,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
     this.setDefaultDeviceTypeSpecimenType(null, null);
   }
 
-  public SpecimenType getDefaultSpecimenType() {
-    return defaultSpecimenType;
-  }
-
-  public void addDeviceType(DeviceType device) {
-    configuredDeviceTypes.add(device);
-  }
-
   public List<DeviceType> getDeviceTypes() {
     return configuredDeviceTypes.stream().filter(e -> !e.isDeleted()).collect(Collectors.toList());
   }
@@ -138,45 +90,5 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
         && this.getDefaultDeviceType().getInternalId().equals(deletedDevice.getInternalId())) {
       this.removeDefaultDeviceTypeSpecimenType();
     }
-  }
-
-  public String getCliaNumber() {
-    return this.cliaNumber;
-  }
-
-  public void setCliaNumber(String cliaNumber) {
-    this.cliaNumber = cliaNumber;
-  }
-
-  public Provider getOrderingProvider() {
-    return orderingProvider;
-  }
-
-  public void setOrderingProvider(Provider orderingProvider) {
-    this.orderingProvider = orderingProvider;
-  }
-
-  public StreetAddress getAddress() {
-    return address;
-  }
-
-  public void setAddress(StreetAddress address) {
-    this.address = address;
-  }
-
-  public String getTelephone() {
-    return telephone;
-  }
-
-  public void setTelephone(String telephone) {
-    this.telephone = telephone;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
   }
 }

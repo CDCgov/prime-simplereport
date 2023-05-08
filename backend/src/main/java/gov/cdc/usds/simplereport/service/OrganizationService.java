@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityInput;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -364,14 +365,16 @@ public class OrganizationService {
 
     Facility facility =
         new Facility(
-            organization,
-            testingFacilityName,
-            cliaNumber,
-            facilityAddress,
-            phone,
-            email,
-            orderingProvider,
-            configuredDevices);
+            FacilityInput.builder()
+                .org(organization)
+                .facilityName(testingFacilityName)
+                .cliaNumber(cliaNumber)
+                .facilityAddress(facilityAddress)
+                .phone(phone)
+                .email(email)
+                .orderingProvider(orderingProvider)
+                .configuredDevices(configuredDevices)
+                .build());
     facility = facilityRepository.save(facility);
     patientSelfRegistrationLinkService.createRegistrationLink(facility);
     oktaRepository.createFacility(facility);

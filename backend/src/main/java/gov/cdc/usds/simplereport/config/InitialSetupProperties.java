@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.config;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityInput;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -80,17 +81,20 @@ public class InitialSetupProperties {
         DeviceType defaultDeviceType,
         SpecimenType defaultSpecimenType,
         List<DeviceType> configured) {
+
       return new Facility(
-          org,
-          getName(),
-          getCliaNumber(),
-          getAddress(),
-          getTelephone(),
-          getEmail(),
-          provider,
-          defaultDeviceType,
-          defaultSpecimenType,
-          configured);
+          FacilityInput.builder()
+              .org(org)
+              .facilityName(getName())
+              .cliaNumber(getCliaNumber())
+              .facilityAddress(getAddress())
+              .phone(getTelephone())
+              .email(getEmail())
+              .orderingProvider(provider)
+              .defaultDeviceType(defaultDeviceType)
+              .defaultSpecimenType(defaultSpecimenType)
+              .configuredDevices(configured)
+              .build());
     }
   }
 

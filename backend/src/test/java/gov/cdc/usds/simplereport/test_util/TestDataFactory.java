@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityInput;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -185,16 +186,18 @@ public class TestDataFactory {
             new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212"));
     Facility facility =
         new Facility(
-            org,
-            facilityName,
-            "123456",
-            getAddress(),
-            "555-867-5309",
-            "facility@test.com",
-            doc,
-            defaultDevice,
-            defaultSpecimen,
-            configuredDevices);
+            FacilityInput.builder()
+                .org(org)
+                .facilityName(facilityName)
+                .cliaNumber("123456")
+                .facilityAddress(getAddress())
+                .phone("555-867-5309")
+                .email("facility@test.com")
+                .orderingProvider(doc)
+                .defaultDeviceType(defaultDevice)
+                .defaultSpecimenType(defaultSpecimen)
+                .configuredDevices(configuredDevices)
+                .build());
     Facility save = facilityRepository.save(facility);
     oktaRepository.createFacility(save);
     return save;
