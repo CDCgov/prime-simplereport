@@ -104,59 +104,6 @@ public class OrganizationMutationResolver {
     return new ApiFacility(created);
   }
 
-  /** addFacilityNew is being kept along side addFacility to ensure backwards compatibility */
-  /** addFacilityNew calls addFacility */
-  /** addFacilityNew should be removed at a future date */
-  @MutationMapping
-  public ApiFacility addFacilityNew(
-      @Argument String testingFacilityName,
-      @Argument String cliaNumber,
-      @Argument String street,
-      @Argument String streetTwo,
-      @Argument String city,
-      @Argument String state,
-      @Argument String zipCode,
-      @Argument String phone,
-      @Argument String email,
-      @Argument String orderingProviderFirstName,
-      @Argument String orderingProviderMiddleName,
-      @Argument String orderingProviderLastName,
-      @Argument String orderingProviderSuffix,
-      @Argument String orderingProviderNPI,
-      @Argument String orderingProviderStreet,
-      @Argument String orderingProviderStreetTwo,
-      @Argument String orderingProviderCity,
-      @Argument String orderingProviderCounty,
-      @Argument String orderingProviderState,
-      @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderPhone,
-      @Argument List<UUID> deviceIds) {
-
-    return addFacility(
-        testingFacilityName,
-        cliaNumber,
-        street,
-        streetTwo,
-        city,
-        state,
-        zipCode,
-        phone,
-        email,
-        orderingProviderFirstName,
-        orderingProviderMiddleName,
-        orderingProviderLastName,
-        orderingProviderSuffix,
-        orderingProviderNPI,
-        orderingProviderStreet,
-        orderingProviderStreetTwo,
-        orderingProviderCity,
-        orderingProviderCounty,
-        orderingProviderState,
-        orderingProviderZipCode,
-        orderingProviderPhone,
-        deviceIds);
-  }
-
   /** updateFacility is the latest iteration */
   /** remove updateFacilityNew at a later date */
   @MutationMapping
@@ -223,61 +170,6 @@ public class OrganizationMutationResolver {
             parsePhoneNumber(orderingProviderPhone),
             deviceIds);
     return new ApiFacility(facility);
-  }
-
-  /** updateFacilityNew is being kept along side updateFacility to ensure backwards compatibility */
-  /** updateFacilityNew calls updateFacility */
-  /** updateFacilityNew should be removed at a future date */
-  @MutationMapping
-  public ApiFacility updateFacilityNew(
-      @Argument UUID facilityId,
-      @Argument String testingFacilityName,
-      @Argument String cliaNumber,
-      @Argument String street,
-      @Argument String streetTwo,
-      @Argument String city,
-      @Argument String state,
-      @Argument String zipCode,
-      @Argument String phone,
-      @Argument String email,
-      @Argument String orderingProviderFirstName,
-      @Argument String orderingProviderMiddleName,
-      @Argument String orderingProviderLastName,
-      @Argument String orderingProviderSuffix,
-      @Argument String orderingProviderNPI,
-      @Argument String orderingProviderStreet,
-      @Argument String orderingProviderStreetTwo,
-      @Argument String orderingProviderCity,
-      @Argument String orderingProviderCounty,
-      @Argument String orderingProviderState,
-      @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderPhone,
-      @Argument List<UUID> deviceIds) {
-
-    return updateFacility(
-        facilityId,
-        testingFacilityName,
-        cliaNumber,
-        street,
-        streetTwo,
-        city,
-        state,
-        zipCode,
-        phone,
-        email,
-        orderingProviderFirstName,
-        orderingProviderMiddleName,
-        orderingProviderLastName,
-        orderingProviderSuffix,
-        orderingProviderNPI,
-        orderingProviderStreet,
-        orderingProviderStreetTwo,
-        orderingProviderCity,
-        orderingProviderCounty,
-        orderingProviderState,
-        orderingProviderZipCode,
-        orderingProviderPhone,
-        deviceIds);
   }
 
   @MutationMapping
