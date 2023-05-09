@@ -75,6 +75,22 @@ export function isStaticFileToSkip(envelope: ITelemetryItem) {
   }
 }
 
+const setAdditionalInfo = (data: any[]) => {
+  return data.length === 1 ? undefined : JSON.stringify(data.slice(1));
+};
+
+const setMessage = (data: any[]) => {
+  return typeof data[0] === "string" ? data[0] : JSON.stringify(data[0]);
+};
+
+const setException = (data: any[]) => {
+  return data[0] instanceof Error ? data[0] : undefined;
+};
+
+const setExceptionMessage = (exception: Error | undefined, data: any[]) => {
+  return exception ? exception.message : data[0];
+};
+
 export function sanitizeOktaToken(envelope: ITelemetryItem): void {
   try {
     // Okta redirects only come from page views events
@@ -128,9 +144,9 @@ export function withInsights(console: Console) {
       originalConsole[method](...data);
 
       if (method === "error" || method === "warn") {
-        let exception = data[0] instanceof Error ? data[0] : undefined;
+        let exception = setException(data);
         const id = (() => {
-          let message = exception ? exception.message : data[0];
+          let message = setExceptionMessage(exception, data);
           if (typeof message === "string") {
             const messageNeedsSanitation = message.includes("#id_token");
             if (messageNeedsSanitation) {
@@ -153,23 +169,20 @@ export function withInsights(console: Console) {
           id,
           severityLevel,
           properties: {
-            additionalInformation:
-              data.length === 1 ? undefined : JSON.stringify(data.slice(1)),
+            additionalInformation: setAdditionalInfo(data),
           },
         });
 
         return;
       }
 
-      const message =
-        typeof data[0] === "string" ? data[0] : JSON.stringify(data[0]);
+      const message = setMessage(data);
       appInsights?.trackEvent({
         name: `${method.toUpperCase()} - ${message}`,
         properties: {
           severityLevel,
           message,
-          additionalInformation:
-            data.length === 1 ? undefined : JSON.stringify(data.slice(1)),
+          additionalInformation: setAdditionalInfo(data),
         },
       });
     };

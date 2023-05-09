@@ -1,7 +1,13 @@
 import { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { useDispatch, connect } from "react-redux";
-import { Navigate, Route, Routes, useLocation } from "react-router-dom";
+import {
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+  Location,
+} from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
 
@@ -55,13 +61,10 @@ export const WHOAMI_QUERY = gql`
   }
 `;
 
-const App = () => {
-  const appInsights = getAppInsights();
-  const dispatch = useDispatch();
-  const location = useLocation();
-  const accessToken = localStorage.getItem("access_token");
-
-  // Check if the user is logged in, if not redirect to Okta
+const checkOktaLoginStatus = (
+  accessToken: string | null,
+  location: Location
+) => {
   if (process.env.REACT_APP_OKTA_ENABLED === "true") {
     if (!accessToken) {
       // If Okta login has been attempted and returned to SR with an error, don't redirect back to Okta
@@ -74,6 +77,16 @@ const App = () => {
       throw new Error("Not authenticated, redirecting to Okta...");
     }
   }
+};
+
+const App = () => {
+  const appInsights = getAppInsights();
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const accessToken = localStorage.getItem("access_token");
+
+  // Check if the user is logged in, if not redirect to Okta
+  checkOktaLoginStatus(accessToken, location);
 
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
