@@ -57,15 +57,14 @@ public class BulkUploadResultsToFhirTest {
             .collect(Collectors.toList());
 
     verify(repo, times(1)).findAllByIsDeletedFalse();
-    assertThat(serializedBundles).hasSize(2);
+    assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(14);
     assertThat(resourceUrls).hasSize(14);
-        
   }
 
   @Test
   void convertExistingCsv_aoeQuestionsMapped() {
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-aoe.csv");
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
 
     var asymptomaticEntry = serializedBundles.get(0);

@@ -56,9 +56,6 @@ public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
-  private final Function<Map<String, String>, TestResultRow> fileRowConstructor =
-      TestResultRow::new;
-
   private final DeviceTypeRepository deviceTypeRepository;
 
   private final GitProperties gitProperties;
