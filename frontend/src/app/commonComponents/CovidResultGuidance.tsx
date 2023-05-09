@@ -1,21 +1,17 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
 
-import { COVID_RESULTS } from "../constants";
+import { TEST_RESULTS } from "../testResults/constants";
 
-interface Props {
+type CovidResultInfoProps = {
   result: TestResult;
   isPatientApp: boolean;
-  needsHeading: boolean;
-}
+  t: translateFn;
+};
 
-const setCovidResultInfo = (
-  result: TestResult,
-  isPatientApp: boolean,
-  t: translateFn
-) => {
+const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
   switch (result) {
-    case COVID_RESULTS.POSITIVE:
+    case TEST_RESULTS.POSITIVE:
       return (
         <>
           <p>{t("testResult.notes.positive.p1")}</p>
@@ -33,7 +29,10 @@ const setCovidResultInfo = (
               parent="p"
               i18nKey="testResult.notes.positive.p2"
               components={[
-                <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
+                <a
+                  href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html"
+                  key="covid-19-symptoms-info"
+                >
                   Watch for symptoms and learn when to seek emergency medical
                   attention
                 </a>,
@@ -49,6 +48,7 @@ const setCovidResultInfo = (
                   href={t("testResult.notes.positive.symptomsLink")}
                   target="_blank"
                   rel="noopener noreferrer"
+                  key="symptoms-link"
                 >
                   symptoms link
                 </a>,
@@ -72,6 +72,7 @@ const setCovidResultInfo = (
                 href={t("testResult.cdcLink")}
                 target="_blank"
                 rel="noopener noreferrer"
+                key="cdc-link-one"
               >
                 cdc.gov
               </a>,
@@ -79,6 +80,7 @@ const setCovidResultInfo = (
                 href={t("testResult.countyCheckToolLink")}
                 target="_blank"
                 rel="noopener noreferrer"
+                key="county-check-tool-link"
               >
                 county check tool
               </a>,
@@ -86,7 +88,7 @@ const setCovidResultInfo = (
           />
         </>
       );
-    case COVID_RESULTS.NEGATIVE:
+    case TEST_RESULTS.NEGATIVE:
       return (
         <>
           <p>{t("testResult.notes.negative.p0")}</p>
@@ -112,6 +114,7 @@ const setCovidResultInfo = (
                 href={t("testResult.cdcLink")}
                 target="_blank"
                 rel="noopener noreferrer"
+                key="cdc-link-two"
               >
                 cdc.gov
               </a>,
@@ -119,44 +122,39 @@ const setCovidResultInfo = (
           />
         </>
       );
-    default:
+    case TEST_RESULTS.UNDETERMINED:
       return (
         <>
           <p>{t("testResult.notes.inconclusive.p0")}</p>
           {isPatientApp && <p>{t("testResult.notes.inconclusive.p1")}</p>}
         </>
       );
+    default:
+      return null;
   }
 };
 
-const CovidResultGuidance = (props: Props) => {
-  const result = props.result;
-  const isPatientApp = props.isPatientApp;
-  const needsHeading = props.needsHeading;
+interface CovidResultGuidanceProps {
+  result: TestResult;
+  isPatientApp: boolean;
+  needsHeading: boolean;
+}
+const CovidResultGuidance = ({
+  result,
+  isPatientApp,
+  needsHeading,
+}: CovidResultGuidanceProps) => {
   const { t } = useTranslation();
-  const covidGuidanceArray: any = [];
 
-  if (needsHeading) {
-    covidGuidanceArray.push(
-      <p className="text-bold sr-guidance-heading">
-        {t("testResult.notes.h1")}
-      </p>
-    );
-  }
-
-  switch (result) {
-    case "UNDETERMINED":
-      covidGuidanceArray.push(
-        setCovidResultInfo("UNDETERMINED", isPatientApp, t)
-      );
-      break;
-    case "NEGATIVE":
-      covidGuidanceArray.push(setCovidResultInfo("NEGATIVE", isPatientApp, t));
-      break;
-    case "POSITIVE":
-      covidGuidanceArray.push(setCovidResultInfo("POSITIVE", isPatientApp, t));
-      break;
-  }
-  return covidGuidanceArray;
+  return (
+    <>
+      {needsHeading && (
+        <p className="text-bold sr-guidance-heading">
+          {t("testResult.notes.h1")}
+        </p>
+      )}
+      <CovidResultInfo result={result} isPatientApp={isPatientApp} t={t} />
+    </>
+  );
 };
 export default CovidResultGuidance;
