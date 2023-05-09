@@ -15,7 +15,7 @@ input ProviderInput {
 
 input UpdateFacilityInput {
     facilityId: ID!
-    testingFacilityName: String!
+    facilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
@@ -29,7 +29,7 @@ input UpdateFacilityInput {
 }
 
 input AddFacilityInput {
-    testingFacilityName: String!
+    facilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
