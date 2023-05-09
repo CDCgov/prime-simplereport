@@ -134,6 +134,7 @@ interface Props {
   patientsInQueue: string[];
   startTestPatientId: string | null;
   setStartTestPatientId: any;
+  canEditPeople: boolean;
 }
 
 const AddToQueueSearchBox = ({
@@ -142,6 +143,7 @@ const AddToQueueSearchBox = ({
   patientsInQueue,
   startTestPatientId,
   setStartTestPatientId,
+  canEditPeople,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -277,6 +279,7 @@ const AddToQueueSearchBox = ({
         shouldShowSuggestions={showDropdown}
         loading={debounced !== queryString || loading}
         dropDownRef={dropDownRef}
+        canEditPeople={canEditPeople}
       />
     </React.Fragment>
   );

@@ -13,12 +13,15 @@ import React, {
 import moment from "moment";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { Label } from "@trussworks/react-uswds";
-import { useSelector } from "react-redux";
 
 import { displayFullName, facilityDisplayName } from "../utils";
 import { isValidDate } from "../utils/date";
 import { getParameterFromUrl } from "../utils/url";
-import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
+import {
+  useDocumentTitle,
+  useOutsideClick,
+  useTypedSelector,
+} from "../utils/hooks";
 import Pagination from "../commonComponents/Pagination";
 import {
   COVID_RESULTS,
@@ -187,8 +190,13 @@ export const DetachedTestResultsList = ({
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const isOrgAdmin = hasPermission(
-    useSelector((state) => (state as any).user.permissions),
+    useTypedSelector((state) => state.user.permissions),
     appPermissions.settings.canView
+  );
+
+  const canEditPeople = hasPermission(
+    useTypedSelector((state) => state.user.permissions),
+    appPermissions.people.canEdit
   );
 
   const [queryPatients, { data: patientData, loading: patientLoading }] =
@@ -479,6 +487,7 @@ export const DetachedTestResultsList = ({
                   shouldShowSuggestions={showDropdown}
                   loading={debounced !== queryString || patientLoading}
                   dropDownRef={dropDownRef}
+                  canEditPeople={canEditPeople}
                 />
               </div>
               <div className="usa-form-group date-filter-group">

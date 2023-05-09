@@ -7,11 +7,6 @@ import {
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
-import { Provider } from "react-redux";
-import createMockStore from "redux-mock-store";
-
-import { UserPermission } from "../../../generated/graphql";
-import { initialState } from "../../store";
 
 import AddToQueueSearch, { QUERY_PATIENT } from "./AddToQueueSearch";
 
@@ -76,25 +71,6 @@ const mocks = [
   },
 ];
 
-const mockStore = createMockStore([]);
-
-const standardUser = {
-  id: "a123",
-  firstName: "Bob",
-  lastName: "Bobberoo",
-  middleName: "",
-  suffix: "",
-  email: "bob@example.com",
-  isAdmin: false,
-  roleDescription: "Standard user",
-  permissions: [UserPermission.SearchPatients, UserPermission.EditPatient],
-};
-
-const standardUserStore = mockStore({
-  ...initialState,
-  user: { ...standardUser },
-});
-
 describe("AddToSearchQueue", () => {
   beforeEach(async () => {
     refetchQueueMock = jest.fn();
@@ -103,15 +79,14 @@ describe("AddToSearchQueue", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <Provider store={standardUserStore}>
-            <AddToQueueSearch
-              refetchQueue={refetchQueueMock}
-              facilityId={facilityId}
-              patientsInQueue={[patientInQueue.internalId]}
-              startTestPatientId=""
-              setStartTestPatientId={setStartTestPatientIdMock}
-            />
-          </Provider>
+          <AddToQueueSearch
+            refetchQueue={refetchQueueMock}
+            facilityId={facilityId}
+            patientsInQueue={[patientInQueue.internalId]}
+            startTestPatientId=""
+            setStartTestPatientId={setStartTestPatientIdMock}
+            canEditPeople={true}
+          />
         </MockedProvider>
       </MemoryRouter>
     );

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 import { showError } from "../utils/srToast";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -11,6 +10,7 @@ import {
   useGetFacilityQueueQuery,
   GetFacilityQueueQuery,
 } from "../../generated/graphql";
+import { useTypedSelector } from "../utils/hooks";
 
 import AddToQueueSearch, {
   StartTestProps,
@@ -77,8 +77,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     null
   );
   const canUseCsvUploader = hasPermission(
-    useSelector((state) => (state as any).user.permissions),
+    useTypedSelector((state) => state.user.permissions),
     appPermissions.results.canView
+  );
+
+  const canEditPeople = hasPermission(
+    useTypedSelector((state) => state.user.permissions),
+    appPermissions.people.canEdit
   );
 
   useEffect(() => {
@@ -198,6 +203,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patientsInQueue={patientsInQueue}
             startTestPatientId={startTestPatientId}
             setStartTestPatientId={setStartTestPatientId}
+            canEditPeople={canEditPeople}
           />
         </div>
         {createQueueItems(data.queue)}

@@ -1,11 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { Story, Meta } from "@storybook/react";
-import createMockStore from "redux-mock-store";
-import { Provider } from "react-redux";
-
-import { UserPermission } from "../../../generated/graphql";
-import { initialState } from "../../store";
 
 import SearchResults, { QueueProps, TestResultsProps } from "./SearchResults";
 
@@ -27,68 +22,22 @@ const patient = {
   },
 };
 
-const mockStore = createMockStore([]);
-
-const standardUser = {
-  id: "a123",
-  firstName: "Bob",
-  lastName: "Bobberoo",
-  middleName: "",
-  suffix: "",
-  email: "bob@example.com",
-  isAdmin: false,
-  roleDescription: "Standard user",
-  permissions: [UserPermission.SearchPatients, UserPermission.EditPatient],
-};
-
-const standardUserStore = mockStore({
-  ...initialState,
-  user: { ...standardUser },
-});
-
-const entryOnlyUserStore = mockStore({
-  ...initialState,
-  user: {
-    ...standardUser,
-    roleDescription: "Test-entry user",
-    permissions: [UserPermission.SearchPatients],
-  },
-});
-
 const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   children,
 }) => <MemoryRouter>{children}</MemoryRouter>;
-
-interface TestResultsPropsWithEntryOnlyUser extends TestResultsProps {
-  isEntryOnlyUser?: boolean;
-}
 
 export default {
   title: "Search Results",
   component: SearchResults,
   argTypes: {},
-  decorators: [
-    (Story, context) => (
-      <Provider
-        store={
-          context.args["isEntryOnlyUser"]
-            ? entryOnlyUserStore
-            : standardUserStore
-        }
-      >
-        <Story></Story>
-      </Provider>
-    ),
-  ],
 } as Meta;
 
-const TestResultsTemplate =
-  (): Story<TestResultsPropsWithEntryOnlyUser> => (args) =>
-    (
-      <RouterWithFacility>
-        <SearchResults {...args} />
-      </RouterWithFacility>
-    );
+const TestResultsTemplate = (): Story<TestResultsProps> => (args) =>
+  (
+    <RouterWithFacility>
+      <SearchResults {...args} />
+    </RouterWithFacility>
+  );
 const QueueTemplate = (): Story<QueueProps> => (args) =>
   (
     <RouterWithFacility>
@@ -103,7 +52,7 @@ NoResults.args = {
   loading: false,
   patients: [],
   shouldShowSuggestions: true,
-  isEntryOnlyUser: false,
+  canEditPeople: true,
 };
 
 export const WithResults = TestResultsTemplate();
@@ -113,6 +62,7 @@ WithResults.args = {
   loading: false,
   patients: [patient],
   shouldShowSuggestions: true,
+  canEditPeople: true,
 };
 
 export const QueueResults = QueueTemplate();
@@ -122,4 +72,5 @@ QueueResults.args = {
   patients: [patient],
   patientsInQueue: [],
   shouldShowSuggestions: true,
+  canEditPeople: true,
 };
