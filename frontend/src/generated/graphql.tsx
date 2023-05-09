@@ -29,12 +29,12 @@ export type AddFacilityInput = {
   cliaNumber?: InputMaybe<Scalars["String"]>;
   deviceIds: Array<InputMaybe<Scalars["ID"]>>;
   email?: InputMaybe<Scalars["String"]>;
+  facilityName: Scalars["String"];
   orderingProvider?: InputMaybe<ProviderInput>;
   phone?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
   streetTwo?: InputMaybe<Scalars["String"]>;
-  testingFacilityName: Scalars["String"];
   zipCode: Scalars["String"];
 };
 
@@ -953,12 +953,12 @@ export type UpdateFacilityInput = {
   deviceIds: Array<InputMaybe<Scalars["ID"]>>;
   email?: InputMaybe<Scalars["String"]>;
   facilityId: Scalars["ID"];
+  facilityName: Scalars["String"];
   orderingProvider?: InputMaybe<ProviderInput>;
   phone?: InputMaybe<Scalars["String"]>;
   state: Scalars["String"];
   street: Scalars["String"];
   streetTwo?: InputMaybe<Scalars["String"]>;
-  testingFacilityName: Scalars["String"];
   zipCode: Scalars["String"];
 };
 
