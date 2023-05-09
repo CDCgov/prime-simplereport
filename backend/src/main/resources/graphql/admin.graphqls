@@ -6,7 +6,7 @@ extend type Query {
   pendingOrganizations: [PendingOrganization!]!
 }
 extend type Mutation {
-  resendToReportStream(testEventIds: [ID!]!): Boolean
+  resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean!): Boolean
   createDeviceType(input: CreateDeviceType!): DeviceType
   updateDeviceType(input: UpdateDeviceType!): DeviceType
   createSpecimenType(input: CreateSpecimenType!): SpecimenType
