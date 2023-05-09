@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.Query;
 
 /** Specification of EternalAuditedEntityRepository for {@link DeviceType} manipulation. */
 public interface DeviceTypeRepository extends EternalAuditedEntityRepository<DeviceType> {
@@ -25,4 +26,12 @@ public interface DeviceTypeRepository extends EternalAuditedEntityRepository<Dev
   List<DeviceType> findAllByIsDeletedFalse();
 
   DeviceType findDeviceTypeByModelIgnoreCaseAndIsDeletedFalse(String model);
+
+  @Query(BASE_QUERY)
+  @EntityGraph(
+      attributePaths = {
+        "supportedDiseaseTestPerformed",
+        "supportedDiseaseTestPerformed.supportedDisease"
+      })
+  List<DeviceType> findAllRecords();
 }
