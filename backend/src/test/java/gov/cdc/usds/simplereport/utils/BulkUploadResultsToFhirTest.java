@@ -2,18 +2,18 @@ package gov.cdc.usds.simplereport.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
@@ -25,7 +25,7 @@ import org.springframework.boot.info.GitProperties;
 
 public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
-  private static DeviceTypeRepository repo;
+  private static ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
@@ -42,8 +42,8 @@ public class BulkUploadResultsToFhirTest {
 
   @BeforeEach
   public void beforeEach() {
-    repo = spy(DeviceTypeRepository.class);
-    sut = new BulkUploadResultsToFhir(repo, gitProperties);
+    resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
+    sut = new BulkUploadResultsToFhir(resultsUploaderDeviceValidationService, gitProperties);
   }
 
   @Test
@@ -58,7 +58,8 @@ public class BulkUploadResultsToFhirTest {
             .map(Bundle.BundleEntryComponent::getFullUrl)
             .collect(Collectors.toList());
 
-    verify(repo, times(1)).findAllByIsDeletedFalse();
+    verify(resultsUploaderDeviceValidationService, times(2))
+        .getModelAndTestPerformedCodeToDeviceMap();
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(14);
     assertThat(resourceUrls).hasSize(14);
@@ -102,8 +103,8 @@ public class BulkUploadResultsToFhirTest {
   @Test
   void convertExistingCsv_observationValuesPresent() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    when(repo.findAllByIsDeletedFalse())
-        .thenReturn(TestDataBuilder.createDeviceTypeListWithDeviceTypeDisease());
+    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
 
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
 
@@ -122,7 +123,6 @@ public class BulkUploadResultsToFhirTest {
           assertThat(observation.getSubject().getReference()).isNotEmpty();
         });
 
-    verify(repo, times(1)).findAllByIsDeletedFalse();
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(14);
   }

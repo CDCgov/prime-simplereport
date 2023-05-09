@@ -2,9 +2,10 @@ package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_SET;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,10 @@ public class ResultsUploaderDeviceValidationService {
   private final DeviceTypeRepository deviceTypeRepository;
 
   @Cacheable(DEVICE_MODEL_AND_TEST_PERFORMED_CODE_SET)
-  public Set<String> getModelAndTestPerformedCodeSet() {
-    log.info("generating ModelAndTestPerformedCodeSet cache");
+  public Map<String, DeviceType> getModelAndTestPerformedCodeToDeviceMap() {
+    log.info("generating ModelAndTestPerformedCodeToDeviceMap cache");
 
-    Set<String> resultSet = new HashSet<>();
+    Map<String, DeviceType> resultMap = new HashMap<>();
 
     deviceTypeRepository
         .findAllRecords()
@@ -37,22 +38,22 @@ public class ResultsUploaderDeviceValidationService {
                           String model = deviceType.getModel();
                           String testPerformedCode = deviceTypeDisease.getTestPerformedLoincCode();
                           if (model != null && testPerformedCode != null) {
-                            resultSet.add(getSetKey(model, testPerformedCode));
+                            resultMap.put(getMapKey(model, testPerformedCode), deviceType);
                           }
                         }));
 
-    return resultSet;
+    return resultMap;
   }
 
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
   @Caching(
       evict = {@CacheEvict(value = DEVICE_MODEL_AND_TEST_PERFORMED_CODE_SET, allEntries = true)})
-  public void cacheModelAndTestPerformedCodeSet() {
-    log.info("clear and generate ModelAndTestPerformedCodeSet cache");
-    getModelAndTestPerformedCodeSet();
+  public void cacheModelAndTestPerformedCodeToDeviceMap() {
+    log.info("clear and generate ModelAndTestPerformedCodeToDeviceMap cache");
+    getModelAndTestPerformedCodeToDeviceMap();
   }
 
-  public static String getSetKey(String model, String testPerformedCode) {
+  public static String getMapKey(String model, String testPerformedCode) {
     return model.toLowerCase() + "|" + testPerformedCode.toLowerCase();
   }
 }

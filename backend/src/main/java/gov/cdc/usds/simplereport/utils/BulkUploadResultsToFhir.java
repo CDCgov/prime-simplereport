@@ -15,14 +15,13 @@ import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -56,11 +55,8 @@ public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
-  private final DeviceTypeRepository deviceTypeRepository;
-
+  private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
   private final GitProperties gitProperties;
-
-  private List<DeviceType> availableDevices;
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
@@ -103,7 +99,6 @@ public class BulkUploadResultsToFhir {
   public List<String> convertToFhirBundles(InputStream csvStream, UUID orgId) {
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
-    availableDevices = deviceTypeRepository.findAllByIsDeletedFalse();
     while (valueIterator.hasNext()) {
       final Map<String, String> row;
       try {
@@ -244,41 +239,31 @@ public class BulkUploadResultsToFhir {
     UUID deviceId = UUID.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
     var modelName = row.getEquipmentModelName().getValue();
-    var matchingDevices =
-        availableDevices.stream()
-            .filter(device -> device.getModel().equalsIgnoreCase(modelName))
-            .filter(
-                device ->
-                    device.getSupportedDiseaseTestPerformed().stream()
-                        .anyMatch(
-                            disease ->
-                                Objects.equals(
-                                    disease.getTestPerformedLoincCode(), testPerformedCode)))
-            .toList();
+    // todo remove
+    var bar = ResultsUploaderDeviceValidationService.getMapKey(modelName, testPerformedCode);
+    var foo = resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap();
+    //
+    var matchingDevice =
+        resultsUploaderDeviceValidationService
+            .getModelAndTestPerformedCodeToDeviceMap()
+            .get(ResultsUploaderDeviceValidationService.getMapKey(modelName, testPerformedCode));
 
-    if (matchingDevices.size() == 1) {
-      var deviceType = matchingDevices.get(0);
+    if (matchingDevice != null) {
       Optional<DeviceTypeDisease> deviceTypeDisease =
-          deviceType.getSupportedDiseaseTestPerformed().stream()
-              .filter(code -> Objects.equals(code.getTestPerformedLoincCode(), testPerformedCode))
+          matchingDevice.getSupportedDiseaseTestPerformed().stream()
+              .filter(
+                  disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
               .findFirst();
-      manufacturer = deviceType.getManufacturer();
+      manufacturer = matchingDevice.getManufacturer();
       equipmentUid = deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
       testKitNameId = deviceTypeDisease.map(DeviceTypeDisease::getTestkitNameId).orElse(null);
       deviceId = deviceTypeDisease.map(DeviceTypeDisease::getInternalId).orElse(deviceId);
       var supportedDisease =
           deviceTypeDisease.map(DeviceTypeDisease::getSupportedDisease).orElse(null);
       diseaseName = supportedDisease != null ? supportedDisease.getName() : null;
-    } else if (matchingDevices.isEmpty()) {
-      log.info(
-          "No device found for model ("
-              + modelName
-              + ") and test performed code ("
-              + testPerformedCode
-              + ")");
     } else {
       log.info(
-          "More than one device found for model ("
+          "No device found for model ("
               + modelName
               + ") and test performed code ("
               + testPerformedCode
@@ -407,12 +392,5 @@ public class BulkUploadResultsToFhir {
       default:
         return TestCorrectionStatus.ORIGINAL;
     }
-  }
-
-  private Map<String, DeviceType> getAvailableDevicesMap() { // todo
-    var map = new HashMap<String, DeviceType>();
-    var allDevices = deviceTypeRepository.findAllByIsDeletedFalse();
-
-    return map;
   }
 }
