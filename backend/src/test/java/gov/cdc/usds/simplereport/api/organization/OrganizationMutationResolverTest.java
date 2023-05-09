@@ -194,7 +194,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
   @Test
   void markFacilityAsDeleted_false() {
-    // WHENa
+    // WHEN
     organizationMutationResolver.markFacilityAsDeleted(facility.getInternalId(), false);
 
     // THEN
