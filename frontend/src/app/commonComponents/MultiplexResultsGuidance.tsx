@@ -8,13 +8,14 @@ import {
   haCovidResults,
 } from "../utils/testResults";
 
-interface Props {
-  results: MultiplexResult[];
-  isPatientApp: boolean;
-  multiplexEnabled: boolean;
-}
-
-const setPositiveFluResultInfo = (needsHeading: boolean, t: translateFn) => {
+type PositiveFluResultInfoProps = {
+  needsHeading: boolean;
+  t: translateFn;
+};
+const PositiveFluResultInfo = ({
+  needsHeading,
+  t,
+}: PositiveFluResultInfoProps) => {
   return (
     <>
       {needsHeading && (
@@ -32,6 +33,7 @@ const setPositiveFluResultInfo = (needsHeading: boolean, t: translateFn) => {
             href={t("testResult.fluNotes.positive.highRiskLink")}
             target="_blank"
             rel="noopener noreferrer"
+            key="flu-high-risk-link"
           >
             flu high risk link
           </a>,
@@ -46,6 +48,7 @@ const setPositiveFluResultInfo = (needsHeading: boolean, t: translateFn) => {
             href={t("testResult.fluNotes.positive.treatmentLink")}
             target="_blank"
             rel="noopener noreferrer"
+            key="flu-treatment-link"
           >
             flu treatment link
           </a>,
@@ -55,41 +58,38 @@ const setPositiveFluResultInfo = (needsHeading: boolean, t: translateFn) => {
   );
 };
 
-const MultiplexResultsGuidance = (props: Props) => {
+interface MultiplexResultsGuidanceProps {
+  results: MultiplexResult[];
+  isPatientApp: boolean;
+  multiplexEnabled: boolean;
+}
+const MultiplexResultsGuidance = (props: MultiplexResultsGuidanceProps) => {
   const results = props.results;
   const isPatientApp = props.isPatientApp;
   const multiplexEnabled = props.multiplexEnabled;
   const { t } = useTranslation();
   const needsCovidHeading = haCovidResults(results);
-  const needsFluHeading = multiplexEnabled && hasPositiveFluResults(results);
-  const testGuidanceArray: any = [];
+  const needsFluGuidance = multiplexEnabled && hasPositiveFluResults(results);
   const covidResult = getResultByDiseaseName(results, "COVID-19") as TestResult;
-  let covidGuidanceElement;
-  if (isPatientApp) {
-    covidGuidanceElement = (
-      <CovidResultGuidance
-        result={covidResult}
-        isPatientApp={isPatientApp}
-        needsHeading={needsCovidHeading}
-      />
-    );
-  } else {
-    covidGuidanceElement = (
-      <div className={needsCovidHeading ? "sr-margin-bottom-28px" : ""}>
+
+  return (
+    <>
+      <div
+        className={
+          needsCovidHeading && !isPatientApp ? "sr-margin-bottom-28px" : ""
+        }
+      >
         <CovidResultGuidance
           result={covidResult}
           isPatientApp={isPatientApp}
           needsHeading={needsCovidHeading}
         />
       </div>
-    );
-  }
-  testGuidanceArray.push(covidGuidanceElement);
-
-  if (needsFluHeading) {
-    testGuidanceArray.push(setPositiveFluResultInfo(needsFluHeading, t));
-  }
-  return testGuidanceArray;
+      {needsFluGuidance && (
+        <PositiveFluResultInfo needsHeading={needsFluGuidance} t={t} />
+      )}
+    </>
+  );
 };
 
 export default MultiplexResultsGuidance;

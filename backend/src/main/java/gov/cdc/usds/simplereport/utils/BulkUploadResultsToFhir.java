@@ -34,7 +34,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,9 +51,6 @@ import org.springframework.stereotype.Component;
 public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
-  private final Function<Map<String, String>, TestResultRow> fileRowConstructor =
-      TestResultRow::new;
-
   private final DeviceTypeRepository deviceTypeRepository;
 
   private final GitProperties gitProperties;
@@ -97,7 +93,7 @@ public class BulkUploadResultsToFhir {
         log.error("Unable to parse csv.", ex);
         continue;
       }
-      var fileRow = fileRowConstructor.apply(row);
+      var fileRow = new TestResultRow(row);
 
       var future =
           CompletableFuture.supplyAsync(() -> convertRowToFhirBundle(fileRow, orgId))

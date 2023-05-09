@@ -59,7 +59,11 @@ const TermsOfService: React.FunctionComponent<Props> = ({
           parent="p"
           className="margin-top-105"
           i18nKey="testResult.tos.introText"
-          components={[<a href="https://simplereport.gov/">SimpleReport</a>]}
+          components={[
+            <a href="https://simplereport.gov/" key="simple-report-link">
+              SimpleReport
+            </a>,
+          ]}
         />
         <div className="tos-content prime-formgroup usa-prose height-card-lg overflow-x-hidden font-body-3xs">
           <ToS />

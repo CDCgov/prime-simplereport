@@ -63,7 +63,7 @@ class USAGovBanner extends React.Component<Props, State> {
                 <br />
                 <Trans
                   i18nKey="banner.secureHelper"
-                  components={[<strong>https://</strong>]}
+                  components={[<strong key="help-url-prefix">https://</strong>]}
                 />
               </p>
             </div>
