@@ -17,15 +17,6 @@ public interface DeviceTypeRepository extends EternalAuditedEntityRepository<Dev
   Optional<DeviceType> findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
       String manufacturer, String model);
 
-  @EntityGraph(
-      attributePaths = {
-        "supportedDiseaseTestPerformed",
-        "supportedDiseaseTestPerformed.supportedDisease"
-      })
-  List<DeviceType> findAllByIsDeletedFalse();
-
-  DeviceType findDeviceTypeByModelIgnoreCaseAndIsDeletedFalse(String model);
-
   @Query(BASE_QUERY)
   @EntityGraph(
       attributePaths = {
