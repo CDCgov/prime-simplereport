@@ -239,10 +239,6 @@ public class BulkUploadResultsToFhir {
     UUID deviceId = UUID.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
     var modelName = row.getEquipmentModelName().getValue();
-    // todo remove
-    var bar = ResultsUploaderDeviceValidationService.getMapKey(modelName, testPerformedCode);
-    var foo = resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap();
-    //
     var matchingDevice =
         resultsUploaderDeviceValidationService
             .getModelAndTestPerformedCodeToDeviceMap()
