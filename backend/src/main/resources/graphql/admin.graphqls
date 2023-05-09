@@ -21,44 +21,6 @@ extend type Mutation {
     suffix: String
     email: String
   ): ApiUser
-    createOrganization(
-    name: String!
-    type: String!
-    externalId: String!
-    testingFacilityName: String!
-    cliaNumber: String
-    street: String!
-    streetTwo: String
-    city: String
-    county: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
-    state: String!
-    zipCode: String!
-    phone: String
-    email: String
-    orderingProviderName: NameInput
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceTypes: [String]!
-    defaultDevice: String!
-    adminName: NameInput
-    adminFirstName: String
-    adminMiddleName: String
-    adminLastName: String
-    adminSuffix: String
-    adminEmail: String!
-  ): Organization
   setOrganizationIdentityVerified(
     externalId: String!
     verified: Boolean!
