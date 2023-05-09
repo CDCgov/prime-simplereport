@@ -10,12 +10,14 @@ import static org.mockito.Mockito.when;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.Observation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -95,5 +97,33 @@ public class BulkUploadResultsToFhirTest {
 
   private InputStream loadCsv(String csvFile) {
     return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(csvFile);
+  }
+
+  @Test
+  void convertExistingCsv_observationValuesPresent() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    when(repo.findAllByIsDeletedFalse())
+        .thenReturn(TestDataBuilder.createDeviceTypeListWithDeviceTypeDisease());
+
+    var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
+
+    var first = serializedBundles.get(0);
+    var deserializedBundle = (Bundle) parser.parseResource(first);
+    var observations =
+        deserializedBundle.getEntry().stream()
+            .filter(entry -> entry.getFullUrl().contains("Observation/"))
+            .map(observation -> (Observation) observation.getResource())
+            .toList();
+
+    observations.forEach(
+        observation -> {
+          // could be AOE or Covid/flu
+          assertThat(observation.getCode().getText()).isNotEmpty();
+          assertThat(observation.getSubject().getReference()).isNotEmpty();
+        });
+
+    verify(repo, times(1)).findAllByIsDeletedFalse();
+    assertThat(serializedBundles).hasSize(1);
+    assertThat(deserializedBundle.getEntry()).hasSize(14);
   }
 }

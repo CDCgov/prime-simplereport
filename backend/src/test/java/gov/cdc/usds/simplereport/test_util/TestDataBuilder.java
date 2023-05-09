@@ -75,6 +75,24 @@ public class TestDataBuilder {
     return new DeviceType(null, null, null, 0);
   }
 
+  public static List<DeviceType> createDeviceTypeListWithDeviceTypeDisease() {
+    return List.of(
+        new DeviceType(
+            "Dan's Test Device",
+            "Dan, duh",
+            "ID NOW",
+            0,
+            new ArrayList<>(),
+            List.of(
+                new DeviceTypeDisease(
+                    UUID.randomUUID(),
+                    new SupportedDisease("the pox", "1234"),
+                    "94534-5",
+                    "equipmentid",
+                    "testKit",
+                    "testOrdered"))));
+  }
+
   public static TestOrder createEmptyTestOrder() {
     return new TestOrder(createEmptyPerson(false), createEmptyFacility(false));
   }
