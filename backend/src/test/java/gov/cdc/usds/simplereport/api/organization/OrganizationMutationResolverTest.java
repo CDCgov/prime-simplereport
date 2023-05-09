@@ -104,7 +104,8 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        List.of(deviceId));
+        List.of(deviceId),
+        null);
 
     // THEN
     verify(mockedOrganizationService)
@@ -160,7 +161,8 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         facility.getOrderingProvider().getAddress().getState(),
         facility.getOrderingProvider().getAddress().getPostalCode(),
         facility.getOrderingProvider().getTelephone(),
-        List.of(deviceId));
+        List.of(deviceId),
+        null);
 
     // THEN
     verify(mockedOrganizationService)

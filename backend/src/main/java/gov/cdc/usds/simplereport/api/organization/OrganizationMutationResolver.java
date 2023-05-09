@@ -7,7 +7,9 @@ import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.toOptional;
 
+import gov.cdc.usds.simplereport.api.model.AddFacilityInput;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
+import gov.cdc.usds.simplereport.api.model.UpdateFacilityInput;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -63,43 +65,85 @@ public class OrganizationMutationResolver {
       @Argument String orderingProviderState,
       @Argument String orderingProviderZipCode,
       @Argument String orderingProviderPhone,
-      @Argument List<UUID> deviceIds) {
-    organizationService.assertFacilityNameAvailable(testingFacilityName);
+      @Argument List<UUID> deviceIds,
+      @Argument AddFacilityInput facilityInfo) {
+    if (facilityInfo == null) {
+      organizationService.assertFacilityNameAvailable(testingFacilityName);
+
+      StreetAddress facilityAddress =
+          addressValidationService.getValidatedAddress(
+              street,
+              streetTwo,
+              city,
+              state,
+              zipCode,
+              addressValidationService.FACILITY_DISPLAY_NAME);
+      StreetAddress providerAddress =
+          new StreetAddress(
+              parseString(orderingProviderStreet),
+              parseString(orderingProviderStreetTwo),
+              parseString(orderingProviderCity),
+              parseState(orderingProviderState),
+              parseString(orderingProviderZipCode),
+              parseString(orderingProviderCounty));
+      PersonName providerName =
+          new PersonName(
+              orderingProviderFirstName,
+              orderingProviderMiddleName,
+              orderingProviderLastName,
+              orderingProviderSuffix);
+      Facility created =
+          organizationService.createFacility(
+              testingFacilityName,
+              cliaNumber,
+              facilityAddress,
+              parsePhoneNumber(phone),
+              parseEmail(email),
+              deviceIds,
+              providerName,
+              providerAddress,
+              parsePhoneNumber(orderingProviderPhone),
+              orderingProviderNPI);
+
+      return new ApiFacility(created);
+    }
+
+    organizationService.assertFacilityNameAvailable(facilityInfo.getFacilityName());
 
     StreetAddress facilityAddress =
         addressValidationService.getValidatedAddress(
-            street,
-            streetTwo,
-            city,
-            state,
-            zipCode,
+            facilityInfo.getStreet(),
+            facilityInfo.getStreetTwo(),
+            facilityInfo.getCity(),
+            facilityInfo.getState(),
+            facilityInfo.getZipCode(),
             addressValidationService.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         new StreetAddress(
-            parseString(orderingProviderStreet),
-            parseString(orderingProviderStreetTwo),
-            parseString(orderingProviderCity),
-            parseState(orderingProviderState),
-            parseString(orderingProviderZipCode),
-            parseString(orderingProviderCounty));
+            parseString(facilityInfo.getOrderingProvider().getStreet()),
+            parseString(facilityInfo.getOrderingProvider().getStreetTwo()),
+            parseString(facilityInfo.getOrderingProvider().getCity()),
+            parseState(facilityInfo.getOrderingProvider().getState()),
+            parseString(facilityInfo.getOrderingProvider().getZipCode()),
+            parseString(facilityInfo.getOrderingProvider().getCounty()));
     PersonName providerName =
         new PersonName(
-            orderingProviderFirstName,
-            orderingProviderMiddleName,
-            orderingProviderLastName,
-            orderingProviderSuffix);
+            facilityInfo.getOrderingProvider().getFirstName(),
+            facilityInfo.getOrderingProvider().getMiddleName(),
+            facilityInfo.getOrderingProvider().getLastName(),
+            facilityInfo.getOrderingProvider().getSuffix());
     Facility created =
         organizationService.createFacility(
-            testingFacilityName,
-            cliaNumber,
+            facilityInfo.getFacilityName(),
+            facilityInfo.getCliaNumber(),
             facilityAddress,
-            parsePhoneNumber(phone),
-            parseEmail(email),
-            deviceIds,
+            parsePhoneNumber(facilityInfo.getPhone()),
+            parseEmail(facilityInfo.getEmail()),
+            facilityInfo.getDeviceIds(),
             providerName,
             providerAddress,
-            parsePhoneNumber(orderingProviderPhone),
-            orderingProviderNPI);
+            parsePhoneNumber(facilityInfo.getOrderingProvider().getPhone()),
+            facilityInfo.getOrderingProvider().getNpi());
 
     return new ApiFacility(created);
   }
@@ -130,45 +174,86 @@ public class OrganizationMutationResolver {
       @Argument String orderingProviderState,
       @Argument String orderingProviderZipCode,
       @Argument String orderingProviderPhone,
-      @Argument List<UUID> deviceIds) {
+      @Argument List<UUID> deviceIds,
+      @Argument UpdateFacilityInput facilityInfo) {
 
+    if (facilityInfo == null) {
+      StreetAddress facilityAddress =
+          addressValidationService.getValidatedAddress(
+              street,
+              streetTwo,
+              city,
+              state,
+              zipCode,
+              addressValidationService.FACILITY_DISPLAY_NAME);
+
+      PersonName providerName =
+          new PersonName(
+              orderingProviderFirstName,
+              orderingProviderMiddleName,
+              orderingProviderLastName,
+              orderingProviderSuffix);
+
+      StreetAddress providerAddress =
+          new StreetAddress(
+              parseString(orderingProviderStreet),
+              parseString(orderingProviderStreetTwo),
+              parseString(orderingProviderCity),
+              parseState(orderingProviderState),
+              parseString(orderingProviderZipCode),
+              parseString(orderingProviderCounty));
+      Facility facility =
+          organizationService.updateFacility(
+              facilityId,
+              testingFacilityName,
+              cliaNumber,
+              facilityAddress,
+              parsePhoneNumber(phone),
+              parseEmail(email),
+              providerName,
+              providerAddress,
+              orderingProviderNPI,
+              parsePhoneNumber(orderingProviderPhone),
+              deviceIds);
+      return new ApiFacility(facility);
+    }
     StreetAddress facilityAddress =
         addressValidationService.getValidatedAddress(
-            street,
-            streetTwo,
-            city,
-            state,
-            zipCode,
+            facilityInfo.getStreet(),
+            facilityInfo.getStreetTwo(),
+            facilityInfo.getCity(),
+            facilityInfo.getState(),
+            facilityInfo.getZipCode(),
             addressValidationService.FACILITY_DISPLAY_NAME);
 
     PersonName providerName =
         new PersonName(
-            orderingProviderFirstName,
-            orderingProviderMiddleName,
-            orderingProviderLastName,
-            orderingProviderSuffix);
+            facilityInfo.getOrderingProvider().getFirstName(),
+            facilityInfo.getOrderingProvider().getMiddleName(),
+            facilityInfo.getOrderingProvider().getLastName(),
+            facilityInfo.getOrderingProvider().getSuffix());
 
     StreetAddress providerAddress =
         new StreetAddress(
-            parseString(orderingProviderStreet),
-            parseString(orderingProviderStreetTwo),
-            parseString(orderingProviderCity),
-            parseState(orderingProviderState),
-            parseString(orderingProviderZipCode),
-            parseString(orderingProviderCounty));
+            parseString(facilityInfo.getOrderingProvider().getStreet()),
+            parseString(facilityInfo.getOrderingProvider().getStreetTwo()),
+            parseString(facilityInfo.getOrderingProvider().getCity()),
+            parseState(facilityInfo.getOrderingProvider().getState()),
+            parseString(facilityInfo.getOrderingProvider().getZipCode()),
+            parseString(facilityInfo.getOrderingProvider().getCounty()));
     Facility facility =
         organizationService.updateFacility(
-            facilityId,
-            testingFacilityName,
-            cliaNumber,
+            facilityInfo.getFacilityId(),
+            facilityInfo.getFacilityName(),
+            facilityInfo.getCliaNumber(),
             facilityAddress,
-            parsePhoneNumber(phone),
-            parseEmail(email),
+            parsePhoneNumber(facilityInfo.getPhone()),
+            parseEmail(facilityInfo.getEmail()),
             providerName,
             providerAddress,
-            orderingProviderNPI,
-            parsePhoneNumber(orderingProviderPhone),
-            deviceIds);
+            facilityInfo.getOrderingProvider().getNpi(),
+            parsePhoneNumber(facilityInfo.getOrderingProvider().getPhone()),
+            facilityInfo.getDeviceIds());
     return new ApiFacility(facility);
   }
 

@@ -1,0 +1,43 @@
+input ProviderInput {
+    firstName: String
+    middleName: String
+    lastName: String
+    suffix: String
+    npi: String
+    street:String
+    streetTwo:String
+    city: String
+    county: String
+    state: String
+    zipCode: String
+    phone: String
+}
+
+input UpdateFacilityInput {
+    facilityId: ID!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProvider: ProviderInput
+    deviceIds: [ID]!
+}
+
+input AddFacilityInput {
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProvider: ProviderInput
+    deviceIds: [ID]!
+}

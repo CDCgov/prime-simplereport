@@ -1,21 +1,22 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import java.util.List;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class ProviderInput {
-  private String firstName;
-  private String middleName;
-  private String lastName;
-  private String suffix;
-  private String npi;
+public class AddFacilityInput {
+  private String facilityName;
+  private String cliaNumber;
   private String street;
   private String streetTwo;
   private String city;
-  private String county;
   private String state;
   private String zipCode;
   private String phone;
+  private String email;
+  private ProviderInput orderingProvider;
+  private List<UUID> deviceIds;
 }
