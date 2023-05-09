@@ -1,0 +1,233 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CovidResultGuidance displays guidance for "NEGATIVE" result 1`] = `
+<div>
+  <p
+    class="text-bold sr-guidance-heading"
+  >
+    testResult.notes.h1
+  </p>
+  <p>
+    testResult.notes.negative.p0
+  </p>
+  <ul
+    class="sr-multi-column"
+  >
+    <li>
+      testResult.notes.negative.symptoms.li0
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li1
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li2
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li3
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li4
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li5
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li6
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li7
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li8
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li9
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li10
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`CovidResultGuidance displays guidance for "NEGATIVE" result 2`] = `
+<div>
+  <p>
+    testResult.notes.negative.p0
+  </p>
+  <ul
+    class=""
+  >
+    <li>
+      testResult.notes.negative.symptoms.li0
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li1
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li2
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li3
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li4
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li5
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li6
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li7
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li8
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li9
+    </li>
+    <li>
+      testResult.notes.negative.symptoms.li10
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`CovidResultGuidance displays guidance for "POSITIVE" result 1`] = `
+<div>
+  <p
+    class="text-bold sr-guidance-heading"
+  >
+    testResult.notes.h1
+  </p>
+  <p>
+    testResult.notes.positive.p1
+  </p>
+  <ul>
+    <li>
+      testResult.notes.positive.guidelines.li0
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li1
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li2
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li3
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li4
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li5
+    </li>
+  </ul>
+  <ul>
+    <li>
+      testResult.notes.positive.emergency.li0
+    </li>
+    <li>
+      testResult.notes.positive.emergency.li1
+    </li>
+    <li>
+      testResult.notes.positive.emergency.li2
+    </li>
+    <li>
+      testResult.notes.positive.emergency.li3
+    </li>
+    <li>
+      testResult.notes.positive.emergency.li4
+    </li>
+  </ul>
+  <p>
+    testResult.notes.positive.p3
+  </p>
+</div>
+`;
+
+exports[`CovidResultGuidance displays guidance for "POSITIVE" result 2`] = `
+<div>
+  <p>
+    testResult.notes.positive.p1
+  </p>
+  <ul>
+    <li>
+      testResult.notes.positive.guidelines.li0
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li1
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li2
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li3
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li4
+    </li>
+    <li>
+      testResult.notes.positive.guidelines.li5
+    </li>
+  </ul>
+  <ul>
+    <li>
+      testResult.notes.positive.emergency.li0
+    </li>
+    <li>
+      testResult.notes.positive.emergency.li1
+    </li>
+    <li>
+      testResult.notes.positive.emergency.li2
+    </li>
+    <li>
+      testResult.notes.positive.emergency.li3
+    </li>
+    <li>
+      testResult.notes.positive.emergency.li4
+    </li>
+  </ul>
+  <p>
+    testResult.notes.positive.p3
+  </p>
+</div>
+`;
+
+exports[`CovidResultGuidance displays guidance for "UNDETERMINED" result 1`] = `
+<div>
+  <p
+    class="text-bold sr-guidance-heading"
+  >
+    testResult.notes.h1
+  </p>
+  <p>
+    testResult.notes.inconclusive.p0
+  </p>
+</div>
+`;
+
+exports[`CovidResultGuidance displays guidance for "UNDETERMINED" result 2`] = `
+<div>
+  <p>
+    testResult.notes.inconclusive.p0
+  </p>
+  <p>
+    testResult.notes.inconclusive.p1
+  </p>
+</div>
+`;
+
+exports[`CovidResultGuidance displays guidance for "UNKNOWN" result 1`] = `
+<div>
+  <p
+    class="text-bold sr-guidance-heading"
+  >
+    testResult.notes.h1
+  </p>
+</div>
+`;
+
+exports[`CovidResultGuidance displays guidance for "UNKNOWN" result 2`] = `<div />`;
