@@ -210,7 +210,6 @@ public class TestResultUploadService {
   private Future<UploadResponse> submitResultsAsCsv(byte[] content) {
     return CompletableFuture.supplyAsync(
         () -> {
-          log.info("future ...");
           UploadResponse response;
           try {
             response = _client.uploadCSV(content);

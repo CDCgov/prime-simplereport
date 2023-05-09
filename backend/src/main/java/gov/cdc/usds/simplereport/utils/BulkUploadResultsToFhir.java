@@ -55,7 +55,7 @@ import org.springframework.stereotype.Component;
 public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
-  private static final String SNOMED_REGEX = "^[0-9]{9}$";
+  private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private final Function<Map<String, String>, TestResultRow> fileRowConstructor =
       TestResultRow::new;
 
@@ -410,5 +410,12 @@ public class BulkUploadResultsToFhir {
       default:
         return TestCorrectionStatus.ORIGINAL;
     }
+  }
+
+  private Map<String, DeviceType> getAvailableDevicesMap() { // todo
+    var map = new HashMap<String, DeviceType>();
+    var allDevices = deviceTypeRepository.findAllByIsDeletedFalse();
+
+    return map;
   }
 }
