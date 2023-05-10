@@ -40,8 +40,6 @@ public class OrganizationMutationResolver {
   private final AddressValidationService addressValidationService;
   private final ApiUserService apiUserService;
 
-  /** addFacility is the latest iteration */
-  /** remove addFacilityNew at a later date */
   @MutationMapping
   public ApiFacility addFacility(
       @Argument String testingFacilityName,
@@ -148,8 +146,6 @@ public class OrganizationMutationResolver {
     return new ApiFacility(created);
   }
 
-  /** updateFacility is the latest iteration */
-  /** remove updateFacilityNew at a later date */
   @MutationMapping
   public ApiFacility updateFacility(
       @Argument UUID facilityId,
