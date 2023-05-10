@@ -373,6 +373,7 @@ export type MutationResendActivationEmailArgs = {
 };
 
 export type MutationResendToReportStreamArgs = {
+  fhirOnly: Scalars["Boolean"];
   testEventIds: Array<Scalars["ID"]>;
 };
 
