@@ -17,11 +17,8 @@ import { Label } from "@trussworks/react-uswds";
 import { displayFullName, facilityDisplayName } from "../utils";
 import { isValidDate } from "../utils/date";
 import { getParameterFromUrl } from "../utils/url";
-import {
-  useDocumentTitle,
-  useOutsideClick,
-  useTypedSelector,
-} from "../utils/hooks";
+import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
+import { useAppSelector } from "../store";
 import Pagination from "../commonComponents/Pagination";
 import {
   COVID_RESULTS,
@@ -190,12 +187,12 @@ export const DetachedTestResultsList = ({
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const isOrgAdmin = hasPermission(
-    useTypedSelector((state) => state.user.permissions),
+    useAppSelector((state) => state.user.permissions),
     appPermissions.settings.canView
   );
 
   const canAddPatient = hasPermission(
-    useTypedSelector((state) => state.user.permissions),
+    useAppSelector((state) => state.user.permissions),
     appPermissions.people.canEdit
   );
 

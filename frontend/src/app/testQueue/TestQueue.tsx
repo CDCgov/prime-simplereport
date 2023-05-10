@@ -5,12 +5,12 @@ import { useLocation } from "react-router-dom";
 import { showError } from "../utils/srToast";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { appPermissions, hasPermission } from "../permissions";
+import { useAppSelector } from "../store";
 import { PATIENT_TERM } from "../../config/constants";
 import {
   useGetFacilityQueueQuery,
   GetFacilityQueueQuery,
 } from "../../generated/graphql";
-import { useTypedSelector } from "../utils/hooks";
 
 import AddToQueueSearch, {
   StartTestProps,
@@ -77,12 +77,12 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     null
   );
   const canUseCsvUploader = hasPermission(
-    useTypedSelector((state) => state.user.permissions),
+    useAppSelector((state) => state.user.permissions),
     appPermissions.results.canView
   );
 
   const canAddPatient = hasPermission(
-    useTypedSelector((state) => state.user.permissions),
+    useAppSelector((state) => state.user.permissions),
     appPermissions.people.canEdit
   );
 
