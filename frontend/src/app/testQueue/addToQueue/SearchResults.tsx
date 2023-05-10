@@ -16,7 +16,7 @@ interface SearchResultsProps {
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;
   selectedPatient?: Patient;
-  canEditPeople: boolean;
+  canAddPatient: boolean;
 }
 
 export interface QueueProps extends SearchResultsProps {
@@ -116,9 +116,9 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
         <div className="margin-bottom-105">No results found.</div>
         <div>
           Check for spelling errors
-          {props.canEditPeople ? (
+          {props.canAddPatient ? (
             <>
-              {" or "}
+              {" or"}
               <Button
                 className="margin-left-1"
                 label={`Add new ${PATIENT_TERM}`}

@@ -81,7 +81,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     appPermissions.results.canView
   );
 
-  const canEditPeople = hasPermission(
+  const canAddPatient = hasPermission(
     useTypedSelector((state) => state.user.permissions),
     appPermissions.people.canEdit
   );
@@ -203,7 +203,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patientsInQueue={patientsInQueue}
             startTestPatientId={startTestPatientId}
             setStartTestPatientId={setStartTestPatientId}
-            canEditPeople={canEditPeople}
+            canAddPatient={canAddPatient}
           />
         </div>
         {createQueueItems(data.queue)}

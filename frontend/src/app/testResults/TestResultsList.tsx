@@ -194,7 +194,7 @@ export const DetachedTestResultsList = ({
     appPermissions.settings.canView
   );
 
-  const canEditPeople = hasPermission(
+  const canAddPatient = hasPermission(
     useTypedSelector((state) => state.user.permissions),
     appPermissions.people.canEdit
   );
@@ -487,7 +487,7 @@ export const DetachedTestResultsList = ({
                   shouldShowSuggestions={showDropdown}
                   loading={debounced !== queryString || patientLoading}
                   dropDownRef={dropDownRef}
-                  canEditPeople={canEditPeople}
+                  canAddPatient={canAddPatient}
                 />
               </div>
               <div className="usa-form-group date-filter-group">

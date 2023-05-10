@@ -52,7 +52,7 @@ NoResults.args = {
   loading: false,
   patients: [],
   shouldShowSuggestions: true,
-  canEditPeople: true,
+  canAddPatient: true,
 };
 
 export const WithResults = TestResultsTemplate();
@@ -62,7 +62,7 @@ WithResults.args = {
   loading: false,
   patients: [patient],
   shouldShowSuggestions: true,
-  canEditPeople: true,
+  canAddPatient: true,
 };
 
 export const QueueResults = QueueTemplate();
@@ -72,5 +72,5 @@ QueueResults.args = {
   patients: [patient],
   patientsInQueue: [],
   shouldShowSuggestions: true,
-  canEditPeople: true,
+  canAddPatient: true,
 };

@@ -83,7 +83,7 @@ describe("SearchResults", () => {
                 onAddToQueue={jest.fn()}
                 shouldShowSuggestions={true}
                 loading={false}
-                canEditPeople={true}
+                canAddPatient={true}
               />
             }
           />
@@ -106,7 +106,7 @@ describe("SearchResults", () => {
                 onAddToQueue={jest.fn()}
                 shouldShowSuggestions={true}
                 loading={false}
-                canEditPeople={true}
+                canAddPatient={true}
               />
             }
           />
@@ -135,7 +135,7 @@ describe("SearchResults", () => {
                 onAddToQueue={jest.fn()}
                 shouldShowSuggestions={true}
                 loading={false}
-                canEditPeople={false}
+                canAddPatient={false}
               />
             }
           />
@@ -161,7 +161,7 @@ describe("SearchResults", () => {
               onAddToQueue={jest.fn()}
               shouldShowSuggestions={true}
               loading={false}
-              canEditPeople={true}
+              canAddPatient={true}
             />
           }
         />
@@ -185,7 +185,7 @@ describe("SearchResults", () => {
               onAddToQueue={addToQueue}
               shouldShowSuggestions={true}
               loading={false}
-              canEditPeople={true}
+              canAddPatient={true}
             />
           }
         />
@@ -211,7 +211,7 @@ describe("SearchResults", () => {
               shouldShowSuggestions={true}
               loading={false}
               selectedPatient={patients[0]}
-              canEditPeople={true}
+              canAddPatient={true}
             />
           }
         />

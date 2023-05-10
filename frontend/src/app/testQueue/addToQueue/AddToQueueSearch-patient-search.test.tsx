@@ -85,7 +85,7 @@ describe("AddToSearchQueue", () => {
             patientsInQueue={[patientInQueue.internalId]}
             startTestPatientId=""
             setStartTestPatientId={setStartTestPatientIdMock}
-            canEditPeople={true}
+            canAddPatient={true}
           />
         </MockedProvider>
       </MemoryRouter>
