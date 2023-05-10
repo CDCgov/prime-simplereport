@@ -10,12 +10,13 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
 import { getAppInsights } from "../../TelemetryService";
+import {
+  GetFacilitiesDocument as GET_FACILITY_QUERY,
+  UpdateFacilityDocument as UPDATE_FACILITY_MUTATION,
+} from "../../../generated/graphql";
 
 import { Props as FacilityFormProps } from "./FacilityForm";
-import FacilityFormContainer, {
-  GET_FACILITY_QUERY,
-  UPDATE_FACILITY_MUTATION,
-} from "./FacilityFormContainer";
+import FacilityFormContainer from "./FacilityFormContainer";
 
 export const deviceTypes: FacilityFormDeviceType[] = [
   {

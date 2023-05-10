@@ -7,3 +7,152 @@ query GetManagedFacilities {
     }
   }
 }
+
+query GetFacilities {
+  organization {
+    internalId
+    testingFacility {
+      id
+      cliaNumber
+      name
+      street
+      streetTwo
+      city
+      state
+      zipCode
+      phone
+      email
+      deviceTypes {
+        name
+        internalId
+      }
+      orderingProvider {
+        firstName
+        middleName
+        lastName
+        suffix
+        NPI
+        street
+        streetTwo
+        city
+        state
+        zipCode
+        phone
+      }
+    }
+  }
+  deviceTypes {
+    internalId
+    name
+  }
+}
+
+mutation AddFacility(
+  $testingFacilityName: String!
+  $cliaNumber: String
+  $street: String!
+  $streetTwo: String
+  $city: String
+  $state: String!
+  $zipCode: String!
+  $phone: String
+  $email: String
+  $orderingProviderFirstName: String
+  $orderingProviderMiddleName: String
+  $orderingProviderLastName: String
+  $orderingProviderSuffix: String
+  $orderingProviderNPI: String
+  $orderingProviderStreet: String
+  $orderingProviderStreetTwo: String
+  $orderingProviderCity: String
+  $orderingProviderState: String
+  $orderingProviderZipCode: String
+  $orderingProviderPhone: String
+  $devices: [ID]!
+) {
+  addFacility(
+    facilityInfo: {
+      facilityName: $testingFacilityName
+      cliaNumber: $cliaNumber
+      street: $street
+      streetTwo: $streetTwo
+      city: $city
+      state: $state
+      zipCode: $zipCode
+      phone: $phone
+      email: $email
+      orderingProvider: {
+        firstName: $orderingProviderFirstName
+        middleName: $orderingProviderMiddleName
+        lastName: $orderingProviderLastName
+        suffix: $orderingProviderSuffix
+        npi: $orderingProviderNPI
+        street: $orderingProviderStreet
+        streetTwo: $orderingProviderStreetTwo
+        city: $orderingProviderCity
+        state: $orderingProviderState
+        zipCode: $orderingProviderZipCode
+        phone: $orderingProviderPhone
+      }
+      deviceIds: $devices
+    }
+  ) {
+    id
+  }
+}
+
+mutation UpdateFacility(
+  $facilityId: ID!
+  $testingFacilityName: String!
+  $cliaNumber: String
+  $street: String!
+  $streetTwo: String
+  $city: String
+  $state: String!
+  $zipCode: String!
+  $phone: String
+  $email: String
+  $orderingProviderFirstName: String
+  $orderingProviderMiddleName: String
+  $orderingProviderLastName: String
+  $orderingProviderSuffix: String
+  $orderingProviderNPI: String
+  $orderingProviderStreet: String
+  $orderingProviderStreetTwo: String
+  $orderingProviderCity: String
+  $orderingProviderState: String
+  $orderingProviderZipCode: String
+  $orderingProviderPhone: String
+  $devices: [ID]!
+) {
+  updateFacility(
+    facilityInfo: {
+      facilityId: $facilityId
+      facilityName: $testingFacilityName
+      cliaNumber: $cliaNumber
+      street: $street
+      streetTwo: $streetTwo
+      city: $city
+      state: $state
+      zipCode: $zipCode
+      phone: $phone
+      email: $email
+      orderingProvider: {
+        firstName: $orderingProviderFirstName
+        middleName: $orderingProviderMiddleName
+        lastName: $orderingProviderLastName
+        suffix: $orderingProviderSuffix
+        npi: $orderingProviderNPI
+        street: $orderingProviderStreet
+        streetTwo: $orderingProviderStreetTwo
+        city: $orderingProviderCity
+        state: $orderingProviderState
+        zipCode: $orderingProviderZipCode
+        phone: $orderingProviderPhone
+      }
+      deviceIds: $devices
+    }
+  ) {
+    id
+  }
+}
