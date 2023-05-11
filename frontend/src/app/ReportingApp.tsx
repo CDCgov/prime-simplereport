@@ -79,7 +79,7 @@ const checkOktaLoginStatus = (
   }
 };
 
-const App = () => {
+const ReportingApp = () => {
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -404,4 +404,4 @@ const App = () => {
   );
 };
 
-export default connect()(App);
+export default connect()(ReportingApp);
