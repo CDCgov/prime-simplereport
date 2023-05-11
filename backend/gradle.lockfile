@@ -2,9 +2,9 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 antlr:antlr:2.7.7=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-base:6.4.3=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-caching-api:6.4.3=compileClasspath,runtimeClasspath
-ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.4.3=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-base:6.4.4=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-caching-api:6.4.4=compileClasspath,runtimeClasspath
+ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.4.4=compileClasspath,runtimeClasspath
 ca.uhn.hapi.fhir:org.hl7.fhir.r4:5.6.971=compileClasspath,runtimeClasspath
 ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.0.4=compileClasspath,runtimeClasspath
 ch.qos.logback:logback-classic:1.2.12=compileClasspath,runtimeClasspath
