@@ -1051,26 +1051,23 @@ export type WhoAmIQuery = {
   whoami: {
     __typename?: "User";
     id: string;
-    firstName?: string | null | undefined;
-    middleName?: string | null | undefined;
+    firstName?: string | null;
+    middleName?: string | null;
     lastName: string;
-    suffix?: string | null | undefined;
+    suffix?: string | null;
     email: string;
-    isAdmin?: boolean | null | undefined;
+    isAdmin?: boolean | null;
     permissions: Array<UserPermission>;
     roleDescription: string;
-    organization?:
-      | {
-          __typename?: "Organization";
-          name: string;
-          testingFacility: Array<{
-            __typename?: "Facility";
-            id: string;
-            name: string;
-          }>;
-        }
-      | null
-      | undefined;
+    organization?: {
+      __typename?: "Organization";
+      name: string;
+      testingFacility: Array<{
+        __typename?: "Facility";
+        id: string;
+        name: string;
+      }>;
+    } | null;
   };
 };
 
@@ -1078,48 +1075,42 @@ export type GetFacilitiesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetFacilitiesQuery = {
   __typename?: "Query";
-  organization?:
-    | {
-        __typename?: "Organization";
+  organization?: {
+    __typename?: "Organization";
+    internalId: string;
+    testingFacility: Array<{
+      __typename?: "Facility";
+      id: string;
+      cliaNumber?: string | null;
+      name: string;
+      street?: string | null;
+      streetTwo?: string | null;
+      city?: string | null;
+      state?: string | null;
+      zipCode?: string | null;
+      phone?: string | null;
+      email?: string | null;
+      deviceTypes: Array<{
+        __typename?: "DeviceType";
+        name: string;
         internalId: string;
-        testingFacility: Array<{
-          __typename?: "Facility";
-          id: string;
-          cliaNumber?: string | null | undefined;
-          name: string;
-          street?: string | null | undefined;
-          streetTwo?: string | null | undefined;
-          city?: string | null | undefined;
-          state?: string | null | undefined;
-          zipCode?: string | null | undefined;
-          phone?: string | null | undefined;
-          email?: string | null | undefined;
-          deviceTypes: Array<{
-            __typename?: "DeviceType";
-            name: string;
-            internalId: string;
-          }>;
-          orderingProvider?:
-            | {
-                __typename?: "Provider";
-                firstName?: string | null | undefined;
-                middleName?: string | null | undefined;
-                lastName?: string | null | undefined;
-                suffix?: string | null | undefined;
-                NPI?: string | null | undefined;
-                street?: string | null | undefined;
-                streetTwo?: string | null | undefined;
-                city?: string | null | undefined;
-                state?: string | null | undefined;
-                zipCode?: string | null | undefined;
-                phone?: string | null | undefined;
-              }
-            | null
-            | undefined;
-        }>;
-      }
-    | null
-    | undefined;
+      }>;
+      orderingProvider?: {
+        __typename?: "Provider";
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName?: string | null;
+        suffix?: string | null;
+        NPI?: string | null;
+        street?: string | null;
+        streetTwo?: string | null;
+        city?: string | null;
+        state?: string | null;
+        zipCode?: string | null;
+        phone?: string | null;
+      } | null;
+    }>;
+  } | null;
   deviceTypes: Array<{
     __typename?: "DeviceType";
     internalId: string;
@@ -1154,7 +1145,7 @@ export type UpdateFacilityMutationVariables = Exact<{
 
 export type UpdateFacilityMutation = {
   __typename?: "Mutation";
-  updateFacility?: { __typename?: "Facility"; id: string } | null | undefined;
+  updateFacility?: { __typename?: "Facility"; id: string } | null;
 };
 
 export type AddFacilityMutationVariables = Exact<{
@@ -1183,7 +1174,7 @@ export type AddFacilityMutationVariables = Exact<{
 
 export type AddFacilityMutation = {
   __typename?: "Mutation";
-  addFacility?: { __typename?: "Facility"; id: string } | null | undefined;
+  addFacility?: { __typename?: "Facility"; id: string } | null;
 };
 
 export type GetManagedFacilitiesQueryVariables = Exact<{
@@ -1192,28 +1183,26 @@ export type GetManagedFacilitiesQueryVariables = Exact<{
 
 export type GetManagedFacilitiesQuery = {
   __typename?: "Query";
-  organization?:
-    | {
-        __typename?: "Organization";
-        facilities: Array<{
-          __typename?: "Facility";
-          id: string;
-          cliaNumber?: string | null | undefined;
-          name: string;
-        }>;
-      }
-    | null
-    | undefined;
+  organization?: {
+    __typename?: "Organization";
+    facilities: Array<{
+      __typename?: "Facility";
+      id: string;
+      cliaNumber?: string | null;
+      name: string;
+    }>;
+  } | null;
 };
 
 export type GetOrganizationQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetOrganizationQuery = {
   __typename?: "Query";
-  organization?:
-    | { __typename?: "Organization"; name: string; type: string }
-    | null
-    | undefined;
+  organization?: {
+    __typename?: "Organization";
+    name: string;
+    type: string;
+  } | null;
 };
 
 export type AdminSetOrganizationMutationVariables = Exact<{
@@ -1223,7 +1212,7 @@ export type AdminSetOrganizationMutationVariables = Exact<{
 
 export type AdminSetOrganizationMutation = {
   __typename?: "Mutation";
-  adminUpdateOrganization?: string | null | undefined;
+  adminUpdateOrganization?: string | null;
 };
 
 export type SetOrganizationMutationVariables = Exact<{
@@ -1232,7 +1221,7 @@ export type SetOrganizationMutationVariables = Exact<{
 
 export type SetOrganizationMutation = {
   __typename?: "Mutation";
-  updateOrganization?: string | null | undefined;
+  updateOrganization?: string | null;
 };
 
 export type AllSelfRegistrationLinksQueryVariables = Exact<{
@@ -1243,18 +1232,15 @@ export type AllSelfRegistrationLinksQuery = {
   __typename?: "Query";
   whoami: {
     __typename?: "User";
-    organization?:
-      | {
-          __typename?: "Organization";
-          patientSelfRegistrationLink?: string | null | undefined;
-          facilities: Array<{
-            __typename?: "Facility";
-            name: string;
-            patientSelfRegistrationLink?: string | null | undefined;
-          }>;
-        }
-      | null
-      | undefined;
+    organization?: {
+      __typename?: "Organization";
+      patientSelfRegistrationLink?: string | null;
+      facilities: Array<{
+        __typename?: "Facility";
+        name: string;
+        patientSelfRegistrationLink?: string | null;
+      }>;
+    } | null;
   };
 };
 
@@ -1267,7 +1253,7 @@ export type UpdateUserPrivilegesMutationVariables = Exact<{
 
 export type UpdateUserPrivilegesMutation = {
   __typename?: "Mutation";
-  updateUserPrivileges?: { __typename?: "User"; id: string } | null | undefined;
+  updateUserPrivileges?: { __typename?: "User"; id: string } | null;
 };
 
 export type ResetUserPasswordMutationVariables = Exact<{
@@ -1276,7 +1262,7 @@ export type ResetUserPasswordMutationVariables = Exact<{
 
 export type ResetUserPasswordMutation = {
   __typename?: "Mutation";
-  resetUserPassword?: { __typename?: "User"; id: string } | null | undefined;
+  resetUserPassword?: { __typename?: "User"; id: string } | null;
 };
 
 export type SetUserIsDeletedMutationVariables = Exact<{
@@ -1286,7 +1272,7 @@ export type SetUserIsDeletedMutationVariables = Exact<{
 
 export type SetUserIsDeletedMutation = {
   __typename?: "Mutation";
-  setUserIsDeleted?: { __typename?: "User"; id: string } | null | undefined;
+  setUserIsDeleted?: { __typename?: "User"; id: string } | null;
 };
 
 export type ReactivateUserMutationVariables = Exact<{
@@ -1295,7 +1281,7 @@ export type ReactivateUserMutationVariables = Exact<{
 
 export type ReactivateUserMutation = {
   __typename?: "Mutation";
-  reactivateUser?: { __typename?: "User"; id: string } | null | undefined;
+  reactivateUser?: { __typename?: "User"; id: string } | null;
 };
 
 export type AddUserToCurrentOrgMutationVariables = Exact<{
@@ -1307,7 +1293,7 @@ export type AddUserToCurrentOrgMutationVariables = Exact<{
 
 export type AddUserToCurrentOrgMutation = {
   __typename?: "Mutation";
-  addUserToCurrentOrg?: { __typename?: "User"; id: string } | null | undefined;
+  addUserToCurrentOrg?: { __typename?: "User"; id: string } | null;
 };
 
 export type GetUserQueryVariables = Exact<{
@@ -1316,50 +1302,41 @@ export type GetUserQueryVariables = Exact<{
 
 export type GetUserQuery = {
   __typename?: "Query";
-  user?:
-    | {
-        __typename?: "User";
+  user?: {
+    __typename?: "User";
+    id: string;
+    firstName?: string | null;
+    middleName?: string | null;
+    lastName: string;
+    roleDescription: string;
+    role?: Role | null;
+    permissions: Array<UserPermission>;
+    email: string;
+    status?: string | null;
+    organization?: {
+      __typename?: "Organization";
+      testingFacility: Array<{
+        __typename?: "Facility";
         id: string;
-        firstName?: string | null | undefined;
-        middleName?: string | null | undefined;
-        lastName: string;
-        roleDescription: string;
-        role?: Role | null | undefined;
-        permissions: Array<UserPermission>;
-        email: string;
-        status?: string | null | undefined;
-        organization?:
-          | {
-              __typename?: "Organization";
-              testingFacility: Array<{
-                __typename?: "Facility";
-                id: string;
-                name: string;
-              }>;
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+        name: string;
+      }>;
+    } | null;
+  } | null;
 };
 
 export type GetUsersAndStatusQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetUsersAndStatusQuery = {
   __typename?: "Query";
-  usersWithStatus?:
-    | Array<{
-        __typename?: "ApiUserWithStatus";
-        id: string;
-        firstName?: string | null | undefined;
-        middleName?: string | null | undefined;
-        lastName: string;
-        email: string;
-        status?: string | null | undefined;
-      }>
-    | null
-    | undefined;
+  usersWithStatus?: Array<{
+    __typename?: "ApiUserWithStatus";
+    id: string;
+    firstName?: string | null;
+    middleName?: string | null;
+    lastName: string;
+    email: string;
+    status?: string | null;
+  }> | null;
 };
 
 export type ResendActivationEmailMutationVariables = Exact<{
@@ -1368,18 +1345,15 @@ export type ResendActivationEmailMutationVariables = Exact<{
 
 export type ResendActivationEmailMutation = {
   __typename?: "Mutation";
-  resendActivationEmail?:
-    | {
-        __typename?: "User";
-        id: string;
-        firstName?: string | null | undefined;
-        middleName?: string | null | undefined;
-        lastName: string;
-        email: string;
-        status?: string | null | undefined;
-      }
-    | null
-    | undefined;
+  resendActivationEmail?: {
+    __typename?: "User";
+    id: string;
+    firstName?: string | null;
+    middleName?: string | null;
+    lastName: string;
+    email: string;
+    status?: string | null;
+  } | null;
 };
 
 export type UpdateUserNameMutationVariables = Exact<{
@@ -1392,7 +1366,7 @@ export type UpdateUserNameMutationVariables = Exact<{
 
 export type UpdateUserNameMutation = {
   __typename?: "Mutation";
-  updateUser?: { __typename?: "User"; id: string } | null | undefined;
+  updateUser?: { __typename?: "User"; id: string } | null;
 };
 
 export type EditUserEmailMutationVariables = Exact<{
@@ -1402,10 +1376,7 @@ export type EditUserEmailMutationVariables = Exact<{
 
 export type EditUserEmailMutation = {
   __typename?: "Mutation";
-  updateUserEmail?:
-    | { __typename?: "User"; id: string; email: string }
-    | null
-    | undefined;
+  updateUserEmail?: { __typename?: "User"; id: string; email: string } | null;
 };
 
 export type ResetUserMfaMutationVariables = Exact<{
@@ -1414,7 +1385,7 @@ export type ResetUserMfaMutationVariables = Exact<{
 
 export type ResetUserMfaMutation = {
   __typename?: "Mutation";
-  resetUserMfa?: { __typename?: "User"; id: string } | null | undefined;
+  resetUserMfa?: { __typename?: "User"; id: string } | null;
 };
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
@@ -1425,14 +1396,11 @@ export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
 
 export type GetTopLevelDashboardMetricsNewQuery = {
   __typename?: "Query";
-  topLevelDashboardMetrics?:
-    | {
-        __typename?: "TopLevelDashboardMetrics";
-        positiveTestCount?: number | null | undefined;
-        totalTestCount?: number | null | undefined;
-      }
-    | null
-    | undefined;
+  topLevelDashboardMetrics?: {
+    __typename?: "TopLevelDashboardMetrics";
+    positiveTestCount?: number | null;
+    totalTestCount?: number | null;
+  } | null;
 };
 
 export type PatientExistsQueryVariables = Exact<{
@@ -1444,7 +1412,7 @@ export type PatientExistsQueryVariables = Exact<{
 
 export type PatientExistsQuery = {
   __typename?: "Query";
-  patientExistsWithoutZip?: boolean | null | undefined;
+  patientExistsWithoutZip?: boolean | null;
 };
 
 export type AddPatientMutationVariables = Exact<{
@@ -1479,14 +1447,11 @@ export type AddPatientMutationVariables = Exact<{
 
 export type AddPatientMutation = {
   __typename?: "Mutation";
-  addPatient?:
-    | {
-        __typename?: "Patient";
-        internalId: string;
-        facility?: { __typename?: "Facility"; id: string } | null | undefined;
-      }
-    | null
-    | undefined;
+  addPatient?: {
+    __typename?: "Patient";
+    internalId: string;
+    facility?: { __typename?: "Facility"; id: string } | null;
+  } | null;
 };
 
 export type ArchivePersonMutationVariables = Exact<{
@@ -1496,10 +1461,7 @@ export type ArchivePersonMutationVariables = Exact<{
 
 export type ArchivePersonMutation = {
   __typename?: "Mutation";
-  setPatientIsDeleted?:
-    | { __typename?: "Patient"; internalId: string }
-    | null
-    | undefined;
+  setPatientIsDeleted?: { __typename?: "Patient"; internalId: string } | null;
 };
 
 export type GetPatientDetailsQueryVariables = Exact<{
@@ -1508,49 +1470,39 @@ export type GetPatientDetailsQueryVariables = Exact<{
 
 export type GetPatientDetailsQuery = {
   __typename?: "Query";
-  patient?:
-    | {
-        __typename?: "Patient";
-        firstName?: string | null | undefined;
-        middleName?: string | null | undefined;
-        lastName?: string | null | undefined;
-        birthDate?: any | null | undefined;
-        street?: string | null | undefined;
-        streetTwo?: string | null | undefined;
-        city?: string | null | undefined;
-        state?: string | null | undefined;
-        zipCode?: string | null | undefined;
-        telephone?: string | null | undefined;
-        role?: string | null | undefined;
-        lookupId?: string | null | undefined;
-        email?: string | null | undefined;
-        emails?: Array<string | null | undefined> | null | undefined;
-        county?: string | null | undefined;
-        country?: string | null | undefined;
-        race?: string | null | undefined;
-        ethnicity?: string | null | undefined;
-        tribalAffiliation?: Array<string | null | undefined> | null | undefined;
-        gender?: string | null | undefined;
-        residentCongregateSetting?: boolean | null | undefined;
-        employedInHealthcare?: boolean | null | undefined;
-        preferredLanguage?: string | null | undefined;
-        testResultDelivery?: TestResultDeliveryPreference | null | undefined;
-        phoneNumbers?:
-          | Array<
-              | {
-                  __typename?: "PhoneNumber";
-                  type?: PhoneType | null | undefined;
-                  number?: string | null | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-        facility?: { __typename?: "Facility"; id: string } | null | undefined;
-      }
-    | null
-    | undefined;
+  patient?: {
+    __typename?: "Patient";
+    firstName?: string | null;
+    middleName?: string | null;
+    lastName?: string | null;
+    birthDate?: any | null;
+    street?: string | null;
+    streetTwo?: string | null;
+    city?: string | null;
+    state?: string | null;
+    zipCode?: string | null;
+    telephone?: string | null;
+    role?: string | null;
+    lookupId?: string | null;
+    email?: string | null;
+    emails?: Array<string | null> | null;
+    county?: string | null;
+    country?: string | null;
+    race?: string | null;
+    ethnicity?: string | null;
+    tribalAffiliation?: Array<string | null> | null;
+    gender?: string | null;
+    residentCongregateSetting?: boolean | null;
+    employedInHealthcare?: boolean | null;
+    preferredLanguage?: string | null;
+    testResultDelivery?: TestResultDeliveryPreference | null;
+    phoneNumbers?: Array<{
+      __typename?: "PhoneNumber";
+      type?: PhoneType | null;
+      number?: string | null;
+    } | null> | null;
+    facility?: { __typename?: "Facility"; id: string } | null;
+  } | null;
 };
 
 export type UpdatePatientMutationVariables = Exact<{
@@ -1586,10 +1538,7 @@ export type UpdatePatientMutationVariables = Exact<{
 
 export type UpdatePatientMutation = {
   __typename?: "Mutation";
-  updatePatient?:
-    | { __typename?: "Patient"; internalId: string }
-    | null
-    | undefined;
+  updatePatient?: { __typename?: "Patient"; internalId: string } | null;
 };
 
 export type GetPatientsCountByFacilityQueryVariables = Exact<{
@@ -1600,7 +1549,7 @@ export type GetPatientsCountByFacilityQueryVariables = Exact<{
 
 export type GetPatientsCountByFacilityQuery = {
   __typename?: "Query";
-  patientsCount?: number | null | undefined;
+  patientsCount?: number | null;
 };
 
 export type GetPatientsByFacilityQueryVariables = Exact<{
@@ -1613,30 +1562,17 @@ export type GetPatientsByFacilityQueryVariables = Exact<{
 
 export type GetPatientsByFacilityQuery = {
   __typename?: "Query";
-  patients?:
-    | Array<
-        | {
-            __typename?: "Patient";
-            internalId: string;
-            firstName?: string | null | undefined;
-            lastName?: string | null | undefined;
-            middleName?: string | null | undefined;
-            birthDate?: any | null | undefined;
-            isDeleted?: boolean | null | undefined;
-            role?: string | null | undefined;
-            lastTest?:
-              | {
-                  __typename?: "TestResult";
-                  dateAdded?: string | null | undefined;
-                }
-              | null
-              | undefined;
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined;
+  patients?: Array<{
+    __typename?: "Patient";
+    internalId: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    middleName?: string | null;
+    birthDate?: any | null;
+    isDeleted?: boolean | null;
+    role?: string | null;
+    lastTest?: { __typename?: "TestResult"; dateAdded?: string | null } | null;
+  } | null> | null;
 };
 
 export type AddUserMutationVariables = Exact<{
@@ -1651,7 +1587,7 @@ export type AddUserMutationVariables = Exact<{
 
 export type AddUserMutation = {
   __typename?: "Mutation";
-  addUser?: { __typename?: "User"; id: string } | null | undefined;
+  addUser?: { __typename?: "User"; id: string } | null;
 };
 
 export type CreateDeviceTypeMutationVariables = Exact<{
@@ -1667,10 +1603,7 @@ export type CreateDeviceTypeMutationVariables = Exact<{
 
 export type CreateDeviceTypeMutation = {
   __typename?: "Mutation";
-  createDeviceType?:
-    | { __typename?: "DeviceType"; internalId: string }
-    | null
-    | undefined;
+  createDeviceType?: { __typename?: "DeviceType"; internalId: string } | null;
 };
 
 export type UpdateDeviceTypeMutationVariables = Exact<{
@@ -1687,10 +1620,7 @@ export type UpdateDeviceTypeMutationVariables = Exact<{
 
 export type UpdateDeviceTypeMutation = {
   __typename?: "Mutation";
-  updateDeviceType?:
-    | { __typename?: "DeviceType"; internalId: string }
-    | null
-    | undefined;
+  updateDeviceType?: { __typename?: "DeviceType"; internalId: string } | null;
 };
 
 export type GetDeviceTypeListQueryVariables = Exact<{ [key: string]: never }>;
@@ -1712,9 +1642,9 @@ export type GetDeviceTypeListQuery = {
     supportedDiseaseTestPerformed: Array<{
       __typename?: "SupportedDiseaseTestPerformed";
       testPerformedLoincCode: string;
-      testkitNameId?: string | null | undefined;
-      equipmentUid?: string | null | undefined;
-      testOrderedLoincCode?: string | null | undefined;
+      testkitNameId?: string | null;
+      equipmentUid?: string | null;
+      testOrderedLoincCode?: string | null;
       supportedDisease: {
         __typename?: "SupportedDisease";
         internalId: string;
@@ -1759,10 +1689,10 @@ export type GetPendingOrganizationsQuery = {
     __typename?: "PendingOrganization";
     externalId: string;
     name: string;
-    adminFirstName?: string | null | undefined;
-    adminLastName?: string | null | undefined;
-    adminEmail?: string | null | undefined;
-    adminPhone?: string | null | undefined;
+    adminFirstName?: string | null;
+    adminLastName?: string | null;
+    adminEmail?: string | null;
+    adminPhone?: string | null;
     createdAt: any;
   }>;
 };
@@ -1774,7 +1704,7 @@ export type SetOrgIdentityVerifiedMutationVariables = Exact<{
 
 export type SetOrgIdentityVerifiedMutation = {
   __typename?: "Mutation";
-  setOrganizationIdentityVerified?: boolean | null | undefined;
+  setOrganizationIdentityVerified?: boolean | null;
 };
 
 export type MarkPendingOrganizationAsDeletedMutationVariables = Exact<{
@@ -1784,7 +1714,7 @@ export type MarkPendingOrganizationAsDeletedMutationVariables = Exact<{
 
 export type MarkPendingOrganizationAsDeletedMutation = {
   __typename?: "Mutation";
-  markPendingOrganizationAsDeleted?: string | null | undefined;
+  markPendingOrganizationAsDeleted?: string | null;
 };
 
 export type EditPendingOrganizationMutationVariables = Exact<{
@@ -1798,7 +1728,7 @@ export type EditPendingOrganizationMutationVariables = Exact<{
 
 export type EditPendingOrganizationMutation = {
   __typename?: "Mutation";
-  editPendingOrganization?: string | null | undefined;
+  editPendingOrganization?: string | null;
 };
 
 export type GetOrganizationsQueryVariables = Exact<{
@@ -1821,20 +1751,18 @@ export type SetCurrentUserTenantDataAccessOpMutationVariables = Exact<{
 
 export type SetCurrentUserTenantDataAccessOpMutation = {
   __typename?: "Mutation";
-  setCurrentUserTenantDataAccess?:
-    | {
-        __typename?: "User";
-        id: string;
-        email: string;
-        permissions: Array<UserPermission>;
-        role?: Role | null | undefined;
-        organization?:
-          | { __typename?: "Organization"; name: string; externalId: string }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  setCurrentUserTenantDataAccess?: {
+    __typename?: "User";
+    id: string;
+    email: string;
+    permissions: Array<UserPermission>;
+    role?: Role | null;
+    organization?: {
+      __typename?: "Organization";
+      name: string;
+      externalId: string;
+    } | null;
+  } | null;
 };
 
 export type GetPatientQueryVariables = Exact<{
@@ -1843,33 +1771,23 @@ export type GetPatientQueryVariables = Exact<{
 
 export type GetPatientQuery = {
   __typename?: "Query";
-  patient?:
-    | {
-        __typename?: "Patient";
-        internalId: string;
-        firstName?: string | null | undefined;
-        lastName?: string | null | undefined;
-        middleName?: string | null | undefined;
-        birthDate?: any | null | undefined;
-        gender?: string | null | undefined;
-        telephone?: string | null | undefined;
-        emails?: Array<string | null | undefined> | null | undefined;
-        testResultDelivery?: TestResultDeliveryPreference | null | undefined;
-        phoneNumbers?:
-          | Array<
-              | {
-                  __typename?: "PhoneNumber";
-                  type?: PhoneType | null | undefined;
-                  number?: string | null | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  patient?: {
+    __typename?: "Patient";
+    internalId: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    middleName?: string | null;
+    birthDate?: any | null;
+    gender?: string | null;
+    telephone?: string | null;
+    emails?: Array<string | null> | null;
+    testResultDelivery?: TestResultDeliveryPreference | null;
+    phoneNumbers?: Array<{
+      __typename?: "PhoneNumber";
+      type?: PhoneType | null;
+      number?: string | null;
+    } | null> | null;
+  } | null;
 };
 
 export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
@@ -1881,41 +1799,24 @@ export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
 
 export type GetPatientsByFacilityForQueueQuery = {
   __typename?: "Query";
-  patients?:
-    | Array<
-        | {
-            __typename?: "Patient";
-            internalId: string;
-            firstName?: string | null | undefined;
-            lastName?: string | null | undefined;
-            middleName?: string | null | undefined;
-            birthDate?: any | null | undefined;
-            gender?: string | null | undefined;
-            telephone?: string | null | undefined;
-            email?: string | null | undefined;
-            emails?: Array<string | null | undefined> | null | undefined;
-            testResultDelivery?:
-              | TestResultDeliveryPreference
-              | null
-              | undefined;
-            phoneNumbers?:
-              | Array<
-                  | {
-                      __typename?: "PhoneNumber";
-                      type?: PhoneType | null | undefined;
-                      number?: string | null | undefined;
-                    }
-                  | null
-                  | undefined
-                >
-              | null
-              | undefined;
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined;
+  patients?: Array<{
+    __typename?: "Patient";
+    internalId: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    middleName?: string | null;
+    birthDate?: any | null;
+    gender?: string | null;
+    telephone?: string | null;
+    email?: string | null;
+    emails?: Array<string | null> | null;
+    testResultDelivery?: TestResultDeliveryPreference | null;
+    phoneNumbers?: Array<{
+      __typename?: "PhoneNumber";
+      type?: PhoneType | null;
+      number?: string | null;
+    } | null> | null;
+  } | null> | null;
 };
 
 export type AddPatientToQueueMutationVariables = Exact<{
@@ -1930,7 +1831,7 @@ export type AddPatientToQueueMutationVariables = Exact<{
 
 export type AddPatientToQueueMutation = {
   __typename?: "Mutation";
-  addPatientToQueue?: string | null | undefined;
+  addPatientToQueue?: string | null;
 };
 
 export type UpdateAoeMutationVariables = Exact<{
@@ -1944,7 +1845,7 @@ export type UpdateAoeMutationVariables = Exact<{
 
 export type UpdateAoeMutation = {
   __typename?: "Mutation";
-  updateTimeOfTestQuestions?: string | null | undefined;
+  updateTimeOfTestQuestions?: string | null;
 };
 
 export type RemovePatientFromQueueMutationVariables = Exact<{
@@ -1953,7 +1854,7 @@ export type RemovePatientFromQueueMutationVariables = Exact<{
 
 export type RemovePatientFromQueueMutation = {
   __typename?: "Mutation";
-  removePatientFromQueue?: string | null | undefined;
+  removePatientFromQueue?: string | null;
 };
 
 export type EditQueueItemMutationVariables = Exact<{
@@ -1968,26 +1869,20 @@ export type EditQueueItemMutationVariables = Exact<{
 
 export type EditQueueItemMutation = {
   __typename?: "Mutation";
-  editQueueItem?:
-    | {
-        __typename?: "TestOrder";
-        dateTested?: any | null | undefined;
-        results: Array<{
-          __typename?: "MultiplexResult";
-          testResult?: string | null | undefined;
-          disease?:
-            | { __typename?: "SupportedDisease"; name: string }
-            | null
-            | undefined;
-        }>;
-        deviceType: {
-          __typename?: "DeviceType";
-          internalId: string;
-          testLength: number;
-        };
-      }
-    | null
-    | undefined;
+  editQueueItem?: {
+    __typename?: "TestOrder";
+    dateTested?: any | null;
+    results: Array<{
+      __typename?: "MultiplexResult";
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
+    }>;
+    deviceType: {
+      __typename?: "DeviceType";
+      internalId: string;
+      testLength: number;
+    };
+  } | null;
 };
 
 export type SubmitQueueItemMutationVariables = Exact<{
@@ -2002,14 +1897,11 @@ export type SubmitQueueItemMutationVariables = Exact<{
 
 export type SubmitQueueItemMutation = {
   __typename?: "Mutation";
-  submitQueueItem?:
-    | {
-        __typename?: "AddTestResultResponse";
-        deliverySuccess?: boolean | null | undefined;
-        testResult: { __typename?: "TestOrder"; internalId: string };
-      }
-    | null
-    | undefined;
+  submitQueueItem?: {
+    __typename?: "AddTestResultResponse";
+    deliverySuccess?: boolean | null;
+    testResult: { __typename?: "TestOrder"; internalId: string };
+  } | null;
 };
 
 export type GetFacilityQueueQueryVariables = Exact<{
@@ -2018,106 +1910,83 @@ export type GetFacilityQueueQueryVariables = Exact<{
 
 export type GetFacilityQueueQuery = {
   __typename?: "Query";
-  queue?:
-    | Array<
-        | {
-            __typename?: "TestOrder";
-            internalId: string;
-            pregnancy?: string | null | undefined;
-            dateAdded: string;
-            symptoms?: string | null | undefined;
-            symptomOnset?: any | null | undefined;
-            noSymptoms?: boolean | null | undefined;
-            dateTested?: any | null | undefined;
-            correctionStatus?: string | null | undefined;
-            reasonForCorrection?: string | null | undefined;
-            deviceType: {
-              __typename?: "DeviceType";
-              internalId: string;
-              name: string;
-              model: string;
-              testLength: number;
-            };
-            specimenType: {
-              __typename?: "SpecimenType";
-              internalId: string;
-              name: string;
-              typeCode: string;
-            };
-            patient: {
-              __typename?: "Patient";
-              internalId: string;
-              telephone?: string | null | undefined;
-              birthDate?: any | null | undefined;
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              gender?: string | null | undefined;
-              testResultDelivery?:
-                | TestResultDeliveryPreference
-                | null
-                | undefined;
-              preferredLanguage?: string | null | undefined;
-              email?: string | null | undefined;
-              emails?: Array<string | null | undefined> | null | undefined;
-              phoneNumbers?:
-                | Array<
-                    | {
-                        __typename?: "PhoneNumber";
-                        type?: PhoneType | null | undefined;
-                        number?: string | null | undefined;
-                      }
-                    | null
-                    | undefined
-                  >
-                | null
-                | undefined;
-            };
-            results: Array<{
-              __typename?: "MultiplexResult";
-              testResult?: string | null | undefined;
-              disease?:
-                | { __typename?: "SupportedDisease"; name: string }
-                | null
-                | undefined;
-            }>;
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined;
-  facility?:
-    | {
-        __typename?: "Facility";
-        name: string;
-        id: string;
-        deviceTypes: Array<{
-          __typename?: "DeviceType";
+  queue?: Array<{
+    __typename?: "TestOrder";
+    internalId: string;
+    pregnancy?: string | null;
+    dateAdded: string;
+    symptoms?: string | null;
+    symptomOnset?: any | null;
+    noSymptoms?: boolean | null;
+    dateTested?: any | null;
+    correctionStatus?: string | null;
+    reasonForCorrection?: string | null;
+    deviceType: {
+      __typename?: "DeviceType";
+      internalId: string;
+      name: string;
+      model: string;
+      testLength: number;
+    };
+    specimenType: {
+      __typename?: "SpecimenType";
+      internalId: string;
+      name: string;
+      typeCode: string;
+    };
+    patient: {
+      __typename?: "Patient";
+      internalId: string;
+      telephone?: string | null;
+      birthDate?: any | null;
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      gender?: string | null;
+      testResultDelivery?: TestResultDeliveryPreference | null;
+      preferredLanguage?: string | null;
+      email?: string | null;
+      emails?: Array<string | null> | null;
+      phoneNumbers?: Array<{
+        __typename?: "PhoneNumber";
+        type?: PhoneType | null;
+        number?: string | null;
+      } | null> | null;
+    };
+    results: Array<{
+      __typename?: "MultiplexResult";
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
+    }>;
+  } | null> | null;
+  facility?: {
+    __typename?: "Facility";
+    name: string;
+    id: string;
+    deviceTypes: Array<{
+      __typename?: "DeviceType";
+      internalId: string;
+      name: string;
+      testLength: number;
+      supportedDiseaseTestPerformed: Array<{
+        __typename?: "SupportedDiseaseTestPerformed";
+        testPerformedLoincCode: string;
+        testOrderedLoincCode?: string | null;
+        supportedDisease: {
+          __typename?: "SupportedDisease";
           internalId: string;
           name: string;
-          testLength: number;
-          supportedDiseaseTestPerformed: Array<{
-            __typename?: "SupportedDiseaseTestPerformed";
-            testPerformedLoincCode: string;
-            testOrderedLoincCode?: string | null | undefined;
-            supportedDisease: {
-              __typename?: "SupportedDisease";
-              internalId: string;
-              name: string;
-              loinc: string;
-            };
-          }>;
-          swabTypes: Array<{
-            __typename?: "SpecimenType";
-            internalId: string;
-            name: string;
-            typeCode: string;
-          }>;
-        }>;
-      }
-    | null
-    | undefined;
+          loinc: string;
+        };
+      }>;
+      swabTypes: Array<{
+        __typename?: "SpecimenType";
+        internalId: string;
+        name: string;
+        typeCode: string;
+      }>;
+    }>;
+  } | null;
 };
 
 export type GetTestResultForCorrectionQueryVariables = Exact<{
@@ -2126,43 +1995,24 @@ export type GetTestResultForCorrectionQueryVariables = Exact<{
 
 export type GetTestResultForCorrectionQuery = {
   __typename?: "Query";
-  testResult?:
-    | {
-        __typename?: "TestResult";
-        dateTested?: any | null | undefined;
-        correctionStatus?: string | null | undefined;
-        results?:
-          | Array<
-              | {
-                  __typename?: "MultiplexResult";
-                  testResult?: string | null | undefined;
-                  disease?:
-                    | { __typename?: "SupportedDisease"; name: string }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-        deviceType?:
-          | { __typename?: "DeviceType"; name: string }
-          | null
-          | undefined;
-        patient?:
-          | {
-              __typename?: "Patient";
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              birthDate?: any | null | undefined;
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    correctionStatus?: string | null;
+    results?: Array<{
+      __typename?: "MultiplexResult";
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
+    } | null> | null;
+    deviceType?: { __typename?: "DeviceType"; name: string } | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      birthDate?: any | null;
+    } | null;
+  } | null;
 };
 
 export type MarkTestAsErrorMutationVariables = Exact<{
@@ -2172,10 +2022,10 @@ export type MarkTestAsErrorMutationVariables = Exact<{
 
 export type MarkTestAsErrorMutation = {
   __typename?: "Mutation";
-  correctTestMarkAsError?:
-    | { __typename?: "TestResult"; internalId?: string | null | undefined }
-    | null
-    | undefined;
+  correctTestMarkAsError?: {
+    __typename?: "TestResult";
+    internalId?: string | null;
+  } | null;
 };
 
 export type MarkTestAsCorrectionMutationVariables = Exact<{
@@ -2185,10 +2035,10 @@ export type MarkTestAsCorrectionMutationVariables = Exact<{
 
 export type MarkTestAsCorrectionMutation = {
   __typename?: "Mutation";
-  correctTestMarkAsCorrection?:
-    | { __typename?: "TestResult"; internalId?: string | null | undefined }
-    | null
-    | undefined;
+  correctTestMarkAsCorrection?: {
+    __typename?: "TestResult";
+    internalId?: string | null;
+  } | null;
 };
 
 export type GetTestResultDetailsQueryVariables = Exact<{
@@ -2197,58 +2047,36 @@ export type GetTestResultDetailsQueryVariables = Exact<{
 
 export type GetTestResultDetailsQuery = {
   __typename?: "Query";
-  testResult?:
-    | {
-        __typename?: "TestResult";
-        dateTested?: any | null | undefined;
-        correctionStatus?: string | null | undefined;
-        symptoms?: string | null | undefined;
-        symptomOnset?: any | null | undefined;
-        pregnancy?: string | null | undefined;
-        results?:
-          | Array<
-              | {
-                  __typename?: "MultiplexResult";
-                  testResult?: string | null | undefined;
-                  disease?:
-                    | { __typename?: "SupportedDisease"; name: string }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-        deviceType?:
-          | { __typename?: "DeviceType"; name: string }
-          | null
-          | undefined;
-        patient?:
-          | {
-              __typename?: "Patient";
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              birthDate?: any | null | undefined;
-            }
-          | null
-          | undefined;
-        createdBy?:
-          | {
-              __typename?: "ApiUser";
-              name: {
-                __typename?: "NameInfo";
-                firstName?: string | null | undefined;
-                middleName?: string | null | undefined;
-                lastName: string;
-              };
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    correctionStatus?: string | null;
+    symptoms?: string | null;
+    symptomOnset?: any | null;
+    pregnancy?: string | null;
+    results?: Array<{
+      __typename?: "MultiplexResult";
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
+    } | null> | null;
+    deviceType?: { __typename?: "DeviceType"; name: string } | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      birthDate?: any | null;
+    } | null;
+    createdBy?: {
+      __typename?: "ApiUser";
+      name: {
+        __typename?: "NameInfo";
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName: string;
+      };
+    } | null;
+  } | null;
 };
 
 export type GetTestResultForTextQueryVariables = Exact<{
@@ -2257,35 +2085,22 @@ export type GetTestResultForTextQueryVariables = Exact<{
 
 export type GetTestResultForTextQuery = {
   __typename?: "Query";
-  testResult?:
-    | {
-        __typename?: "TestResult";
-        dateTested?: any | null | undefined;
-        patient?:
-          | {
-              __typename?: "Patient";
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              birthDate?: any | null | undefined;
-              phoneNumbers?:
-                | Array<
-                    | {
-                        __typename?: "PhoneNumber";
-                        type?: PhoneType | null | undefined;
-                        number?: string | null | undefined;
-                      }
-                    | null
-                    | undefined
-                  >
-                | null
-                | undefined;
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      birthDate?: any | null;
+      phoneNumbers?: Array<{
+        __typename?: "PhoneNumber";
+        type?: PhoneType | null;
+        number?: string | null;
+      } | null> | null;
+    } | null;
+  } | null;
 };
 
 export type SendSmsMutationVariables = Exact<{
@@ -2294,7 +2109,7 @@ export type SendSmsMutationVariables = Exact<{
 
 export type SendSmsMutation = {
   __typename?: "Mutation";
-  sendPatientLinkSmsByTestEventId?: boolean | null | undefined;
+  sendPatientLinkSmsByTestEventId?: boolean | null;
 };
 
 export type GetTestResultForResendingEmailsQueryVariables = Exact<{
@@ -2303,24 +2118,18 @@ export type GetTestResultForResendingEmailsQueryVariables = Exact<{
 
 export type GetTestResultForResendingEmailsQuery = {
   __typename?: "Query";
-  testResult?:
-    | {
-        __typename?: "TestResult";
-        dateTested?: any | null | undefined;
-        patient?:
-          | {
-              __typename?: "Patient";
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              email?: string | null | undefined;
-              emails?: Array<string | null | undefined> | null | undefined;
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      email?: string | null;
+      emails?: Array<string | null> | null;
+    } | null;
+  } | null;
 };
 
 export type ResendTestResultsEmailMutationVariables = Exact<{
@@ -2329,7 +2138,7 @@ export type ResendTestResultsEmailMutationVariables = Exact<{
 
 export type ResendTestResultsEmailMutation = {
   __typename?: "Mutation";
-  sendPatientLinkEmailByTestEventId?: boolean | null | undefined;
+  sendPatientLinkEmailByTestEventId?: boolean | null;
 };
 
 export type GetFacilityResultsForCsvWithCountQueryVariables = Exact<{
@@ -2345,116 +2154,75 @@ export type GetFacilityResultsForCsvWithCountQueryVariables = Exact<{
 
 export type GetFacilityResultsForCsvWithCountQuery = {
   __typename?: "Query";
-  testResultsPage?:
-    | {
-        __typename?: "TestResultsPage";
-        totalElements?: number | null | undefined;
-        content?:
-          | Array<
-              | {
-                  __typename?: "TestResult";
-                  dateTested?: any | null | undefined;
-                  dateUpdated?: any | null | undefined;
-                  correctionStatus?: string | null | undefined;
-                  reasonForCorrection?: string | null | undefined;
-                  symptoms?: string | null | undefined;
-                  noSymptoms?: boolean | null | undefined;
-                  symptomOnset?: any | null | undefined;
-                  facility?:
-                    | {
-                        __typename?: "Facility";
-                        name: string;
-                        isDeleted?: boolean | null | undefined;
-                      }
-                    | null
-                    | undefined;
-                  results?:
-                    | Array<
-                        | {
-                            __typename?: "MultiplexResult";
-                            testResult?: string | null | undefined;
-                            disease?:
-                              | {
-                                  __typename?: "SupportedDisease";
-                                  name: string;
-                                }
-                              | null
-                              | undefined;
-                          }
-                        | null
-                        | undefined
-                      >
-                    | null
-                    | undefined;
-                  deviceType?:
-                    | {
-                        __typename?: "DeviceType";
-                        name: string;
-                        manufacturer: string;
-                        model: string;
-                        swabTypes: Array<{
-                          __typename?: "SpecimenType";
-                          internalId: string;
-                          name: string;
-                        }>;
-                      }
-                    | null
-                    | undefined;
-                  patient?:
-                    | {
-                        __typename?: "Patient";
-                        firstName?: string | null | undefined;
-                        middleName?: string | null | undefined;
-                        lastName?: string | null | undefined;
-                        birthDate?: any | null | undefined;
-                        gender?: string | null | undefined;
-                        race?: string | null | undefined;
-                        ethnicity?: string | null | undefined;
-                        tribalAffiliation?:
-                          | Array<string | null | undefined>
-                          | null
-                          | undefined;
-                        lookupId?: string | null | undefined;
-                        telephone?: string | null | undefined;
-                        email?: string | null | undefined;
-                        street?: string | null | undefined;
-                        streetTwo?: string | null | undefined;
-                        city?: string | null | undefined;
-                        county?: string | null | undefined;
-                        state?: string | null | undefined;
-                        zipCode?: string | null | undefined;
-                        country?: string | null | undefined;
-                        role?: string | null | undefined;
-                        residentCongregateSetting?: boolean | null | undefined;
-                        employedInHealthcare?: boolean | null | undefined;
-                        preferredLanguage?: string | null | undefined;
-                      }
-                    | null
-                    | undefined;
-                  createdBy?:
-                    | {
-                        __typename?: "ApiUser";
-                        nameInfo?:
-                          | {
-                              __typename?: "NameInfo";
-                              firstName?: string | null | undefined;
-                              middleName?: string | null | undefined;
-                              lastName: string;
-                            }
-                          | null
-                          | undefined;
-                      }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  testResultsPage?: {
+    __typename?: "TestResultsPage";
+    totalElements?: number | null;
+    content?: Array<{
+      __typename?: "TestResult";
+      dateTested?: any | null;
+      dateUpdated?: any | null;
+      correctionStatus?: string | null;
+      reasonForCorrection?: string | null;
+      symptoms?: string | null;
+      noSymptoms?: boolean | null;
+      symptomOnset?: any | null;
+      facility?: {
+        __typename?: "Facility";
+        name: string;
+        isDeleted?: boolean | null;
+      } | null;
+      results?: Array<{
+        __typename?: "MultiplexResult";
+        testResult?: string | null;
+        disease?: { __typename?: "SupportedDisease"; name: string } | null;
+      } | null> | null;
+      deviceType?: {
+        __typename?: "DeviceType";
+        name: string;
+        manufacturer: string;
+        model: string;
+        swabTypes: Array<{
+          __typename?: "SpecimenType";
+          internalId: string;
+          name: string;
+        }>;
+      } | null;
+      patient?: {
+        __typename?: "Patient";
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName?: string | null;
+        birthDate?: any | null;
+        gender?: string | null;
+        race?: string | null;
+        ethnicity?: string | null;
+        tribalAffiliation?: Array<string | null> | null;
+        lookupId?: string | null;
+        telephone?: string | null;
+        email?: string | null;
+        street?: string | null;
+        streetTwo?: string | null;
+        city?: string | null;
+        county?: string | null;
+        state?: string | null;
+        zipCode?: string | null;
+        country?: string | null;
+        role?: string | null;
+        residentCongregateSetting?: boolean | null;
+        employedInHealthcare?: boolean | null;
+        preferredLanguage?: string | null;
+      } | null;
+      createdBy?: {
+        __typename?: "ApiUser";
+        nameInfo?: {
+          __typename?: "NameInfo";
+          firstName?: string | null;
+          middleName?: string | null;
+          lastName: string;
+        } | null;
+      } | null;
+    } | null> | null;
+  } | null;
 };
 
 export type GetFacilityResultsMultiplexWithCountQueryVariables = Exact<{
@@ -2470,103 +2238,55 @@ export type GetFacilityResultsMultiplexWithCountQueryVariables = Exact<{
 
 export type GetFacilityResultsMultiplexWithCountQuery = {
   __typename?: "Query";
-  testResultsPage?:
-    | {
-        __typename?: "TestResultsPage";
-        totalElements?: number | null | undefined;
-        content?:
-          | Array<
-              | {
-                  __typename?: "TestResult";
-                  internalId?: string | null | undefined;
-                  dateTested?: any | null | undefined;
-                  correctionStatus?: string | null | undefined;
-                  results?:
-                    | Array<
-                        | {
-                            __typename?: "MultiplexResult";
-                            testResult?: string | null | undefined;
-                            disease?:
-                              | {
-                                  __typename?: "SupportedDisease";
-                                  name: string;
-                                }
-                              | null
-                              | undefined;
-                          }
-                        | null
-                        | undefined
-                      >
-                    | null
-                    | undefined;
-                  deviceType?:
-                    | {
-                        __typename?: "DeviceType";
-                        internalId: string;
-                        name: string;
-                      }
-                    | null
-                    | undefined;
-                  patient?:
-                    | {
-                        __typename?: "Patient";
-                        internalId: string;
-                        firstName?: string | null | undefined;
-                        middleName?: string | null | undefined;
-                        lastName?: string | null | undefined;
-                        birthDate?: any | null | undefined;
-                        gender?: string | null | undefined;
-                        lookupId?: string | null | undefined;
-                        email?: string | null | undefined;
-                        phoneNumbers?:
-                          | Array<
-                              | {
-                                  __typename?: "PhoneNumber";
-                                  type?: PhoneType | null | undefined;
-                                  number?: string | null | undefined;
-                                }
-                              | null
-                              | undefined
-                            >
-                          | null
-                          | undefined;
-                      }
-                    | null
-                    | undefined;
-                  createdBy?:
-                    | {
-                        __typename?: "ApiUser";
-                        nameInfo?:
-                          | {
-                              __typename?: "NameInfo";
-                              firstName?: string | null | undefined;
-                              lastName: string;
-                            }
-                          | null
-                          | undefined;
-                      }
-                    | null
-                    | undefined;
-                  patientLink?:
-                    | {
-                        __typename?: "PatientLink";
-                        internalId?: string | null | undefined;
-                      }
-                    | null
-                    | undefined;
-                  facility?:
-                    | { __typename?: "Facility"; name: string }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  testResultsPage?: {
+    __typename?: "TestResultsPage";
+    totalElements?: number | null;
+    content?: Array<{
+      __typename?: "TestResult";
+      internalId?: string | null;
+      dateTested?: any | null;
+      correctionStatus?: string | null;
+      results?: Array<{
+        __typename?: "MultiplexResult";
+        testResult?: string | null;
+        disease?: { __typename?: "SupportedDisease"; name: string } | null;
+      } | null> | null;
+      deviceType?: {
+        __typename?: "DeviceType";
+        internalId: string;
+        name: string;
+      } | null;
+      patient?: {
+        __typename?: "Patient";
+        internalId: string;
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName?: string | null;
+        birthDate?: any | null;
+        gender?: string | null;
+        lookupId?: string | null;
+        email?: string | null;
+        phoneNumbers?: Array<{
+          __typename?: "PhoneNumber";
+          type?: PhoneType | null;
+          number?: string | null;
+        } | null> | null;
+      } | null;
+      createdBy?: {
+        __typename?: "ApiUser";
+        nameInfo?: {
+          __typename?: "NameInfo";
+          firstName?: string | null;
+          lastName: string;
+        } | null;
+      } | null;
+      patientLink?: {
+        __typename?: "PatientLink";
+        internalId?: string | null;
+      } | null;
+      facility?: { __typename?: "Facility"; name: string } | null;
+    } | null> | null;
+  } | null;
 };
 
 export type GetAllFacilitiesQueryVariables = Exact<{
@@ -2575,19 +2295,12 @@ export type GetAllFacilitiesQueryVariables = Exact<{
 
 export type GetAllFacilitiesQuery = {
   __typename?: "Query";
-  facilities?:
-    | Array<
-        | {
-            __typename?: "Facility";
-            id: string;
-            name: string;
-            isDeleted?: boolean | null | undefined;
-          }
-        | null
-        | undefined
-      >
-    | null
-    | undefined;
+  facilities?: Array<{
+    __typename?: "Facility";
+    id: string;
+    name: string;
+    isDeleted?: boolean | null;
+  } | null> | null;
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
@@ -2601,7 +2314,7 @@ export type GetResultsCountByFacilityQueryVariables = Exact<{
 
 export type GetResultsCountByFacilityQuery = {
   __typename?: "Query";
-  testResultsCount?: number | null | undefined;
+  testResultsCount?: number | null;
 };
 
 export type GetTestResultForPrintQueryVariables = Exact<{
@@ -2610,67 +2323,46 @@ export type GetTestResultForPrintQueryVariables = Exact<{
 
 export type GetTestResultForPrintQuery = {
   __typename?: "Query";
-  testResult?:
-    | {
-        __typename?: "TestResult";
-        dateTested?: any | null | undefined;
-        correctionStatus?: string | null | undefined;
-        results?:
-          | Array<
-              | {
-                  __typename?: "MultiplexResult";
-                  testResult?: string | null | undefined;
-                  disease?:
-                    | { __typename?: "SupportedDisease"; name: string }
-                    | null
-                    | undefined;
-                }
-              | null
-              | undefined
-            >
-          | null
-          | undefined;
-        deviceType?:
-          | { __typename?: "DeviceType"; name: string; model: string }
-          | null
-          | undefined;
-        patient?:
-          | {
-              __typename?: "Patient";
-              firstName?: string | null | undefined;
-              middleName?: string | null | undefined;
-              lastName?: string | null | undefined;
-              birthDate?: any | null | undefined;
-            }
-          | null
-          | undefined;
-        facility?:
-          | {
-              __typename?: "Facility";
-              name: string;
-              cliaNumber?: string | null | undefined;
-              phone?: string | null | undefined;
-              street?: string | null | undefined;
-              streetTwo?: string | null | undefined;
-              city?: string | null | undefined;
-              state?: string | null | undefined;
-              zipCode?: string | null | undefined;
-              orderingProvider?:
-                | {
-                    __typename?: "Provider";
-                    firstName?: string | null | undefined;
-                    middleName?: string | null | undefined;
-                    lastName?: string | null | undefined;
-                    NPI?: string | null | undefined;
-                  }
-                | null
-                | undefined;
-            }
-          | null
-          | undefined;
-      }
-    | null
-    | undefined;
+  testResult?: {
+    __typename?: "TestResult";
+    dateTested?: any | null;
+    correctionStatus?: string | null;
+    results?: Array<{
+      __typename?: "MultiplexResult";
+      testResult?: string | null;
+      disease?: { __typename?: "SupportedDisease"; name: string } | null;
+    } | null> | null;
+    deviceType?: {
+      __typename?: "DeviceType";
+      name: string;
+      model: string;
+    } | null;
+    patient?: {
+      __typename?: "Patient";
+      firstName?: string | null;
+      middleName?: string | null;
+      lastName?: string | null;
+      birthDate?: any | null;
+    } | null;
+    facility?: {
+      __typename?: "Facility";
+      name: string;
+      cliaNumber?: string | null;
+      phone?: string | null;
+      street?: string | null;
+      streetTwo?: string | null;
+      city?: string | null;
+      state?: string | null;
+      zipCode?: string | null;
+      orderingProvider?: {
+        __typename?: "Provider";
+        firstName?: string | null;
+        middleName?: string | null;
+        lastName?: string | null;
+        NPI?: string | null;
+      } | null;
+    } | null;
+  } | null;
 };
 
 export type GetUploadSubmissionQueryVariables = Exact<{
@@ -2685,30 +2377,16 @@ export type GetUploadSubmissionQuery = {
     createdAt: any;
     status: UploadStatus;
     recordsCount: number;
-    warnings?:
-      | Array<
-          | {
-              __typename?: "FeedbackMessage";
-              message?: string | null | undefined;
-              scope?: string | null | undefined;
-            }
-          | null
-          | undefined
-        >
-      | null
-      | undefined;
-    errors?:
-      | Array<
-          | {
-              __typename?: "FeedbackMessage";
-              message?: string | null | undefined;
-              scope?: string | null | undefined;
-            }
-          | null
-          | undefined
-        >
-      | null
-      | undefined;
+    warnings?: Array<{
+      __typename?: "FeedbackMessage";
+      message?: string | null;
+      scope?: string | null;
+    } | null> | null;
+    errors?: Array<{
+      __typename?: "FeedbackMessage";
+      message?: string | null;
+      scope?: string | null;
+    } | null> | null;
   };
 };
 
@@ -2727,34 +2405,20 @@ export type GetUploadSubmissionsQuery = {
     content: Array<{
       __typename?: "UploadResult";
       internalId: string;
-      reportId?: string | null | undefined;
+      reportId?: string | null;
       createdAt: any;
       status: UploadStatus;
       recordsCount: number;
-      errors?:
-        | Array<
-            | {
-                __typename?: "FeedbackMessage";
-                message?: string | null | undefined;
-                scope?: string | null | undefined;
-              }
-            | null
-            | undefined
-          >
-        | null
-        | undefined;
-      warnings?:
-        | Array<
-            | {
-                __typename?: "FeedbackMessage";
-                message?: string | null | undefined;
-                scope?: string | null | undefined;
-              }
-            | null
-            | undefined
-          >
-        | null
-        | undefined;
+      errors?: Array<{
+        __typename?: "FeedbackMessage";
+        message?: string | null;
+        scope?: string | null;
+      } | null> | null;
+      warnings?: Array<{
+        __typename?: "FeedbackMessage";
+        message?: string | null;
+        scope?: string | null;
+      } | null> | null;
     }>;
   };
 };
@@ -2780,9 +2444,9 @@ export type GetDeviceTypesForLookupQuery = {
     supportedDiseaseTestPerformed: Array<{
       __typename?: "SupportedDiseaseTestPerformed";
       testPerformedLoincCode: string;
-      testkitNameId?: string | null | undefined;
-      equipmentUid?: string | null | undefined;
-      testOrderedLoincCode?: string | null | undefined;
+      testkitNameId?: string | null;
+      equipmentUid?: string | null;
+      testOrderedLoincCode?: string | null;
       supportedDisease: {
         __typename?: "SupportedDisease";
         internalId: string;
