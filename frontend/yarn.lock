@@ -7661,10 +7661,10 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classlist-polyfill@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/classlist-polyfill/-/classlist-polyfill-1.0.3.tgz#7cd5a9207c8d6932f592fdeaa6b45352ed71690d"
-  integrity sha512-bDLDUsSg5LYFWsc2hphtG6ulyaCFSupdEBU3wxNECKWHnyPVvY8EB9Wbt9DzWkstWclFZhDaZK/VnEK/DmqE/Q==
+classlist-polyfill@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/classlist-polyfill/-/classlist-polyfill-1.2.0.tgz#935bc2dfd9458a876b279617514638bcaa964a2e"
+  integrity sha512-GzIjNdcEtH4ieA2S8NmrSxv7DfEV5fmixQeyTmqmRmRJPGpRBaSnA2a0VrCjyT8iW8JjEdMbKzDotAJf+ajgaQ==
 
 classnames@*, classnames@^2.2.6:
   version "2.3.2"
@@ -19051,12 +19051,12 @@ use@^3.1.0:
   resolved "https://registry.yarnpkg.com/use/-/use-3.1.1.tgz#d50c8cac79a19fbc20f2911f56eb973f4e10070f"
   integrity sha512-cwESVXlO3url9YWlFW/TA9cshCEhtu7IKJ/p5soJ/gGpj7vbvFrAY/eIioQ6Dw23KjZhYgiIo8HOs1nQ2vr/oQ==
 
-uswds@2.13.3:
-  version "2.13.3"
-  resolved "https://registry.yarnpkg.com/uswds/-/uswds-2.13.3.tgz#f2a0623b496941ff30ad3a0ea1610407d35a6b14"
-  integrity sha512-qCblljeaRvS3+PrSxoHqQwmMnp746+Y1YZA34BkTzJknvo2bhhdzGE21yJaInumzIqV3glLD13TFdRwrwikMMQ==
+uswds@2.14.0:
+  version "2.14.0"
+  resolved "https://registry.yarnpkg.com/uswds/-/uswds-2.14.0.tgz#f7861aec6512b38d8c6ec70f1e01b3590cdbd914"
+  integrity sha512-r5ebL3av9jOPcbXTxKnGiT5k5NVIAWmtYcO8LeJkA5Svh2qc90YRhzCUWbz9TbGdXJriMCPb7whiULPDxmRhxg==
   dependencies:
-    classlist-polyfill "1.0.3"
+    classlist-polyfill "1.2.0"
     domready "1.0.8"
     object-assign "4.1.1"
     receptor "1.0.0"
