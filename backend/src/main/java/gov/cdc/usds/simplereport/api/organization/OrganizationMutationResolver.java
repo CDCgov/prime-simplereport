@@ -110,11 +110,11 @@ public class OrganizationMutationResolver {
 
     StreetAddress facilityAddress =
         addressValidationService.getValidatedAddress(
-            facilityInfo.getStreet(),
-            facilityInfo.getStreetTwo(),
-            facilityInfo.getCity(),
-            facilityInfo.getState(),
-            facilityInfo.getZipCode(),
+            facilityInfo.getAddress().getStreet(),
+            facilityInfo.getAddress().getStreetTwo(),
+            facilityInfo.getAddress().getCity(),
+            facilityInfo.getAddress().getState(),
+            facilityInfo.getAddress().getZipCode(),
             addressValidationService.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         new StreetAddress(
@@ -215,11 +215,11 @@ public class OrganizationMutationResolver {
     }
     StreetAddress facilityAddress =
         addressValidationService.getValidatedAddress(
-            facilityInfo.getStreet(),
-            facilityInfo.getStreetTwo(),
-            facilityInfo.getCity(),
-            facilityInfo.getState(),
-            facilityInfo.getZipCode(),
+            facilityInfo.getAddress().getStreet(),
+            facilityInfo.getAddress().getStreetTwo(),
+            facilityInfo.getAddress().getCity(),
+            facilityInfo.getAddress().getState(),
+            facilityInfo.getAddress().getZipCode(),
             addressValidationService.FACILITY_DISPLAY_NAME);
 
     PersonName providerName =

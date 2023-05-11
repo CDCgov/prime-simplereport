@@ -13,15 +13,19 @@ input ProviderInput {
     phone: String
 }
 
-input UpdateFacilityInput {
-    facilityId: ID!
-    facilityName: String!
-    cliaNumber: String
+input FacilityAddressInput{
     street: String!
     streetTwo: String
     city: String
     state: String!
     zipCode: String!
+}
+
+input UpdateFacilityInput {
+    facilityId: ID!
+    facilityName: String!
+    cliaNumber: String
+    address: FacilityAddressInput!
     phone: String
     email: String
     orderingProvider: ProviderInput
@@ -31,11 +35,7 @@ input UpdateFacilityInput {
 input AddFacilityInput {
     facilityName: String!
     cliaNumber: String
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
+    address: FacilityAddressInput!
     phone: String
     email: String
     orderingProvider: ProviderInput
