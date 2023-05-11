@@ -1,0 +1,20 @@
+FROM gradle:7.6.1-jdk17 AS build
+
+WORKDIR /home/gradle/graphql-api
+
+COPY ./.git ./.git
+
+WORKDIR /home/gradle/graphql-api/backend
+
+COPY ./backend/gradle ./gradle
+COPY ./backend/*.gradle ./
+COPY ./backend/config ./config
+COPY ./backend/src ./src
+COPY ./backend/gradle.properties gradle.properties
+COPY ./backend/db_liquibase_action.sh db_liquibase_action.sh
+
+RUN chown -R gradle:gradle .
+
+USER gradle
+
+ENTRYPOINT ["./db_liquibase_action.sh"]

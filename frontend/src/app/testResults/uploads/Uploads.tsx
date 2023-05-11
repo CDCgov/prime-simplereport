@@ -329,9 +329,9 @@ const Uploads = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {errors.map((e, i) => {
+                    {errors.map((e) => {
                       return (
-                        <tr key={"error_" + i}>
+                        <tr key={(e?.message || "") + (e?.indices || "")}>
                           <td>{e?.["message"]} </td>
                           <td>
                             {e?.["indices"] &&

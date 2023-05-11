@@ -23,6 +23,7 @@ import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
+import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.TenantDataAccessService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
@@ -87,6 +88,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationService.class,
   ApiUserService.class,
   DiseaseService.class,
+  ResultService.class,
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
   CurrentAccountRequestContextHolder.class,

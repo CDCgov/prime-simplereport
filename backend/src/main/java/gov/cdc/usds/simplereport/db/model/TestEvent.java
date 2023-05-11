@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import static gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService.COVID_LOINC;
+import static gov.cdc.usds.simplereport.service.DiseaseService.COVID19_NAME;
+import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_A_NAME;
+import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_B_NAME;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -64,12 +67,7 @@ public class TestEvent extends BaseTestInfo {
     this(testOrder, false);
   }
 
-  public TestEvent(TestOrder testOrder, Boolean hasPriorTests, Set<Result> results) {
-    this(testOrder, hasPriorTests);
-    this.results.addAll(results);
-  }
-
-  private TestEvent(TestOrder order, Boolean hasPriorTests) {
+  public TestEvent(TestOrder order, Boolean hasPriorTests) {
     super(order.getPatient(), order.getFacility(), order.getDeviceType(), order.getSpecimenType());
     // store a link, and *also* store the object as JSON
     // force load the lazy-loaded phone numbers so values are available to the object mapper
@@ -94,10 +92,7 @@ public class TestEvent extends BaseTestInfo {
 
   // Constructor for creating corrections. Copy the original event
   public TestEvent(
-      TestEvent event,
-      TestCorrectionStatus correctionStatus,
-      String reasonForCorrection,
-      Set<Result> results) {
+      TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(event, correctionStatus, reasonForCorrection);
 
     this.patientData = event.getPatientData();
@@ -106,14 +101,10 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
-    this.results.addAll(results);
   }
 
   public TestEvent(
-      TestOrder order,
-      TestCorrectionStatus correctionStatus,
-      String reasonForCorrection,
-      Set<Result> results) {
+      TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(order, correctionStatus, reasonForCorrection);
 
     TestEvent event = order.getTestEvent();
@@ -124,7 +115,6 @@ public class TestEvent extends BaseTestInfo {
     this.surveyData = event.getSurveyData();
     setDateTestedBackdate(order.getDateTestedBackdate());
     this.priorCorrectedTestEventId = event.getInternalId();
-    this.results.addAll(results);
   }
 
   public UUID getPatientInternalID() {
@@ -170,5 +160,18 @@ public class TestEvent extends BaseTestInfo {
             .filter(result -> COVID_LOINC.equals(result.getDisease().getLoinc()))
             .findFirst();
     return resultObject.map(Result::getTestResult);
+  }
+
+  public boolean hasCovidResult() {
+    return this.results.stream()
+        .anyMatch(result -> COVID19_NAME.equals(result.getDisease().getName()));
+  }
+
+  public boolean hasFluResult() {
+    return this.results.stream()
+        .anyMatch(
+            result ->
+                FLU_A_NAME.equals(result.getDisease().getName())
+                    || FLU_B_NAME.equals(result.getDisease().getName()));
   }
 }

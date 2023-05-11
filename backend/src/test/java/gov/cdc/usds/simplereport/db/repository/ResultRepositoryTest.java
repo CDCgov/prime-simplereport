@@ -115,6 +115,6 @@ class ResultRepositoryTest extends BaseRepositoryTest {
         PATIENT, FACILITY, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.NEGATIVE, false);
 
     List<Result> results = _repo.findAllByDisease(diseaseService.covid());
-    assertEquals(2, results.size());
+    assertEquals(4, results.size());
   }
 }

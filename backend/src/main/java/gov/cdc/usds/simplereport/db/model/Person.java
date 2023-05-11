@@ -204,11 +204,23 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.role = PersonRole.STAFF;
   }
 
-  public Person(PersonName names, Organization org, Facility facility, PersonRole role) {
+  public Person(
+      PersonName names,
+      Organization org,
+      Facility facility,
+      PersonRole role,
+      String gender,
+      LocalDate birthDate,
+      StreetAddress address,
+      String race) {
     super(org);
     this.facility = facility;
     this.nameInfo = names;
     this.role = role;
+    this.gender = gender;
+    this.birthDate = birthDate;
+    this.address = address;
+    this.race = race;
   }
 
   @Override

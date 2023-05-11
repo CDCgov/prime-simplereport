@@ -6,19 +6,12 @@ extend type Query {
   pendingOrganizations: [PendingOrganization!]!
 }
 extend type Mutation {
-  resendToReportStream(testEventIds: [ID!]!): Boolean
+  resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean!): Boolean
   createDeviceType(input: CreateDeviceType!): DeviceType
   updateDeviceType(input: UpdateDeviceType!): DeviceType
   createSpecimenType(input: CreateSpecimenType!): SpecimenType
-  addUser( # not actually used in the admin console (currently)
-    name: NameInput
-    firstName: String
-    middleName: String
-    lastName: String
-    suffix: String
-    email: String!
-    organizationExternalId: String!
-    role: Role!
+  addUser( # used in AddOrganizationAdminFormContainer
+    user: UserInput!
   ): User
   createApiUserNoOkta(
     name: NameInput

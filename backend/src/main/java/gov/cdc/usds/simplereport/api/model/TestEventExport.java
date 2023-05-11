@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import static gov.cdc.usds.simplereport.service.DiseaseService.COVID19_NAME;
 import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -181,7 +182,7 @@ public class TestEventExport {
   private static Optional<? extends DeviceTypeDisease> getFirstCovidDiseaseInfo(
       List<DeviceTypeDisease> deviceTypeDiseases) {
     return deviceTypeDiseases.stream()
-        .filter(s -> "COVID-19".equals(s.getSupportedDisease().getName()))
+        .filter(s -> COVID19_NAME.equals(s.getSupportedDisease().getName()))
         .findFirst();
   }
 

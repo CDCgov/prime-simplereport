@@ -32,7 +32,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultWithCount;
 import gov.cdc.usds.simplereport.db.repository.AdvisoryLockManager;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
-import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
@@ -73,6 +72,7 @@ public class TestOrderService {
   private final PatientAnswersRepository _patientAnswersRepo;
   private final TestEventRepository _testEventRepo;
   private final PatientLinkService _patientLinkService;
+  private final ResultService resultService;
 
   @Qualifier("csvQueueReportingService")
   private final TestEventReportingService _testEventReportingService;
@@ -82,7 +82,6 @@ public class TestOrderService {
 
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
-  private final ResultRepository _resultRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -312,38 +311,25 @@ public class TestOrderService {
 
     try {
       order.setDeviceTypeAndSpecimenType(deviceType, specimenType);
-      var resultSet = editMultiplexResult(order, results);
+      editMultiplexResult(order, results);
       order.setDateTestedBackdate(dateTested);
       order.markComplete();
 
       boolean hasPriorTests = _testEventRepo.existsByPatient(person);
       TestEvent testEvent =
           order.getCorrectionStatus() == TestCorrectionStatus.ORIGINAL
-              ? new TestEvent(order, hasPriorTests, resultSet)
-              : new TestEvent(
-                  order, order.getCorrectionStatus(), order.getReasonForCorrection(), resultSet);
+              ? new TestEvent(order, hasPriorTests)
+              : new TestEvent(order, order.getCorrectionStatus(), order.getReasonForCorrection());
 
       TestEvent savedEvent = _testEventRepo.save(testEvent);
 
-      List<Result> resultsForTestEvent =
-          order.getResults().stream()
-              .map(
-                  result ->
-                      Result.builder()
-                          .disease(result.getDisease())
-                          .resultLOINC(result.getResultLOINC())
-                          .testResult(result.getTestResult())
-                          .testEvent(savedEvent)
-                          .build())
-              .toList();
-      savedEvent.getResults().addAll(resultsForTestEvent);
+      List<Result> resultsForTestEvent = order.getResults().stream().map(Result::new).toList();
 
-      _resultRepo.saveAll(resultsForTestEvent);
+      savedEvent = resultService.addResultsToTestEvent(savedEvent, resultsForTestEvent);
 
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
-      _testEventReportingService.report(savedEvent);
-      _fhirQueueReportingService.report(testEvent);
+      reportTestEventToRS(savedEvent);
     } finally {
       unlockOrder(order.getInternalId());
     }
@@ -369,23 +355,32 @@ public class TestOrderService {
     return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
+  private void reportTestEventToRS(TestEvent savedEvent) {
+    if (savedEvent.hasCovidResult()) {
+      _testEventReportingService.report(savedEvent);
+    }
+
+    if (savedEvent.hasFluResult()) {
+      _fhirQueueReportingService.report(savedEvent);
+    }
+  }
+
   private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
     // delete all results
-    _resultRepo.deleteAll(order.getResults());
-    order.getResults().clear();
+    order = resultService.removeTestOrderResults(order);
 
     // create new ones
     if (!newResults.isEmpty()) {
-      newResults.forEach(
-          newResult -> {
-            Result result =
-                new Result(
-                    order,
-                    _diseaseService.getDiseaseByName(newResult.getDiseaseName()),
-                    newResult.getTestResult());
-            order.addResult(result);
-            _resultRepo.save(result);
-          });
+      List<Result> results =
+          newResults.stream()
+              .map(
+                  input ->
+                      new Result(
+                          _diseaseService.getDiseaseByName(input.getDiseaseName()),
+                          input.getTestResult()))
+              .toList();
+
+      order = resultService.addResultsToTestOrder(order, results);
     }
 
     return order.getResults();
@@ -547,24 +542,13 @@ public class TestOrderService {
       case REMOVED -> {
         ensureCorrectionFlowBackwardCompatibility(event);
         // copy the event results to new removal Event
-        var results =
-            event.getResults().stream()
-                .map(
-                    result ->
-                        Result.builder()
-                            .disease(result.getDisease())
-                            .resultLOINC(result.getResultLOINC())
-                            .testResult(result.getTestResult())
-                            .build())
-                .collect(Collectors.toSet());
+        var results = event.getResults().stream().map(Result::new).collect(Collectors.toSet());
         var newRemoveEvent =
-            new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection, results);
+            new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
         _testEventRepo.save(newRemoveEvent);
-        results.forEach(result -> result.setTestEvent(newRemoveEvent));
-        _resultRepo.saveAll(results);
+        newRemoveEvent = resultService.addResultsToTestEvent(newRemoveEvent, results);
 
-        _testEventReportingService.report(newRemoveEvent);
-        _fhirQueueReportingService.report(newRemoveEvent);
+        reportTestEventToRS(newRemoveEvent);
 
         order.setReasonForCorrection(reasonForCorrection);
         order.setTestEventRef(newRemoveEvent);
@@ -586,28 +570,7 @@ public class TestOrderService {
         event.getResults().stream().anyMatch(result -> null != result.getTestOrder());
 
     if (hasResultsWithTestOrderAndTestEvent) {
-      TestOrder order = event.getOrder();
-
-      // remove the link to the TestOrder for all the existing results
-      Set<Result> orderResults = order.getResults();
-      orderResults.forEach(result -> result.setTestOrder(null));
-      order.getResults().clear();
-      _resultRepo.saveAll(orderResults);
-
-      // copy results for the existing TestEvent and make link to the TestOrder
-      List<Result> resultsFromTestEvent =
-          event.getResults().stream()
-              .map(
-                  result ->
-                      Result.builder()
-                          .disease(result.getDisease())
-                          .resultLOINC(result.getResultLOINC())
-                          .testResult(result.getTestResult())
-                          .testOrder(order)
-                          .build())
-              .toList();
-      order.getResults().addAll(resultsFromTestEvent);
-      _resultRepo.saveAll(resultsFromTestEvent);
+      resultService.separateCombinedResultsToTestEventResultsAndTestOrderResults(event);
     }
   }
 

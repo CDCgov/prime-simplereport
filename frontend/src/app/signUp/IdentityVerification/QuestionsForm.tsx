@@ -1,3 +1,5 @@
+import { Buffer } from "buffer";
+
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopwatch } from "@fortawesome/free-solid-svg-icons";
@@ -16,7 +18,6 @@ import { mmss } from "../../testQueue/TestTimer";
 import { useDocumentTitle } from "../../utils/hooks";
 
 import { initAnswers, getAnswerKey, toOptions, buildSchema } from "./utils";
-
 import "./QuestionsForm.scss";
 
 interface Props {
@@ -127,7 +128,7 @@ const QuestionsForm: React.FC<Props> = ({
           {questionSet.map((question, index) => {
             const key = getAnswerKey(index);
             return (
-              <div key={index}>
+              <div key={Buffer.from(question.questionText).toString("base64")}>
                 <RadioGroup
                   legend={question.questionText}
                   selectedRadio={answers[key]}

@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.apiuser;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.User;
+import gov.cdc.usds.simplereport.api.model.UserInput;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -29,18 +30,19 @@ public class UserMutationResolver {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @MutationMapping
-  public User addUser(
-      @Argument PersonName name,
-      @Argument String firstName,
-      @Argument String middleName,
-      @Argument String lastName,
-      @Argument String suffix,
-      @Argument String email,
-      @Argument String organizationExternalId,
-      @Argument Role role) {
-    name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUser(email, name, organizationExternalId, role);
-    return new User(user);
+  public User addUser(@Argument UserInput user) {
+    UserInfo userInfo =
+        _us.createUser(
+            user.getEmail(),
+            Translators.consolidateNameArguments(
+                user.getName(),
+                user.getFirstName(),
+                user.getMiddleName(),
+                user.getLastName(),
+                user.getSuffix()),
+            user.getOrganizationExternalId(),
+            user.getRole());
+    return new User(userInfo);
   }
 
   @MutationMapping
