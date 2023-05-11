@@ -40,6 +40,7 @@ export const organizationFields = [
       text="Organization name"
       tooltip="Organizations have multiple testing facilities or locations as part of their network."
       position="right"
+      key="org-name-tooltip"
     />,
     true,
     "",
