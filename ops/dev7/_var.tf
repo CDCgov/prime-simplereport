@@ -38,3 +38,9 @@ variable "liquibase_rollback_tag" {
   type        = string
   default     = null
 }
+
+variable "image_action" {
+  description = "The liquibase action to perform"
+  type        = string
+  default     = null
+}

@@ -17,17 +17,19 @@ defaults:
     working-directory: backend
 
 jobs:
-  test-db-rollback:
+  test-db-liquibase-action:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Start DB
         run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
       - name: Build rollback image
-        run: docker compose -f docker-compose.db-rollback.yml build
+        run: docker compose -f docker-compose.db-liquibase-action.yml build
       - name: Run forward migrations
-        run: docker compose -f docker-compose.db-rollback.yml run --entrypoint "gradle liquibaseUpdate" rollback
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --entrypoint "gradle liquibaseUpdate" db_liquibase_action
       - name: Run liquibase validation
-        run: docker compose -f docker-compose.db-rollback.yml run --entrypoint "gradle liquibaseValidate" rollback
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --env "LIQUIBASE_ACTION=validate" db_liquibase_action
+      - name: Run liquibase clear checksums
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --env "LIQUIBASE_ACTION=clear-checksums" db_liquibase_action
       - name: Test rolling back on last 20 migrations
-        run: docker compose -f docker-compose.db-rollback.yml run --env LIQUIBASE_ROLLBACK_COUNT=20 rollback
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --entrypoint "gradle liquibaseRollbackCount -PliquibaseCommandValue=20" db_liquibase_action
