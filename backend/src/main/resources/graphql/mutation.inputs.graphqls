@@ -1,3 +1,4 @@
+# Contains input definitions for mutations
 input ProviderInput {
     firstName: String
     middleName: String
