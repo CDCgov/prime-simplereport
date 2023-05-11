@@ -14,7 +14,6 @@ input ProviderInput {
     phone: String
 }
 
-
 input FacilityAddressInput{
     street: String!
     streetTwo: String
@@ -42,5 +41,4 @@ input AddFacilityInput {
     email: String
     orderingProvider: ProviderInput
     deviceIds: [ID]!
-
 }
