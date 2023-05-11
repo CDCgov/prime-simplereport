@@ -31,6 +31,11 @@ variable "acr_server" {
   type        = string
   default     = "simplereportacr.azurecr.io"
 }
+variable "image_action" {
+  description = "The liquibase action to perform"
+  type        = string
+  default     = null
+}
 
 # Rollback info
 variable "rollback_tag" {

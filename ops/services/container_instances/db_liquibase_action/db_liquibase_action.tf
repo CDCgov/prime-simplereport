@@ -1,5 +1,5 @@
-resource "azurerm_container_group" "db_rollback" {
-  name                = "${var.name}-${var.env}-db-rollback"
+resource "azurerm_container_group" "db_liquibase_action" {
+  name                = "${var.name}-${var.env}-db-${var.image_action}"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
   ip_address_type     = "Private"
@@ -15,8 +15,8 @@ resource "azurerm_container_group" "db_rollback" {
   }
 
   container {
-    name   = "${var.name}-${var.env}-db-rollback"
-    image  = "${var.acr_server}/api/simple-report-api-build:rollback"
+    name   = "${var.name}-${var.env}-db-${var.image_action}"
+    image  = "${var.acr_server}/api/simple-report-api-build:${var.image_action}"
     cpu    = "1"
     memory = "1.5"
 
@@ -28,6 +28,7 @@ resource "azurerm_container_group" "db_rollback" {
 
     environment_variables = {
       LIQUIBASE_ROLLBACK_TAG = var.rollback_tag
+      LIQUIBASE_ACTION       = var.image_action
     }
 
     secure_environment_variables = {
