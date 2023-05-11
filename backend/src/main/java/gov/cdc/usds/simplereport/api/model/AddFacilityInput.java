@@ -10,11 +10,7 @@ import lombok.Getter;
 public class AddFacilityInput {
   private String facilityName;
   private String cliaNumber;
-  private String street;
-  private String streetTwo;
-  private String city;
-  private String state;
-  private String zipCode;
+  private AddressInput address;
   private String phone;
   private String email;
   private ProviderInput orderingProvider;

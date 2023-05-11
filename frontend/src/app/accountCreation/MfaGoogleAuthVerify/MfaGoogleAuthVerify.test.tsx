@@ -74,10 +74,10 @@ describe("Verify Google Auth MFA", () => {
       screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(
+      await screen.findByText(
         "To start using SimpleReport, visit the website to log in to your account."
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("shows an error for an invalid security code", async () => {

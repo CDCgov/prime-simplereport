@@ -25,17 +25,13 @@ export type Scalars = {
 };
 
 export type AddFacilityInput = {
-  city?: InputMaybe<Scalars["String"]>;
+  address: FacilityAddressInput;
   cliaNumber?: InputMaybe<Scalars["String"]>;
   deviceIds: Array<InputMaybe<Scalars["ID"]>>;
   email?: InputMaybe<Scalars["String"]>;
   facilityName: Scalars["String"];
   orderingProvider?: InputMaybe<ProviderInput>;
   phone?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  zipCode: Scalars["String"];
 };
 
 export type AddTestResultResponse = {
@@ -132,6 +128,14 @@ export type Facility = {
   street?: Maybe<Scalars["String"]>;
   streetTwo?: Maybe<Scalars["String"]>;
   zipCode?: Maybe<Scalars["String"]>;
+};
+
+export type FacilityAddressInput = {
+  city?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  zipCode: Scalars["String"];
 };
 
 export type FeedbackMessage = {
@@ -373,6 +377,7 @@ export type MutationResendActivationEmailArgs = {
 };
 
 export type MutationResendToReportStreamArgs = {
+  fhirOnly: Scalars["Boolean"];
   testEventIds: Array<Scalars["ID"]>;
 };
 
@@ -948,7 +953,7 @@ export type UpdateDeviceType = {
 };
 
 export type UpdateFacilityInput = {
-  city?: InputMaybe<Scalars["String"]>;
+  address: FacilityAddressInput;
   cliaNumber?: InputMaybe<Scalars["String"]>;
   deviceIds: Array<InputMaybe<Scalars["ID"]>>;
   email?: InputMaybe<Scalars["String"]>;
@@ -956,10 +961,6 @@ export type UpdateFacilityInput = {
   facilityName: Scalars["String"];
   orderingProvider?: InputMaybe<ProviderInput>;
   phone?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  zipCode: Scalars["String"];
 };
 
 export type UploadResponse = {
@@ -2697,11 +2698,13 @@ export const AddFacilityDocument = gql`
       facilityInfo: {
         facilityName: $testingFacilityName
         cliaNumber: $cliaNumber
-        street: $street
-        streetTwo: $streetTwo
-        city: $city
-        state: $state
-        zipCode: $zipCode
+        address: {
+          street: $street
+          streetTwo: $streetTwo
+          city: $city
+          state: $state
+          zipCode: $zipCode
+        }
         phone: $phone
         email: $email
         orderingProvider: {
@@ -2817,11 +2820,13 @@ export const UpdateFacilityDocument = gql`
         facilityId: $facilityId
         facilityName: $testingFacilityName
         cliaNumber: $cliaNumber
-        street: $street
-        streetTwo: $streetTwo
-        city: $city
-        state: $state
-        zipCode: $zipCode
+        address: {
+          street: $street
+          streetTwo: $streetTwo
+          city: $city
+          state: $state
+          zipCode: $zipCode
+        }
         phone: $phone
         email: $email
         orderingProvider: {

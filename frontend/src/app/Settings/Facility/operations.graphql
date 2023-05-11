@@ -74,11 +74,13 @@ mutation AddFacility(
     facilityInfo: {
       facilityName: $testingFacilityName
       cliaNumber: $cliaNumber
-      street: $street
-      streetTwo: $streetTwo
-      city: $city
-      state: $state
-      zipCode: $zipCode
+      address: {
+        street: $street
+        streetTwo: $streetTwo
+        city: $city
+        state: $state
+        zipCode: $zipCode
+      }
       phone: $phone
       email: $email
       orderingProvider: {
@@ -130,11 +132,13 @@ mutation UpdateFacility(
       facilityId: $facilityId
       facilityName: $testingFacilityName
       cliaNumber: $cliaNumber
-      street: $street
-      streetTwo: $streetTwo
-      city: $city
-      state: $state
-      zipCode: $zipCode
+      address: {
+        street: $street
+        streetTwo: $streetTwo
+        city: $city
+        state: $state
+        zipCode: $zipCode
+      }
       phone: $phone
       email: $email
       orderingProvider: {
