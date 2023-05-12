@@ -8,10 +8,11 @@ import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,8 +80,8 @@ class FileValidatorTest {
   @BeforeEach
   public void setup() {
     var resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
-    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of("id now|94534-5"));
+    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceType()));
     testResultFileValidator =
         new FileValidator<>(row -> new TestResultRow(row, resultsUploaderDeviceValidationService));
   }

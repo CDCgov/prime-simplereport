@@ -617,41 +617,43 @@ public class FhirConverter {
     }
   }
 
-  public static Set<Observation> convertToAOEObservations(
-      String eventId, AskOnEntrySurvey surveyData) {
+  public static Set<Observation> convertToAOEObservation(
+      String eventId, Boolean symptomatic, LocalDate symptomOnsetDate) {
     var observations = new HashSet<Observation>();
     var symptomaticCode =
         createLoincConcept(
             LOINC_AOE_SYMPTOMATIC,
             "Has symptoms related to condition of interest",
             "Has symptoms related to condition of interest");
-    if (surveyData.getNoSymptoms()) {
-      // user reported as not symptomatic
+    observations.add(
+        createAOEObservation(
+            eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(symptomatic)));
+
+    if (Boolean.TRUE.equals(symptomatic) && symptomOnsetDate != null) {
       observations.add(
           createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(false)));
-    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
-      // user reported as symptomatic
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(true)));
-      if (surveyData.getSymptomOnsetDate() != null) {
-        observations.add(
-            createAOEObservation(
-                eventId + LOINC_AOE_SYMPTOM_ONSET,
-                createLoincConcept(
-                    LOINC_AOE_SYMPTOM_ONSET,
-                    "Illness or injury onset date and time",
-                    "Illness or injury onset date and time"),
-                new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
-      }
-    } else {
-      // if neither no symptoms nor any symptoms checked, AoE form was not completed
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(null)));
+              eventId + LOINC_AOE_SYMPTOM_ONSET,
+              createLoincConcept(
+                  LOINC_AOE_SYMPTOM_ONSET,
+                  "Illness or injury onset date and time",
+                  "Illness or injury onset date and time"),
+              new DateTimeType(symptomOnsetDate.toString())));
     }
     return observations;
+  }
+
+  public static Set<Observation> convertToAOEObservations(
+      String eventId, AskOnEntrySurvey surveyData) {
+    Boolean symptomatic = null;
+    if (surveyData.getNoSymptoms()) {
+      symptomatic = false;
+    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
+      symptomatic = true;
+    } // implied else: AoE form was not completed. Symptomatic set to null
+
+    var symptomOnsetDate = surveyData.getSymptomOnsetDate();
+
+    return convertToAOEObservation(eventId, symptomatic, symptomOnsetDate);
   }
 
   public static Observation createAOEObservation(

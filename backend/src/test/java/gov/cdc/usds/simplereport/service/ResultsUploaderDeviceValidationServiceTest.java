@@ -1,17 +1,18 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService.getSetKey;
+import static gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService.getMapKey;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -33,16 +34,17 @@ class ResultsUploaderDeviceValidationServiceTest
     createDeviceType("Alinity M", "97088-0", "97022-0");
 
     // WHEN
-    Set<String> modelAndTestPerformedCodeSet = sut.getModelAndTestPerformedCodeSet();
+    Map<String, DeviceType> modelAndTestPerformedCodeToDeviceMap =
+        sut.getModelAndTestPerformedCodeToDeviceMap();
 
     // THEN
-    assertThat(modelAndTestPerformedCodeSet)
+    assertThat(modelAndTestPerformedCodeToDeviceMap.keySet())
         .hasSize(3)
         .contains("genbody covid-19 ag|97097-0")
         .contains("alinity m|97088-0")
         .contains("alinity m|97022-0")
-        .contains(getSetKey("Alinity M", "97088-0"))
-        .contains(getSetKey("GenBody COVID-19 Ag", "97097-0"));
+        .contains(getMapKey("Alinity M", "97088-0"))
+        .contains(getMapKey("GenBody COVID-19 Ag", "97097-0"));
   }
 
   protected void createDeviceType(String model, String... testPerformedCodes) {

@@ -143,6 +143,14 @@ public class TestDataBuilder {
         DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
+  public static DeviceType createDeviceTypeForBulkUpload() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed =
+        List.of(createDeviceTypeDisease(createCovidSupportedDiseaseForBulkUpload()));
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "ID NOW", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
   public static DeviceType createDeviceTypeForMultiplex() {
     List<SpecimenType> swabTypes = new ArrayList<>();
     List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
@@ -205,6 +213,10 @@ public class TestDataBuilder {
     var testOrder = new TestOrder(createPerson(), createFacility());
     testOrder.setDeviceTypeAndSpecimenType(createDeviceType(), createSpecimenType());
     return testOrder;
+  }
+
+  public static SupportedDisease createCovidSupportedDiseaseForBulkUpload() {
+    return new SupportedDisease("COVID-19", "94534-5");
   }
 
   public static SupportedDisease createCovidSupportedDisease() {
