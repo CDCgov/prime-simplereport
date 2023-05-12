@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
 
 import { showError } from "../utils/srToast";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { appPermissions, hasPermission } from "../permissions";
+import { useAppSelector } from "../store";
 import { PATIENT_TERM } from "../../config/constants";
 import {
   useGetFacilityQueueQuery,
@@ -77,8 +77,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     null
   );
   const canUseCsvUploader = hasPermission(
-    useSelector((state) => (state as any).user.permissions),
+    useAppSelector((state) => state.user.permissions),
     appPermissions.results.canView
+  );
+
+  const canAddPatient = hasPermission(
+    useAppSelector((state) => state.user.permissions),
+    appPermissions.people.canEdit
   );
 
   useEffect(() => {
@@ -198,6 +203,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patientsInQueue={patientsInQueue}
             startTestPatientId={startTestPatientId}
             setStartTestPatientId={setStartTestPatientId}
+            canAddPatient={canAddPatient}
           />
         </div>
         {createQueueItems(data.queue)}
