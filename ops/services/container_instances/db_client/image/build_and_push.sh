@@ -15,7 +15,7 @@ fi
 echo "Building backend images"
 docker compose -f ${DOCKER_COMPOSE_FILE:-docker-compose.yml} build
 
-docker tag "simple-report-api-build:latest" $ACR_TAG
+docker tag "simple-report-db-client:latest" $ACR_TAG
 echo "Tagged $ACR_TAG"
 
 # Log in to ACR
