@@ -13,7 +13,7 @@ module "db_liquibase_action" {
 }
 
 module "db_client" {
-  source                  = "../services/container_instances/infra/db_client"
+  source                  = "../services/container_instances/db_client/infra"
   count                   = 1
   name                    = local.name
   env                     = local.env
