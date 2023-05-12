@@ -83,6 +83,7 @@ describe("SearchResults", () => {
                 onAddToQueue={jest.fn()}
                 shouldShowSuggestions={true}
                 loading={false}
+                canAddPatient={true}
               />
             }
           />
@@ -105,6 +106,7 @@ describe("SearchResults", () => {
                 onAddToQueue={jest.fn()}
                 shouldShowSuggestions={true}
                 loading={false}
+                canAddPatient={true}
               />
             }
           />
@@ -118,6 +120,31 @@ describe("SearchResults", () => {
           `Redirected to /add-patient?facility=${mockFacilityID}`
         )
       ).toBeInTheDocument();
+    });
+
+    it("should not show add patient button for entry only user", () => {
+      render(
+        <RouterWithFacility>
+          <Route
+            path="/queue"
+            element={
+              <SearchResults
+                page="queue"
+                patients={[]}
+                patientsInQueue={[]}
+                onAddToQueue={jest.fn()}
+                shouldShowSuggestions={true}
+                loading={false}
+                canAddPatient={false}
+              />
+            }
+          />
+        </RouterWithFacility>
+      );
+
+      expect(
+        screen.queryByText(`Add new ${PATIENT_TERM}`)
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -134,6 +161,7 @@ describe("SearchResults", () => {
               onAddToQueue={jest.fn()}
               shouldShowSuggestions={true}
               loading={false}
+              canAddPatient={true}
             />
           }
         />
@@ -157,6 +185,7 @@ describe("SearchResults", () => {
               onAddToQueue={addToQueue}
               shouldShowSuggestions={true}
               loading={false}
+              canAddPatient={true}
             />
           }
         />
@@ -182,6 +211,7 @@ describe("SearchResults", () => {
               shouldShowSuggestions={true}
               loading={false}
               selectedPatient={patients[0]}
+              canAddPatient={true}
             />
           }
         />

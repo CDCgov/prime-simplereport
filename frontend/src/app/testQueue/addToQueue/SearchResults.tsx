@@ -16,6 +16,7 @@ interface SearchResultsProps {
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;
   selectedPatient?: Patient;
+  canAddPatient: boolean;
 }
 
 export interface QueueProps extends SearchResultsProps {
@@ -114,14 +115,21 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       >
         <div className="margin-bottom-105">No results found.</div>
         <div>
-          Check for spelling errors or
-          <Button
-            className="margin-left-1"
-            label={`Add new ${PATIENT_TERM}`}
-            onClick={() => {
-              setRedirect(`/add-patient?facility=${activeFacilityId}`);
-            }}
-          />
+          Check for spelling errors
+          {props.canAddPatient ? (
+            <>
+              {" or"}
+              <Button
+                className="margin-left-1"
+                label={`Add new ${PATIENT_TERM}`}
+                onClick={() => {
+                  setRedirect(`/add-patient?facility=${activeFacilityId}`);
+                }}
+              />
+            </>
+          ) : (
+            "."
+          )}
         </div>
       </div>
     );

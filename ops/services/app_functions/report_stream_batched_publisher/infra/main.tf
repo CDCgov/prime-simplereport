@@ -1,7 +1,7 @@
 locals {
   simple_report_callback_url = "https://${var.environment == "prod" ? "www" : var.environment}.simplereport.gov/api/reportstream/callback"
   resource_group_name        = "${var.resource_group_name_prefix}${var.env_level}"
-  report_stream_url          = "https://${var.environment == "prod" ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems"
+  report_stream_url          = "https://${(var.environment == "prod" || var.environment == "stg") ? "" : "staging."}prime.cdc.gov/api/reports?option=SkipInvalidItems"
   function_app_source        = "${path.module}/../${var.function_app_source}"
   management_tags = {
     prime-app      = "simple-report"
@@ -65,7 +65,7 @@ resource "azurerm_linux_function_app" "functions" {
       action                    = "Allow"
     }
     application_stack {
-      node_version = "14"
+      node_version = "18"
     }
   }
 
@@ -76,7 +76,7 @@ resource "azurerm_linux_function_app" "functions" {
   app_settings = {
     https_only                       = true
     FUNCTIONS_WORKER_RUNTIME         = "node"
-    WEBSITE_NODE_DEFAULT_VERSION     = "~14"
+    WEBSITE_NODE_DEFAULT_VERSION     = "~18"
     FUNCTION_APP_EDIT_MODE           = "readonly"
     HASH                             = azurerm_storage_blob.appcode.content_md5
     WEBSITE_RUN_FROM_PACKAGE         = "https://${data.azurerm_storage_account.app.name}.blob.core.windows.net/${azurerm_storage_container.deployments.name}/${azurerm_storage_blob.appcode.name}${data.azurerm_storage_account_sas.sas.sas}"

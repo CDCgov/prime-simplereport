@@ -17,8 +17,11 @@ jobs:
   build_backend_image:
     uses: ./.github/workflows/buildBackendImage.yml
 
+  build_database_image:
+    uses: ./.github/workflows/buildDatabaseImage.yml
+
   cypress-local-env:
-    needs: [build_cypress_image, build_backend_image]
+    needs: [build_backend_image, build_cypress_image, build_database_image]
     runs-on: ubuntu-latest
     steps:
 
@@ -88,7 +91,7 @@ jobs:
         CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
         CYPRESS_BACKEND_URL: "https://localhost.simplereport.gov/api"
         WIREMOCK_URL: "http://cypress:8088"
-        SPEC_PATH: "cypress/integration/*"
+        SPEC_PATH: "cypress/e2e/**"
         TEST_ENV: "https://localhost.simplereport.gov"
         # frontend settings
         REACT_APP_OKTA_URL: "http://cypress:8088"

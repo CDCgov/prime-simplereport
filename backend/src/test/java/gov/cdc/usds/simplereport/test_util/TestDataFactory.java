@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.test_util.TestDataBuilder.getAddress;
 
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -33,6 +34,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
@@ -43,7 +45,6 @@ import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
-import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -51,6 +52,7 @@ import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
+import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.lang.reflect.Array;
@@ -59,9 +61,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -96,11 +96,12 @@ public class TestDataFactory {
   @Autowired private PatientLinkRepository patientLinkRepository;
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
-  @Autowired private ResultRepository resultRepository;
   @Autowired private DemoOktaRepository oktaRepository;
   @Autowired private TestResultUploadRepository testResultUploadRepository;
   @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
+  @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
+  @Autowired private ResultService resultService;
   @Autowired private ApiUserService apiUserService;
   @Autowired private DiseaseService diseaseService;
 
@@ -235,7 +236,9 @@ public class TestDataFactory {
   @Transactional
   public Person createMinimalPerson(
       Organization org, Facility fac, PersonName names, PersonRole role) {
-    Person p = new Person(names, org, fac, role);
+    Person p =
+        new Person(names, org, fac, role, "female", LocalDate.now(), getFullAddress(), "black");
+
     personRepository.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309");
     phoneNumberRepository.save(pn);
@@ -390,18 +393,20 @@ public class TestDataFactory {
     return testOrderRepository.save(o);
   }
 
-  public TestOrder createCompletedTestOrder(Person patient, Facility facility, TestResult result) {
+  public TestOrder createTestOrderWithCovidResult(
+      Person patient, Facility facility, TestResult result) {
+    return createTestOrder(patient, facility, List.of(new Result(diseaseService.covid(), result)));
+  }
+
+  public TestOrder createTestOrder(Person patient, Facility facility, List<Result> results) {
     TestOrder order = new TestOrder(patient, facility);
     order.setAskOnEntrySurvey(savePatientAnswers(createEmptySurvey()));
     order.setDeviceTypeAndSpecimenType(
         facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
 
-    order.markComplete();
     TestOrder savedOrder = testOrderRepository.save(order);
 
-    Result resultEntity = new Result(order, diseaseService.covid(), result);
-    order.addResult(resultEntity);
-    resultRepository.save(resultEntity);
+    resultService.addResultsToTestOrder(order, results);
     patientLinkRepository.save(new PatientLink(savedOrder));
     return order;
   }
@@ -420,16 +425,33 @@ public class TestDataFactory {
     return createTestEvent(p, f, TestResult.NEGATIVE);
   }
 
+  public TestEvent createTestEvent(TestOrder testOrder) {
+    TestEvent testEvent = testEventRepository.save(new TestEvent(testOrder));
+
+    List<Result> copiedResults = testOrder.getResults().stream().map(Result::new).toList();
+    resultService.addResultsToTestEvent(testEvent, copiedResults);
+
+    testOrder.setTestEventRef(testEvent);
+    testOrder.markComplete();
+    testOrderRepository.save(testOrder);
+
+    return testEvent;
+  }
+
   public TestEvent createTestEvent(Person p, Facility f, AskOnEntrySurvey s, TestResult r, Date d) {
     TestOrder o = createTestOrder(p, f, s);
     o.setDateTestedBackdate(d);
-    Result result = new Result(o, diseaseService.covid(), r);
-    TestEvent e = testEventRepository.save(new TestEvent(o, false, Set.of(result)));
+    Result orderResult = new Result(diseaseService.covid(), r);
+    resultService.addResultsToTestOrder(o, List.of(orderResult));
+
+    TestEvent e = new TestEvent(o, false);
+    testEventRepository.save(e);
+
+    Result copiedResult = new Result(orderResult);
+    resultService.addResultsToTestEvent(e, List.of(copiedResult));
+
     o.setTestEventRef(e);
     o.markComplete();
-
-    result.setTestEvent(e);
-    resultRepository.save(result);
     testOrderRepository.save(o);
     return e;
   }
@@ -440,14 +462,15 @@ public class TestDataFactory {
 
   public TestEvent createTestEvent(Person p, Facility f, TestResult r, Boolean hasPriorTests) {
     TestOrder o = createTestOrder(p, f);
-    Result result = new Result(o, diseaseService.covid(), r);
-    resultRepository.save(result);
-    o = testOrderRepository.save(o);
+    Result orderResult = new Result(diseaseService.covid(), r);
+    resultService.addResultsToTestOrder(o, List.of(orderResult));
 
-    TestEvent e = new TestEvent(o, hasPriorTests, Set.of(result));
+    TestEvent e = new TestEvent(o, hasPriorTests);
     testEventRepository.save(e);
-    result.setTestEvent(e);
-    resultRepository.save(result);
+
+    Result copiedResult = new Result(orderResult);
+    resultService.addResultsToTestEvent(e, List.of(copiedResult));
+
     o.setTestEventRef(e);
     o.markComplete();
     testOrderRepository.save(o);
@@ -462,22 +485,21 @@ public class TestDataFactory {
       TestResult fluBResult,
       Boolean hasPriorTests) {
     TestOrder order = createTestOrder(person, facility);
-    Result covid = new Result(order, diseaseService.covid(), covidResult);
-    resultRepository.save(covid);
-    Result fluA = new Result(order, diseaseService.fluA(), fluAResult);
-    resultRepository.save(fluA);
-    Result fluB = new Result(order, diseaseService.fluB(), fluBResult);
-    resultRepository.save(fluB);
+
+    var results =
+        List.of(
+            new Result(diseaseService.covid(), covidResult),
+            new Result(diseaseService.fluA(), fluAResult),
+            new Result(diseaseService.fluB(), fluBResult));
+
+    resultService.addResultsToTestOrder(order, results);
     order = testOrderRepository.save(order);
 
-    TestEvent event = new TestEvent(order, hasPriorTests, Set.of(covid, fluA, fluB));
+    TestEvent event = new TestEvent(order, hasPriorTests);
     testEventRepository.save(event);
-    covid.setTestEvent(event);
-    resultRepository.save(covid);
-    fluA.setTestEvent(event);
-    resultRepository.save(fluA);
-    fluB.setTestEvent(event);
-    resultRepository.save(fluB);
+
+    var copiedResults = order.getResults().stream().map(Result::new).toList();
+    resultService.addResultsToTestEvent(event, copiedResults);
 
     order.setTestEventRef(event);
     order.markComplete();
@@ -487,38 +509,32 @@ public class TestDataFactory {
   }
 
   public TestEvent createTestEventCorrection(
-      TestEvent originalTestEvent, TestCorrectionStatus correctionStatus) {
+      TestEvent originalTestEvent, TestCorrectionStatus correctionStatus, String reason) {
+    List<Result> copiedResults = originalTestEvent.getResults().stream().map(Result::new).toList();
+
+    TestEvent newRemoveEvent = new TestEvent(originalTestEvent, correctionStatus, reason);
+    testEventRepository.save(newRemoveEvent);
+
+    resultService.addResultsToTestEvent(newRemoveEvent, copiedResults);
 
     TestOrder order = originalTestEvent.getTestOrder();
-
-    order.setReasonForCorrection("Cold feet");
+    order.setReasonForCorrection(reason);
     order.setCorrectionStatus(correctionStatus);
-
-    List<Result> originalResults = resultRepository.findAllByTestOrder(order);
-    Set<Result> copiedResults =
-        originalResults.stream().map(Result::new).collect(Collectors.toSet());
-
-    TestEvent newRemoveEvent =
-        new TestEvent(originalTestEvent, correctionStatus, "Cold feet", copiedResults);
-    copiedResults.forEach(result -> result.setTestEvent(newRemoveEvent));
-
     order.setTestEventRef(newRemoveEvent);
-    testEventRepository.save(newRemoveEvent);
     testOrderRepository.save(order);
-    resultRepository.saveAll(copiedResults);
 
     Hibernate.initialize(newRemoveEvent.getOrganization());
     return newRemoveEvent;
   }
 
-  public TestEvent doTest(TestOrder order, TestResult result) {
-    TestEvent event = testEventRepository.save(new TestEvent(order));
-    Result resultEntity = new Result(event, order, diseaseService.covid(), result);
-    resultRepository.save(resultEntity);
-    order.setTestEventRef(event);
-    order.markComplete();
-    testOrderRepository.save(order);
-    return event;
+  public TestEvent createTestEventCorrection(
+      TestEvent originalTestEvent, TestCorrectionStatus correctionStatus) {
+    return createTestEventCorrection(originalTestEvent, correctionStatus, "Cold feet");
+  }
+
+  public TestEvent submitTest(TestOrder order, TestResult result) {
+    resultService.addResultsToTestOrder(order, List.of(new Result(diseaseService.covid(), result)));
+    return createTestEvent(order);
   }
 
   @Transactional
@@ -552,9 +568,24 @@ public class TestDataFactory {
     return deviceTypeRepository.save(new DeviceType(name, manufacturer, model, 15));
   }
 
+  public DeviceType saveDeviceType(DeviceType deviceType) {
+    return deviceTypeRepository.save(deviceType);
+  }
+
   public DeviceType getGenericDevice() {
     initGenericDeviceTypeAndSpecimenType();
     return genericDeviceType;
+  }
+
+  public SupportedDisease getCovidDisease() {
+    return diseaseService.covid();
+  }
+
+  public DeviceType addDiseasesToDevice(
+      DeviceType deviceType, List<DeviceTypeDisease> deviceTypeDiseases) {
+    deviceTypeDiseaseRepository.saveAll(deviceTypeDiseases);
+    deviceType.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseases);
+    return deviceTypeRepository.save(deviceType);
   }
 
   public SpecimenType createSpecimenType(
@@ -579,11 +610,5 @@ public class TestDataFactory {
 
   public static List<PhoneNumberInput> getListOfOnePhoneNumberInput() {
     return List.of(new PhoneNumberInput("MOBILE", "(503) 867-5309"));
-  }
-
-  public void createResult(
-      TestEvent testEvent, TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
-    var res = new Result(testEvent, testOrder, disease, testResult);
-    resultRepository.save(res);
   }
 }

@@ -18,6 +18,7 @@ export const liveJurisdictions = [
   "ID",
   "IL",
   "IN",
+  "KS",
   "LA",
   "MA",
   "MD",

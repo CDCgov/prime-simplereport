@@ -423,10 +423,12 @@ class LiveOktaRepositoryTest {
     var identityAttributes = new IdentityAttributes(username, personName);
     var org = new Organization("orgName", "orgType", "1", true);
 
+    Set<Facility> facilities = Set.of();
+    Set<OrganizationRole> roles = Set.of();
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true));
+            () -> _repo.createUser(identityAttributes, org, facilities, roles, true));
     assertEquals("Cannot create Okta user without last name", caught.getMessage());
   }
 
@@ -437,10 +439,12 @@ class LiveOktaRepositoryTest {
     var identityAttributes = new IdentityAttributes(null, personName);
     var org = new Organization("orgName", "orgType", "1", true);
 
+    Set<Facility> facilities = Set.of();
+    Set<OrganizationRole> roles = Set.of();
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true));
+            () -> _repo.createUser(identityAttributes, org, facilities, roles, true));
     assertEquals("Cannot create Okta user without username", caught.getMessage());
   }
 
@@ -456,10 +460,12 @@ class LiveOktaRepositoryTest {
     when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
     when(_client.listGroups(isNull(), anyString(), isNull())).thenReturn(mockGroupList);
 
+    Set<Facility> facilities = Set.of();
+    Set<OrganizationRole> roles = Set.of();
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true));
+            () -> _repo.createUser(identityAttributes, org, facilities, roles, true));
     assertEquals(
         "Cannot add Okta user to nonexistent organization=" + org.getExternalId(),
         caught.getMessage());
@@ -483,10 +489,12 @@ class LiveOktaRepositoryTest {
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn("nonexistent");
 
+    Set<Facility> facilities = Set.of();
+    Set<OrganizationRole> roles = Set.of();
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true));
+            () -> _repo.createUser(identityAttributes, org, facilities, roles, true));
     assertEquals(
         "Cannot add Okta user to nonexistent group=" + groupProfileName, caught.getMessage());
   }
@@ -701,10 +709,12 @@ class LiveOktaRepositoryTest {
         .thenReturn(mockUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
 
+    Set<Facility> facilities = Set.of();
+    Set<OrganizationRole> roles = Set.of();
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _repo.updateUserPrivileges(userName, org, Set.of(), Set.of()));
+            () -> _repo.updateUserPrivileges(userName, org, facilities, roles));
     assertEquals("Cannot update role of Okta user with unrecognized username", caught.getMessage());
   }
 
@@ -729,10 +739,12 @@ class LiveOktaRepositoryTest {
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn("");
 
+    Set<Facility> facilities = Set.of();
+    Set<OrganizationRole> roles = Set.of();
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _repo.updateUserPrivileges(userName, org, Set.of(), Set.of()));
+            () -> _repo.updateUserPrivileges(userName, org, facilities, roles));
     assertEquals(
         "Cannot update privileges of Okta user in organization they do not belong to.",
         caught.getMessage());
@@ -766,12 +778,12 @@ class LiveOktaRepositoryTest {
         .thenReturn(mockEmptyGroupList);
     when(mockEmptyGroupList.stream()).then(i -> Stream.of());
 
+    Set<Facility> facilities = Set.of();
+    Set<OrganizationRole> roles = Set.of(OrganizationRole.ADMIN);
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () ->
-                _repo.updateUserPrivileges(
-                    userName, org, Set.of(), Set.of(OrganizationRole.ADMIN)));
+            () -> _repo.updateUserPrivileges(userName, org, facilities, roles));
     assertEquals(
         "Cannot add Okta user to nonexistent organization=" + org.getExternalId(),
         caught.getMessage());
@@ -801,6 +813,17 @@ class LiveOktaRepositoryTest {
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
     when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
         .thenReturn(mockGroupList);
+
+    Set<Facility> userFacilities = Set.of();
+    Set<OrganizationRole> userOrgRoles = Set.of(OrganizationRole.USER);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.updateUserPrivileges(userName, org, userFacilities, userOrgRoles));
+    assertEquals(
+        "Cannot add Okta user to nonexistent group=" + groupOrgPrefix + ":USER",
+        caught.getMessage());
   }
 
   @Test

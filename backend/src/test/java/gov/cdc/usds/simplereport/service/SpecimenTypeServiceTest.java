@@ -17,7 +17,7 @@ import org.springframework.transaction.TransactionSystemException;
       "hibernate.query.interceptor.error-level=ERROR",
       "spring.jpa.properties.hibernate.enable_lazy_load_no_trans=true"
     })
-public class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService> {
+class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService> {
 
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
 
@@ -39,33 +39,36 @@ public class SpecimenTypeServiceTest extends BaseServiceTest<SpecimenTypeService
   @Test
   @SliceTestConfiguration.WithSimpleReportOrgAdminUser
   void createNewSpecimenType_failsWithInvalidCredentials() {
+    CreateSpecimenType createSpecimenTypeData =
+        CreateSpecimenType.builder()
+            .name("Nasal swab")
+            .typeCode("012345678")
+            .collectionLocationName("Nasopharangyal Structure")
+            .collectionLocationCode("123456789")
+            .build();
+
     assertThrows(
         AccessDeniedException.class,
         () -> {
-          _service.createSpecimenType(
-              CreateSpecimenType.builder()
-                  .name("Nasal swab")
-                  .typeCode("012345678")
-                  .collectionLocationName("Nasopharangyal Structure")
-                  .collectionLocationCode("123456789")
-                  .build());
+          _service.createSpecimenType(createSpecimenTypeData);
         });
   }
 
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void createNewSpecimenType_failsWithTooShortLoinc() {
+    CreateSpecimenType createSpecimenTypeData =
+        CreateSpecimenType.builder()
+            .name("Nasal swab")
+            .typeCode("012")
+            .collectionLocationName("Nasopharangyal Structure")
+            .collectionLocationCode("123")
+            .build();
     Exception exception =
         assertThrows(
             TransactionSystemException.class,
             () -> {
-              _service.createSpecimenType(
-                  CreateSpecimenType.builder()
-                      .name("Nasal swab")
-                      .typeCode("012")
-                      .collectionLocationName("Nasopharangyal Structure")
-                      .collectionLocationCode("123")
-                      .build());
+              _service.createSpecimenType(createSpecimenTypeData);
             });
     assert (exception.getMessage()).contains("Could not commit JPA transaction");
   }

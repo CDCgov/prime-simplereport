@@ -15,10 +15,12 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ID
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NPI_PREFIX;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTICIONER_IDENTIFIER_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
@@ -67,6 +69,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
@@ -314,17 +317,29 @@ public class FhirConverter {
         provider.getNameInfo(),
         provider.getTelephone(),
         provider.getAddress(),
-        DEFAULT_COUNTRY);
+        DEFAULT_COUNTRY,
+        provider.getProviderId());
   }
 
   public static Practitioner convertToPractitioner(
-      String id, PersonName name, String telephone, StreetAddress addr, String country) {
+      String id,
+      PersonName name,
+      String telephone,
+      StreetAddress addr,
+      String country,
+      String npi) {
     var practitioner =
         new Practitioner()
             .addName(convertToHumanName(name))
             .addAddress(convertToAddress(addr, country))
             .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
     practitioner.setId(id);
+
+    LuhnCheckDigit npiValidator = new LuhnCheckDigit();
+    if (StringUtils.isNotEmpty(npi) && npiValidator.isValid(NPI_PREFIX.concat(npi))) {
+      practitioner.addIdentifier().setSystem(PRACTICIONER_IDENTIFIER_SYSTEM).setValue(npi);
+    }
+
     return practitioner;
   }
 
@@ -370,46 +385,39 @@ public class FhirConverter {
 
   public static Patient convertToPatient(Person person) {
     return convertToPatient(
-        person.getInternalId().toString(),
-        person.getNameInfo(),
-        person.getPhoneNumbers(),
-        person.getEmails(),
-        person.getGender(),
-        person.getBirthDate(),
-        person.getAddress(),
-        person.getCountry(),
-        person.getRace(),
-        person.getEthnicity(),
-        person.getTribalAffiliation());
+        ConvertToPatientProps.builder()
+            .id(person.getInternalId().toString())
+            .name(person.getNameInfo())
+            .phoneNumbers(person.getPhoneNumbers())
+            .emails(person.getEmails())
+            .gender(person.getGender())
+            .dob(person.getBirthDate())
+            .address(person.getAddress())
+            .country(person.getCountry())
+            .race(person.getRace())
+            .ethnicity(person.getEthnicity())
+            .tribalAffiliations(person.getTribalAffiliation())
+            .build());
   }
 
-  public static Patient convertToPatient(
-      String id,
-      PersonName name,
-      List<PhoneNumber> phoneNumbers,
-      List<String> emails,
-      String gender,
-      LocalDate dob,
-      StreetAddress address,
-      String country,
-      String race,
-      String ethnicity,
-      List<String> tribalAffiliations) {
+  public static Patient convertToPatient(ConvertToPatientProps props) {
     var patient =
         new Patient()
-            .addName(convertToHumanName(name))
-            .setGender(convertToAdministrativeGender(gender))
-            .setBirthDate(convertToDate(dob))
-            .addAddress(convertToAddress(address, country));
+            .addName(convertToHumanName(props.getName()))
+            .setGender(convertToAdministrativeGender(props.getGender()))
+            .setBirthDate(convertToDate(props.getDob()))
+            .addAddress(convertToAddress(props.getAddress(), props.getCountry()));
 
-    patient.addExtension(convertToRaceExtension(race));
-    patient.addExtension(convertToEthnicityExtension(ethnicity));
-    patient.addExtension(convertToTribalAffiliationExtension(tribalAffiliations).orElse(null));
+    patient.addExtension(convertToRaceExtension(props.getRace()));
+    patient.addExtension(convertToEthnicityExtension(props.getEthnicity()));
+    patient.addExtension(
+        convertToTribalAffiliationExtension(props.getTribalAffiliations()).orElse(null));
 
-    patient.setId(id);
-    patient.addIdentifier().setValue(id);
-    convertPhoneNumbersToContactPoint(phoneNumbers).forEach(patient::addTelecom);
-    convertEmailsToContactPoint(ContactPointUse.HOME, emails).forEach(patient::addTelecom);
+    patient.setId(props.getId());
+    patient.addIdentifier().setValue(props.getId());
+    convertPhoneNumbersToContactPoint(props.getPhoneNumbers()).forEach(patient::addTelecom);
+    convertEmailsToContactPoint(ContactPointUse.HOME, props.getEmails())
+        .forEach(patient::addTelecom);
     return patient;
   }
 
@@ -480,7 +488,7 @@ public class FhirConverter {
             result -> {
               Optional<DeviceTypeDisease> deviceTypeDisease =
                   deviceType.getSupportedDiseaseTestPerformed().stream()
-                      .filter(code -> code.getSupportedDisease() == result.getDisease())
+                      .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
                       .findFirst();
               String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease);
               String equipmentUid = getEquipmentUid(deviceTypeDisease);
@@ -518,53 +526,51 @@ public class FhirConverter {
       String equipmentUid,
       String deviceModel) {
     if (result != null && result.getDisease() != null) {
+
       return convertToObservation(
-          testPerformedCode,
-          result.getDisease().getName(),
-          result.getResultLOINC(),
-          correctionStatus,
-          correctionReason,
-          result.getInternalId().toString(),
-          Translators.convertConceptCodeToConceptName(result.getResultLOINC()),
-          testkitNameId,
-          equipmentUid,
-          deviceModel);
+          ConvertToObservationProps.builder()
+              .diseaseCode(testPerformedCode)
+              .diseaseName(result.getDisease().getName())
+              .resultCode(result.getResultSNOMED())
+              .correctionStatus(correctionStatus)
+              .correctionReason(correctionReason)
+              .id(result.getInternalId().toString())
+              .resultDescription(
+                  Translators.convertConceptCodeToConceptName(result.getResultSNOMED()))
+              .testkitNameId(testkitNameId)
+              .equipmentUid(equipmentUid)
+              .deviceModel(deviceModel)
+              .build());
     }
     return null;
   }
 
-  public static Observation convertToObservation(
-      String diseaseCode,
-      String diseaseName,
-      String resultCode,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason,
-      String id,
-      String resultDescription,
-      String testkitNameId,
-      String equipmentUid,
-      String deviceModel) {
+  public static Observation convertToObservation(ConvertToObservationProps props) {
     var observation = new Observation();
-    observation.setId(id);
-    setStatus(observation, correctionStatus);
-    observation.setCode(createLoincConcept(diseaseCode, "", diseaseName));
-    addSNOMEDValue(resultCode, observation, resultDescription);
-    observation.getMethod().getCodingFirstRep().setDisplay(deviceModel);
+    observation.setId(props.getId());
+    setStatus(observation, props.getCorrectionStatus());
+    observation.setCode(createLoincConcept(props.getDiseaseCode(), "", props.getDiseaseName()));
+    addSNOMEDValue(props.getResultCode(), observation, props.getResultDescription());
+    observation.getMethod().getCodingFirstRep().setDisplay(props.getDeviceModel());
     observation
         .getMethod()
         .addExtension(
             new Extension()
                 .setUrl(TESTKIT_NAME_ID_EXTENSION_URL)
-                .setValue(new CodeableConcept().addCoding().setCode(testkitNameId)))
+                .setValue(new CodeableConcept().addCoding().setCode(props.getTestkitNameId())))
         .addExtension(
             new Extension()
                 .setUrl(EQUIPMENT_UID_EXTENSION_URL)
-                .setValue(new CodeableConcept().addCoding().setCode(equipmentUid)));
+                .setValue(new CodeableConcept().addCoding().setCode(props.getEquipmentUid())));
 
     addCorrectionNote(
-        correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
+        props.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL,
+        props.getCorrectionReason(),
+        observation);
 
-    observation.addInterpretation().addCoding(convertToAbnormalFlagInterpretation(resultCode));
+    observation
+        .addInterpretation()
+        .addCoding(convertToAbnormalFlagInterpretation(props.getResultCode()));
 
     return observation;
   }
@@ -611,41 +617,43 @@ public class FhirConverter {
     }
   }
 
-  public static Set<Observation> convertToAOEObservations(
-      String eventId, AskOnEntrySurvey surveyData) {
+  public static Set<Observation> convertToAOEObservation(
+      String eventId, Boolean symptomatic, LocalDate symptomOnsetDate) {
     var observations = new HashSet<Observation>();
     var symptomaticCode =
         createLoincConcept(
             LOINC_AOE_SYMPTOMATIC,
             "Has symptoms related to condition of interest",
             "Has symptoms related to condition of interest");
-    if (surveyData.getNoSymptoms()) {
-      // user reported as not symptomatic
+    observations.add(
+        createAOEObservation(
+            eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(symptomatic)));
+
+    if (Boolean.TRUE.equals(symptomatic) && symptomOnsetDate != null) {
       observations.add(
           createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(false)));
-    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
-      // user reported as symptomatic
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(true)));
-      if (surveyData.getSymptomOnsetDate() != null) {
-        observations.add(
-            createAOEObservation(
-                eventId + LOINC_AOE_SYMPTOM_ONSET,
-                createLoincConcept(
-                    LOINC_AOE_SYMPTOM_ONSET,
-                    "Illness or injury onset date and time",
-                    "Illness or injury onset date and time"),
-                new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
-      }
-    } else {
-      // if neither no symptoms nor any symptoms checked, AoE form was not completed
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(null)));
+              eventId + LOINC_AOE_SYMPTOM_ONSET,
+              createLoincConcept(
+                  LOINC_AOE_SYMPTOM_ONSET,
+                  "Illness or injury onset date and time",
+                  "Illness or injury onset date and time"),
+              new DateTimeType(symptomOnsetDate.toString())));
     }
     return observations;
+  }
+
+  public static Set<Observation> convertToAOEObservations(
+      String eventId, AskOnEntrySurvey surveyData) {
+    Boolean symptomatic = null;
+    if (surveyData.getNoSymptoms()) {
+      symptomatic = false;
+    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
+      symptomatic = true;
+    } // implied else: AoE form was not completed. Symptomatic set to null
+
+    var symptomOnsetDate = surveyData.getSymptomOnsetDate();
+
+    return convertToAOEObservation(eventId, symptomatic, symptomOnsetDate);
   }
 
   public static Observation createAOEObservation(
@@ -794,51 +802,47 @@ public class FhirConverter {
       GitProperties gitProperties,
       Date currentDate,
       String processingId) {
+
     return createFhirBundle(
-        convertToPatient(testEvent.getPatient()),
-        convertToOrganization(testEvent.getFacility()),
-        null,
-        convertToPractitioner(testEvent.getProviderData()),
-        convertToDevice(testEvent.getDeviceType()),
-        convertToSpecimen(testEvent.getSpecimenType()),
-        convertToObservation(
-            testEvent.getResults(),
-            testEvent.getDeviceType(),
-            testEvent.getCorrectionStatus(),
-            testEvent.getReasonForCorrection()),
-        convertToAOEObservations(testEvent.getInternalId().toString(), testEvent.getSurveyData()),
-        convertToServiceRequest(testEvent.getOrder()),
-        convertToDiagnosticReport(testEvent),
-        currentDate,
-        gitProperties,
-        processingId);
+        CreateFhirBundleProps.builder()
+            .patient(convertToPatient(testEvent.getPatient()))
+            .testingLab(convertToOrganization(testEvent.getFacility()))
+            .orderingFacility(null)
+            .practitioner(convertToPractitioner(testEvent.getProviderData()))
+            .device(convertToDevice(testEvent.getDeviceType()))
+            .specimen(convertToSpecimen(testEvent.getSpecimenType()))
+            .resultObservations(
+                convertToObservation(
+                    testEvent.getResults(),
+                    testEvent.getDeviceType(),
+                    testEvent.getCorrectionStatus(),
+                    testEvent.getReasonForCorrection()))
+            .aoeObservations(
+                convertToAOEObservations(
+                    testEvent.getInternalId().toString(), testEvent.getSurveyData()))
+            .serviceRequest(convertToServiceRequest(testEvent.getOrder()))
+            .diagnosticReport(convertToDiagnosticReport(testEvent))
+            .currentDate(currentDate)
+            .gitProperties(gitProperties)
+            .processingId(processingId)
+            .build());
   }
 
-  public static Bundle createFhirBundle(
-      Patient patient,
-      Organization testingLab,
-      Organization orderingFacility,
-      Practitioner practitioner,
-      Device device,
-      Specimen specimen,
-      List<Observation> resultObservations,
-      Set<Observation> aoeObservations,
-      ServiceRequest serviceRequest,
-      DiagnosticReport diagnosticReport,
-      Date currentDate,
-      GitProperties gitProperties,
-      String processingId) {
-    var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
+  public static Bundle createFhirBundle(CreateFhirBundleProps props) {
+    var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
     var orderingFacilityFullUrl =
-        orderingFacility == null
+        props.getOrderingFacility() == null
             ? null
-            : ResourceType.Organization + "/" + orderingFacility.getId();
-    var testingLabOrganizationFullUrl = ResourceType.Organization + "/" + testingLab.getId();
-    var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
-    var specimenFullUrl = ResourceType.Specimen + "/" + specimen.getId();
-    var serviceRequestFullUrl = ResourceType.ServiceRequest + "/" + serviceRequest.getId();
-    var diagnosticReportFullUrl = ResourceType.DiagnosticReport + "/" + diagnosticReport.getId();
-    var deviceFullUrl = ResourceType.Device + "/" + device.getId();
+            : ResourceType.Organization + "/" + props.getOrderingFacility().getId();
+    var testingLabOrganizationFullUrl =
+        ResourceType.Organization + "/" + props.getTestingLab().getId();
+    var practitionerFullUrl = ResourceType.Practitioner + "/" + props.getPractitioner().getId();
+    var specimenFullUrl = ResourceType.Specimen + "/" + props.getSpecimen().getId();
+    var serviceRequestFullUrl =
+        ResourceType.ServiceRequest + "/" + props.getServiceRequest().getId();
+    var diagnosticReportFullUrl =
+        ResourceType.DiagnosticReport + "/" + props.getDiagnosticReport().getId();
+    var deviceFullUrl = ResourceType.Device + "/" + props.getDevice().getId();
 
     var practitionerRole =
         createPractitionerRole(
@@ -846,77 +850,81 @@ public class FhirConverter {
                 ? testingLabOrganizationFullUrl
                 : orderingFacilityFullUrl,
             practitionerFullUrl);
-    var provenance = createProvenance(testingLabOrganizationFullUrl, currentDate);
+    var provenance = createProvenance(testingLabOrganizationFullUrl, props.getCurrentDate());
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(
             testingLabOrganizationFullUrl,
             diagnosticReportFullUrl,
             provenanceFullUrl,
-            gitProperties,
-            processingId);
+            props.getGitProperties(),
+            props.getProcessingId());
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
-    patient.setManagingOrganization(new Reference(testingLabOrganizationFullUrl));
-    specimen.setSubject(new Reference(patientFullUrl));
+    props.getPatient().setManagingOrganization(new Reference(testingLabOrganizationFullUrl));
+    props.getSpecimen().setSubject(new Reference(patientFullUrl));
 
-    serviceRequest.setSubject(new Reference(patientFullUrl));
-    serviceRequest.addPerformer(new Reference(testingLabOrganizationFullUrl));
-    serviceRequest.setRequester(new Reference(practitionerRoleFullUrl));
-    diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
-    diagnosticReport.setSubject(new Reference(patientFullUrl));
-    diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
+    props.getServiceRequest().setSubject(new Reference(patientFullUrl));
+    props.getServiceRequest().addPerformer(new Reference(testingLabOrganizationFullUrl));
+    props.getServiceRequest().setRequester(new Reference(practitionerRoleFullUrl));
+    props.getDiagnosticReport().addBasedOn(new Reference(serviceRequestFullUrl));
+    props.getDiagnosticReport().setSubject(new Reference(patientFullUrl));
+    props.getDiagnosticReport().addSpecimen(new Reference(specimenFullUrl));
 
     var entryList = new ArrayList<Pair<String, Resource>>();
     entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
     entryList.add(Pair.of(provenanceFullUrl, provenance));
-    entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
-    entryList.add(Pair.of(patientFullUrl, patient));
-    entryList.add(Pair.of(testingLabOrganizationFullUrl, testingLab));
+    entryList.add(Pair.of(diagnosticReportFullUrl, props.getDiagnosticReport()));
+    entryList.add(Pair.of(patientFullUrl, props.getPatient()));
+    entryList.add(Pair.of(testingLabOrganizationFullUrl, props.getTestingLab()));
     if (orderingFacilityFullUrl != null) {
-      entryList.add(Pair.of(orderingFacilityFullUrl, orderingFacility));
+      entryList.add(Pair.of(orderingFacilityFullUrl, props.getOrderingFacility()));
     }
-    entryList.add(Pair.of(practitionerFullUrl, practitioner));
-    entryList.add(Pair.of(specimenFullUrl, specimen));
-    entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
-    entryList.add(Pair.of(deviceFullUrl, device));
+    entryList.add(Pair.of(practitionerFullUrl, props.getPractitioner()));
+    entryList.add(Pair.of(specimenFullUrl, props.getSpecimen()));
+    entryList.add(Pair.of(serviceRequestFullUrl, props.getServiceRequest()));
+    entryList.add(Pair.of(deviceFullUrl, props.getDevice()));
     entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
     entryList.add(
         Pair.of(
             ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
             new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
 
-    resultObservations.forEach(
-        observation -> {
-          var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+    props
+        .getResultObservations()
+        .forEach(
+            observation -> {
+              var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
 
-          observation.setSubject(new Reference(patientFullUrl));
-          observation.addPerformer(new Reference(testingLabOrganizationFullUrl));
-          observation.setSpecimen(new Reference(specimenFullUrl));
-          observation.setDevice(new Reference(deviceFullUrl));
+              observation.setSubject(new Reference(patientFullUrl));
+              observation.addPerformer(new Reference(testingLabOrganizationFullUrl));
+              observation.setSpecimen(new Reference(specimenFullUrl));
+              observation.setDevice(new Reference(deviceFullUrl));
 
-          diagnosticReport.addResult(new Reference(observationFullUrl));
-          entryList.add(Pair.of(observationFullUrl, observation));
-        });
+              props.getDiagnosticReport().addResult(new Reference(observationFullUrl));
+              entryList.add(Pair.of(observationFullUrl, observation));
+            });
 
-    if (aoeObservations != null) {
-      aoeObservations.forEach(
-          observation -> {
-            var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+    if (props.getAoeObservations() != null) {
+      props
+          .getAoeObservations()
+          .forEach(
+              observation -> {
+                var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
 
-            observation.setSubject(new Reference(patientFullUrl));
+                observation.setSubject(new Reference(patientFullUrl));
 
-            serviceRequest.addSupportingInfo(new Reference(observationFullUrl));
-            entryList.add(Pair.of(observationFullUrl, observation));
-          });
+                props.getServiceRequest().addSupportingInfo(new Reference(observationFullUrl));
+                entryList.add(Pair.of(observationFullUrl, observation));
+              });
     }
 
     var bundle =
         new Bundle()
             .setType(BundleType.MESSAGE)
-            .setTimestamp(currentDate)
-            .setIdentifier(new Identifier().setValue(diagnosticReport.getId()));
+            .setTimestamp(props.getCurrentDate())
+            .setIdentifier(new Identifier().setValue(props.getDiagnosticReport().getId()));
     entryList.forEach(
         pair ->
             bundle.addEntry(

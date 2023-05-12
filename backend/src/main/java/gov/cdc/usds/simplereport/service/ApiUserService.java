@@ -69,6 +69,10 @@ public class ApiUserService {
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
 
+  private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
+    log.info("User with id={} updated by user with id={}", authorId, updatedUserId);
+  }
+
   public boolean userExists(String username) {
     Optional<ApiUser> found =
         _apiUserRepo.findByLoginEmailIncludeArchived(username.toLowerCase().strip());
@@ -187,10 +191,8 @@ public class ApiUserService {
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
-    log.info(
-        "User with id={} updated by user with id={}",
-        apiUser.getInternalId(),
-        getCurrentApiUser().getInternalId().toString());
+    createUserUpdatedAuditLog(
+        apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
 
     return user;
   }
@@ -213,10 +215,7 @@ public class ApiUserService {
         newOrgClaims.map(c -> _orgService.getOrganizationRoles(org, c));
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
 
-    log.info(
-        "User with id={} updated by user with id={}",
-        apiUser.getInternalId(),
-        getCurrentApiUser().getInternalId());
+    createUserUpdatedAuditLog(apiUser.getInternalId(), getCurrentApiUser().getInternalId());
 
     return user;
   }
@@ -240,10 +239,8 @@ public class ApiUserService {
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
 
-    log.info(
-        "User with id={} updated by user with id={}",
-        apiUser.getInternalId(),
-        getCurrentApiUser().getInternalId().toString());
+    createUserUpdatedAuditLog(
+        apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
 
     return new UserInfo(apiUser, orgRoles, isAdmin);
   }

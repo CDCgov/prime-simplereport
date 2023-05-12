@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import static gov.cdc.usds.simplereport.service.DiseaseService.COVID19_NAME;
 import static java.lang.Boolean.TRUE;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,6 +32,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * For latest supported values, see:
@@ -176,11 +179,31 @@ public class TestEventExport {
           .put("Taiwanese", "oan")
           .build();
 
-  private static Optional<? extends DeviceTypeDisease> getCovidDiseaseInfo(
+  private static Optional<? extends DeviceTypeDisease> getFirstCovidDiseaseInfo(
+      List<DeviceTypeDisease> deviceTypeDiseases) {
+    return deviceTypeDiseases.stream()
+        .filter(s -> COVID19_NAME.equals(s.getSupportedDisease().getName()))
+        .findFirst();
+  }
+
+  private static List<DeviceTypeDisease> getCovidDiseaseInfo(
       List<DeviceTypeDisease> deviceTypeDiseases) {
     return deviceTypeDiseases.stream()
         .filter(s -> "COVID-19".equals(s.getSupportedDisease().getName()))
-        .findFirst();
+        .toList();
+  }
+
+  @Nullable
+  private String getCommonCovidDiseaseValue(Function<DeviceTypeDisease, String> diseaseValue) {
+    if (deviceType.isPresent()) {
+      List<DeviceTypeDisease> covidDiseaseInfo =
+          getCovidDiseaseInfo(deviceType.get().getSupportedDiseaseTestPerformed());
+      List<String> distinctValues = covidDiseaseInfo.stream().map(diseaseValue).distinct().toList();
+      if (distinctValues.size() == 1) {
+        return distinctValues.get(0);
+      }
+    }
+    return null;
   }
 
   private String boolToYesNoUnk(Boolean value) {
@@ -600,7 +623,7 @@ public class TestEventExport {
     // This field is mapped to the testPerformedLoinc but was mistakenly named ordered_test_code
     return deviceType
         .map(DeviceType::getSupportedDiseaseTestPerformed)
-        .flatMap(TestEventExport::getCovidDiseaseInfo)
+        .flatMap(TestEventExport::getFirstCovidDiseaseInfo)
         .map(DeviceTypeDisease::getTestPerformedLoincCode)
         .orElse(null);
   }
@@ -627,20 +650,12 @@ public class TestEventExport {
 
   @JsonProperty("Test_Kit_Name_ID")
   public String getTestKitNameId() {
-    return deviceType
-        .map(DeviceType::getSupportedDiseaseTestPerformed)
-        .flatMap(TestEventExport::getCovidDiseaseInfo)
-        .map(DeviceTypeDisease::getTestkitNameId)
-        .orElse(null);
+    return getCommonCovidDiseaseValue(DeviceTypeDisease::getTestkitNameId);
   }
 
   @JsonProperty("Equipment_Model_ID")
   public String getEquipmentModelId() {
-    return deviceType
-        .map(DeviceType::getSupportedDiseaseTestPerformed)
-        .flatMap(TestEventExport::getCovidDiseaseInfo)
-        .map(DeviceTypeDisease::getEquipmentUid)
-        .orElse(null);
+    return getCommonCovidDiseaseValue(DeviceTypeDisease::getEquipmentUid);
   }
 
   @JsonProperty("Test_date")

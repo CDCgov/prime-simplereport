@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useFeature } from "flagged";
 
 import AddOrganizationAdminFormContainer from "./AddOrganizationAdmin/AddOrganizationAdminFormContainer";
 import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
@@ -7,12 +8,15 @@ import TenantDataAccessFormContainer from "./TenantDataAccess/TenantDataAccessFo
 import SupportAdmin from "./SupportAdmin";
 import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganizationsContainer";
 import ManageDeviceTypeFormContainer from "./DeviceType/ManageDeviceTypeFormContainer";
+import { HivUploadForm } from "./HIVUpload/HivUploadForm";
 
 interface Props {
   isAdmin: boolean;
 }
 
 const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
+  const hivEnabled = useFeature("hivEnabled") as boolean;
+
   if (!isAdmin) {
     return <Navigate to="/queue" />;
   }
@@ -35,6 +39,9 @@ const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
         path="tenant-data-access"
         element={<TenantDataAccessFormContainer />}
       />
+      {hivEnabled && (
+        <Route path="hiv-csv-upload" element={<HivUploadForm />} />
+      )}
       <Route path="/" element={<SupportAdmin />} />
     </Routes>
   );

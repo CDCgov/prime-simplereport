@@ -1,8 +1,11 @@
+import { useFeature } from "flagged";
+
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 
 const SupportAdmin = () => {
   useDocumentTitle("Support admin");
+  const hivEnabled = useFeature("hivEnabled") as boolean;
 
   return (
     <div className="prime-home flex-1">
@@ -42,6 +45,13 @@ const SupportAdmin = () => {
                   Organization data
                 </LinkWithQuery>
               </div>
+              {hivEnabled && (
+                <div>
+                  <LinkWithQuery to="/admin/hiv-csv-upload">
+                    Beta - HIV CSV Upload
+                  </LinkWithQuery>
+                </div>
+              )}
             </div>
           </div>
         </div>

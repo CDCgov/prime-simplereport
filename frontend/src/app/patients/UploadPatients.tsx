@@ -225,7 +225,7 @@ const UploadPatients = () => {
         setButtonIsDisabled(false);
         setErrorMessage({
           header: "Error: Invalid file",
-          body: <>"File is missing or empty."</>,
+          body: <>File is missing or empty.</>,
           includeGuide: true,
         });
         setFileValid(false);
@@ -240,8 +240,8 @@ const UploadPatients = () => {
           header: "Error: File too large",
           body: (
             <>
-              ${file.name} is too large for SimpleReport to process. Please
-              limit each upload to less than 50 MB.
+              {file.name} is too large for SimpleReport to process. Please limit
+              each upload to less than 50 MB.
             </>
           ),
           includeGuide: false,
@@ -258,9 +258,9 @@ const UploadPatients = () => {
           header: "Error: File too large",
           body: (
             <>
-              ${file.name} has too many rows for SimpleReport to process. Please
-              limit each upload to less than $
-              {MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.`
+              {file.name} has too many rows for SimpleReport to process. Please
+              limit each upload to less than{" "}
+              {MAX_CSV_UPLOAD_ROW_COUNT.toLocaleString()} rows.
             </>
           ),
           includeGuide: false,

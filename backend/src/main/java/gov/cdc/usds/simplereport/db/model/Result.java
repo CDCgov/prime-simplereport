@@ -11,22 +11,27 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Entity
+@Builder
 public class Result extends EternalAuditedEntity {
 
   @ManyToOne
   @JoinColumn(name = "test_event_id")
+  @Setter
   private TestEvent testEvent;
 
-  @ManyToOne(optional = false)
-  @JoinColumn(name = "test_order_id", nullable = false, updatable = false)
+  @ManyToOne
+  @JoinColumn(name = "test_order_id")
+  @Setter
   private TestOrder testOrder;
 
   @ManyToOne(optional = false)
@@ -34,44 +39,24 @@ public class Result extends EternalAuditedEntity {
   private SupportedDisease disease;
 
   @Column(name = "result", nullable = false)
-  private String resultLOINC;
+  private String resultSNOMED;
 
   @Column(name = "test_result", nullable = false)
   @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private TestResult testResult;
 
-  public Result(
-      TestEvent testEvent, TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
-    this.testEvent = testEvent;
-    this.testOrder = testOrder;
+  public Result(SupportedDisease disease, TestResult testResult) {
     this.disease = disease;
-    this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
-    this.testResult = testResult;
-  }
-
-  public Result(TestOrder testOrder, SupportedDisease disease, TestResult testResult) {
-    this.testOrder = testOrder;
-    this.disease = disease;
-    this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
+    this.resultSNOMED = Translators.convertTestResultToSnomed(testResult);
     this.testResult = testResult;
   }
 
   /* Copy constructor, used for corrections and removals */
   public Result(Result originalResult) {
-    this.testOrder = originalResult.testOrder;
     this.disease = originalResult.disease;
-    this.resultLOINC = originalResult.resultLOINC;
+    this.resultSNOMED = originalResult.resultSNOMED;
     this.testResult = originalResult.testResult;
-  }
-
-  public void setTestEvent(TestEvent event) {
-    this.testEvent = event;
-  }
-
-  public void setResult(TestResult testResult) {
-    this.resultLOINC = Translators.convertTestResultToLoinc(testResult);
-    this.testResult = testResult;
   }
 
   public SupportedDiseaseTestResult getDiseaseResult() {
@@ -90,12 +75,12 @@ public class Result extends EternalAuditedEntity {
     return Objects.equals(testEvent, that.testEvent)
         && Objects.equals(testOrder, that.testOrder)
         && Objects.equals(disease, that.disease)
-        && Objects.equals(resultLOINC, that.resultLOINC)
+        && Objects.equals(resultSNOMED, that.resultSNOMED)
         && Objects.equals(testResult, that.testResult);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(testEvent, testOrder, disease, resultLOINC, testResult);
+    return Objects.hash(testEvent, testOrder, disease, resultSNOMED, testResult);
   }
 }

@@ -4,6 +4,7 @@ const mockSupportedDiseaseCovid = [
   {
     supportedDisease:
       mockSupportedDiseaseTestPerformedCovid[0].supportedDisease,
+    testPerformedLoincCode: "123456",
   },
 ];
 
