@@ -3,24 +3,35 @@ name: Rollback DB
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: 'The Liquibase tag to roll back to'
-        required: true
       environment:
-        description: 'The environment of the DB that should be rolled back. Options: (demo dev dev2 dev3 dev4 dev5 dev6 dev7 pentest test training stg prod)'
+        description: |
+          The environment of the database.
         required: true
-
-concurrency:
-  group: db-rollback
+        type: choice
+        options: [demo, dev, dev2, dev3, dev4, dev5, dev6, dev7, pentest, test, training, stg, prod]
+        default: dev
+      action:
+        description: |
+          The liquibase action to run.
+        required: true
+        type: choice
+        options: [validate, clear-checksums, rollback]
+        default: validate
+      tag:
+        description: |
+          Only required if rollback is selected.
+          The Liquibase tag to roll back to
+        type: string
+        default: ""
 
 env:
   DEPLOY_ENV: ${{ github.event.inputs.environment }}
+  DOCKER_COMPOSE_FILE: docker-compose.db-liquibase-action.yml
+  GIT_SHA: ${{ github.event.inputs.action }}
   LIQUIBASE_ROLLBACK_TAG: ${{ github.event.inputs.tag }}
-  DOCKER_COMPOSE_FILE: docker-compose.db-rollback.yml
-  GIT_SHA: rollback
 
 jobs:
-  build-rollback-image:
+  build-image:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,13 +49,13 @@ jobs:
       - name: Login to ACR
         run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
 
-      - name: Delete existing rollback image
+      - name: Delete existing $GIT_SHA image
         run: |
-          if [ "$(az acr repository show --name simplereportacr --image api/simple-report-api-build:rollback | jq -r '.name')" == "rollback" ]; then
-            echo "Deleting rollback image"
-            az acr repository delete --name simplereportacr --image api/simple-report-api-build:rollback --yes
+          if [ "$(az acr repository show --name simplereportacr --image api/simple-report-api-build:$GIT_SHA | jq -r '.name')" == "$GIT_SHA" ]; then
+            echo "Deleting $GIT_SHA image"
+            az acr repository delete --name simplereportacr --image api/simple-report-api-build:$GIT_SHA --yes
           else
-            echo "No rollback image to delete"
+            echo "No $GIT_SHA image to delete"
           fi
 
       - name: Set up Docker Buildx
@@ -53,9 +64,9 @@ jobs:
       - name: Build and push Docker images
         run: ./build_and_push.sh
 
-  rollback-to-tag:
+  action:
     runs-on: ubuntu-latest
-    needs: build-rollback-image
+    needs: build-image
     defaults:
       run:
         working-directory: ./ops
@@ -83,32 +94,33 @@ jobs:
       - name: Terraform init
         run: make init-${{ env.DEPLOY_ENV }}
       
-      - name: Terraform apply DB Rollback Container Instance
+      - name: Terraform apply DB db_liquibase_action Container Instance
         run: |
           terraform -chdir=$DEPLOY_ENV apply \
           -var acr_image_tag=dummy \
-          -var liquibase_rollback_tag=$LIQUIBASE_ROLLBACK_TAG \
-          -target module.db_rollback[0] --auto-approve
-      
+          -var liquibase_rollback_tag="$LIQUIBASE_ROLLBACK_TAG" \
+          -var image_action=$GIT_SHA \
+          -target module.db_liquibase_action[0] --auto-approve
+
       - name: Display container logs
         if: always()
         run: |
           RESOURCE_GROUP=$DEPLOY_ENV
           if [[ "$DEPLOY_ENV" == *dev* ]]; then RESOURCE_GROUP=dev; fi;
           echo "Resource Group: $RESOURCE_GROUP"
-          az container logs --follow -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-rollback"
-          if [ "$(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-rollback" | jq '.containers[].instanceView.currentState.exitCode')" != "null" ]; then
-            exit $(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-rollback" | jq '.containers[].instanceView.currentState.exitCode')
+          az container logs --follow -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-$GIT_SHA"
+          if [ "$(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-$GIT_SHA" | jq '.containers[].instanceView.currentState.exitCode')" != "null" ]; then
+            exit $(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-$DEPLOY_ENV-db-$GIT_SHA" | jq '.containers[].instanceView.currentState.exitCode')
           else
             echo "No instance view available for the specified container group."
             exit 1
           fi;
 
-      - name: Terraform destroy DB Rollback Container Instance
+      - name: Terraform destroy DB db_liquibase_action Container Instance
         if: always()
         run: |
           terraform -chdir=$DEPLOY_ENV destroy \
           -var acr_image_tag=dummy \
-          -var liquibase_rollback_tag=$LIQUIBASE_ROLLBACK_TAG \
-          -target module.db_rollback[0] --auto-approve
-
+          -var liquibase_rollback_tag="" \
+          -var image_action=$GIT_SHA \
+          -target module.db_liquibase_action[0] --auto-approve

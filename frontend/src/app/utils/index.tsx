@@ -19,9 +19,6 @@ export const facilityDisplayName = (
   return `${name}${isDeleted ? " (Archived)" : ""}`;
 };
 
-export const isLocalHost = () =>
-  Boolean(window.location.hostname === "localhost");
-
 export const isEmptyString = (input = "") => {
   return Boolean(input.trim().length === 0);
 };
