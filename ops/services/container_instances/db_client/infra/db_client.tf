@@ -1,4 +1,4 @@
-resource "azurerm_container_group" "db_liquibase_action" {
+resource "azurerm_container_group" "db_client" {
   name                = "${var.name}-${var.env}-db-client"
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
