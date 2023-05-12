@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_SET;
+import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 public class ResultsUploaderDeviceValidationService {
   private final DeviceTypeRepository deviceTypeRepository;
 
-  @Cacheable(DEVICE_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  @Cacheable(DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP)
   public Map<String, DeviceType> getModelAndTestPerformedCodeToDeviceMap() {
     log.info("generating ModelAndTestPerformedCodeToDeviceMap cache");
 
@@ -47,7 +47,7 @@ public class ResultsUploaderDeviceValidationService {
 
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
   @Caching(
-      evict = {@CacheEvict(value = DEVICE_MODEL_AND_TEST_PERFORMED_CODE_SET, allEntries = true)})
+      evict = {@CacheEvict(value = DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP, allEntries = true)})
   public void cacheModelAndTestPerformedCodeToDeviceMap() {
     log.info("clear and generate ModelAndTestPerformedCodeToDeviceMap cache");
     getModelAndTestPerformedCodeToDeviceMap();

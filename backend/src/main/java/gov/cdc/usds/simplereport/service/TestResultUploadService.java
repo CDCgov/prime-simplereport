@@ -183,18 +183,20 @@ public class TestResultUploadService {
 
   private Future<UploadResponse> submitResultsAsFhir(
       ByteArrayInputStream content, Organization org) {
-    // convert csv to fhir and serialize to json
-    var serializedFhirBundles = fhirConverter.convertToFhirBundles(content, org.getInternalId());
-
-    // build the ndjson request body
-    var ndJson = new StringBuilder();
-    for (String bundle : serializedFhirBundles) {
-      ndJson.append(bundle).append(System.lineSeparator());
-    }
-
     // send to report stream
     return CompletableFuture.supplyAsync(
         () -> {
+          long start = System.currentTimeMillis();
+          // convert csv to fhir and serialize to json
+          var serializedFhirBundles =
+              fhirConverter.convertToFhirBundles(content, org.getInternalId());
+
+          // build the ndjson request body
+          var ndJson = new StringBuilder();
+          for (String bundle : serializedFhirBundles) {
+            ndJson.append(bundle).append(System.lineSeparator());
+          }
+
           UploadResponse response;
           try {
             response =
@@ -203,6 +205,7 @@ public class TestResultUploadService {
             log.info("RS Fhir API Error " + e.status() + " Response: " + e.contentUTF8());
             response = parseFeignException(e);
           }
+          log.info("FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
           return response;
         });
   }
@@ -210,6 +213,7 @@ public class TestResultUploadService {
   private Future<UploadResponse> submitResultsAsCsv(byte[] content) {
     return CompletableFuture.supplyAsync(
         () -> {
+          long start = System.currentTimeMillis();
           UploadResponse response;
           try {
             response = _client.uploadCSV(content);
@@ -217,6 +221,7 @@ public class TestResultUploadService {
             log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
             response = parseFeignException(e);
           }
+          log.info("CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
           return response;
         });
   }
