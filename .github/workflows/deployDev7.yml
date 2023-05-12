@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./ops/container_instances/db_client/image
+        working-directory: ./ops/services/container_instances/db_client/image
     steps:
       - uses: actions/checkout@v3
       - name: Set up Docker Buildx
