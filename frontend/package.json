@@ -251,6 +251,7 @@
     },
     "coveragePathIgnorePatterns": [
       "<rootDir>/src/index.tsx",
+      "<rootDir>/src/serviceWorker.ts",
       ".stories.tsx"
     ]
   }
