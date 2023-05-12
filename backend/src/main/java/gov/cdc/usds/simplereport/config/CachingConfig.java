@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class CachingConfig {
 
   public static final String DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP =
-      "deviceModelAndTestPerformedCodeSet";
+      "deviceModelAndTestPerformedCodeMap";
 
   @Bean
   public CacheManager cacheManager() {
