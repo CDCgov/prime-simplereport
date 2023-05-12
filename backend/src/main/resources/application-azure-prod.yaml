@@ -24,3 +24,5 @@ twilio:
   from-number: "+14045312484"
 features:
   hivEnabled: false
+datahub:
+  fhir-enabled: false

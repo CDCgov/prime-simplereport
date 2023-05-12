@@ -8,12 +8,12 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import gov.cdc.usds.simplereport.test_util.TestErrorMessageUtil;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -421,8 +421,8 @@ class TestResultRowTest {
 
   private ResultsUploaderDeviceValidationService mockResultsUploaderDeviceValidationService() {
     var resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
-    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeSet())
-        .thenReturn(Set.of("id now|94534-5"));
+    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceType()));
     return resultsUploaderDeviceValidationService;
   }
 }
