@@ -1,5 +1,6 @@
 import { Context } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
+import * as appInsights from "applicationinsights";
 
 import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
@@ -182,7 +183,10 @@ describe("FHIRTestEventReporter", () => {
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
     await FHIRTestEventReporter(context);
-
+    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledTimes(2);
+    expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
+      expect.objectContaining({ name: "Queue:ciao. Test Event Parse Failure" })
+    );
     expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
     expect(context.log).toHaveBeenCalledWith(
       "Queue: ciao. Successfully parsed message count of 0 in batch 1 is less than 1; aborting"
