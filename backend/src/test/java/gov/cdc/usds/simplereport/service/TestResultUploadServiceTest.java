@@ -23,6 +23,7 @@ import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -72,6 +73,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Captor private ArgumentCaptor<String> accessTokenCaptor;
   @Mock private DataHubClient dataHubMock;
   @Mock private TestResultUploadRepository repoMock;
+  @Mock private SpecimenTypeRepository specimenTypeRepositoryMock;
   @Mock private OrganizationService orgServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
@@ -382,6 +384,32 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     String[] rows = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8).split("\n");
     assertThat(rows[0]).endsWith(",processing_mode_code");
     assertThat(rows[1]).endsWith(",D");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_translatesSpecimenNameToSNOMED() {
+    // GIVEN
+    //    ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
+    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    var response = new UploadResponse();
+    response.setId(UUID.randomUUID());
+    response.setOverallStatus(ReportStreamStatus.RECEIVED);
+    response.setReportItemCount(5);
+    response.setErrors(new FeedbackMessage[] {});
+    response.setWarnings(new FeedbackMessage[] {});
+    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(specimenTypeRepositoryMock.findAll())
+        .thenReturn(List.of(_dataFactory.getGenericSpecimen()));
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
+    String[] rows = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8).split("\n");
+    assertThat(rows[1]).contains("000111222");
   }
 
   @Test

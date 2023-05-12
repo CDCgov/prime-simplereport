@@ -120,6 +120,7 @@ public class CsvValidatorUtils {
   private static final Set<String> TEST_RESULT_VALUES =
       Set.of("positive", "negative", "not detected", "detected", "invalid result");
 
+  // TODO: replace with legacy specimen names and add to valueset in TRUService
   private static final Set<String> SPECIMEN_TYPE_VALUES =
       Set.of(
           "Anterior nares swab",

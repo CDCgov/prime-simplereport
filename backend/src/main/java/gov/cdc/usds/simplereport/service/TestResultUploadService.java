@@ -9,8 +9,10 @@ import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
@@ -48,6 +50,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
+  private final SpecimenTypeRepository specimenTypeRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final TokenAuthentication _tokenAuth;
@@ -74,6 +77,7 @@ public class TestResultUploadService {
 
   private static final int FIVE_MINUTES_MS = 300 * 1000;
   public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
+  public static final String SPECIMEN_TYPE_COLUMN_NAME = "specimen_type";
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
@@ -84,6 +88,11 @@ public class TestResultUploadService {
 
   private static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+  private Map<String, String> buildSpecimenNameToSNOMEDMap() {
+    return specimenTypeRepository.findAll().stream()
+        .collect(Collectors.toMap(SpecimenType::getName, SpecimenType::getTypeCode));
+  }
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream) {
@@ -111,6 +120,8 @@ public class TestResultUploadService {
       content = attachProcessingModeCode(content);
     }
 
+    content = translateSpecimenNameToSNOMED(content, buildSpecimenNameToSNOMEDMap());
+
     TestResultUpload csvResult = null;
     Future<UploadResponse> csvResponse;
     Future<UploadResponse> fhirResponse = null;
@@ -134,6 +145,25 @@ public class TestResultUploadService {
       }
     }
     return csvResult;
+  }
+
+  private byte[] translateSpecimenNameToSNOMED(byte[] content, Map<String, String> snomedMap) {
+    String[] rows = new String(content, StandardCharsets.UTF_8).split("\n");
+    String headers = rows[0];
+
+    int specimenTypeIndex =
+        Arrays.stream(headers.split(",")).toList().indexOf(SPECIMEN_TYPE_COLUMN_NAME);
+
+    for (int i = 1; i < rows.length; i++) {
+      var row = rows[i].split(",");
+      var specimenTypeName = Arrays.stream(row).toList().get(specimenTypeIndex);
+
+      row[specimenTypeIndex] = snomedMap.get(specimenTypeName);
+
+      rows[i] = String.join(",", row);
+    }
+
+    return String.join("\n", rows).getBytes();
   }
 
   private byte[] attachProcessingModeCode(byte[] content) {
