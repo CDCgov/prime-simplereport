@@ -8,8 +8,6 @@ import { getAppInsights } from "../../TelemetryService";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 import { useDocumentTitle } from "../../utils/hooks";
 import {
-  AddFacilityMutation,
-  UpdateFacilityMutation,
   useAddFacilityMutation,
   useGetFacilitiesQuery,
   useUpdateFacilityMutation,
@@ -85,22 +83,22 @@ const FacilityFormContainer: any = (props: Props) => {
       devices: facility.deviceTypes.map((d) => d.internalId),
     };
 
-    const savedFacility = facilityId
+    const savedFacilityId = facilityId
       ? await updateFacilityMutation({
           variables: {
             facilityId,
             ...facilityInfo,
           },
-        })
-      : await addFacilityMutation({ variables: { ...facilityInfo } });
+        }).then((response) => response?.data?.updateFacility?.id)
+      : await addFacilityMutation({ variables: { ...facilityInfo } }).then(
+          (response) => response?.data?.addFacility?.id
+        );
 
     setFacilityData(() => ({
       ...facility,
-      id: facilityId
-        ? ((savedFacility as UpdateFacilityMutation).updateFacility
-            ?.id as string)
-        : ((savedFacility as AddFacilityMutation).addFacility?.id as string),
+      id: savedFacilityId as string,
     }));
+
     showSuccess(
       "The settings for the facility have been updated",
       "Updated Facility"
