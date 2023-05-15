@@ -31,7 +31,7 @@ resource "azurerm_container_group" "db_client" {
       mount_path = "/export"
 
       storage_account_name = var.storage_account_name
-      //storage_account_key = var.storage_account_key
+      storage_account_key = var.storage_account_key
       share_name = var.storage_share_name
     }
 

@@ -53,10 +53,10 @@ variable "storage_account_name" {
   type        = string
 }
 
-/*variable "storage_account_key" {
+variable "storage_account_key" {
   description = "The key for the Azure storage account for data export"
   type        = string
-}*/
+}
 
 variable "storage_share_name" {
   description = "The name of the Azure storage account share for data export"
