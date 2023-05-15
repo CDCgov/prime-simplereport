@@ -353,7 +353,7 @@ class FileValidatorTest {
             "x is not an acceptable value for the residence_type column.",
             "x is not an acceptable value for the test_result column.",
             "x is not an acceptable value for the test_result_status column.",
-            "x is not an acceptable value for the specimen_type column.",
+            "1 is not an acceptable value for the specimen_type column.",
             "Invalid equipment_model_name and test_performed_code combination");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
