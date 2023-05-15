@@ -34,14 +34,5 @@ resource "azurerm_container_group" "db_client" {
       storage_account_key = var.storage_account_key
       share_name = var.storage_share_name
     }
-
-    environment_variables = {
-      //LIQUIBASE_ROLLBACK_TAG = var.rollback_tag
-      //LIQUIBASE_ACTION       = var.image_action
-    }
-
-    secure_environment_variables = {
-      //SPRING_DATASOURCE_URL = var.spring_datasource_url
-    }
   }
 }

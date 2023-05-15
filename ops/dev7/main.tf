@@ -58,7 +58,7 @@ resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
 }
 
 resource "azurerm_storage_share" "db_client_export" {
-  name                 = "db-client-export"
+  name                 = "db-client-export-${local.env}"
   storage_account_name = azurerm_storage_account.app.name
   quota                = 10
 }

@@ -55,6 +55,12 @@ resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
   storage_account_name = azurerm_storage_account.app.name
 }
 
+resource "azurerm_storage_share" "db_client_export" {
+  name                 = "db-client-export-${local.env}"
+  storage_account_name = azurerm_storage_account.app.name
+  quota                = 10
+}
+
 # Manually configured rules/rewrite sets
 module "app_gateway" {
   source                  = "../services/app_gateway"
