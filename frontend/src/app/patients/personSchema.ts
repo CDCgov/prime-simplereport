@@ -154,12 +154,12 @@ export function isValidBirthdate18n(t: TFunction) {
     }
     if (parsedDate.year() < 1900) {
       return this.createError({
-        message: t("patient.form.errors.birthDate.past", undefined),
+        message: t("patient.form.errors.birthDate.past") || "",
       });
     }
     if (parsedDate.isAfter(moment())) {
       return this.createError({
-        message: t("patient.form.errors.birthDate.future", undefined),
+        message: t("patient.form.errors.birthDate.future") || "",
       });
     }
     return true;
@@ -178,7 +178,7 @@ function isValidEmail18n(t: TFunction) {
 
     if (email && email.length > MAX_LENGTH) {
       return this.createError({
-        message: t("patient.form.errors.fieldLength", undefined),
+        message: t("patient.form.errors.fieldLength") || "",
       });
     }
 
@@ -316,8 +316,8 @@ const updatePhoneNumberSchemata: (
 const translateUpdateEmailSchemata = (t: TFunction) => {
   return yup
     .string()
-    .email(t("patient.form.errors.email", undefined))
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+    .email(t("patient.form.errors.email") || "")
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
     .nullable();
 };
 
@@ -357,7 +357,7 @@ const translateSelfRegistrationSchema: TranslatedSchema<
   yup.object({
     firstName: yup
       .string()
-      .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
       .required(t("patient.form.errors.firstName", undefined)),
     middleName: yup
       .string()
