@@ -1,4 +1,5 @@
 import { createStore } from "redux";
+import { TypedUseSelectorHook, useSelector } from "react-redux";
 
 import { COVID_RESULTS } from "../app/constants";
 import { UserPermission } from "../generated/graphql";
@@ -143,5 +144,7 @@ const configureStore = () => {
 export const store = configureStore();
 
 export type RootState = ReturnType<typeof store.getState>;
+
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
 
 export default reducers;
