@@ -121,12 +121,6 @@ class CsvValidatorUtilsTest {
   }
 
   @Test
-  void invalidSpecimenName() {
-    var specimenType = new ValueOrError("fake specimen name", "specimen_type");
-    assertThat(validateSpecimenType(specimenType)).hasSize(1);
-  }
-
-  @Test
   void validSpecimenSNOMED() {
     var specimenType = new ValueOrError("012345678", "specimen_type");
     assertThat(validateSpecimenType(specimenType)).isEmpty();

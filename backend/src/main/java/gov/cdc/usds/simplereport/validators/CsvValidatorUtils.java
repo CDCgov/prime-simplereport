@@ -204,8 +204,7 @@ public class CsvValidatorUtils {
     if (nonSNOMEDValue && !value.matches(SNOMED_REGEX)) {
       errors.add(
           new FeedbackMessage(
-              ITEM_SCOPE,
-              input.getValue() + " is not a valid value for column " + input.getHeader()));
+              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
     }
 
     return errors;
