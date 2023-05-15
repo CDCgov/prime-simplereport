@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -79,6 +81,53 @@ public class TestResultUploadService {
   public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
   public static final String SPECIMEN_TYPE_COLUMN_NAME = "specimen_type";
 
+  private static final Map<String, String> specimenSNOMEDMap = new HashMap<>();
+
+  static {
+    specimenSNOMEDMap.put("Swab of internal nose", "445297001");
+    specimenSNOMEDMap.put("Nasal Swab", "445297001");
+    specimenSNOMEDMap.put("Nasal", "445297001");
+    specimenSNOMEDMap.put("Varied", "445297001");
+    specimenSNOMEDMap.put("Nasopharyngeal swab", "258500001");
+    specimenSNOMEDMap.put("Mid-turbinate nasal swab", "871810001");
+    specimenSNOMEDMap.put("Anterior nares swab", "697989009");
+    specimenSNOMEDMap.put("Anterior nasal swab", "697989009");
+    specimenSNOMEDMap.put("Nasopharyngeal aspirate", "258411007");
+    specimenSNOMEDMap.put("Nasopharyngeal washings", "258467004");
+    specimenSNOMEDMap.put("Nasopharyngeal wash", "258467004");
+    specimenSNOMEDMap.put("Nasal aspirate", "429931000124105");
+    specimenSNOMEDMap.put("Nasal aspirate specimen", "429931000124105");
+    specimenSNOMEDMap.put("Throat swab", "258529004");
+    specimenSNOMEDMap.put("Oropharyngeal swab", "258529004");
+    specimenSNOMEDMap.put("Oral swab", "418932006");
+    specimenSNOMEDMap.put("Sputum specimen", "119334006");
+    specimenSNOMEDMap.put("Sputum", "119334006");
+    specimenSNOMEDMap.put("Saliva specimen", "258560004");
+    specimenSNOMEDMap.put("Saliva", "258560004");
+    specimenSNOMEDMap.put("Serum specimen", "119364003");
+    specimenSNOMEDMap.put("Serum", "119364003");
+    specimenSNOMEDMap.put("Plasma specimen", "119361006");
+    specimenSNOMEDMap.put("Plasma", "119361006");
+    specimenSNOMEDMap.put("Whole blood sample", "258580003");
+    specimenSNOMEDMap.put("Whole blood", "258580003");
+    specimenSNOMEDMap.put("Venous blood specimen", "122555007");
+    specimenSNOMEDMap.put("Venous whole blood", "122555007");
+    specimenSNOMEDMap.put("Blood specimen", "119297000");
+    specimenSNOMEDMap.put("Capillary blood specimen", "122554006");
+    specimenSNOMEDMap.put("fingerstick whole blood", "122554006");
+    specimenSNOMEDMap.put("Dried blood spot specimen", "440500007");
+    specimenSNOMEDMap.put("Dried blood spot", "440500007");
+    specimenSNOMEDMap.put("fingerstick blood dried blood spot", "440500007");
+    specimenSNOMEDMap.put("Nasopharyngeal and oropharyngeal swab", "433801000124107");
+    specimenSNOMEDMap.put("Nasal and throat swab combination", "433801000124107");
+    specimenSNOMEDMap.put("Nasal and throat swab", "433801000124107");
+    specimenSNOMEDMap.put("Lower respiratory fluid sample", "309171007");
+    specimenSNOMEDMap.put("lower respiratory tract aspirates", "309171007");
+    specimenSNOMEDMap.put("Bronchoalveolar lavage fluid sample", "258607008");
+    specimenSNOMEDMap.put("Bronchoalveolar lavage fluid", "258607008");
+    specimenSNOMEDMap.put("Bronchoalveolar lavage", "258607008");
+  }
+
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
 
@@ -90,8 +139,17 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   private Map<String, String> buildSpecimenNameToSNOMEDMap() {
-    return specimenTypeRepository.findAll().stream()
-        .collect(Collectors.toMap(SpecimenType::getName, SpecimenType::getTypeCode));
+    var dbSpecimens =
+        specimenTypeRepository.findAll().stream()
+            .collect(Collectors.toMap(SpecimenType::getName, SpecimenType::getTypeCode));
+
+    // Combine specimen name -> SNOMED maps from the database and those hardcoded in the service,
+    // favoring the DB result on conflicts
+    return Stream.of(dbSpecimens, specimenSNOMEDMap)
+        .flatMap(map -> map.entrySet().stream())
+        .collect(
+            Collectors.toMap(
+                o -> o.getKey().toLowerCase(), Map.Entry::getValue, (db, mem) -> db, HashMap::new));
   }
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
@@ -156,7 +214,7 @@ public class TestResultUploadService {
 
     for (int i = 1; i < rows.length; i++) {
       var row = rows[i].split(",");
-      var specimenTypeName = Arrays.stream(row).toList().get(specimenTypeIndex);
+      var specimenTypeName = Arrays.stream(row).toList().get(specimenTypeIndex).toLowerCase();
 
       row[specimenTypeIndex] = snomedMap.get(specimenTypeName);
 

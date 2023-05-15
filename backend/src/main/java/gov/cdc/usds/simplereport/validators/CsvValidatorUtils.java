@@ -121,33 +121,33 @@ public class CsvValidatorUtils {
       Set.of("positive", "negative", "not detected", "detected", "invalid result");
 
   // TODO: replace with legacy specimen names and add to valueset in TRUService
-  private static final Set<String> SPECIMEN_TYPE_VALUES =
-      Set.of(
-          "Anterior nares swab",
-          "Mid-turbinate nasal swab",
-          "Nasopharyngeal swab",
-          "Throat swab",
-          "Nasopharyngeal washings",
-          "Nasopharyngeal aspirate",
-          "Nasal aspirate specimen",
-          "Oral saliva sample",
-          "Serum specimen",
-          "Plasma specimen",
-          "Nasopharyngeal and oropharyngeal swab",
-          "Bronchoalveolar lavage fluid sample",
-          "Swab of internal nose",
-          "Venous blood specimen",
-          "Whole blood sample",
-          "Capillary blood specimen",
-          "Sputum specimen",
-          "Nasal washings",
-          "Sputum specimen obtained by sputum induction",
-          "Coughed sputum specimen",
-          "Specimen from trachea obtained by aspiration",
-          "Lower respiratory fluid sample",
-          "Specimen obtained by bronchial aspiration",
-          "Exhaled air specimen",
-          "Dried blood spot specimen");
+  //  private static final Set<String> SPECIMEN_TYPE_VALUES =
+  //      Set.of(
+  //          "Anterior nares swab",
+  //          "Mid-turbinate nasal swab",
+  //          "Nasopharyngeal swab",
+  //          "Throat swab",
+  //          "Nasopharyngeal washings",
+  //          "Nasopharyngeal aspirate",
+  //          "Nasal aspirate specimen",
+  //          "Oral saliva sample",
+  //          "Serum specimen",
+  //          "Plasma specimen",
+  //          "Nasopharyngeal and oropharyngeal swab",
+  //          "Bronchoalveolar lavage fluid sample",
+  //          "Swab of internal nose",
+  //          "Venous blood specimen",
+  //          "Whole blood sample",
+  //          "Capillary blood specimen",
+  //          "Sputum specimen",
+  //          "Nasal washings",
+  //          "Sputum specimen obtained by sputum induction",
+  //          "Coughed sputum specimen",
+  //          "Specimen from trachea obtained by aspiration",
+  //          "Lower respiratory fluid sample",
+  //          "Specimen obtained by bronchial aspiration",
+  //          "Exhaled air specimen",
+  //          "Dried blood spot specimen");
 
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
@@ -192,31 +192,16 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateSpecimenType(ValueOrError input) {
-    return validateSpecimenNameOrSNOMED(input, SPECIMEN_TYPE_VALUES);
-  }
-
-  private static List<FeedbackMessage> validateSpecimenNameOrSNOMED(
-      ValueOrError input, Set<String> specimenTypeValues) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
+
     if (value == null) {
       return errors;
     }
 
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
 
-    if (nonSNOMEDValue) {
-      if (!specimenTypeValues.contains(value)) {
-        errors.add(
-            new FeedbackMessage(
-                ITEM_SCOPE,
-                input.getValue() + " is not a valid value for column " + input.getHeader()));
-      }
-
-      return errors;
-    }
-
-    if (!value.matches(SNOMED_REGEX)) {
+    if (nonSNOMEDValue && !value.matches(SNOMED_REGEX)) {
       errors.add(
           new FeedbackMessage(
               ITEM_SCOPE,
