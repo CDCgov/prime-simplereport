@@ -25,6 +25,16 @@ resource "azurerm_container_group" "db_client" {
       protocol = "TCP"
     }
 
+    volume {
+      name = "${var.name}-${var.env}-db-client-volume"
+      read_only = false
+      mount_path = "/export"
+
+      storage_account_name = var.storage_account_name
+      //storage_account_key = var.storage_account_key
+      share_name = var.storage_share_name
+    }
+
     environment_variables = {
       //LIQUIBASE_ROLLBACK_TAG = var.rollback_tag
       //LIQUIBASE_ACTION       = var.image_action

@@ -42,3 +42,23 @@ variable "subnet_id" {
   description = "The subnet to deploy the container instance to"
   type        = string
 }
+
+/*
+storage_account_name = var.storage_account_name
+        storage_account_key = var.storage_account_key
+        share_name = var.storage_share_name
+        */
+variable "storage_account_name" {
+  description = "The name of the Azure storage account for data export"
+  type        = string
+}
+
+/*variable "storage_account_key" {
+  description = "The key for the Azure storage account for data export"
+  type        = string
+}*/
+
+variable "storage_share_name" {
+  description = "The name of the Azure storage account share for data export"
+  type        = string
+}
