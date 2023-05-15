@@ -1,17 +1,26 @@
 package gov.cdc.usds.simplereport.validators;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
+import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 class FileValidatorTest {
 
   List<String> patientBulkUploadRequiredFields =
@@ -66,7 +75,16 @@ class FileValidatorTest {
           "testing_lab_zip_code");
   FileValidator<PatientUploadRow> patientBulkUploadFileValidator =
       new FileValidator<>(PatientUploadRow::new);
-  FileValidator<TestResultRow> testResultFileValidator = new FileValidator<>(TestResultRow::new);
+  FileValidator<TestResultRow> testResultFileValidator;
+
+  @BeforeEach
+  public void setup() {
+    var resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
+    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceType()));
+    testResultFileValidator =
+        new FileValidator<>(row -> new TestResultRow(row, resultsUploaderDeviceValidationService));
+  }
 
   @Test
   void patientBulkUpload_emptyFile_returnsError() {
@@ -236,6 +254,32 @@ class FileValidatorTest {
   }
 
   @Test
+  void testResults_invalid_deviceModel_testPerformedCode() {
+    // GIVEN
+    InputStream input =
+        loadCsv("testResultUpload/test-results-upload-invalid-deviceModel_testPerformedCode.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).hasSize(1);
+
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
+
+    assertThat(errorMessages)
+        .contains("Invalid equipment_model_name and test_performed_code combination");
+  }
+
+  @Test
+  void testResults_validFile_fluOnly() {
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).isEmpty();
+  }
+
+  @Test
   void testResultsFile_invalidHeaders() {
     // GIVEN
     InputStream input = new ByteArrayInputStream("invalid\nyes".getBytes());
@@ -243,7 +287,7 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
     List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
-    assertThat(errors).hasSize(66);
+    assertThat(errors).hasSize(67);
     errors.forEach(
         error -> {
           String errorMessage = error.getMessage();
@@ -270,7 +314,7 @@ class FileValidatorTest {
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
-    assertThat(errors).hasSize(34);
+    assertThat(errors).hasSize(35);
 
     List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
     List<List<Integer>> indices = errors.stream().map(FeedbackMessage::getIndices).toList();
@@ -309,7 +353,8 @@ class FileValidatorTest {
             "x is not an acceptable value for the residence_type column.",
             "x is not an acceptable value for the test_result column.",
             "x is not an acceptable value for the test_result_status column.",
-            "x is not an acceptable value for the specimen_type column.");
+            "x is not an acceptable value for the specimen_type column.",
+            "Invalid equipment_model_name and test_performed_code combination");
     indices.forEach(i -> assertThat(i).isEqualTo(List.of(2)));
   }
 

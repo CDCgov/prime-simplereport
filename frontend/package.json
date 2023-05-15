@@ -49,7 +49,7 @@
     "redux": "^4.2.1",
     "sass": "^1.47.0",
     "smartystreets-javascript-sdk": "^2.1.0",
-    "uswds": "2.13.3",
+    "uswds": "2.14.0",
     "uuid": "^9.0.0",
     "yup": "^0.32.9"
   },
@@ -183,7 +183,7 @@
   "devDependencies": {
     "@graphql-codegen/cli": "3.2.2",
     "@graphql-codegen/typescript": "3.0.3",
-    "@graphql-codegen/typescript-operations": "2.2.2",
+    "@graphql-codegen/typescript-operations": "3.0.4",
     "@graphql-codegen/typescript-react-apollo": "3.3.7",
     "@storybook/addon-a11y": "^6.5.16",
     "@storybook/addon-actions": "^6.5.13",
@@ -239,7 +239,8 @@
   "resolutions": {
     "nth-check": "2.1.1",
     "@storybook/react-docgen-typescript-plugin": "1.0.6--canary.9.cd77847.0",
-    "fork-ts-checker-webpack-plugin":"6.5.3"
+    "fork-ts-checker-webpack-plugin":"6.5.3",
+    "webpack@>5.0.0": "5.76.0"
   },
   "msw": {
     "workerDirectory": "/storybook_public"
@@ -250,6 +251,7 @@
     },
     "coveragePathIgnorePatterns": [
       "<rootDir>/src/index.tsx",
+      "<rootDir>/src/serviceWorker.ts",
       ".stories.tsx"
     ]
   }

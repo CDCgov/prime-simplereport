@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model.filerow;
 
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ITEM_SCOPE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateClia;
@@ -16,12 +17,15 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTes
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResultStatus;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYesNoAnswer;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
+import static java.util.Collections.emptyList;
 
+import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import lombok.Getter;
 
 @Getter
@@ -122,6 +126,92 @@ public class TestResultRow implements FileRow {
   static final String TESTING_LAB_CITY = "testing_lab_city";
   static final String TESTING_LAB_STATE = "testing_lab_state";
   static final String TESTING_LAB_ZIP_CODE_FIELD = "testing_lab_zip_code";
+  static Set<String> fluOnlyTestPerformedLoinc =
+      Set.of(
+          "100973-7",
+          "100974-5",
+          "17015-9",
+          "17016-7",
+          "22096-2",
+          "22825-4",
+          "22827-0",
+          "24015-0",
+          "31437-7",
+          "31438-5",
+          "31859-2",
+          "31864-2",
+          "33535-6",
+          "34487-9",
+          "38381-0",
+          "38382-8",
+          "40982-1",
+          "43874-7",
+          "43895-2",
+          "44558-5",
+          "44563-5",
+          "44564-3",
+          "44567-6",
+          "44570-0",
+          "44571-8",
+          "44573-4",
+          "44575-9",
+          "44577-5",
+          "46082-4",
+          "46083-2",
+          "48310-7",
+          "48509-4",
+          "49521-8",
+          "49523-4",
+          "49524-2",
+          "49531-7",
+          "49535-8",
+          "50697-2",
+          "5229-0",
+          "5230-8",
+          "54243-1",
+          "55463-4",
+          "55464-2",
+          "55465-9",
+          "5862-8",
+          "5863-6",
+          "5866-9",
+          "59423-4",
+          "62462-7",
+          "6435-2",
+          "6437-8",
+          "6438-6",
+          "68986-9",
+          "68987-7",
+          "72356-9",
+          "72366-8",
+          "74785-7",
+          "74786-5",
+          "74787-3",
+          "76078-5",
+          "76080-1",
+          "77026-3",
+          "77027-1",
+          "77028-9",
+          "7920-2",
+          "7931-9",
+          "80381-7",
+          "80382-5",
+          "80383-3",
+          "82166-0",
+          "82167-8",
+          "82168-6",
+          "82169-4",
+          "82170-2",
+          "85476-0",
+          "85477-8",
+          "85478-6",
+          "92141-1",
+          "92142-9",
+          "92976-0",
+          "92977-8",
+          "9531-5",
+          "9534-9");
+  private ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
 
   private static final List<String> requiredFields =
       List.of(
@@ -158,6 +248,13 @@ public class TestResultRow implements FileRow {
           TESTING_LAB_CITY,
           TESTING_LAB_STATE,
           TESTING_LAB_ZIP_CODE_FIELD);
+
+  public TestResultRow(
+      Map<String, String> rawRow,
+      ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService) {
+    this(rawRow);
+    this.resultsUploaderDeviceValidationService = resultsUploaderDeviceValidationService;
+  }
 
   public TestResultRow(Map<String, String> rawRow) {
     patientId = getValue(rawRow, "patient_id", isRequired("patient_id"));
@@ -255,6 +352,34 @@ public class TestResultRow implements FileRow {
     testResultStatus = getValue(rawRow, "test_result_status", isRequired("test_result_status"));
   }
 
+  private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
+      String equipmentModelName, String testPerformedCode) {
+
+    if (validModelTestPerformedCombination(equipmentModelName, testPerformedCode)
+        || validFluOnlyTestPerformedLoinc(testPerformedCode)) {
+      return emptyList();
+    }
+
+    String errorMessage =
+        "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
+    return List.of(new FeedbackMessage(ITEM_SCOPE, errorMessage));
+  }
+
+  private boolean validFluOnlyTestPerformedLoinc(String testPerformedCode) {
+    return testPerformedCode != null && fluOnlyTestPerformedLoinc.contains(testPerformedCode);
+  }
+
+  private boolean validModelTestPerformedCombination(
+      String equipmentModelName, String testPerformedCode) {
+    return equipmentModelName != null
+        && testPerformedCode != null
+        && resultsUploaderDeviceValidationService
+            .getModelAndTestPerformedCodeToDeviceMap()
+            .containsKey(
+                ResultsUploaderDeviceValidationService.getMapKey(
+                    equipmentModelName, testPerformedCode));
+  }
+
   @Override
   public List<String> getRequiredFields() {
     return requiredFields;
@@ -315,6 +440,10 @@ public class TestResultRow implements FileRow {
     errors.addAll(validateSpecimenType(specimenType));
 
     errors.addAll(validateClia(testingLabClia));
+
+    errors.addAll(
+        validateDeviceModelAndTestPerformedCode(
+            equipmentModelName.getValue(), testPerformedCode.getValue()));
 
     return errors;
   }

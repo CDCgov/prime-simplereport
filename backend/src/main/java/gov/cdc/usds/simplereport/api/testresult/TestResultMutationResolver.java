@@ -24,12 +24,15 @@ public class TestResultMutationResolver {
   private final TestEventReportingService fhirReportingService;
 
   @MutationMapping
-  public boolean resendToReportStream(@Argument List<UUID> testEventIds) {
+  public boolean resendToReportStream(
+      @Argument List<UUID> testEventIds, @Argument boolean fhirOnly) {
     testEventRepository
         .findAllByInternalIdIn(testEventIds)
         .forEach(
             testEvent -> {
-              testEventReportingService.report(testEvent);
+              if (!fhirOnly) {
+                testEventReportingService.report(testEvent);
+              }
               fhirReportingService.report(testEvent);
             });
 
