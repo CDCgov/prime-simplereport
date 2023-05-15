@@ -172,7 +172,11 @@ public class CsvValidatorUtils {
 
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
 
-    if (nonSNOMEDValue && !value.matches(SNOMED_REGEX)) {
+    if (nonSNOMEDValue) {
+      return errors;
+    }
+
+    if (!value.matches(SNOMED_REGEX)) {
       errors.add(
           new FeedbackMessage(
               ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));

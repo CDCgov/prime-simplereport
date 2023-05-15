@@ -130,6 +130,6 @@ class CsvValidatorUtilsTest {
   void invalidSpecimenSNOMED() {
     // too many characters
     var specimenType = new ValueOrError("0123456789", "specimen_type");
-    assertThat(validateEthnicity(specimenType)).hasSize(1);
+    assertThat(validateSpecimenType(specimenType)).hasSize(1);
   }
 }
