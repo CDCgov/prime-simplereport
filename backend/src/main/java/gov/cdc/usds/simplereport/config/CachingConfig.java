@@ -10,11 +10,11 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CachingConfig {
 
-  public static final String DEVICE_MODEL_AND_TEST_PERFORMED_CODE_SET =
-      "deviceModelAndTestPerformedCodeSet";
+  public static final String DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP =
+      "deviceModelAndTestPerformedCodeMap";
 
   @Bean
   public CacheManager cacheManager() {
-    return new ConcurrentMapCacheManager(DEVICE_MODEL_AND_TEST_PERFORMED_CODE_SET);
+    return new ConcurrentMapCacheManager(DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP);
   }
 }
