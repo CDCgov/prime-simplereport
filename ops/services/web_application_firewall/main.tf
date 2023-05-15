@@ -178,7 +178,7 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
        * These rules should be periodically reviewed for relevance.
        */
       rule_group_override {
-        rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT" //TODO: add exception for whoami
+        rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT"
         dynamic "rule" {
           for_each = [
             "920300",
@@ -192,7 +192,7 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       }
 
       rule_group_override {
-        rule_group_name = "REQUEST-932-APPLICATION-ATTACK-RCE" //TODO: add exception for whoami
+        rule_group_name = "REQUEST-932-APPLICATION-ATTACK-RCE"
         dynamic "rule" {
           for_each = [
             "932100",

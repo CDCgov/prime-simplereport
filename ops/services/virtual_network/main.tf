@@ -25,11 +25,11 @@ resource "azurerm_subnet" "vms" {
   # We did try to rename this, but it turns out we have manual infrastructure attached to this subnet,
   # so renaming it (by which we mean destroying and rebuilding it) would be a bit complicated.
   # That manual infrastructure should be imported (see #1360)--if that is done, revisit this.
-  name                                      = "${var.env}-vms"
-  resource_group_name                       = var.resource_group_name
-  virtual_network_name                      = azurerm_virtual_network.vn.name
-  address_prefixes                          = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
-  private_endpoint_network_policies_enabled = false
+  name                                           = "${var.env}-vms"
+  resource_group_name                            = var.resource_group_name
+  virtual_network_name                           = azurerm_virtual_network.vn.name
+  address_prefixes                               = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
+  enforce_private_link_endpoint_network_policies = true
 }
 
 resource "azurerm_subnet" "lbs" {
