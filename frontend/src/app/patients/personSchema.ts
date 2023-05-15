@@ -197,18 +197,9 @@ function areValidEmails18n(t: TFunction) {
     return emails.every(validator);
   };
 }
-const updateFieldSchemata: (
-  t: TFunction
-) => Record<keyof PersonUpdate, yup.AnySchema> = (t) => ({
-  lookupId: yup.string().nullable(),
-  role: yup
-    .mixed()
-    .oneOf(
-      [...getValues(ROLE_VALUES), "UNKNOWN", "", null],
-      t("patient.form.errors.role") || ""
-    ),
-  telephone: yup.mixed().optional(),
-  phoneNumbers: yup
+
+const getPhoneNumberSchema = (t: TFunction) => {
+  return yup
     .array()
     .test(
       "phone-numbers",
@@ -225,32 +216,44 @@ const updateFieldSchemata: (
       t("patient.form.errors.phoneNumbersType") || "",
       hasPhoneType
     )
-    .required(),
+    .required();
+};
+
+const getRequiredAddressSchema = (t: TFunction, key: string) => {
+  return yup
+    .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
+    .required(t(key) || "");
+};
+
+const updateFieldSchemata: (
+  t: TFunction
+) => Record<keyof PersonUpdate, yup.AnySchema> = (t) => ({
+  lookupId: yup.string().nullable(),
+  role: yup
+    .mixed()
+    .oneOf(
+      [...getValues(ROLE_VALUES), "UNKNOWN", "", null],
+      t("patient.form.errors.role") || ""
+    ),
+  telephone: yup.mixed().optional(),
+  phoneNumbers: getPhoneNumberSchema(t),
   emails: yup
     .array()
     .test("emails", t("patient.form.errors.email") || "", areValidEmails18n(t))
     .nullable(),
-  street: yup
-    .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
-    .required(t("patient.form.errors.street") || ""),
+  street: getRequiredAddressSchema(t, "patient.form.errors.street"),
   streetTwo: yup
     .string()
     .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
     .nullable(),
-  city: yup
-    .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
-    .required(t("patient.form.errors.city") || ""),
+  city: getRequiredAddressSchema(t, "patient.form.errors.city"),
   county: yup
     .string()
     .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
     .nullable(),
   state: yup.string().required(t("patient.form.errors.state") || ""),
-  zipCode: yup
-    .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
-    .required(t("patient.form.errors.zipCode") || ""),
+  zipCode: getRequiredAddressSchema(t, "patient.form.errors.zipCode"),
   country: yup.string().required(t("patient.form.errors.country") || ""),
   race: yup
     .mixed()
