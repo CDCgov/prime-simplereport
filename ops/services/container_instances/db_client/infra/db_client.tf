@@ -26,13 +26,13 @@ resource "azurerm_container_group" "db_client" {
     }
 
     volume {
-      name = "${var.name}-${var.env}-db-client-volume"
-      read_only = false
+      name       = "${var.name}-${var.env}-db-client-volume"
+      read_only  = false
       mount_path = "/export"
 
       storage_account_name = var.storage_account_name
-      storage_account_key = var.storage_account_key
-      share_name = var.storage_share_name
+      storage_account_key  = var.storage_account_key
+      share_name           = var.storage_share_name
     }
   }
 }
