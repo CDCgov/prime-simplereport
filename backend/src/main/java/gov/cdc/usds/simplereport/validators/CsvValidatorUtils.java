@@ -270,7 +270,7 @@ public class CsvValidatorUtils {
     if (isRequired && (value == null || value.trim().isEmpty())) {
       return new ValueOrError(new FeedbackMessage(ITEM_SCOPE, getRequiredValueErrorMessage(name)));
     }
-    return new ValueOrError(value, name);
+    return new ValueOrError(value.trim(), name);
   }
 
   public static List<FeedbackMessage> hasMissingRequiredHeaders(
