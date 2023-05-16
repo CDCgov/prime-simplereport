@@ -83,6 +83,7 @@ describe("AddToSearchQueue - new patient begin test", () => {
             patientsInQueue={[]}
             startTestPatientId="48c523e8-7c65-4047-955c-e3f65bb8b58a"
             setStartTestPatientId={setStartTestPatientIdMock}
+            canAddPatient={true}
           />
         </MockedProvider>
       </MemoryRouter>

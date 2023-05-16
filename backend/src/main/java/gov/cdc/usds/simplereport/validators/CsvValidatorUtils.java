@@ -418,9 +418,9 @@ public class CsvValidatorUtils {
 
   @Getter
   public static class ValueOrError {
-    public final List<FeedbackMessage> error;
-    public final String value;
-    public final String header;
+    private final List<FeedbackMessage> error;
+    private final String value;
+    private final String header;
 
     public ValueOrError(String value, String header) {
       this.value = value;
@@ -435,7 +435,7 @@ public class CsvValidatorUtils {
     }
 
     public List<FeedbackMessage> getPossibleError() {
-      return this.error;
+      return this.getError();
     }
   }
 }

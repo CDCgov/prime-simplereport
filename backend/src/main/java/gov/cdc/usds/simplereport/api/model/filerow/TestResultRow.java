@@ -374,9 +374,9 @@ public class TestResultRow implements FileRow {
     return equipmentModelName != null
         && testPerformedCode != null
         && resultsUploaderDeviceValidationService
-            .getModelAndTestPerformedCodeSet()
-            .contains(
-                ResultsUploaderDeviceValidationService.getSetKey(
+            .getModelAndTestPerformedCodeToDeviceMap()
+            .containsKey(
+                ResultsUploaderDeviceValidationService.getMapKey(
                     equipmentModelName, testPerformedCode));
   }
 

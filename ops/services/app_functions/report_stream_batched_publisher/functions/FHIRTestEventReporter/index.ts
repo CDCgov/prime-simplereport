@@ -80,16 +80,13 @@ const FHIRTestEventReporter: AzureFunction = async function (
       return new Promise<void>((resolve, reject) => {
         (async () => {
           try {
-            if (testEventBatch.parseFailureCount > 0) {
-              telemetry.trackEvent({
-                name: `Queue:${publishingQueue.name}. Test Event Parse Failure`,
-                properties: {
-                  count: testEventBatch.parseFailureCount,
-                  parseFailures: Object.keys(testEventBatch.parseFailure),
-                },
-                tagOverrides,
-              });
-            }
+            const failureObj = {
+              testEventBatch,
+              publishingQueueName: publishingQueue.name,
+              tagOverrides,
+            };
+
+            trackFailures(failureObj);
 
             if (testEventBatch.parseSuccessCount < 1) {
               context.log(
@@ -185,6 +182,23 @@ const FHIRTestEventReporter: AzureFunction = async function (
         )
         .join(", ")}]`
     );
+  }
+};
+
+const trackFailures = ({
+  testEventBatch,
+  tagOverrides,
+  publishingQueueName,
+}) => {
+  if (testEventBatch.parseFailureCount > 0) {
+    telemetry.trackEvent({
+      name: `Queue:${publishingQueueName}. Test Event Parse Failure`,
+      properties: {
+        count: testEventBatch.parseFailureCount,
+        parseFailures: Object.keys(testEventBatch.parseFailure),
+      },
+      tagOverrides,
+    });
   }
 };
 
