@@ -43,11 +43,6 @@ variable "subnet_id" {
   type        = string
 }
 
-/*
-storage_account_name = var.storage_account_name
-        storage_account_key = var.storage_account_key
-        share_name = var.storage_share_name
-        */
 variable "storage_account_name" {
   description = "The name of the Azure storage account for data export"
   type        = string
