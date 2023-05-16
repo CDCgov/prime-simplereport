@@ -96,7 +96,6 @@ module "nat_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
   subnet_webapp_id        = data.terraform_remote_state.persistent_dev5.outputs.subnet_webapp_id
   subnet_lb_id            = data.terraform_remote_state.persistent_dev5.outputs.subnet_lbs_id
-  subnet_vm_id            = data.terraform_remote_state.persistent_dev5.outputs.subnet_vm_id
   tags                    = local.management_tags
 }
 
