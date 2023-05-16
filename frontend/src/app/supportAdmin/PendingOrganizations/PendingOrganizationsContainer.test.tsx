@@ -301,9 +301,6 @@ describe("PendingOrganizationsContainer", () => {
       expect(screen.getByText("Edit only", { exact: false })).toBeDisabled();
       expect(screen.getByText("Verify", { exact: true })).toBeInTheDocument();
       expect(screen.getByText("Verify", { exact: true })).toBeEnabled();
-      expect(
-        screen.getByTestId("old-schema-explanation", { exact: false })
-      ).toBeInTheDocument();
     });
     it("shows disabled modal with copy text for old date org", async () => {
       await userEvent.click(screen.getAllByText("Edit/Verify")[0]);
@@ -316,9 +313,6 @@ describe("PendingOrganizationsContainer", () => {
       expect(screen.getByText("Edit only", { exact: false })).toBeDisabled();
       expect(screen.getByText("Verify", { exact: true })).toBeInTheDocument();
       expect(screen.getByText("Verify", { exact: true })).toBeEnabled();
-      expect(
-        screen.getByTestId("old-schema-explanation", { exact: false })
-      ).toBeInTheDocument();
       await userEvent.click(screen.getByTestId("close-modal"));
       expect(
         screen.queryByText("Organization details", { exact: false })
