@@ -7,7 +7,7 @@ import { MemoryRouter as Router } from "react-router-dom";
 import { I18nextProvider } from "react-i18next";
 
 import { appPermissions } from "../permissions";
-import { GET_FACILITY_QUERY } from "../Settings/Facility/FacilityFormContainer";
+import { GetFacilitiesDocument as GET_FACILITY_QUERY } from "../../generated/graphql";
 import i18n from "../../i18n";
 
 import WithFacility from "./WithFacility";
