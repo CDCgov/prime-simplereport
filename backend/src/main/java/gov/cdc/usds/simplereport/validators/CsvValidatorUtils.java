@@ -267,10 +267,13 @@ public class CsvValidatorUtils {
 
   public static ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
-    if (isRequired && (value == null || value.trim().isEmpty())) {
+    if (value != null && !value.isBlank()) {
+      value = value.strip();
+    }
+    if (isRequired && (value == null || value.isBlank())) {
       return new ValueOrError(new FeedbackMessage(ITEM_SCOPE, getRequiredValueErrorMessage(name)));
     }
-    return new ValueOrError(value.trim(), name);
+    return new ValueOrError(value, name);
   }
 
   public static List<FeedbackMessage> hasMissingRequiredHeaders(
