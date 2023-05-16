@@ -2956,6 +2956,12 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 class="grid-col-8"
               >
                 <div>
+                  The SNOMED code representing the type of biological sample used for testing.
+                </div>
+                <div>
+                  <br />
+                </div>
+                <div>
                   Find the specimen type for your device on the 
                   <a
                     class="usa-link"
@@ -2965,22 +2971,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   >
                     device code lookup tool
                   </a>
-                   and copy the text value or nine-digit SNOMED code.
-                </div>
-                <div>
-                  <br />
-                </div>
-                <div>
-                  You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the 
-                  <a
-                    class="usa-link"
-                    href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    CDC website
-                  </a>
-                  . Download the spreadsheet, go to the "LOINC Mapping" tab, and copy either the SNOMED code or text value for your device from column D.
+                   and copy the SNOMED code for the given specimen.
                 </div>
               </div>
             </div>
@@ -2997,39 +2988,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <ul
                 class="grid-col-8 prime-ul margin-top-0"
               >
-                <li
-                  class="bullet-list"
-                >
-                  <em>
-                    <mark>
-                      <code>
-                        Swab of internal nose
-                      </code>
-                    </mark>
-                  </em>
-                </li>
-                <li
-                  class="bullet-list"
-                >
-                  <em>
-                    <mark>
-                      <code>
-                        Nasopharyngeal Swab
-                      </code>
-                    </mark>
-                  </em>
-                </li>
-                <li
-                  class="bullet-list"
-                >
-                  <em>
-                    <mark>
-                      <code>
-                        Bronchoalveolar lavage
-                      </code>
-                    </mark>
-                  </em>
-                </li>
                 <li
                   class="bullet-list"
                 >
