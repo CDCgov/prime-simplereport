@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_AND_SNOMED_MAP;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -105,7 +106,7 @@ public class ResultsUploaderDeviceValidationService {
     getModelAndTestPerformedCodeToDeviceMap();
   }
 
-  @Cacheable(DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP)
+  @Cacheable(SPECIMEN_NAME_AND_SNOMED_MAP)
   public Map<String, String> getSpecimenTypeNameToSNOMEDMap() {
     log.info("generating getSpecimenTypeNameToSNOMEDMap cache");
 
@@ -123,8 +124,7 @@ public class ResultsUploaderDeviceValidationService {
   }
 
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
-  @Caching(
-      evict = {@CacheEvict(value = DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP, allEntries = true)})
+  @Caching(evict = {@CacheEvict(value = SPECIMEN_NAME_AND_SNOMED_MAP, allEntries = true)})
   public void cacheSpecimenTypeNameToSNOMEDMap() {
     log.info("clear and generate specimenTypeNameToSNOMEDMap cache");
     getSpecimenTypeNameToSNOMEDMap();

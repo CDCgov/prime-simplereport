@@ -117,9 +117,8 @@ public class TestResultUploadService {
       content = attachProcessingModeCode(content);
     }
 
-    content =
-        translateSpecimenNameToSNOMED(
-            content, resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
+    var a = resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap();
+    content = translateSpecimenNameToSNOMED(content, a);
 
     TestResultUpload csvResult = null;
     Future<UploadResponse> csvResponse;
