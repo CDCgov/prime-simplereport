@@ -359,7 +359,6 @@ public class BulkUploadResultsToFhir {
 
   private String getSpecimenTypeSnomed(String input) {
     if (input.matches(ALPHABET_REGEX)) {
-      // TODO
       return resultsUploaderDeviceValidationService
           .getSpecimenTypeNameToSNOMEDMap()
           .get(input.toLowerCase());
