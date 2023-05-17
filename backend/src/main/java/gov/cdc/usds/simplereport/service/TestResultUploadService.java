@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
@@ -29,7 +28,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +36,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,6 +52,7 @@ public class TestResultUploadService {
   private final SpecimenTypeRepository specimenTypeRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
+  private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
   private final BulkUploadResultsToFhir fhirConverter;
@@ -81,6 +79,9 @@ public class TestResultUploadService {
   public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
   public static final String SPECIMEN_TYPE_COLUMN_NAME = "specimen_type";
 
+  private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
+
+  /*
   private static final Map<String, String> specimenSNOMEDMap = new HashMap<>();
 
   static {
@@ -128,6 +129,8 @@ public class TestResultUploadService {
     specimenSNOMEDMap.put("Bronchoalveolar lavage", "258607008");
   }
 
+   */
+
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
 
@@ -138,6 +141,7 @@ public class TestResultUploadService {
   private static final ObjectMapper mapper =
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+  /*
   private Map<String, String> buildSpecimenNameToSNOMEDMap() {
     var dbSpecimens =
         specimenTypeRepository.findAll().stream()
@@ -151,6 +155,7 @@ public class TestResultUploadService {
             Collectors.toMap(
                 o -> o.getKey().toLowerCase(), Map.Entry::getValue, (db, mem) -> db, HashMap::new));
   }
+   */
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream) {
@@ -178,13 +183,17 @@ public class TestResultUploadService {
       content = attachProcessingModeCode(content);
     }
 
-    content = translateSpecimenNameToSNOMED(content, buildSpecimenNameToSNOMEDMap());
+    content =
+        translateSpecimenNameToSNOMED(
+            content, resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
 
     TestResultUpload csvResult = null;
     Future<UploadResponse> csvResponse;
     Future<UploadResponse> fhirResponse = null;
+
     if (content.length > 0) {
       csvResponse = submitResultsAsCsv(content);
+
       if (fhirEnabled) {
         fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
       }
@@ -213,8 +222,12 @@ public class TestResultUploadService {
         Arrays.stream(headers.split(",")).toList().indexOf(SPECIMEN_TYPE_COLUMN_NAME);
 
     for (int i = 1; i < rows.length; i++) {
-      var row = rows[i].split(",");
+      var row = rows[i].split(",", -1);
       var specimenTypeName = Arrays.stream(row).toList().get(specimenTypeIndex).toLowerCase();
+
+      if (!specimenTypeName.matches(ALPHABET_REGEX)) {
+        continue;
+      }
 
       row[specimenTypeIndex] = snomedMap.get(specimenTypeName);
 

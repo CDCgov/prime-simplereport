@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
@@ -75,6 +76,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private TestResultUploadRepository repoMock;
   @Mock private SpecimenTypeRepository specimenTypeRepositoryMock;
   @Mock private OrganizationService orgServiceMock;
+  @Mock private ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
@@ -390,7 +392,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @SliceTestConfiguration.WithSimpleReportStandardUser
   void uploadService_processCsv_translatesSpecimenNameToSNOMED() {
     // GIVEN
-    //    ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
     var response = new UploadResponse();
@@ -402,6 +403,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(specimenTypeRepositoryMock.findAll())
         .thenReturn(List.of(_dataFactory.getGenericSpecimen()));
+    when(resultsUploaderDeviceValidationServiceMock.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
 
     // WHEN
     sut.processResultCSV(input);
@@ -409,6 +412,11 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // THEN
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
     String[] rows = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8).split("\n");
+    assertThat(rows).hasSize(2);
+    var headerCount = Arrays.stream(rows[0].split(",")).toList().size();
+    var row = rows[1];
+
+    assertThat(row.split(",")).hasSize(headerCount);
     assertThat(rows[1]).contains("000111222");
   }
 
