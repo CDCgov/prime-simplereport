@@ -205,29 +205,7 @@ export type Mutation = {
 };
 
 export type MutationAddFacilityArgs = {
-  city?: InputMaybe<Scalars["String"]>;
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  deviceIds?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
-  email?: InputMaybe<Scalars["String"]>;
-  facilityInfo?: InputMaybe<AddFacilityInput>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]>;
-  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
-  phone?: InputMaybe<Scalars["String"]>;
-  state?: InputMaybe<Scalars["String"]>;
-  street?: InputMaybe<Scalars["String"]>;
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  testingFacilityName?: InputMaybe<Scalars["String"]>;
-  zipCode?: InputMaybe<Scalars["String"]>;
+  facilityInfo: AddFacilityInput;
 };
 
 export type MutationAddPatientArgs = {
@@ -443,30 +421,7 @@ export type MutationUpdateDeviceTypeArgs = {
 };
 
 export type MutationUpdateFacilityArgs = {
-  city?: InputMaybe<Scalars["String"]>;
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  deviceIds?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
-  email?: InputMaybe<Scalars["String"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  facilityInfo?: InputMaybe<UpdateFacilityInput>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]>;
-  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
-  phone?: InputMaybe<Scalars["String"]>;
-  state?: InputMaybe<Scalars["String"]>;
-  street?: InputMaybe<Scalars["String"]>;
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  testingFacilityName?: InputMaybe<Scalars["String"]>;
-  zipCode?: InputMaybe<Scalars["String"]>;
+  facilityInfo: UpdateFacilityInput;
 };
 
 export type MutationUpdateOrganizationArgs = {
