@@ -68,19 +68,7 @@ public class TestDataBuilder {
 
   public static Facility createEmptyFacility(boolean includeValidDevice) {
     DeviceType device = includeValidDevice ? createEmptyDeviceWithLoinc() : null;
-    return new Facility(
-        FacilityBuilder.builder()
-            .org(null)
-            .facilityName(null)
-            .cliaNumber(null)
-            .facilityAddress(null)
-            .phone(null)
-            .email(null)
-            .orderingProvider(null)
-            .defaultDeviceType(device)
-            .defaultSpecimenType(null)
-            .configuredDevices(Collections.emptyList())
-            .build());
+    return new Facility(FacilityBuilder.builder().defaultDeviceType(device).build());
   }
 
   public static DeviceType createEmptyDeviceWithLoinc() {
