@@ -5,11 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,16 +34,18 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     Facility saved =
         _repo.save(
             new Facility(
-                org,
-                "Third Floor",
-                "123456",
-                getAddress(),
-                "555-867-5309",
-                "facility@test.com",
-                mccoy,
-                bill,
-                spec,
-                configuredDevices));
+                FacilityBuilder.builder()
+                    .org(org)
+                    .facilityName("Third Floor")
+                    .cliaNumber("123456")
+                    .facilityAddress(getAddress())
+                    .phone("555-867-5309")
+                    .email("facility@test.com")
+                    .orderingProvider(mccoy)
+                    .defaultDeviceType(bill)
+                    .defaultSpecimenType(spec)
+                    .configuredDevices(configuredDevices)
+                    .build()));
     Optional<Facility> maybe = _repo.findByOrganizationAndFacilityName(org, "Third Floor");
     assertTrue(maybe.isPresent(), "should find the facility");
     Facility found = maybe.get();

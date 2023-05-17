@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.FacilityInput;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -161,7 +161,7 @@ class DeviceMigrationServiceTest extends BaseServiceTest<DeviceMigrationService>
 
     return facilityRepository.save(
         new Facility(
-            FacilityInput.builder()
+            FacilityBuilder.builder()
                 .org(org)
                 .facilityName(UUID.randomUUID().toString())
                 .cliaNumber("123456")

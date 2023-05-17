@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.config;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.FacilityInput;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -83,7 +83,7 @@ public class InitialSetupProperties {
         List<DeviceType> configured) {
 
       return new Facility(
-          FacilityInput.builder()
+          FacilityBuilder.builder()
               .org(org)
               .facilityName(getName())
               .cliaNumber(getCliaNumber())

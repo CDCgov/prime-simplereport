@@ -81,7 +81,7 @@ class PersonSerializationTest extends BaseNonSpringBootTestConfiguration {
         new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
     p.setFacility(
         new Facility(
-            FacilityInput.builder()
+            FacilityBuilder.builder()
                 .org(fakeOrg)
                 .facilityName("Nice Place")
                 .cliaNumber("YOUGOTHERE")

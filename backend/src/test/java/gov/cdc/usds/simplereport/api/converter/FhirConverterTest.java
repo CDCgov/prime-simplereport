@@ -33,7 +33,7 @@ import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.FacilityInput;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -405,7 +405,7 @@ class FhirConverterTest {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var facility =
         new Facility(
-            FacilityInput.builder()
+            FacilityBuilder.builder()
                 .org(null)
                 .facilityName("Elron")
                 .cliaNumber("123D456789")
@@ -417,6 +417,7 @@ class FhirConverterTest {
                 .orderingProvider(null)
                 .configuredDevices(Collections.emptyList())
                 .build());
+
     ReflectionTestUtils.setField(facility, "internalId", UUID.fromString(internalId));
 
     var actual = convertToOrganization(facility);
@@ -1360,7 +1361,7 @@ class FhirConverterTest {
 
     var facility =
         new Facility(
-            FacilityInput.builder()
+            FacilityBuilder.builder()
                 .org(organization)
                 .facilityName("School")
                 .cliaNumber("123D456789")

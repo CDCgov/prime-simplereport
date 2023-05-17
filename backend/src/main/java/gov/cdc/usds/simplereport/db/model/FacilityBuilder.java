@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class FacilityInput {
+public class FacilityBuilder {
   Organization org;
   String facilityName;
   String cliaNumber;

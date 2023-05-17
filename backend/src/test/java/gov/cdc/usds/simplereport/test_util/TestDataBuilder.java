@@ -7,7 +7,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountReq
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.FacilityInput;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -69,7 +69,7 @@ public class TestDataBuilder {
   public static Facility createEmptyFacility(boolean includeValidDevice) {
     DeviceType device = includeValidDevice ? createEmptyDeviceWithLoinc() : null;
     return new Facility(
-        FacilityInput.builder()
+        FacilityBuilder.builder()
             .org(null)
             .facilityName(null)
             .cliaNumber(null)
@@ -184,7 +184,7 @@ public class TestDataBuilder {
     Provider doc = new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212");
 
     return new Facility(
-        FacilityInput.builder()
+        FacilityBuilder.builder()
             .org(createValidOrganization())
             .facilityName("Testing Paradise")
             .cliaNumber("123456")

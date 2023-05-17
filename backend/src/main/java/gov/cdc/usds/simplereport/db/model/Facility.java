@@ -17,31 +17,35 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 public class Facility extends OrganizationScopedEternalEntity implements LocatedEntity {
 
   @Column(nullable = false, unique = false) // unique within an organization only
+  @Getter
+  @Setter
   private String facilityName;
 
   // these are common to all the children of the immediate base class, but ...
-  @Embedded private StreetAddress address;
-  @Column private String telephone;
+  @Embedded @Getter @Setter private StreetAddress address;
+  @Column @Getter @Setter private String telephone;
 
-  @Column private String email;
+  @Column @Getter @Setter private String email;
 
-  @Column private String cliaNumber;
+  @Column @Getter @Setter private String cliaNumber;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "ordering_provider_id", nullable = false)
+  @Getter
+  @Setter
   private Provider orderingProvider;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_type_id")
+  @Getter
   private DeviceType defaultDeviceType;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_specimen_type_id")
+  @Getter
   private SpecimenType defaultSpecimenType;
 
   @ManyToMany(fetch = FetchType.EAGER)
@@ -54,14 +58,17 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   protected Facility() {
     /* for hibernate */ }
 
-  public Facility(FacilityInput facilityInput) {
-
-    super(facilityInput.org);
-    this.setDefaultDeviceTypeSpecimenType(defaultDeviceType, defaultSpecimenType);
-  }
-
-  public void addDeviceType(DeviceType device) {
-    configuredDeviceTypes.add(device);
+  public Facility(FacilityBuilder facilityBuilder) {
+    super(facilityBuilder.org);
+    this.facilityName = facilityBuilder.facilityName;
+    this.cliaNumber = facilityBuilder.cliaNumber;
+    this.address = facilityBuilder.facilityAddress;
+    this.telephone = facilityBuilder.phone;
+    this.email = facilityBuilder.email;
+    this.orderingProvider = facilityBuilder.orderingProvider;
+    this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
+    this.setDefaultDeviceTypeSpecimenType(
+        facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
   }
 
   public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {
@@ -75,6 +82,10 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   public void removeDefaultDeviceTypeSpecimenType() {
     this.setDefaultDeviceTypeSpecimenType(null, null);
+  }
+
+  public void addDeviceType(DeviceType device) {
+    configuredDeviceTypes.add(device);
   }
 
   public List<DeviceType> getDeviceTypes() {

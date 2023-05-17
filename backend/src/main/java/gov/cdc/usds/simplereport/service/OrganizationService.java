@@ -7,7 +7,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.FacilityInput;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -365,7 +365,7 @@ public class OrganizationService {
 
     Facility facility =
         new Facility(
-            FacilityInput.builder()
+            FacilityBuilder.builder()
                 .org(organization)
                 .facilityName(testingFacilityName)
                 .cliaNumber(cliaNumber)
