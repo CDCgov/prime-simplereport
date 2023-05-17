@@ -42,7 +42,7 @@ public class CsvValidatorUtils {
   private static final String DATE_TIME_REGEX =
       "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
-  private static final String SNOMED_REGEX = "^[0-9]{9}$";
+  private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final Set<String> VALID_STATE_CODES =
