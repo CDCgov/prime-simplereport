@@ -1,7 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import { DeviceType } from "../../../generated/graphql";
+import {
+  DeviceType,
+  SupportedDiseaseTestPerformed,
+} from "../../../generated/graphql";
 import Button from "../../commonComponents/Button/Button";
 
 interface SearchResultsProps {
@@ -61,7 +64,21 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
               <td id={`model-name-${idx}`}>{d.model}</td>
               <td id={`test-type-${idx}`}>
                 {d.supportedDiseaseTestPerformed
-                  ?.map((sd) => sd.supportedDisease.name)
+                  ?.reduce(
+                    (
+                      diseaseNames: Array<String>,
+                      disease: SupportedDiseaseTestPerformed
+                    ) => {
+                      const diseaseName = disease.supportedDisease.name;
+
+                      if (!diseaseNames.includes(diseaseName)) {
+                        diseaseNames.push(diseaseName);
+                      }
+
+                      return diseaseNames;
+                    },
+                    []
+                  )
                   .join(", ")}
               </td>
               <td id={`view-${idx}`}>

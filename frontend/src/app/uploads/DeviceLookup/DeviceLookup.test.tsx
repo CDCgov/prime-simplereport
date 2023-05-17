@@ -14,6 +14,18 @@ import DeviceLookup from "./DeviceLookup";
 
 window.scrollTo = jest.fn();
 
+const supportedDiseaseTestPerformed = {
+  supportedDisease: {
+    internalId: "177cfdfa-1ce5-404f-bd39-5492f87868f4",
+    loinc: "96741-4",
+    name: "COVID-19",
+  },
+  testPerformedLoincCode: "0000-0",
+  equipmentUid: "equipmentUid987",
+  testkitNameId: "testkitNameId987",
+  testOrderedLoincCode: "9999-9",
+};
+
 const devices = [
   {
     internalId: "abc1",
@@ -22,7 +34,10 @@ const devices = [
     manufacturer: "Celoxitin",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
-    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+    supportedDiseaseTestPerformed:
+      mockSupportedDiseaseTestPerformedCovid.concat(
+        supportedDiseaseTestPerformed
+      ),
   },
   {
     internalId: "some-guid",
@@ -64,6 +79,9 @@ describe("Device lookup", () => {
 
     expect(screen.getByText("Celoxitin")).toBeInTheDocument();
     expect(screen.getByText("Model A")).toBeInTheDocument();
+
+    // `getByText` throws if multiple matches are found - this device has two
+    // SupportedDiseaseTestPerformed entries, implying the de-duplication is occurring
     expect(screen.getByText("COVID-19")).toBeInTheDocument();
   });
 
@@ -78,6 +96,7 @@ describe("Device lookup", () => {
     expect(model).toBeDisabled();
     expect(model).toHaveValue("Model A");
 
+    // Mock returned two COVID-19 supported disease entries - only one rendered
     const loinc = screen.getByLabelText("Test performed code (COVID-19)");
     expect(loinc).toBeDisabled();
     expect(loinc).toHaveValue("1234-1");
