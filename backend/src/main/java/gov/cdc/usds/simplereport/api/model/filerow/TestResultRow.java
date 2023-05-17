@@ -377,7 +377,14 @@ public class TestResultRow implements FileRow {
             .getModelAndTestPerformedCodeToDeviceMap()
             .containsKey(
                 ResultsUploaderDeviceValidationService.getMapKey(
-                    equipmentModelName, testPerformedCode));
+                    removeTrailingAsterisk(equipmentModelName), testPerformedCode));
+  }
+
+  private String removeTrailingAsterisk(String value) {
+    if (value != null && value.length() > 0 && value.charAt(value.length() - 1) == '*') {
+      return value.substring(0, value.length() - 1);
+    }
+    return value;
   }
 
   @Override

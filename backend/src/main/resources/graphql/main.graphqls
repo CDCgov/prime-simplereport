@@ -471,55 +471,10 @@ type Query {
 
 type Mutation {
   updateFacility(
-    facilityId: ID
-    testingFacilityName: String
-    cliaNumber: String
-    street: String
-    streetTwo: String
-    city: String
-    state: String
-    zipCode: String
-    phone: String
-    email: String
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceIds: [ID]
-    facilityInfo: UpdateFacilityInput
+    facilityInfo: UpdateFacilityInput!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
-    testingFacilityName: String
-    cliaNumber: String
-    street: String
-    streetTwo: String
-    city: String
-    state: String
-    zipCode: String
-    phone: String
-    email: String
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceIds: [ID]
-    facilityInfo: AddFacilityInput
+    facilityInfo: AddFacilityInput!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
     name: NameInput
