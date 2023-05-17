@@ -406,7 +406,6 @@ class FhirConverterTest {
     var facility =
         new Facility(
             FacilityBuilder.builder()
-                .org(null)
                 .facilityName("Elron")
                 .cliaNumber("123D456789")
                 .facilityAddress(
@@ -414,7 +413,6 @@ class FhirConverterTest {
                         List.of("12 Main Street", "Unit 4"), "Lakewood", "FL", "21037", null))
                 .phone("248 555 1234")
                 .email("email@example.com")
-                .orderingProvider(null)
                 .configuredDevices(Collections.emptyList())
                 .build());
 
