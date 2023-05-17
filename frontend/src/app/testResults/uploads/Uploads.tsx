@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup } from "@trussworks/react-uswds";
+import { Maybe } from "graphql/jsutils/Maybe";
 
 import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
@@ -17,7 +18,52 @@ import {
   MAX_CSV_UPLOAD_ROW_COUNT,
 } from "../../../config/constants";
 
+
 const REPORT_MAX_ITEM_COLUMNS = 2000;
+
+type EnhancedFeedbackMessage = FeedbackMessage & {
+  indicesRange: string[];
+};
+
+function groupErrors(
+  errors: Array<EnhancedFeedbackMessage | undefined | null>
+) {
+  function extractValues(
+    indicies: Maybe<Maybe<number>[]> | undefined
+  ): Array<number> {
+    const returnValues: Array<number> = [];
+
+    if (indicies) {
+      indicies.forEach((index) => {
+        if (index) returnValues.push(index);
+      });
+    }
+
+    return returnValues;
+  }
+
+  errors.forEach((error) => {
+    const indices = extractValues(error?.indices).sort((a, b) => a - b);
+    if (error && indices && indices.length > 2) {
+      error.indicesRange = [];
+      let startRange = indices[0];
+      let endRange = indices[0];
+
+      for (let i = 1; i < indices.length; i++) {
+        if (endRange + 1 !== indices[i] || i === indices.length - 1) {
+          if (startRange === endRange) {
+            error.indicesRange.push(`${startRange}`);
+          } else {
+            error.indicesRange.push(`${startRange} - ${endRange}`);
+          }
+          startRange = indices[i];
+        }
+        endRange = indices[i];
+      }
+    }
+  });
+  return errors;
+}
 
 const Uploads = () => {
   useDocumentTitle("Upload spreadsheet");
@@ -36,7 +82,7 @@ const Uploads = () => {
   const [reportId, setReportId] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<
-    Array<FeedbackMessage | undefined | null>
+    Array<EnhancedFeedbackMessage | undefined | null>
   >([]);
   const [errorMessage, setErrorMessage] = useState<ReactElement | null>(null);
   const [isFileValid, setFileValid] = useState<boolean>(true);
@@ -142,7 +188,7 @@ const Uploads = () => {
           has not been accepted.
         </>
       );
-      const errorMessage = {} as FeedbackMessage;
+      const errorMessage = {} as EnhancedFeedbackMessage;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
       setFileValid(false);
@@ -190,7 +236,7 @@ const Uploads = () => {
               file has not been accepted.
             </>
           );
-          setErrors(response.errors);
+          setErrors(groupErrors(response.errors));
           setFileValid(false);
           appInsights?.trackEvent({
             name: "Spreadsheet upload validation failure",
@@ -324,8 +370,8 @@ const Uploads = () => {
                 <table className="usa-table usa-table--borderless">
                   <thead>
                     <tr>
-                      <th>Error description</th>
-                      <th>Location of error</th>
+                      <th>Error</th>
+                      <th>Row(s)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -333,10 +379,22 @@ const Uploads = () => {
                       return (
                         <tr key={(e?.message || "") + (e?.indices || "")}>
                           <td>{e?.["message"]} </td>
-                          <td>
-                            {e?.["indices"] &&
-                              "Row(s): " + e?.["indices"]?.join(", ")}
-                          </td>
+                          {e?.indicesRange ? (
+                            <td>
+                              {e?.indicesRange.map((range) => {
+                                return (
+                                  <div>
+                                    {range}
+                                    <br />
+                                  </div>
+                                );
+                              })}
+                            </td>
+                          ) : (
+                            <td>
+                              {e?.["indices"] && e?.["indices"]?.join(", ")}
+                            </td>
+                          )}
                         </tr>
                       );
                     })}
