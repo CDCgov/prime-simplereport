@@ -27,30 +27,16 @@ export type EnhancedFeedbackMessage = FeedbackMessage & {
 export function groupErrors(
   errors: Array<EnhancedFeedbackMessage | undefined | null>
 ) {
-  function extractValues(
-    indicies: Maybe<Maybe<number>[]> | undefined
-  ): Array<number> {
-    const returnValues: Array<number> = [];
-    if (indicies) {
-      indicies.forEach((index) => {
-        if (index) returnValues.push(index);
-      });
-    }
-    return returnValues;
-  }
+  const extractNumbers = (
+    array: Maybe<Maybe<number>[]> | undefined
+  ): Array<number> =>
+    array ? array.filter((element): element is number => !!element) : [];
+
+  const computeRange = (startRange: number, endRange: number) =>
+    startRange === endRange ? `${startRange}` : `${startRange} - ${endRange}`;
 
   errors.forEach((error) => {
-    function pushRanges(startRange: number, endRange: number) {
-      if (error) {
-        if (startRange === endRange) {
-          error.indicesRange.push(`${startRange}`);
-        } else {
-          error.indicesRange.push(`${startRange} - ${endRange}`);
-        }
-      }
-    }
-
-    const indices = extractValues(error?.indices).sort((a, b) => a - b);
+    const indices = extractNumbers(error?.indices).sort((a, b) => a - b);
 
     if (error && indices && indices.length > 2) {
       error.indicesRange = [];
@@ -60,14 +46,14 @@ export function groupErrors(
       for (let i = 1; i < indices.length; i++) {
         if (endRange + 1 !== indices[i]) {
           // end of the consecutive numbers
-          pushRanges(startRange, endRange);
+          error.indicesRange.push(computeRange(startRange, endRange));
           startRange = indices[i];
         }
         endRange = indices[i];
 
         if (i === indices.length - 1) {
           // end of the array
-          pushRanges(startRange, endRange);
+          error.indicesRange.push(computeRange(startRange, endRange));
         }
       }
     }
@@ -393,7 +379,7 @@ const Uploads = () => {
                             <td>
                               {e?.indicesRange.map((range) => {
                                 return (
-                                  <div>
+                                  <div key={range}>
                                     {range}
                                     <br />
                                   </div>

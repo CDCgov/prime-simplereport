@@ -296,6 +296,7 @@ describe("Uploads", () => {
         ).toBeInTheDocument();
       });
       expect(screen.getByText("Error")).toBeInTheDocument();
+      expect(screen.getByText("Row(s)")).toBeInTheDocument();
       expect(screen.getByText("missing required column")).toBeInTheDocument();
       expect(mockTrackEvent).toHaveBeenCalledWith({
         name: "Spreadsheet upload validation failure",
