@@ -205,29 +205,7 @@ export type Mutation = {
 };
 
 export type MutationAddFacilityArgs = {
-  city?: InputMaybe<Scalars["String"]>;
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  deviceIds?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
-  email?: InputMaybe<Scalars["String"]>;
-  facilityInfo?: InputMaybe<AddFacilityInput>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]>;
-  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
-  phone?: InputMaybe<Scalars["String"]>;
-  state?: InputMaybe<Scalars["String"]>;
-  street?: InputMaybe<Scalars["String"]>;
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  testingFacilityName?: InputMaybe<Scalars["String"]>;
-  zipCode?: InputMaybe<Scalars["String"]>;
+  facilityInfo: AddFacilityInput;
 };
 
 export type MutationAddPatientArgs = {
@@ -443,30 +421,7 @@ export type MutationUpdateDeviceTypeArgs = {
 };
 
 export type MutationUpdateFacilityArgs = {
-  city?: InputMaybe<Scalars["String"]>;
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  deviceIds?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
-  email?: InputMaybe<Scalars["String"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  facilityInfo?: InputMaybe<UpdateFacilityInput>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]>;
-  orderingProviderCounty?: InputMaybe<Scalars["String"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
-  phone?: InputMaybe<Scalars["String"]>;
-  state?: InputMaybe<Scalars["String"]>;
-  street?: InputMaybe<Scalars["String"]>;
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  testingFacilityName?: InputMaybe<Scalars["String"]>;
-  zipCode?: InputMaybe<Scalars["String"]>;
+  facilityInfo: UpdateFacilityInput;
 };
 
 export type MutationUpdateOrganizationArgs = {
@@ -1071,6 +1026,23 @@ export type WhoAmIQuery = {
   };
 };
 
+export type GetManagedFacilitiesQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetManagedFacilitiesQuery = {
+  __typename?: "Query";
+  organization?: {
+    __typename?: "Organization";
+    facilities: Array<{
+      __typename?: "Facility";
+      id: string;
+      cliaNumber?: string | null;
+      name: string;
+    }>;
+  } | null;
+};
+
 export type GetFacilitiesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetFacilitiesQuery = {
@@ -1118,36 +1090,6 @@ export type GetFacilitiesQuery = {
   }>;
 };
 
-export type UpdateFacilityMutationVariables = Exact<{
-  facilityId: Scalars["ID"];
-  testingFacilityName: Scalars["String"];
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  city?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  zipCode: Scalars["String"];
-  phone?: InputMaybe<Scalars["String"]>;
-  email?: InputMaybe<Scalars["String"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
-  devices: Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>;
-}>;
-
-export type UpdateFacilityMutation = {
-  __typename?: "Mutation";
-  updateFacility?: { __typename?: "Facility"; id: string } | null;
-};
-
 export type AddFacilityMutationVariables = Exact<{
   testingFacilityName: Scalars["String"];
   cliaNumber?: InputMaybe<Scalars["String"]>;
@@ -1177,21 +1119,34 @@ export type AddFacilityMutation = {
   addFacility?: { __typename?: "Facility"; id: string } | null;
 };
 
-export type GetManagedFacilitiesQueryVariables = Exact<{
-  [key: string]: never;
+export type UpdateFacilityMutationVariables = Exact<{
+  facilityId: Scalars["ID"];
+  testingFacilityName: Scalars["String"];
+  cliaNumber?: InputMaybe<Scalars["String"]>;
+  street: Scalars["String"];
+  streetTwo?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]>;
+  state: Scalars["String"];
+  zipCode: Scalars["String"];
+  phone?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
+  devices: Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>;
 }>;
 
-export type GetManagedFacilitiesQuery = {
-  __typename?: "Query";
-  organization?: {
-    __typename?: "Organization";
-    facilities: Array<{
-      __typename?: "Facility";
-      id: string;
-      cliaNumber?: string | null;
-      name: string;
-    }>;
-  } | null;
+export type UpdateFacilityMutation = {
+  __typename?: "Mutation";
+  updateFacility?: { __typename?: "Facility"; id: string } | null;
 };
 
 export type GetOrganizationQueryVariables = Exact<{ [key: string]: never }>;
@@ -2519,6 +2474,67 @@ export type WhoAmIQueryResult = Apollo.QueryResult<
   WhoAmIQuery,
   WhoAmIQueryVariables
 >;
+export const GetManagedFacilitiesDocument = gql`
+  query GetManagedFacilities {
+    organization {
+      facilities {
+        id
+        cliaNumber
+        name
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetManagedFacilitiesQuery__
+ *
+ * To run a query within a React component, call `useGetManagedFacilitiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetManagedFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetManagedFacilitiesQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetManagedFacilitiesQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetManagedFacilitiesQuery,
+    GetManagedFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetManagedFacilitiesQuery,
+    GetManagedFacilitiesQueryVariables
+  >(GetManagedFacilitiesDocument, options);
+}
+export function useGetManagedFacilitiesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetManagedFacilitiesQuery,
+    GetManagedFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetManagedFacilitiesQuery,
+    GetManagedFacilitiesQueryVariables
+  >(GetManagedFacilitiesDocument, options);
+}
+export type GetManagedFacilitiesQueryHookResult = ReturnType<
+  typeof useGetManagedFacilitiesQuery
+>;
+export type GetManagedFacilitiesLazyQueryHookResult = ReturnType<
+  typeof useGetManagedFacilitiesLazyQuery
+>;
+export type GetManagedFacilitiesQueryResult = Apollo.QueryResult<
+  GetManagedFacilitiesQuery,
+  GetManagedFacilitiesQueryVariables
+>;
 export const GetFacilitiesDocument = gql`
   query GetFacilities {
     organization {
@@ -2609,123 +2625,6 @@ export type GetFacilitiesQueryResult = Apollo.QueryResult<
   GetFacilitiesQuery,
   GetFacilitiesQueryVariables
 >;
-export const UpdateFacilityDocument = gql`
-  mutation UpdateFacility(
-    $facilityId: ID!
-    $testingFacilityName: String!
-    $cliaNumber: String
-    $street: String!
-    $streetTwo: String
-    $city: String
-    $state: String!
-    $zipCode: String!
-    $phone: String
-    $email: String
-    $orderingProviderFirstName: String
-    $orderingProviderMiddleName: String
-    $orderingProviderLastName: String
-    $orderingProviderSuffix: String
-    $orderingProviderNPI: String
-    $orderingProviderStreet: String
-    $orderingProviderStreetTwo: String
-    $orderingProviderCity: String
-    $orderingProviderState: String
-    $orderingProviderZipCode: String
-    $orderingProviderPhone: String
-    $devices: [ID]!
-  ) {
-    updateFacility(
-      facilityId: $facilityId
-      testingFacilityName: $testingFacilityName
-      cliaNumber: $cliaNumber
-      street: $street
-      streetTwo: $streetTwo
-      city: $city
-      state: $state
-      zipCode: $zipCode
-      phone: $phone
-      email: $email
-      orderingProviderFirstName: $orderingProviderFirstName
-      orderingProviderMiddleName: $orderingProviderMiddleName
-      orderingProviderLastName: $orderingProviderLastName
-      orderingProviderSuffix: $orderingProviderSuffix
-      orderingProviderNPI: $orderingProviderNPI
-      orderingProviderStreet: $orderingProviderStreet
-      orderingProviderStreetTwo: $orderingProviderStreetTwo
-      orderingProviderCity: $orderingProviderCity
-      orderingProviderState: $orderingProviderState
-      orderingProviderZipCode: $orderingProviderZipCode
-      orderingProviderPhone: $orderingProviderPhone
-      deviceIds: $devices
-    ) {
-      id
-    }
-  }
-`;
-export type UpdateFacilityMutationFn = Apollo.MutationFunction<
-  UpdateFacilityMutation,
-  UpdateFacilityMutationVariables
->;
-
-/**
- * __useUpdateFacilityMutation__
- *
- * To run a mutation, you first call `useUpdateFacilityMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateFacilityMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateFacilityMutation, { data, loading, error }] = useUpdateFacilityMutation({
- *   variables: {
- *      facilityId: // value for 'facilityId'
- *      testingFacilityName: // value for 'testingFacilityName'
- *      cliaNumber: // value for 'cliaNumber'
- *      street: // value for 'street'
- *      streetTwo: // value for 'streetTwo'
- *      city: // value for 'city'
- *      state: // value for 'state'
- *      zipCode: // value for 'zipCode'
- *      phone: // value for 'phone'
- *      email: // value for 'email'
- *      orderingProviderFirstName: // value for 'orderingProviderFirstName'
- *      orderingProviderMiddleName: // value for 'orderingProviderMiddleName'
- *      orderingProviderLastName: // value for 'orderingProviderLastName'
- *      orderingProviderSuffix: // value for 'orderingProviderSuffix'
- *      orderingProviderNPI: // value for 'orderingProviderNPI'
- *      orderingProviderStreet: // value for 'orderingProviderStreet'
- *      orderingProviderStreetTwo: // value for 'orderingProviderStreetTwo'
- *      orderingProviderCity: // value for 'orderingProviderCity'
- *      orderingProviderState: // value for 'orderingProviderState'
- *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
- *      orderingProviderPhone: // value for 'orderingProviderPhone'
- *      devices: // value for 'devices'
- *   },
- * });
- */
-export function useUpdateFacilityMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UpdateFacilityMutation,
-    UpdateFacilityMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UpdateFacilityMutation,
-    UpdateFacilityMutationVariables
-  >(UpdateFacilityDocument, options);
-}
-export type UpdateFacilityMutationHookResult = ReturnType<
-  typeof useUpdateFacilityMutation
->;
-export type UpdateFacilityMutationResult =
-  Apollo.MutationResult<UpdateFacilityMutation>;
-export type UpdateFacilityMutationOptions = Apollo.BaseMutationOptions<
-  UpdateFacilityMutation,
-  UpdateFacilityMutationVariables
->;
 export const AddFacilityDocument = gql`
   mutation AddFacility(
     $testingFacilityName: String!
@@ -2751,27 +2650,33 @@ export const AddFacilityDocument = gql`
     $devices: [ID]!
   ) {
     addFacility(
-      testingFacilityName: $testingFacilityName
-      cliaNumber: $cliaNumber
-      street: $street
-      streetTwo: $streetTwo
-      city: $city
-      state: $state
-      zipCode: $zipCode
-      phone: $phone
-      email: $email
-      orderingProviderFirstName: $orderingProviderFirstName
-      orderingProviderMiddleName: $orderingProviderMiddleName
-      orderingProviderLastName: $orderingProviderLastName
-      orderingProviderSuffix: $orderingProviderSuffix
-      orderingProviderNPI: $orderingProviderNPI
-      orderingProviderStreet: $orderingProviderStreet
-      orderingProviderStreetTwo: $orderingProviderStreetTwo
-      orderingProviderCity: $orderingProviderCity
-      orderingProviderState: $orderingProviderState
-      orderingProviderZipCode: $orderingProviderZipCode
-      orderingProviderPhone: $orderingProviderPhone
-      deviceIds: $devices
+      facilityInfo: {
+        facilityName: $testingFacilityName
+        cliaNumber: $cliaNumber
+        address: {
+          street: $street
+          streetTwo: $streetTwo
+          city: $city
+          state: $state
+          zipCode: $zipCode
+        }
+        phone: $phone
+        email: $email
+        orderingProvider: {
+          firstName: $orderingProviderFirstName
+          middleName: $orderingProviderMiddleName
+          lastName: $orderingProviderLastName
+          suffix: $orderingProviderSuffix
+          npi: $orderingProviderNPI
+          street: $orderingProviderStreet
+          streetTwo: $orderingProviderStreetTwo
+          city: $orderingProviderCity
+          state: $orderingProviderState
+          zipCode: $orderingProviderZipCode
+          phone: $orderingProviderPhone
+        }
+        deviceIds: $devices
+      }
     ) {
       id
     }
@@ -2840,66 +2745,128 @@ export type AddFacilityMutationOptions = Apollo.BaseMutationOptions<
   AddFacilityMutation,
   AddFacilityMutationVariables
 >;
-export const GetManagedFacilitiesDocument = gql`
-  query GetManagedFacilities {
-    organization {
-      facilities {
-        id
-        cliaNumber
-        name
+export const UpdateFacilityDocument = gql`
+  mutation UpdateFacility(
+    $facilityId: ID!
+    $testingFacilityName: String!
+    $cliaNumber: String
+    $street: String!
+    $streetTwo: String
+    $city: String
+    $state: String!
+    $zipCode: String!
+    $phone: String
+    $email: String
+    $orderingProviderFirstName: String
+    $orderingProviderMiddleName: String
+    $orderingProviderLastName: String
+    $orderingProviderSuffix: String
+    $orderingProviderNPI: String
+    $orderingProviderStreet: String
+    $orderingProviderStreetTwo: String
+    $orderingProviderCity: String
+    $orderingProviderState: String
+    $orderingProviderZipCode: String
+    $orderingProviderPhone: String
+    $devices: [ID]!
+  ) {
+    updateFacility(
+      facilityInfo: {
+        facilityId: $facilityId
+        facilityName: $testingFacilityName
+        cliaNumber: $cliaNumber
+        address: {
+          street: $street
+          streetTwo: $streetTwo
+          city: $city
+          state: $state
+          zipCode: $zipCode
+        }
+        phone: $phone
+        email: $email
+        orderingProvider: {
+          firstName: $orderingProviderFirstName
+          middleName: $orderingProviderMiddleName
+          lastName: $orderingProviderLastName
+          suffix: $orderingProviderSuffix
+          npi: $orderingProviderNPI
+          street: $orderingProviderStreet
+          streetTwo: $orderingProviderStreetTwo
+          city: $orderingProviderCity
+          state: $orderingProviderState
+          zipCode: $orderingProviderZipCode
+          phone: $orderingProviderPhone
+        }
+        deviceIds: $devices
       }
+    ) {
+      id
     }
   }
 `;
+export type UpdateFacilityMutationFn = Apollo.MutationFunction<
+  UpdateFacilityMutation,
+  UpdateFacilityMutationVariables
+>;
 
 /**
- * __useGetManagedFacilitiesQuery__
+ * __useUpdateFacilityMutation__
  *
- * To run a query within a React component, call `useGetManagedFacilitiesQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetManagedFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
+ * To run a mutation, you first call `useUpdateFacilityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateFacilityMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
  *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const { data, loading, error } = useGetManagedFacilitiesQuery({
+ * const [updateFacilityMutation, { data, loading, error }] = useUpdateFacilityMutation({
  *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      testingFacilityName: // value for 'testingFacilityName'
+ *      cliaNumber: // value for 'cliaNumber'
+ *      street: // value for 'street'
+ *      streetTwo: // value for 'streetTwo'
+ *      city: // value for 'city'
+ *      state: // value for 'state'
+ *      zipCode: // value for 'zipCode'
+ *      phone: // value for 'phone'
+ *      email: // value for 'email'
+ *      orderingProviderFirstName: // value for 'orderingProviderFirstName'
+ *      orderingProviderMiddleName: // value for 'orderingProviderMiddleName'
+ *      orderingProviderLastName: // value for 'orderingProviderLastName'
+ *      orderingProviderSuffix: // value for 'orderingProviderSuffix'
+ *      orderingProviderNPI: // value for 'orderingProviderNPI'
+ *      orderingProviderStreet: // value for 'orderingProviderStreet'
+ *      orderingProviderStreetTwo: // value for 'orderingProviderStreetTwo'
+ *      orderingProviderCity: // value for 'orderingProviderCity'
+ *      orderingProviderState: // value for 'orderingProviderState'
+ *      orderingProviderZipCode: // value for 'orderingProviderZipCode'
+ *      orderingProviderPhone: // value for 'orderingProviderPhone'
+ *      devices: // value for 'devices'
  *   },
  * });
  */
-export function useGetManagedFacilitiesQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetManagedFacilitiesQuery,
-    GetManagedFacilitiesQueryVariables
+export function useUpdateFacilityMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateFacilityMutation,
+    UpdateFacilityMutationVariables
   >
 ) {
   const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<
-    GetManagedFacilitiesQuery,
-    GetManagedFacilitiesQueryVariables
-  >(GetManagedFacilitiesDocument, options);
+  return Apollo.useMutation<
+    UpdateFacilityMutation,
+    UpdateFacilityMutationVariables
+  >(UpdateFacilityDocument, options);
 }
-export function useGetManagedFacilitiesLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetManagedFacilitiesQuery,
-    GetManagedFacilitiesQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetManagedFacilitiesQuery,
-    GetManagedFacilitiesQueryVariables
-  >(GetManagedFacilitiesDocument, options);
-}
-export type GetManagedFacilitiesQueryHookResult = ReturnType<
-  typeof useGetManagedFacilitiesQuery
+export type UpdateFacilityMutationHookResult = ReturnType<
+  typeof useUpdateFacilityMutation
 >;
-export type GetManagedFacilitiesLazyQueryHookResult = ReturnType<
-  typeof useGetManagedFacilitiesLazyQuery
->;
-export type GetManagedFacilitiesQueryResult = Apollo.QueryResult<
-  GetManagedFacilitiesQuery,
-  GetManagedFacilitiesQueryVariables
+export type UpdateFacilityMutationResult =
+  Apollo.MutationResult<UpdateFacilityMutation>;
+export type UpdateFacilityMutationOptions = Apollo.BaseMutationOptions<
+  UpdateFacilityMutation,
+  UpdateFacilityMutationVariables
 >;
 export const GetOrganizationDocument = gql`
   query GetOrganization {

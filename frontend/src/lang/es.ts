@@ -204,7 +204,7 @@ export const es: LanguageConfig = {
           birthDate: {
             base: "Se requiere la fecha de nacimiento, debe estar en formato MM/DD/AA, y en el pasado",
             past: "La fecha de nacimiento está demasiado lejos en el pasado",
-            future: "La fecha de nacimiento no puede ser futura",
+            future: "La fecha de nacimiento no puede ser en el futuro",
           },
           telephone: "Falta el número de teléfono o no es válido",
           phoneNumbers: "Faltan los números de teléfono o no son válidos",
@@ -222,7 +222,7 @@ export const es: LanguageConfig = {
           race: "La raza es obligatoria",
           tribalAffiliation: "La afiliación tribal tiene un formato incorrecto",
           ethnicity: "La etnia es obligatoria",
-          gender: "El sexo asignado al nacer es obligatoria",
+          gender: "El sexo asignado al nacer es obligatorio",
           residentCongregateSetting:
             "¿Reside usted en un entorno compartido por muchas personas?  Se requiere una respuesta",
           employedInHealthcare:
