@@ -322,6 +322,8 @@ describe("Uploads", () => {
         { indices: [1, 2, 3, 10] },
         { indices: [5, 54, 56, 55] },
         { indices: [5, 66, 56] },
+        { indices: [7] },
+        { indices: [] },
         { indices: undefined },
       ] as EnhancedFeedbackMessage[];
 
@@ -332,7 +334,9 @@ describe("Uploads", () => {
       expect(result[2]?.indicesRange).toEqual(["1 - 3", "10"]);
       expect(result[3]?.indicesRange).toEqual(["5", "54 - 56"]);
       expect(result[4]?.indicesRange).toEqual(["5", "56", "66"]);
-      expect(result[5]?.indicesRange).toEqual(undefined);
+      expect(result[5]?.indicesRange).toEqual(["7"]);
+      expect(result[6]?.indicesRange).toEqual(undefined);
+      expect(result[7]?.indicesRange).toEqual(undefined);
     });
   });
 });

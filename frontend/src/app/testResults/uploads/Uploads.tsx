@@ -32,13 +32,13 @@ export function groupErrors(
   ): Array<number> =>
     array ? array.filter((element): element is number => !!element) : [];
 
-  const computeRange = (startRange: number, endRange: number) =>
-    startRange === endRange ? `${startRange}` : `${startRange} - ${endRange}`;
+  const computeRange = (start: number, end: number) =>
+    start === end ? `${start}` : `${start} - ${end}`;
 
   errors.forEach((error) => {
     const indices = extractNumbers(error?.indices).sort((a, b) => a - b);
 
-    if (error && indices && indices.length > 2) {
+    if (error && indices && indices.length > 0) {
       error.indicesRange = [];
       let startRange = indices[0];
       let endRange = indices[0];
@@ -50,12 +50,9 @@ export function groupErrors(
           startRange = indices[i];
         }
         endRange = indices[i];
-
-        if (i === indices.length - 1) {
-          // end of the array
-          error.indicesRange.push(computeRange(startRange, endRange));
-        }
       }
+      // end of the array
+      error.indicesRange.push(computeRange(startRange, endRange));
     }
   });
   return errors;
