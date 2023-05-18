@@ -27,52 +27,50 @@ public class ResultsUploaderDeviceValidationService {
   private final DeviceTypeRepository deviceTypeRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
 
-  private static final Map<String, String> specimenSNOMEDMap = new HashMap<>();
-
-  static {
-    specimenSNOMEDMap.put("swab of internal nose", "445297001");
-    specimenSNOMEDMap.put("nasal swab", "445297001");
-    specimenSNOMEDMap.put("nasal", "445297001");
-    specimenSNOMEDMap.put("varied", "445297001");
-    specimenSNOMEDMap.put("nasopharyngeal swab", "258500001");
-    specimenSNOMEDMap.put("mid-turbinate nasal swab", "871810001");
-    specimenSNOMEDMap.put("anterior nares swab", "697989009");
-    specimenSNOMEDMap.put("anterior nasal swab", "697989009");
-    specimenSNOMEDMap.put("nasopharyngeal aspirate", "258411007");
-    specimenSNOMEDMap.put("nasopharyngeal washings", "258467004");
-    specimenSNOMEDMap.put("nasopharyngeal wash", "258467004");
-    specimenSNOMEDMap.put("nasal aspirate", "429931000124105");
-    specimenSNOMEDMap.put("nasal aspirate specimen", "429931000124105");
-    specimenSNOMEDMap.put("throat swab", "258529004");
-    specimenSNOMEDMap.put("oropharyngeal swab", "258529004");
-    specimenSNOMEDMap.put("oral swab", "418932006");
-    specimenSNOMEDMap.put("sputum specimen", "119334006");
-    specimenSNOMEDMap.put("sputum", "119334006");
-    specimenSNOMEDMap.put("saliva specimen", "258560004");
-    specimenSNOMEDMap.put("saliva", "258560004");
-    specimenSNOMEDMap.put("serum specimen", "119364003");
-    specimenSNOMEDMap.put("serum", "119364003");
-    specimenSNOMEDMap.put("plasma specimen", "119361006");
-    specimenSNOMEDMap.put("plasma", "119361006");
-    specimenSNOMEDMap.put("whole blood sample", "258580003");
-    specimenSNOMEDMap.put("whole blood", "258580003");
-    specimenSNOMEDMap.put("venous blood specimen", "122555007");
-    specimenSNOMEDMap.put("venous whole blood", "122555007");
-    specimenSNOMEDMap.put("blood specimen", "119297000");
-    specimenSNOMEDMap.put("capillary blood specimen", "122554006");
-    specimenSNOMEDMap.put("fingerstick whole blood", "122554006");
-    specimenSNOMEDMap.put("dried blood spot specimen", "440500007");
-    specimenSNOMEDMap.put("dried blood spot", "440500007");
-    specimenSNOMEDMap.put("fingerstick blood dried blood spot", "440500007");
-    specimenSNOMEDMap.put("nasopharyngeal and oropharyngeal swab", "433801000124107");
-    specimenSNOMEDMap.put("nasal and throat swab combination", "433801000124107");
-    specimenSNOMEDMap.put("nasal and throat swab", "433801000124107");
-    specimenSNOMEDMap.put("lower respiratory fluid sample", "309171007");
-    specimenSNOMEDMap.put("lower respiratory tract aspirates", "309171007");
-    specimenSNOMEDMap.put("bronchoalveolar lavage fluid sample", "258607008");
-    specimenSNOMEDMap.put("bronchoalveolar lavage fluid", "258607008");
-    specimenSNOMEDMap.put("bronchoalveolar lavage", "258607008");
-  }
+  private static final Map<String, String> specimenSNOMEDMap =
+      Map.ofEntries(
+          Map.entry("swab of internal nose", "445297001"),
+          Map.entry("nasal swab", "445297001"),
+          Map.entry("nasal", "445297001"),
+          Map.entry("varied", "445297001"),
+          Map.entry("nasopharyngeal swab", "258500001"),
+          Map.entry("mid-turbinate nasal swab", "871810001"),
+          Map.entry("anterior nares swab", "697989009"),
+          Map.entry("anterior nasal swab", "697989009"),
+          Map.entry("nasopharyngeal aspirate", "258411007"),
+          Map.entry("nasopharyngeal washings", "258467004"),
+          Map.entry("nasopharyngeal wash", "258467004"),
+          Map.entry("nasal aspirate", "429931000124105"),
+          Map.entry("nasal aspirate specimen", "429931000124105"),
+          Map.entry("throat swab", "258529004"),
+          Map.entry("oropharyngeal swab", "258529004"),
+          Map.entry("oral swab", "418932006"),
+          Map.entry("sputum specimen", "119334006"),
+          Map.entry("sputum", "119334006"),
+          Map.entry("saliva specimen", "258560004"),
+          Map.entry("saliva", "258560004"),
+          Map.entry("serum specimen", "119364003"),
+          Map.entry("serum", "119364003"),
+          Map.entry("plasma specimen", "119361006"),
+          Map.entry("plasma", "119361006"),
+          Map.entry("whole blood sample", "258580003"),
+          Map.entry("whole blood", "258580003"),
+          Map.entry("venous blood specimen", "122555007"),
+          Map.entry("venous whole blood", "122555007"),
+          Map.entry("blood specimen", "119297000"),
+          Map.entry("capillary blood specimen", "122554006"),
+          Map.entry("fingerstick whole blood", "122554006"),
+          Map.entry("dried blood spot specimen", "440500007"),
+          Map.entry("dried blood spot", "440500007"),
+          Map.entry("fingerstick blood dried blood spot", "440500007"),
+          Map.entry("nasopharyngeal and oropharyngeal swab", "433801000124107"),
+          Map.entry("nasal and throat swab combination", "433801000124107"),
+          Map.entry("nasal and throat swab", "433801000124107"),
+          Map.entry("lower respiratory fluid sample", "309171007"),
+          Map.entry("lower respiratory tract aspirates", "309171007"),
+          Map.entry("bronchoalveolar lavage fluid sample", "258607008"),
+          Map.entry("bronchoalveolar lavage fluid", "258607008"),
+          Map.entry("bronchoalveolar lavage", "258607008"));
 
   @Cacheable(DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP)
   public Map<String, DeviceType> getModelAndTestPerformedCodeToDeviceMap() {
