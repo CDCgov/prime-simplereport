@@ -372,9 +372,9 @@ const Uploads = () => {
                       return (
                         <tr key={(e?.message || "") + (e?.indices || "")}>
                           <td>{e?.["message"]} </td>
-                          {e?.indicesRange && (
-                            <td>
-                              {e?.indicesRange.map((range) => {
+                          <td>
+                            {e?.indicesRange &&
+                              e?.indicesRange.map((range) => {
                                 return (
                                   <div key={range}>
                                     {range}
@@ -382,8 +382,7 @@ const Uploads = () => {
                                   </div>
                                 );
                               })}
-                            </td>
-                          )}
+                          </td>
                         </tr>
                       );
                     })}
