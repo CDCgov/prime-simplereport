@@ -18,47 +18,57 @@ import {
   MAX_CSV_UPLOAD_ROW_COUNT,
 } from "../../../config/constants";
 
-
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
-type EnhancedFeedbackMessage = FeedbackMessage & {
+export type EnhancedFeedbackMessage = FeedbackMessage & {
   indicesRange: string[];
 };
 
-function groupErrors(
+export function groupErrors(
   errors: Array<EnhancedFeedbackMessage | undefined | null>
 ) {
   function extractValues(
     indicies: Maybe<Maybe<number>[]> | undefined
   ): Array<number> {
     const returnValues: Array<number> = [];
-
     if (indicies) {
       indicies.forEach((index) => {
         if (index) returnValues.push(index);
       });
     }
-
     return returnValues;
   }
 
   errors.forEach((error) => {
+    function pushRanges(startRange: number, endRange: number) {
+      if (error) {
+        if (startRange === endRange) {
+          error.indicesRange.push(`${startRange}`);
+        } else {
+          error.indicesRange.push(`${startRange} - ${endRange}`);
+        }
+      }
+    }
+
     const indices = extractValues(error?.indices).sort((a, b) => a - b);
+
     if (error && indices && indices.length > 2) {
       error.indicesRange = [];
       let startRange = indices[0];
       let endRange = indices[0];
 
       for (let i = 1; i < indices.length; i++) {
-        if (endRange + 1 !== indices[i] || i === indices.length - 1) {
-          if (startRange === endRange) {
-            error.indicesRange.push(`${startRange}`);
-          } else {
-            error.indicesRange.push(`${startRange} - ${endRange}`);
-          }
+        if (endRange + 1 !== indices[i]) {
+          // end of the consecutive numbers
+          pushRanges(startRange, endRange);
           startRange = indices[i];
         }
         endRange = indices[i];
+
+        if (i === indices.length - 1) {
+          // end of the array
+          pushRanges(startRange, endRange);
+        }
       }
     }
   });
@@ -379,7 +389,7 @@ const Uploads = () => {
                       return (
                         <tr key={(e?.message || "") + (e?.indices || "")}>
                           <td>{e?.["message"]} </td>
-                          {e?.indicesRange ? (
+                          {e?.indicesRange && (
                             <td>
                               {e?.indicesRange.map((range) => {
                                 return (
@@ -389,10 +399,6 @@ const Uploads = () => {
                                   </div>
                                 );
                               })}
-                            </td>
-                          ) : (
-                            <td>
-                              {e?.["indices"] && e?.["indices"]?.join(", ")}
                             </td>
                           )}
                         </tr>
