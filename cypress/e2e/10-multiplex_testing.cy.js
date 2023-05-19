@@ -7,45 +7,45 @@ describe("Testing with multiplex devices", () => {
 
   loginHooks();
 
-  before(() => {
-    cy.makePOSTRequest({
-      operationName: "GetManagedFacilities",
-      variables: {},
-      query:
-        "query GetManagedFacilities {\n  organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}",
-    }).then((res) => {
-      facility = res.body.data.organization.facilities[0];
+  context("Conduct test", () => {
+    before(() => {
       cy.makePOSTRequest({
-        operationName: "GetPatientsByFacility",
-        variables: {
-          facilityId: facility.id,
-          pageNumber: 0,
-          pageSize: 1,
-          includeArchived: false,
-        },
+        operationName: "GetManagedFacilities",
+        variables: {},
         query:
-          "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $includeArchived: Boolean, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    includeArchived: $includeArchived\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}",
+          "query GetManagedFacilities {\n  organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}",
       }).then((res) => {
-        patient = res.body.data.patients[0];
+        facility = res.body.data.organization.facilities[0];
+        cy.makePOSTRequest({
+          operationName: "GetPatientsByFacility",
+          variables: {
+            facilityId: facility.id,
+            pageNumber: 0,
+            pageSize: 1,
+            includeArchived: false,
+          },
+          query:
+            "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $includeArchived: Boolean, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    includeArchived: $includeArchived\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}",
+        }).then((res) => {
+          patient = res.body.data.patients[0];
+        });
+      });
+
+      cy.task("getMultiplexDeviceName").then((name) => {
+        multiplexDeviceName = name;
       });
     });
 
-    cy.task("getMultiplexDeviceName").then((name) => {
-      multiplexDeviceName = name;
+    after(() => {
+      // delete the device if it exists
+      cy.makePOSTRequest({
+        operationName: "MarkDeviceTypeAsDeleted",
+        variables: { deviceName: multiplexDeviceName },
+        query:
+          "mutation MarkDeviceTypeAsDeleted($deviceName: String){\n  markDeviceTypeAsDeleted(deviceId: null, deviceName: $deviceName)\n{name}}",
+      });
     });
-  });
 
-  after(() => {
-    // delete the device if it exists
-    cy.makePOSTRequest({
-      operationName: "MarkDeviceTypeAsDeleted",
-      variables: { deviceName: multiplexDeviceName },
-      query:
-        "mutation MarkDeviceTypeAsDeleted($deviceName: String){\n  markDeviceTypeAsDeleted(deviceId: null, deviceName: $deviceName)\n{name}}",
-    });
-  });
-
-  context("Conduct test", () => {
     beforeEach(() => {
       cy.intercept("POST", graphqlURL, (req) => {
         aliasQuery(req, "GetFacilityQueue");
