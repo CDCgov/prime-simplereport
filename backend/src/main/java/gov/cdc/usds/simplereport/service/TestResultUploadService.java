@@ -117,16 +117,16 @@ public class TestResultUploadService {
       content = attachProcessingModeCode(content);
     }
 
-    content =
-        translateSpecimenNameToSNOMED(
-            content, resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
-
     TestResultUpload csvResult = null;
     Future<UploadResponse> csvResponse;
     Future<UploadResponse> fhirResponse = null;
 
     if (content.length > 0) {
-      csvResponse = submitResultsAsCsv(content);
+      var csvContent =
+          translateSpecimenNameToSNOMED(
+              content, resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
+
+      csvResponse = submitResultsAsCsv(csvContent);
 
       if (fhirEnabled) {
         fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
