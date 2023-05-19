@@ -117,19 +117,22 @@ class CsvValidatorUtilsTest {
   @Test
   void validSpecimenName() {
     var specimenType = new ValueOrError("Oral saliva sample", "specimen_type");
-    assertThat(validateSpecimenType(specimenType)).isEmpty();
+    assertThat(validateSpecimenType(specimenType, Map.of("oral saliva sample", "000111222")))
+        .isEmpty();
   }
 
   @Test
   void validSpecimenSNOMED() {
     var specimenType = new ValueOrError("012345678", "specimen_type");
-    assertThat(validateSpecimenType(specimenType)).isEmpty();
+    assertThat(validateSpecimenType(specimenType, Map.of("oral saliva sample", "000111222")))
+        .isEmpty();
   }
 
   @Test
   void invalidSpecimenSNOMED() {
     // too many characters
     var specimenType = new ValueOrError("0123456789", "specimen_type");
-    assertThat(validateSpecimenType(specimenType)).hasSize(1);
+    assertThat(validateSpecimenType(specimenType, Map.of("oral saliva sample", "000111222")))
+        .hasSize(1);
   }
 }

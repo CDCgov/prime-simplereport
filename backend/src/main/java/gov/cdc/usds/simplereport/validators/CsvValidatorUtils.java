@@ -162,7 +162,8 @@ public class CsvValidatorUtils {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
   }
 
-  public static List<FeedbackMessage> validateSpecimenType(ValueOrError input) {
+  public static List<FeedbackMessage> validateSpecimenType(
+      ValueOrError input, Map<String, String> specimenNameSNOMEDMap) {
     List<FeedbackMessage> errors = new ArrayList<>();
     String value = parseString(input.getValue());
 
@@ -173,6 +174,12 @@ public class CsvValidatorUtils {
     boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
 
     if (nonSNOMEDValue) {
+      if (!specimenNameSNOMEDMap.containsKey(value.toLowerCase())) {
+        errors.add(
+            new FeedbackMessage(
+                ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+      }
+
       return errors;
     }
 

@@ -122,11 +122,7 @@ public class TestResultUploadService {
     Future<UploadResponse> fhirResponse = null;
 
     if (content.length > 0) {
-      var csvContent =
-          translateSpecimenNameToSNOMED(
-              content, resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
-
-      csvResponse = submitResultsAsCsv(csvContent);
+      csvResponse = submitResultsAsCsv(content);
 
       if (fhirEnabled) {
         fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
@@ -251,7 +247,12 @@ public class TestResultUploadService {
           long start = System.currentTimeMillis();
           UploadResponse response;
           try {
-            response = _client.uploadCSV(content);
+            var csvContent =
+                translateSpecimenNameToSNOMED(
+                    content,
+                    resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
+
+            response = _client.uploadCSV(csvContent);
           } catch (FeignException e) {
             log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
             response = parseFeignException(e);

@@ -82,6 +82,8 @@ class FileValidatorTest {
     var resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
     when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceType()));
+    when(resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
     testResultFileValidator =
         new FileValidator<>(row -> new TestResultRow(row, resultsUploaderDeviceValidationService));
   }
@@ -267,6 +269,23 @@ class FileValidatorTest {
 
     assertThat(errorMessages)
         .contains("Invalid equipment_model_name and test_performed_code combination");
+  }
+
+  @Test
+  void testResults_invalidSpecimenTypeName() {
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-invalid-specimen-name.csv");
+
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+
+    /// THEN
+    assertThat(errors).hasSize(1);
+
+    List<String> errorMessages = errors.stream().map(FeedbackMessage::getMessage).toList();
+
+    assertThat(errorMessages)
+        .contains("fake specimen name is not an acceptable value for the specimen_type column.");
   }
 
   @Test

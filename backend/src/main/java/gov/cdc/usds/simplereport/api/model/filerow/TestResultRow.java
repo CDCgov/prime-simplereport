@@ -444,7 +444,9 @@ public class TestResultRow implements FileRow {
 
     errors.addAll(validateTestResult(testResult));
     errors.addAll(validateTestResultStatus(testResultStatus));
-    errors.addAll(validateSpecimenType(specimenType));
+    errors.addAll(
+        validateSpecimenType(
+            specimenType, resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap()));
 
     errors.addAll(validateClia(testingLabClia));
 
