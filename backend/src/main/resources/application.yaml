@@ -130,6 +130,7 @@ simple-report:
       - HEAD
       - POST
   batch-size: 1000
+  fhir-reporting-enabled: false
 twilio:
   messaging-service-sid: ${TWILIO_MESSAGING_SID}
 logging:
