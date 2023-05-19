@@ -41,70 +41,7 @@ public class OrganizationMutationResolver {
   private final ApiUserService apiUserService;
 
   @MutationMapping
-  public ApiFacility addFacility(
-      @Argument String testingFacilityName,
-      @Argument String cliaNumber,
-      @Argument String street,
-      @Argument String streetTwo,
-      @Argument String city,
-      @Argument String state,
-      @Argument String zipCode,
-      @Argument String phone,
-      @Argument String email,
-      @Argument String orderingProviderFirstName,
-      @Argument String orderingProviderMiddleName,
-      @Argument String orderingProviderLastName,
-      @Argument String orderingProviderSuffix,
-      @Argument String orderingProviderNPI,
-      @Argument String orderingProviderStreet,
-      @Argument String orderingProviderStreetTwo,
-      @Argument String orderingProviderCity,
-      @Argument String orderingProviderCounty,
-      @Argument String orderingProviderState,
-      @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderPhone,
-      @Argument List<UUID> deviceIds,
-      @Argument AddFacilityInput facilityInfo) {
-    if (facilityInfo == null) {
-      organizationService.assertFacilityNameAvailable(testingFacilityName);
-
-      StreetAddress facilityAddress =
-          addressValidationService.getValidatedAddress(
-              street,
-              streetTwo,
-              city,
-              state,
-              zipCode,
-              addressValidationService.FACILITY_DISPLAY_NAME);
-      StreetAddress providerAddress =
-          new StreetAddress(
-              parseString(orderingProviderStreet),
-              parseString(orderingProviderStreetTwo),
-              parseString(orderingProviderCity),
-              parseState(orderingProviderState),
-              parseString(orderingProviderZipCode),
-              parseString(orderingProviderCounty));
-      PersonName providerName =
-          new PersonName(
-              orderingProviderFirstName,
-              orderingProviderMiddleName,
-              orderingProviderLastName,
-              orderingProviderSuffix);
-      Facility created =
-          organizationService.createFacility(
-              testingFacilityName,
-              cliaNumber,
-              facilityAddress,
-              parsePhoneNumber(phone),
-              parseEmail(email),
-              deviceIds,
-              providerName,
-              providerAddress,
-              parsePhoneNumber(orderingProviderPhone),
-              orderingProviderNPI);
-
-      return new ApiFacility(created);
-    }
+  public ApiFacility addFacility(@Argument AddFacilityInput facilityInfo) {
 
     organizationService.assertFacilityNameAvailable(facilityInfo.getFacilityName());
 
@@ -147,72 +84,8 @@ public class OrganizationMutationResolver {
   }
 
   @MutationMapping
-  public ApiFacility updateFacility(
-      @Argument UUID facilityId,
-      @Argument String testingFacilityName,
-      @Argument String cliaNumber,
-      @Argument String street,
-      @Argument String streetTwo,
-      @Argument String city,
-      @Argument String state,
-      @Argument String zipCode,
-      @Argument String phone,
-      @Argument String email,
-      @Argument String orderingProviderFirstName,
-      @Argument String orderingProviderMiddleName,
-      @Argument String orderingProviderLastName,
-      @Argument String orderingProviderSuffix,
-      @Argument String orderingProviderNPI,
-      @Argument String orderingProviderStreet,
-      @Argument String orderingProviderStreetTwo,
-      @Argument String orderingProviderCity,
-      @Argument String orderingProviderCounty,
-      @Argument String orderingProviderState,
-      @Argument String orderingProviderZipCode,
-      @Argument String orderingProviderPhone,
-      @Argument List<UUID> deviceIds,
-      @Argument UpdateFacilityInput facilityInfo) {
+  public ApiFacility updateFacility(@Argument UpdateFacilityInput facilityInfo) {
 
-    if (facilityInfo == null) {
-      StreetAddress facilityAddress =
-          addressValidationService.getValidatedAddress(
-              street,
-              streetTwo,
-              city,
-              state,
-              zipCode,
-              addressValidationService.FACILITY_DISPLAY_NAME);
-
-      PersonName providerName =
-          new PersonName(
-              orderingProviderFirstName,
-              orderingProviderMiddleName,
-              orderingProviderLastName,
-              orderingProviderSuffix);
-
-      StreetAddress providerAddress =
-          new StreetAddress(
-              parseString(orderingProviderStreet),
-              parseString(orderingProviderStreetTwo),
-              parseString(orderingProviderCity),
-              parseState(orderingProviderState),
-              parseString(orderingProviderZipCode),
-              parseString(orderingProviderCounty));
-      Facility facility =
-          organizationService.updateFacility(
-              facilityId,
-              testingFacilityName,
-              cliaNumber,
-              facilityAddress,
-              parsePhoneNumber(phone),
-              parseEmail(email),
-              providerName,
-              providerAddress,
-              orderingProviderNPI,
-              parsePhoneNumber(orderingProviderPhone),
-              deviceIds);
-      return new ApiFacility(facility);
-    }
     StreetAddress facilityAddress =
         addressValidationService.getValidatedAddress(
             facilityInfo.getAddress().getStreet(),
