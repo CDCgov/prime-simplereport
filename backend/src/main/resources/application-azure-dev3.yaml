@@ -15,5 +15,6 @@ simple-report:
       - https://simple-report-api-dev3.azurewebsites.net
       - https://simple-report-dev3.azureedge.net
       - https://dev3.simplereport.gov
+  fhir-reporting-enabled: false
 twilio:
   enabled: true
