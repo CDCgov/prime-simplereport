@@ -166,8 +166,8 @@ public class BulkUploadResultsToFhir {
                 .name(
                     new PersonName(
                         row.getPatientFirstName().getValue(),
-                        row.getPatientLastName().getValue(),
                         row.getPatientMiddleName().getValue(),
+                        row.getPatientLastName().getValue(),
                         null))
                 .phoneNumbers(
                     List.of(
