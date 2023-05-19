@@ -122,7 +122,7 @@ public class BulkUploadResultsToFhir {
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
-    var testEventId = UUID.randomUUID().toString();
+    var testEventId = row.getAccessionNumber().getValue();
     var patientAddr =
         new StreetAddress(
             row.getPatientStreet().getValue(),
