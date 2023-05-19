@@ -1,13 +1,12 @@
 import { aliasMutation, aliasQuery } from "../utils/graphql-test-utils";
-import { loginHooks } from "../support/e2e";
+import {loginWithSession} from "../support/e2e";
 import { graphqlURL } from "../utils/request-utils";
 
 describe("Testing with multiplex devices", () => {
   let patient, facility, multiplexDeviceName;
 
-  loginHooks();
-
   before(() => {
+    loginWithSession();
     cy.makePOSTRequest({
       operationName: "GetManagedFacilities",
       variables: {},
