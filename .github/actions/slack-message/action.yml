@@ -1,0 +1,55 @@
+name: Slack Messages
+description: Sends a message to Slack
+inputs:
+  username:
+    description: GitHub username of the user who triggered the workflow
+    required: true
+  description:
+    description: Description of the workflow
+    required: true
+  user_map:
+    description: Mapping of GitHub usernames to Slack user IDs
+    required: true
+  webhook_url:
+    description: Slack webhook URL
+    required: true
+  default_github_user:
+    description: Default GitHub user to use if the user is not found in the map
+    required: false
+    default: "alismx"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+    - name: Set vars
+      id: vars
+      shell: bash
+      run: |
+        user_id=""
+        description=""
+        user_id="$(echo ${{ inputs.user_map }} | sed -e 's/^"//' -e 's/"$//' | jq -r 'to_entries[] | select(.key=="${{ inputs.username }}") | .value')"
+        description="${{ inputs.description }}"
+        if [ -z "$user_id" ]; then
+          # if the user is not found in the map, use the default GitHub user
+          user_id="$(echo ${{ inputs.user_map }} | sed -e 's/^"//' -e 's/"$//' | jq -r 'to_entries[] | select(.key=="${{ inputs.default_github_user }}") | .value')"
+          description="${{ inputs.description }} \n\n 
+          :this-is-fine-fire: Slack user ID not found for ${{ inputs.username }}. In order to fix this you will need to update the GitHub/Slack user map. :this-is-fine-fire: \n\n
+          :this-is-fine-fire: Find instructions here on how to update the user map: https://github.com/CDCgov/prime-simplereport/wiki/Update-Github-Slack-user-map :this-is-fine-fire:"
+        fi
+        echo "::add-mask::$user_id"
+        echo "::add-mask::$description"
+        echo ::set-output name=user_id::$user_id
+        echo ::set-output name=description::$description
+
+    - name: Send alert to Slack
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "triggered_by": "${{ steps.vars.outputs.user_id }}",
+            "description": "${{ steps.vars.outputs.description }}"
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ inputs.webhook_url }}
