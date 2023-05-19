@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup } from "@trussworks/react-uswds";
+import { Maybe } from "graphql/jsutils/Maybe";
 
 import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
@@ -19,6 +20,44 @@ import {
 
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
+export type EnhancedFeedbackMessage = FeedbackMessage & {
+  indicesRange: string[];
+};
+
+export function groupErrors(
+  errors: Array<EnhancedFeedbackMessage | undefined | null>
+) {
+  const extractNumbers = (
+    array: Maybe<Maybe<number>[]> | undefined
+  ): Array<number> =>
+    array ? array.filter((element): element is number => !!element) : [];
+
+  const computeRange = (start: number, end: number) =>
+    start === end ? `${start}` : `${start} - ${end}`;
+
+  errors.forEach((error) => {
+    const indices = extractNumbers(error?.indices).sort((a, b) => a - b);
+
+    if (error && indices && indices.length > 0) {
+      error.indicesRange = [];
+      let startRange = indices[0];
+      let endRange = indices[0];
+
+      for (let i = 1; i < indices.length; i++) {
+        if (endRange + 1 !== indices[i]) {
+          // end of the consecutive numbers
+          error.indicesRange.push(computeRange(startRange, endRange));
+          startRange = indices[i];
+        }
+        endRange = indices[i];
+      }
+      // end of the array
+      error.indicesRange.push(computeRange(startRange, endRange));
+    }
+  });
+  return errors;
+}
+
 const Uploads = () => {
   useDocumentTitle("Upload spreadsheet");
 
@@ -36,7 +75,7 @@ const Uploads = () => {
   const [reportId, setReportId] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<
-    Array<FeedbackMessage | undefined | null>
+    Array<EnhancedFeedbackMessage | undefined | null>
   >([]);
   const [errorMessage, setErrorMessage] = useState<ReactElement | null>(null);
   const [isFileValid, setFileValid] = useState<boolean>(true);
@@ -142,7 +181,7 @@ const Uploads = () => {
           has not been accepted.
         </>
       );
-      const errorMessage = {} as FeedbackMessage;
+      const errorMessage = {} as EnhancedFeedbackMessage;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
       setFileValid(false);
@@ -190,7 +229,7 @@ const Uploads = () => {
               file has not been accepted.
             </>
           );
-          setErrors(response.errors);
+          setErrors(groupErrors(response.errors));
           setFileValid(false);
           appInsights?.trackEvent({
             name: "Spreadsheet upload validation failure",
@@ -324,8 +363,8 @@ const Uploads = () => {
                 <table className="usa-table usa-table--borderless">
                   <thead>
                     <tr>
-                      <th>Error description</th>
-                      <th>Location of error</th>
+                      <th>Error</th>
+                      <th>Row(s)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -334,8 +373,15 @@ const Uploads = () => {
                         <tr key={(e?.message || "") + (e?.indices || "")}>
                           <td>{e?.["message"]} </td>
                           <td>
-                            {e?.["indices"] &&
-                              "Row(s): " + e?.["indices"]?.join(", ")}
+                            {e?.indicesRange &&
+                              e?.indicesRange.map((range) => {
+                                return (
+                                  <div key={range}>
+                                    {range}
+                                    <br />
+                                  </div>
+                                );
+                              })}
                           </td>
                         </tr>
                       );
