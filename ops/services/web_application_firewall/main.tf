@@ -178,37 +178,55 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
        * These rules should be periodically reviewed for relevance.
        */
       rule_group_override {
-        rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT" //TODO: add exception for whoami
-        disabled_rules = [
-          "920300",
-          "920320"
-        ]
+        rule_group_name = "REQUEST-920-PROTOCOL-ENFORCEMENT"
+        dynamic "rule" {
+          for_each = [
+            "920300",
+            "920320"
+          ]
+          content {
+            id      = rule.value
+            enabled = false
+          }
+        }
       }
 
       rule_group_override {
-        rule_group_name = "REQUEST-932-APPLICATION-ATTACK-RCE" //TODO: add exception for whoami
-        disabled_rules = [
-          "932100",
-          "932105",
-          "932115"
-        ]
+        rule_group_name = "REQUEST-932-APPLICATION-ATTACK-RCE"
+        dynamic "rule" {
+          for_each = [
+            "932100",
+            "932105",
+            "932115"
+          ]
+          content {
+            id      = rule.value
+            enabled = false
+          }
+        }
       }
 
       rule_group_override {
         rule_group_name = "REQUEST-942-APPLICATION-ATTACK-SQLI"
-        disabled_rules = [
-          "942110",
-          "942150",
-          "942190",
-          "942200",
-          "942260",
-          "942330",
-          "942361",
-          "942370",
-          "942410",
-          "942430",
-          "942440"
-        ]
+        dynamic "rule" {
+          for_each = [
+            "942110",
+            "942150",
+            "942190",
+            "942200",
+            "942260",
+            "942330",
+            "942361",
+            "942370",
+            "942410",
+            "942430",
+            "942440"
+          ]
+          content {
+            id      = rule.value
+            enabled = false
+          }
+        }
       }
     }
   }
