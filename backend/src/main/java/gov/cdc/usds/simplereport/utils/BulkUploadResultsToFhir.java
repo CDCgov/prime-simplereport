@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUN
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAOEObservation;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
+import static java.util.Collections.emptyList;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -40,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Organization;
@@ -159,6 +161,15 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderZipCode().getValue(),
             null);
 
+    List<PhoneNumber> patientPhoneNumbers =
+        StringUtils.isNotBlank(row.getPatientPhoneNumber().getValue())
+            ? List.of(new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().getValue()))
+            : emptyList();
+    List<String> patientEmails =
+        StringUtils.isNotBlank(row.getPatientEmail().getValue())
+            ? List.of(row.getPatientEmail().getValue())
+            : emptyList();
+
     var patient =
         FhirConverter.convertToPatient(
             ConvertToPatientProps.builder()
@@ -169,10 +180,8 @@ public class BulkUploadResultsToFhir {
                         row.getPatientMiddleName().getValue(),
                         row.getPatientLastName().getValue(),
                         null))
-                .phoneNumbers(
-                    List.of(
-                        new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().getValue())))
-                .emails(List.of(row.getPatientEmail().getValue()))
+                .phoneNumbers(patientPhoneNumbers)
+                .emails(patientEmails)
                 .gender(row.getPatientGender().getValue())
                 .dob(LocalDate.parse(row.getPatientDob().getValue(), dateTimeFormatter))
                 .address(patientAddr)
