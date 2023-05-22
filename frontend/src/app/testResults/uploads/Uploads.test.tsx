@@ -9,7 +9,7 @@ import { getAppInsights } from "../../TelemetryService";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 
-import Uploads from "./Uploads";
+import Uploads, { EnhancedFeedbackMessage, groupErrors } from "./Uploads";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -295,7 +295,8 @@ describe("Uploads", () => {
           screen.getByText("Error: File not accepted")
         ).toBeInTheDocument();
       });
-      expect(screen.getByText("Error description")).toBeInTheDocument();
+      expect(screen.getByText("Error")).toBeInTheDocument();
+      expect(screen.getByText("Row(s)")).toBeInTheDocument();
       expect(screen.getByText("missing required column")).toBeInTheDocument();
       expect(mockTrackEvent).toHaveBeenCalledWith({
         name: "Spreadsheet upload validation failure",
@@ -310,6 +311,32 @@ describe("Uploads", () => {
           user: "testuser@test.org",
         },
       });
+    });
+  });
+
+  describe("error row grouping", () => {
+    it("should group consecutive errors into a range with single values in between", () => {
+      const errors = [
+        { indices: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] },
+        { indices: [1, 2, 3, 4, 6, 8, 9, 10] },
+        { indices: [1, 2, 3, 10] },
+        { indices: [5, 54, 56, 55] },
+        { indices: [5, 66, 56] },
+        { indices: [7] },
+        { indices: [] },
+        { indices: undefined },
+      ] as EnhancedFeedbackMessage[];
+
+      const result = groupErrors(errors);
+
+      expect(result[0]?.indicesRange).toEqual(["1 - 10"]);
+      expect(result[1]?.indicesRange).toEqual(["1 - 4", "6", "8 - 10"]);
+      expect(result[2]?.indicesRange).toEqual(["1 - 3", "10"]);
+      expect(result[3]?.indicesRange).toEqual(["5", "54 - 56"]);
+      expect(result[4]?.indicesRange).toEqual(["5", "56", "66"]);
+      expect(result[5]?.indicesRange).toEqual(["7"]);
+      expect(result[6]?.indicesRange).toEqual(undefined);
+      expect(result[7]?.indicesRange).toEqual(undefined);
     });
   });
 });
