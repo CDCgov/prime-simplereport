@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
@@ -48,8 +49,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
+  private final SpecimenTypeRepository specimenTypeRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
+  private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
   private final BulkUploadResultsToFhir fhirConverter;
@@ -74,6 +77,9 @@ public class TestResultUploadService {
 
   private static final int FIVE_MINUTES_MS = 300 * 1000;
   public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
+  public static final String SPECIMEN_TYPE_COLUMN_NAME = "specimen_type";
+
+  private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
@@ -114,8 +120,10 @@ public class TestResultUploadService {
     TestResultUpload csvResult = null;
     Future<UploadResponse> csvResponse;
     Future<UploadResponse> fhirResponse = null;
+
     if (content.length > 0) {
       csvResponse = submitResultsAsCsv(content);
+
       if (fhirEnabled) {
         fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
       }
@@ -134,6 +142,29 @@ public class TestResultUploadService {
       }
     }
     return csvResult;
+  }
+
+  private byte[] translateSpecimenNameToSNOMED(byte[] content, Map<String, String> snomedMap) {
+    String[] rows = new String(content, StandardCharsets.UTF_8).split("\n");
+    String headers = rows[0];
+
+    int specimenTypeIndex =
+        Arrays.stream(headers.split(",")).toList().indexOf(SPECIMEN_TYPE_COLUMN_NAME);
+
+    for (int i = 1; i < rows.length; i++) {
+      var row = rows[i].split(",", -1);
+      var specimenTypeName = Arrays.stream(row).toList().get(specimenTypeIndex).toLowerCase();
+
+      if (!specimenTypeName.matches(ALPHABET_REGEX)) {
+        continue;
+      }
+
+      row[specimenTypeIndex] = snomedMap.get(specimenTypeName);
+
+      rows[i] = String.join(",", row);
+    }
+
+    return String.join("\n", rows).getBytes();
   }
 
   private byte[] attachProcessingModeCode(byte[] content) {
@@ -216,7 +247,12 @@ public class TestResultUploadService {
           long start = System.currentTimeMillis();
           UploadResponse response;
           try {
-            response = _client.uploadCSV(content);
+            var csvContent =
+                translateSpecimenNameToSNOMED(
+                    content,
+                    resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
+
+            response = _client.uploadCSV(csvContent);
           } catch (FeignException e) {
             log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
             response = parseFeignException(e);
