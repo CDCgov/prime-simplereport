@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.validators;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
@@ -19,6 +21,7 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -134,5 +137,67 @@ class CsvValidatorUtilsTest {
     var specimenType = new ValueOrError("0123456789", "specimen_type");
     assertThat(validateSpecimenType(specimenType, Map.of("oral saliva sample", "000111222")))
         .hasSize(1);
+  }
+
+  @Test
+  void validDateFormat() {
+    var validDates = new ArrayList<ValueOrError>();
+    validDates.add(new ValueOrError("01/01/2023", "date"));
+    validDates.add(new ValueOrError("1/1/2023", "date"));
+    validDates.add(new ValueOrError("1/01/2023", "date"));
+    validDates.add(new ValueOrError("01/1/2023", "date"));
+    validDates.add(new ValueOrError("1/31/2023", "date"));
+    validDates.add(new ValueOrError("12/01/2023", "date"));
+    for (var date : validDates) {
+      assertThat(validateDateFormat(date)).isEmpty();
+    }
+  }
+
+  @Test
+  void invalidDateFormat() {
+    var validDates = new ArrayList<ValueOrError>();
+    validDates.add(new ValueOrError("00/01/2023", "date"));
+    validDates.add(new ValueOrError("1/32/2023", "date"));
+    validDates.add(new ValueOrError("1/1/23", "date"));
+    validDates.add(new ValueOrError("11/00/2023", "date"));
+    validDates.add(new ValueOrError("0/31/2023", "date"));
+    validDates.add(new ValueOrError("10/0/2023", "date"));
+    validDates.add(new ValueOrError("00/00/2023", "date"));
+    validDates.add(new ValueOrError("0/0/2023", "date"));
+    validDates.add(new ValueOrError("0/0/202", "date"));
+    for (var date : validDates) {
+      assertThat(validateDateFormat(date)).hasSize(1);
+    }
+  }
+
+  @Test
+  void validDateTime() {
+    var validDateTimes = new ArrayList<ValueOrError>();
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11", "datetime"));
+    validDateTimes.add(new ValueOrError("1/1/2023 12:34", "datetime"));
+    validDateTimes.add(new ValueOrError("1/01/2023 23:59", "datetime"));
+    validDateTimes.add(new ValueOrError("01/1/2023 00:00", "datetime"));
+    validDateTimes.add(new ValueOrError("1/31/2023 05:50", "datetime"));
+    validDateTimes.add(new ValueOrError("12/01/2023 1:01", "datetime"));
+    for (var datetime : validDateTimes) {
+      assertThat(validateDateTime(datetime)).isEmpty();
+    }
+  }
+
+  @Test
+  void invalidDateTime() {
+    var validDateTimes = new ArrayList<ValueOrError>();
+    validDateTimes.add(new ValueOrError("00/01/2023 11:60", "datetime"));
+    validDateTimes.add(new ValueOrError("1/32/2023 1:50", "datetime"));
+    validDateTimes.add(new ValueOrError("1/1/23 12:34", "datetime"));
+    validDateTimes.add(new ValueOrError("11/00/2023 52:37", "datetime"));
+    validDateTimes.add(new ValueOrError("0/31/2023 5:29", "datetime"));
+    validDateTimes.add(new ValueOrError("10/0/2023 6:15", "datetime"));
+    validDateTimes.add(new ValueOrError("00/00/2023 07:30", "datetime"));
+    validDateTimes.add(new ValueOrError("0/0/2023 10:23", "datetime"));
+    validDateTimes.add(new ValueOrError("0/0/202 11:11", "datetime"));
+    for (var datetime : validDateTimes) {
+      assertThat(validateDateTime(datetime)).hasSize(1);
+    }
   }
 }
