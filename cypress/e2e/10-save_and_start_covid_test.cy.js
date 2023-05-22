@@ -19,13 +19,9 @@ describe('Save and start covid test',()=>{
     });
   });
 
-  after(() => {
-    // delete the device if it exists
-    cy.makePOSTRequest({
-      operationName: "MarkDeviceTypeAsDeleted",
-      variables: {deviceName: covidOnlyDeviceName},
-      query:
-        "mutation MarkDeviceTypeAsDeleted($deviceName: String){\n  markDeviceTypeAsDeleted(deviceId: null, deviceName: $deviceName)\n{name}}",
+  beforeEach(()=>{
+    cy.intercept("POST", graphqlURL, (req) => {
+      aliasQuery(req, "GetFacilityQueue");
     });
   });
 
@@ -43,11 +39,9 @@ describe('Save and start covid test',()=>{
     it("edits the found patient and clicks save and start test ", () => {
       cy.get(".sr-patient-list").contains(patientName).click();
       cy.contains("General information").should('exist');
-
       // a11y scan of edit patient page
       cy.injectSRAxe();
       cy.checkA11y();
-
       cy.get('input[name="middleName"]').clear().type(testNumber().toString(10));
       cy.get(".prime-save-patient-changes-start-test").click();
     });
@@ -158,21 +152,16 @@ describe('Save and start covid test',()=>{
     });
     it("clicks save changes and verifies test queue redirect", () => {
       cy.get(".prime-save-patient-changes").first().click();
-      cy.get(".ReactModal__Content").should("not.exist");
-      cy.url().should("include", "queue");
     });
     it("verifies test card highlighted", () => {
+      cy.wait("@gqlGetFacilityQueueQuery");
+      cy.get(".ReactModal__Content").should("not.exist");
+      cy.url().should("include", "queue");
       cy.get(".prime-queue-item__info").contains(patientName);
     });
   });
 
   context("start test from patients page for patient already in queue", () => {
-    beforeEach(()=>{
-      cy.intercept("POST", graphqlURL, (req) => {
-        aliasQuery(req, "GetFacilityQueue");
-      });
-    });
-
     it("navigates to patients page, selects Start test, and verifies link to test queue", () => {
       cy.visit("/");
       cy.get(".usa-nav-container");
@@ -184,7 +173,6 @@ describe('Save and start covid test',()=>{
     });
 
     it("verifies test card highlighted", () => {
-      //GetFacilityQueue
       cy.wait("@gqlGetFacilityQueueQuery");
       cy.get(".ReactModal__Content").should("not.exist");
       cy.url().should("include", "queue");

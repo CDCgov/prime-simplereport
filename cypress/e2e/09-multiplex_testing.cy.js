@@ -34,16 +34,6 @@ describe("Testing with multiplex devices", () => {
     });
   });
 
-  after(() => {
-    // delete the device if it exists
-    cy.makePOSTRequest({
-      operationName: "MarkDeviceTypeAsDeleted",
-      variables: {deviceName: multiplexDeviceName},
-      query:
-        "mutation MarkDeviceTypeAsDeleted($deviceName: String){\n  markDeviceTypeAsDeleted(deviceId: null, deviceName: $deviceName)\n{name}}",
-    });
-  });
-
   beforeEach(() => {
     cy.intercept("POST", graphqlURL, (req) => {
       aliasQuery(req, "GetFacilityQueue");
@@ -92,7 +82,7 @@ describe("Testing with multiplex devices", () => {
           .siblings("label")
           .click();
         cy.wait("@gqlEditQueueItemQuery");
-        cy.get('input[name="inconclusive-tests"]').should("be.checked");
+        cy.wait("@gqlGetFacilityQueueQuery");
         cy.get("@submitBtn").should("be.enabled").click();
       }
     );
