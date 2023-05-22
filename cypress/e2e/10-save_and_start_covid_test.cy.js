@@ -1,11 +1,11 @@
 import {generatePatient, loginHooks, testNumber} from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
-import {aliasMutation, aliasQuery} from "../utils/graphql-test-utils";
+import {aliasQuery} from "../utils/graphql-test-utils";
 
 loginHooks();
 
 describe('Save and start covid test',()=>{
-  let patientName, lastName, phoneNumber, covidOnlyDeviceName, facility, patient;
+  let patientName, lastName, phoneNumber, covidOnlyDeviceName;
   before("retrieve the patient info", () => {
     cy.task("getPatientName").then((name) => {
       patientName = name;
