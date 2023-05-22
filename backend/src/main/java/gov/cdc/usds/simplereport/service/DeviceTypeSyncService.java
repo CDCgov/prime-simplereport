@@ -114,7 +114,8 @@ public class DeviceTypeSyncService {
               "covid",
               "sars-2019-ncov",
               "2019-ncovrna",
-              "sars antigen result"));
+              "sars antigen result",
+              "cov-19 idx assay report"));
   private static final Set<String> FLU_A_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
   private static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
