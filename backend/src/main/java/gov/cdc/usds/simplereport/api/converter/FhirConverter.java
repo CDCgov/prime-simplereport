@@ -415,9 +415,15 @@ public class FhirConverter {
 
     patient.setId(props.getId());
     patient.addIdentifier().setValue(props.getId());
-    convertPhoneNumbersToContactPoint(props.getPhoneNumbers()).forEach(patient::addTelecom);
-    convertEmailsToContactPoint(ContactPointUse.HOME, props.getEmails())
-        .forEach(patient::addTelecom);
+
+    if (!CollectionUtils.isEmpty(props.getPhoneNumbers())) {
+      convertPhoneNumbersToContactPoint(props.getPhoneNumbers()).forEach(patient::addTelecom);
+    }
+
+    if (!CollectionUtils.isEmpty(props.getEmails())) {
+      convertEmailsToContactPoint(ContactPointUse.HOME, props.getEmails())
+          .forEach(patient::addTelecom);
+    }
     return patient;
   }
 

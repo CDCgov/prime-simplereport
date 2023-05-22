@@ -6,6 +6,10 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.api.model.AddFacilityInput;
+import gov.cdc.usds.simplereport.api.model.AddressInput;
+import gov.cdc.usds.simplereport.api.model.ProviderInput;
+import gov.cdc.usds.simplereport.api.model.UpdateFacilityInput;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -83,29 +87,36 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
     // WHEN
     organizationMutationResolver.addFacility(
-        facility.getFacilityName(),
-        facility.getCliaNumber(),
-        facility.getAddress().getStreetOne(),
-        facility.getAddress().getStreetTwo(),
-        facility.getAddress().getCity(),
-        facility.getAddress().getState(),
-        facility.getAddress().getPostalCode(),
-        facility.getTelephone(),
-        facility.getEmail(),
-        facility.getOrderingProvider().getNameInfo().getFirstName(),
-        facility.getOrderingProvider().getNameInfo().getMiddleName(),
-        facility.getOrderingProvider().getNameInfo().getLastName(),
-        facility.getOrderingProvider().getNameInfo().getSuffix(),
-        facility.getOrderingProvider().getProviderId(),
-        facility.getOrderingProvider().getAddress().getStreetOne(),
-        facility.getOrderingProvider().getAddress().getStreetTwo(),
-        facility.getOrderingProvider().getAddress().getCity(),
-        facility.getOrderingProvider().getAddress().getCounty(),
-        facility.getOrderingProvider().getAddress().getState(),
-        facility.getOrderingProvider().getAddress().getPostalCode(),
-        facility.getOrderingProvider().getTelephone(),
-        List.of(deviceId),
-        null);
+        AddFacilityInput.builder()
+            .facilityName(facility.getFacilityName())
+            .cliaNumber(facility.getCliaNumber())
+            .address(
+                AddressInput.builder()
+                    .street(facility.getAddress().getStreetOne())
+                    .streetTwo(facility.getAddress().getStreetTwo())
+                    .city(facility.getAddress().getCity())
+                    .state(facility.getAddress().getState())
+                    .zipCode(facility.getAddress().getPostalCode())
+                    .build())
+            .phone(facility.getTelephone())
+            .email(facility.getEmail())
+            .orderingProvider(
+                ProviderInput.builder()
+                    .firstName(facility.getOrderingProvider().getNameInfo().getFirstName())
+                    .middleName(facility.getOrderingProvider().getNameInfo().getMiddleName())
+                    .lastName(facility.getOrderingProvider().getNameInfo().getLastName())
+                    .suffix(facility.getOrderingProvider().getNameInfo().getSuffix())
+                    .npi(facility.getOrderingProvider().getProviderId())
+                    .street(facility.getOrderingProvider().getAddress().getStreetOne())
+                    .streetTwo(facility.getOrderingProvider().getAddress().getStreetTwo())
+                    .city(facility.getOrderingProvider().getAddress().getCity())
+                    .county(facility.getOrderingProvider().getAddress().getCounty())
+                    .state(facility.getOrderingProvider().getAddress().getState())
+                    .zipCode(facility.getOrderingProvider().getAddress().getPostalCode())
+                    .phone(facility.getOrderingProvider().getTelephone())
+                    .build())
+            .deviceIds(List.of(deviceId))
+            .build());
 
     // THEN
     verify(mockedOrganizationService)
@@ -139,30 +150,37 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
     // WHEN
     organizationMutationResolver.updateFacility(
-        facility.getInternalId(),
-        facility.getFacilityName(),
-        facility.getCliaNumber(),
-        facility.getAddress().getStreetOne(),
-        facility.getAddress().getStreetTwo(),
-        facility.getAddress().getCity(),
-        facility.getAddress().getState(),
-        facility.getAddress().getPostalCode(),
-        facility.getTelephone(),
-        facility.getEmail(),
-        facility.getOrderingProvider().getNameInfo().getFirstName(),
-        facility.getOrderingProvider().getNameInfo().getMiddleName(),
-        facility.getOrderingProvider().getNameInfo().getLastName(),
-        facility.getOrderingProvider().getNameInfo().getSuffix(),
-        facility.getOrderingProvider().getProviderId(),
-        facility.getOrderingProvider().getAddress().getStreetOne(),
-        facility.getOrderingProvider().getAddress().getStreetTwo(),
-        facility.getOrderingProvider().getAddress().getCity(),
-        facility.getOrderingProvider().getAddress().getCounty(),
-        facility.getOrderingProvider().getAddress().getState(),
-        facility.getOrderingProvider().getAddress().getPostalCode(),
-        facility.getOrderingProvider().getTelephone(),
-        List.of(deviceId),
-        null);
+        UpdateFacilityInput.builder()
+            .facilityId(facility.getInternalId())
+            .facilityName(facility.getFacilityName())
+            .cliaNumber(facility.getCliaNumber())
+            .address(
+                AddressInput.builder()
+                    .street(facility.getAddress().getStreetOne())
+                    .streetTwo(facility.getAddress().getStreetTwo())
+                    .city(facility.getAddress().getCity())
+                    .state(facility.getAddress().getState())
+                    .zipCode(facility.getAddress().getPostalCode())
+                    .build())
+            .phone(facility.getTelephone())
+            .email(facility.getEmail())
+            .orderingProvider(
+                ProviderInput.builder()
+                    .firstName(facility.getOrderingProvider().getNameInfo().getFirstName())
+                    .middleName(facility.getOrderingProvider().getNameInfo().getMiddleName())
+                    .lastName(facility.getOrderingProvider().getNameInfo().getLastName())
+                    .suffix(facility.getOrderingProvider().getNameInfo().getSuffix())
+                    .npi(facility.getOrderingProvider().getProviderId())
+                    .street(facility.getOrderingProvider().getAddress().getStreetOne())
+                    .streetTwo(facility.getOrderingProvider().getAddress().getStreetTwo())
+                    .city(facility.getOrderingProvider().getAddress().getCity())
+                    .county(facility.getOrderingProvider().getAddress().getCounty())
+                    .state(facility.getOrderingProvider().getAddress().getState())
+                    .zipCode(facility.getOrderingProvider().getAddress().getPostalCode())
+                    .phone(facility.getOrderingProvider().getTelephone())
+                    .build())
+            .deviceIds(List.of(deviceId))
+            .build());
 
     // THEN
     verify(mockedOrganizationService)
