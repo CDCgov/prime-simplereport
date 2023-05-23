@@ -31,7 +31,6 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
   handleVerify,
   isUpdating,
   isVerifying,
-  orgUsingOldSchema,
 }) => {
   const [org, setOrg] = useState<PendingOrganizationFormValues>({
     name: organization.name,
@@ -75,7 +74,7 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      handleUpdate(org);
+      await handleUpdate(org);
     } else {
       setErrors(validation.errors);
     }
@@ -87,13 +86,12 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      handleVerify(org);
+      await handleVerify(org);
     } else {
       setErrors(validation.errors);
     }
   };
   const commonInputProps = {
-    disabled: orgUsingOldSchema,
     formObject: org,
     onChange,
     required: true,
@@ -229,7 +227,7 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
               variant="outline"
               onClick={onSave}
               label={getEditBtnLabel(isUpdating)}
-              disabled={isVerifying || isUpdating || orgUsingOldSchema}
+              disabled={isVerifying || isUpdating}
             />
             <Button
               className="margin-right-205"
