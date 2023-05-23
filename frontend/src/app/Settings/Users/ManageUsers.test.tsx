@@ -543,10 +543,8 @@ describe("ManageUsers", () => {
       it("fails for a missing first name", async () => {
         await userEvent.clear(first);
         await userEvent.click(confirmButton);
+        await expect(() => screen.findByText("A first name is required"));
         await waitFor(() => expect(confirmButton).toBeDisabled());
-        expect(
-          screen.getByText("A first name is required")
-        ).toBeInTheDocument();
       });
 
       it("fails for a missing last name", async () => {
@@ -555,12 +553,8 @@ describe("ManageUsers", () => {
         });
         await userEvent.clear(last);
         await userEvent.click(confirmButton);
+        await expect(() => screen.findByText("a last name is required"));
         await waitFor(() => expect(confirmButton).toBeDisabled());
-        await waitFor(() => {
-          expect(
-            screen.getByText(/a last name is required/i)
-          ).toBeInTheDocument();
-        });
       });
     });
 
