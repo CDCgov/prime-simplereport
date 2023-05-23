@@ -402,7 +402,7 @@ class TestResultRowTest {
     invalidIndividualFields.put("residence_type", "not");
     invalidIndividualFields.put("test_result", "pos");
     invalidIndividualFields.put("test_result_status", "complete");
-    invalidIndividualFields.put("specimen_type", "swab");
+    invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
     var testResultRow =
         new TestResultRow(invalidIndividualFields, mockResultsUploaderDeviceValidationService());

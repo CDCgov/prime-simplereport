@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { faCheck } from "@fortawesome/free-solid-svg-icons/faCheck";
 import { faCopy } from "@fortawesome/free-solid-svg-icons/faCopy";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { capitalize } from "lodash";
+import { capitalize, uniqBy } from "lodash";
 
 import Optional from "../../commonComponents/Optional";
 import TextInput from "../../commonComponents/TextInput";
@@ -97,7 +97,10 @@ const DeviceDetails = (props: { device: DeviceType }) => {
       </div>
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
-          {device.supportedDiseaseTestPerformed.map((supportedTest) => (
+          {uniqBy(
+            device.supportedDiseaseTestPerformed,
+            (sdtp) => sdtp.supportedDisease.name
+          ).map((supportedTest) => (
             <div
               className="text-field"
               key={`${supportedTest.supportedDisease.name}-${supportedTest.testPerformedLoincCode}`}

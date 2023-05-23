@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUN
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAOEObservation;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
+import static java.util.Collections.emptyList;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -40,6 +41,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Organization;
@@ -85,17 +87,6 @@ public class BulkUploadResultsToFhir {
     yesNoToBooleanMap.put("", null);
   }
 
-  private final Map<String, String> specimenTypeToSnomedMap =
-      Map.of(
-          "Nasal Swab".toLowerCase(), "445297001",
-          "Nasopharyngeal Swab".toLowerCase(), "258500001",
-          "Anterior Nares Swab".toLowerCase(), "697989009", // aka nasal
-          "Throat Swab".toLowerCase(), "258529004", // Oropharyngeal
-          "Oropharyngeal Swab".toLowerCase(), "258529004",
-          "Whole Blood".toLowerCase(), "258580003",
-          "Plasma".toLowerCase(), "119361006",
-          "Serum".toLowerCase(), "119364003");
-
   public List<String> convertToFhirBundles(InputStream csvStream, UUID orgId) {
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
@@ -133,7 +124,7 @@ public class BulkUploadResultsToFhir {
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
-    var testEventId = UUID.randomUUID().toString();
+    var testEventId = row.getAccessionNumber().getValue();
     var patientAddr =
         new StreetAddress(
             row.getPatientStreet().getValue(),
@@ -159,6 +150,15 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderZipCode().getValue(),
             null);
 
+    List<PhoneNumber> patientPhoneNumbers =
+        StringUtils.isNotBlank(row.getPatientPhoneNumber().getValue())
+            ? List.of(new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().getValue()))
+            : emptyList();
+    List<String> patientEmails =
+        StringUtils.isNotBlank(row.getPatientEmail().getValue())
+            ? List.of(row.getPatientEmail().getValue())
+            : emptyList();
+
     var patient =
         FhirConverter.convertToPatient(
             ConvertToPatientProps.builder()
@@ -166,13 +166,11 @@ public class BulkUploadResultsToFhir {
                 .name(
                     new PersonName(
                         row.getPatientFirstName().getValue(),
-                        row.getPatientLastName().getValue(),
                         row.getPatientMiddleName().getValue(),
+                        row.getPatientLastName().getValue(),
                         null))
-                .phoneNumbers(
-                    List.of(
-                        new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().getValue())))
-                .emails(List.of(row.getPatientEmail().getValue()))
+                .phoneNumbers(patientPhoneNumbers)
+                .emails(patientEmails)
                 .gender(row.getPatientGender().getValue())
                 .dob(LocalDate.parse(row.getPatientDob().getValue(), dateTimeFormatter))
                 .address(patientAddr)
@@ -356,7 +354,9 @@ public class BulkUploadResultsToFhir {
 
   private String getSpecimenTypeSnomed(String input) {
     if (input.matches(ALPHABET_REGEX)) {
-      return specimenTypeToSnomedMap.get(input.toLowerCase());
+      return resultsUploaderDeviceValidationService
+          .getSpecimenTypeNameToSNOMEDMap()
+          .get(input.toLowerCase());
     } else if (input.matches(SNOMED_REGEX)) {
       return input;
     }
