@@ -155,17 +155,17 @@ class CsvValidatorUtilsTest {
 
   @Test
   void invalidDateFormat() {
-    var validDates = new ArrayList<ValueOrError>();
-    validDates.add(new ValueOrError("00/01/2023", "date"));
-    validDates.add(new ValueOrError("1/32/2023", "date"));
-    validDates.add(new ValueOrError("1/1/23", "date"));
-    validDates.add(new ValueOrError("11/00/2023", "date"));
-    validDates.add(new ValueOrError("0/31/2023", "date"));
-    validDates.add(new ValueOrError("10/0/2023", "date"));
-    validDates.add(new ValueOrError("00/00/2023", "date"));
-    validDates.add(new ValueOrError("0/0/2023", "date"));
-    validDates.add(new ValueOrError("0/0/202", "date"));
-    for (var date : validDates) {
+    var invalidDates = new ArrayList<ValueOrError>();
+    invalidDates.add(new ValueOrError("00/01/2023", "date"));
+    invalidDates.add(new ValueOrError("1/32/2023", "date"));
+    invalidDates.add(new ValueOrError("1/1/23", "date"));
+    invalidDates.add(new ValueOrError("11/00/2023", "date"));
+    invalidDates.add(new ValueOrError("0/31/2023", "date"));
+    invalidDates.add(new ValueOrError("10/0/2023", "date"));
+    invalidDates.add(new ValueOrError("00/00/2023", "date"));
+    invalidDates.add(new ValueOrError("0/0/2023", "date"));
+    invalidDates.add(new ValueOrError("0/0/202", "date"));
+    for (var date : invalidDates) {
       assertThat(validateDateFormat(date)).hasSize(1);
     }
   }
@@ -186,17 +186,17 @@ class CsvValidatorUtilsTest {
 
   @Test
   void invalidDateTime() {
-    var validDateTimes = new ArrayList<ValueOrError>();
-    validDateTimes.add(new ValueOrError("00/01/2023 11:60", "datetime"));
-    validDateTimes.add(new ValueOrError("1/32/2023 1:50", "datetime"));
-    validDateTimes.add(new ValueOrError("1/1/23 12:34", "datetime"));
-    validDateTimes.add(new ValueOrError("11/00/2023 52:37", "datetime"));
-    validDateTimes.add(new ValueOrError("0/31/2023 5:29", "datetime"));
-    validDateTimes.add(new ValueOrError("10/0/2023 6:15", "datetime"));
-    validDateTimes.add(new ValueOrError("00/00/2023 07:30", "datetime"));
-    validDateTimes.add(new ValueOrError("0/0/2023 10:23", "datetime"));
-    validDateTimes.add(new ValueOrError("0/0/202 11:11", "datetime"));
-    for (var datetime : validDateTimes) {
+    var invalidDateTimes = new ArrayList<ValueOrError>();
+    invalidDateTimes.add(new ValueOrError("00/01/2023 11:60", "datetime"));
+    invalidDateTimes.add(new ValueOrError("1/32/2023 1:50", "datetime"));
+    invalidDateTimes.add(new ValueOrError("1/1/23 12:34", "datetime"));
+    invalidDateTimes.add(new ValueOrError("11/00/2023 52:37", "datetime"));
+    invalidDateTimes.add(new ValueOrError("0/31/2023 5:29", "datetime"));
+    invalidDateTimes.add(new ValueOrError("10/0/2023 6:15", "datetime"));
+    invalidDateTimes.add(new ValueOrError("00/00/2023 07:30", "datetime"));
+    invalidDateTimes.add(new ValueOrError("0/0/2023 10:23", "datetime"));
+    invalidDateTimes.add(new ValueOrError("0/0/202 11:11", "datetime"));
+    for (var datetime : invalidDateTimes) {
       assertThat(validateDateTime(datetime)).hasSize(1);
     }
   }
