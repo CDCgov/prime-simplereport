@@ -548,9 +548,6 @@ describe("ManageUsers", () => {
       });
 
       it("fails for a missing last name", async () => {
-        await waitFor(() => {
-          expect(screen.getByRole("dialog")).toBeInTheDocument();
-        });
         await userEvent.clear(last);
         await userEvent.click(confirmButton);
         await expect(() => screen.findByText("a last name is required"));

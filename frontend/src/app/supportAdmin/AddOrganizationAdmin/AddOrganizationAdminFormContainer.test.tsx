@@ -85,18 +85,9 @@ const waitForOrgLoadReturnTitle = async () => {
 };
 
 const selectOrg = async () => {
-  // using the default test id that comes with the trusswork component
-  // await userEvent.click(screen.getByTestId("combo-box-select"));
-  // await userEvent.click(
-  //   screen.getByTestId(
-  //     "combo-box-option-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-  //   )
-  // );
   await act(() => {
     selectEvent.select(screen.getByLabelText(/organization/i), "Space Camp");
   });
-  // const bl = await screen.getByTestId("combo-box-input")
-  // expect(bl).toHaveValue("Space Camp");
 };
 
 describe("when loading orgs", () => {
