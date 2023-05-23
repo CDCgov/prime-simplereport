@@ -344,9 +344,7 @@ describe("AddPatient", () => {
             exact: false,
           })
         ).toBeInTheDocument();
-        const modal = screen.getByRole("dialog", {
-          exact: false,
-        });
+        const modal = screen.getByRole("dialog");
 
         await userEvent.click(
           within(modal).getByLabelText("Use address as entered", {
@@ -601,9 +599,7 @@ describe("AddPatient", () => {
           })
         ).toBeInTheDocument();
 
-        const modal = screen.getByRole("dialog", {
-          exact: false,
-        });
+        const modal = screen.getByRole("dialog");
 
         await userEvent.click(
           within(modal).getByLabelText("Use address as entered", {

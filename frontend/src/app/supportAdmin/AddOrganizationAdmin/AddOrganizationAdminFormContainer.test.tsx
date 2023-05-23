@@ -1,7 +1,8 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import selectEvent from "react-select-event";
 
 import {
   AddUserDocument,
@@ -85,12 +86,17 @@ const waitForOrgLoadReturnTitle = async () => {
 
 const selectOrg = async () => {
   // using the default test id that comes with the trusswork component
-  await userEvent.click(screen.getByTestId("combo-box-select"));
-  await userEvent.click(
-    screen.getByTestId(
-      "combo-box-option-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-    )
-  );
+  // await userEvent.click(screen.getByTestId("combo-box-select"));
+  // await userEvent.click(
+  //   screen.getByTestId(
+  //     "combo-box-option-DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+  //   )
+  // );
+  await act(() => {
+    selectEvent.select(screen.getByLabelText(/organization/i), "Space Camp");
+  });
+  // const bl = await screen.getByTestId("combo-box-input")
+  // expect(bl).toHaveValue("Space Camp");
 };
 
 describe("when loading orgs", () => {
@@ -137,6 +143,9 @@ describe("unsuccessful form submission", () => {
     await selectOrg();
     expect(screen.getByText("Save Changes", { exact: false })).toBeEnabled();
     await userEvent.click(screen.getByTestId("combo-box-clear-button"));
+    await waitFor(() =>
+      expect(screen.getByTestId("combo-box-input")).toHaveValue("")
+    );
     expect(screen.getByText("Save Changes", { exact: false })).toBeDisabled();
   });
 
