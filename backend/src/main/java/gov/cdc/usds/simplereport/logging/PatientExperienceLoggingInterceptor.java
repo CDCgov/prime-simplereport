@@ -1,8 +1,11 @@
 package gov.cdc.usds.simplereport.logging;
 
+import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -13,8 +16,12 @@ import org.springframework.web.servlet.ModelAndView;
 /** HandlerInterceptor to set a request ID for patient experience REST handlers. */
 @Component
 @ConditionalOnWebApplication
+@AllArgsConstructor
 @Slf4j
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
+
+  private final ApiUserContextHolder userContextHolder;
+  private final OrganizationService organizationService;
 
   @Override
   public boolean preHandle(
@@ -25,7 +32,14 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
         sanitizeRequestURI(request.getRequestURI()),
         handler);
     String requestId = UUID.randomUUID().toString();
+    var org = organizationService.getCurrentOrganization();
+    var user =
+        userContextHolder.hasBeenPopulated()
+            ? userContextHolder.getCurrentApiUser().getLoginEmail()
+            : "";
     MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, requestId);
+    MDC.put(LoggingConstants.ORGANIZATION_ID_MDC_KEY, org.getInternalId().toString());
+    MDC.put(LoggingConstants.USER_MDC_KEY, user);
     response.addHeader(LoggingConstants.REQUEST_ID_HEADER, requestId);
     return true;
   }
@@ -48,6 +62,8 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       throws Exception {
     log.trace("Final logging cleanup step.");
     MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
+    MDC.remove(LoggingConstants.ORGANIZATION_ID_MDC_KEY);
+    MDC.remove(LoggingConstants.USER_MDC_KEY);
   }
 
   private String sanitizeRequestURI(String requestURI) {

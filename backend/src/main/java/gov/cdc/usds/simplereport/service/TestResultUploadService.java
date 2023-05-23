@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +13,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
-import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
@@ -49,7 +50,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
-  private final SpecimenTypeRepository specimenTypeRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
@@ -216,50 +216,54 @@ public class TestResultUploadService {
       ByteArrayInputStream content, Organization org) {
     // send to report stream
     return CompletableFuture.supplyAsync(
-        () -> {
-          long start = System.currentTimeMillis();
-          // convert csv to fhir and serialize to json
-          var serializedFhirBundles =
-              fhirConverter.convertToFhirBundles(content, org.getInternalId());
+        withMDC(
+            () -> {
+              long start = System.currentTimeMillis();
+              // convert csv to fhir and serialize to json
+              var serializedFhirBundles =
+                  fhirConverter.convertToFhirBundles(content, org.getInternalId());
 
-          // build the ndjson request body
-          var ndJson = new StringBuilder();
-          for (String bundle : serializedFhirBundles) {
-            ndJson.append(bundle).append(System.lineSeparator());
-          }
+              // build the ndjson request body
+              var ndJson = new StringBuilder();
+              for (String bundle : serializedFhirBundles) {
+                ndJson.append(bundle).append(System.lineSeparator());
+              }
 
-          UploadResponse response;
-          try {
-            response =
-                _client.uploadFhir(ndJson.toString().trim(), getRSAuthToken().getAccessToken());
-          } catch (FeignException e) {
-            log.info("RS Fhir API Error " + e.status() + " Response: " + e.contentUTF8());
-            response = parseFeignException(e);
-          }
-          log.info("FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
-          return response;
-        });
+              UploadResponse response;
+              try {
+                response =
+                    _client.uploadFhir(ndJson.toString().trim(), getRSAuthToken().getAccessToken());
+              } catch (FeignException e) {
+                log.info("RS Fhir API Error " + e.status() + " Response: " + e.contentUTF8());
+                response = parseFeignException(e);
+              }
+              log.info(
+                  "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+              return response;
+            }));
   }
 
   private Future<UploadResponse> submitResultsAsCsv(byte[] content) {
     return CompletableFuture.supplyAsync(
-        () -> {
-          long start = System.currentTimeMillis();
-          UploadResponse response;
-          try {
-            var csvContent =
-                translateSpecimenNameToSNOMED(
-                    content,
-                    resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
+        withMDC(
+            () -> {
+              long start = System.currentTimeMillis();
+              UploadResponse response;
+              try {
+                var csvContent =
+                    translateSpecimenNameToSNOMED(
+                        content,
+                        resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
 
-            response = _client.uploadCSV(csvContent);
-          } catch (FeignException e) {
-            log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
-            response = parseFeignException(e);
-          }
-          log.info("CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
-          return response;
-        });
+                response = _client.uploadCSV(csvContent);
+              } catch (FeignException e) {
+                log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
+                response = parseFeignException(e);
+              }
+              log.info(
+                  "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+              return response;
+            }));
   }
 
   private UploadResponse parseFeignException(FeignException e) {
