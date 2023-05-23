@@ -16,7 +16,6 @@ export interface VerficationModalProps extends ModalProps {
   ) => Promise<EditOrgMutationResponse>;
   handleVerify: (organization: PendingOrganizationFormValues) => Promise<void>;
   isVerifying: boolean;
-  orgUsingOldSchema: boolean;
 }
 
 export interface DeletionModalProps extends ModalProps {
