@@ -13,31 +13,39 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 public class Facility extends OrganizationScopedEternalEntity implements LocatedEntity {
 
   @Column(nullable = false, unique = false) // unique within an organization only
+  @Getter
+  @Setter
   private String facilityName;
 
   // these are common to all the children of the immediate base class, but ...
-  @Embedded private StreetAddress address;
-  @Column private String telephone;
+  @Embedded @Getter @Setter private StreetAddress address;
+  @Column @Getter @Setter private String telephone;
 
-  @Column private String email;
+  @Column @Getter @Setter private String email;
 
-  @Column private String cliaNumber;
+  @Column @Getter @Setter private String cliaNumber;
 
   @ManyToOne(optional = false)
   @JoinColumn(name = "ordering_provider_id", nullable = false)
+  @Getter
+  @Setter
   private Provider orderingProvider;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_device_type_id")
+  @Getter
   private DeviceType defaultDeviceType;
 
   @ManyToOne(optional = true, fetch = FetchType.EAGER)
   @JoinColumn(name = "default_specimen_type_id")
+  @Getter
   private SpecimenType defaultSpecimenType;
 
   @ManyToMany(fetch = FetchType.EAGER)
@@ -50,58 +58,17 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
   protected Facility() {
     /* for hibernate */ }
 
-  public Facility(
-      Organization org,
-      String facilityName,
-      String cliaNumber,
-      StreetAddress facilityAddress,
-      String phone,
-      String email,
-      Provider orderingProvider,
-      DeviceType defaultDeviceType,
-      SpecimenType defaultSpecimenType,
-      List<DeviceType> configuredDevices) {
-    this(
-        org,
-        facilityName,
-        cliaNumber,
-        facilityAddress,
-        phone,
-        email,
-        orderingProvider,
-        configuredDevices);
-    this.setDefaultDeviceTypeSpecimenType(defaultDeviceType, defaultSpecimenType);
-  }
-
-  public Facility(
-      Organization org,
-      String facilityName,
-      String cliaNumber,
-      StreetAddress facilityAddress,
-      String phone,
-      String email,
-      Provider orderingProvider,
-      List<DeviceType> configuredDevices) {
-    super(org);
-    this.facilityName = facilityName;
-    this.cliaNumber = cliaNumber;
-    this.address = facilityAddress;
-    this.telephone = phone;
-    this.email = email;
-    this.orderingProvider = orderingProvider;
-    this.configuredDeviceTypes.addAll(configuredDevices);
-  }
-
-  public void setFacilityName(String facilityName) {
-    this.facilityName = facilityName;
-  }
-
-  public String getFacilityName() {
-    return facilityName;
-  }
-
-  public DeviceType getDefaultDeviceType() {
-    return this.defaultDeviceType;
+  public Facility(FacilityBuilder facilityBuilder) {
+    super(facilityBuilder.org);
+    this.facilityName = facilityBuilder.facilityName;
+    this.cliaNumber = facilityBuilder.cliaNumber;
+    this.address = facilityBuilder.facilityAddress;
+    this.telephone = facilityBuilder.phone;
+    this.email = facilityBuilder.email;
+    this.orderingProvider = facilityBuilder.orderingProvider;
+    this.configuredDeviceTypes.addAll(facilityBuilder.configuredDevices);
+    this.setDefaultDeviceTypeSpecimenType(
+        facilityBuilder.defaultDeviceType, facilityBuilder.defaultSpecimenType);
   }
 
   public void setDefaultDeviceTypeSpecimenType(DeviceType deviceType, SpecimenType specimenType) {
@@ -115,10 +82,6 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
 
   public void removeDefaultDeviceTypeSpecimenType() {
     this.setDefaultDeviceTypeSpecimenType(null, null);
-  }
-
-  public SpecimenType getDefaultSpecimenType() {
-    return defaultSpecimenType;
   }
 
   public void addDeviceType(DeviceType device) {
@@ -138,45 +101,5 @@ public class Facility extends OrganizationScopedEternalEntity implements Located
         && this.getDefaultDeviceType().getInternalId().equals(deletedDevice.getInternalId())) {
       this.removeDefaultDeviceTypeSpecimenType();
     }
-  }
-
-  public String getCliaNumber() {
-    return this.cliaNumber;
-  }
-
-  public void setCliaNumber(String cliaNumber) {
-    this.cliaNumber = cliaNumber;
-  }
-
-  public Provider getOrderingProvider() {
-    return orderingProvider;
-  }
-
-  public void setOrderingProvider(Provider orderingProvider) {
-    this.orderingProvider = orderingProvider;
-  }
-
-  public StreetAddress getAddress() {
-    return address;
-  }
-
-  public void setAddress(StreetAddress address) {
-    this.address = address;
-  }
-
-  public String getTelephone() {
-    return telephone;
-  }
-
-  public void setTelephone(String telephone) {
-    this.telephone = telephone;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public void setEmail(String email) {
-    this.email = email;
   }
 }
