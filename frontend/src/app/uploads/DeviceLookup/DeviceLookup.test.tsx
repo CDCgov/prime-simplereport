@@ -14,6 +14,18 @@ import DeviceLookup from "./DeviceLookup";
 
 window.scrollTo = jest.fn();
 
+const duplicateSupportedDiseaseTestPerformed = {
+  supportedDisease: {
+    internalId: "177cfdfa-1ce5-404f-bd39-5492f87868f4",
+    loinc: "96741-4",
+    name: "COVID-19",
+  },
+  testPerformedLoincCode: "0000-0",
+  equipmentUid: "equipmentUid987",
+  testkitNameId: "testkitNameId987",
+  testOrderedLoincCode: "9999-9",
+};
+
 const devices = [
   {
     internalId: "abc1",
@@ -22,7 +34,10 @@ const devices = [
     manufacturer: "Celoxitin",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
-    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+    supportedDiseaseTestPerformed:
+      mockSupportedDiseaseTestPerformedCovid.concat(
+        duplicateSupportedDiseaseTestPerformed
+      ),
   },
   {
     internalId: "some-guid",
@@ -64,7 +79,9 @@ describe("Device lookup", () => {
 
     expect(screen.getByText("Celoxitin")).toBeInTheDocument();
     expect(screen.getByText("Model A")).toBeInTheDocument();
-    expect(screen.getByText("COVID-19")).toBeInTheDocument();
+
+    // eslint-disable-next-line jest-dom/prefer-in-document
+    expect(screen.getAllByText("COVID-19")).toHaveLength(1);
   });
 
   it("selected device displays device info", async () => {
@@ -78,9 +95,12 @@ describe("Device lookup", () => {
     expect(model).toBeDisabled();
     expect(model).toHaveValue("Model A");
 
-    const loinc = screen.getByLabelText("Test performed code (COVID-19)");
-    expect(loinc).toBeDisabled();
-    expect(loinc).toHaveValue("1234-1");
+    const loinc = screen.getAllByLabelText("Test performed code (COVID-19)");
+
+    // eslint-disable-next-line jest-dom/prefer-in-document
+    expect(loinc).toHaveLength(1);
+    expect(loinc[0]).toBeDisabled();
+    expect(loinc[0]).toHaveValue("1234-1");
 
     const testResults = screen.getByLabelText("Test result");
     expect(within(testResults).getByText("Positive")).toBeInTheDocument();

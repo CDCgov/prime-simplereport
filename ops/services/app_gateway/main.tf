@@ -439,14 +439,14 @@ resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
   target_resource_id         = azurerm_application_gateway.load_balancer.id
   log_analytics_workspace_id = var.log_workspace_uri
 
-  dynamic "log" {
+  dynamic "enabled_log" {
     for_each = [
       "ApplicationGatewayAccessLog",
       "ApplicationGatewayPerformanceLog",
       "ApplicationGatewayFirewallLog",
     ]
     content {
-      category = log.value
+      category = enabled_log.value
 
       retention_policy {
         enabled = false
