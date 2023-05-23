@@ -37,7 +37,7 @@ variable "acr_image_tag" {
   type        = string
 }
 
-# Rollback info
+# Client container specifics
 variable "subnet_id" {
   description = "The subnet to deploy the container instance to"
   type        = string
