@@ -36,11 +36,15 @@ public class CsvValidatorUtils {
   private static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
 
   // MM/DD/YYYY OR M/D/YYYY
-  private static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
+  // Month and day values of 0 or 00 are invalid, but format of 01 to 09 is still allowed.
+  // Months are limited to values between 1 and 12
+  // Days are limited to values between 1 and 31
+  private static final String DATE_REGEX =
+      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}$";
 
   // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
   private static final String DATE_TIME_REGEX =
-      "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
+      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
