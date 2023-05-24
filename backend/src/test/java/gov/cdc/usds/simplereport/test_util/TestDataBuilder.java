@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountReq
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -68,7 +69,10 @@ public class TestDataBuilder {
   public static Facility createEmptyFacility(boolean includeValidDevice) {
     DeviceType device = includeValidDevice ? createEmptyDeviceWithLoinc() : null;
     return new Facility(
-        null, null, null, null, null, null, null, device, null, Collections.emptyList());
+        FacilityBuilder.builder()
+            .defaultDeviceType(device)
+            .configuredDevices(Collections.emptyList())
+            .build());
   }
 
   public static DeviceType createEmptyDeviceWithLoinc() {
@@ -172,16 +176,18 @@ public class TestDataBuilder {
     Provider doc = new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212");
 
     return new Facility(
-        createValidOrganization(),
-        "Testing Paradise",
-        "123456",
-        getAddress(),
-        "555-867-5309",
-        "facility@test.com",
-        doc,
-        deviceType,
-        specimenType,
-        List.of(deviceType));
+        FacilityBuilder.builder()
+            .org(createValidOrganization())
+            .facilityName("Testing Paradise")
+            .cliaNumber("123456")
+            .facilityAddress(getAddress())
+            .phone("555-867-5309")
+            .email("facility@test.com")
+            .orderingProvider(doc)
+            .defaultDeviceType(deviceType)
+            .defaultSpecimenType(specimenType)
+            .configuredDevices(List.of(deviceType))
+            .build());
   }
 
   private static AskOnEntrySurvey createEmptyAskOnEntrySurvey() {
