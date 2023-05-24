@@ -17,7 +17,7 @@ type OrganizationFormData = {
 
 interface ManageOrganizationProps {
   organization: EditableOrganization;
-  onSave: (organization: EditableOrganization) => void;
+  onSave: (organization: EditableOrganization) => Promise<void>;
   canEditOrganizationName: boolean;
 }
 
@@ -33,6 +33,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
     register,
     handleSubmit,
     formState: { errors, isSubmitting, isDirty },
+    reset,
     watch,
   } = useForm<OrganizationFormData>({
     defaultValues: { type: organization.type, name: organization.name },
@@ -48,8 +49,13 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
       name: canEditOrganizationName ? orgData.name : organization.name,
       type: orgData.type,
     };
-
-    onSave(updatedOrganization);
+    try {
+      await onSave(updatedOrganization);
+      // update default values so the isDirty check applies to current updated data
+      reset({ ...orgData });
+    } catch (e) {
+      /* do nothing as the container component already displays error toast */
+    }
   };
 
   /**
