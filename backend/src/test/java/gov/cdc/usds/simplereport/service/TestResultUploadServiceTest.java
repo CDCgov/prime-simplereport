@@ -23,7 +23,6 @@ import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
-import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -74,7 +73,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Captor private ArgumentCaptor<String> accessTokenCaptor;
   @Mock private DataHubClient dataHubMock;
   @Mock private TestResultUploadRepository repoMock;
-  @Mock private SpecimenTypeRepository specimenTypeRepositoryMock;
   @Mock private OrganizationService orgServiceMock;
   @Mock private ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
@@ -401,8 +399,6 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     response.setErrors(new FeedbackMessage[] {});
     response.setWarnings(new FeedbackMessage[] {});
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
-    when(specimenTypeRepositoryMock.findAll())
-        .thenReturn(List.of(_dataFactory.getGenericSpecimen()));
     when(resultsUploaderDeviceValidationServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
 
