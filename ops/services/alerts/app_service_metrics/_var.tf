@@ -85,6 +85,10 @@ variable "skip_on_weekends" {
   default = false
 }
 
+variable "skip_when_off_hours" {
+  default = false
+}
+
 // Additional URLs to monitor via App Insights availability tests
 // Format: map of { test name = URL } pairs
 variable "additional_uptime_test_urls" {

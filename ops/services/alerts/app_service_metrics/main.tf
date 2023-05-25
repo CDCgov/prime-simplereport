@@ -2,7 +2,8 @@ locals {
   env_title = title(var.env)
 
   // If skip_on_weekends true, only run the query on weekdays
-  skip_on_weekends = var.skip_on_weekends ? "| where dayofweek(now()) between (time(1) .. time(5))" : "| where true"
+  skip_on_weekends    = var.skip_on_weekends ? "| where dayofweek(now()) between (time(1) .. time(5))" : "| where true"
+  skip_when_off_hours = var.skip_when_off_hours ? "| where hourofday(now()) between (time(14) .. time(22))" : "| where true"
 }
 
 resource "azurerm_monitor_metric_alert" "cpu_util" {
@@ -249,6 +250,8 @@ requests
 ${local.skip_on_weekends}
 | where timestamp >= ago(7m) 
     and operation_Name =~ 'QueueBatchedReportStreamUploader'
+    and dayofweek(now()) between (time(1) .. time(5))
+    and hourofday(now()) between (time(14) .. time(22))
   QUERY
 
   trigger {
