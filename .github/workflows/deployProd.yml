@@ -132,3 +132,17 @@ jobs:
         with:
           client-tarball: client.tgz
           deploy-env: ${{env.DEPLOY_ENV}}
+  slack_alert:
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: [deploy]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Send alert to Slack
+        uses: ./.github/actions/slack-message
+        with:
+          username: ${{ github.actor }}
+          description: |
+            :siren-gif: Deploy to ${{ env.DEPLOY_ENV }} failed. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} :siren-gif:
+          webhook_url: ${{ secrets.SR_ALERTS_SLACK_WEBHOOK_URL }}
+          user_map: $${{ secrets.SR_ALERTS_GITHUB_SLACK_MAP }}
