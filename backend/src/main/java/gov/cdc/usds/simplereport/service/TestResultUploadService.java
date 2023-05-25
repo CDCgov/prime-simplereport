@@ -11,7 +11,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
-import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
@@ -49,7 +48,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
-  private final SpecimenTypeRepository specimenTypeRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
