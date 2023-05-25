@@ -580,10 +580,10 @@ export type PatientLink = {
 
 export type PendingOrganization = {
   __typename?: "PendingOrganization";
-  adminEmail?: Maybe<Scalars["String"]>;
-  adminFirstName?: Maybe<Scalars["String"]>;
-  adminLastName?: Maybe<Scalars["String"]>;
-  adminPhone?: Maybe<Scalars["String"]>;
+  adminEmail: Scalars["String"];
+  adminFirstName: Scalars["String"];
+  adminLastName: Scalars["String"];
+  adminPhone: Scalars["String"];
   createdAt: Scalars["DateTime"];
   externalId: Scalars["String"];
   name: Scalars["String"];
@@ -1644,10 +1644,10 @@ export type GetPendingOrganizationsQuery = {
     __typename?: "PendingOrganization";
     externalId: string;
     name: string;
-    adminFirstName?: string | null;
-    adminLastName?: string | null;
-    adminEmail?: string | null;
-    adminPhone?: string | null;
+    adminFirstName: string;
+    adminLastName: string;
+    adminEmail: string;
+    adminPhone: string;
     createdAt: any;
   }>;
 };
