@@ -10,6 +10,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: "${{ github.ref }}"
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: 18
   JAVA_VERSION: 17
