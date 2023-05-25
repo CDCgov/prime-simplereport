@@ -354,6 +354,7 @@ const Header: React.FC<{}> = () => {
                 }))}
               />
             </div>
+            {/*Disabled due to https://github.com/CDCgov/prime-simplereport/issues/5863*/}
             {/*<TouchpointsButton />*/}
           </div>
         </nav>

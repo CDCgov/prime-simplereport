@@ -52,7 +52,10 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
         {children}
         <SRToastContainer />
       </main>
-      <footer>{/*<TouchpointsButton />*/}</footer>
+      <footer>
+        {/*Disabled due to https://github.com/CDCgov/prime-simplereport/issues/5863*/}
+        {/*<TouchpointsButton />*/}
+      </footer>
     </div>
   );
 };
