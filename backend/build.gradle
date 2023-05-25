@@ -91,10 +91,7 @@ dependencies {
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.16.1'
-    implementation 'com.azure:azure-core-http-netty:1.13.2'
-    implementation 'com.azure:azure-core:1.38.0'
-    implementation 'com.azure:azure-storage-common:12.20.1'
+    implementation 'com.azure:azure-storage-queue:12.17.0'
 
     // RandomStringUtils to generate PatientSelfRegistrationLink
     implementation 'org.apache.commons:commons-lang3:3.12.0'
