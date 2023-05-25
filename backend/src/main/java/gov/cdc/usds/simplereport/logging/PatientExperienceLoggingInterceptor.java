@@ -1,7 +1,10 @@
 package gov.cdc.usds.simplereport.logging;
 
-import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,7 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
 
-  private final ApiUserContextHolder userContextHolder;
+  private final ApiUserService apiUserService;
   private final OrganizationService organizationService;
 
   @Override
@@ -31,15 +34,22 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
         request.getMethod(),
         sanitizeRequestURI(request.getRequestURI()),
         handler);
-    String requestId = UUID.randomUUID().toString();
-    var org = organizationService.getCurrentOrganization();
-    var user =
-        userContextHolder.hasBeenPopulated()
-            ? userContextHolder.getCurrentApiUser().getLoginEmail()
-            : "";
+    Organization org = null;
+    UserInfo userInfo = null;
+    try {
+      org = organizationService.getCurrentOrganization();
+      userInfo = apiUserService.getCurrentUserInfo();
+    } catch (NoSuchElementException e) {
+      // account for rest endpoints that are hit without okta info
+      log.debug("Exception getting additional logging context.", e);
+    }
+    var orgId = org != null ? org.getInternalId().toString() : "";
+    var userEmail = userInfo != null ? userInfo.getEmail() : "";
+    var requestId = UUID.randomUUID().toString();
+
     MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, requestId);
-    MDC.put(LoggingConstants.ORGANIZATION_ID_MDC_KEY, org.getInternalId().toString());
-    MDC.put(LoggingConstants.USER_MDC_KEY, user);
+    MDC.put(LoggingConstants.ORGANIZATION_ID_MDC_KEY, orgId);
+    MDC.put(LoggingConstants.USER_MDC_KEY, userEmail);
     response.addHeader(LoggingConstants.REQUEST_ID_HEADER, requestId);
     return true;
   }
