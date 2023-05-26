@@ -1,8 +1,9 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
+import selectEvent from "react-select-event";
 
 import { OrganizationOption } from "../Components/OrganizationComboDropdown";
 
@@ -55,8 +56,9 @@ describe("TenantDataAccessForm", () => {
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
   it("selecting/clearing org enables/disables access", async () => {
-    await userEvent.click(screen.getByTestId("combo-box-select"));
-    await userEvent.click(screen.getByTestId("combo-box-option-ORG_2"));
+    await act(() => {
+      selectEvent.select(screen.getByLabelText(/organization/i), "Org 2 Name");
+    });
     const saveButton = screen.getAllByText("Access data")[0];
     await userEvent.type(
       screen.getByLabelText("Justification", { exact: false }),
@@ -64,7 +66,9 @@ describe("TenantDataAccessForm", () => {
     );
     expect(saveButton).toBeEnabled();
     await userEvent.click(screen.getByTestId("combo-box-clear-button"));
-    expect(saveButton).toBeDisabled();
+    await waitFor(() => {
+      expect(saveButton).toBeDisabled();
+    });
   });
 
   it("Submits a cancellation form", async () => {
