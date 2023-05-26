@@ -1,5 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import selectEvent from "react-select-event";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
@@ -152,8 +153,12 @@ describe("ManageDeviceTypeFormContainer", () => {
   it("should update the selected device", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    await userEvent.click(screen.getByTestId("combo-box-select"));
-    await userEvent.click(screen.getAllByText("Covalent Observer")[1]);
+    await act(() => {
+      selectEvent.select(
+        screen.getByLabelText(/select device/i),
+        "Covalent Observer"
+      );
+    });
 
     await addValue("Manufacturer", " LLC");
     await addValue("Model", "D");
@@ -172,6 +177,8 @@ describe("ManageDeviceTypeFormContainer", () => {
       screen.getByLabelText("Test ordered code *"),
       "LP 321"
     );
+
+    expect(screen.getByText("Save changes")).toBeEnabled();
     await userEvent.click(screen.getByText("Save changes"));
 
     await waitFor(() =>

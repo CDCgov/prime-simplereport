@@ -465,18 +465,28 @@ describe("TestResultsList", () => {
         { target: { value: "Cragell" } }
       );
 
-      await waitForElementToBeRemoved(() => screen.queryByText(/Searching/i));
+      await waitFor(() =>
+        expect(screen.queryByText(/Searching/i)).not.toBeInTheDocument()
+      );
 
-      expect(await screen.findByText(/Filter/i));
-      await userEvent.click(screen.getByText(/Filter/i));
+      expect(await screen.getAllByText(/Filter/i)[0]);
+      await userEvent.click(screen.getAllByText(/Filter/i)[0]);
 
       // Clear filter
       expect(await screen.findByText("Clear filters")).toBeInTheDocument();
       await userEvent.click(screen.getByText("Clear filters"));
 
       // All results, filter no longer applied
-      expect(await screen.findByText("Cragell, Barb Whitaker"));
-      expect(await screen.findByText("Colleer, Barde X"));
+      expect(
+        await within(screen.getByTitle("filtered-result")).findByText(
+          "Cragell, Barb Whitaker"
+        )
+      );
+      expect(
+        await within(screen.getByTitle("filtered-result")).findByText(
+          "Colleer, Barde X"
+        )
+      );
     });
 
     it("should be able to clear date filters", async () => {
@@ -593,7 +603,6 @@ describe("TestResultsList", () => {
         "button",
         {
           name: "Download results",
-          exact: false,
         }
       );
       await userEvent.click(downloadButton2);
