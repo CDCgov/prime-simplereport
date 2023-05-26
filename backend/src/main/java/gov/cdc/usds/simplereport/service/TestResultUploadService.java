@@ -15,7 +15,6 @@ import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
@@ -283,9 +282,9 @@ public class TestResultUploadService {
               response.getWarnings(),
               response.getErrors());
 
-      if (response.getOverallStatus() != ReportStreamStatus.ERROR) {
-        result = _repo.save(result);
-      }
+      //      if (response.getOverallStatus() != ReportStreamStatus.ERROR) {
+      result = _repo.save(result);
+      //      }
     }
     return result;
   }
