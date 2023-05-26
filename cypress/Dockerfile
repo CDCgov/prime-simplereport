@@ -1,4 +1,4 @@
-FROM cypress/browsers:node14.17.0-chrome91-ff89
+FROM cypress/browsers:node18.12.0-chrome107
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 RUN apt-get install -y wget apt-transport-https; \
