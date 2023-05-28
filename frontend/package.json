@@ -188,7 +188,7 @@
     "@graphql-codegen/typescript-react-apollo": "3.3.7",
     "@storybook/addon-a11y": "^6.5.16",
     "@storybook/addon-actions": "^6.5.13",
-    "@storybook/addon-essentials": "^6.5.13",
+    "@storybook/addon-essentials": "^7.0.18",
     "@storybook/addon-interactions": "^6.5.13",
     "@storybook/addon-links": "^6.5.13",
     "@storybook/builder-webpack5": "^6.5.13",
