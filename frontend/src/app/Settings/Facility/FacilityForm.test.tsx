@@ -3,6 +3,7 @@ import {
   render,
   screen,
   waitFor,
+  waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -719,6 +720,10 @@ describe("FacilityForm", () => {
       const deviceList = screen.getByTestId("multi-select-option-list");
       await userEvent.click(deviceInput);
       await userEvent.click(within(deviceList).getByText("Device 1"));
+
+      await waitForElementToBeRemoved(() =>
+        screen.queryByText("There are currently no devices")
+      );
 
       // Expect no errors
       expect(

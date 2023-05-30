@@ -1,4 +1,4 @@
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -509,16 +509,9 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      fireEvent.click(screen.getByTestId("multi-select-input"));
-      await userEvent.hover(
-        screen.getByTestId("multi-select-option-Strawberries")
-      );
-      fireEvent.keyDown(
-        screen.getByTestId("multi-select-option-Strawberries"),
-        {
-          key: "ArrowDown",
-        }
-      );
+      await userEvent.click(screen.getByTestId("multi-select-toggle"));
+      // clicks down arrow 7 times total to get to last option and then ensure focus is not lost when clicking down arrow again
+      await userEvent.keyboard("{ArrowDown>7/}");
 
       expect(
         screen.getByTestId("multi-select-option-Strawberries")
@@ -778,17 +771,23 @@ describe("MultiSelectDropdown component", () => {
         screen.getByTestId("multi-select-option-Blueberries")
       );
 
-      expect(screen.getByTestId("multi-select-option-Blueberries")).toHaveClass(
-        "usa-combo-box__list-option--focused"
-      );
+      await waitFor(() => {
+        expect(
+          screen.getByTestId("multi-select-option-Blueberries")
+        ).toHaveClass("usa-combo-box__list-option--focused");
+      });
 
       await userEvent.hover(screen.getByTestId("multi-select-option-Grapes"));
-      expect(
-        screen.getByTestId("multi-select-option-Blueberries")
-      ).not.toHaveClass("usa-combo-box__list-option--focused");
-      expect(screen.getByTestId("multi-select-option-Grapes")).toHaveClass(
-        "usa-combo-box__list-option--focused"
-      );
+      await waitFor(() => {
+        expect(
+          screen.getByTestId("multi-select-option-Blueberries")
+        ).not.toHaveClass("usa-combo-box__list-option--focused");
+      });
+      await waitFor(() => {
+        expect(screen.getByTestId("multi-select-option-Grapes")).toHaveClass(
+          "usa-combo-box__list-option--focused"
+        );
+      });
     });
 
     it("clears focus when clicking outside of the component", async () => {
