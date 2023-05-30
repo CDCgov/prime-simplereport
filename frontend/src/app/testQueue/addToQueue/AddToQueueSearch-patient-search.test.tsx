@@ -3,6 +3,7 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
@@ -94,7 +95,7 @@ describe("AddToSearchQueue", () => {
 
   describe("patient search", () => {
     it("does not search on too few input search characters", async () => {
-      fireEvent.change(screen.getByRole("searchbox", { exact: false }), {
+      fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "a" },
       });
       fireEvent.click(screen.getByRole("button"));
@@ -103,7 +104,7 @@ describe("AddToSearchQueue", () => {
     });
 
     it("performs search on input change", async () => {
-      fireEvent.change(screen.getByRole("searchbox", { exact: false }), {
+      fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "bar" },
       });
       fireEvent.click(screen.getByRole("button"));
@@ -111,7 +112,9 @@ describe("AddToSearchQueue", () => {
       expect(screen.getByText("Searching...")).toBeInTheDocument();
       await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
 
-      expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
+      });
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -119,7 +122,7 @@ describe("AddToSearchQueue", () => {
     });
 
     it("does not allow adding new test if patient already in queue", async () => {
-      fireEvent.change(screen.getByRole("searchbox", { exact: false }), {
+      fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "joh" },
       });
       fireEvent.click(screen.getByRole("button"));

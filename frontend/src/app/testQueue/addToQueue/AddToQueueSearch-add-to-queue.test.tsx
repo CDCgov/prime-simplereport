@@ -168,10 +168,7 @@ describe("AddToSearchQueue - add to queue", () => {
       srToast,
       "showAlertNotification"
     );
-    await userEvent.type(
-      screen.getByRole("searchbox", { exact: false }),
-      "bar"
-    );
+    await userEvent.type(screen.getByRole("searchbox"), "bar");
 
     await userEvent.click(screen.getAllByRole("button")[1]);
 
@@ -187,10 +184,7 @@ describe("AddToSearchQueue - add to queue", () => {
   });
 
   it("tracks custom telemetry event", async () => {
-    await userEvent.type(
-      screen.getByRole("searchbox", { exact: false }),
-      "bar"
-    );
+    await userEvent.type(screen.getByRole("searchbox"), "bar");
 
     await userEvent.click(screen.getAllByRole("button")[1]);
 

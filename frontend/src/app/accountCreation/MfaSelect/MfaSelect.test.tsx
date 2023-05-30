@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
@@ -98,9 +98,11 @@ describe("MfaSelect routing", () => {
     await userEvent.click(smsRadio);
     expect(smsRadio).toBeChecked();
     await userEvent.click(continueButton);
-    expect(
-      screen.getByText("Get your security code via text message (SMS).")
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText("Get your security code via text message (SMS).")
+      ).toBeInTheDocument();
+    });
   });
 
   it("can route to the Google Auth page", async () => {
@@ -143,11 +145,13 @@ describe("MfaSelect routing", () => {
     expect(securityKeyRadio).toBeChecked();
     await userEvent.click(continueButton);
 
-    expect(
-      screen.getByText(
-        "Insert your Security Key in your computer’s USB port or connect it with a USB cable."
-      )
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "Insert your Security Key in your computer’s USB port or connect it with a USB cable."
+        )
+      ).toBeInTheDocument();
+    });
   });
 
   it("can route to the Email page", async () => {
@@ -157,12 +161,14 @@ describe("MfaSelect routing", () => {
     await userEvent.click(emailRadio);
     expect(emailRadio).toBeChecked();
     await userEvent.click(continueButton);
-    expect(
-      screen.getByText(
-        "We’ve sent you an email with a one-time security code.",
-        { exact: false }
-      )
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          "We’ve sent you an email with a one-time security code.",
+          { exact: false }
+        )
+      ).toBeInTheDocument();
+    });
   });
 
   it("can route to the Phone call page", async () => {
@@ -172,8 +178,10 @@ describe("MfaSelect routing", () => {
     await userEvent.click(phoneRadio);
     expect(phoneRadio).toBeChecked();
     await userEvent.click(continueButton);
-    expect(
-      screen.getByText("Get your security code via a phone call")
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.getByText("Get your security code via a phone call")
+      ).toBeInTheDocument();
+    });
   });
 });
