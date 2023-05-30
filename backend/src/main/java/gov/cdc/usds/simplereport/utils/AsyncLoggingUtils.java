@@ -5,6 +5,9 @@ import java.util.function.Supplier;
 import org.slf4j.MDC;
 
 public class AsyncLoggingUtils {
+
+  private AsyncLoggingUtils() {}
+
   public static <U> Supplier<U> withMDC(Supplier<U> supplier) {
     Map<String, String> mdc = MDC.getCopyOfContextMap();
     return () -> {
