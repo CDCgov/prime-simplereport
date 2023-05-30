@@ -1,9 +1,9 @@
 package gov.cdc.usds.simplereport.logging;
 
+import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
 
-  @Lazy private final ApiUserService apiUserService;
+  @Lazy private final ApiUserContextHolder apiUserContextHolder;
   private final OrganizationService organizationService;
 
   @Override
@@ -36,16 +36,17 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
         sanitizeRequestURI(request.getRequestURI()),
         handler);
     Organization org = null;
-    UserInfo userInfo = null;
+    ApiUser userInfo = null;
     try {
       org = organizationService.getCurrentOrganization();
-      userInfo = apiUserService.getCurrentUserInfo();
+      userInfo =
+          apiUserContextHolder.hasBeenPopulated() ? apiUserContextHolder.getCurrentApiUser() : null;
     } catch (NoSuchElementException e) {
       // account for rest endpoints that are hit without okta info
       log.debug("Exception getting additional logging context.", e);
     }
     var orgId = org != null ? org.getInternalId().toString() : "";
-    var userEmail = userInfo != null ? userInfo.getEmail() : "";
+    var userEmail = userInfo != null ? userInfo.getLoginEmail() : "";
     var requestId = UUID.randomUUID().toString();
 
     MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, requestId);
