@@ -8,6 +8,12 @@ function getWiremockPath(filename) {
     "support/wiremock" : "cypress/support/wiremock";
   return `${wiremockPath}/${filename}`;
 }
+
+// module.exports = (on, config) => {
+//   require("cypress-fail-fast/plugin")(on, config);
+//   return config;
+// };
+
 module.exports = {
   viewportWidth: 1200,
   viewportHeight: 800,
@@ -21,6 +27,7 @@ module.exports = {
   e2e: {
     supportFile: 'cypress/support/e2e.js',
     setupNodeEvents(on, config) {
+      require("cypress-fail-fast/plugin")(on, config);
       on("task", {
         // These tasks set and read state to be passed between specs
         setAuth({ id_token, access_token }) {
