@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
 
-  private final ApiUserService apiUserService;
+  @Lazy private final ApiUserService apiUserService;
   private final OrganizationService organizationService;
 
   @Override
