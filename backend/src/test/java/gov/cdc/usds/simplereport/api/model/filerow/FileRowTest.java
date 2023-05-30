@@ -24,7 +24,7 @@ class FileRowTest {
   @Test
   void invokeGetPossibleError_returnsErrorsFromGetPossibleError() throws IllegalAccessException {
     class TestFileRow implements FileRow {
-      final ValueOrError val = new ValueOrError(new FeedbackMessage());
+      //      final ValueOrError val = new ValueOrError(new FeedbackMessage());
 
       @Override
       public List<FeedbackMessage> validateRequiredFields() {

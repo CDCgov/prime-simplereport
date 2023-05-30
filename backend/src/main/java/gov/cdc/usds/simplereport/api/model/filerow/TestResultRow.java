@@ -362,7 +362,15 @@ public class TestResultRow implements FileRow {
 
     String errorMessage =
         "Invalid " + EQUIPMENT_MODEL_NAME + " and " + TEST_PERFORMED_CODE + " combination";
-    return List.of(new FeedbackMessage(ITEM_SCOPE, errorMessage));
+    return List.of(
+
+        //        new FeedbackMessage(ITEM_SCOPE, errorMessage)
+        FeedbackMessage.builder()
+            .scope(ITEM_SCOPE)
+            .message(errorMessage)
+            .fieldRequired(true)
+            .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+            .build());
   }
 
   private boolean validFluOnlyTestPerformedLoinc(String testPerformedCode) {

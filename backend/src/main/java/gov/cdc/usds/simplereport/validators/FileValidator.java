@@ -30,10 +30,16 @@ public class FileValidator<T extends FileRow> {
 
     if (!valueIterator.hasNext()) {
       var feedback =
-          new FeedbackMessage(
-              CsvValidatorUtils.ITEM_SCOPE,
-              "File is missing headers and other required data",
-              null);
+          //          new FeedbackMessage(
+          //              CsvValidatorUtils.ITEM_SCOPE,
+          //              "File is missing headers and other required data",
+          //              null);
+
+          FeedbackMessage.builder()
+              .scope(CsvValidatorUtils.ITEM_SCOPE)
+              .message("File is missing headers and other required data")
+              .build();
+
       mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
     }
 
@@ -50,10 +56,19 @@ public class FileValidator<T extends FileRow> {
           rowNumber--;
         }
         var feedback =
-            new FeedbackMessage(
-                CsvValidatorUtils.ITEM_SCOPE,
-                "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.",
-                new ArrayList<>(List.of(rowNumber)));
+            //            new FeedbackMessage(
+            //                CsvValidatorUtils.ITEM_SCOPE,
+            //                "File has the incorrect number of columns or empty rows. Please make
+            // sure all columns match the data template, and delete any empty rows.",
+            //                new ArrayList<>(List.of(rowNumber)));
+
+            FeedbackMessage.builder()
+                .scope(CsvValidatorUtils.ITEM_SCOPE)
+                .message(
+                    "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.")
+                .indices(List.of(rowNumber))
+                .build();
+
         mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
         continue;
       }

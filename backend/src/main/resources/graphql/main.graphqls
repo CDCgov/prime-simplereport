@@ -352,6 +352,9 @@ type FeedbackMessage {
   scope: String
   message: String
   indices: [Int]
+  fieldHeader: String!
+  errorType: String!
+  fieldRequired: Boolean!
 }
 
 type UploadSubmissionPage {

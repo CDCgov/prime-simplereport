@@ -180,8 +180,18 @@ public class CsvValidatorUtils {
     if (nonSNOMEDValue) {
       if (!specimenNameSNOMEDMap.containsKey(value.toLowerCase())) {
         errors.add(
-            new FeedbackMessage(
-                ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+            FeedbackMessage.builder()
+                .scope(ITEM_SCOPE)
+                .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+                .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+                .fieldRequired(true)
+                .fieldHeader(input.getHeader())
+                .build()
+
+            //            new FeedbackMessage(
+            //                ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(),
+            // input.getHeader()))
+            );
       }
 
       return errors;
@@ -189,8 +199,16 @@ public class CsvValidatorUtils {
 
     if (!value.matches(SNOMED_REGEX)) {
       errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+          //          new FeedbackMessage(
+          //              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(),
+          // input.getHeader()))
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(true)
+              .fieldHeader(input.getHeader())
+              .build());
     }
 
     return errors;
@@ -258,8 +276,16 @@ public class CsvValidatorUtils {
       PAST_DATE_FLEXIBLE_FORMATTER.parse(input.getValue());
     } catch (DateTimeParseException e) {
       errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+          //          new FeedbackMessage(
+          //              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(),
+          // input.getHeader()))
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
     }
     return errors;
   }
@@ -293,9 +319,18 @@ public class CsvValidatorUtils {
       value = value.strip();
     }
     if (isRequired && (value == null || value.isBlank())) {
-      return new ValueOrError(new FeedbackMessage(ITEM_SCOPE, getRequiredValueErrorMessage(name)));
+      return new ValueOrError(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(name)
+              .message(getRequiredValueErrorMessage(name))
+              .errorType(FeedbackMessage.ErrorType.MISSING_DATA)
+              .fieldRequired(true)
+              .build());
+      //      return new ValueOrError(new FeedbackMessage(ITEM_SCOPE,
+      // getRequiredValueErrorMessage(name)));
     }
-    return new ValueOrError(value, name);
+    return new ValueOrError(value, name, isRequired);
   }
 
   public static List<FeedbackMessage> hasMissingRequiredHeaders(
@@ -308,10 +343,21 @@ public class CsvValidatorUtils {
             requiredField -> {
               if (!columns.contains(requiredField)) {
                 var feedback =
-                    new FeedbackMessage(
-                        CsvValidatorUtils.ITEM_SCOPE,
-                        "The header for column " + requiredField + " is missing or invalid.",
-                        null);
+                    //                    new FeedbackMessage(
+                    //                        CsvValidatorUtils.ITEM_SCOPE,
+                    //                        "The header for column " + requiredField + " is
+                    // missing or invalid.",
+                    //                        null);
+
+                    FeedbackMessage.builder()
+                        .scope(CsvValidatorUtils.ITEM_SCOPE)
+                        .message(
+                            "The header for column " + requiredField + " is missing or invalid.")
+                        .fieldHeader(requiredField)
+                        .errorType(FeedbackMessage.ErrorType.MISSING_HEADER)
+                        .fieldRequired(true)
+                        .build();
+
                 errors.add(feedback);
               }
             });
@@ -413,8 +459,16 @@ public class CsvValidatorUtils {
     }
     if (!value.matches(regex)) {
       errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+          //          new FeedbackMessage(
+          //              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(),
+          // input.getHeader()))
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
     }
     return errors;
   }
@@ -428,8 +482,17 @@ public class CsvValidatorUtils {
     }
     if (!acceptableValues.contains(value.toLowerCase())) {
       errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+          //          new FeedbackMessage(
+          //              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(),
+          // input.getHeader()))
+
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
     }
     return errors;
   }
@@ -446,17 +509,20 @@ public class CsvValidatorUtils {
     private final List<FeedbackMessage> error;
     private final String value;
     private final String header;
+    private final boolean required;
 
-    public ValueOrError(String value, String header) {
+    public ValueOrError(String value, String header, boolean required) {
       this.value = value;
       this.error = Collections.emptyList();
       this.header = header;
+      this.required = required;
     }
 
     public ValueOrError(FeedbackMessage error) {
       this.value = null;
       this.header = null;
       this.error = List.of(error);
+      this.required = error.isFieldRequired();
     }
 
     public List<FeedbackMessage> getPossibleError() {
