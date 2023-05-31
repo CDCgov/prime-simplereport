@@ -1,0 +1,9 @@
+version: "3.2"
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: simple-report-db-client
+    ports:
+      - "5432:5432"
