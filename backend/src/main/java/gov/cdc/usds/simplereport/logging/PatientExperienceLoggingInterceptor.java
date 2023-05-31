@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.logging;
 
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -12,7 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -24,7 +24,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
 
-  @Lazy private final ApiUserContextHolder apiUserContextHolder;
+  private final ApiUserContextHolder apiUserContextHolder;
   private final OrganizationService organizationService;
 
   @Override
@@ -41,7 +41,7 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       org = organizationService.getCurrentOrganization();
       userInfo =
           apiUserContextHolder.hasBeenPopulated() ? apiUserContextHolder.getCurrentApiUser() : null;
-    } catch (NoSuchElementException e) {
+    } catch (NoSuchElementException | MisconfiguredUserException e) {
       // account for rest endpoints that are hit without okta info
       log.debug("Exception getting additional logging context.", e);
     }
