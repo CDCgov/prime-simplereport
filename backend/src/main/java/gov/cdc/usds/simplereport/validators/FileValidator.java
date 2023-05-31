@@ -54,7 +54,7 @@ public class FileValidator<T extends FileRow> {
                 .scope(CsvValidatorUtils.ITEM_SCOPE)
                 .message(
                     "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.")
-                .indices(List.of(rowNumber))
+                .indices(new ArrayList<>(List.of(rowNumber)))
                 .build();
         mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
         continue;
