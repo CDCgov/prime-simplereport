@@ -5,6 +5,7 @@ module.exports = {
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     "@storybook/preset-create-react-app",
+    "@storybook/addon-mdx-gfm",
   ],
   webpackFinal: async (config) => {
     config.resolve.alias["@microsoft/applicationinsights-react-js"] =
@@ -14,8 +15,11 @@ module.exports = {
     );
     return config;
   },
-  framework: "@storybook/react",
-  core: {
-    builder: "@storybook/builder-webpack5",
+  framework: {
+    name: "@storybook/react-webpack5",
+    options: {},
+  },
+  docs: {
+    autodocs: true,
   },
 };
