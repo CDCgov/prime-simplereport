@@ -2,8 +2,10 @@ package gov.cdc.usds.simplereport.service.model.reportstream;
 
 import java.io.Serializable;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -11,6 +13,8 @@ import lombok.ToString;
 @Setter
 @ToString
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class FeedbackMessage implements Serializable {
   public enum ErrorType {
     MISSING_HEADER,
