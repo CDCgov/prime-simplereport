@@ -60,6 +60,72 @@ export function groupErrors(
 }
 
 export function getGuidance(error: EnhancedFeedbackMessage) {
+  const fieldsAcceptSpecificValues = new Set([
+    "patient_gender",
+    "patient_race",
+    "patient_ethnicity",
+    "pregnant",
+    "employed_in_healthcare",
+    "symptomatic_for_disease",
+    "resident_congregate_setting",
+    "residence_type",
+    "hospitalized",
+    "icu",
+    "test_result_status",
+  ]);
+
+  const getMissingHeaderErrorGuidance = (header: string) =>
+    `Include a column with ${header} as the header.`;
+
+  const getMissingDataErrorGuidance = (header: string) =>
+    `${header} is a required field. Include values in each row under this column.`;
+
+  const getInvalidDataErrorGuidance = (
+    header: string,
+    required: boolean,
+    specificValues: boolean
+  ) => {
+    const guideLink = (
+      <HashLink pathname="/results/upload/submit/guide" hash={header}>
+        <u>in the upload guide</u>
+      </HashLink>
+    );
+
+    let guidance;
+    if (required) {
+      if (specificValues) {
+        guidance = (
+          <div>
+            Choose from the accepted values listed under {header} {guideLink}.
+          </div>
+        );
+      } else {
+        guidance = (
+          <div>
+            Follow the instructions under {header} {guideLink}.
+          </div>
+        );
+      }
+    } else {
+      if (specificValues) {
+        guidance = (
+          <div>
+            If including {header}, choose from the accepted values listed under{" "}
+            {header} {guideLink}.
+          </div>
+        );
+      } else {
+        guidance = (
+          <div>
+            If including {header}, follow the instructions under {header}{" "}
+            {guideLink}.
+          </div>
+        );
+      }
+    }
+    return guidance;
+  };
+
   if (error.errorType === "MISSING_HEADER") {
     return getMissingHeaderErrorGuidance(error.fieldHeader);
   } else if (error.errorType === "MISSING_DATA") {
@@ -68,63 +134,9 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     return getInvalidDataErrorGuidance(
       error.fieldHeader,
       error.fieldRequired,
-      false
+      fieldsAcceptSpecificValues.has(error.fieldHeader)
     );
   }
-}
-
-export function getMissingHeaderErrorGuidance(header: string) {
-  return `Include a column with ${header} as the header.`;
-}
-
-export function getMissingDataErrorGuidance(header: string) {
-  return `${header} is a required field. Include values in each row under this column.`;
-}
-
-export function getInvalidDataErrorGuidance(
-  header: string,
-  required: boolean,
-  specificValues: boolean
-) {
-  const guideLink = (
-    <HashLink pathname="/results/upload/submit/guide" hash={header}>
-      <u>in the upload guide</u>
-    </HashLink>
-  );
-
-  let guidance;
-  if (required) {
-    if (specificValues) {
-      guidance = (
-        <div>
-          Choose from the accepted values listed under {header} {guideLink}.
-        </div>
-      );
-    } else {
-      guidance = (
-        <div>
-          Follow the instructions under {header} {guideLink}.
-        </div>
-      );
-    }
-  } else {
-    if (specificValues) {
-      guidance = (
-        <div>
-          If including {header}, choose from the accepted values listed under{" "}
-          {header} {guideLink}.
-        </div>
-      );
-    } else {
-      guidance = (
-        <div>
-          If including {header}, follow the instructions under {header}{" "}
-          {guideLink}.
-        </div>
-      );
-    }
-  }
-  return guidance;
 }
 
 const Uploads = () => {
