@@ -200,7 +200,7 @@ export const en = {
           phoneNumbers: "Phone numbers are missing or invalid",
           phoneNumbersType: "Phone type is required",
           phoneNumbersDuplicate: "Duplicate phone number entered",
-          email: "Email is missing or incorrectly formatted",
+          email: "Email is incorrectly formatted",
           street: "Street address is missing",
           streetTwo: "Street 2 is incorrectly formatted",
           zipCode: "ZIP code is missing",

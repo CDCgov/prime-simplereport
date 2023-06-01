@@ -210,7 +210,7 @@ export const es: LanguageConfig = {
           phoneNumbers: "Faltan los números de teléfono o no son válidos",
           phoneNumbersType: "Se requiere tipo de teléfono",
           phoneNumbersDuplicate: "Número de teléfono duplicado ingresado",
-          email: "Falta el correo electrónico o tiene un formato incorrecto",
+          email: "El correo electrónico tiene un formato incorrecto",
           street: "Falta el nombre de la calle",
           streetTwo: "Calle 2 tiene un formato incorrecto",
           zipCode: "Falta el código postal o tiene un formato incorrecto",
