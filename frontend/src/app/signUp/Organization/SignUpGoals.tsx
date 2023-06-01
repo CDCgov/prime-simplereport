@@ -32,7 +32,7 @@ const SignUpGoals = () => {
   }
 
   const onSubmit = () => {
-    if (!!signUpGoal) {
+    if (signUpGoal) {
       setSubmitted(true);
     }
   };
