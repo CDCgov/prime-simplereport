@@ -11,6 +11,11 @@ resource "azurerm_key_vault" "db_keys" {
   soft_delete_retention_days = 90
   purge_protection_enabled   = true
 
+  network_acls {
+    bypass         = "AzureServices"
+    default_action = "Deny"
+  }
+
   tags = local.management_tags
 }
 
