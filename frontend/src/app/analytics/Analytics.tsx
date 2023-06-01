@@ -244,7 +244,7 @@ export const Analytics = (props: Props) => {
                   <div className="grid-row grid-gap">
                     <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-row">
-                        <h2>Tests conducted</h2>
+                        <h3>Tests conducted</h3>
                         <span className="font-sans-3xl text-bold margin-y-auto">
                           {totalTests}
                         </span>
@@ -253,7 +253,7 @@ export const Analytics = (props: Props) => {
                     </div>
                     <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-align-center">
-                        <h2>Positive tests</h2>
+                        <h3>Positive tests</h3>
                         <span className="font-sans-3xl text-bold margin-y-auto">
                           {positiveTests}
                         </span>
@@ -266,7 +266,7 @@ export const Analytics = (props: Props) => {
                     </div>
                     <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-align-center">
-                        <h2>Negative tests</h2>
+                        <h3>Negative tests</h3>
                         <span className="font-sans-3xl text-bold margin-y-auto">
                           {negativeTests}
                         </span>
@@ -275,7 +275,7 @@ export const Analytics = (props: Props) => {
                     </div>
                     <div className="desktop:grid-col-3 tablet:grid-col-6 mobile:grid-col-1">
                       <div className="card display-flex flex-column flex-align-center">
-                        <h2>Positivity rate</h2>
+                        <h3>Positivity rate</h3>
                         <span className="font-sans-3xl text-bold margin-y-auto">
                           {positivityRate !== null
                             ? positivityRate.toFixed(1) + "%"
