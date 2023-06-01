@@ -23,10 +23,21 @@ resource "azurerm_storage_account" "app" {
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
 
+  queue_properties {
+    logging {
+      delete                = false
+      read                  = false
+      write                 = false
+      version               = "1.0"
+      retention_policy_days = 7
+    }
+  }
+
   static_website {
     index_document     = "index.html"
     error_404_document = "404.html"
   }
+
   tags = local.management_tags
 }
 
