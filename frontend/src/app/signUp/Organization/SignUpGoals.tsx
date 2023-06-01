@@ -15,7 +15,7 @@ import "./SignUpGoals.scss";
 const SignUpGoals = () => {
   const [submitted, setSubmitted] = useState(false);
   const [signUpGoal, setSignUpGoal] = useState("");
-  const [signUpGoalError, setSignUpGoalError] = useState("");
+
   useDocumentTitle("Sign up - select status");
 
   if (submitted) {
@@ -32,10 +32,7 @@ const SignUpGoals = () => {
   }
 
   const onSubmit = () => {
-    if (signUpGoal === "") {
-      setSignUpGoalError("Please select an option");
-    } else {
-      setSignUpGoalError("");
+    if (signUpGoal !== "") {
       setSubmitted(true);
     }
   };
@@ -71,8 +68,6 @@ const SignUpGoals = () => {
               },
             ]}
             selectedRadio={signUpGoal}
-            errorMessage={signUpGoalError}
-            validationStatus={signUpGoalError ? "error" : undefined}
             onChange={setSignUpGoal}
             variant="tile"
           />
@@ -81,6 +76,7 @@ const SignUpGoals = () => {
           className="width-full continue-button"
           onClick={onSubmit}
           label={"Continue"}
+          disabled={!signUpGoal}
         />
       </Card>
     </CardBackground>
