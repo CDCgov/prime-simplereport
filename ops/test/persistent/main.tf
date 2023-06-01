@@ -26,18 +26,6 @@ module "monitoring" {
   tags = local.management_tags
 }
 
-module "bastion" {
-  source = "../../services/bastion_host"
-  env    = local.env
-
-  resource_group_location = local.rg_location
-  resource_group_name     = local.rg_name
-
-  virtual_network = module.vnet.network
-
-  tags = local.management_tags
-}
-
 resource "random_password" "random_nophi_password" {
   length           = 30
   special          = false

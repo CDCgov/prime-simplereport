@@ -55,6 +55,12 @@ resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
   storage_account_name = azurerm_storage_account.app.name
 }
 
+resource "azurerm_storage_share" "db_client_export" {
+  name                 = "db-client-export-${local.env}"
+  storage_account_name = azurerm_storage_account.app.name
+  quota                = 10
+}
+
 resource "azurerm_cdn_profile" "cdn_profile" {
   name                = "${local.name}-${local.env}"
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -145,7 +151,6 @@ module "nat_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
   subnet_webapp_id        = data.terraform_remote_state.persistent_stg.outputs.subnet_webapp_id
   subnet_lb_id            = data.terraform_remote_state.persistent_stg.outputs.subnet_lbs_id
-  subnet_vm_id            = data.terraform_remote_state.persistent_stg.outputs.subnet_vm_id
   tags                    = local.management_tags
 }
 
