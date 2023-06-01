@@ -491,6 +491,10 @@ public class CsvValidatorUtils {
       this.required = required;
     }
 
+    public ValueOrError(String value, String header) {
+      this(value, header, false);
+    }
+
     public ValueOrError(FeedbackMessage error) {
       this.value = null;
       this.header = null;
