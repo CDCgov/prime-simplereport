@@ -18,24 +18,20 @@ const SignUpGoals = () => {
 
   useDocumentTitle("Sign up - select status");
 
+  const onSubmit = () => {
+    setSubmitted(true);
+  };
+
   if (submitted) {
     switch (signUpGoal) {
-      case "newOrg":
-        return <OrganizationForm />;
       case "existingOrg":
         return <RequestAccess />;
       case "testResult":
         return <RequestTestResult />;
       default:
-        break;
+        return <OrganizationForm />;
     }
   }
-
-  const onSubmit = () => {
-    if (signUpGoal) {
-      setSubmitted(true);
-    }
-  };
 
   return (
     <CardBackground>
