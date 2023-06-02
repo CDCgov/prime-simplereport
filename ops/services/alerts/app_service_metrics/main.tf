@@ -2,8 +2,7 @@ locals {
   env_title = title(var.env)
 
   // If skip_on_weekends true, only run the query on weekdays
-  skip_on_weekends    = var.skip_on_weekends ? "| where dayofweek(now()) between (time(1) .. time(5))" : "| where true"
-  skip_when_off_hours = var.skip_when_off_hours ? "| where hourofday(now()) between (time(14) .. time(22))" : "| where true"
+  skip_on_weekends = var.skip_on_weekends ? "| where dayofweek(now()) between (time(1) .. time(5))" : "| where true"
 }
 
 resource "azurerm_monitor_metric_alert" "cpu_util" {
@@ -240,17 +239,16 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_functio
   resource_group_name = var.rg_name
   severity            = var.severity
   frequency           = 5
-  time_window         = 15
+  time_window         = 7
   enabled             = contains(var.disabled_alerts, "batched_uploader_function_not_triggering") ? false : true
 
   data_source_id = var.app_insights_id
 
   query = <<-QUERY
 requests
-| where timestamp >= ago(15m) 
+${local.skip_on_weekends}
+| where timestamp >= ago(7m) 
     and operation_Name =~ 'QueueBatchedReportStreamUploader'
-    and dayofweek(now()) between (time(1) .. time(5))
-    and hourofday(now()) between (time(14) .. time(22))
   QUERY
 
   trigger {
@@ -388,17 +386,16 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_fu
   resource_group_name = var.rg_name
   severity            = var.severity
   frequency           = 5
-  time_window         = 15
+  time_window         = 7
   enabled             = contains(var.disabled_alerts, "fhir_batched_uploader_function_not_triggering") ? false : true
 
   data_source_id = var.app_insights_id
 
   query = <<-QUERY
 requests
-| where timestamp >= ago(15m) 
+${local.skip_on_weekends}
+| where timestamp >= ago(7m) 
     and operation_Name =~ 'FHIRTestEventReporter'
-    and dayofweek(now()) between (time(1) .. time(5))
-    and hourofday(now()) between (time(14) .. time(22))
   QUERY
 
   trigger {
