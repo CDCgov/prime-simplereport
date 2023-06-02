@@ -68,38 +68,38 @@ describe("PasswordCreate", () => {
   });
 
   it("thinks 'foo' is a weak password", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "foo");
+    await userEvent.type(screen.getByLabelText("Password *"), "foo");
     expect(screen.getByText(strengthLabel("Weak"))).toBeInTheDocument();
   });
 
   it("thinks 'fooBAR' is a weak password", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "fooBAR");
+    await userEvent.type(screen.getByLabelText("Password *"), "fooBAR");
     expect(screen.getByText(strengthLabel("Okay"))).toBeInTheDocument();
   });
 
   it("thinks 'fooB1' is an okay password", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "fooB1");
+    await userEvent.type(screen.getByLabelText("Password *"), "fooB1");
     expect(screen.getByText(strengthLabel("Medium"))).toBeInTheDocument();
   });
 
   it("thinks 'fooBAR123!' is a good password", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "fooBAR123!");
+    await userEvent.type(screen.getByLabelText("Password *"), "fooBAR123!");
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
   });
 
   it("can type in the password confirmation", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "fooBAR123!");
+    await userEvent.type(screen.getByLabelText("Password *"), "fooBAR123!");
     await userEvent.type(
-      screen.getByLabelText("Confirm password", { exact: false }),
+      screen.getByLabelText("Confirm password *", { exact: false }),
       "fooBAR123!"
     );
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
   });
 
   it("requires password to be valid", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "foo");
+    await userEvent.type(screen.getByLabelText("Password *"), "foo");
     await userEvent.type(
-      screen.getByLabelText("Confirm password", { exact: false }),
+      screen.getByLabelText("Confirm password *", { exact: false }),
       "foo"
     );
     expect(screen.getByText(strengthLabel("Weak"))).toBeInTheDocument();
@@ -112,9 +112,9 @@ describe("PasswordCreate", () => {
   });
 
   it("requires passwords to match", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "fooBAR123!");
+    await userEvent.type(screen.getByLabelText("Password *"), "fooBAR123!");
     await userEvent.type(
-      screen.getByLabelText("Confirm password", { exact: false }),
+      screen.getByLabelText("Confirm password *", { exact: false }),
       "fooBAR123"
     );
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
@@ -122,9 +122,9 @@ describe("PasswordCreate", () => {
   });
 
   it("succeeds on submit with valid password", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "validPASS123!");
+    await userEvent.type(screen.getByLabelText("Password *"), "validPASS123!");
     await userEvent.type(
-      screen.getByLabelText("Confirm password", { exact: false }),
+      screen.getByLabelText("Confirm password *", { exact: false }),
       "validPASS123!"
     );
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();
@@ -136,9 +136,12 @@ describe("PasswordCreate", () => {
   });
 
   it("fails on submit with invalid password", async () => {
-    await userEvent.type(screen.getByLabelText("Password"), "INvalidPASS123!");
     await userEvent.type(
-      screen.getByLabelText("Confirm password", { exact: false }),
+      screen.getByLabelText("Password *"),
+      "INvalidPASS123!"
+    );
+    await userEvent.type(
+      screen.getByLabelText("Confirm password *", { exact: false }),
       "INvalidPASS123!"
     );
     expect(screen.getByText(strengthLabel("Strong"))).toBeInTheDocument();

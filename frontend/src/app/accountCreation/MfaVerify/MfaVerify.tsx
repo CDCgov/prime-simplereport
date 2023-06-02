@@ -77,6 +77,7 @@ export const MfaVerify = (props: Props) => {
       validationStatus={codeError ? "error" : undefined}
       onBlur={validateCode}
       onChange={(evt) => setCode(evt.currentTarget.value)}
+      required={true}
     />
   );
 
