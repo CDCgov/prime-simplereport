@@ -235,6 +235,8 @@ public class BulkUploadResultsToFhir {
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
+    String testOrderLoinc = null;
+
     UUID deviceId = UUID.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
     var modelName = row.getEquipmentModelName().getValue();
@@ -244,7 +246,6 @@ public class BulkUploadResultsToFhir {
             .get(ResultsUploaderDeviceValidationService.getMapKey(modelName, testPerformedCode));
 
     if (matchingDevice != null) {
-
       List<DeviceTypeDisease> deviceTypeDiseaseEntries =
           matchingDevice.getSupportedDiseaseTestPerformed().stream()
               .filter(
@@ -266,6 +267,8 @@ public class BulkUploadResultsToFhir {
               .map(DeviceTypeDisease::getSupportedDisease)
               .map(SupportedDisease::getName)
               .orElse(null);
+
+      testOrderLoinc = MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries);
     } else {
       log.info(
           "No device found for model ("
@@ -325,8 +328,8 @@ public class BulkUploadResultsToFhir {
 
     var serviceRequest =
         FhirConverter.convertToServiceRequest(
-            ServiceRequest.ServiceRequestStatus.ACTIVE,
-            testPerformedCode,
+            ServiceRequest.ServiceRequestStatus.COMPLETED,
+            testOrderLoinc,
             UUID.randomUUID().toString());
 
     var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
