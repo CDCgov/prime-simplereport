@@ -65,7 +65,11 @@ const OrganizationComboDropDown: React.FC<Props> = ({
               field: { onChange, value, name, ref },
               fieldState: { error },
             }) => (
-              <div className={error?.message && "usa-form-group--error"}>
+              <div
+                className={
+                  error?.message && "usa-form-group usa-form-group--error"
+                }
+              >
                 {error && (
                   <span className={"usa-error-message"} role={"alert"}>
                     <span className="usa-sr-only">Error: </span>{" "}
