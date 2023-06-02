@@ -163,6 +163,20 @@ describe("unsuccessful form submission", () => {
     });
     expect(screen.getByTestId("combo-box-input")).toHaveFocus();
   });
+
+  it("displays an error with invalid email", async () => {
+    renderView();
+    await waitForOrgLoadReturnTitle();
+    fireEvent.change(screen.getByLabelText("Email *"), {
+      target: {
+        value: "Flora",
+      },
+    });
+    fireEvent.click(screen.getByText("Save Changes"));
+    await waitFor(async () => {
+      expect(screen.getByText("Invalid email address")).toBeInTheDocument();
+    });
+  });
 });
 
 describe("successful form submission", () => {
