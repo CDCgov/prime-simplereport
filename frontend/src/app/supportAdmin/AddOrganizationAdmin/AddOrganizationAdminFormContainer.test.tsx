@@ -1,7 +1,12 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
 import selectEvent from "react-select-event";
 
 import {
@@ -135,7 +140,7 @@ describe("unsuccessful form submission", () => {
     renderView();
     await waitForOrgLoadReturnTitle();
     await selectOrg();
-    await userEvent.click(screen.getByText("Save Changes"));
+    fireEvent.click(screen.getByText("Save Changes"));
     await waitFor(async () => {
       expect(screen.getByText("First name is missing")).toBeInTheDocument();
     });
@@ -147,11 +152,12 @@ describe("unsuccessful form submission", () => {
   it("displays an error when no organization is selected", async () => {
     renderView();
     await waitForOrgLoadReturnTitle();
-    await userEvent.type(
-      screen.getByLabelText("First name", { exact: false }),
-      "Flora"
-    );
-    await userEvent.click(screen.getByText("Save Changes"));
+    fireEvent.change(screen.getByLabelText("First name", { exact: false }), {
+      target: {
+        value: "Flora",
+      },
+    });
+    fireEvent.click(screen.getByText("Save Changes"));
     await waitFor(async () => {
       expect(screen.getByText("Organization is missing")).toBeInTheDocument();
     });
@@ -161,8 +167,12 @@ describe("unsuccessful form submission", () => {
   it("displays an error with invalid email", async () => {
     renderView();
     await waitForOrgLoadReturnTitle();
-    await userEvent.type(screen.getByLabelText("Email *"), "Flora");
-    await userEvent.click(screen.getByText("Save Changes"));
+    fireEvent.change(screen.getByLabelText("Email *"), {
+      target: {
+        value: "Flora",
+      },
+    });
+    fireEvent.click(screen.getByText("Save Changes"));
     await waitFor(async () => {
       expect(screen.getByText("Invalid email address")).toBeInTheDocument();
     });
@@ -175,21 +185,24 @@ describe("successful form submission", () => {
     renderView();
     await waitForOrgLoadReturnTitle();
     await selectOrg();
-    await userEvent.type(
-      screen.getByLabelText("First name", { exact: false }),
-      "Flora"
-    );
-    await userEvent.type(
-      screen.getByLabelText("Last name", { exact: false }),
-      "Murray"
-    );
-    await userEvent.type(
-      screen.getByLabelText("Email", { exact: false }),
-      "Flora.Murray@example.com"
-    );
+    fireEvent.change(screen.getByLabelText("First name", { exact: false }), {
+      target: {
+        value: "Flora",
+      },
+    });
+    fireEvent.change(screen.getByLabelText("Last name", { exact: false }), {
+      target: {
+        value: "Murray",
+      },
+    });
+    fireEvent.change(screen.getByLabelText("Email", { exact: false }), {
+      target: {
+        value: "Flora.Murray@example.com",
+      },
+    });
     expect(screen.getByText("Save Changes", { exact: false })).toBeEnabled();
     expect(screen.getByTestId("combo-box-input")).toHaveValue("Space Camp");
-    await userEvent.click(screen.getByText("Save Changes"));
+    fireEvent.click(screen.getByText("Save Changes"));
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith(
         "The organization admin has been added",
