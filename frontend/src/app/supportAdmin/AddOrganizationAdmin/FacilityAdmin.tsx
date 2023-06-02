@@ -24,10 +24,6 @@ const FacilityAdmin: React.FC<Props> = ({ admin, register, errors }) => {
     ["suffix" as keyof FacilityAdmin]: { required: false },
     ["email" as keyof FacilityAdmin]: {
       required: `Email is missing`,
-      pattern: {
-        value: /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
-        message: "Invalid email address",
-      },
     },
   };
 
