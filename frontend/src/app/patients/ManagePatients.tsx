@@ -306,9 +306,11 @@ export const DetachedManagePatients = ({
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
-              <h1 className="font-sans-lg">
-                {PATIENT_TERM_PLURAL_CAP}
-                <span className="sr-showing-patients-on-page">
+              <div className="display-flex flex-align-center">
+                <h1 className="font-sans-lg margin-y-0">
+                  {PATIENT_TERM_PLURAL_CAP}
+                </h1>
+                <span className="sr-showing-patients-on-page margin-left-4">
                   {totalEntries === undefined ? (
                     "Loading..."
                   ) : (
@@ -319,7 +321,7 @@ export const DetachedManagePatients = ({
                     </>
                   )}
                 </span>
-              </h1>
+              </div>
               <div>{showActionButtons()}</div>
             </div>
             <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
