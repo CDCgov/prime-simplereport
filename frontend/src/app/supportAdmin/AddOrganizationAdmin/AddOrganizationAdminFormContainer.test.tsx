@@ -59,11 +59,22 @@ const addAdminMutation = {
   },
 };
 
+const mockFacility: any = {
+  id: "12345",
+};
+
 jest.mock("react-router-dom", () => {
   const original = jest.requireActual("react-router-dom");
   return {
     ...original,
     Navigate: () => <p>Redirected</p>,
+  };
+});
+jest.mock("../../facilitySelect/useSelectedFacility", () => {
+  return {
+    useSelectedFacility: () => {
+      return [mockFacility, () => {}];
+    },
   };
 });
 
@@ -112,45 +123,48 @@ describe("after loading orgs", () => {
   });
 });
 
-describe("form validation", () => {
-  it("shows an inline error when having a blank first name", async () => {
-    renderView();
-    await waitForOrgLoadReturnTitle();
-    const firstName = screen.getByLabelText("First name", {
-      exact: false,
-    });
-    await userEvent.clear(firstName);
-    await userEvent.tab();
-    expect(
-      await screen.findByText("First name is missing", { exact: false })
-    ).toBeInTheDocument();
-  });
-});
-
 describe("unsuccessful form submission", () => {
   it("toggles the save button when selecting organization", async () => {
     renderView();
     await waitForOrgLoadReturnTitle();
     await selectOrg();
     expect(screen.getByText("Save Changes", { exact: false })).toBeEnabled();
-    await userEvent.click(screen.getByTestId("combo-box-clear-button"));
-    await waitFor(() =>
-      expect(screen.getByTestId("combo-box-input")).toHaveValue("")
-    );
-    expect(screen.getByText("Save Changes", { exact: false })).toBeDisabled();
   });
 
   it("displays an error when there are form errors", async () => {
-    let alertSpy: jest.SpyInstance = jest.spyOn(srToast, "showError");
     renderView();
     await waitForOrgLoadReturnTitle();
     await selectOrg();
     await userEvent.click(screen.getByText("Save Changes"));
-    await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith(
-        "Please check the form to make sure you complete all of the required fields.",
-        "Form Errors"
-      );
+    await waitFor(async () => {
+      expect(screen.getByText("First name is missing")).toBeInTheDocument();
+    });
+    expect(screen.getByText("Last name is missing")).toBeInTheDocument();
+    expect(screen.getByText("Email is missing")).toBeInTheDocument();
+    expect(screen.getByLabelText("First name *")).toHaveFocus();
+  });
+
+  it("displays an error when no organization is selected", async () => {
+    renderView();
+    await waitForOrgLoadReturnTitle();
+    await userEvent.type(
+      screen.getByLabelText("First name", { exact: false }),
+      "Flora"
+    );
+    await userEvent.click(screen.getByText("Save Changes"));
+    await waitFor(async () => {
+      expect(screen.getByText("Organization is missing")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("combo-box-input")).toHaveFocus();
+  });
+
+  it("displays an error with invalid email", async () => {
+    renderView();
+    await waitForOrgLoadReturnTitle();
+    await userEvent.type(screen.getByLabelText("Email *"), "Flora");
+    await userEvent.click(screen.getByText("Save Changes"));
+    await waitFor(async () => {
+      expect(screen.getByText("Invalid email address")).toBeInTheDocument();
     });
   });
 });
