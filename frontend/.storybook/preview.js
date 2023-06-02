@@ -1,4 +1,6 @@
 import { addDecorator } from "@storybook/react";
+
+import { MockedProvider } from "@apollo/client/testing"; // Use for Apollo Version 3+
 import { initializeWorker } from "msw-storybook-addon";
 import "../src/styles/App.css";
 
@@ -28,5 +30,9 @@ export const parameters = {
       color: /(background|color)$/i,
       date: /Date$/,
     },
+  },
+  apolloClient: {
+    MockedProvider,
+    // any props you want to pass to MockedProvider on every story
   },
 };

@@ -9,6 +9,7 @@ module.exports = {
     "@storybook/addon-interactions",
     "@storybook/preset-create-react-app",
     "@storybook/addon-mdx-gfm",
+    "storybook-addon-apollo-client",
   ],
   webpackFinal: async (config) => {
     config.resolve.alias["@microsoft/applicationinsights-react-js"] =
@@ -18,9 +19,9 @@ module.exports = {
     );
     config.module.rules.push({
       test: /\.scss$/,
-      sideEffects: true, //scss is considered a side effect of sass
-      use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
-      include: path.resolve(__dirname, "../node_modules"), // I didn't need this path set
+      sideEffects: true,
+      use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"], // not sure which of these are needed
+      include: path.resolve(__dirname, "../node_modules"),
     });
     return config;
   },
