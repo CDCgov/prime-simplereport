@@ -15,30 +15,23 @@ import "./SignUpGoals.scss";
 const SignUpGoals = () => {
   const [submitted, setSubmitted] = useState(false);
   const [signUpGoal, setSignUpGoal] = useState("");
-  const [signUpGoalError, setSignUpGoalError] = useState("");
+
   useDocumentTitle("Sign up - select status");
+
+  const onSubmit = () => {
+    setSubmitted(true);
+  };
 
   if (submitted) {
     switch (signUpGoal) {
-      case "newOrg":
-        return <OrganizationForm />;
       case "existingOrg":
         return <RequestAccess />;
       case "testResult":
         return <RequestTestResult />;
       default:
-        break;
+        return <OrganizationForm />;
     }
   }
-
-  const onSubmit = () => {
-    if (signUpGoal === "") {
-      setSignUpGoalError("Please select an option");
-    } else {
-      setSignUpGoalError("");
-      setSubmitted(true);
-    }
-  };
 
   return (
     <CardBackground>
@@ -71,8 +64,6 @@ const SignUpGoals = () => {
               },
             ]}
             selectedRadio={signUpGoal}
-            errorMessage={signUpGoalError}
-            validationStatus={signUpGoalError ? "error" : undefined}
             onChange={setSignUpGoal}
             variant="tile"
           />
@@ -81,6 +72,7 @@ const SignUpGoals = () => {
           className="width-full continue-button"
           onClick={onSubmit}
           label={"Continue"}
+          disabled={!signUpGoal}
         />
       </Card>
     </CardBackground>
