@@ -49,7 +49,7 @@
     "react-uid": "^2.3.2",
     "redux": "^4.2.1",
     "sass": "^1.47.0",
-    "smartystreets-javascript-sdk": "^2.1.0",
+    "smartystreets-javascript-sdk": "^2.1.2",
     "uswds": "2.14.0",
     "uuid": "^9.0.0",
     "yup": "^0.32.9"
