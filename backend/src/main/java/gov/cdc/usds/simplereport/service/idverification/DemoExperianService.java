@@ -28,7 +28,7 @@ import org.springframework.web.client.RestClientException;
 public class DemoExperianService implements ExperianService {
 
   private static final ObjectMapper _objectMapper = new ObjectMapper();
-  private static final List<Integer> EXPECTED_ANSWERS = Arrays.asList(1, 4, 2, 1);
+  private static final List<Integer> EXPECTED_ANSWERS = Arrays.asList(1, 4, 2, 1, 3);
   private static final String USER_EMAIL_NOT_FOUND = "notfound@example.com";
   private static final String USER_EMAIL_GENERATE_REST_EXCEPTION = "rest.exception@example.com";
   private static final String SESSION_ID_GENERATE_REST_EXCEPTION = "GENERATE_REST_EXCEPTION";
