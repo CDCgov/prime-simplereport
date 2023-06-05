@@ -155,7 +155,6 @@ export const DetachedManagePatients = ({
         `action_${prevArchivePersonId}`
       );
       actionItemToFocus?.focus();
-      setPrevArchivePersonId(null);
     }
   }, [prevArchivePersonId]);
 
@@ -351,7 +350,9 @@ export const DetachedManagePatients = ({
                 }}
                 queryString={debounced || ""}
                 className="display-inline-block"
-                focusOnMount
+                // only focus search if we're not returning focus to the action
+                // button following the exiting of a modal
+                focusOnMount={prevArchivePersonId === null}
                 showSubmitButton={false}
               />
             </div>
