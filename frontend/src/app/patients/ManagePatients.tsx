@@ -164,7 +164,7 @@ export const DetachedManagePatients = ({
       <ArchivePersonModal
         person={archivePerson}
         closeModal={() => {
-          setPrevId(archivePerson.internalId);
+          setPrevArchivePersonId(archivePerson.internalId);
           setArchivePerson(null);
           refetch();
         }}
