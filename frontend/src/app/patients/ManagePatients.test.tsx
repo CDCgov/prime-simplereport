@@ -107,6 +107,19 @@ describe("ManagePatients", () => {
       ).toBeInTheDocument();
     });
 
+    it("when exiting archive modal, the action button is refocused", async () => {
+      render(<TestContainer />);
+      expect(await screen.findByText(patients[0].lastName, { exact: false }));
+
+      const menu = (await screen.findAllByText("More actions"))[0];
+      await userEvent.click(menu);
+      await userEvent.click(await screen.findByText(`Archive ${PATIENT_TERM}`));
+      await userEvent.click(screen.getByText("No, go back", { exact: false }));
+      expect(
+        screen.getByTestId(`action_${patients[0].internalId}`, { exact: false })
+      ).toHaveFocus();
+    });
+
     it("can start test", async () => {
       render(<TestContainer />);
       expect(await screen.findByText(patients[0].lastName, { exact: false }));
