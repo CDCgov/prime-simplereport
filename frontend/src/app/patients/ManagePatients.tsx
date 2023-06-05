@@ -123,7 +123,9 @@ export const DetachedManagePatients = ({
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
-  const [prevArchivePersonId, setPrevId] = useState<string | null>(null);
+  const [prevArchivePersonId, setPrevArchivePersonId] = useState<string | null>(
+    null
+  );
 
   const navigate = useNavigate();
 
@@ -153,7 +155,7 @@ export const DetachedManagePatients = ({
         `action_${prevArchivePersonId}`
       );
       actionItemToFocus?.focus();
-      setPrevId(null);
+      setPrevArchivePersonId(null);
     }
   }, [prevArchivePersonId]);
 
