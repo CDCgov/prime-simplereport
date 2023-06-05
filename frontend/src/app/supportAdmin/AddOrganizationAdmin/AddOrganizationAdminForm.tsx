@@ -1,19 +1,23 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
+import { useForm } from "react-hook-form";
 
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import OrganizationComboDropDown, {
-  useOrganizationDropDownValidation,
   OrganizationOption,
 } from "../Components/OrganizationComboDropdown";
 
-import FacilityAdmin, { useFacilityAdminValidation } from "./FacilityAdmin";
+import FacilityAdmin from "./FacilityAdmin";
 
 const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
   Object.values(organizationOptions).sort((a, b) => {
     return a.name > b.name ? 1 : -1;
   });
 
+export interface OrganizationAdminFormData {
+  organizationExternalId: string;
+  admin: FacilityAdmin;
+}
 interface Props {
   organizationExternalId: string;
   admin: FacilityAdmin;
@@ -24,60 +28,39 @@ interface Props {
   ) => void;
 }
 
-const AddOrganizationAdminForm = (props: Props) => {
-  const [admin, updateAdminFormData] = useState<FacilityAdmin>(props.admin);
-
+const AddOrganizationAdminForm = ({
+  organizationExternalId,
+  admin,
+  organizationOptions,
+  saveOrganizationAdmin,
+}: Props) => {
   const sortedOrganizationOptions = useMemo(
-    () => sortOrganizationOptions(props.organizationOptions),
-    [props.organizationOptions]
+    () => sortOrganizationOptions(organizationOptions),
+    [organizationOptions]
   );
 
-  const [organizationExternalId, updateOrganizationExternalId] = useState<
-    string | undefined
-  >("");
-  const [formIsValid, updateFormIsValid] = useState<boolean>(false);
-
-  const updateOrganizationExternalIdDropDown = (
-    externalId: string | undefined
-  ) => {
-    updateOrganizationExternalId(externalId);
-    if (externalId !== undefined) {
-      updateFormIsValid(true);
-    } else {
-      updateFormIsValid(false);
-    }
+  const onSubmit = async (data: OrganizationAdminFormData) => {
+    saveOrganizationAdmin(data.organizationExternalId, data.admin);
   };
 
-  const updateAdminForm = (data: FacilityAdmin) => {
-    updateAdminFormData(data);
-    updateFormIsValid(true);
-  };
-
-  const { validateAdmin } = useFacilityAdminValidation(admin);
-
-  const { validateOrganizationDropDown } = useOrganizationDropDownValidation(
-    organizationExternalId
-  );
-
-  const validateAndSaveOrganizationAdmin = async () => {
-    if (
-      validateOrganizationDropDown() === "error" ||
-      organizationExternalId === undefined
-    ) {
-      updateFormIsValid(false);
-      return;
-    }
-    if ((await validateAdmin()) === "error") {
-      updateFormIsValid(false);
-      return;
-    }
-    props.saveOrganizationAdmin(organizationExternalId, admin);
-  };
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting, isDirty },
+    control,
+  } = useForm<OrganizationAdminFormData>({
+    defaultValues: {
+      organizationExternalId: organizationExternalId,
+      admin: admin,
+    },
+  });
+  const formCurrentValues = watch();
 
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
-        <div className="grid-row">
+        <form className="grid-row" onSubmit={handleSubmit(onSubmit)}>
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
@@ -92,21 +75,24 @@ const AddOrganizationAdminForm = (props: Props) => {
                 }}
               >
                 <Button
-                  type="button"
-                  onClick={validateAndSaveOrganizationAdmin}
+                  type="submit"
                   label="Save Changes"
-                  disabled={!formIsValid}
+                  disabled={isSubmitting || !isDirty}
                 />
               </div>
             </div>
           </div>
           <OrganizationComboDropDown
             selectedExternalId={organizationExternalId}
-            updateSelectedExternalId={updateOrganizationExternalIdDropDown}
             organizationOptions={sortedOrganizationOptions}
+            control={control}
           />
-          <FacilityAdmin admin={admin} updateAdmin={updateAdminForm} />
-        </div>
+          <FacilityAdmin
+            admin={formCurrentValues.admin}
+            errors={errors}
+            register={register}
+          />
+        </form>
       </div>
     </div>
   );
