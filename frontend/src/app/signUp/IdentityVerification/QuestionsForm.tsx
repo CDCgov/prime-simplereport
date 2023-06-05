@@ -152,7 +152,7 @@ const QuestionsForm: React.FC<QuestionsFormProps> = ({
               buttons={toOptions(field.choices)}
               errorMessage="This field is required"
               validationStatus={
-                !!errors.experianQuestions?.[index]?.value ? "error" : undefined
+                errors.experianQuestions?.[index]?.value ? "error" : undefined
               }
               required
               registrationProps={register(
