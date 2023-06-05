@@ -82,6 +82,7 @@ const QuestionsForm: React.FC<QuestionsFormProps> = ({
       experianQuestions: questionSet.map((q, idx) => ({
         text: q.questionText,
         choices: q.questionSelect.questionChoice,
+        idx,
       })),
     },
   });
@@ -101,8 +102,8 @@ const QuestionsForm: React.FC<QuestionsFormProps> = ({
     formData.experianQuestions.forEach(
       (q) => (answers[`answer${q.idx + 1}`] = q.value)
     );
-    console.log("form data", formData.experianQuestions);
-    await onSubmit(answers as Answers);
+
+    await onSubmit(answers);
   };
 
   /**
