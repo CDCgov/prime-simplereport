@@ -17,12 +17,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-/** HandlerInterceptor to set a request ID for patient experience REST handlers. */
+/**
+ * HandlerInterceptor to populate MDC with debug information for all REST requests (all paths
+ * excluding graphql path).
+ */
 @Component
 @ConditionalOnWebApplication
 @AllArgsConstructor
 @Slf4j
-public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
+public class RestLoggingInterceptor implements HandlerInterceptor {
 
   private final ApiUserContextHolder apiUserContextHolder;
   private final OrganizationService organizationService;
