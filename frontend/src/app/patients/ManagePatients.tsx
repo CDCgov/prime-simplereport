@@ -111,7 +111,7 @@ interface Props {
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
 }
-
+const FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER = "focus on search bar on next render";
 export const DetachedManagePatients = ({
   canEditUser,
   data,
@@ -123,8 +123,8 @@ export const DetachedManagePatients = ({
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
-  const [prevArchivePersonId, setPrevArchivePersonId] = useState<string | null>(
-    null
+  const [subsequentFocusId, setSubsequentFocusId] = useState<string | null>(
+    FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER
   );
 
   const navigate = useNavigate();
@@ -150,20 +150,21 @@ export const DetachedManagePatients = ({
   }, [queryString, setNamePrefixMatch, navigate, activeFacilityId]);
 
   useEffect(() => {
-    if (prevArchivePersonId) {
+    if (subsequentFocusId) {
       const actionItemToFocus = document.getElementById(
-        `action_${prevArchivePersonId}`
+        `action_${subsequentFocusId}`
       );
       actionItemToFocus?.focus();
+      setSubsequentFocusId(null);
     }
-  }, [prevArchivePersonId]);
+  }, [subsequentFocusId]);
 
   if (archivePerson) {
     return (
       <ArchivePersonModal
         person={archivePerson}
         closeModal={() => {
-          setPrevArchivePersonId(archivePerson.internalId);
+          setSubsequentFocusId(archivePerson.internalId);
           setArchivePerson(null);
           refetch();
         }}
@@ -350,9 +351,9 @@ export const DetachedManagePatients = ({
                 }}
                 queryString={debounced || ""}
                 className="display-inline-block"
-                // only focus search if we're not returning focus to the action
-                // button following the exiting of a modal
-                focusOnMount={prevArchivePersonId === null}
+                focusOnMount={
+                  subsequentFocusId === FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER
+                }
                 showSubmitButton={false}
               />
             </div>
