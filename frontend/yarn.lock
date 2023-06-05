@@ -9313,10 +9313,10 @@ escodegen@^2.0.0:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-prettier@^8.3.0:
-  version "8.5.0"
-  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
-  integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
+eslint-config-prettier@^8.8.0:
+  version "8.8.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.8.0.tgz#bfda738d412adc917fd7b038857110efe98c9348"
+  integrity sha512-wLbQiFre3tdGgpDv67NQKnJuTlcUVYHas3k+DZCc2U2BadthoEY4B7hLPvAxaqdyOGCzuLfii2fqGph10va7oA==
 
 eslint-config-react-app@^7.0.1:
   version "7.0.1"
@@ -17434,10 +17434,10 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-smartystreets-javascript-sdk@^2.1.0:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/smartystreets-javascript-sdk/-/smartystreets-javascript-sdk-2.1.1.tgz#d0e8b121f34eb60c53f70b85dc30064ba890382e"
-  integrity sha512-6r4y/IquMEYs8TDdrhzWo85vcneI4vWimKYefTjZkZ4WzmzG6a2jHtNqMOUInTWjUPnmffwieK+Gc0K15baVmg==
+smartystreets-javascript-sdk@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/smartystreets-javascript-sdk/-/smartystreets-javascript-sdk-2.1.2.tgz#60d433b920cc6b8763e0067b6bc2ec5f485a3cba"
+  integrity sha512-F4mmyTfkDHYmsW8O2mGGztkMRyg+utQcXEYLxrKYWoWcyEfY65El876E7YoltL+CwoYSxcNUEQkJifUi1tEaLQ==
   dependencies:
     axios "^0.26.1"
     axios-retry "3.2.0"
