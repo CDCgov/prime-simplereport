@@ -123,6 +123,8 @@ export const DetachedManagePatients = ({
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
+  const [prevArchivePersonId, setPrevId] = useState<string | null>(null);
+
   const navigate = useNavigate();
 
   const [redirect, setRedirect] = useState<
@@ -134,7 +136,6 @@ export const DetachedManagePatients = ({
       debounceTime: SEARCH_DEBOUNCE_TIME,
     }
   );
-
   useEffect(() => {
     if (queryString && queryString.length > 1) {
       setNamePrefixMatch(queryString);
@@ -146,11 +147,22 @@ export const DetachedManagePatients = ({
     });
   }, [queryString, setNamePrefixMatch, navigate, activeFacilityId]);
 
+  useEffect(() => {
+    if (prevArchivePersonId) {
+      const actionItemToFocus = document.getElementById(
+        `action_${prevArchivePersonId}`
+      );
+      actionItemToFocus?.focus();
+      setPrevId(null);
+    }
+  }, [prevArchivePersonId]);
+
   if (archivePerson) {
     return (
       <ArchivePersonModal
         person={archivePerson}
         closeModal={() => {
+          setPrevId(archivePerson.internalId);
           setArchivePerson(null);
           refetch();
         }}
@@ -222,6 +234,7 @@ export const DetachedManagePatients = ({
           <td>
             {canEditUser && !patient.isDeleted && (
               <ActionsMenu
+                id={`${patient.internalId}`}
                 items={[
                   {
                     name: "Start test",
