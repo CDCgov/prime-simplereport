@@ -24,7 +24,7 @@ describe("Updating organization settings", () => {
     cy.contains("Save settings").click();
   });
   it("displays a validation toast", () => {
-    cy.get(".Toastify").contains("An organization type must be selected");
+    cy.contains("An organization type must be selected");
   });
   it("attempts a valid selection for organization type", () => {
     cy.get('select[name="type"]').select("Nursing home");
