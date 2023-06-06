@@ -590,26 +590,26 @@ describe("ManageUsers", () => {
         await userEvent.clear(email);
         await userEvent.type(email, invalidEmail);
         await userEvent.click(confirmButton);
-        await waitFor(() => expect(confirmButton).toBeDisabled());
-        expect(
-          screen.getByText("Email must be a valid email address")
-        ).toBeInTheDocument();
+        await expect(await screen.findByText("Invalid email address"));
       });
 
-      it("fails for the same email", async () => {
-        await userEvent.click(confirmButton);
-        await waitFor(() => expect(confirmButton).toBeDisabled());
-        expect(
-          screen.getByText("The old and new email addresses must be different")
-        ).toBeInTheDocument();
+      it("submit button disabled for same email", async () => {
+        await expect(await screen.findByLabelText(/Email address/i));
+        await userEvent.clear(email);
+        await userEvent.type(email, "john@example.com");
+        expect(confirmButton).toBeDisabled();
       });
 
-      it("fails with an empty textbox", async () => {
+      it("Error shows for required email field", async () => {
         await userEvent.clear(email);
         await userEvent.click(confirmButton);
-        await waitFor(() => expect(confirmButton).toBeDisabled());
-        expect(
-          screen.getByText("Enter a valid email address")
+        await expect(
+          await screen.findByText("Email is required")
+        ).toBeInTheDocument();
+        await userEvent.type(email, "not an email");
+        await userEvent.click(confirmButton);
+        await expect(
+          await screen.findByText("Invalid email address")
         ).toBeInTheDocument();
       });
     });
