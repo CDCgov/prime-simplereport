@@ -111,7 +111,7 @@ interface Props {
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
 }
-
+const FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER = "focus on search bar on next render";
 export const DetachedManagePatients = ({
   canEditUser,
   data,
@@ -123,6 +123,10 @@ export const DetachedManagePatients = ({
   activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
+  const [subsequentFocusId, setSubsequentFocusId] = useState<string | null>(
+    FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER
+  );
+
   const navigate = useNavigate();
 
   const [redirect, setRedirect] = useState<
@@ -134,7 +138,6 @@ export const DetachedManagePatients = ({
       debounceTime: SEARCH_DEBOUNCE_TIME,
     }
   );
-
   useEffect(() => {
     if (queryString && queryString.length > 1) {
       setNamePrefixMatch(queryString);
@@ -146,11 +149,22 @@ export const DetachedManagePatients = ({
     });
   }, [queryString, setNamePrefixMatch, navigate, activeFacilityId]);
 
+  useEffect(() => {
+    if (subsequentFocusId) {
+      const actionItemToFocus = document.getElementById(
+        `action_${subsequentFocusId}`
+      );
+      actionItemToFocus?.focus();
+      setSubsequentFocusId(null);
+    }
+  }, [subsequentFocusId]);
+
   if (archivePerson) {
     return (
       <ArchivePersonModal
         person={archivePerson}
         closeModal={() => {
+          setSubsequentFocusId(archivePerson.internalId);
           setArchivePerson(null);
           refetch();
         }}
@@ -222,6 +236,7 @@ export const DetachedManagePatients = ({
           <td>
             {canEditUser && !patient.isDeleted && (
               <ActionsMenu
+                id={`${patient.internalId}`}
                 items={[
                   {
                     name: "Start test",
@@ -336,7 +351,9 @@ export const DetachedManagePatients = ({
                 }}
                 queryString={debounced || ""}
                 className="display-inline-block"
-                focusOnMount
+                focusOnMount={
+                  subsequentFocusId === FOCUS_ON_SEARCH_BAR_ON_NEXT_RENDER
+                }
                 showSubmitButton={false}
               />
             </div>

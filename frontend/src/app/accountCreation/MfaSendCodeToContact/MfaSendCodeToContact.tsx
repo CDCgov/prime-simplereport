@@ -108,6 +108,7 @@ export const MfaSendCodeToContact = (props: Props) => {
           validationStatus={contactError ? "error" : undefined}
           onBlur={validateContact}
           onChange={(evt) => setContact(evt.target.value)}
+          required={true}
         />
         <Button
           className="margin-top-3"
