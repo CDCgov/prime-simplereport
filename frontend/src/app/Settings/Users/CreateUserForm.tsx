@@ -7,7 +7,7 @@ import Dropdown from "../../commonComponents/Dropdown";
 import { Role } from "../../permissions";
 import { RootState } from "../../store";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
-import Input from "../../commonComponents/Input";
+import TextInput from "../../commonComponents/TextInput";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
@@ -87,16 +87,6 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
     setSaving(false);
   };
 
-  const commonInputProps = {
-    formObject: newUser,
-    onChange,
-    required: true,
-    disabled: isUpdating,
-    validate: validateField,
-    errors,
-    getValidationStatus,
-  };
-
   return (
     <div className="border-0 card-container">
       <div className="display-flex flex-justify">
@@ -112,16 +102,54 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
       <div>
-        <Input {...commonInputProps} label="First name" field="firstName" />
+        <TextInput
+          value={newUser["firstName"]}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange("firstName")(e.target.value)
+          }
+          required={true}
+          disabled={isUpdating}
+          onBlur={() => {
+            validateField("firstName");
+          }}
+          errorMessage={errors["firstName"]}
+          validationStatus={getValidationStatus("firstName")}
+          label="First name"
+          name="firstName"
+        />
         <div></div>
-        <Input {...commonInputProps} label="Last name" field="lastName" />
+        <TextInput
+          value={newUser["lastName"]}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange("lastName")(e.target.value)
+          }
+          required={true}
+          disabled={isUpdating}
+          onBlur={() => {
+            validateField("lastName");
+          }}
+          errorMessage={errors["lastName"]}
+          validationStatus={getValidationStatus("lastName")}
+          label="Last Name"
+          name="lastName"
+        />
       </div>
       <div>
-        <Input
-          {...commonInputProps}
+        <TextInput
+          value={newUser["email"]}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            onChange("email")(e.target.value)
+          }
+          required={true}
+          disabled={isUpdating}
+          onBlur={() => {
+            validateField("email");
+          }}
+          errorMessage={errors["email"]}
+          validationStatus={getValidationStatus("email")}
           label="Email address"
-          field="email"
-          type="email"
+          name="email"
+          type={"email"}
         />
       </div>
       <div className="grid-row">
