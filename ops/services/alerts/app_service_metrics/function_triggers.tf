@@ -1,7 +1,7 @@
 resource "azurerm_monitor_action_group" "function_triggers" {
   name                = "${var.env}-function-triggers"
   resource_group_name = var.rg_name
-  short_name          = "${var.env}-triggers"
+  short_name          = "${var.env}-ft"
 }
 
 resource "azurerm_monitor_alert_processing_rule_action_group" "function_triggers_group" {
