@@ -1,94 +1,58 @@
-import React, { useState } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
+import { useForm } from "react-hook-form";
 
 import Button from "../../commonComponents/Button/Button";
 import Dropdown from "../../commonComponents/Dropdown";
-import { Role } from "../../permissions";
 import { RootState } from "../../store";
-import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import TextInput from "../../commonComponents/TextInput";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import { UpdateUser } from "./ManageUsers";
-import {
-  CreateUserErrors,
-  initCreateUserErrors,
-  createUserSchema as schema,
-  CreateUser,
-  ROLE_OPTIONS,
-} from "./CreateUserSchema";
+import { CreateUser, ROLE_OPTIONS } from "./CreateUserSchema";
 
 interface Props {
   onClose: () => void;
   onSubmit: (newUserInvite: Partial<SettingsUser>) => void;
-  isUpdating: boolean;
 }
 
-const initialFormState: CreateUser = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  role: "USER",
-};
-
-const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
+const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
   const facilities = useSelector<RootState, UserFacilitySetting[]>(
     (state) => state.facilities
   );
-  const [newUser, updateNewUser] = useState(initialFormState);
-  const [errors, setErrors] = useState<CreateUserErrors>(
-    initCreateUserErrors()
-  );
-  const [saving, setSaving] = useState(isUpdating);
 
   const updateUser: UpdateUser = (key, value) => {
-    updateNewUser({
-      ...newUser,
-      [key]: value,
-    });
-  };
-
-  const onChange =
-    (field: keyof CreateUser) => (value: CreateUser[typeof field]) => {
-      updateNewUser({ ...newUser, [field]: value });
-    };
-
-  const validateField = async (field: keyof CreateUser) => {
-    setErrors(await isFieldValid({ data: newUser, schema, errors, field }));
-  };
-
-  const getValidationStatus = (field: keyof CreateUser) =>
-    errors[field] ? "error" : undefined;
-
-  const disableSubmit =
-    saving ||
-    !newUser.firstName ||
-    !newUser.lastName ||
-    !newUser.email ||
-    !(newUser as SettingsUser).organization?.testingFacility ||
-    (newUser as SettingsUser)?.organization?.testingFacility.length === 0;
-
-  const onSave = async () => {
-    setSaving(true);
-    const validation = await isFormValid({
-      data: newUser,
-      schema,
-    });
-    if (validation.valid) {
-      setErrors(initCreateUserErrors());
-      onSubmit(newUser);
-      setSaving(false);
-      return;
+    if (key === "organization" || key === "permissions") {
+      setValue(key, value);
     }
-    setErrors(validation.errors);
-    setSaving(false);
   };
 
+  const onSave = async (user: CreateUser) => {
+    onSubmit(user);
+  };
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors: errors2, isSubmitting, isDirty },
+    setValue,
+  } = useForm<CreateUser>({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      role: "USER",
+      organization: null,
+      permissions: [],
+    },
+  });
+  const formCurrentValues = watch();
   return (
-    <div className="border-0 card-container">
+    <form className="border-0 card-container" onSubmit={handleSubmit(onSave)}>
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
           Invite new user
@@ -103,70 +67,60 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
       <div>
         <TextInput
-          value={newUser["firstName"]}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            onChange("firstName")(e.target.value)
-          }
-          required={true}
-          disabled={isUpdating}
-          onBlur={() => {
-            validateField("firstName");
-          }}
-          errorMessage={errors["firstName"]}
-          validationStatus={getValidationStatus("firstName")}
           label="First name"
           name="firstName"
+          required={true}
+          value={formCurrentValues.firstName}
+          registrationProps={register("firstName", {
+            required: "First name is required",
+          })}
+          validationStatus={errors2?.firstName?.type ? "error" : undefined}
+          errorMessage={errors2?.firstName?.message}
         />
         <div></div>
         <TextInput
-          value={newUser["lastName"]}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            onChange("lastName")(e.target.value)
-          }
-          required={true}
-          disabled={isUpdating}
-          onBlur={() => {
-            validateField("lastName");
-          }}
-          errorMessage={errors["lastName"]}
-          validationStatus={getValidationStatus("lastName")}
           label="Last Name"
           name="lastName"
+          required={true}
+          value={formCurrentValues.lastName}
+          registrationProps={register("lastName", {
+            required: "Last name is required",
+          })}
+          validationStatus={errors2?.lastName?.type ? "error" : undefined}
+          errorMessage={errors2?.lastName?.message}
         />
       </div>
       <div>
         <TextInput
-          value={newUser["email"]}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            onChange("email")(e.target.value)
-          }
-          required={true}
-          disabled={isUpdating}
-          onBlur={() => {
-            validateField("email");
-          }}
-          errorMessage={errors["email"]}
-          validationStatus={getValidationStatus("email")}
           label="Email address"
           name="email"
-          type={"email"}
+          required={true}
+          value={formCurrentValues.email}
+          registrationProps={register("email", {
+            required: "Email is required",
+            pattern: {
+              value:
+                /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/,
+              message: "Email must be a valid email address",
+            },
+          })}
+          validationStatus={errors2?.email?.type ? "error" : undefined}
+          errorMessage={errors2?.email?.message}
         />
       </div>
       <div className="grid-row">
         <Dropdown
-          options={ROLE_OPTIONS}
           label="Access level"
           name="role"
-          selectedValue={newUser.role as string}
+          required={true}
+          options={ROLE_OPTIONS}
+          selectedValue={formCurrentValues.role}
           className="grid-col"
-          onChange={(evt) => updateUser("role", evt.target.value as Role)}
-          errorMessage={errors["role"]}
-          validationStatus={getValidationStatus("role")}
-          required
+          registrationProps={register("role")}
         />
       </div>
       <UserFacilitiesSettingsForm
-        activeUser={newUser}
+        activeUser={formCurrentValues}
         onUpdateUser={updateUser}
         allFacilities={facilities}
         showRequired
@@ -181,13 +135,13 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
           />
           <Button
             className="margin-right-205"
-            onClick={onSave}
-            label={saving ? "Sending" : "Send invite"}
-            disabled={disableSubmit}
+            type={"submit"}
+            label={isSubmitting ? "Sending" : "Send invite"}
+            disabled={isSubmitting || !isDirty}
           />
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 
