@@ -5,7 +5,6 @@ import {
   screen,
   waitFor,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
 import QuestionsFormContainer from "./QuestionsFormContainer";
 import { initPersonalDetails } from "./utils";
@@ -118,7 +117,7 @@ describe("QuestionsFormContainer", () => {
         const submitButton = screen.queryAllByText("Submit", {
           exact: false,
         })[0];
-        await userEvent.click(submitButton);
+        fireEvent.click(submitButton);
         expect(
           await screen.findByText(
             "Congratulations, your identity has been verified successfully",
@@ -132,7 +131,7 @@ describe("QuestionsFormContainer", () => {
         fireEvent.click(screen.getByLabelText("2004", { exact: false }), {
           target: { value: "3" },
         });
-        await userEvent.click(
+        fireEvent.click(
           screen.queryAllByText("Submit", {
             exact: false,
           })[0]
