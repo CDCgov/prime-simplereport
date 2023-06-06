@@ -5,9 +5,9 @@ resource "azurerm_monitor_action_group" "function_triggers" {
 }
 
 resource "azurerm_monitor_alert_processing_rule_action_group" "function_triggers_group" {
-  name                 = "example"
-  resource_group_name  = "example"
-  scopes               = [azurerm_resource_group.example.id]
+  name                 = "${var.env}-function-triggers-processing"
+  resource_group_name  = var.rg_name
+  scopes               = [data.azurerm_resource_group.app.id]
   add_action_group_ids = [azurerm_monitor_action_group.function_triggers.id]
 
   condition {
@@ -34,10 +34,6 @@ resource "azurerm_monitor_alert_processing_rule_action_group" "function_triggers
         days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
       }
     }
-  }
-
-  tags = {
-    foo = "bar"
   }
 }
 
