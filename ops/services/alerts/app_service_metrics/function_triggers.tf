@@ -1,14 +1,7 @@
-resource "azurerm_monitor_action_group" "function_triggers" {
-  name                = "${var.env}-function-triggers"
-  resource_group_name = var.rg_name
-  short_name          = "${var.env}-ft"
-}
-
-resource "azurerm_monitor_alert_processing_rule_action_group" "function_triggers_group" {
-  name                 = "${var.env}-function-triggers-processing"
+resource "azurerm_monitor_alert_processing_rule_suppression" "function_triggers_suppression" {
+  name                 = "${var.env}-function-triggers-suppression"
   resource_group_name  = var.rg_name
   scopes               = [data.azurerm_resource_group.app.id]
-  add_action_group_ids = [azurerm_monitor_action_group.function_triggers.id]
 
   condition {
     target_resource_type {
@@ -17,21 +10,21 @@ resource "azurerm_monitor_alert_processing_rule_action_group" "function_triggers
     }
     severity {
       operator = "Equals"
-      values   = ["Sev0", "Sev1", "Sev2"]
+      values   = ["Sev4"]
     }
   }
 
   schedule {
     effective_from  = "2022-01-01T01:02:03"
     effective_until = "2022-02-02T01:02:03"
-    time_zone       = "Eastern Standard Time"
+    time_zone       = "Pacific Standard Time"
     recurrence {
       daily {
-        start_time = "09:00:00"
-        end_time   = "20:00:00"
+        start_time = "20:00:00"
+        end_time   = "09:00:00"
       }
       weekly {
-        days_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
+        days_of_week = ["Saturday", "Sunday"]
       }
     }
   }
@@ -42,7 +35,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_functio
   description         = "QueueBatchedReportStreamUploader is not triggering on schedule"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
-  severity            = var.severity
+  severity            = 4
   frequency           = 5
   time_window         = 7
   enabled             = contains(var.disabled_alerts, "batched_uploader_function_not_triggering") ? false : true
@@ -64,7 +57,7 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = azurerm_monitor_action_group.function_triggers.id
+    action_group = var.action_group_ids
   }
 }
 
@@ -73,7 +66,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_fu
   description         = "FHIRTestEventReporter is not triggering on schedule"
   location            = data.azurerm_resource_group.app.location
   resource_group_name = var.rg_name
-  severity            = var.severity
+  severity            = 4
   frequency           = 5
   time_window         = 7
   enabled             = contains(var.disabled_alerts, "fhir_batched_uploader_function_not_triggering") ? false : true
@@ -95,7 +88,7 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = azurerm_monitor_action_group.function_triggers.id
+    action_group = var.action_group_ids
   }
 }
 
