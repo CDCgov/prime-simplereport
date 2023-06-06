@@ -113,6 +113,7 @@ export const MfaSelect = () => {
           onChange={setMfaOption}
           variant="tile"
           renderAsForm
+          required={true}
         />
         <Button
           className="margin-top-3"

@@ -193,6 +193,7 @@ export const PasswordForm = () => {
           validationStatus={passwordError ? "error" : undefined}
           onBlur={validatePassword}
           onChange={handlePasswordChange}
+          required={true}
         />
         <div className="display-flex grid-gap margin-top-105">
           {strengthBars}
@@ -212,6 +213,7 @@ export const PasswordForm = () => {
           validationStatus={passwordConfirmationError ? "error" : undefined}
           onBlur={validatePasswordConfirmation}
           onChange={(evt) => setPasswordConfirmation(evt.currentTarget.value)}
+          required={true}
         />
         <Button
           className="margin-top-3"

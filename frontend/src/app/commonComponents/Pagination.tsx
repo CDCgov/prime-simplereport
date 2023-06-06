@@ -83,41 +83,49 @@ const Pagination = ({
   }
 
   return (
-    <nav
-      className={classnames("usa-pagination", className)}
-      role="navigation"
-      aria-label="Pagination"
-    >
-      <ol>
-        {currentPage > 1 && (
-          <li key="prevpage">
-            <Link to={`${currentPage - 1}`} label="Previous Page">
-              <FontAwesomeIcon icon={faAngleLeft as IconProp} /> Prev
-            </Link>
-          </li>
-        )}
-        {pageList.map((pn) =>
-          typeof pn === "number" ? (
-            <li key={pn}>
-              <Link to={pn} label={`Page ${pn}`} active={pn === currentPage}>
-                <span>{pn}</span>
-              </Link>
-            </li>
-          ) : (
-            <li key={pn} aria-hidden="true">
-              …
-            </li>
-          )
-        )}
-        {currentPage < totalPages && (
-          <li key="nextpage">
-            <Link to={`${currentPage + 1}`} label="Next Page">
-              Next <FontAwesomeIcon icon={faAngleRight as IconProp} />
-            </Link>
-          </li>
-        )}
-      </ol>
-    </nav>
+    <>
+      {pageList.length > 0 && (
+        <nav
+          className={classnames("usa-pagination", className)}
+          role="navigation"
+          aria-label="Pagination"
+        >
+          <ol>
+            {currentPage > 1 && (
+              <li key="prevpage">
+                <Link to={`${currentPage - 1}`} label="Previous Page">
+                  <FontAwesomeIcon icon={faAngleLeft as IconProp} /> Prev
+                </Link>
+              </li>
+            )}
+            {pageList.map((pn) =>
+              typeof pn === "number" ? (
+                <li key={pn}>
+                  <Link
+                    to={pn}
+                    label={`Page ${pn}`}
+                    active={pn === currentPage}
+                  >
+                    <span>{pn}</span>
+                  </Link>
+                </li>
+              ) : (
+                <li key={pn} aria-hidden="true">
+                  …
+                </li>
+              )
+            )}
+            {currentPage < totalPages && (
+              <li key="nextpage">
+                <Link to={`${currentPage + 1}`} label="Next Page">
+                  Next <FontAwesomeIcon icon={faAngleRight as IconProp} />
+                </Link>
+              </li>
+            )}
+          </ol>
+        </nav>
+      )}
+    </>
   );
 };
 
