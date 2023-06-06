@@ -1,6 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { UIDConsumer } from "react-uid";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 import Required from "./Required";
 import Optional from "./Optional";
@@ -28,11 +29,12 @@ interface Props<T> {
   variant?: "default" | "tile" | "horizontal";
   hintText?: string;
   disabled?: boolean;
-  onChange: (value: T) => void;
+  onChange?: (value: T) => void;
   onClick?: (value: T) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   inputClassName?: string;
   renderAsForm?: boolean;
+  registrationProps?: UseFormRegisterReturn<any>;
 }
 
 const RadioGroup = <T extends string>({
@@ -54,6 +56,7 @@ const RadioGroup = <T extends string>({
   disabled,
   inputClassName,
   renderAsForm,
+  registrationProps,
 }: Props<T>): React.ReactElement => {
   const inputClass = classnames(
     "usa-radio__input",
@@ -116,8 +119,9 @@ const RadioGroup = <T extends string>({
                     className={inputClass}
                     checked={c.value === selectedRadio}
                     onClick={onClick ? () => onClick(c.value) : undefined}
-                    onChange={() => onChange(c.value)}
+                    onChange={onChange ? () => onChange(c.value) : undefined}
                     onBlur={onBlur}
+                    {...registrationProps}
                   />
                   <label className={labelClasses} htmlFor={uid(c.value)}>
                     {c.label}
