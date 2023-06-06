@@ -1,7 +1,7 @@
 resource "azurerm_monitor_alert_processing_rule_suppression" "function_triggers_suppression" {
-  name                 = "${var.env}-function-triggers-suppression"
-  resource_group_name  = var.rg_name
-  scopes               = [data.azurerm_resource_group.app.id]
+  name                = "${var.env}-function-triggers-suppression"
+  resource_group_name = var.rg_name
+  scopes              = [data.azurerm_resource_group.app.id]
 
   condition {
     target_resource_type {
