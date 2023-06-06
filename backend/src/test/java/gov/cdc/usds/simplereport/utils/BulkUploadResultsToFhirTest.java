@@ -1,31 +1,36 @@
 package gov.cdc.usds.simplereport.utils;
 
+import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonFieldsEqual;
+import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.readJsonStream;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
+import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Observation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
 import org.springframework.boot.info.GitProperties;
 
 public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
   private static ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
+  private static UUIDGenerator uuidGenerator;
+  private static DateGenerator dateGenerator;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
@@ -126,4 +131,100 @@ public class BulkUploadResultsToFhirTest {
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(14);
   }
+
+  private InputStream getJsonStream(String jsonFile) {
+    return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(jsonFile);
+  }
+
+  @Test
+  void convertExistingCsv_matchesFhirJson()
+      throws IOException, NoSuchFieldException, IllegalAccessException, ParseException {
+    // Configure mocks for random UUIDs and Date timestamp
+    try (MockedStatic<UUIDGenerator> mockedUUIDGenerator = mockStatic(UUIDGenerator.class)) {
+      try (MockedStatic<DateGenerator> mockedDateGenerator = mockStatic(DateGenerator.class)) {
+        when(UUIDGenerator.randomUUID())
+            .thenReturn(UUID.fromString("10000000-0000-0000-0000-000000000001"))
+            .thenReturn(UUID.fromString("20000000-0000-0000-0000-000000000002"))
+            .thenReturn(UUID.fromString("30000000-0000-0000-0000-000000000003"))
+            .thenReturn(UUID.fromString("40000000-0000-0000-0000-000000000004"))
+            .thenReturn(UUID.fromString("50000000-0000-0000-0000-000000000005"))
+            .thenReturn(UUID.fromString("60000000-0000-0000-0000-000000000006"))
+            .thenReturn(UUID.fromString("70000000-0000-0000-0000-000000000007"));
+
+        // Construct UTC date object
+        String dateString = "2023-05-24T15:33:06.472-04:00";
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date date = sdf.parse(dateString);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
+        Date finalDate = calendar.getTime();
+
+        when(DateGenerator.newDate()).thenReturn(finalDate);
+
+        sut = new BulkUploadResultsToFhir(resultsUploaderDeviceValidationService, gitProperties);
+
+        when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+            .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+
+        InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid.csv");
+
+        String actualBundleString;
+        var serializedBundles =
+            sut.convertToFhirBundles(
+                csvStream, UUID.fromString("12345000-0000-0000-0000-000000000001"));
+        actualBundleString = serializedBundles.get(0);
+
+        InputStream jsonStream =
+            getJsonStream("testResultUpload/test-results-upload-valid-as-fhir.json");
+        String expectedBundleString = readJsonStream(jsonStream);
+
+        var objectMapper = new ObjectMapper();
+        var expectedNode = objectMapper.readTree(expectedBundleString);
+        var actualNode = objectMapper.readTree(actualBundleString);
+
+        HashSet<String> ignoredFields = new HashSet<>();
+
+        assertJsonFieldsEqual(expectedNode, actualNode, "", ignoredFields);
+      }
+    }
+  }
+
+  @Test
+  void convertExistingCsv_meetsProcessingSpeed() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-5000-rows.csv");
+
+    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+
+    var startTime = System.currentTimeMillis();
+
+    var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
+
+    var endTime = System.currentTimeMillis();
+    var elapsedTime = endTime - startTime;
+
+    assertTrue(elapsedTime < 10000, "Bundle processing took more than 10 seconds for 5000 rows");
+  }
+
+  //  @Test
+  //  void mockStaticTest() {
+  //    try (MockedStatic<UUIDGenerator> mockedUUIDGenerator = mockStatic(UUIDGenerator.class)){
+  //      try (MockedStatic<DateGenerator> mockedDateGenerator = mockStatic(DateGenerator.class)){
+  //
+  // mockedUUIDGenerator.when(UUIDGenerator::randomUUID).thenReturn(UUID.fromString("10000000-0000-0000-0000-000000000001"))
+  //                .thenReturn(UUID.fromString("20000000-0000-0000-0000-000000000002"))
+  //                .thenReturn(UUID.fromString("30000000-0000-0000-0000-000000000003"))
+  //                .thenReturn(UUID.fromString("40000000-0000-0000-0000-000000000004"))
+  //                .thenReturn(UUID.fromString("50000000-0000-0000-0000-000000000005"))
+  //                .thenReturn(UUID.fromString("60000000-0000-0000-0000-000000000006"))
+  //                .thenReturn(UUID.fromString("70000000-0000-0000-0000-000000000007"));
+  //      }
+  //
+  //      var test = UUIDGenerator.randomUUID();
+  //
+  //      assertThat(test).isEqualTo(UUID.fromString("10000000-0000-0000-0000-000000000001"));
+  //
+  //    }
+  //  }
 }

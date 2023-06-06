@@ -55,6 +55,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
+import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -474,14 +475,15 @@ public class FhirConverter {
     return specimen;
   }
 
-  public static Specimen convertToSpecimen(@NotNull SpecimenType specimenType) {
+  public static Specimen convertToSpecimen(
+      @NotNull SpecimenType specimenType, UUID specimenIdentifier) {
     return convertToSpecimen(
         specimenType.getTypeCode(),
         specimenType.getName(),
         specimenType.getCollectionLocationCode(),
         specimenType.getCollectionLocationName(),
         specimenType.getInternalId().toString(),
-        UUID.randomUUID().toString());
+        specimenIdentifier.toString());
   }
 
   public static List<Observation> convertToObservation(
@@ -816,7 +818,7 @@ public class FhirConverter {
             .orderingFacility(null)
             .practitioner(convertToPractitioner(testEvent.getProviderData()))
             .device(convertToDevice(testEvent.getDeviceType()))
-            .specimen(convertToSpecimen(testEvent.getSpecimenType()))
+            .specimen(convertToSpecimen(testEvent.getSpecimenType(), UUIDGenerator.randomUUID()))
             .resultObservations(
                 convertToObservation(
                     testEvent.getResults(),
@@ -855,8 +857,11 @@ public class FhirConverter {
             orderingFacilityFullUrl == null
                 ? testingLabOrganizationFullUrl
                 : orderingFacilityFullUrl,
-            practitionerFullUrl);
-    var provenance = createProvenance(testingLabOrganizationFullUrl, props.getCurrentDate());
+            practitionerFullUrl,
+            UUIDGenerator.randomUUID());
+    var provenance =
+        createProvenance(
+            testingLabOrganizationFullUrl, props.getCurrentDate(), UUIDGenerator.randomUUID());
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(
@@ -864,7 +869,8 @@ public class FhirConverter {
             diagnosticReportFullUrl,
             provenanceFullUrl,
             props.getGitProperties(),
-            props.getProcessingId());
+            props.getProcessingId(),
+            UUIDGenerator.randomUUID());
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
@@ -941,9 +947,10 @@ public class FhirConverter {
     return bundle;
   }
 
-  public static Provenance createProvenance(String organizationFullUrl, Date dateTested) {
+  public static Provenance createProvenance(
+      String organizationFullUrl, Date dateTested, UUID provenanceId) {
     var provenance = new Provenance();
-    provenance.setId(UUID.randomUUID().toString());
+    provenance.setId(provenanceId.toString());
     provenance
         .getActivity()
         .addCoding()
@@ -956,9 +963,9 @@ public class FhirConverter {
   }
 
   public static PractitionerRole createPractitionerRole(
-      String organizationUrl, String practitionerUrl) {
+      String organizationUrl, String practitionerUrl, UUID practitionerRoleId) {
     var practitionerRole = new PractitionerRole();
-    practitionerRole.setId(UUID.randomUUID().toString());
+    practitionerRole.setId(practitionerRoleId.toString());
     practitionerRole
         .setPractitioner(new Reference().setReference(practitionerUrl))
         .setOrganization(new Reference().setReference(organizationUrl));
@@ -970,9 +977,10 @@ public class FhirConverter {
       String mainResourceUrl,
       String provenanceFullUrl,
       GitProperties gitProperties,
-      String processingId) {
+      String processingId,
+      UUID messageHeaderId) {
     var messageHeader = new MessageHeader();
-    messageHeader.setId(UUID.randomUUID().toString());
+    messageHeader.setId(messageHeaderId.toString());
     messageHeader
         .getEventCoding()
         .setSystem(EVENT_TYPE_CODE_SYSTEM)

@@ -208,7 +208,7 @@ public class BulkUploadResultsToFhir {
               null);
       orderingFacility =
           FhirConverter.convertToOrganization(
-              UUID.randomUUID().toString(),
+              UUIDGenerator.randomUUID().toString(),
               row.getOrderingFacilityName().getValue(),
               row.getTestingLabClia().getValue(),
               row.getOrderingFacilityPhoneNumber().getValue(),
@@ -234,7 +234,7 @@ public class BulkUploadResultsToFhir {
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
-    UUID deviceId = UUID.randomUUID();
+    UUID deviceId = UUIDGenerator.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
     var modelName = row.getEquipmentModelName().getValue();
     var matchingDevice =
@@ -272,8 +272,8 @@ public class BulkUploadResultsToFhir {
             getDescriptionValue(row.getSpecimenType().getValue()),
             null,
             null,
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString());
+            UUIDGenerator.randomUUID().toString(),
+            UUIDGenerator.randomUUID().toString());
 
     var observation =
         List.of(
@@ -285,7 +285,7 @@ public class BulkUploadResultsToFhir {
                     .correctionStatus(
                         mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
                     .correctionReason(null)
-                    .id(UUID.randomUUID().toString())
+                    .id(UUIDGenerator.randomUUID().toString())
                     .resultDescription(
                         Translators.convertConceptCodeToConceptName(
                             getDescriptionValue(row.getTestResult().getValue())))
@@ -316,7 +316,7 @@ public class BulkUploadResultsToFhir {
         FhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.ACTIVE,
             testPerformedCode,
-            UUID.randomUUID().toString());
+            UUIDGenerator.randomUUID().toString());
 
     var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
     var diagnosticReport =
@@ -325,7 +325,7 @@ public class BulkUploadResultsToFhir {
             testPerformedCode,
             testEventId,
             Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            new Date());
+            DateGenerator.newDate());
 
     return FhirConverter.createFhirBundle(
         CreateFhirBundleProps.builder()
@@ -339,7 +339,7 @@ public class BulkUploadResultsToFhir {
             .aoeObservations(aoeObservations)
             .serviceRequest(serviceRequest)
             .diagnosticReport(diagnosticReport)
-            .currentDate(new Date())
+            .currentDate(DateGenerator.newDate())
             .gitProperties(gitProperties)
             .processingId(processingModeCode)
             .build());

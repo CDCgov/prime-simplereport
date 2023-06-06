@@ -570,7 +570,7 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
-    var actual = convertToSpecimen(specimenType);
+    var actual = convertToSpecimen(specimenType, UUID.randomUUID());
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getType().getCoding()).hasSize(1);
@@ -593,7 +593,7 @@ class FhirConverterTest {
     SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
     ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
 
-    var actual = convertToSpecimen(specimenType);
+    var actual = convertToSpecimen(specimenType, UUID.randomUUID());
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -1087,7 +1087,8 @@ class FhirConverterTest {
   @Test
   void createPractitionerRole_valid() {
     var practitionerRole =
-        createPractitionerRole("Organization/org-id", "Practitioner/practitioner-id");
+        createPractitionerRole(
+            "Organization/org-id", "Practitioner/practitioner-id", UUID.randomUUID());
 
     assertThat(practitionerRole.getOrganization().getReference()).isEqualTo("Organization/org-id");
     assertThat(practitionerRole.getPractitioner().getReference())
@@ -1098,7 +1099,12 @@ class FhirConverterTest {
   void createMessageHeader_valid() {
     var messageHeader =
         createMessageHeader(
-            "Organization/org-id", "mainResource", "provenance", gitProperties, "P");
+            "Organization/org-id",
+            "mainResource",
+            "provenance",
+            gitProperties,
+            "P",
+            UUID.randomUUID());
 
     assertThat(messageHeader.getEventCoding().getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0003");
@@ -1148,7 +1154,7 @@ class FhirConverterTest {
   @Test
   void createProvenance_valid() {
     var date = new Date();
-    var provenance = createProvenance("Organization/org-id", date);
+    var provenance = createProvenance("Organization/org-id", date, UUID.randomUUID());
 
     assertThat(provenance.getActivity().getCoding()).hasSize(1);
     assertThat(provenance.getActivity().getCodingFirstRep().getCode()).isEqualTo("R01");
