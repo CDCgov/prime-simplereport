@@ -9,12 +9,13 @@ import {
   Role,
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
+import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
 
 const AddOrganizationAdminFormContainer = () => {
   useDocumentTitle("Add organization admin");
-
+  const [activeFacility] = useSelectedFacility();
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
     fetchPolicy: "no-cache",
@@ -57,7 +58,7 @@ const AddOrganizationAdminFormContainer = () => {
   };
 
   if (submitted) {
-    return <Navigate to="/admin" />;
+    return <Navigate to={`/admin?facility=${activeFacility?.id}`} />;
   }
 
   return (
