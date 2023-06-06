@@ -142,7 +142,8 @@ public class BulkUploadResultsToFhirTest {
     // Configure mocks for random UUIDs and Date timestamp
     try (MockedStatic<UUIDGenerator> mockedUUIDGenerator = mockStatic(UUIDGenerator.class)) {
       try (MockedStatic<DateGenerator> mockedDateGenerator = mockStatic(DateGenerator.class)) {
-        when(UUIDGenerator.randomUUID())
+        mockedUUIDGenerator
+            .when(UUIDGenerator::randomUUID)
             .thenReturn(UUID.fromString("10000000-0000-0000-0000-000000000001"))
             .thenReturn(UUID.fromString("20000000-0000-0000-0000-000000000002"))
             .thenReturn(UUID.fromString("30000000-0000-0000-0000-000000000003"))
@@ -160,7 +161,7 @@ public class BulkUploadResultsToFhirTest {
         calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
         Date finalDate = calendar.getTime();
 
-        when(DateGenerator.newDate()).thenReturn(finalDate);
+        mockedDateGenerator.when(DateGenerator::newDate).thenReturn(finalDate);
 
         sut = new BulkUploadResultsToFhir(resultsUploaderDeviceValidationService, gitProperties);
 
