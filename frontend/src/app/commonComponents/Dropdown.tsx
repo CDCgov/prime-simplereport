@@ -17,7 +17,7 @@ interface Props {
   options: Option[];
   label?: string | React.ReactNode;
   name?: string;
-  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   selectedValue: string;
   disabled?: boolean;
   defaultOption?: string;
