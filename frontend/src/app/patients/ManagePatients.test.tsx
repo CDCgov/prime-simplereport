@@ -1,7 +1,9 @@
 import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import {
+  fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -109,12 +111,17 @@ describe("ManagePatients", () => {
 
     it("when exiting archive modal, the action button is refocused", async () => {
       render(<TestContainer />);
-      expect(await screen.findByText(patients[0].lastName, { exact: false }));
-
       const menu = (await screen.findAllByText("More actions"))[0];
-      await userEvent.click(menu);
-      await userEvent.click(await screen.findByText(`Archive ${PATIENT_TERM}`));
-      await userEvent.click(screen.getByText("No, go back", { exact: false }));
+      userEvent.click(menu);
+      await screen.findByText(`Archive ${PATIENT_TERM}`);
+      fireEvent.click(screen.getByText(`Archive ${PATIENT_TERM}`));
+      await screen.findByText("No, go back");
+      userEvent.click(screen.getByText("No, go back"));
+
+      await waitFor(() =>
+        expect(screen.queryByText("No, go back")).not.toBeInTheDocument()
+      );
+
       expect(
         screen.getByTestId(`action_${patients[0].internalId}`, { exact: false })
       ).toHaveFocus();
