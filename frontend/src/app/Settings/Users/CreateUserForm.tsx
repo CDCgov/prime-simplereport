@@ -38,7 +38,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
     register,
     handleSubmit,
     watch,
-    formState: { errors: errors2, isSubmitting, isDirty },
+    formState: { errors, isSubmitting, isDirty },
     setValue,
   } = useForm<CreateUser>({
     defaultValues: {
@@ -74,8 +74,8 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           registrationProps={register("firstName", {
             required: "First name is required",
           })}
-          validationStatus={errors2?.firstName?.type ? "error" : undefined}
-          errorMessage={errors2?.firstName?.message}
+          validationStatus={errors?.firstName?.type ? "error" : undefined}
+          errorMessage={errors?.firstName?.message}
         />
         <div></div>
         <TextInput
@@ -86,8 +86,8 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           registrationProps={register("lastName", {
             required: "Last name is required",
           })}
-          validationStatus={errors2?.lastName?.type ? "error" : undefined}
-          errorMessage={errors2?.lastName?.message}
+          validationStatus={errors?.lastName?.type ? "error" : undefined}
+          errorMessage={errors?.lastName?.message}
         />
       </div>
       <div>
@@ -104,8 +104,8 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
               message: "Email must be a valid email address",
             },
           })}
-          validationStatus={errors2?.email?.type ? "error" : undefined}
-          errorMessage={errors2?.email?.message}
+          validationStatus={errors?.email?.type ? "error" : undefined}
+          errorMessage={errors?.email?.message}
         />
       </div>
       <div className="grid-row">
