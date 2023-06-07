@@ -24,6 +24,7 @@ export interface CreateUser {
   lastName: string;
   email: string;
   role: Role;
+  facilityIds: string[];
   organization?: Maybe<{
     testingFacility: UserFacilitySetting[];
   }>;

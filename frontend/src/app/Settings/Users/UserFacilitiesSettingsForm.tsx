@@ -1,12 +1,13 @@
 import React, { useRef, useState, useEffect, useMemo } from "react";
+import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
 import { UserPermission } from "../../../generated/graphql";
 
 import { UpdateUser } from "./ManageUsers";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
-
 import "./ManageUsers.scss";
+import { CreateUser } from "./CreateUserSchema";
 
 type FacilityLookup = Record<string, UserFacilitySetting>;
 
@@ -29,6 +30,9 @@ interface Props {
   allFacilities: UserFacilitySetting[]; // all facilities for the entire org; the activeUser would have a subset of these
   onUpdateUser: UpdateUser;
   showRequired?: boolean;
+  register?: UseFormRegister<CreateUser>;
+  errors?: FieldErrors<CreateUser>;
+  setValue?: UseFormSetValue<CreateUser>;
 }
 
 const UserFacilitiesSettingsForm: React.FC<Props> = ({
@@ -36,6 +40,9 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   allFacilities,
   onUpdateUser,
   showRequired,
+  register,
+  errors,
+  setValue,
 }) => {
   const [isComponentVisible, setIsComponentVisible] = useState(false);
 
@@ -121,18 +128,68 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     [userFacilities]
   );
 
-  const boxes = [
+  let boxes = [
     {
       value: "ALL_FACILITIES",
       label: `Access all facilities (${allFacilities.length})`,
       disabled: isAdmin,
+      checked: hasAllFacilityAccess,
     },
     ...allFacilities.map((facility) => ({
       value: facility.id,
       label: facility.name,
       disabled: isAdmin,
+      checked: userFacilityLookup.has(facility.id),
     })),
   ];
+
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    if (value === "ALL_FACILITIES") {
+      if (checked) {
+        onUpdateUser("permissions", [
+          ...(activeUser.permissions || []),
+          UserPermission.AccessAllFacilities,
+        ]);
+        if (setValue) {
+          setValue("facilityIds", [
+            "ALL_FACILITIES",
+            ...allFacilities.map((facility) => facility.id),
+          ]);
+        }
+      } else {
+        onUpdateUser(
+          "permissions",
+          activeUser.permissions?.filter(
+            (permission) => permission !== "ACCESS_ALL_FACILITIES"
+          ) || []
+        );
+      }
+    } else {
+      if (checked) {
+        const facility = facilityLookup[value];
+        onUpdateUser("organization", {
+          testingFacility: [
+            ...(activeUser.organization?.testingFacility || []),
+            facility,
+          ],
+        });
+      } else {
+        onRemoveFacility(activeUser, value);
+      }
+    }
+  };
+
+  if (register) {
+    boxes = boxes.map((box) => ({
+      ...box,
+      ...register("facilityIds", {
+        required: "At least one facility must be selected",
+        onChange,
+      }),
+    }));
+  }
+
   const checkedValues: { [key: string]: boolean | undefined } = {
     ALL_FACILITIES: hasAllFacilityAccess,
   };
@@ -154,37 +211,9 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         legend="Facilities"
         legendSrOnly
         name="facilities"
-        checkedValues={checkedValues}
-        onChange={(e) => {
-          const { value, checked } = e.target;
-          if (value === "ALL_FACILITIES") {
-            if (checked) {
-              onUpdateUser("permissions", [
-                ...(activeUser.permissions || []),
-                UserPermission.AccessAllFacilities,
-              ]);
-            } else {
-              onUpdateUser(
-                "permissions",
-                activeUser.permissions?.filter(
-                  (permission) => permission !== "ACCESS_ALL_FACILITIES"
-                ) || []
-              );
-            }
-          } else {
-            if (checked) {
-              const facility = facilityLookup[value];
-              onUpdateUser("organization", {
-                testingFacility: [
-                  ...(activeUser.organization?.testingFacility || []),
-                  facility,
-                ],
-              });
-            } else {
-              onRemoveFacility(activeUser, value);
-            }
-          }
-        }}
+        onChange={onChange}
+        validationStatus={errors?.facilityIds?.type ? "error" : undefined}
+        errorMessage={errors?.facilityIds?.message}
       />
     </>
   );

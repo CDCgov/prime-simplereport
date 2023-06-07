@@ -46,6 +46,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
       lastName: "",
       email: "",
       role: "USER",
+      facilityIds: [],
       organization: null,
       permissions: [],
     },
@@ -124,6 +125,9 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
         onUpdateUser={updateUser}
         allFacilities={facilities}
         showRequired
+        register={register}
+        errors={errors}
+        setValue={setValue}
       />
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
         <div className="display-flex flex-justify-end">
