@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service.model.reportstream;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import java.io.Serializable;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -16,16 +17,18 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeedbackMessage implements Serializable {
+  /*
   public enum ErrorType {
     MISSING_HEADER,
     MISSING_DATA,
     INVALID_DATA
   }
+   */
 
   private String scope;
   private String message;
   private List<Integer> indices;
   private String fieldHeader;
   private boolean fieldRequired;
-  private ErrorType errorType;
+  private ResultUploadErrorType errorType;
 }

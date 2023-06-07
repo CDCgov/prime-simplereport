@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 public enum ResultUploadErrorType {
-  HEADER_ERROR,
+  MISSING_HEADER,
   INVALID_DATA,
   MISSING_DATA,
   INCORRECT_STRUCTURE

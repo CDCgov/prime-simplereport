@@ -9,8 +9,10 @@ import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.ResultUploadError;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
@@ -47,6 +49,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
+  private final ResultUploadErrorRepository errorRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
@@ -107,6 +110,10 @@ public class TestResultUploadService {
         testResultFileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
       validationErrorResult.setErrors(errors.toArray(FeedbackMessage[]::new));
+
+      errorRepository.saveAll(
+          errors.stream().map(error -> new ResultUploadError(org, error)).toList());
+
       return validationErrorResult;
     }
 

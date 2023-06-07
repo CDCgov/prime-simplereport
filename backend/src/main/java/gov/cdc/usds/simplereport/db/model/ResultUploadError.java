@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
+import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -66,5 +67,23 @@ public class ResultUploadError extends AuditedEntity {
     this.field = field;
     this.required = required;
     this.message = message;
+  }
+
+  public ResultUploadError(
+      TestResultUpload upload, Organization organization, FeedbackMessage feedbackMessage) {
+    this.upload = upload;
+    this.organization = organization;
+    this.type = feedbackMessage.getErrorType();
+    this.field = feedbackMessage.getFieldHeader();
+    this.required = feedbackMessage.isFieldRequired();
+    this.message = feedbackMessage.getMessage();
+  }
+
+  public ResultUploadError(Organization organization, FeedbackMessage feedbackMessage) {
+    this.organization = organization;
+    this.type = feedbackMessage.getErrorType();
+    this.field = feedbackMessage.getFieldHeader();
+    this.required = feedbackMessage.isFieldRequired();
+    this.message = feedbackMessage.getMessage();
   }
 }
