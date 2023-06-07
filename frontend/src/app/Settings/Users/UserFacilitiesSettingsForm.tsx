@@ -52,7 +52,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
 
   const handleClickOutside = (event: any) => {
     // TODO: figure out this type
-    if (ref.current && ref.current.contains(event.target)) {
+    if (ref?.current?.contains(event.target)) {
       // inside click
       // TODO: this doesn't capture the buttons inside the table
     } else {
