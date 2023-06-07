@@ -387,6 +387,7 @@
       "resource": {
         "resourceType": "Device",
         "id": "00000000-0000-0000-0000-000000000003",
+        "manufacturer": "Acme",
         "deviceName": [
           {
             "name": "ID NOW",
@@ -428,7 +429,8 @@
               "system": "http://loinc.org",
               "code": "94534-5"
             }
-          ]
+          ],
+          "text": "COVID-19"
         },
         "subject": {
           "reference": "Patient/1234"
@@ -459,6 +461,20 @@
           }
         ],
         "method": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding": {
+                "code": "BOOMX2"
+              }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "543212134"
+              }
+            }
+          ],
           "coding": [
             {
               "display": "ID NOW"

@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.utils;
 
-import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonFieldsEqual;
-import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.readJsonStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -15,14 +13,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
@@ -156,9 +155,18 @@ public class BulkUploadResultsToFhirTest {
     return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(jsonFile);
   }
 
+  private String readJsonStream(InputStream is) throws IOException {
+    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+    StringBuilder stringBuilder = new StringBuilder();
+    String line;
+    while ((line = reader.readLine()) != null) {
+      stringBuilder.append(line);
+    }
+    return stringBuilder.toString();
+  }
+
   @Test
-  void convertExistingCsv_matchesFhirJson()
-      throws IOException, NoSuchFieldException, IllegalAccessException, ParseException {
+  void convertExistingCsv_matchesFhirJson() throws IOException, ParseException {
     // Configure mocks for random UUIDs and Date timestamp
     var mockedUUIDGenerator = mock(UUIDGenerator.class);
     when(mockedUUIDGenerator.randomUUID())
@@ -223,9 +231,10 @@ public class BulkUploadResultsToFhirTest {
     var expectedNode = objectMapper.readTree(expectedBundleString);
     var actualNode = objectMapper.readTree(actualBundleString);
 
-    HashSet<String> ignoredFields = new HashSet<>();
+    var expectedNormalizedJson = objectMapper.writeValueAsString(expectedNode);
+    var actualNormalizedJson = objectMapper.writeValueAsString(actualNode);
 
-    assertJsonFieldsEqual(expectedNode, actualNode, "", ignoredFields);
+    assertThat(expectedNormalizedJson).isEqualTo(actualNormalizedJson);
   }
 
   @Test
