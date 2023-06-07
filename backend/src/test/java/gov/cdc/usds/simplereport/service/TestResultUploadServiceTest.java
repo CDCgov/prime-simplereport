@@ -299,7 +299,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     InputStream invalidInput = new ByteArrayInputStream("invalid".getBytes());
     when(csvFileValidatorMock.validate(any()))
-        .thenReturn(List.of(new FeedbackMessage("error", "my lovely error message")));
+        .thenReturn(List.of(FeedbackMessage.builder().message("my lovely error message").build()));
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
 
     // WHEN
