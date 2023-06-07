@@ -76,7 +76,7 @@ const EditUserNameModal: React.FC<EditUserNameModalProps> = ({
         validationStatus={errors.firstName?.type ? "error" : undefined}
         errorMessage={errors.firstName?.message}
         registrationProps={register("firstName", {
-          required: "first name is required",
+          required: "First name is required",
         })}
       />
       <TextInput
