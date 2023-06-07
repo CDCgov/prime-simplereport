@@ -1,3 +1,4 @@
+// email utils
 export const emailIsValid = (emailAddress = "") => {
   return emailRegex.test(String(emailAddress).toLowerCase());
 };
