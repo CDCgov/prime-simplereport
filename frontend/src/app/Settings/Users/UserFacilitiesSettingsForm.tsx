@@ -104,15 +104,15 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     }
   }, [hasAllFacilityAccess, activeUser, onUpdateUser, allFacilities]);
 
-  const userFacilities = useMemo(
-    () =>
-      hasAllFacilityAccess
-        ? [...allFacilities]
-        : activeUser.organization
-        ? [...activeUser.organization.testingFacility]
-        : [],
-    [activeUser, allFacilities, hasAllFacilityAccess]
-  );
+  const userFacilities = useMemo(() => {
+    if (hasAllFacilityAccess) {
+      return [...allFacilities];
+    } else if (activeUser.organization?.testingFacility) {
+      return [...activeUser.organization.testingFacility];
+    } else {
+      return [];
+    }
+  }, [activeUser, allFacilities, hasAllFacilityAccess]);
 
   userFacilities.sort(alphabeticalFacilitySort);
 
