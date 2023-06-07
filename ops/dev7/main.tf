@@ -25,10 +25,21 @@ resource "azurerm_storage_account" "app" {
   allow_nested_items_to_be_public  = false
   cross_tenant_replication_enabled = false
 
+  queue_properties {
+    logging {
+      delete                = false
+      read                  = false
+      write                 = false
+      version               = "1.0"
+      retention_policy_days = 7
+    }
+  }
+
   static_website {
     index_document     = "index.html"
     error_404_document = "404.html"
   }
+
   tags = local.management_tags
 }
 
@@ -55,6 +66,12 @@ resource "azurerm_storage_queue" "fhir_data_queue" {
 resource "azurerm_storage_queue" "fhir_publishing_error_queue" {
   name                 = "fhir-data-publishing-error"
   storage_account_name = azurerm_storage_account.app.name
+}
+
+resource "azurerm_storage_share" "db_client_export" {
+  name                 = "db-client-export-${local.env}"
+  storage_account_name = azurerm_storage_account.app.name
+  quota                = 10
 }
 
 # Manually configured rules/rewrite sets
@@ -90,7 +107,6 @@ module "nat_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
   subnet_webapp_id        = data.terraform_remote_state.persistent_dev7.outputs.subnet_webapp_id
   subnet_lb_id            = data.terraform_remote_state.persistent_dev7.outputs.subnet_lbs_id
-  subnet_vm_id            = data.terraform_remote_state.persistent_dev7.outputs.subnet_vm_id
   tags                    = local.management_tags
 }
 

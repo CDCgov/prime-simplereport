@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAOEObservation;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getCommonDiseaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
@@ -18,6 +19,7 @@ import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -34,7 +36,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -234,6 +235,8 @@ public class BulkUploadResultsToFhir {
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
+    String testOrderLoinc = null;
+
     UUID deviceId = UUID.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
     var modelName = row.getEquipmentModelName().getValue();
@@ -243,18 +246,29 @@ public class BulkUploadResultsToFhir {
             .get(ResultsUploaderDeviceValidationService.getMapKey(modelName, testPerformedCode));
 
     if (matchingDevice != null) {
-      Optional<DeviceTypeDisease> deviceTypeDisease =
+      List<DeviceTypeDisease> deviceTypeDiseaseEntries =
           matchingDevice.getSupportedDiseaseTestPerformed().stream()
               .filter(
                   disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
-              .findFirst();
+              .toList();
       manufacturer = matchingDevice.getManufacturer();
-      equipmentUid = deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
-      testKitNameId = deviceTypeDisease.map(DeviceTypeDisease::getTestkitNameId).orElse(null);
-      deviceId = deviceTypeDisease.map(DeviceTypeDisease::getInternalId).orElse(deviceId);
-      var supportedDisease =
-          deviceTypeDisease.map(DeviceTypeDisease::getSupportedDisease).orElse(null);
-      diseaseName = supportedDisease != null ? supportedDisease.getName() : null;
+      equipmentUid =
+          getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+      testKitNameId =
+          getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
+      deviceId =
+          deviceTypeDiseaseEntries.stream()
+              .findFirst()
+              .map(DeviceTypeDisease::getInternalId)
+              .orElse(deviceId);
+      diseaseName =
+          deviceTypeDiseaseEntries.stream()
+              .findFirst()
+              .map(DeviceTypeDisease::getSupportedDisease)
+              .map(SupportedDisease::getName)
+              .orElse(null);
+
+      testOrderLoinc = MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries);
     } else {
       log.info(
           "No device found for model ("
@@ -314,8 +328,8 @@ public class BulkUploadResultsToFhir {
 
     var serviceRequest =
         FhirConverter.convertToServiceRequest(
-            ServiceRequest.ServiceRequestStatus.ACTIVE,
-            testPerformedCode,
+            ServiceRequest.ServiceRequestStatus.COMPLETED,
+            testOrderLoinc,
             UUID.randomUUID().toString());
 
     var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);

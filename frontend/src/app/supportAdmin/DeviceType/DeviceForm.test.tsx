@@ -1,7 +1,8 @@
 import React from "react";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { cloneDeep } from "lodash";
+import selectEvent from "react-select-event";
 
 import DeviceForm from "./DeviceForm";
 import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDiseaseTestPerformedCovid";
@@ -239,8 +240,12 @@ describe("update existing devices", () => {
 
   describe("When selecting a device", () => {
     it("enables input fields and prefills them with current values", async () => {
-      await userEvent.click(screen.getByTestId("combo-box-select"));
-      await userEvent.click(screen.getAllByText("Postal Swab")[1]);
+      await act(() => {
+        selectEvent.select(
+          screen.getByLabelText(/select device/i),
+          "Postal Swab"
+        );
+      });
 
       const manufacturerInput = screen.getByLabelText("Manufacturer", {
         exact: false,
@@ -296,8 +301,12 @@ describe("update existing devices", () => {
     });
 
     it("maps supported diseases to supported disease and empty test performed", async () => {
-      await userEvent.click(screen.getByTestId("combo-box-select"));
-      await userEvent.click(screen.getAllByText("Fission Energizer")[1]);
+      await act(() => {
+        selectEvent.select(
+          screen.getByLabelText(/select device/i),
+          "Fission Energizer"
+        );
+      });
 
       const supportedDisease = screen.getAllByLabelText("Supported disease *");
       const testPerformed = screen.getAllByLabelText("Test performed code *");
@@ -328,8 +337,12 @@ describe("update existing devices", () => {
     });
 
     it("removes a supported disease when trash button is clicked", async () => {
-      await userEvent.click(screen.getByTestId("combo-box-select"));
-      await userEvent.click(screen.getAllByText("Postal Swab")[1]);
+      await act(() => {
+        selectEvent.select(
+          screen.getByLabelText(/select device/i),
+          "Postal Swab"
+        );
+      });
 
       expect(
         screen
@@ -353,9 +366,12 @@ describe("update existing devices", () => {
 
     describe("selecting another device", () => {
       it("prefills input fields with new values", async () => {
-        await userEvent.click(screen.getByTestId("combo-box-select"));
-        await userEvent.click(screen.getAllByText("Fission Energizer")[1]);
-
+        await act(() => {
+          selectEvent.select(
+            screen.getByLabelText(/select device/i),
+            "Fission Energizer"
+          );
+        });
         const manufacturerInput = screen.getByLabelText("Manufacturer", {
           exact: false,
         });
@@ -372,8 +388,12 @@ describe("update existing devices", () => {
 
     describe("updating a device", () => {
       it("calls update device with the current values", async () => {
-        await userEvent.click(screen.getByTestId("combo-box-select"));
-        await userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
+        await act(() => {
+          selectEvent.select(
+            screen.getByLabelText(/select device/i),
+            "Tesla Emitter"
+          );
+        });
 
         const snomedInput = screen.getAllByTestId("multi-select-toggle")[0];
         const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
@@ -435,8 +455,12 @@ describe("update existing devices", () => {
         );
       });
       it("sets loinc code to the test performed code for covid", async () => {
-        await userEvent.click(screen.getByTestId("combo-box-select"));
-        await userEvent.click(screen.getAllByText("Tesla Emitter")[1]);
+        await act(() => {
+          selectEvent.select(
+            screen.getByLabelText(/select device/i),
+            "Tesla Emitter"
+          );
+        });
         await clearAndEnterInput("Test performed code *", "950-9501");
         await clearAndEnterInput("Test ordered code *", "1059-059");
         await userEvent.click(screen.getByText("Save changes"));

@@ -4,12 +4,18 @@ import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import React from "react";
+import { MemoryRouter as Router } from "react-router";
 
 import { getAppInsights } from "../../TelemetryService";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 
-import Uploads, { EnhancedFeedbackMessage, groupErrors } from "./Uploads";
+import Uploads, {
+  EnhancedFeedbackMessage,
+  getGuidance,
+  groupErrors,
+} from "./Uploads";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -337,6 +343,97 @@ describe("Uploads", () => {
       expect(result[5]?.indicesRange).toEqual(["7"]);
       expect(result[6]?.indicesRange).toEqual(undefined);
       expect(result[7]?.indicesRange).toEqual(undefined);
+    });
+  });
+
+  describe("error guidance", () => {
+    it("should give you guidance for missing headers", () => {
+      const guidance = getGuidance({
+        errorType: "MISSING_HEADER",
+        fieldHeader: "patient_first_name",
+      } as EnhancedFeedbackMessage);
+
+      expect(guidance).toEqual(
+        "Include a column with patient_first_name as the header."
+      );
+    });
+
+    it("should give you guidance for missing data", () => {
+      const guidance = getGuidance({
+        errorType: "MISSING_DATA",
+        fieldHeader: "patient_first_name",
+      } as EnhancedFeedbackMessage);
+
+      expect(guidance).toEqual(
+        "patient_first_name is a required field. Include values in each row under this column."
+      );
+    });
+
+    it("should give you guidance for required invalid data", async () => {
+      const Guidance = getGuidance({
+        errorType: "INVALID_DATA",
+        fieldHeader: "patient_first_name",
+        fieldRequired: true,
+      } as EnhancedFeedbackMessage) as JSX.Element;
+
+      render(<Router>{Guidance}</Router>);
+
+      expect(
+        screen.getByText("Follow the instructions under patient_first_name", {
+          exact: false,
+        })
+      ).toBeInTheDocument();
+    });
+
+    it("should give you guidance for optional invalid data", async () => {
+      const Guidance = getGuidance({
+        errorType: "INVALID_DATA",
+        fieldHeader: "patient_middle_name",
+        fieldRequired: false,
+      } as EnhancedFeedbackMessage) as JSX.Element;
+
+      render(<Router>{Guidance}</Router>);
+
+      expect(
+        screen.getByText(
+          "If including patient_middle_name, follow the instructions under patient_middle_name",
+          { exact: false }
+        )
+      ).toBeInTheDocument();
+    });
+
+    it("should give you guidance for required invalid data with specific acceptable values", async () => {
+      const Guidance = getGuidance({
+        errorType: "INVALID_DATA",
+        fieldHeader: "patient_ethnicity",
+        fieldRequired: true,
+      } as EnhancedFeedbackMessage) as JSX.Element;
+
+      render(<Router>{Guidance}</Router>);
+
+      expect(
+        screen.getByText(
+          "Choose from the accepted values listed under patient_ethnicity",
+          { exact: false }
+        )
+      ).toBeInTheDocument();
+    });
+
+    it("should give you guidance for optional invalid data with specific acceptable values", async () => {
+      const Guidance = getGuidance({
+        errorType: "INVALID_DATA",
+        fieldHeader: "residence_type",
+        fieldRequired: false,
+      } as EnhancedFeedbackMessage) as JSX.Element;
+
+      render(<Router>{Guidance}</Router>);
+
+      expect(
+        screen.getByText(
+          "If including residence_type, choose from the accepted values listed under residence_type",
+          { exact: false }
+        )
+      ).toBeInTheDocument();
     });
   });
 });

@@ -251,9 +251,9 @@ const PendingOrganizations = ({
                 <thead>
                   <tr>
                     <th scope="col">Organization name</th>
-                    <th scope="row">Administrator</th>
-                    <th scope="row">Contact information</th>
-                    <th scope="row">Created</th>
+                    <th scope="col">Administrator</th>
+                    <th scope="col">Contact information</th>
+                    <th scope="col">Created</th>
                     <th scope="col">External ID</th>
                     <th scope="col" aria-hidden></th>
                     <th scope="col" aria-hidden></th>

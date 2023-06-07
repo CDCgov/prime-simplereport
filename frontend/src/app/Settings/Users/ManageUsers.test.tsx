@@ -366,9 +366,9 @@ describe("ManageUsers", () => {
       await userEvent.type(last, newUser.lastName);
       await userEvent.type(email, newUser.email);
       await userEvent.selectOptions(select, newUser.role);
-      const sendButton = screen.getByText("Send invite");
       await userEvent.click(screen.getAllByRole("checkbox")[0]);
-      expect(sendButton).toBeEnabled();
+      const sendButton = screen.getByText("Send invite");
+      await waitFor(() => expect(sendButton).toBeEnabled());
       await userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({ variables: newUser });
@@ -397,9 +397,9 @@ describe("ManageUsers", () => {
       await userEvent.type(last, newUser.lastName);
       await userEvent.type(email, newUser.email);
       await userEvent.selectOptions(select, newUser.role);
-      const sendButton = screen.getByText("Send invite");
       await userEvent.click(screen.getAllByRole("checkbox")[0]);
-      expect(sendButton).toBeEnabled();
+      const sendButton = screen.getByText("Send invite");
+      await waitFor(() => expect(sendButton).toBeEnabled());
       await userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).not.toBeCalled());
       expect(
@@ -494,7 +494,6 @@ describe("ManageUsers", () => {
       await userEvent.click(resetButton);
       const sureButton = await screen.findByRole("button", {
         name: "Reset multi-factor authentication",
-        exact: false,
       });
       await userEvent.click(sureButton);
       await waitFor(() => expect(resetUserMfa).toBeCalled());
@@ -544,17 +543,15 @@ describe("ManageUsers", () => {
       it("fails for a missing first name", async () => {
         await userEvent.clear(first);
         await userEvent.click(confirmButton);
+        await expect(() => screen.findByText("A first name is required"));
         await waitFor(() => expect(confirmButton).toBeDisabled());
-        expect(
-          screen.getByText("A first name is required")
-        ).toBeInTheDocument();
       });
 
       it("fails for a missing last name", async () => {
         await userEvent.clear(last);
         await userEvent.click(confirmButton);
+        await expect(() => screen.findByText("a last name is required"));
         await waitFor(() => expect(confirmButton).toBeDisabled());
-        expect(screen.getByText("A last name is required")).toBeInTheDocument();
       });
     });
 

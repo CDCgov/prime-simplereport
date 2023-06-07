@@ -605,7 +605,7 @@ public class TestEventExport {
 
   @JsonProperty("Ordering_provider_zip_code")
   public String getOrderingProviderZipCode() {
-    return this.getTestingLabZipCode();
+    return provider.map(Provider::getZipCode).orElse(null);
   }
 
   @JsonProperty("Ordering_provider_county")
