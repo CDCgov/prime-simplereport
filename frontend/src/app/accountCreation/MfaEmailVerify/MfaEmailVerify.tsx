@@ -2,8 +2,11 @@ import { useEffect } from "react";
 
 import { AccountCreationApi } from "../AccountCreationApiService";
 import { MfaVerify } from "../MfaVerify/MfaVerify";
+import { useDocumentTitle } from "../../utils/hooks";
 
 export const MfaEmailVerify = () => {
+  useDocumentTitle("Verify your security code");
+
   useEffect(() => {
     AccountCreationApi.enrollEmailMfa();
   }, []);
