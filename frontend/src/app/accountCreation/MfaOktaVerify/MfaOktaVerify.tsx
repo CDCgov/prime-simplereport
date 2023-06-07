@@ -2,7 +2,7 @@ import { MfaVerify } from "../MfaVerify/MfaVerify";
 import { useDocumentTitle } from "../../utils/hooks";
 
 export const MfaOktaVerify = () => {
-  useDocumentTitle("Verify your security code");
+  useDocumentTitle("Verify your security code from Okta Verify");
 
   return (
     <MfaVerify

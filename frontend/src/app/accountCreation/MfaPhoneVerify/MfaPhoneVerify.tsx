@@ -5,7 +5,7 @@ import { formatPhoneNumber } from "../../utils/text";
 import { useDocumentTitle } from "../../utils/hooks";
 
 export const MfaPhoneVerify = () => {
-  useDocumentTitle("Verify your security code");
+  useDocumentTitle("Verify your security code from a phone call");
   const location: any = useLocation();
 
   return (
