@@ -18,7 +18,7 @@ public class UUIDGenerator {
    *
    * @return a randomly generated UUID
    */
-  public static UUID randomUUID() {
+  public UUID randomUUID() {
     return UUID.randomUUID();
   }
 }

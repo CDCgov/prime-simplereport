@@ -19,7 +19,7 @@ public class DateGenerator {
    *
    * @return a new Date object representing the current date and time
    */
-  public static Date newDate() {
+  public Date newDate() {
     return new Date();
   }
 }
