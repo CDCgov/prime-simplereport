@@ -4,7 +4,10 @@ import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonFields
 import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.readJsonStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
@@ -17,7 +20,12 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Observation;
