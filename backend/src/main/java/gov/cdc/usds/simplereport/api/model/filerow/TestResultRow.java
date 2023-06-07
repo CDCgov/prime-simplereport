@@ -367,6 +367,7 @@ public class TestResultRow implements FileRow {
             .scope(ITEM_SCOPE)
             .message(errorMessage)
             .fieldRequired(true)
+            .fieldHeader(EQUIPMENT_MODEL_NAME)
             .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
             .build());
   }
