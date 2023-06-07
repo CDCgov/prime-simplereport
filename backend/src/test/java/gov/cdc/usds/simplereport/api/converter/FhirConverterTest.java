@@ -33,6 +33,7 @@ import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -404,14 +405,17 @@ class FhirConverterTest {
     var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
     var facility =
         new Facility(
-            null,
-            "Elron",
-            "123D456789",
-            new StreetAddress(List.of("12 Main Street", "Unit 4"), "Lakewood", "FL", "21037", null),
-            "248 555 1234",
-            "email@example.com",
-            null,
-            Collections.emptyList());
+            FacilityBuilder.builder()
+                .facilityName("Elron")
+                .cliaNumber("123D456789")
+                .facilityAddress(
+                    new StreetAddress(
+                        List.of("12 Main Street", "Unit 4"), "Lakewood", "FL", "21037", null))
+                .phone("248 555 1234")
+                .email("email@example.com")
+                .configuredDevices(Collections.emptyList())
+                .build());
+
     ReflectionTestUtils.setField(facility, "internalId", UUID.fromString(internalId));
 
     var actual = convertToOrganization(facility);
@@ -1361,16 +1365,18 @@ class FhirConverterTest {
 
     var facility =
         new Facility(
-            organization,
-            "School",
-            "123D456789",
-            address,
-            "7735551234",
-            "school@example.com",
-            provider,
-            deviceType,
-            specimenType,
-            Collections.emptyList());
+            FacilityBuilder.builder()
+                .org(organization)
+                .facilityName("School")
+                .cliaNumber("123D456789")
+                .facilityAddress(address)
+                .phone("7735551234")
+                .email("school@example.com")
+                .orderingProvider(provider)
+                .defaultDeviceType(deviceType)
+                .defaultSpecimenType(specimenType)
+                .configuredDevices(Collections.emptyList())
+                .build());
     var person =
         new Person(
             organization,

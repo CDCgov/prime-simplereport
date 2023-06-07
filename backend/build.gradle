@@ -54,7 +54,6 @@ dependencies {
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.0'
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     // UI layer dependencies
     implementation 'org.json:json:20230227'
@@ -72,7 +71,7 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:3.4.9'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.4.13'
 
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
@@ -92,10 +91,7 @@ dependencies {
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.16.1'
-    implementation 'com.azure:azure-core-http-netty:1.13.2'
-    implementation 'com.azure:azure-core:1.38.0'
-    implementation 'com.azure:azure-storage-common:12.20.1'
+    implementation 'com.azure:azure-storage-queue:12.17.0'
 
     // RandomStringUtils to generate PatientSelfRegistrationLink
     implementation 'org.apache.commons:commons-lang3:3.12.0'

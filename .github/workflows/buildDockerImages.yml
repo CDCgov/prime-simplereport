@@ -9,4 +9,4 @@ jobs:
     uses: ./.github/workflows/buildCypressImage.yml
 
   build_database_image:
-    uses: ./.github/workflows/buildCypressImage.yml
+    uses: ./.github/workflows/buildDatabaseImage.yml

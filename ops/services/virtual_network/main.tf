@@ -20,11 +20,8 @@ resource "azurerm_virtual_network" "vn" {
   tags = var.management_tags
 }
 
-# VMs subnet
 resource "azurerm_subnet" "vms" {
-  # We did try to rename this, but it turns out we have manual infrastructure attached to this subnet,
-  # so renaming it (by which we mean destroying and rebuilding it) would be a bit complicated.
-  # That manual infrastructure should be imported (see #1360)--if that is done, revisit this.
+  count                                          = var.env == "prod" ? 1 : 0
   name                                           = "${var.env}-vms"
   resource_group_name                            = var.resource_group_name
   virtual_network_name                           = azurerm_virtual_network.vn.name

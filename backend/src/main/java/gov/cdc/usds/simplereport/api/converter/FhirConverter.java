@@ -66,6 +66,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -494,13 +495,21 @@ public class FhirConverter {
     return results.stream()
         .map(
             result -> {
-              Optional<DeviceTypeDisease> deviceTypeDisease =
+              List<DeviceTypeDisease> deviceTypeDiseaseEntries =
                   deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
-                      .findFirst();
-              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease);
-              String equipmentUid = getEquipmentUid(deviceTypeDisease);
-              String testkitNameId = getTestkitNameId(deviceTypeDisease);
+                      .toList();
+              String testPerformedLoincCode =
+                  deviceTypeDiseaseEntries.stream()
+                      .findFirst()
+                      .map(DeviceTypeDisease::getTestPerformedLoincCode)
+                      .orElse(null);
+              String equipmentUid =
+                  getCommonDiseaseValue(
+                      deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+              String testkitNameId =
+                  getCommonDiseaseValue(
+                      deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
               return convertToObservation(
                   result,
                   testPerformedLoincCode,
@@ -513,16 +522,11 @@ public class FhirConverter {
         .collect(Collectors.toList());
   }
 
-  private static String getTestkitNameId(Optional<DeviceTypeDisease> deviceTypeDisease) {
-    return deviceTypeDisease.map(DeviceTypeDisease::getTestkitNameId).orElse(null);
-  }
-
-  private static String getEquipmentUid(Optional<DeviceTypeDisease> deviceTypeDisease) {
-    return deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
-  }
-
-  private static String getTestPerformedLoincCode(Optional<DeviceTypeDisease> deviceTypeDisease) {
-    return deviceTypeDisease.map(DeviceTypeDisease::getTestPerformedLoincCode).orElse(null);
+  public static String getCommonDiseaseValue(
+      List<DeviceTypeDisease> deviceTypeDiseases,
+      Function<DeviceTypeDisease, String> diseaseValue) {
+    List<String> distinctValues = deviceTypeDiseases.stream().map(diseaseValue).distinct().toList();
+    return distinctValues.size() == 1 ? distinctValues.get(0) : null;
   }
 
   public static Observation convertToObservation(
