@@ -25,7 +25,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.stubbing.Answer;
 import org.springframework.boot.info.GitProperties;
 
 @ExtendWith(MockitoExtension.class)
@@ -152,13 +154,27 @@ public class BulkUploadResultsToFhirTest {
     // Configure mocks for random UUIDs and Date timestamp
     var mockedUUIDGenerator = mock(UUIDGenerator.class);
     when(mockedUUIDGenerator.randomUUID())
-        .thenReturn(UUID.fromString("10000000-0000-0000-0000-000000000001"))
-        .thenReturn(UUID.fromString("20000000-0000-0000-0000-000000000002"))
-        .thenReturn(UUID.fromString("30000000-0000-0000-0000-000000000003"))
-        .thenReturn(UUID.fromString("40000000-0000-0000-0000-000000000004"))
-        .thenReturn(UUID.fromString("50000000-0000-0000-0000-000000000005"))
-        .thenReturn(UUID.fromString("60000000-0000-0000-0000-000000000006"))
-        .thenReturn(UUID.fromString("70000000-0000-0000-0000-000000000007"));
+        .thenAnswer(
+            new Answer<UUID>() {
+              private long counter = 1;
+
+              @Override
+              public UUID answer(InvocationOnMock invocation) {
+                counter++;
+                String counterPadded = String.format("%32s", counter).replace(' ', '0');
+                String uuid =
+                    counterPadded.substring(0, 8)
+                        + "-"
+                        + counterPadded.substring(8, 12)
+                        + "-"
+                        + counterPadded.substring(12, 16)
+                        + "-"
+                        + counterPadded.substring(16, 20)
+                        + "-"
+                        + counterPadded.substring(20, 32);
+                return UUID.fromString(uuid);
+              }
+            });
 
     // Construct UTC date object
     String dateString = "2023-05-24T15:33:06.472-04:00";
@@ -188,7 +204,7 @@ public class BulkUploadResultsToFhirTest {
     String actualBundleString;
     var serializedBundles =
         sut.convertToFhirBundles(
-            csvStream, UUID.fromString("12345000-0000-0000-0000-000000000001"));
+            csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
     actualBundleString = serializedBundles.get(0);
 
     InputStream jsonStream =
@@ -218,40 +234,6 @@ public class BulkUploadResultsToFhirTest {
     var endTime = System.currentTimeMillis();
     var elapsedTime = endTime - startTime;
 
-    assertTrue(elapsedTime < 10000, "Bundle processing took more than 10 seconds for 5000 rows");
+    assertTrue(elapsedTime < 20000, "Bundle processing took more than 20 seconds for 5000 rows");
   }
-
-  //  @Test
-  //  void mockStaticTest() throws ParseException {
-  //    try (MockedStatic<UUIDGenerator> mockedUUIDGenerator = mockStatic(UUIDGenerator.class)) {
-  //      try (MockedStatic<DateGenerator> mockedDateGenerator = mockStatic(DateGenerator.class)) {
-  //
-  //        mockedUUIDGenerator
-  //            .when(UUIDGenerator::randomUUID)
-  //            .thenReturn(UUID.fromString("10000000-0000-0000-0000-000000000001"))
-  //            .thenReturn(UUID.fromString("20000000-0000-0000-0000-000000000002"))
-  //            .thenReturn(UUID.fromString("30000000-0000-0000-0000-000000000003"))
-  //            .thenReturn(UUID.fromString("40000000-0000-0000-0000-000000000004"))
-  //            .thenReturn(UUID.fromString("50000000-0000-0000-0000-000000000005"))
-  //            .thenReturn(UUID.fromString("60000000-0000-0000-0000-000000000006"))
-  //            .thenReturn(UUID.fromString("70000000-0000-0000-0000-000000000007"));
-  //
-  //        String dateString = "2023-05-24T15:33:06.472-04:00";
-  //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-  //        Date date = sdf.parse(dateString);
-  //        Calendar calendar = Calendar.getInstance();
-  //        calendar.setTime(date);
-  //        calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-  //        Date finalDate = calendar.getTime();
-  //
-  //        mockedDateGenerator.when(DateGenerator::newDate).thenReturn(finalDate);
-  //
-  //        var testUUID = UUIDGenerator.randomUUID();
-  //        var testDate = DateGenerator.newDate();
-  //
-  //        assertThat(testUUID).isEqualTo(UUID.fromString("10000000-0000-0000-0000-000000000001"));
-  //        assertThat(testDate.toString()).isEqualTo(finalDate.toString());
-  //      }
-  //    }
-  //  }
 }

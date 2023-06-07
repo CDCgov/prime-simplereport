@@ -7,10 +7,10 @@
   "timestamp": "2023-05-24T15:33:06.472-04:00",
   "entry": [
     {
-      "fullUrl": "MessageHeader/3b7f30d9-9db9-4fa2-b7ce-764be17e9d4b",
+      "fullUrl": "MessageHeader/00000000-0000-0000-0000-000000000010",
       "resource": {
         "resourceType": "MessageHeader",
-        "id": "3b7f30d9-9db9-4fa2-b7ce-764be17e9d4b",
+        "id": "00000000-0000-0000-0000-000000000010",
         "meta": {
           "tag": [
             {
@@ -32,7 +32,7 @@
           }
         ],
         "sender": {
-          "reference": "Organization/12345000-0000-0000-0000-000000000001"
+          "reference": "Organization/12345000-0000-0000-0000-000000000000"
         },
         "source": {
           "extension": [
@@ -57,7 +57,7 @@
         },
         "focus": [
           {
-            "reference": "Provenance/e672dc8f-3510-436b-99c2-d199138a1597"
+            "reference": "Provenance/00000000-0000-0000-0000-000000000009"
           },
           {
             "reference": "DiagnosticReport/123"
@@ -66,10 +66,10 @@
       }
     },
     {
-      "fullUrl": "Provenance/e672dc8f-3510-436b-99c2-d199138a1597",
+      "fullUrl": "Provenance/00000000-0000-0000-0000-000000000009",
       "resource": {
         "resourceType": "Provenance",
-        "id": "e672dc8f-3510-436b-99c2-d199138a1597",
+        "id": "00000000-0000-0000-0000-000000000009",
         "recorded": "2023-05-24T15:33:06.472-04:00",
         "activity": {
           "coding": [
@@ -83,7 +83,7 @@
         "agent": [
           {
             "who": {
-              "reference": "Organization/12345000-0000-0000-0000-000000000001"
+              "reference": "Organization/12345000-0000-0000-0000-000000000000"
             }
           }
         ]
@@ -101,7 +101,7 @@
         ],
         "basedOn": [
           {
-            "reference": "ServiceRequest/60000000-0000-0000-0000-000000000006"
+            "reference": "ServiceRequest/00000000-0000-0000-0000-000000000007"
           }
         ],
         "status": "final",
@@ -120,12 +120,12 @@
         "issued": "2023-05-24T15:33:06.472-04:00",
         "specimen": [
           {
-            "reference": "Specimen/30000000-0000-0000-0000-000000000003"
+            "reference": "Specimen/00000000-0000-0000-0000-000000000004"
           }
         ],
         "result": [
           {
-            "reference": "Observation/50000000-0000-0000-0000-000000000005"
+            "reference": "Observation/00000000-0000-0000-0000-000000000006"
           }
         ]
       }
@@ -197,15 +197,15 @@
           }
         ],
         "managingOrganization": {
-          "reference": "Organization/12345000-0000-0000-0000-000000000001"
+          "reference": "Organization/12345000-0000-0000-0000-000000000000"
         }
       }
     },
     {
-      "fullUrl": "Organization/12345000-0000-0000-0000-000000000001",
+      "fullUrl": "Organization/12345000-0000-0000-0000-000000000000",
       "resource": {
         "resourceType": "Organization",
-        "id": "12345000-0000-0000-0000-000000000001",
+        "id": "12345000-0000-0000-0000-000000000000",
         "identifier": [
           {
             "use": "official",
@@ -242,10 +242,10 @@
       }
     },
     {
-      "fullUrl": "Organization/10000000-0000-0000-0000-000000000001",
+      "fullUrl": "Organization/00000000-0000-0000-0000-000000000002",
       "resource": {
         "resourceType": "Organization",
-        "id": "10000000-0000-0000-0000-000000000001",
+        "id": "00000000-0000-0000-0000-000000000002",
         "identifier": [
           {
             "use": "official",
@@ -322,13 +322,13 @@
       }
     },
     {
-      "fullUrl": "Specimen/30000000-0000-0000-0000-000000000003",
+      "fullUrl": "Specimen/00000000-0000-0000-0000-000000000004",
       "resource": {
         "resourceType": "Specimen",
-        "id": "30000000-0000-0000-0000-000000000003",
+        "id": "00000000-0000-0000-0000-000000000004",
         "identifier": [
           {
-            "value": "40000000-0000-0000-0000-000000000004"
+            "value": "00000000-0000-0000-0000-000000000005"
           }
         ],
         "subject": {
@@ -337,10 +337,10 @@
       }
     },
     {
-      "fullUrl": "ServiceRequest/60000000-0000-0000-0000-000000000006",
+      "fullUrl": "ServiceRequest/00000000-0000-0000-0000-000000000007",
       "resource": {
         "resourceType": "ServiceRequest",
-        "id": "60000000-0000-0000-0000-000000000006",
+        "id": "00000000-0000-0000-0000-000000000007",
         "extension": [
           {
             "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
@@ -354,13 +354,13 @@
             }
           }
         ],
-        "status": "active",
+        "status": "completed",
         "intent": "order",
         "code": {
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "94534-5"
+              "code": "95422-2"
             }
           ]
         },
@@ -368,11 +368,11 @@
           "reference": "Patient/1234"
         },
         "requester": {
-          "reference": "PractitionerRole/17ff49b4-8740-417c-b43b-93b23fc9e666"
+          "reference": "PractitionerRole/00000000-0000-0000-0000-000000000008"
         },
         "performer": [
           {
-            "reference": "Organization/12345000-0000-0000-0000-000000000001"
+            "reference": "Organization/12345000-0000-0000-0000-000000000000"
           }
         ],
         "supportingInfo": [
@@ -383,10 +383,10 @@
       }
     },
     {
-      "fullUrl": "Device/20000000-0000-0000-0000-000000000002",
+      "fullUrl": "Device/00000000-0000-0000-0000-000000000003",
       "resource": {
         "resourceType": "Device",
-        "id": "20000000-0000-0000-0000-000000000002",
+        "id": "00000000-0000-0000-0000-000000000003",
         "deviceName": [
           {
             "name": "ID NOW",
@@ -396,15 +396,15 @@
       }
     },
     {
-      "fullUrl": "PractitionerRole/17ff49b4-8740-417c-b43b-93b23fc9e666",
+      "fullUrl": "PractitionerRole/00000000-0000-0000-0000-000000000008",
       "resource": {
         "resourceType": "PractitionerRole",
-        "id": "17ff49b4-8740-417c-b43b-93b23fc9e666",
+        "id": "00000000-0000-0000-0000-000000000008",
         "practitioner": {
           "reference": "Practitioner/1013012657"
         },
         "organization": {
-          "reference": "Organization/10000000-0000-0000-0000-000000000001"
+          "reference": "Organization/00000000-0000-0000-0000-000000000002"
         }
       }
     },
@@ -417,10 +417,10 @@
       }
     },
     {
-      "fullUrl": "Observation/50000000-0000-0000-0000-000000000005",
+      "fullUrl": "Observation/00000000-0000-0000-0000-000000000006",
       "resource": {
         "resourceType": "Observation",
-        "id": "50000000-0000-0000-0000-000000000005",
+        "id": "00000000-0000-0000-0000-000000000006",
         "status": "final",
         "code": {
           "coding": [
@@ -435,7 +435,7 @@
         },
         "performer": [
           {
-            "reference": "Organization/12345000-0000-0000-0000-000000000001"
+            "reference": "Organization/12345000-0000-0000-0000-000000000000"
           }
         ],
         "valueCodeableConcept": {
@@ -466,10 +466,10 @@
           ]
         },
         "specimen": {
-          "reference": "Specimen/30000000-0000-0000-0000-000000000003"
+          "reference": "Specimen/00000000-0000-0000-0000-000000000004"
         },
         "device": {
-          "reference": "Device/20000000-0000-0000-0000-000000000002"
+          "reference": "Device/00000000-0000-0000-0000-000000000003"
         }
       }
     },

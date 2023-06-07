@@ -210,7 +210,7 @@ public class BulkUploadResultsToFhir {
               null);
       orderingFacility =
           fhirConverter.convertToOrganization(
-              UUID.randomUUID().toString(),
+              uuidGenerator.randomUUID().toString(),
               row.getOrderingFacilityName().getValue(),
               row.getTestingLabClia().getValue(),
               row.getOrderingFacilityPhoneNumber().getValue(),
