@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
 
-import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
 import { TextInput } from "../../commonComponents/TextInput";
 
@@ -9,7 +9,11 @@ import { BaseEditModal } from "./BaseEditModal";
 
 import "./ManageUsers.scss";
 
-interface Props {
+type UserNameFormData = {
+  firstName: string;
+  lastName: string;
+};
+interface EditUserNameModalProps {
   onClose: () => void;
   onEditUserName: (
     userId: string,
@@ -21,7 +25,7 @@ interface Props {
   user: SettingsUser;
 }
 
-const EditUserNameModal: React.FC<Props> = ({
+const EditUserNameModal: React.FC<EditUserNameModalProps> = ({
   onClose,
   onEditUserName,
   user,
@@ -31,74 +35,62 @@ const EditUserNameModal: React.FC<Props> = ({
     "",
     user.lastName
   )}`;
-  const [firstName, updateFirstName] = useState(user.firstName || "");
-  const [lastName, updateLastName] = useState(user.lastName);
-  const [firstNameError, setFirstNameError] = useState("");
-  const [lastNameError, setLastNameError] = useState("");
 
-  const validateFirstName = () => {
-    if (firstName === "") {
-      setFirstNameError("A first name is required");
-    } else {
-      setFirstNameError("");
-    }
+  /**
+   * Form setup
+   */
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty },
+    watch,
+  } = useForm<UserNameFormData>({
+    defaultValues: { firstName: user.firstName || "", lastName: user.lastName },
+  });
+
+  const formCurrentValues = watch();
+
+  /**
+   * Handle submit
+   */
+  const onSubmit = (formData: UserNameFormData) => {
+    onEditUserName(
+      user.id,
+      formData.firstName,
+      user.middleName || "",
+      formData.lastName,
+      user.suffix || ""
+    );
   };
 
-  const validateLastName = () => {
-    if (lastName === "") {
-      setLastNameError("A last name is required");
-    } else {
-      setLastNameError("");
-    }
-  };
-
+  /**
+   * HTML
+   */
   const modalContent = (
-    <div>
+    <>
       <TextInput
         label="First name"
         name="firstName"
-        value={firstName}
+        value={formCurrentValues.firstName}
         required={true}
-        onChange={(e) => updateFirstName(e.target.value)}
-        onBlur={() => validateFirstName()}
-        validationStatus={firstNameError ? "error" : undefined}
-        errorMessage={firstNameError}
+        validationStatus={errors.firstName?.type ? "error" : undefined}
+        errorMessage={errors.firstName?.message}
+        registrationProps={register("firstName", {
+          required: "First name is required",
+        })}
       />
       <TextInput
         label="Last name"
         name="lastName"
-        value={lastName}
+        value={formCurrentValues.lastName}
         required={true}
-        onChange={(e) => updateLastName(e.target.value)}
-        onBlur={() => validateLastName()}
-        validationStatus={lastNameError ? "error" : undefined}
-        errorMessage={lastNameError}
+        validationStatus={errors.lastName?.type ? "error" : undefined}
+        errorMessage={errors.lastName?.message}
+        registrationProps={register("lastName", {
+          required: "Last name is required",
+        })}
       />
-    </div>
-  );
-  const modalButtons = (
-    <div>
-      <Button
-        className="margin-right-2"
-        onClick={onClose}
-        variant="unstyled"
-        label="Cancel"
-      />
-      <Button
-        className="margin-right-205"
-        onClick={() =>
-          onEditUserName(
-            user.id,
-            firstName,
-            user.middleName || "",
-            lastName,
-            user.suffix || ""
-          )
-        }
-        label="Confirm"
-        disabled={firstNameError || lastNameError ? true : false}
-      />
-    </div>
+    </>
   );
 
   return (
@@ -106,7 +98,8 @@ const EditUserNameModal: React.FC<Props> = ({
       heading={heading}
       onClose={onClose}
       content={modalContent}
-      buttons={modalButtons}
+      onSubmit={handleSubmit(onSubmit)}
+      submitDisabled={isSubmitting || !isDirty}
     ></BaseEditModal>
   );
 };
