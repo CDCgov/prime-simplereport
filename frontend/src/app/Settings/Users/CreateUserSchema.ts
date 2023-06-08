@@ -1,7 +1,4 @@
 import { Role } from "../../permissions";
-import { Maybe, UserPermission } from "../../../generated/graphql";
-
-import { UserFacilitySetting } from "./ManageUsersContainer";
 
 export const ROLE_OPTIONS: { value: Role; label: string }[] = [
   {
@@ -25,8 +22,4 @@ export interface CreateUser {
   email: string;
   role: Role;
   facilityIds: string[];
-  organization?: Maybe<{
-    testingFacility: UserFacilitySetting[];
-  }>;
-  permissions: UserPermission[];
 }
