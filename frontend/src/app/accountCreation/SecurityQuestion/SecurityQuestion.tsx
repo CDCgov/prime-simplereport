@@ -13,8 +13,10 @@ import {
 } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { useDocumentTitle } from "../../utils/hooks";
 
 export const SecurityQuestion = () => {
+  useDocumentTitle("Select your security question");
   // State setup
   const [securityQuestion, setSecurityQuestion] = useState("");
   const [securityQuestionError, setSecurityQuestionError] = useState("");
