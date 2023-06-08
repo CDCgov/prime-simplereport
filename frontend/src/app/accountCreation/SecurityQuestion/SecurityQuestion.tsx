@@ -13,8 +13,10 @@ import {
 } from "../../../config/constants";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
+import { useDocumentTitle } from "../../utils/hooks";
 
 export const SecurityQuestion = () => {
+  useDocumentTitle("Select your security question");
   // State setup
   const [securityQuestion, setSecurityQuestion] = useState("");
   const [securityQuestionError, setSecurityQuestionError] = useState("");
@@ -94,6 +96,7 @@ export const SecurityQuestion = () => {
           validationStatus={securityQuestionError ? "error" : undefined}
           onBlur={validateSecurityQuestion}
           onChange={(evt) => setSecurityQuestion(evt.target.value)}
+          required={true}
         />
         <TextInput
           label={"Answer"}
@@ -103,6 +106,7 @@ export const SecurityQuestion = () => {
           validationStatus={securityAnswerError ? "error" : undefined}
           onBlur={validateSecurityAnswer}
           onChange={(evt) => setSecurityAnswer(evt.target.value)}
+          required={true}
         />
         <Button
           className="margin-top-3"

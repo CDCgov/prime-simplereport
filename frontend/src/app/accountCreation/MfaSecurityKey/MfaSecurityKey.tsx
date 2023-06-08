@@ -8,8 +8,11 @@ import { accountCreationSteps } from "../../../config/constants";
 import iconLoader from "../../../img/loader.svg";
 import { AccountCreationApi } from "../AccountCreationApiService";
 import { strToBin, binToStr } from "../../utils/text";
+import { useDocumentTitle } from "../../utils/hooks";
 
 export const MfaSecurityKey = () => {
+  useDocumentTitle("Set up authentication via security key");
+
   const [attestation, setAttestation] = useState("");
   const [clientData, setClientData] = useState("");
   const [activated, setActivated] = useState(false);

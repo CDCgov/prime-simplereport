@@ -7,10 +7,13 @@ import Button from "../../commonComponents/Button/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
+import { useDocumentTitle } from "../../utils/hooks";
 
 type MfaOptions = "SMS" | "Okta" | "Google" | "FIDO" | "Phone" | "Email" | "";
 
 export const MfaSelect = () => {
+  useDocumentTitle("Set up authentication");
+
   const [mfaOption, setMfaOption] = useState<MfaOptions>("");
   const [mfaOptionError, setMfaOptionError] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -113,6 +116,7 @@ export const MfaSelect = () => {
           onChange={setMfaOption}
           variant="tile"
           renderAsForm
+          required={true}
         />
         <Button
           className="margin-top-3"

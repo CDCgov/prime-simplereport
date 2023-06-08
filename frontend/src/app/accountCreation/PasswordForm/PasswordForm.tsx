@@ -15,6 +15,7 @@ import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import { accountCreationSteps } from "../../../config/constants";
+import { useDocumentTitle } from "../../utils/hooks";
 
 type PasswordInformation = {
   password: string;
@@ -22,6 +23,8 @@ type PasswordInformation = {
 };
 
 export const PasswordForm = () => {
+  useDocumentTitle("Create your password");
+
   // State setup
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [passwordInfo, setPasswordInfo] = useState<PasswordInformation>({
@@ -193,6 +196,7 @@ export const PasswordForm = () => {
           validationStatus={passwordError ? "error" : undefined}
           onBlur={validatePassword}
           onChange={handlePasswordChange}
+          required={true}
         />
         <div className="display-flex grid-gap margin-top-105">
           {strengthBars}
@@ -212,6 +216,7 @@ export const PasswordForm = () => {
           validationStatus={passwordConfirmationError ? "error" : undefined}
           onBlur={validatePasswordConfirmation}
           onChange={(evt) => setPasswordConfirmation(evt.currentTarget.value)}
+          required={true}
         />
         <Button
           className="margin-top-3"
