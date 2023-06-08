@@ -109,7 +109,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
       role="region"
       aria-atomic="true"
     >
-      <div className="sr-only" id={"device-result-table-desc"}>
+      <div className="usa-sr-only" id={"device-result-table-desc"}>
         device search results
       </div>
       <div className="usa-card__body results-dropdown__body">

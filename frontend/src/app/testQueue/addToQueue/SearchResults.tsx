@@ -171,7 +171,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       role="region"
       aria-atomic="true"
     >
-      <div className="sr-only" id={"patient-result-table-desc"}>
+      <div className="usa-sr-only" id={"patient-result-table-desc"}>
         patient search results
       </div>
       <div className="usa-card__body results-dropdown__body">
