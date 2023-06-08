@@ -14,12 +14,15 @@ import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import { UpdateUser } from "./ManageUsers";
 import { CreateUser, ROLE_OPTIONS } from "./CreateUserSchema";
 
-interface Props {
+interface CreateUserFormProps {
   onClose: () => void;
   onSubmit: (newUserInvite: Partial<SettingsUser>) => void;
 }
 
-const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
+const CreateUserForm: React.FC<CreateUserFormProps> = ({
+  onClose,
+  onSubmit,
+}) => {
   const facilities = useSelector<RootState, UserFacilitySetting[]>(
     (state) => state.facilities
   );
