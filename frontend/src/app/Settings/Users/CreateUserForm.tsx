@@ -83,7 +83,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
         />
         <div></div>
         <TextInput
-          label="Last Name"
+          label="Last name"
           name="lastName"
           required={true}
           value={formCurrentValues.lastName}

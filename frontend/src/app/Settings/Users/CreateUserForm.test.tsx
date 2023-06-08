@@ -11,7 +11,6 @@ import configureStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
 
 import CreateUserForm from "./CreateUserForm";
-import { SettingsUser } from "./ManageUsersContainer";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -27,10 +26,7 @@ describe("CreateUserForm", () => {
     render(
       <Provider store={store}>
         <MockedProvider>
-          <CreateUserForm
-            onSubmit={(input: Partial<SettingsUser>) => {}}
-            onClose={mockOnClose}
-          />
+          <CreateUserForm onSubmit={mockOnSubmit} onClose={mockOnClose} />
         </MockedProvider>
       </Provider>
     );
@@ -71,6 +67,76 @@ describe("CreateUserForm", () => {
         async () => await userEvent.click(screen.getByLabelText("Close"))
       );
       expect(mockOnClose).toBeCalledTimes(1);
+    });
+  });
+  describe("On submit", () => {
+    it("Admin user role", () => {});
+    it("Standard user with access to all facilities", async () => {
+      fireEvent.change(screen.getByLabelText("First name *"), {
+        target: { value: "Billy" },
+      });
+      fireEvent.change(screen.getByLabelText("Last name *"), {
+        target: { value: "Thorton" },
+      });
+      fireEvent.click(screen.getByLabelText("Access all facilities (2)"));
+      fireEvent.change(screen.getByLabelText("Email address *"), {
+        target: { value: "BillyBob@example.com" },
+      });
+      fireEvent.click(screen.getByText("Send invite"));
+
+      await waitFor(() => expect(mockOnSubmit).toBeCalledTimes(1));
+      expect(mockOnSubmit).toBeCalledWith({
+        email: "BillyBob@example.com",
+        facilityIds: ["ALL_FACILITIES", "1", "2"],
+        firstName: "Billy",
+        lastName: "Thorton",
+        organization: {
+          testingFacility: [
+            {
+              id: "1",
+              name: "Facility 1",
+            },
+            {
+              id: "2",
+              name: "Facility 2",
+            },
+          ],
+        },
+        permissions: ["ACCESS_ALL_FACILITIES"],
+        role: "USER",
+      });
+    });
+
+    it("Standard user with one facility", async () => {
+      fireEvent.change(screen.getByLabelText("First name *"), {
+        target: { value: "Billy" },
+      });
+      fireEvent.change(screen.getByLabelText("Last name *"), {
+        target: { value: "Thorton" },
+      });
+      fireEvent.click(screen.getByLabelText("Facility 1"));
+      fireEvent.change(screen.getByLabelText("Email address *"), {
+        target: { value: "BillyBob@example.com" },
+      });
+      fireEvent.click(screen.getByText("Send invite"));
+
+      await waitFor(() => expect(mockOnSubmit).toBeCalledTimes(1));
+      expect(mockOnSubmit).toBeCalledWith({
+        email: "BillyBob@example.com",
+        facilityIds: ["1"],
+        firstName: "Billy",
+        lastName: "Thorton",
+        organization: {
+          testingFacility: [
+            {
+              id: "1",
+              name: "Facility 1",
+            },
+          ],
+        },
+        permissions: [],
+        role: "USER",
+      });
     });
   });
 });
