@@ -37,7 +37,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_functio
   resource_group_name = var.rg_name
   severity            = 4
   frequency           = 5
-  time_window         = 7
+  time_window         = 15
   enabled             = contains(var.disabled_alerts, "batched_uploader_function_not_triggering") ? false : true
 
   data_source_id = var.app_insights_id
@@ -46,8 +46,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_functio
 
   query = <<-QUERY
 requests
-${local.skip_on_weekends}
-| where timestamp >= ago(7m) 
+| where timestamp >= ago(15m) 
     and operation_Name =~ 'QueueBatchedReportStreamUploader'
   QUERY
 
@@ -68,7 +67,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_fu
   resource_group_name = var.rg_name
   severity            = 4
   frequency           = 5
-  time_window         = 7
+  time_window         = 15
   enabled             = contains(var.disabled_alerts, "fhir_batched_uploader_function_not_triggering") ? false : true
 
   data_source_id = var.app_insights_id
@@ -77,8 +76,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_fu
 
   query = <<-QUERY
 requests
-${local.skip_on_weekends}
-| where timestamp >= ago(7m) 
+| where timestamp >= ago(15m) 
     and operation_Name =~ 'FHIRTestEventReporter'
   QUERY
 
