@@ -207,10 +207,6 @@ const AddToQueueSearchBox = ({
     setDebounced(event.target.value);
   };
 
-  const onSearchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
-
   const onAddToQueue = (
     patient: Patient,
     {
@@ -264,11 +260,11 @@ const AddToQueueSearchBox = ({
   return (
     <React.Fragment>
       <SearchInput
-        onSearchClick={onSearchClick}
         onInputChange={onInputChange}
         queryString={debounced}
         disabled={!allowQuery}
         placeholder={`Search for a ${PATIENT_TERM} to start their test`}
+        showSubmitButton={false}
       />
       <SearchResults
         page="queue"
