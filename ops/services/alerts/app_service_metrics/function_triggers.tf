@@ -17,7 +17,7 @@ resource "azurerm_monitor_alert_processing_rule_suppression" "function_triggers_
   schedule {
     effective_from  = "2022-01-01T01:02:03"
     effective_until = "2022-02-02T01:02:03"
-    time_zone       = "Pacific Standard Time"
+    time_zone       = "Eastern Standard Time"
     recurrence {
       daily {
         start_time = "20:00:00"
