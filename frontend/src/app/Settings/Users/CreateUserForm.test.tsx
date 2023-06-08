@@ -1,9 +1,17 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import userEvent from "@testing-library/user-event";
 
 import CreateUserForm from "./CreateUserForm";
+import { SettingsUser } from "./ManageUsersContainer";
 
 const mockStore = configureStore([]);
 const store = mockStore({
@@ -12,13 +20,17 @@ const store = mockStore({
     { id: "2", name: "Facility 2" },
   ],
 });
-
+let mockOnClose = jest.fn();
+let mockOnSubmit = jest.fn();
 describe("CreateUserForm", () => {
   beforeEach(() => {
     render(
       <Provider store={store}>
         <MockedProvider>
-          <CreateUserForm onSubmit={() => {}} onClose={() => {}} />
+          <CreateUserForm
+            onSubmit={(input: Partial<SettingsUser>) => {}}
+            onClose={mockOnClose}
+          />
         </MockedProvider>
       </Provider>
     );
@@ -47,6 +59,18 @@ describe("CreateUserForm", () => {
           screen.getByText("Email address must be a valid email address")
         ).toBeInTheDocument();
       });
+    });
+  });
+  describe("Close", () => {
+    it("Clicking `Go back` runs the onClose", () => {
+      fireEvent.click(screen.getByText("Go back"));
+      expect(mockOnClose).toBeCalledTimes(1);
+    });
+    it("Clicking `X` runs the onClose", async () => {
+      await act(
+        async () => await userEvent.click(screen.getByLabelText("Close"))
+      );
+      expect(mockOnClose).toBeCalledTimes(1);
     });
   });
 });
