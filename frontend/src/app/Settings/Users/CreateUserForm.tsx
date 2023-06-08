@@ -101,11 +101,11 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
           required={true}
           value={formCurrentValues.email}
           registrationProps={register("email", {
-            required: "Email is required",
+            required: "Email address is required",
             pattern: {
               value:
                 /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/,
-              message: "Email must be a valid email address",
+              message: "Email address must be a valid email address",
             },
           })}
           validationStatus={errors?.email?.type ? "error" : undefined}
