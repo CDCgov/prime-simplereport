@@ -2,8 +2,10 @@ import { useLocation } from "react-router-dom";
 
 import { MfaVerify } from "../MfaVerify/MfaVerify";
 import { formatPhoneNumber } from "../../utils/text";
+import { useDocumentTitle } from "../../utils/hooks";
 
 export const MfaPhoneVerify = () => {
+  useDocumentTitle("Verify your security code from a phone call");
   const location: any = useLocation();
 
   return (
