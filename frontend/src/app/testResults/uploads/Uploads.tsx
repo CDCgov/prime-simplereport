@@ -58,6 +58,24 @@ export function groupErrors(
   });
   return errors;
 }
+export function getErrorMessage(error: EnhancedFeedbackMessage) {
+  if (error.message && error.fieldHeader) {
+    const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+)+(?:_[a-z0-9]+)*)/gi;
+    return error.message.split(headerRegex).map((value, index) => (
+      <span key={index}>
+        {headerRegex.test(value) ? (
+          <mark>
+            <code>{value}</code>
+          </mark>
+        ) : (
+          value
+        )}
+      </span>
+    ));
+  }
+
+  return <span>{error.message}</span>;
+}
 
 export function getGuidance(error: EnhancedFeedbackMessage) {
   const fieldsAcceptSpecificValues = new Set([
@@ -74,11 +92,22 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     "test_result_status",
   ]);
 
-  const getMissingHeaderErrorGuidance = (header: string) =>
-    `Include a column with ${header} as the header.`;
+  const highlightHeader = (header: string) => (
+    <mark>
+      <code>{header}</code>
+    </mark>
+  );
 
-  const getMissingDataErrorGuidance = (header: string) =>
-    `${header} is a required field. Include values in each row under this column.`;
+  const getMissingHeaderErrorGuidance = (header: string) => (
+    <span>Include a column with {highlightHeader(header)} as the header.</span>
+  );
+
+  const getMissingDataErrorGuidance = (header: string) => (
+    <span>
+      {highlightHeader(header)} is a required field. Include values in each row
+      under this column.
+    </span>
+  );
 
   const getInvalidDataErrorGuidance = (
     header: string,
@@ -95,42 +124,43 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     if (required) {
       if (specificValues) {
         guidance = (
-          <div>
-            Choose from the accepted values listed under {header} {guideLink}.
-          </div>
+          <span>
+            Choose from the accepted values listed under{" "}
+            {highlightHeader(header)} {guideLink}.
+          </span>
         );
       } else {
         guidance = (
-          <div>
-            Follow the instructions under {header} {guideLink}.
-          </div>
+          <span>
+            Follow the instructions under {highlightHeader(header)} {guideLink}.
+          </span>
         );
       }
     } else {
       if (specificValues) {
         guidance = (
-          <div>
-            If including {header}, choose from the accepted values listed under{" "}
-            {header} {guideLink}.
-          </div>
+          <span>
+            If including {highlightHeader(header)}, choose from the accepted
+            values listed under {highlightHeader(header)} {guideLink}.
+          </span>
         );
       } else {
         guidance = (
-          <div>
-            If including {header}, follow the instructions under {header}{" "}
-            {guideLink}.
-          </div>
+          <span>
+            If including {highlightHeader(header)}, follow the instructions
+            under {highlightHeader(header)} {guideLink}.
+          </span>
         );
       }
     }
     return guidance;
   };
 
-  if (error.errorType === "MISSING_HEADER") {
+  if (error.fieldHeader && error.errorType === "MISSING_HEADER") {
     return getMissingHeaderErrorGuidance(error.fieldHeader);
-  } else if (error.errorType === "MISSING_DATA") {
+  } else if (error.fieldHeader && error.errorType === "MISSING_DATA") {
     return getMissingDataErrorGuidance(error.fieldHeader);
-  } else if (error.errorType === "INVALID_DATA") {
+  } else if (error.fieldHeader && error.errorType === "INVALID_DATA") {
     return getInvalidDataErrorGuidance(
       error.fieldHeader,
       error.fieldRequired,
@@ -453,7 +483,7 @@ const Uploads = () => {
                     {errors.map((e) => {
                       return (
                         <tr key={(e?.message || "") + (e?.indices || "")}>
-                          <td>{e?.["message"]} </td>
+                          <td>{e && getErrorMessage(e)} </td>
                           <td>
                             <div>{e && getGuidance(e)}</div>
                           </td>
