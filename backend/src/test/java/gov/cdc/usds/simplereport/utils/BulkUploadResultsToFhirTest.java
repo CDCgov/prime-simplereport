@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.utils;
 
+import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonNodesEqual;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -231,10 +232,7 @@ public class BulkUploadResultsToFhirTest {
     var expectedNode = objectMapper.readTree(expectedBundleString);
     var actualNode = objectMapper.readTree(actualBundleString);
 
-    var expectedNormalizedJson = objectMapper.writeValueAsString(expectedNode);
-    var actualNormalizedJson = objectMapper.writeValueAsString(actualNode);
-
-    assertThat(expectedNormalizedJson).isEqualTo(actualNormalizedJson);
+    assertJsonNodesEqual(expectedNode, actualNode);
   }
 
   @Test
