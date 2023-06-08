@@ -1,21 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
+import { useForm } from "react-hook-form";
 
-import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
+import { emailRegex } from "../../utils/email";
 import { TextInput } from "../../commonComponents/TextInput";
-import { emailIsValid } from "../../utils/email";
 
 import { SettingsUser } from "./ManageUsersContainer";
-import "./ManageUsers.scss";
 import BaseEditModal from "./BaseEditModal";
 
-interface Props {
+import "./ManageUsers.scss";
+
+type EmailFormData = {
+  email: string;
+};
+interface EditUserEmailModalProps {
   onClose: () => void;
   onEditUserEmail: (userId: string, emailAddress: string) => void;
   user: SettingsUser;
 }
 
-const EditUserEmailModal: React.FC<Props> = ({
+const EditUserEmailModal: React.FC<EditUserEmailModalProps> = ({
   onClose,
   onEditUserEmail,
   user,
@@ -25,71 +29,45 @@ const EditUserEmailModal: React.FC<Props> = ({
     user.middleName,
     user.lastName
   )}`;
-  const [emailAddress, updateEmailAddress] = useState(user.email);
-  const [emailAddressError, setEmailAddressError] = useState("");
 
-  const onConfirm = (userId: string, emailAddress: string) => {
-    if (!validateEmailAddress()) {
-      return;
-    }
+  /**
+   * Form setup
+   */
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty },
+    watch,
+  } = useForm<EmailFormData>({ defaultValues: { email: user.email } });
 
-    onEditUserEmail(userId, emailAddress);
+  const formCurrentValues = watch();
+
+  /**
+   * Handle submit
+   */
+  const onSubmit = (formData: EmailFormData) => {
+    onEditUserEmail(user.id, formData.email);
   };
 
-  const validateEmailAddress = () => {
-    if (!emailAddress) {
-      setEmailAddressError("Enter a valid email address");
-      return false;
-    }
-    if (emailAddress === user.email) {
-      setEmailAddressError("The old and new email addresses must be different");
-      return false;
-    }
-
-    let valid;
-    try {
-      valid = emailIsValid(emailAddress);
-    } catch (e: any) {
-      valid = false;
-    }
-
-    if (!valid) {
-      setEmailAddressError("Email must be a valid email address");
-      return false;
-    }
-
-    setEmailAddressError("");
-    return true;
-  };
-
+  /**
+   * HTML
+   */
   const modalContent = (
     <TextInput
       label="Email address"
       name="emailAddress"
-      value={emailAddress}
+      value={formCurrentValues.email}
       required={true}
-      onChange={(e) => updateEmailAddress(e.target.value)}
-      onBlur={() => validateEmailAddress()}
-      validationStatus={emailAddressError ? "error" : undefined}
-      errorMessage={emailAddressError}
+      validationStatus={errors.email?.type ? "error" : undefined}
+      errorMessage={errors.email?.message}
+      registrationProps={register("email", {
+        required: "Email is required",
+        pattern: {
+          value: emailRegex,
+          message: "Invalid email address",
+        },
+      })}
     />
-  );
-
-  const modalButtons = (
-    <div>
-      <Button
-        className="margin-right-2"
-        onClick={onClose}
-        variant="unstyled"
-        label="Cancel"
-      />
-      <Button
-        className="margin-right-205"
-        onClick={() => onConfirm(user.id, emailAddress)}
-        label="Confirm"
-        disabled={emailAddressError ? true : false}
-      />
-    </div>
   );
 
   return (
@@ -97,7 +75,8 @@ const EditUserEmailModal: React.FC<Props> = ({
       heading={heading}
       onClose={onClose}
       content={modalContent}
-      buttons={modalButtons}
+      onSubmit={handleSubmit(onSubmit)}
+      submitDisabled={isSubmitting || !isDirty}
     ></BaseEditModal>
   );
 };
