@@ -403,8 +403,8 @@ describe("ManageUsers", () => {
       await userEvent.click(sendButton);
       await waitFor(() => expect(addUserToOrg).not.toBeCalled());
       expect(
-        screen.queryAllByText("Email must be a valid email address").length
-      ).toBe(1);
+        screen.getByText("Email address must be a valid email address")
+      ).toBeInTheDocument();
     });
 
     it("passes user details to the addUserToOrg function without a role", async () => {
