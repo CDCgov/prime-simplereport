@@ -168,6 +168,7 @@ const CsvSchemaDocumentation = () => {
   let pageTitle = getPageTitle(locationHash);
   useEffect(() => {
     document.title = pageTitle;
+    document.getElementById(location.hash.replace("#", ""))?.scrollIntoView();
   }, [location, pageTitle]);
 
   const appInsights = getAppInsights();
