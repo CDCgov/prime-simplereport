@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
@@ -44,10 +44,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   errors,
   setValue,
 }) => {
-  const [isComponentVisible, setIsComponentVisible] = useState(false);
-
-  const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
-
   const facilityLookup: FacilityLookup = useMemo(
     () =>
       allFacilities.reduce((acc, { id, name }) => {
@@ -56,26 +52,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
       }, {} as FacilityLookup),
     [allFacilities]
   );
-
-  const handleClickOutside = (event: any) => {
-    // TODO: figure out this type
-    if (ref?.current?.contains(event.target)) {
-      // inside click
-      // TODO: this doesn't capture the buttons inside the table
-    } else {
-      // outside click
-      if (isComponentVisible) {
-        setIsComponentVisible(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  });
 
   const onRemoveFacility = (
     activeUser: Partial<SettingsUser>,
