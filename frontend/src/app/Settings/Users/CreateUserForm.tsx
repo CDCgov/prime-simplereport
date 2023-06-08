@@ -7,12 +7,12 @@ import Button from "../../commonComponents/Button/Button";
 import Dropdown from "../../commonComponents/Dropdown";
 import { RootState } from "../../store";
 import TextInput from "../../commonComponents/TextInput";
+import { UserPermission } from "../../../generated/graphql";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
-import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
-import { UpdateUser } from "./ManageUsers";
 import { CreateUser, ROLE_OPTIONS } from "./CreateUserSchema";
+import UserFacilitiesSettings from "./UserFacilitiesSettings";
 
 interface CreateUserFormProps {
   onClose: () => void;
@@ -27,14 +27,40 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
     (state) => state.facilities
   );
 
-  const updateUser: UpdateUser = (key, value) => {
-    if (key === "organization" || key === "permissions") {
-      setValue(key, value);
-    }
-  };
+  let facilitiesMap = facilities.reduce(
+    (map: { [id: string]: UserFacilitySetting }, facility) => {
+      map[facility.id] = facility;
+      return map;
+    },
+    {}
+  );
 
   const onSave = async (user: CreateUser) => {
-    onSubmit(user);
+    const permissions: UserPermission[] = [];
+    let organization: {
+      testingFacility: UserFacilitySetting[];
+    };
+    if (user.role === "ADMIN") {
+      organization = {
+        testingFacility: Object.values(facilitiesMap),
+      };
+      permissions.push(UserPermission.AccessAllFacilities);
+    } else {
+      organization = {
+        testingFacility: user.facilityIds
+          .map((id) => facilitiesMap[id])
+          .filter((userFacilitySetting) => userFacilitySetting !== undefined),
+      };
+      if (user.facilityIds.includes("ALL_FACILITIES")) {
+        permissions.push(UserPermission.AccessAllFacilities);
+      }
+    }
+
+    onSubmit({
+      ...user,
+      organization,
+      permissions,
+    });
   };
 
   const {
@@ -50,8 +76,6 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
       email: "",
       role: "USER",
       facilityIds: [],
-      organization: null,
-      permissions: [],
     },
   });
   const formCurrentValues = watch();
@@ -120,14 +144,21 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
           options={ROLE_OPTIONS}
           selectedValue={formCurrentValues.role}
           className="grid-col"
-          registrationProps={register("role")}
+          registrationProps={register("role", {
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => {
+              if (e.target.value === "ADMIN") {
+                setValue("facilityIds", [
+                  "ALL_FACILITIES",
+                  ...facilities.map((facility) => facility.id),
+                ]);
+              }
+            },
+          })}
         />
       </div>
-      <UserFacilitiesSettingsForm
-        activeUser={formCurrentValues}
-        onUpdateUser={updateUser}
+      <UserFacilitiesSettings
+        formValues={formCurrentValues}
         allFacilities={facilities}
-        showRequired
         register={register}
         errors={errors}
         setValue={setValue}
