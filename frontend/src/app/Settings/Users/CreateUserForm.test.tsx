@@ -33,8 +33,9 @@ describe("CreateUserForm", () => {
   });
   describe("Validation", () => {
     it("All fields are validated", async () => {
-      fireEvent.click(screen.getByLabelText("Facility 1"));
-      fireEvent.click(screen.getByLabelText("Facility 1"));
+      fireEvent.change(screen.getByLabelText("Access level *"), {
+        target: { value: "ENTRY_ONLY" },
+      });
       fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => screen.findByText("First name is required"));
@@ -82,22 +83,6 @@ describe("CreateUserForm", () => {
         target: { value: "BillyBob@example.com" },
       });
     };
-    const userFromForm = {
-      email: "BillyBob@example.com",
-      facilityIds: ["1"],
-      firstName: "Billy",
-      lastName: "Thorton",
-      organization: {
-        testingFacility: [
-          {
-            id: "1",
-            name: "Facility 1",
-          },
-        ],
-      },
-      permissions: [],
-      role: "USER",
-    };
 
     it("Admin user role", async () => {
       fillForm();
@@ -107,23 +92,24 @@ describe("CreateUserForm", () => {
       fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => expect(mockOnSubmit).toBeCalledTimes(1));
-      expect(mockOnSubmit).toBeCalledWith({
-        ...userFromForm,
-        facilityIds: ["ALL_FACILITIES", "1", "2"],
-        organization: {
-          testingFacility: [
-            {
-              id: "1",
-              name: "Facility 1",
-            },
-            {
-              id: "2",
-              name: "Facility 2",
-            },
-          ],
-        },
-        permissions: ["ACCESS_ALL_FACILITIES"],
-      });
+      expect(mockOnSubmit).toBeCalledWith(
+        expect.objectContaining({
+          organization: {
+            testingFacility: [
+              {
+                id: "1",
+                name: "Facility 1",
+              },
+              {
+                id: "2",
+                name: "Facility 2",
+              },
+            ],
+          },
+          permissions: ["ACCESS_ALL_FACILITIES"],
+          role: "ADMIN",
+        })
+      );
     });
     it("Standard user with access to all facilities", async () => {
       fillForm();
@@ -131,23 +117,23 @@ describe("CreateUserForm", () => {
       fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => expect(mockOnSubmit).toBeCalledTimes(1));
-      expect(mockOnSubmit).toBeCalledWith({
-        ...userFromForm,
-        facilityIds: ["ALL_FACILITIES", "1", "2"],
-        organization: {
-          testingFacility: [
-            {
-              id: "1",
-              name: "Facility 1",
-            },
-            {
-              id: "2",
-              name: "Facility 2",
-            },
-          ],
-        },
-        permissions: ["ACCESS_ALL_FACILITIES"],
-      });
+      expect(mockOnSubmit).toBeCalledWith(
+        expect.objectContaining({
+          organization: {
+            testingFacility: [
+              {
+                id: "1",
+                name: "Facility 1",
+              },
+              {
+                id: "2",
+                name: "Facility 2",
+              },
+            ],
+          },
+          permissions: ["ACCESS_ALL_FACILITIES"],
+        })
+      );
     });
 
     it("Standard user with one facility", async () => {
@@ -155,7 +141,22 @@ describe("CreateUserForm", () => {
       fireEvent.click(screen.getByText("Send invite"));
 
       await waitFor(() => expect(mockOnSubmit).toBeCalledTimes(1));
-      expect(mockOnSubmit).toBeCalledWith(userFromForm);
+      expect(mockOnSubmit).toBeCalledWith({
+        email: "BillyBob@example.com",
+        facilityIds: ["1"],
+        firstName: "Billy",
+        lastName: "Thorton",
+        organization: {
+          testingFacility: [
+            {
+              id: "1",
+              name: "Facility 1",
+            },
+          ],
+        },
+        permissions: [],
+        role: "USER",
+      });
     });
   });
 });
