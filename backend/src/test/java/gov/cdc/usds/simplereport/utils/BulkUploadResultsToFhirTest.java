@@ -18,21 +18,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.util.Calendar;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.hl7.fhir.r4.model.BaseDateTimeType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Observation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
@@ -45,29 +44,42 @@ public class BulkUploadResultsToFhirTest {
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
-  private UUIDGenerator uuidGenerator = new UUIDGenerator();
-  private DateGenerator dateGenerator = new DateGenerator();
+  private final UUIDGenerator uuidGenerator = new UUIDGenerator();
+  private final DateGenerator dateGenerator = new DateGenerator();
+  private static ZoneIdGenerator zoneIdGenerator;
+  private static FhirDateTimeUtil fhirDateTimeUtil;
 
   BulkUploadResultsToFhir sut;
 
   @BeforeAll
   public static void init() {
     gitProperties = mock(GitProperties.class);
+    zoneIdGenerator = mock(ZoneIdGenerator.class);
+    fhirDateTimeUtil = mock(FhirDateTimeUtil.class);
 
     when(gitProperties.getCommitTime()).thenReturn(commitTime);
     when(gitProperties.getShortCommitId()).thenReturn("short-commit-id");
+    when(zoneIdGenerator.getSystemZoneId()).thenReturn(ZoneId.of("UTC"));
+    when(fhirDateTimeUtil.getBaseDateTimeType(Mockito.any(BaseDateTimeType.class)))
+        .thenAnswer(
+            (Answer<BaseDateTimeType>)
+                invocation -> {
+                  BaseDateTimeType localBaseDateTimeType = invocation.getArgument(0);
+                  return localBaseDateTimeType.setTimeZoneZulu(true);
+                });
   }
 
   @BeforeEach
   public void beforeEach() {
     resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
-    FhirConverter fhirConverter = new FhirConverter(uuidGenerator);
+    FhirConverter fhirConverter = new FhirConverter(uuidGenerator, fhirDateTimeUtil);
     sut =
         new BulkUploadResultsToFhir(
             resultsUploaderDeviceValidationService,
             gitProperties,
             uuidGenerator,
             dateGenerator,
+            zoneIdGenerator,
             fhirConverter);
   }
 
@@ -167,7 +179,7 @@ public class BulkUploadResultsToFhirTest {
   }
 
   @Test
-  void convertExistingCsv_matchesFhirJson() throws IOException, ParseException {
+  void convertExistingCsv_matchesFhirJson() throws IOException {
     // Configure mocks for random UUIDs and Date timestamp
     var mockedUUIDGenerator = mock(UUIDGenerator.class);
     when(mockedUUIDGenerator.randomUUID())
@@ -194,16 +206,12 @@ public class BulkUploadResultsToFhirTest {
             });
 
     // Construct UTC date object
-    String dateString = "2023-05-24T15:33:06.472-04:00";
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-    Date date = sdf.parse(dateString);
-    Calendar calendar = Calendar.getInstance();
-    calendar.setTime(date);
-    calendar.setTimeZone(TimeZone.getTimeZone("UTC"));
-    Date finalDate = calendar.getTime();
+    String dateString = "2023-05-24T19:33:06.472Z";
+    Instant instant = Instant.parse(dateString);
+    Date date = Date.from(instant);
 
     var mockedDateGenerator = mock(DateGenerator.class);
-    when(mockedDateGenerator.newDate()).thenReturn(finalDate);
+    when(mockedDateGenerator.newDate()).thenReturn(date);
 
     sut =
         new BulkUploadResultsToFhir(
@@ -211,7 +219,8 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator));
+            zoneIdGenerator,
+            new FhirConverter(mockedUUIDGenerator, fhirDateTimeUtil));
 
     when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));

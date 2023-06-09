@@ -25,7 +25,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -60,6 +59,7 @@ public class BulkUploadResultsToFhir {
   private final GitProperties gitProperties;
   private final UUIDGenerator uuidGenerator;
   private final DateGenerator dateGenerator;
+  private final ZoneIdGenerator zoneIdGenerator;
   private final FhirConverter fhirConverter;
 
   @Value("${simple-report.processing-mode-code:P}")
@@ -342,7 +342,7 @@ public class BulkUploadResultsToFhir {
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+            Date.from(testDate.atStartOfDay(zoneIdGenerator.getSystemZoneId()).toInstant()),
             dateGenerator.newDate());
 
     return fhirConverter.createFhirBundle(

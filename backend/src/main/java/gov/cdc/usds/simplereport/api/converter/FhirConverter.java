@@ -54,6 +54,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.utils.FhirDateTimeUtil;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
@@ -122,6 +123,7 @@ import org.springframework.util.CollectionUtils;
 public class FhirConverter {
 
   private final UUIDGenerator uuidGenerator;
+  private final FhirDateTimeUtil fhirDateTimeUtil;
 
   private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
@@ -793,6 +795,18 @@ public class FhirConverter {
             .setStatus(status)
             .setEffective(new DateTimeType(dateTested))
             .setIssued(dateUpdated);
+
+    // Allows EffectiveDateTimeType to be mocked during tests
+    var localEffectiveDateTimeType = diagnosticReport.getEffectiveDateTimeType();
+    var unchangedEffectiveDateTimeType =
+        fhirDateTimeUtil.getBaseDateTimeType(localEffectiveDateTimeType);
+    diagnosticReport.setEffective(unchangedEffectiveDateTimeType);
+
+    // Allows issued element to be mocked during tests
+    var localIssued = diagnosticReport.getIssuedElement();
+    var unchangedIssued = (InstantType) fhirDateTimeUtil.getBaseDateTimeType(localIssued);
+    diagnosticReport.setIssuedElement(unchangedIssued);
+
     diagnosticReport.setId(id);
     if (StringUtils.isNotBlank(code)) {
       diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);
@@ -933,6 +947,12 @@ public class FhirConverter {
             .setType(BundleType.MESSAGE)
             .setTimestamp(props.getCurrentDate())
             .setIdentifier(new Identifier().setValue(props.getDiagnosticReport().getId()));
+
+    // Allows timestamp element to be mocked during tests
+    var localTimestamp = bundle.getTimestampElement();
+    var unchangedTimestamp = (InstantType) fhirDateTimeUtil.getBaseDateTimeType(localTimestamp);
+    bundle.setTimestampElement(unchangedTimestamp);
+
     entryList.forEach(
         pair ->
             bundle.addEntry(
@@ -946,6 +966,12 @@ public class FhirConverter {
   public Provenance createProvenance(
       String organizationFullUrl, Date dateTested, UUID provenanceId) {
     var provenance = new Provenance();
+
+    // Allows recorded element to be mocked during tests
+    var localRecorded = provenance.getRecordedElement();
+    var unchangedRecorded = fhirDateTimeUtil.getBaseDateTimeType(localRecorded);
+    provenance.setRecordedElement((InstantType) unchangedRecorded);
+
     provenance.setId(provenanceId.toString());
     provenance
         .getActivity()
