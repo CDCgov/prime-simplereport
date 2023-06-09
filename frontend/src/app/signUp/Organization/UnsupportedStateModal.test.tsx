@@ -1,4 +1,4 @@
-import { render, RenderResult, screen } from "@testing-library/react";
+import { act, render, RenderResult, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { UnsupportedStateModal } from "./UnsupportedStateModal";
@@ -20,20 +20,20 @@ describe("UnsupportedStateModal", () => {
     expect(component).toMatchSnapshot();
   });
 
-  it("closes on continue", () => {
+  it("closes on continue", async () => {
     const continueButton = screen.getByText("Continue sign up");
     expect(continueButton).toBeDisabled();
 
-    screen.getByLabelText("acknowledged").click();
+    await act(async () => screen.getByLabelText("acknowledged").click());
     expect(continueButton).toBeEnabled();
-    continueButton.click();
+    await act(async () => continueButton.click());
 
     expect(mockOnClose).toBeCalledWith(false);
   });
 
   it("closes on esc key", async () => {
     expect(mockOnClose).not.toHaveBeenCalled();
-    await userEvent.keyboard("{Escape}");
+    await act(async () => await userEvent.keyboard("{Escape}"));
     expect(mockOnClose).toHaveBeenCalledWith(true);
   });
 });

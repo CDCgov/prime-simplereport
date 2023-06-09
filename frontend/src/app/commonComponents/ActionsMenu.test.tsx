@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { ActionsMenu } from "./ActionsMenu";
@@ -24,7 +24,9 @@ describe("action menu", () => {
       "action_1234"
     );
 
-    await userEvent.click(screen.getByText("More actions"));
+    await act(
+      async () => await userEvent.click(screen.getByText("More actions"))
+    );
     expect(screen.getByText("Print action")).toHaveAttribute(
       "id",
       "print_1234"
