@@ -21,6 +21,7 @@ export const ActionsMenu = (props: Props) => (
       <MenuButton
         className="sr-actions-menu"
         id={props.id ? `action_${props.id}` : undefined}
+        data-testid={`action_${props.id}`}
       >
         <FontAwesomeIcon icon={faEllipsisH as IconProp} size="2x" />
         <span className="usa-sr-only">{props.title ?? "More actions"}</span>
