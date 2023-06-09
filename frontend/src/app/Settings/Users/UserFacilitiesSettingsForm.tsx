@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo } from "react";
-import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
 import { UserPermission } from "../../../generated/graphql";
 
 import { UpdateUser } from "./ManageUsers";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
+
 import "./ManageUsers.scss";
-import { CreateUser } from "./CreateUserSchema";
 
 type FacilityLookup = Record<string, UserFacilitySetting>;
 
@@ -30,9 +29,6 @@ interface Props {
   allFacilities: UserFacilitySetting[]; // all facilities for the entire org; the activeUser would have a subset of these
   onUpdateUser: UpdateUser;
   showRequired?: boolean;
-  register?: UseFormRegister<CreateUser>;
-  errors?: FieldErrors<CreateUser>;
-  setValue?: UseFormSetValue<CreateUser>;
 }
 
 const UserFacilitiesSettingsForm: React.FC<Props> = ({
@@ -40,9 +36,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   allFacilities,
   onUpdateUser,
   showRequired,
-  register,
-  errors,
-  setValue,
 }) => {
   const facilityLookup: FacilityLookup = useMemo(
     () =>
@@ -87,15 +80,15 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     }
   }, [hasAllFacilityAccess, activeUser, onUpdateUser, allFacilities]);
 
-  const userFacilities = useMemo(() => {
-    if (hasAllFacilityAccess) {
-      return [...allFacilities];
-    } else if (activeUser.organization?.testingFacility) {
-      return [...activeUser.organization.testingFacility];
-    } else {
-      return [];
-    }
-  }, [activeUser, allFacilities, hasAllFacilityAccess]);
+  const userFacilities = useMemo(
+    () =>
+      hasAllFacilityAccess
+        ? [...allFacilities]
+        : activeUser.organization
+        ? [...activeUser.organization.testingFacility]
+        : [],
+    [activeUser, allFacilities, hasAllFacilityAccess]
+  );
 
   userFacilities.sort(alphabeticalFacilitySort);
 
@@ -104,7 +97,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     [userFacilities]
   );
 
-  let boxes = [
+  const boxes = [
     {
       value: "ALL_FACILITIES",
       label: `Access all facilities (${allFacilities.length})`,
@@ -119,66 +112,12 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     })),
   ];
 
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = e.target;
-    if (value === "ALL_FACILITIES") {
-      if (checked) {
-        onUpdateUser("permissions", [
-          ...(activeUser.permissions || []),
-          UserPermission.AccessAllFacilities,
-        ]);
-        if (setValue) {
-          setValue("facilityIds", [
-            "ALL_FACILITIES",
-            ...allFacilities.map((facility) => facility.id),
-          ]);
-        }
-      } else {
-        onUpdateUser(
-          "permissions",
-          activeUser.permissions?.filter(
-            (permission) => permission !== "ACCESS_ALL_FACILITIES"
-          ) || []
-        );
-      }
-    } else {
-      if (checked) {
-        const facility = facilityLookup[value];
-        onUpdateUser("organization", {
-          testingFacility: [
-            ...(activeUser.organization?.testingFacility || []),
-            facility,
-          ],
-        });
-      } else {
-        onRemoveFacility(activeUser, value);
-      }
-    }
-  };
-
-  if (register) {
-    boxes = boxes.map((box) => ({
-      ...box,
-      ...register("facilityIds", {
-        required: "At least one facility must be selected",
-        onChange,
-      }),
-    }));
-  }
-
-  const checkedValues: { [key: string]: boolean | undefined } = {
-    ALL_FACILITIES: hasAllFacilityAccess,
-  };
-  allFacilities.forEach((facility) => {
-    checkedValues[facility.id] = userFacilityLookup.has(facility.id);
-  });
-
   return (
     <>
-      <h4 className="testing-facility-access-subheader margin-bottom-0">
+      <h3 className="testing-facility-access-subheader margin-bottom-0">
         Testing facility access{" "}
         {showRequired && <span className="text-secondary-vivid">*</span>}
-      </h4>
+      </h3>
       <p className="testing-facility-access-subtext">
         {facilityAccessDescription}
       </p>
@@ -187,9 +126,36 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         legend="Facilities"
         legendSrOnly
         name="facilities"
-        onChange={onChange}
-        validationStatus={errors?.facilityIds?.type ? "error" : undefined}
-        errorMessage={errors?.facilityIds?.message}
+        onChange={(e) => {
+          const { value, checked } = e.target;
+          if (value === "ALL_FACILITIES") {
+            if (checked) {
+              onUpdateUser("permissions", [
+                ...(activeUser.permissions || []),
+                UserPermission.AccessAllFacilities,
+              ]);
+            } else {
+              onUpdateUser(
+                "permissions",
+                activeUser.permissions?.filter(
+                  (permission) => permission !== "ACCESS_ALL_FACILITIES"
+                ) || []
+              );
+            }
+          } else {
+            if (checked) {
+              const facility = facilityLookup[value];
+              onUpdateUser("organization", {
+                testingFacility: [
+                  ...(activeUser.organization?.testingFacility || []),
+                  facility,
+                ],
+              });
+            } else {
+              onRemoveFacility(activeUser, value);
+            }
+          }
+        }}
       />
     </>
   );
