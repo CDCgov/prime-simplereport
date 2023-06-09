@@ -99,11 +99,13 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
   );
 
   const getMissingHeaderErrorGuidance = (header: string) => (
-    <span>Include a column with {highlightHeader(header)} as the header.</span>
+    <span data-testid="guidance">
+      Include a column with {highlightHeader(header)} as the header.
+    </span>
   );
 
   const getMissingDataErrorGuidance = (header: string) => (
-    <span>
+    <span data-testid="guidance">
       {highlightHeader(header)} is a required field. Include values in each row
       under this column.
     </span>
@@ -124,14 +126,14 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     if (required) {
       if (specificValues) {
         guidance = (
-          <span>
+          <span data-testid="guidance">
             Choose from the accepted values listed under{" "}
             {highlightHeader(header)} {guideLink}.
           </span>
         );
       } else {
         guidance = (
-          <span>
+          <span data-testid="guidance">
             Follow the instructions under {highlightHeader(header)} {guideLink}.
           </span>
         );
@@ -139,14 +141,14 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     } else {
       if (specificValues) {
         guidance = (
-          <span>
+          <span data-testid="guidance">
             If including {highlightHeader(header)}, choose from the accepted
             values listed under {highlightHeader(header)} {guideLink}.
           </span>
         );
       } else {
         guidance = (
-          <span>
+          <span data-testid="guidance">
             If including {highlightHeader(header)}, follow the instructions
             under {highlightHeader(header)} {guideLink}.
           </span>

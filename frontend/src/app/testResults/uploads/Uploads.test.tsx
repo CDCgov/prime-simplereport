@@ -342,23 +342,27 @@ describe("Uploads", () => {
 
   describe("error guidance", () => {
     it("should give you guidance for missing headers", () => {
-      const guidance = getGuidance({
+      const Guidance = getGuidance({
         errorType: "MISSING_HEADER",
         fieldHeader: "patient_first_name",
       } as EnhancedFeedbackMessage);
 
-      expect(guidance).toEqual(
+      render(<Router>{Guidance}</Router>);
+
+      expect(screen.getByTestId("guidance")).toHaveTextContent(
         "Include a column with patient_first_name as the header."
       );
     });
 
     it("should give you guidance for missing data", () => {
-      const guidance = getGuidance({
+      const Guidance = getGuidance({
         errorType: "MISSING_DATA",
         fieldHeader: "patient_first_name",
       } as EnhancedFeedbackMessage);
 
-      expect(guidance).toEqual(
+      render(<Router>{Guidance}</Router>);
+
+      expect(screen.getByTestId("guidance")).toHaveTextContent(
         "patient_first_name is a required field. Include values in each row under this column."
       );
     });
@@ -372,11 +376,13 @@ describe("Uploads", () => {
 
       render(<Router>{Guidance}</Router>);
 
-      expect(
-        screen.getByText("Follow the instructions under patient_first_name", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("guidance")).toHaveTextContent(
+        "Follow the instructions under patient_first_name in the upload guide."
+      );
+      expect(screen.getByRole("link")).toHaveAttribute(
+        "href",
+        `/results/upload/submit/guide#patient_first_name`
+      );
     });
 
     it("should give you guidance for optional invalid data", async () => {
@@ -388,12 +394,13 @@ describe("Uploads", () => {
 
       render(<Router>{Guidance}</Router>);
 
-      expect(
-        screen.getByText(
-          "If including patient_middle_name, follow the instructions under patient_middle_name",
-          { exact: false }
-        )
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("guidance")).toHaveTextContent(
+        "If including patient_middle_name, follow the instructions under patient_middle_name in the upload guide."
+      );
+      expect(screen.getByRole("link")).toHaveAttribute(
+        "href",
+        `/results/upload/submit/guide#patient_middle_name`
+      );
     });
 
     it("should give you guidance for required invalid data with specific acceptable values", async () => {
@@ -405,12 +412,13 @@ describe("Uploads", () => {
 
       render(<Router>{Guidance}</Router>);
 
-      expect(
-        screen.getByText(
-          "Choose from the accepted values listed under patient_ethnicity",
-          { exact: false }
-        )
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("guidance")).toHaveTextContent(
+        "Choose from the accepted values listed under patient_ethnicity in the upload guide."
+      );
+      expect(screen.getByRole("link")).toHaveAttribute(
+        "href",
+        `/results/upload/submit/guide#patient_ethnicity`
+      );
     });
 
     it("should give you guidance for optional invalid data with specific acceptable values", async () => {
@@ -422,12 +430,13 @@ describe("Uploads", () => {
 
       render(<Router>{Guidance}</Router>);
 
-      expect(
-        screen.getByText(
-          "If including residence_type, choose from the accepted values listed under residence_type",
-          { exact: false }
-        )
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("guidance")).toHaveTextContent(
+        "If including residence_type, choose from the accepted values listed under residence_type in the upload guide."
+      );
+      expect(screen.getByRole("link")).toHaveAttribute(
+        "href",
+        `/results/upload/submit/guide#residence_type`
+      );
     });
   });
 });
