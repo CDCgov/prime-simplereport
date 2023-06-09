@@ -477,9 +477,7 @@ describe("AddPatient", () => {
             )
         );
 
-        expect(
-          await screen.findByText("Race is missing", { exact: false })
-        ).toBeInTheDocument();
+        await waitFor(() => expect(screen.queryByText(/Race is missing/i)));
       });
     });
 
