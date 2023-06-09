@@ -68,7 +68,6 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    await new Promise((resolve) => setTimeout(resolve, 501));
 
     await waitFor(
       async () => {
@@ -193,7 +192,7 @@ describe("TestQueue", () => {
 
   describe("clicking on test questionnaire", () => {
     beforeEach(async () => {
-      await render(
+      render(
         <MemoryRouter>
           <MockedProvider mocks={mocks}>
             <Provider store={store}>
