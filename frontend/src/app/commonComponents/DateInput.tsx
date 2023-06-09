@@ -65,20 +65,19 @@ export const DateInput = ({
   const { t } = useTranslation();
 
   return (
-    <div
-      className={classnames("usa-form-group", className, {
+    <fieldset
+      className={classnames("usa-form-group usa-fieldset", className, {
         "usa-form-group--error": validationStatus === "error",
       })}
     >
-      <label
+      <legend
         className={classnames("usa-label", labelClassName, {
           "usa-sr-only": labelSrOnly,
           "usa-label--error": validationStatus === "error",
         })}
-        htmlFor={name}
       >
         {label}
-      </label>
+      </legend>
       {noHint ? null : (
         <span className="usa-hint">{t("testResult.dob.exampleText")}</span>
       )}
@@ -126,6 +125,6 @@ export const DateInput = ({
           onChange={yearOnChange}
         />
       </DateInputGroup>
-    </div>
+    </fieldset>
   );
 };
