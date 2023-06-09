@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitFor,
@@ -64,7 +65,13 @@ describe("Device lookup", () => {
   });
 
   it("displays no results message if no matches found", async () => {
-    await userEvent.type(screen.getByLabelText("Select device"), "noresults");
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Select device"),
+          "noresults"
+        )
+    );
     await waitFor(() => {
       expect(
         screen.getByText("No device found matching", { exact: false })
@@ -73,7 +80,10 @@ describe("Device lookup", () => {
   });
 
   it("dropdown displays devices", async () => {
-    await userEvent.type(screen.getByLabelText("Select device"), "model");
+    await act(
+      async () =>
+        await userEvent.type(screen.getByLabelText("Select device"), "model")
+    );
 
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
 
@@ -85,9 +95,12 @@ describe("Device lookup", () => {
   });
 
   it("selected device displays device info", async () => {
-    await userEvent.type(screen.getByLabelText("Select device"), "model");
+    await act(
+      async () =>
+        await userEvent.type(screen.getByLabelText("Select device"), "model")
+    );
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    await userEvent.click(screen.getByText("Select"));
+    await act(async () => await userEvent.click(screen.getByText("Select")));
 
     expect(screen.getByText("Acme Emitter (RT-PCR)")).toBeInTheDocument();
 
@@ -122,15 +135,18 @@ describe("Device lookup", () => {
 
     jest.spyOn(navigator.clipboard, "writeText");
 
-    await userEvent.type(screen.getByLabelText("Select device"), "model");
+    await act(
+      async () =>
+        await userEvent.type(screen.getByLabelText("Select device"), "model")
+    );
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    await userEvent.click(screen.getByText("Select"));
+    await act(async () => await userEvent.click(screen.getByText("Select")));
 
     const button = screen.getByLabelText(
       "Copy equipment model name for Acme Emitter (RT-PCR)"
     );
 
-    await userEvent.click(button);
+    await act(async () => await userEvent.click(button));
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Model A");
   });
