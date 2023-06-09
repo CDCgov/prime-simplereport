@@ -69,15 +69,12 @@ describe("TestQueue", () => {
       </MemoryRouter>
     );
 
-    await waitFor(
-      async () => {
-        expect(
-          screen.getByLabelText(
-            `Search for a ${PATIENT_TERM} to start their test`
-          )
-        ).toBeInTheDocument();
-      },
-      { timeout: 1000 }
+    await waitFor(() =>
+      expect(
+        screen.getByLabelText(
+          `Search for a ${PATIENT_TERM} to start their test`
+        )
+      )
     );
 
     expect(await screen.findByText("Doe, John A"));

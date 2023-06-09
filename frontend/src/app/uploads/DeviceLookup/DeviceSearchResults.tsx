@@ -48,7 +48,10 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
     );
   } else {
     resultsContent = (
-      <table className="usa-table usa-table--borderless">
+      <table
+        className="usa-table usa-table--borderless"
+        aria-describedby={"device-result-table-desc"}
+      >
         <thead>
           <tr>
             <th scope="col">Manufacturer</th>
@@ -99,7 +102,16 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
     );
   }
   const results = (
-    <div className="card-container shadow-3 results-dropdown" ref={dropDownRef}>
+    <div
+      className="card-container shadow-3 results-dropdown"
+      ref={dropDownRef}
+      aria-live="polite"
+      role="region"
+      aria-atomic="true"
+    >
+      <div className="usa-sr-only" id={"device-result-table-desc"}>
+        device search results
+      </div>
       <div className="usa-card__body results-dropdown__body">
         {resultsContent}
       </div>
