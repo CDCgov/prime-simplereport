@@ -7,6 +7,7 @@ import Required from "../../commonComponents/Required";
 import { UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
 import { CreateUser } from "./CreateUserSchema";
+import { alphabeticalFacilitySort } from "./UserFacilitiesSettingsForm";
 
 interface UserFacilitiesSettingProps {
   formValues: CreateUser;
@@ -25,10 +26,10 @@ const UserFacilitiesSettings: React.FC<UserFacilitiesSettingProps> = ({
   setValue,
 }) => {
   const isAdmin = formValues.role === "ADMIN";
-
   const facilityAccessDescription = isAdmin
     ? "Admins have access to all facilities"
     : "All users must have access to at least one facility";
+  allFacilities.sort(alphabeticalFacilitySort);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;

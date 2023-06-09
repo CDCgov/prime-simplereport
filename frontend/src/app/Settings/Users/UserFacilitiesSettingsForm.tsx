@@ -14,7 +14,7 @@ const getHasAllFacilityAccess = (user: Partial<SettingsUser>) =>
   user.role === "ADMIN" ||
   user.permissions?.includes(UserPermission.AccessAllFacilities);
 
-const alphabeticalFacilitySort = (
+export const alphabeticalFacilitySort = (
   a: UserFacilitySetting,
   b: UserFacilitySetting
 ) => {

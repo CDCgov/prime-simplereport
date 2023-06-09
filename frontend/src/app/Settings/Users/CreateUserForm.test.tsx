@@ -15,8 +15,8 @@ import CreateUserForm from "./CreateUserForm";
 const mockStore = configureStore([]);
 const store = mockStore({
   facilities: [
-    { id: "1", name: "Facility 1" },
-    { id: "2", name: "Facility 2" },
+    { id: "1", name: "Gabagool facility" },
+    { id: "2", name: "A+ Facility" },
   ],
 });
 let mockOnClose = jest.fn();
@@ -78,7 +78,7 @@ describe("CreateUserForm", () => {
       fireEvent.change(screen.getByLabelText("Last name *"), {
         target: { value: "Thorton" },
       });
-      fireEvent.click(screen.getByLabelText("Facility 1"));
+      fireEvent.click(screen.getByLabelText("Gabagool facility"));
       fireEvent.change(screen.getByLabelText("Email address *"), {
         target: { value: "BillyBob@example.com" },
       });
@@ -98,11 +98,11 @@ describe("CreateUserForm", () => {
             testingFacility: [
               {
                 id: "1",
-                name: "Facility 1",
+                name: "Gabagool facility",
               },
               {
                 id: "2",
-                name: "Facility 2",
+                name: "A+ Facility",
               },
             ],
           },
@@ -122,12 +122,12 @@ describe("CreateUserForm", () => {
           organization: {
             testingFacility: [
               {
-                id: "1",
-                name: "Facility 1",
+                id: "2",
+                name: "A+ Facility",
               },
               {
-                id: "2",
-                name: "Facility 2",
+                id: "1",
+                name: "Gabagool facility",
               },
             ],
           },
@@ -150,7 +150,7 @@ describe("CreateUserForm", () => {
           testingFacility: [
             {
               id: "1",
-              name: "Facility 1",
+              name: "Gabagool facility",
             },
           ],
         },
