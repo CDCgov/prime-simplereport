@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -62,17 +62,29 @@ describe("Header.tsx", () => {
   it("displays the support link correctly", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
-    await userEvent.click(screen.getByTestId("desktop-user-button"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getByTestId("desktop-user-button"))
+    );
     expect(screen.getByTestId("desktop-support-link")).toBeVisible();
-    await userEvent.click(screen.getByTestId("desktop-support-link"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getByTestId("desktop-support-link"))
+    );
     expect(trackEventMock).toHaveBeenCalledWith({ name: "Support" });
   });
   it("displays new feature link correctly", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "false";
     render(<WrappedHeader />);
-    await userEvent.click(screen.getByTestId("desktop-user-button"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getByTestId("desktop-user-button"))
+    );
     expect(screen.getByTestId("desktop-whats-new-link")).toBeVisible();
-    await userEvent.click(screen.getByTestId("desktop-whats-new-link"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getByTestId("desktop-whats-new-link"))
+    );
     expect(trackEventMock).toHaveBeenCalledWith({ name: "What's new" });
   });
   it("it does not render login links", () => {
@@ -88,7 +100,10 @@ describe("Header.tsx", () => {
         </WrappedHeader>
       );
       const dropdown = await screen.findAllByRole("option");
-      await userEvent.selectOptions(dropdown[1].closest("select")!, "2");
+      await act(
+        async () =>
+          await userEvent.selectOptions(dropdown[1].closest("select")!, "2")
+      );
       expect(
         await screen.findByText("Facility 2 is selected")
       ).toBeInTheDocument();

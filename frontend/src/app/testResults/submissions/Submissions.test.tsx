@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import createMockStore from "redux-mock-store";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -142,7 +148,7 @@ describe("Submissions", () => {
         </Provider>
       </MockedProvider>
     );
-    await new Promise((resolve) => setTimeout(resolve, 0));
+
     expect(await screen.findByText("No results"));
     expect(screen.queryByRole("navigation")).not.toBeInTheDocument();
   });
@@ -157,7 +163,6 @@ describe("Submissions", () => {
         </Provider>
       </MockedProvider>
     );
-    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(await screen.findByText("reportId_1"));
     expect(await screen.findByText("reportId_2"));
@@ -186,9 +191,7 @@ describe("Submissions", () => {
     const startDateInput = screen.getByTestId("start-date");
     fireEvent.change(startDateInput, { target: { value: "2021-01-01" } });
     await waitFor(() => expect(startDateInput).toHaveValue("2021-01-01"));
-    await userEvent.tab();
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    await act(async () => await userEvent.tab());
 
     expect(await screen.findByText("reportId_2"));
     expect(await screen.findByText("reportId_3"));
@@ -213,7 +216,6 @@ describe("Submissions", () => {
     const endDateInput = screen.getByTestId("end-date");
 
     fireEvent.change(endDateInput, { target: { value: "2022-01-01" } });
-    await new Promise((resolve) => setTimeout(resolve, 0));
 
     await waitFor(() =>
       expect(screen.queryByText("reportId_1")).not.toBeInTheDocument()
@@ -234,8 +236,6 @@ describe("Submissions", () => {
         </MockedProvider>
       </Provider>
     );
-
-    await new Promise((resolve) => setTimeout(resolve, 0));
 
     await forEach([result_1, result_2, result_3], async (result) => {
       await waitFor(() =>

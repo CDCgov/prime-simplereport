@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -146,7 +147,7 @@ describe("TenantDataAccessFormContainer", () => {
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
-    await userEvent.click(screen.getByRole("button"));
+    await act(async () => await userEvent.click(screen.getByRole("button")));
     expect(await screen.findByText("Redirected")).toBeInTheDocument();
   });
 });
