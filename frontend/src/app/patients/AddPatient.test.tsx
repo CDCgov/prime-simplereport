@@ -4,6 +4,7 @@ import {
   within,
   waitFor,
   fireEvent,
+  act,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -252,25 +253,34 @@ describe("AddPatient", () => {
 
     describe("Choosing a country", () => {
       it("should show the state and zip code inputs for USA", async () => {
-        await userEvent.selectOptions(
-          screen.getByLabelText("Country", { exact: false }),
-          "USA"
+        await act(
+          async () =>
+            await userEvent.selectOptions(
+              screen.getByLabelText("Country", { exact: false }),
+              "USA"
+            )
         );
         expect(await screen.findByText("State")).toBeInTheDocument();
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
       it("should show the state and zip code inputs for Canada", async () => {
-        await userEvent.selectOptions(
-          screen.getByLabelText("Country", { exact: false }),
-          "CAN"
+        await act(
+          async () =>
+            await userEvent.selectOptions(
+              screen.getByLabelText("Country", { exact: false }),
+              "CAN"
+            )
         );
         expect(await screen.findByText("State")).toBeInTheDocument();
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
       it("should show different states for Canada", async () => {
-        await userEvent.selectOptions(
-          screen.getByLabelText("Country", { exact: false }),
-          "CAN"
+        await act(
+          async () =>
+            await userEvent.selectOptions(
+              screen.getByLabelText("Country", { exact: false }),
+              "CAN"
+            )
         );
 
         let stateInput: HTMLSelectElement;
@@ -278,13 +288,16 @@ describe("AddPatient", () => {
           exact: false,
         }) as HTMLSelectElement;
 
-        await userEvent.selectOptions(stateInput, "QC");
+        await act(async () => await userEvent.selectOptions(stateInput, "QC"));
         expect(stateInput.value).toBe("QC");
       });
       it("should hide the state and zip code inputs for non-US countries", async () => {
-        await userEvent.selectOptions(
-          screen.getByLabelText("Country", { exact: false }),
-          "MEX"
+        await act(
+          async () =>
+            await userEvent.selectOptions(
+              screen.getByLabelText("Country", { exact: false }),
+              "MEX"
+            )
         );
         expect(screen.queryByText("State")).not.toBeInTheDocument();
         expect(screen.queryByText("ZIP code")).not.toBeInTheDocument();
@@ -334,10 +347,13 @@ describe("AddPatient", () => {
             },
           }
         );
-        await userEvent.click(
-          screen.queryAllByText("Save Changes", {
-            exact: false,
-          })[0]
+        await act(
+          async () =>
+            await userEvent.click(
+              screen.queryAllByText("Save Changes", {
+                exact: false,
+              })[0]
+            )
         );
         expect(
           await screen.findByText("Address validation", {
@@ -346,15 +362,21 @@ describe("AddPatient", () => {
         ).toBeInTheDocument();
         const modal = screen.getByRole("dialog");
 
-        await userEvent.click(
-          within(modal).getByLabelText("Use address as entered", {
-            exact: false,
-          })
+        await act(
+          async () =>
+            await userEvent.click(
+              within(modal).getByLabelText("Use address as entered", {
+                exact: false,
+              })
+            )
         );
-        await userEvent.click(
-          within(modal).getByText("Save changes", {
-            exact: false,
-          })
+        await act(
+          async () =>
+            await userEvent.click(
+              within(modal).getByText("Save changes", {
+                exact: false,
+              })
+            )
         );
         expect(await screen.findByText("Patients!"));
       });
@@ -400,10 +422,13 @@ describe("AddPatient", () => {
             },
           }
         );
-        await userEvent.click(
-          screen.queryAllByText("Save Changes", {
-            exact: false,
-          })[0]
+        await act(
+          async () =>
+            await userEvent.click(
+              screen.queryAllByText("Save Changes", {
+                exact: false,
+              })[0]
+            )
         );
         expect(
           await screen.findByText("Invalid ZIP code for this state", {
@@ -443,10 +468,13 @@ describe("AddPatient", () => {
             },
           }
         );
-        await userEvent.click(
-          screen.queryAllByText("Save Changes", {
-            exact: false,
-          })[0]
+        await act(
+          async () =>
+            await userEvent.click(
+              screen.queryAllByText("Save Changes", {
+                exact: false,
+              })[0]
+            )
         );
 
         expect(
@@ -469,14 +497,23 @@ describe("AddPatient", () => {
         expect(facilityInput.value).toBe("");
       });
       it("updates its selection on change", async () => {
-        await userEvent.selectOptions(facilityInput, [mockFacilityID]);
+        await act(
+          async () =>
+            await userEvent.selectOptions(facilityInput, [mockFacilityID])
+        );
         expect(facilityInput.value).toBe(mockFacilityID);
       });
     });
 
     describe("With student ID", () => {
       it("allows student ID to be entered", async () => {
-        await userEvent.selectOptions(screen.getByLabelText("Role"), "STUDENT");
+        await act(
+          async () =>
+            await userEvent.selectOptions(
+              screen.getByLabelText("Role"),
+              "STUDENT"
+            )
+        );
         expect(await screen.findByText("Student ID"));
       });
     });
@@ -528,10 +565,13 @@ describe("AddPatient", () => {
           .spyOn(smartyStreets, "suggestionIsCloseEnough")
           .mockReturnValue(true);
 
-        await userEvent.click(
-          screen.queryAllByText("Save and start test", {
-            exact: false,
-          })[0]
+        await act(
+          async () =>
+            await userEvent.click(
+              screen.queryAllByText("Save and start test", {
+                exact: false,
+              })[0]
+            )
         );
 
         await new Promise((resolve) => setTimeout(resolve, 0));
@@ -588,10 +628,13 @@ describe("AddPatient", () => {
             },
           }
         );
-        await userEvent.click(
-          screen.queryAllByText("Save and start test", {
-            exact: false,
-          })[0]
+        await act(
+          async () =>
+            await userEvent.click(
+              screen.queryAllByText("Save and start test", {
+                exact: false,
+              })[0]
+            )
         );
         expect(
           await screen.findByText("Address validation", {
@@ -601,15 +644,21 @@ describe("AddPatient", () => {
 
         const modal = screen.getByRole("dialog");
 
-        await userEvent.click(
-          within(modal).getByLabelText("Use address as entered", {
-            exact: false,
-          })
+        await act(
+          async () =>
+            await userEvent.click(
+              within(modal).getByLabelText("Use address as entered", {
+                exact: false,
+              })
+            )
         );
-        await userEvent.click(
-          within(modal).getByText("Save changes", {
-            exact: false,
-          })
+        await act(
+          async () =>
+            await userEvent.click(
+              within(modal).getByText("Save changes", {
+                exact: false,
+              })
+            )
         );
 
         expect(
@@ -675,11 +724,14 @@ describe("AddPatient", () => {
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      await userEvent.type(
-        screen.getByLabelText("Date of birth", { exact: false }),
-        "1970-09-22"
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByLabelText("Date of birth", { exact: false }),
+            "1970-09-22"
+          )
       );
-      await userEvent.tab();
+      await act(async () => await userEvent.tab());
 
       await waitFor(() => {
         expect(patientExistsMock).toHaveBeenCalledTimes(1);
@@ -733,11 +785,14 @@ describe("AddPatient", () => {
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      await userEvent.type(
-        screen.getByLabelText("Date of birth", { exact: false }),
-        "1970-09-22"
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByLabelText("Date of birth", { exact: false }),
+            "1970-09-22"
+          )
       );
-      await userEvent.tab();
+      await act(async () => await userEvent.tab());
 
       expect(
         await screen.findByText("This patient is already registered", {
