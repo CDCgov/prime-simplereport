@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import AoEForm from "./AoEForm";
@@ -227,7 +227,7 @@ describe("AoEForm", () => {
         });
 
         expect(emailDeliveryRadio).toBeInTheDocument();
-        await userEvent.click(emailDeliveryRadio);
+        await act(async () => await userEvent.click(emailDeliveryRadio));
         expect(emailDeliveryRadio).toBeChecked();
       });
     });

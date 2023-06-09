@@ -68,7 +68,7 @@ const Submission = () => {
         <div className="usa-card__body">
           <div className="display-flex flex-column margin-top-2 margin-bottom-4">
             <span className="text-base">Report ID</span>
-            <td>{submission?.uploadSubmission.reportId}</td>
+            <span>{submission?.uploadSubmission.reportId}</span>
           </div>
           <div className="display-flex flex-column margin-bottom-4">
             <span className="text-base">Data stream</span>
