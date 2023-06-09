@@ -8,6 +8,7 @@ import Dropdown from "../../commonComponents/Dropdown";
 import { RootState } from "../../store";
 import TextInput from "../../commonComponents/TextInput";
 import { UserPermission } from "../../../generated/graphql";
+import { emailRegex } from "../../utils/email";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
@@ -127,8 +128,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
           registrationProps={register("email", {
             required: "Email address is required",
             pattern: {
-              value:
-                /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/,
+              value: emailRegex,
               message: "Email address must be a valid email address",
             },
           })}
