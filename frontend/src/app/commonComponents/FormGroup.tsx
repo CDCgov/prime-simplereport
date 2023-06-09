@@ -7,17 +7,17 @@ interface FormGroupProps {
 }
 
 const FormGroup = (props: FormGroupProps) => {
-  const WappringEl = props.asSectionGroup ? "div" : "form";
+  const WrappingEl = props.asSectionGroup ? "div" : "form";
 
   return (
-    <WappringEl className="prime-formgroup">
+    <WrappingEl className="prime-formgroup">
       <fieldset className="usa-fieldset">
         <legend className="prime-formgroup-heading usa-legend">
           {props.title}
         </legend>
         {props.children}
       </fieldset>
-    </WappringEl>
+    </WrappingEl>
   );
 };
 
