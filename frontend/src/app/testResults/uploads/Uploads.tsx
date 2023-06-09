@@ -63,8 +63,8 @@ export function getErrorMessage(error: EnhancedFeedbackMessage) {
     const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+){1,7})/g;
     return (
       <span data-testid="error-message">
-        {error.message.split(headerRegex).map((value, index) => (
-          <span key={`span-${value}-${index}`}>
+        {error.message.split(headerRegex).map((value) => (
+          <span key={`span-${value}`}>
             {headerRegex.test(value) ? (
               <mark data-testid="highlighted-header">
                 <code>{value}</code>
