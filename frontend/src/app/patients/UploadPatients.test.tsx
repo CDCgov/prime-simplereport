@@ -1,11 +1,11 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import userEvent from "@testing-library/user-event";
 
-import { file } from "../testResults/uploads/Uploads.test";
+import { file } from "../utils/file";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
 import * as AppInsightsMock from "../TelemetryService";
 
@@ -55,9 +55,11 @@ const successResponseBody = {
 
 async function userEventUpload(uploadFile: File, facility: string) {
   const input = screen.getByTestId("upload-patients-file-input");
-  await userEvent.upload(input, uploadFile);
-  await userEvent.click(screen.getByText(facility));
-  await userEvent.click(screen.getByText("Upload CSV file"));
+  await act(async () => await userEvent.upload(input, uploadFile));
+  await act(async () => await userEvent.click(screen.getByText(facility)));
+  await act(
+    async () => await userEvent.click(screen.getByText("Upload CSV file"))
+  );
 }
 
 const submitCSVFile = async (
@@ -71,26 +73,6 @@ const submitCSVFile = async (
 };
 
 describe("Upload Patient", () => {
-  const trackEventMock = jest.fn();
-  const trackMetricMock = jest.fn();
-  const trackExceptionMock = jest.fn();
-  const getAppInsightsSpy = jest.spyOn(AppInsightsMock, "getAppInsights");
-
-  beforeEach(() => {
-    getAppInsightsSpy.mockImplementation(
-      () =>
-        ({
-          trackEvent: trackEventMock,
-          trackMetric: trackMetricMock,
-          trackException: trackExceptionMock,
-        } as jest.MockedObject<any>)
-    );
-  });
-
-  afterEach(() => {
-    getAppInsightsSpy.mockRestore();
-  });
-
   afterAll(() => {
     jest.clearAllMocks();
   });
@@ -102,16 +84,19 @@ describe("Upload Patient", () => {
   describe("facility selector", () => {
     it("should add facility name to label when one facility is selected", async () => {
       renderUploadPatients();
-      expect(
-        await screen.findByText("3. Upload your spreadsheet.")
-      ).toBeInTheDocument();
+      expect(await screen.findByText("3. Upload your spreadsheet."));
 
-      await userEvent.click(screen.getByText("One facility"));
+      await act(
+        async () => await userEvent.click(screen.getByText("One facility"))
+      );
 
       expect(await screen.findByText("Which facility?")).toBeInTheDocument();
-      await userEvent.selectOptions(
-        screen.getByRole("combobox", { name: /select facility/i }),
-        "2"
+      await act(
+        async () =>
+          await userEvent.selectOptions(
+            screen.getByRole("combobox", { name: /select facility/i }),
+            "2"
+          )
       );
       expect(
         await screen.findByText(
@@ -124,9 +109,13 @@ describe("Upload Patient", () => {
       expect(
         await screen.findByText("3. Upload your spreadsheet.")
       ).toBeInTheDocument();
-      await userEvent.click(screen.getByText("One facility"));
+      await act(
+        async () => await userEvent.click(screen.getByText("One facility"))
+      );
 
-      await userEvent.click(screen.getByText("All facilities"));
+      await act(
+        async () => await userEvent.click(screen.getByText("All facilities"))
+      );
       expect(
         await screen.findByText("3. Upload your spreadsheet.")
       ).toBeInTheDocument();
@@ -137,11 +126,13 @@ describe("Upload Patient", () => {
       renderUploadPatients();
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
 
-      await userEvent.click(screen.getByText("One facility"));
+      await act(
+        async () => await userEvent.click(screen.getByText("One facility"))
+      );
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
       const uploadFile = file("someText");
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, uploadFile);
+      await act(async () => await userEvent.upload(input, uploadFile));
 
       expect(await screen.findByText("Upload CSV file")).toBeEnabled();
     });
@@ -151,9 +142,11 @@ describe("Upload Patient", () => {
 
       const uploadFile = file("someText");
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, uploadFile);
+      await act(async () => await userEvent.upload(input, uploadFile));
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
-      await userEvent.click(screen.getByText("One facility"));
+      await act(
+        async () => await userEvent.click(screen.getByText("One facility"))
+      );
 
       expect(await screen.findByText("Upload CSV file")).toBeEnabled();
     });
@@ -315,7 +308,7 @@ describe("Upload Patient", () => {
     const emptyFile = file("");
 
     await userEventUpload(emptyFile, "One facility");
-    expect(await screen.findByText("Error: Invalid file")).toBeInTheDocument();
+    expect(await screen.findByText("Error: Invalid file"));
     expect(screen.getByText("File is missing or empty.")).toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",
@@ -369,7 +362,9 @@ describe("Upload Patient", () => {
       await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
 
-    await userEvent.click(screen.getByLabelText("close"));
+    await act(
+      async () => await userEvent.click(screen.getByLabelText("close"))
+    );
 
     expect(
       screen.queryByText("Success: Data confirmed")
@@ -387,7 +382,9 @@ describe("Upload Patient", () => {
     ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByLabelText("close"));
+    await act(
+      async () => await userEvent.click(screen.getByLabelText("close"))
+    );
     expect(
       screen.queryByText("Error: File not accepted")
     ).not.toBeInTheDocument();
@@ -452,7 +449,7 @@ describe("Upload Patient", () => {
       renderUploadPatients();
 
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, []);
+      await act(async () => await userEvent.upload(input, []));
       expect(
         screen.getByRole("button", { name: /upload csv file/i })
       ).toBeDisabled();
@@ -469,7 +466,7 @@ describe("Upload Patient", () => {
       renderUploadPatients();
 
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, file("someText"));
+      await act(async () => await userEvent.upload(input, file("someText")));
       expect(
         screen.getByText("Drag file here or choose from folder to change file")
       ).toBeInTheDocument();
@@ -480,10 +477,31 @@ describe("Upload Patient", () => {
     });
   });
   describe("telemetry", () => {
+    const trackEventMock = jest.fn();
+    const trackMetricMock = jest.fn();
+    const trackExceptionMock = jest.fn();
+    const getAppInsightsSpy = jest.spyOn(AppInsightsMock, "getAppInsights");
+    beforeEach(() => {
+      getAppInsightsSpy.mockImplementation(
+        () =>
+          ({
+            trackEvent: trackEventMock,
+            trackMetric: trackMetricMock,
+            trackException: trackExceptionMock,
+          } as jest.MockedObject<any>)
+      );
+    });
+
+    afterEach(() => {
+      getAppInsightsSpy.mockClear();
+    });
     it("checks user click on guidelines gets tracked", async () => {
       renderUploadPatients();
-      await userEvent.click(
-        screen.getByText(/View patient bulk upload guide/i)
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByText(/View patient bulk upload guide/i)
+          )
       );
       await waitFor(() =>
         expect(trackEventMock).toHaveBeenCalledWith({
@@ -491,9 +509,15 @@ describe("Upload Patient", () => {
         })
       );
     });
+
     it("checks user download of csv sample gets tracked", async () => {
       renderUploadPatients();
-      await userEvent.click(screen.getByText(/Download spreadsheet template/i));
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByText(/Download spreadsheet template/i)
+          )
+      );
       await waitFor(() =>
         expect(trackEventMock).toHaveBeenCalledWith({
           name: "downloadPatientBulkUploadSample",
