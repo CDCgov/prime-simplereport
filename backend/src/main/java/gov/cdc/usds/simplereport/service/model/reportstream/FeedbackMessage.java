@@ -17,14 +17,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeedbackMessage implements Serializable {
-  /*
-  public enum ErrorType {
-    MISSING_HEADER,
-    MISSING_DATA,
-    INVALID_DATA
-  }
-   */
-
   private String scope;
   private String message;
   private List<Integer> indices;

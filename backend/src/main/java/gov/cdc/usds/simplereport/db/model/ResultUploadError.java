@@ -34,12 +34,6 @@ public class ResultUploadError extends AuditedEntity {
   @Enumerated(EnumType.STRING)
   private ResultUploadErrorType type;
 
-  /*
-  @ManyToOne(optional = false, fetch = FetchType.LAZY)
-  @JoinColumn(name = "user_id")
-  private User user;
-   */
-
   @Column()
   @Type(type = "text")
   private String field;
@@ -54,24 +48,7 @@ public class ResultUploadError extends AuditedEntity {
 
   protected ResultUploadError() {}
 
-  public ResultUploadError(
-      TestResultUpload upload,
-      Organization organization,
-      ResultUploadErrorType type,
-      String field,
-      boolean required,
-      String message) {
-    this.upload = upload;
-    this.organization = organization;
-    this.type = type;
-    this.field = field;
-    this.required = required;
-    this.message = message;
-  }
-
-  public ResultUploadError(
-      TestResultUpload upload, Organization organization, FeedbackMessage feedbackMessage) {
-    this.upload = upload;
+  public ResultUploadError(Organization organization, FeedbackMessage feedbackMessage) {
     this.organization = organization;
     this.type = feedbackMessage.getErrorType();
     this.field = feedbackMessage.getFieldHeader();
@@ -79,7 +56,9 @@ public class ResultUploadError extends AuditedEntity {
     this.message = feedbackMessage.getMessage();
   }
 
-  public ResultUploadError(Organization organization, FeedbackMessage feedbackMessage) {
+  public ResultUploadError(
+      TestResultUpload upload, Organization organization, FeedbackMessage feedbackMessage) {
+    this.upload = upload;
     this.organization = organization;
     this.type = feedbackMessage.getErrorType();
     this.field = feedbackMessage.getFieldHeader();
