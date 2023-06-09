@@ -59,22 +59,24 @@ export function groupErrors(
   return errors;
 }
 export function getErrorMessage(error: EnhancedFeedbackMessage) {
-  if (error.message && error.fieldHeader) {
-    const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+)+(?:_[a-z0-9]+)*)/gi;
-    return error.message.split(headerRegex).map((value, index) => (
-      <span key={index}>
-        {headerRegex.test(value) ? (
-          <mark>
-            <code>{value}</code>
-          </mark>
-        ) : (
-          value
-        )}
+  if (error.message) {
+    const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+)+(?:[^\s]+))/g;
+    return (
+      <span data-testid="error-message">
+        {error.message.split(headerRegex).map((value, index) => (
+          <span key={`span-${value}-${index}`}>
+            {headerRegex.test(value) ? (
+              <mark data-testid="highlighted-header">
+                <code>{value}</code>
+              </mark>
+            ) : (
+              value
+            )}
+          </span>
+        ))}
       </span>
-    ));
+    );
   }
-
-  return <span>{error.message}</span>;
 }
 
 export function getGuidance(error: EnhancedFeedbackMessage) {
@@ -122,40 +124,30 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
       </HashLink>
     );
 
-    let guidance;
-    if (required) {
-      if (specificValues) {
-        guidance = (
-          <span data-testid="guidance">
-            Choose from the accepted values listed under{" "}
-            {highlightHeader(header)} {guideLink}.
-          </span>
-        );
-      } else {
-        guidance = (
-          <span data-testid="guidance">
-            Follow the instructions under {highlightHeader(header)} {guideLink}.
-          </span>
-        );
-      }
+    if (specificValues) {
+      return (
+        <span data-testid="guidance">
+          {required ? (
+            <span>Choose </span>
+          ) : (
+            <span>If including {highlightHeader(header)}, choose </span>
+          )}
+          from the accepted values listed under {highlightHeader(header)}{" "}
+          {guideLink}.
+        </span>
+      );
     } else {
-      if (specificValues) {
-        guidance = (
-          <span data-testid="guidance">
-            If including {highlightHeader(header)}, choose from the accepted
-            values listed under {highlightHeader(header)} {guideLink}.
-          </span>
-        );
-      } else {
-        guidance = (
-          <span data-testid="guidance">
-            If including {highlightHeader(header)}, follow the instructions
-            under {highlightHeader(header)} {guideLink}.
-          </span>
-        );
-      }
+      return (
+        <span data-testid="guidance">
+          {required ? (
+            <span>Follow </span>
+          ) : (
+            <span>If including {highlightHeader(header)}, follow </span>
+          )}
+          the instructions under {highlightHeader(header)} {guideLink}.
+        </span>
+      );
     }
-    return guidance;
   };
 
   if (error.fieldHeader && error.errorType === "MISSING_HEADER") {

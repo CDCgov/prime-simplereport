@@ -14,6 +14,7 @@ import SRToastContainer from "../../commonComponents/SRToastContainer";
 
 import Uploads, {
   EnhancedFeedbackMessage,
+  getErrorMessage,
   getGuidance,
   groupErrors,
 } from "./Uploads";
@@ -340,7 +341,7 @@ describe("Uploads", () => {
     });
   });
 
-  describe("error guidance", () => {
+  describe("error messages and guidance", () => {
     it("should give you guidance for missing headers", () => {
       const Guidance = getGuidance({
         errorType: "MISSING_HEADER",
@@ -367,7 +368,7 @@ describe("Uploads", () => {
       );
     });
 
-    it("should give you guidance for required invalid data", async () => {
+    it("should give you guidance for required invalid data", () => {
       const Guidance = getGuidance({
         errorType: "INVALID_DATA",
         fieldHeader: "patient_first_name",
@@ -385,7 +386,7 @@ describe("Uploads", () => {
       );
     });
 
-    it("should give you guidance for optional invalid data", async () => {
+    it("should give you guidance for optional invalid data", () => {
       const Guidance = getGuidance({
         errorType: "INVALID_DATA",
         fieldHeader: "patient_middle_name",
@@ -403,7 +404,7 @@ describe("Uploads", () => {
       );
     });
 
-    it("should give you guidance for required invalid data with specific acceptable values", async () => {
+    it("should give you guidance for required invalid data with specific acceptable values", () => {
       const Guidance = getGuidance({
         errorType: "INVALID_DATA",
         fieldHeader: "patient_ethnicity",
@@ -421,7 +422,7 @@ describe("Uploads", () => {
       );
     });
 
-    it("should give you guidance for optional invalid data with specific acceptable values", async () => {
+    it("should give you guidance for optional invalid data with specific acceptable values", () => {
       const Guidance = getGuidance({
         errorType: "INVALID_DATA",
         fieldHeader: "residence_type",
@@ -437,6 +438,41 @@ describe("Uploads", () => {
         "href",
         `/results/upload/submit/guide#residence_type`
       );
+    });
+
+    it("should highlight headers in error messages", () => {
+      const ErrorMessage = getErrorMessage({
+        message:
+          "Invalid equipment_model_name and test_performed_code combination",
+      } as EnhancedFeedbackMessage);
+
+      render(<Router>{ErrorMessage}</Router>);
+
+      expect(screen.getByTestId("error-message")).toHaveTextContent(
+        "Invalid equipment_model_name and test_performed_code combination"
+      );
+      expect(screen.getAllByTestId("highlighted-header")).toHaveLength(2);
+      expect(screen.getAllByTestId("highlighted-header")[0]).toHaveTextContent(
+        "equipment_model_name"
+      );
+      expect(screen.getAllByTestId("highlighted-header")[1]).toHaveTextContent(
+        "test_performed_code"
+      );
+    });
+
+    it("should not highlight anything when no headers exist in error messages", () => {
+      const ErrorMessage = getErrorMessage({
+        message: "Invalid data",
+      } as EnhancedFeedbackMessage);
+
+      render(<Router>{ErrorMessage}</Router>);
+
+      expect(screen.getByTestId("error-message")).toHaveTextContent(
+        "Invalid data"
+      );
+      expect(
+        screen.queryByTestId("highlighted-header")
+      ).not.toBeInTheDocument();
     });
   });
 });
