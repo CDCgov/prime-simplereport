@@ -1,5 +1,5 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import createMockStore from "redux-mock-store";
@@ -78,14 +78,10 @@ describe("Submission", () => {
   });
 
   it("fetches upload submission details from GraphQL server", async () => {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    expect(mockIsDone).toBe(true);
+    await waitFor(() => expect(mockIsDone).toBe(true));
   });
 
   it("renders the bulk test result upload submission view", async () => {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
     expect(await screen.findByText("Report ID"));
     expect(await screen.findByText("12b86a9d-a9d6-4391-a555-6618e8ac66d9"));
 

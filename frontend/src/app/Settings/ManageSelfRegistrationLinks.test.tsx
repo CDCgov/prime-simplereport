@@ -1,5 +1,5 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -64,7 +64,7 @@ describe("ManageSelfRegistrationLinks", () => {
   it("copies the org link", async () => {
     const orgUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedOrgSlug}`;
     const [orgBtn] = screen.getAllByRole("button");
-    await userEvent.click(orgBtn);
+    await act(async () => await userEvent.click(orgBtn));
     await waitFor(async () => expect(orgBtn).toBeEnabled());
     expect(navigator.clipboard.writeText).toBeCalledWith(orgUrl);
   });
@@ -72,7 +72,7 @@ describe("ManageSelfRegistrationLinks", () => {
   it("copies a facility link", async () => {
     const facilityUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedFacilitySlug}`;
     const btns = screen.getAllByRole("button");
-    await userEvent.click(btns[2]);
+    await act(async () => await userEvent.click(btns[2]));
     await waitFor(async () => expect(btns[2]).toBeEnabled());
     expect(navigator.clipboard.writeText).toBeCalledWith(facilityUrl);
   });
