@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.LoggingConstants;
+import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuditLoggerService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -51,6 +52,7 @@ public abstract class BaseFullStackTest {
   @Autowired private DbTruncator _truncator;
   @Autowired protected TestDataFactory _dataFactory;
   @SpyBean protected OrganizationService _orgService;
+  @SpyBean protected ApiUserService _apiUserService;
   @Autowired protected DemoOktaRepository _oktaRepo;
   @SpyBean AuditLoggerService auditLoggerServiceSpy;
   @Captor private ArgumentCaptor<ConsoleApiAuditEvent> auditLogCaptor;

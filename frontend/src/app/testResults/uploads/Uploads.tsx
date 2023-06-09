@@ -17,6 +17,7 @@ import {
   MAX_CSV_UPLOAD_BYTES,
   MAX_CSV_UPLOAD_ROW_COUNT,
 } from "../../../config/constants";
+import { HashLink } from "../../commonComponents/HashLink";
 
 const REPORT_MAX_ITEM_COLUMNS = 2000;
 
@@ -56,6 +57,86 @@ export function groupErrors(
     }
   });
   return errors;
+}
+
+export function getGuidance(error: EnhancedFeedbackMessage) {
+  const fieldsAcceptSpecificValues = new Set([
+    "patient_gender",
+    "patient_race",
+    "patient_ethnicity",
+    "pregnant",
+    "employed_in_healthcare",
+    "symptomatic_for_disease",
+    "resident_congregate_setting",
+    "residence_type",
+    "hospitalized",
+    "icu",
+    "test_result_status",
+  ]);
+
+  const getMissingHeaderErrorGuidance = (header: string) =>
+    `Include a column with ${header} as the header.`;
+
+  const getMissingDataErrorGuidance = (header: string) =>
+    `${header} is a required field. Include values in each row under this column.`;
+
+  const getInvalidDataErrorGuidance = (
+    header: string,
+    required: boolean,
+    specificValues: boolean
+  ) => {
+    const guideLink = (
+      <HashLink pathname="/results/upload/submit/guide" hash={header}>
+        <u>in the upload guide</u>
+      </HashLink>
+    );
+
+    let guidance;
+    if (required) {
+      if (specificValues) {
+        guidance = (
+          <div>
+            Choose from the accepted values listed under {header} {guideLink}.
+          </div>
+        );
+      } else {
+        guidance = (
+          <div>
+            Follow the instructions under {header} {guideLink}.
+          </div>
+        );
+      }
+    } else {
+      if (specificValues) {
+        guidance = (
+          <div>
+            If including {header}, choose from the accepted values listed under{" "}
+            {header} {guideLink}.
+          </div>
+        );
+      } else {
+        guidance = (
+          <div>
+            If including {header}, follow the instructions under {header}{" "}
+            {guideLink}.
+          </div>
+        );
+      }
+    }
+    return guidance;
+  };
+
+  if (error.errorType === "MISSING_HEADER") {
+    return getMissingHeaderErrorGuidance(error.fieldHeader);
+  } else if (error.errorType === "MISSING_DATA") {
+    return getMissingDataErrorGuidance(error.fieldHeader);
+  } else if (error.errorType === "INVALID_DATA") {
+    return getInvalidDataErrorGuidance(
+      error.fieldHeader,
+      error.fieldRequired,
+      fieldsAcceptSpecificValues.has(error.fieldHeader)
+    );
+  }
 }
 
 const Uploads = () => {
@@ -364,6 +445,7 @@ const Uploads = () => {
                   <thead>
                     <tr>
                       <th>Error</th>
+                      <th>Guidance</th>
                       <th>Row(s)</th>
                     </tr>
                   </thead>
@@ -372,6 +454,9 @@ const Uploads = () => {
                       return (
                         <tr key={(e?.message || "") + (e?.indices || "")}>
                           <td>{e?.["message"]} </td>
+                          <td>
+                            <div>{e && getGuidance(e)}</div>
+                          </td>
                           <td>
                             {e?.indicesRange &&
                               e?.indicesRange.map((range) => {
