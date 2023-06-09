@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
@@ -126,7 +126,7 @@ jest.mock("./SearchResults", () => {
         type="submit"
         onClick={() => sr.onAddToQueue(mockPatient, mockAoeAnswers, "create")}
       >
-        I'm a magic fake button click me please
+        Begin test (mock button)
       </button>
     );
   };
@@ -168,9 +168,16 @@ describe("AddToSearchQueue - add to queue", () => {
       srToast,
       "showAlertNotification"
     );
-    await userEvent.type(screen.getByRole("searchbox"), "bar");
 
-    await userEvent.click(screen.getAllByRole("button")[1]);
+    await act(
+      async () => await userEvent.type(screen.getByRole("searchbox"), "bar")
+    );
+    await act(
+      async () =>
+        await userEvent.click(
+          screen.getByRole("button", { name: /begin test \(mock button\)/i })
+        )
+    );
 
     expect(queryPatientMockIsDone).toBe(true);
     expect(addPatientMockIsDone).toBe(true);
@@ -184,9 +191,15 @@ describe("AddToSearchQueue - add to queue", () => {
   });
 
   it("tracks custom telemetry event", async () => {
-    await userEvent.type(screen.getByRole("searchbox"), "bar");
-
-    await userEvent.click(screen.getAllByRole("button")[1]);
+    await act(
+      async () => await userEvent.type(screen.getByRole("searchbox"), "bar")
+    );
+    await act(
+      async () =>
+        await userEvent.click(
+          screen.getByRole("button", { name: /begin test \(mock button\)/i })
+        )
+    );
 
     expect(trackEventMock).toBeCalledWith({ name: "Add Patient To Queue" });
   });

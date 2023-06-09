@@ -37,12 +37,14 @@ exports[`TestQueue should render the test queue 1`] = `
                 id="search-field-small"
                 name="search"
                 placeholder="Search for a patient to start their test"
+                style="border-right: 1px solid;"
                 type="search"
                 value=""
               />
               <button
                 class="usa-button"
                 disabled=""
+                style="display: none;"
                 type="submit"
               >
                 <img
