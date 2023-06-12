@@ -225,8 +225,6 @@ export const schemaBuilder = (facilityId: string | null) => {
                 ],
                 description: [
                   `Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
-                  "<br/>",
-                  'You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html" class="usa-link" target="_blank" rel="noreferrer noopener">CDC website</a>. Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column B.',
                 ],
               },
               {
@@ -244,8 +242,6 @@ export const schemaBuilder = (facilityId: string | null) => {
                 ],
                 description: [
                   `Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
-                  "<br/>",
-                  'You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html" class="usa-link" target="_blank" rel="noreferrer noopener">CDC website</a>. Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column F.',
                 ],
               },
               {
@@ -263,8 +259,6 @@ export const schemaBuilder = (facilityId: string | null) => {
                 ],
                 description: [
                   `Use one of the common values below, or find your device on the ${deviceCodeLookupLink}.`,
-                  "<br/>",
-                  'You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html" class="usa-link" target="_blank" rel="noreferrer noopener">CDC website</a>. Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column E.',
                 ],
               },
               {
