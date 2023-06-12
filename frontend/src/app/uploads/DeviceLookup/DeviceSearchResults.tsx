@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 import {
   DeviceType,
@@ -41,8 +40,10 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
           No device found matching <strong>{queryString}</strong>.
         </div>
         <div>
-          Please try a different search term, or follow the instructions on the{" "}
-          <Link to="/app">Upload Guide</Link> to look up the device code.
+          Please try a different search term from the device's name or
+          manufacturer. If you need help, contact
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>
+          .
         </div>
       </div>
     );
