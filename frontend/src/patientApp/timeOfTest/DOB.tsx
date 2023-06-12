@@ -95,7 +95,7 @@ const DOB = () => {
       ) {
         setError(
           "month",
-          { message: t("testResult.dob.error") },
+          { message: "testResult.dob.error" },
           { shouldFocus: true }
         );
       }

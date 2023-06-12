@@ -72,12 +72,13 @@ export const DateInput = ({
           <span className="usa-sr-only">Error: </span>
           {Array.from(
             new Set([
-              errors.month?.message,
-              errors.day?.message,
-              errors.year?.message,
+              errors.month?.message ?? "",
+              errors.day?.message ?? "",
+              errors.year?.message ?? "",
             ])
           )
-            .filter((x) => x !== undefined)
+            .filter((x) => x !== "")
+            .map((error) => t(error))
             .join("\n")}
         </span>
       )}
@@ -86,9 +87,9 @@ export const DateInput = ({
           name={"month"}
           control={control}
           rules={{
-            required: t("testResult.dob.invalidDate"),
-            min: { value: 1, message: t("testResult.dob.invalidDate") },
-            max: { value: 12, message: t("testResult.dob.invalidDate") },
+            required: "testResult.dob.invalidDate",
+            min: { value: 1, message: "testResult.dob.invalidDate" },
+            max: { value: 12, message: "testResult.dob.invalidDate" },
           }}
           render={({ field: { value, name, ref, onChange } }) => (
             <>
@@ -110,15 +111,15 @@ export const DateInput = ({
           name={"day"}
           control={control}
           rules={{
-            required: t("testResult.dob.invalidDate"),
-            min: { value: 1, message: t("testResult.dob.invalidDate") },
-            max: { value: 31, message: t("testResult.dob.invalidDate") },
+            required: "testResult.dob.invalidDate",
+            min: { value: 1, message: "testResult.dob.invalidDate" },
+            max: { value: 31, message: "testResult.dob.invalidDate" },
             validate: (day) => {
               const month = watch("month");
               const year = watch("year");
               const date = dateFromStrings(month, day, year);
               if (month && day && year && !date.isValid()) {
-                return t("testResult.dob.invalidDate");
+                return "testResult.dob.invalidDate";
               }
               return true;
             },
@@ -143,13 +144,13 @@ export const DateInput = ({
           name={"year"}
           control={control}
           rules={{
-            required: t("testResult.dob.invalidDate"),
-            maxLength: { value: 4, message: t("testResult.dob.invalidDate") },
-            minLength: { value: 4, message: t("testResult.dob.invalidDate") },
-            min: { value: 1900, message: t("testResult.dob.invalidYear") },
+            required: "testResult.dob.invalidDate",
+            maxLength: { value: 4, message: "testResult.dob.invalidDate" },
+            minLength: { value: 4, message: "testResult.dob.invalidDate" },
+            min: { value: 1900, message: "testResult.dob.invalidYear" },
             max: {
               value: moment().year(),
-              message: t("testResult.dob.invalidYear"),
+              message: "testResult.dob.invalidYear",
             },
           }}
           render={({ field: { ref, value, name, onChange } }) => (
