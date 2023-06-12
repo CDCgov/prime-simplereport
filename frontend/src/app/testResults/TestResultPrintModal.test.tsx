@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { cloneDeep } from "lodash";
 import MockDate from "mockdate";
@@ -78,7 +78,9 @@ describe("TestResultPrintModal with only COVID results", () => {
   });
 
   it("should render the test result print view", async () => {
-    await userEvent.click(screen.getAllByText("Print")[1]);
+    await act(
+      async () => await userEvent.click(screen.getAllByText("Print")[1])
+    );
 
     expect(printSpy).toBeCalled();
   });

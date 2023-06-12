@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import SingleFileInput from "./SingleFileInput";
@@ -52,7 +52,9 @@ describe("Single File Input", () => {
       />
     );
     const fileInput = screen.getByTestId("testId");
-    await userEvent.upload(fileInput, file("test content"));
+    await act(
+      async () => await userEvent.upload(fileInput, file("test content"))
+    );
     expect(
       await screen.findByText(
         "Drag file here or choose from folder to change file"
@@ -88,7 +90,9 @@ describe("Single File Input", () => {
       />
     );
     const fileInput = screen.getByTestId("testId");
-    await userEvent.upload(fileInput, file("test content"));
+    await act(
+      async () => await userEvent.upload(fileInput, file("test content"))
+    );
     expect(
       await screen.findByText(
         "Drag file here or choose from folder to change file"

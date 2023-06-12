@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -226,7 +227,10 @@ describe("FacilityFormContainer", () => {
 
     it("redirects on successful facility update", async () => {
       await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
+      );
       expect(await screen.findByText("Redirected")).toBeInTheDocument();
     });
 
@@ -235,7 +239,10 @@ describe("FacilityFormContainer", () => {
         trackEvent: trackEventMock,
       }));
       await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
+      );
       expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
     });
   });
@@ -247,7 +254,10 @@ describe("FacilityFormContainer", () => {
 
     it("creates a new facility", async () => {
       expect(await screen.findByRole("button", { name: /submit/i }));
-      await userEvent.click(screen.getByRole("button", { name: /submit/i }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
+      );
       expect(await screen.findByText("Redirected")).toBeInTheDocument();
     });
   });

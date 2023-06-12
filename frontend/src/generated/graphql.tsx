@@ -140,6 +140,9 @@ export type FacilityAddressInput = {
 
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
+  errorType: Scalars["String"];
+  fieldHeader: Scalars["String"];
+  fieldRequired: Scalars["Boolean"];
   indices?: Maybe<Array<Maybe<Scalars["Int"]>>>;
   message?: Maybe<Scalars["String"]>;
   scope?: Maybe<Scalars["String"]>;

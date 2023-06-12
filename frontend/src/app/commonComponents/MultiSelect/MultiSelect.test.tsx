@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import MultiSelect from "./MultiSelect";
@@ -89,10 +89,19 @@ describe("Multi Select", () => {
     });
     describe("when selecting an item", () => {
       beforeEach(async () => {
-        await userEvent.click(screen.getByTestId("multi-select-input"));
+        await act(
+          async () =>
+            await userEvent.click(screen.getByTestId("multi-select-input"))
+        );
         const optionList = screen.getByTestId("multi-select-option-list");
-        await userEvent.click(within(optionList).getByText("Apples"));
-        await userEvent.click(within(optionList).getByText("Oranges"));
+        await act(
+          async () =>
+            await userEvent.click(within(optionList).getByText("Apples"))
+        );
+        await act(
+          async () =>
+            await userEvent.click(within(optionList).getByText("Oranges"))
+        );
       });
 
       it("should show the pill with the selected item's label", () => {
@@ -120,10 +129,16 @@ describe("Multi Select", () => {
         beforeEach(async () => {
           const pillContainer = screen.getByTestId("pill-container");
           expect(pillContainer).toBeInTheDocument();
-          await userEvent.click(
-            within(pillContainer).getAllByRole("button")[0]
+          await act(
+            async () =>
+              await userEvent.click(
+                within(pillContainer).getAllByRole("button")[0]
+              )
           );
-          await userEvent.click(screen.getByTestId("multi-select-input"));
+          await act(
+            async () =>
+              await userEvent.click(screen.getByTestId("multi-select-input"))
+          );
         });
 
         it("should remove the pill ", () => {
