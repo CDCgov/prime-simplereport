@@ -667,6 +667,8 @@ class LiveOktaRepositoryTest {
     var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
     var orgRole = OrganizationRole.ADMIN;
     var mockUserList = mock(UserList.class);
+    var mockQUserList = mock(UserList.class);
+
     var mockUser = mock(User.class);
     var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
@@ -674,11 +676,14 @@ class LiveOktaRepositoryTest {
     var mockFullGroupList = mock(GroupList.class);
     var mockAdminGroup = mock(Group.class);
     var mockAdminGroupProfile = mock(GroupProfile.class);
+
     when(_client.listUsers(
             isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
         .thenReturn(mockUserList);
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockQUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockQUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.listGroups()).thenReturn(mockGroupList);
     when(mockGroupList.stream())
         .then(i -> Stream.of(mockGroup))
@@ -705,11 +710,15 @@ class LiveOktaRepositoryTest {
     var userName = "fraud@example.com";
     var org = new Organization("orgName", "orgType", "1", true);
     var mockUserList = mock(UserList.class);
+    var mockQUserList = mock(UserList.class);
 
     when(_client.listUsers(
             isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
         .thenReturn(mockUserList);
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockQUserList);
     when(mockUserList.stream()).then(i -> Stream.of());
+    when(mockQUserList.stream()).then(i -> Stream.of());
 
     Set<Facility> facilities = Set.of();
     Set<OrganizationRole> roles = Set.of();
@@ -726,6 +735,7 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
 
     var mockUserList = mock(UserList.class);
+    var mockQUserList = mock(UserList.class);
     var mockUser = mock(User.class);
     var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
@@ -733,8 +743,10 @@ class LiveOktaRepositoryTest {
     when(_client.listUsers(
             isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
         .thenReturn(mockUserList);
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockQUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockQUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.listGroups()).thenReturn(mockGroupList);
     when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
@@ -760,6 +772,7 @@ class LiveOktaRepositoryTest {
     var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
 
     var mockUserList = mock(UserList.class);
+    var mockQUserList = mock(UserList.class);
     var mockUser = mock(User.class);
     var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
@@ -769,8 +782,10 @@ class LiveOktaRepositoryTest {
     when(_client.listUsers(
             isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
         .thenReturn(mockUserList);
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockQUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockQUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.listGroups()).thenReturn(mockGroupList);
     when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
@@ -799,6 +814,7 @@ class LiveOktaRepositoryTest {
     var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
 
     var mockUserList = mock(UserList.class);
+    var mockQUserList = mock(UserList.class);
     var mockUser = mock(User.class);
     var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
@@ -806,8 +822,10 @@ class LiveOktaRepositoryTest {
     when(_client.listUsers(
             isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
         .thenReturn(mockUserList);
+    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockQUserList);
     when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockQUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.listGroups()).thenReturn(mockGroupList);
     when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
