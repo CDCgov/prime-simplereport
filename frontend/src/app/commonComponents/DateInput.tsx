@@ -92,19 +92,17 @@ export const DateInput = ({
             max: { value: 12, message: "testResult.dob.invalidDate" },
           }}
           render={({ field: { value, name, ref, onChange } }) => (
-            <>
-              <TrussworksDateInput
-                id={name}
-                name={name}
-                value={value}
-                label={t("constants.date.month")}
-                unit={"month"}
-                maxLength={2}
-                type={"number"}
-                inputRef={ref}
-                onChange={onChange}
-              />
-            </>
+            <TrussworksDateInput
+              id={name}
+              name={name}
+              value={value}
+              label={t("constants.date.month")}
+              unit={"month"}
+              maxLength={2}
+              type={"number"}
+              inputRef={ref}
+              onChange={onChange}
+            />
           )}
         />
         <Controller
@@ -125,19 +123,17 @@ export const DateInput = ({
             },
           }}
           render={({ field: { value, name, ref, onChange } }) => (
-            <>
-              <TrussworksDateInput
-                id={name}
-                name={name}
-                value={value}
-                label={t("constants.date.day")}
-                unit={"day"}
-                maxLength={2}
-                type={"number"}
-                inputRef={ref}
-                onChange={onChange}
-              />
-            </>
+            <TrussworksDateInput
+              id={name}
+              name={name}
+              value={value}
+              label={t("constants.date.day")}
+              unit={"day"}
+              maxLength={2}
+              type={"number"}
+              inputRef={ref}
+              onChange={onChange}
+            />
           )}
         />
         <Controller
@@ -154,19 +150,17 @@ export const DateInput = ({
             },
           }}
           render={({ field: { ref, value, name, onChange } }) => (
-            <>
-              <TrussworksDateInput
-                id={name}
-                name={name}
-                value={value}
-                label={t("constants.date.year")}
-                unit={"year"}
-                maxLength={4}
-                type={"number"}
-                inputRef={ref}
-                onChange={onChange}
-              />
-            </>
+            <TrussworksDateInput
+              id={name}
+              name={name}
+              value={value}
+              label={t("constants.date.year")}
+              unit={"year"}
+              maxLength={4}
+              type={"number"}
+              inputRef={ref}
+              onChange={onChange}
+            />
           )}
         />
       </DateInputGroup>
