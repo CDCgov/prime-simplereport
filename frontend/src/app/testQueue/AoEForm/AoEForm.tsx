@@ -267,7 +267,7 @@ const AoEForm: React.FC<Props> = ({
     <div>
       <form className="display-flex flex-column padding-bottom-4">
         <RequiredMessage />
-        <FormGroup title="Results">
+        <FormGroup title="Results" asSectionGroup>
           <div className="prime-formgroup__wrapper">
             <RadioGroup
               legend="Would you like to receive a copy of your results via text message?"
@@ -317,7 +317,7 @@ const AoEForm: React.FC<Props> = ({
             />
           </div>
         </FormGroup>
-        <FormGroup title="Symptoms">
+        <FormGroup title="Symptoms" asSectionGroup>
           <SymptomInputs
             noSymptoms={noSymptoms}
             setNoSymptoms={setNoSymptoms}
@@ -333,7 +333,7 @@ const AoEForm: React.FC<Props> = ({
         </FormGroup>
 
         {patient.gender?.toLowerCase() !== "male" && (
-          <FormGroup title="Pregnancy">
+          <FormGroup title="Pregnancy" asSectionGroup>
             <RadioGroup
               legend="Are you currently pregnant?"
               name="pregnancy"

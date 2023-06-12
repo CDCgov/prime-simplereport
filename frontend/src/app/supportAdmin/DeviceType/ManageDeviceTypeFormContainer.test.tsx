@@ -11,7 +11,10 @@ import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDisease
 const mockUpdateDeviceType = jest.fn();
 
 const addValue = async (name: string, value: string) => {
-  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+  await act(
+    async () =>
+      await userEvent.type(screen.getByLabelText(name, { exact: false }), value)
+  );
 };
 
 jest.mock("../../../generated/graphql", () => {
@@ -162,24 +165,41 @@ describe("ManageDeviceTypeFormContainer", () => {
 
     await addValue("Manufacturer", " LLC");
     await addValue("Model", "D");
-    await userEvent.selectOptions(
-      screen.getByLabelText("Supported disease *"),
-      "COVID-19"
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Supported disease *"),
+          "COVID-19"
+        )
     );
-    await userEvent.clear(screen.getByLabelText("Test performed code *"));
-    await userEvent.type(
-      screen.getByLabelText("Test performed code *"),
-      "LP 123"
+    await act(
+      async () =>
+        await userEvent.clear(screen.getByLabelText("Test performed code *"))
+    );
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Test performed code *"),
+          "LP 123"
+        )
     );
 
-    await userEvent.clear(screen.getByLabelText("Test ordered code *"));
-    await userEvent.type(
-      screen.getByLabelText("Test ordered code *"),
-      "LP 321"
+    await act(
+      async () =>
+        await userEvent.clear(screen.getByLabelText("Test ordered code *"))
+    );
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Test ordered code *"),
+          "LP 321"
+        )
     );
 
     expect(screen.getByText("Save changes")).toBeEnabled();
-    await userEvent.click(screen.getByText("Save changes"));
+    await act(
+      async () => await userEvent.click(screen.getByText("Save changes"))
+    );
 
     await waitFor(() =>
       expect(mockUpdateDeviceType).toHaveBeenCalledWith({

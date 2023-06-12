@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitFor,
@@ -67,17 +68,13 @@ describe("TestQueue", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-    await new Promise((resolve) => setTimeout(resolve, 501));
 
-    await waitFor(
-      async () => {
-        expect(
-          screen.getByLabelText(
-            `Search for a ${PATIENT_TERM} to start their test`
-          )
-        ).toBeInTheDocument();
-      },
-      { timeout: 1000 }
+    await waitFor(() =>
+      expect(
+        screen.getByLabelText(
+          `Search for a ${PATIENT_TERM} to start their test`
+        )
+      )
     );
 
     expect(await screen.findByText("Doe, John A"));
@@ -99,9 +96,9 @@ describe("TestQueue", () => {
     const removeButton = await screen.findByLabelText(
       "Close test for Doe, John A"
     );
-    await userEvent.click(removeButton);
+    await act(async () => await userEvent.click(removeButton));
     const confirmButton = await screen.findByText("Yes", { exact: false });
-    await userEvent.click(confirmButton);
+    await act(async () => await userEvent.click(confirmButton));
     expect(
       screen.getByText("Submitting test data for Doe, John A...")
     ).toBeInTheDocument();
@@ -208,7 +205,10 @@ describe("TestQueue", () => {
       expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
       expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 
-      await userEvent.click(screen.getAllByText("Test questionnaire")[0]);
+      await act(
+        async () =>
+          await userEvent.click(screen.getAllByText("Test questionnaire")[0])
+      );
     });
 
     it("should open test questionnaire and display emails and phone numbers correctly", () => {
