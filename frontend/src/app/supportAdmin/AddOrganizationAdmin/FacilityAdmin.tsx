@@ -3,6 +3,7 @@ import { FieldErrors, UseFormRegister, RegisterOptions } from "react-hook-form";
 
 import { camelToSentenceCase } from "../../utils/text";
 import TextInput from "../../commonComponents/TextInput";
+import { emailRegex } from "../../utils/email";
 
 import { OrganizationAdminFormData } from "./AddOrganizationAdminForm";
 
@@ -25,8 +26,7 @@ const FacilityAdmin: React.FC<Props> = ({ admin, register, errors }) => {
     ["email" as keyof FacilityAdmin]: {
       required: `Email is missing`,
       pattern: {
-        value:
-          /^[a-zA-Z0-9_+&*-]+(?:\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/,
+        value: emailRegex,
         message: "Invalid email address",
       },
     },

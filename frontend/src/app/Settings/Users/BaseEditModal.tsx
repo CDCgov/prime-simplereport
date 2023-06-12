@@ -3,19 +3,22 @@ import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "./ManageUsers.scss";
+import Button from "../../commonComponents/Button/Button";
 
-interface Props {
+interface BaseEditModalProps {
   heading: String;
   onClose: () => void;
   content: JSX.Element;
-  buttons: JSX.Element;
+  onSubmit: () => void;
+  submitDisabled: boolean;
 }
 
-export const BaseEditModal: React.FC<Props> = ({
+export const BaseEditModal: React.FC<BaseEditModalProps> = ({
   heading,
   onClose,
   content,
-  buttons,
+  onSubmit,
+  submitDisabled,
 }) => {
   return (
     <Modal
@@ -45,10 +48,25 @@ export const BaseEditModal: React.FC<Props> = ({
           </button>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
-        <div className="grid-row grid-gap">{content}</div>
-        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-          <div className="display-flex flex-justify-end">{buttons}</div>
-        </div>
+        <form onSubmit={onSubmit}>
+          <div className="usa-card__body width-card-lg">{content}</div>
+          <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+            <div className="display-flex flex-justify-end">
+              <Button
+                className="margin-right-2"
+                onClick={onClose}
+                variant="unstyled"
+                label="Cancel"
+              />
+              <Button
+                className="margin-right-205"
+                type="submit"
+                label="Confirm"
+                disabled={submitDisabled}
+              />
+            </div>
+          </div>
+        </form>
       </div>
     </Modal>
   );

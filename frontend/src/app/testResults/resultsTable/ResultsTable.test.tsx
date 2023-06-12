@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
@@ -166,7 +166,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        await userEvent.click(moreActions);
+        await act(async () => await userEvent.click(moreActions));
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -195,7 +195,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        await userEvent.click(moreActions);
+        await act(async () => await userEvent.click(moreActions));
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -225,7 +225,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        await userEvent.click(moreActions);
+        await act(async () => await userEvent.click(moreActions));
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -252,7 +252,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        await userEvent.click(moreActions);
+        await act(async () => await userEvent.click(moreActions));
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();

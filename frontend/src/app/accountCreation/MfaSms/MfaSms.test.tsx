@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -39,11 +40,14 @@ describe("SMS MFA", () => {
   });
 
   it("can enter a valid phone number", async () => {
-    await userEvent.type(
-      screen.getByLabelText("Phone number", { exact: false }),
-      "(910) 867-5309"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Phone number", { exact: false }),
+          "(910) 867-5309"
+        )
     );
-    await userEvent.click(screen.getByText("Send code"));
+    await act(async () => await userEvent.click(screen.getByText("Send code")));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating phone number …")
     );
@@ -54,16 +58,19 @@ describe("SMS MFA", () => {
   });
 
   it("requires a phone number", async () => {
-    await userEvent.click(screen.getByText("Send code"));
+    await act(async () => await userEvent.click(screen.getByText("Send code")));
     expect(screen.getByText("Enter your phone number")).toBeInTheDocument();
   });
 
   it("requires a valid phone number", async () => {
-    await userEvent.type(
-      screen.getByLabelText("Phone number", { exact: false }),
-      "(555) 555-5555"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Phone number", { exact: false }),
+          "(555) 555-5555"
+        )
     );
-    await userEvent.click(screen.getByText("Send code"));
+    await act(async () => await userEvent.click(screen.getByText("Send code")));
     expect(screen.getByText("Enter a valid phone number")).toBeInTheDocument();
   });
 });

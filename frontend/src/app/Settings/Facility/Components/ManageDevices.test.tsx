@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -105,8 +106,11 @@ describe("ManageDevices", () => {
       const deviceInput = screen.getByTestId("multi-select-toggle");
       const deviceList = screen.getByTestId("multi-select-option-list");
 
-      await userEvent.click(deviceInput);
-      await userEvent.click(within(deviceList).getByText("Device C"));
+      await act(async () => await userEvent.click(deviceInput));
+      await act(
+        async () =>
+          await userEvent.click(within(deviceList).getByText("Device C"))
+      );
 
       expect(await screen.findByTestId("pill-container"));
       expect(

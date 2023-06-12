@@ -127,6 +127,7 @@ const DeviceLookup = (props: Props) => {
             queryString={debounced}
             placeholder={"Search for a device"}
             labeledBy="select-device"
+            showSubmitButton={false}
           />
           <DeviceSearchResults
             devices={searchDevices(props.deviceOptions, queryString)}
