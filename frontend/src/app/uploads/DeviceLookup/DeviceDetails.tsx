@@ -115,7 +115,7 @@ const DeviceDetails = (props: { device: DeviceType }) => {
               />
               {getCopyToClipboardButton(
                 supportedTest.testPerformedLoincCode,
-                `Copy Test performed code for ${device.name}`
+                `Copy Test performed code for ${device.name} ${supportedTest.supportedDisease.name}`
               )}
             </div>
           ))}
