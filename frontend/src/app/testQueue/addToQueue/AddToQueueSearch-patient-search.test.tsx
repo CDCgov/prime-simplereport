@@ -3,7 +3,6 @@ import {
   fireEvent,
   render,
   screen,
-  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
@@ -98,7 +97,6 @@ describe("AddToSearchQueue", () => {
       fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "a" },
       });
-      fireEvent.click(screen.getByRole("button"));
 
       expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
     });
@@ -107,14 +105,8 @@ describe("AddToSearchQueue", () => {
       fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "bar" },
       });
-      fireEvent.click(screen.getByRole("button"));
-
-      expect(screen.getByText("Searching...")).toBeInTheDocument();
       await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
 
-      await waitFor(() => {
-        expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
-      });
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -125,12 +117,8 @@ describe("AddToSearchQueue", () => {
       fireEvent.change(screen.getByRole("searchbox"), {
         target: { value: "joh" },
       });
-      fireEvent.click(screen.getByRole("button"));
 
-      expect(screen.getByText("Searching...")).toBeInTheDocument();
       await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-
-      expect(screen.queryByText("Searching...")).not.toBeInTheDocument();
       expect(
         await screen.findByText("Wilhelm, John Jenkins")
       ).toBeInTheDocument();
