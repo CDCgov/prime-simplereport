@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import moment from "moment";
 import { Trans, useTranslation } from "react-i18next";
 import { validate as isValidUUID } from "uuid";
+import { useForm } from "react-hook-form";
 
 import Button from "../../app/commonComponents/Button/Button";
 import { setTestResult, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
 import Alert from "../../app/commonComponents/Alert";
-import { DateInput } from "../../app/commonComponents/DateInput";
+import { DateInput, DateForm } from "../../app/commonComponents/DateInput";
 import {
   dateFromStrings,
   formatLongDateWithTimeOption,
@@ -52,44 +52,23 @@ const DOB = () => {
   > | null>(null);
   const [expiresAt, setExpiresAt] = useState<Date | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [birthMonth, setBirthMonth] = useState("");
-  const [birthDay, setBirthDay] = useState("");
-  const [birthYear, setBirthYear] = useState("");
-  const [birthDateError, setBirthDateError] = useState("");
   const [linkExpiredError, setLinkExpiredError] = useState(false);
   const [linkNotFoundError, setLinkNotFoundError] = useState(
     !isValidUUID(plid)
   );
-  const dobRef = useRef<HTMLInputElement>(null);
   const testResult = useSelector((state: any) => state.testResult);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    dobRef?.current?.focus();
-  }, []);
+  const {
+    handleSubmit,
+    formState: { errors },
+    control,
+    setError,
+    watch,
+  } = useForm<DateForm>({ defaultValues: { month: "", day: "", year: "" } });
 
-  const validateBirthDate = () => {
-    const date = dateFromStrings(birthMonth, birthDay, birthYear);
-    if (date.year() < 1900 || date.year() > moment().year()) {
-      setBirthDateError(t("testResult.dob.invalidYear"));
-      dobRef?.current?.focus();
-      return false;
-    } else if (!date.isValid()) {
-      setBirthDateError(t("testResult.dob.invalidDate"));
-      dobRef?.current?.focus();
-      return false;
-    } else {
-      setBirthDateError("");
-      return true;
-    }
-  };
-
-  const confirmBirthDate = async () => {
-    if (!validateBirthDate()) {
-      return;
-    }
-
-    const date = dateFromStrings(birthMonth, birthDay, birthYear);
+  const confirmBirthDate = async (formData: DateForm) => {
+    const date = dateFromStrings(formData.month, formData.day, formData.year);
     setLoading(true);
     try {
       const response = await PxpApi.validateDateOfBirth(
@@ -114,7 +93,11 @@ const DOB = () => {
         strError.includes("403") ||
         strError.includes("401")
       ) {
-        setBirthDateError(t("testResult.dob.error"));
+        setError(
+          "month",
+          { message: t("testResult.dob.error") },
+          { shouldFocus: true }
+        );
       }
     } finally {
       setLoading(false);
@@ -199,10 +182,7 @@ const DOB = () => {
                         {
                           {
                             facilityPhone:
-                              "at " +
-                              formatPhoneNumberParens(
-                                facility?.phone as string
-                              ),
+                              "at " + formatPhoneNumberParens(facility?.phone),
                           } as any
                         }
                       </span>
@@ -210,33 +190,23 @@ const DOB = () => {
                   </Trans>
                 </em>
               </p>
-              <DateInput
-                className="width-mobile"
-                label={t("testResult.dob.dateOfBirth")}
-                name={"birthDate"}
-                monthName={"birthMonth"}
-                dayName={"birthDay"}
-                yearName={"birthYear"}
-                monthValue={birthMonth}
-                dayValue={birthDay}
-                yearValue={birthYear}
-                monthOnChange={(evt: any) =>
-                  setBirthMonth(evt.currentTarget.value)
-                }
-                dayOnChange={(evt: any) => setBirthDay(evt.currentTarget.value)}
-                yearOnChange={(evt: any) =>
-                  setBirthYear(evt.currentTarget.value)
-                }
-                errorMessage={birthDateError}
-                validationStatus={birthDateError ? "error" : undefined}
-              />
-              <Button
-                className="margin-top-2"
-                id="dob-submit-button"
-                data-testid="dob-submit-button"
-                label={t("testResult.dob.submit")}
-                onClick={confirmBirthDate}
-              />
+              <form onSubmit={handleSubmit(confirmBirthDate)}>
+                <DateInput
+                  className="width-mobile"
+                  label={t("testResult.dob.dateOfBirth")}
+                  name={"birthDate"}
+                  control={control}
+                  errors={errors}
+                  watch={watch}
+                />
+                <Button
+                  className="margin-top-2"
+                  id="dob-submit-button"
+                  data-testid="dob-submit-button"
+                  label={t("testResult.dob.submit")}
+                  type={"submit"}
+                />
+              </form>
             </div>
           </div>
         </div>
