@@ -296,7 +296,6 @@ public class TestResultUploadService {
       if (response.getErrors() != null && response.getErrors().length > 0) {
         errorRepository.saveAll(
             Arrays.stream(response.getErrors())
-                // TODO: can we infer anything more from these error messages?
                 .map(feedbackMessage -> new ResultUploadError(finalResult, org, feedbackMessage))
                 .toList());
       }

@@ -4755,14 +4755,6 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__result_upload_error__organization
                     references: organization
-#              - column:
-#                  name: user_id
-#                  type: uuid
-#                  remarks: The internal ID for the user that submitted the upload
-#                  constraints:
-#                    nullable: false
-#                    foreignKeyName: fk__result_upload_error__user
-#                    references: user
               - column:
                   name: type
                   type: ${database.defaultSchemaName}.test_result_upload_error
