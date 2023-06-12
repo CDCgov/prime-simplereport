@@ -565,9 +565,17 @@ public class LiveOktaRepository implements OktaRepository {
       return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
     }
 
-    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
-    throwErrorIfEmpty(users.stream(), "Cannot get org external ID for nonexistent user");
-    User user = users.single();
+    var searchUserStream =
+        _client.listUsers(null, null, generateLoginSearchTerm(username), null, null).stream();
+    var qUserStream = _client.listUsers(username, null, null, null, null).stream();
+    var userStream = Stream.concat(searchUserStream, qUserStream).distinct();
+    User user =
+        userStream
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "Cannot get org external ID for nonexistent user"));
     return getOrganizationRoleClaimsForUser(user);
   }
 

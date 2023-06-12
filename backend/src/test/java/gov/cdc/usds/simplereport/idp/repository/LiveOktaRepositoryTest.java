@@ -78,7 +78,8 @@ class LiveOktaRepositoryTest {
   void getOrganizationRoleClaimsForUser() {
     String username = "fraud@example.com";
 
-    UserList userList = mock(UserList.class);
+    UserList searchUserList = mock(UserList.class);
+    UserList qUserList = mock(UserList.class);
     User user = mock(User.class);
     GroupList groupList = mock(GroupList.class);
     Group group1 = mock(Group.class);
@@ -91,9 +92,10 @@ class LiveOktaRepositoryTest {
     GroupProfile groupProfile4 = mock(GroupProfile.class);
 
     when(_client.listUsers(null, null, "profile.login eq \"" + username + "\"", null, null))
-        .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of(user));
-    when(userList.single()).thenReturn(user);
+        .thenReturn(searchUserList);
+    when(_client.listUsers(username, null, null, null, null)).thenReturn(qUserList);
+    when(searchUserList.stream()).thenReturn(Stream.of(user));
+    when(qUserList.stream()).thenReturn(Stream.of(user));
     when(user.listGroups()).thenReturn(groupList);
     when(groupList.stream()).thenReturn(Stream.of(group1, group2, group3, group4));
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
