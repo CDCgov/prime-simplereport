@@ -33,18 +33,18 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
     resultsContent = (
       <div
         className={
-          "display-flex flex-column flex-align-center margin-x-7 margin-y-2"
+          "display-flex flex-column flex-align-center margin-x-2 margin-y-2"
         }
       >
         <div className="margin-bottom-105">
           No device found matching <strong>{queryString}</strong>.
         </div>
-        <div>
+        <span>
           Please try a different search term from the device's name or
-          manufacturer. If you need help, contact
+          manufacturer. <br /> If you need help, contact{" "}
           <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>
           .
-        </div>
+        </span>
       </div>
     );
   } else {
