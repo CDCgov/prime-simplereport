@@ -99,15 +99,6 @@
       "jest-dom"
     ],
     "rules": {
-      "graphql/template-strings": [
-        "error",
-        {
-          "env": "apollo"
-        }
-      ],
-      "graphql/named-operations": [
-        "error"
-      ],
       "import/no-unresolved": 0,
       "import/first": 1,
       "import/order": [
