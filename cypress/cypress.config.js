@@ -14,8 +14,9 @@ module.exports = {
   defaultCommandTimeout: 10000,
   video: true,
   videoUploadOnPasses: false,
+  videoCompression: false,
   retries: {
-    runMode: 2,
+    runMode: 1,
     openMode: 1,
   },
   e2e: {
@@ -29,6 +30,14 @@ module.exports = {
         },
         getAuth() {
           return global.auth || {};
+        },
+        table(message) {
+          console.table(message);
+          return null;
+        },
+        print(message) {
+          console.log(message);
+          return null;
         },
         setPatientName: (name) => {
           global.patientName = name;

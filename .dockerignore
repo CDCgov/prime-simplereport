@@ -1,0 +1,15 @@
+#Ignore the following directories
+backend/build/
+backend/.gradle/
+frontend/build/
+frontend/node_modules/
+nginx/
+ops/
+docs/
+.github/
+.run/
+node_modules/
+wiremock/
+cypress/node_modules/
+cypress/screenshots/
+cypress/videos/

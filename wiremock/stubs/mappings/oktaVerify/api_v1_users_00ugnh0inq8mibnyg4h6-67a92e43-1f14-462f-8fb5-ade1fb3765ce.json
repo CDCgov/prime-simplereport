@@ -1,0 +1,42 @@
+{
+  "id": "67a92e43-1f14-462f-8fb5-ade1fb3765ce",
+  "name": "api_v1_users_00ugnh0inq8mibnyg4h6",
+  "request": {
+    "url": "/api/v1/users/00ugnh0inq8miBNYg4h6",
+    "method": "GET"
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"id\":\"00ugnh0inq8miBNYg4h6\",\"status\":\"ACTIVE\",\"created\":\"2021-07-30T18:52:42.000Z\",\"activated\":\"2021-07-30T18:52:42.000Z\",\"statusChanged\":\"2021-07-30T18:56:20.000Z\",\"lastLogin\":null,\"lastUpdated\":\"2021-07-30T18:56:20.000Z\",\"passwordChanged\":\"2021-07-30T18:56:20.000Z\",\"type\":{\"id\":\"oty59yz17WS6hzcM54h6\"},\"profile\":{\"firstName\":\"ENDTOEND\",\"lastName\":\"TESTER\",\"mobilePhone\":null,\"secondEmail\":null,\"login\":\"tester@test.com\",\"email\":\"tester@test.com\"},\"credentials\":{\"password\":{},\"provider\":{\"type\":\"OKTA\",\"name\":\"OKTA\"}},\"_links\":{\"suspend\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/lifecycle/suspend\",\"method\":\"POST\"},\"schema\":{\"href\":\"https://hhs-prime.okta.com/api/v1/meta/schemas/user/osc59yz17WS6hzcM54h6\"},\"resetPassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/lifecycle/reset_password\",\"method\":\"POST\"},\"expirePassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/lifecycle/expire_password\",\"method\":\"POST\"},\"changeRecoveryQuestion\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/credentials/change_recovery_question\",\"method\":\"POST\"},\"self\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6\"},\"type\":{\"href\":\"https://hhs-prime.okta.com/api/v1/meta/types/user/oty59yz17WS6hzcM54h6\"},\"changePassword\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/credentials/change_password\",\"method\":\"POST\"},\"deactivate\":{\"href\":\"https://hhs-prime.okta.com/api/v1/users/00ugnh0inq8miBNYg4h6/lifecycle/deactivate\",\"method\":\"POST\"}}}",
+    "headers": {
+      "Date": "Fri, 30 Jul 2021 18:56:21 GMT",
+      "Content-Type": "application/json",
+      "Server": "nginx",
+      "Public-Key-Pins-Report-Only": "pin-sha256=\"r5EfzZxQVvQpKo3AgYRaT7X2bDO/kj3ACwmxfdT2zt8=\"; pin-sha256=\"MaqlcUgk2mvY/RFSGeSwBRkI+rZ6/dxe/DuQfBT/vnQ=\"; pin-sha256=\"72G5IEvDEWn+EThf3qjR7/bQSWaS2ZSLqolhnO6iyJI=\"; pin-sha256=\"rrV6CLCCvqnk89gWibYT0JO6fNQ8cCit7GGoiVTjCOg=\"; max-age=60; report-uri=\"https://okta.report-uri.com/r/default/hpkp/reportOnly\"",
+      "Vary": "Accept-Encoding",
+      "x-okta-request-id": "YQRLVRg1jZS25KV4CNNHVwAABJM",
+      "x-xss-protection": "0",
+      "p3p": "CP=\"HONK\"",
+      "x-rate-limit-limit": "2000",
+      "x-rate-limit-remaining": "1997",
+      "x-rate-limit-reset": "1627671439",
+      "cache-control": "no-cache, no-store",
+      "pragma": "no-cache",
+      "expires": "0",
+      "content-security-policy": "default-src 'self' hhs-prime.okta.com *.oktacdn.com; connect-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com *.oktacdn.com *.mixpanel.com *.mapbox.com app.pendo.io data.pendo.io pendo-static-5634101834153984.storage.googleapis.com hhs-prime.kerberos.okta.com https://oinmanager.okta.com data:; script-src 'unsafe-inline' 'unsafe-eval' 'self' hhs-prime.okta.com *.oktacdn.com; style-src 'unsafe-inline' 'self' hhs-prime.okta.com *.oktacdn.com app.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com; frame-src 'self' hhs-prime.okta.com hhs-prime-admin.okta.com login.okta.com; img-src 'self' hhs-prime.okta.com *.oktacdn.com *.tiles.mapbox.com *.mapbox.com app.pendo.io data.pendo.io cdn.pendo.io pendo-static-5634101834153984.storage.googleapis.com data: blob:; font-src 'self' hhs-prime.okta.com data: *.oktacdn.com fonts.gstatic.com",
+      "expect-ct": "report-uri=\"https://oktaexpectct.report-uri.com/r/t/ct/reportOnly\", max-age=0",
+      "x-content-type-options": "nosniff",
+      "Strict-Transport-Security": "max-age=315360000; includeSubDomains",
+      "set-cookie": [
+        "sid=\"\"; Expires=Thu, 01-Jan-1970 00:00:10 GMT; Path=/",
+        "JSESSIONID=1E8C3FB58DBC8F58A456DE3E5A9053DE; Path=/; Secure; HttpOnly"
+      ]
+    }
+  },
+  "uuid": "67a92e43-1f14-462f-8fb5-ade1fb3765ce",
+  "persistent": true,
+  "scenarioName": "scenario-1-api-v1-users-00ugnh0inq8miBNYg4h6",
+  "requiredScenarioState": "scenario-1-api-v1-users-00ugnh0inq8miBNYg4h6-3",
+  "newScenarioState": "scenario-1-api-v1-users-00ugnh0inq8miBNYg4h6-4",
+  "insertionIndex": 16
+}

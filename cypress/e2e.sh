@@ -1,24 +1,5 @@
 #!/bin/bash
 
-usage() {
-  cat <<EOF
-usage: $0 options
-
-This script runs the cypress e2e tests.
-
-OPTIONS:
-   -h   Display usage help
-   -s   Relative path to the spec that you desire to run
-   -r   Environment to run against
-   -c   Deployed commit hash
-   -a   Backend url path
-   -p   Public url
-   -f   frontend url path
-   -o   Open Cypress for interactive testing
-   -b   Set the browser to test against: https://docs.cypress.io/guides/guides/launching-browsers#Browsers
-EOF
-}
-
 SPEC_PATH="cypress/e2e/**"
 TEST_ENV="https://localhost.simplereport.gov"
 CHECK_COMMIT="$(git rev-parse HEAD)"
@@ -27,43 +8,6 @@ PUBLIC_URL="/app"
 FRONTEND_URL_PATH="/health/commit"
 RUN_OPEN=false
 BROWSER="chrome"
-
-while getopts "hs:r:c:a:p:f:o:b:" OPTION; do
-  case $OPTION in
-  h)
-    usage
-    exit 1
-    ;;
-  s)
-    SPEC_PATH=$OPTARG
-    ;;
-  r)
-    TEST_ENV=$OPTARG
-    ;;
-  c)
-    CHECK_COMMIT=$OPTARG
-    ;;
-  a)
-    BACKEND_URL_PATH=$OPTARG
-    ;;
-  p)
-    PUBLIC_URL=$OPTARG
-    ;;
-  f)
-    FRONTEND_URL_PATH=$OPTARG
-    ;;
-  o)
-    RUN_OPEN=$OPTARG
-    ;;
-  b)
-    BROWSER=$OPTARG
-    ;;
-  ?)
-    usage
-    exit
-    ;;
-  esac
-done
 
 echo
 [[ -n $SPEC_PATH ]] && echo "Running spec path--------$SPEC_PATH"
@@ -76,18 +20,13 @@ echo
 [[ -n $RUN_OPEN ]] && echo "Run as interactive-------$RUN_OPEN"
 echo 
 
-echo "Starting Wiremock for app bootup..."
-./cypress/support/wiremock/download-wiremock.sh >/dev/null 2>&1
-./cypress/support/wiremock/start-wiremock.sh orgSignUp >/dev/null 2>&1 &
-echo "Wiremock started!"
-echo
 
-echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
 http_response=0
 polls=0
 while [[ $http_response != "200" && $polls -lt 360 ]]; do
   ((polls++))
-  sleep 1
+  sleep 5
+  echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
   http_response=$(curl -skL -w "%{http_code}" "${TEST_ENV}${BACKEND_URL_PATH}")
 done
 if [[ $http_response -ne 200 ]]; then
@@ -97,12 +36,12 @@ fi
 echo 'Backend started!'
 echo
 
-echo "Waiting for frontend to start at ${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}"
 result=0
 polls=0
 while [[ $result -ne 1 && $polls -lt 240 ]]; do
   ((polls++))
-  sleep 1
+  sleep 5
+  echo "Waiting for frontend to start at ${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}"
   result=$(curl -skL "${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}" | grep -c '<title>SimpleReport</title>')
 done
 if [[ $result -ne 1 ]]; then

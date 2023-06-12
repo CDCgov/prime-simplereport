@@ -1,18 +1,21 @@
-FROM gradle:7.6.1-jdk17
+FROM eclipse-temurin:17-jdk-alpine as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
-WORKDIR /app/backend
+WORKDIR /app/
 
 # Only copy dependency-related files
-COPY build.gradle gradle.properties settings.gradle /app/backend/
+ADD ./backend /app/backend
+ADD ./.git /app/.git
 
-RUN chown -R gradle:gradle /app
-USER gradle
+# compile backend into a jar
+RUN cd backend && ./gradlew clean build -x test -x checkstyleMain -x spotlessCheck
 
-# Only download dependencies
-# Eat the expected build failure since no source code has been copied yet
-RUN gradle clean build --no-daemon > /dev/null 2>&1 || true
 
-CMD ["./run.sh"]
+FROM eclipse-temurin:17-jdk-alpine
+LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
+
+COPY --from=build /app/backend/build/libs/*.jar app.jar
+
+ENTRYPOINT ["java","-jar","/app.jar"]
 
 EXPOSE 8080

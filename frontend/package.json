@@ -1,7 +1,6 @@
 {
   "name": "simple-report-client",
   "version": "0.1.0",
-  "private": true,
   "engines": {
     "node": "18"
   },
@@ -99,15 +98,6 @@
       "jest-dom"
     ],
     "rules": {
-      "graphql/template-strings": [
-        "error",
-        {
-          "env": "apollo"
-        }
-      ],
-      "graphql/named-operations": [
-        "error"
-      ],
       "import/no-unresolved": 0,
       "import/first": 1,
       "import/order": [

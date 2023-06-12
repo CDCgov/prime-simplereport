@@ -17,7 +17,7 @@ describe("Updating organization settings", () => {
 
     // Test a11y on the Manage organization page
     cy.injectSRAxe();
-    cy.checkA11y();
+    cy.checkAccessibility();
   });
   it("attempts an empty selection for organization type", () => {
     cy.get('select[name="type"]').select("- Select -");

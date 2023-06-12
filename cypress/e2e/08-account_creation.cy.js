@@ -16,7 +16,7 @@ Cypress.Commands.add("setPassword", () => {
   cy.get('input[name="confirm-password"]').type(pass);
   cy.get(submitButton).click();
   cy.contains("Select your security question");
-  cy.checkA11y();
+  cy.checkAccessibility();
 });
 
 Cypress.Commands.add("setSecurityQuestion", () => {
@@ -26,7 +26,7 @@ Cypress.Commands.add("setSecurityQuestion", () => {
   cy.get('input[name="answer"]').type("Jane Doe");
   cy.get(submitButton).click();
   cy.contains("Set up authentication");
-  cy.checkA11y();
+  cy.checkAccessibility();
 });
 
 Cypress.Commands.add("mfaSelect", (choice) => {
@@ -39,7 +39,7 @@ Cypress.Commands.add("mfaSelect", (choice) => {
 
 Cypress.Commands.add("enterPhoneNumber", () => {
   cy.contains("Get your security code via");
-  cy.checkA11y();
+  cy.checkAccessibility();
   cy.get('input[name="phone-number"]').type("530867530");
   cy.contains("Get your security code via").click();
   cy.contains("Enter a valid phone number");
@@ -50,41 +50,35 @@ Cypress.Commands.add("enterPhoneNumber", () => {
 
 Cypress.Commands.add("scanQrCode", () => {
   cy.contains("Get your security code via");
-  cy.checkA11y();
+  cy.checkAccessibility();
   cy.get(submitButton).click();
 });
 
 Cypress.Commands.add("verifySecurityCode", (code) => {
   cy.contains("Verify your security code.");
   cy.contains('One-time security code');
-  cy.checkA11y();
+  cy.checkAccessibility();
   cy.get('input[name="security-code"]').type(code);
   cy.get(submitButton).first().click();
 });
 
 describe("Okta account creation", () => {
-  // Since these tests interact with Okta, we need to use
-  // Wiremock to stub out the Okta API calls.
-  before(() => {
-    cy.clearCookies();
-    cy.task("downloadWiremock");
-    cy.restartWiremock("accountCreation");
-  });
   beforeEach(() => {
     // Cypress clears cookies by default, but for these tests
     // we want to preserve the Spring session cookie
     Cypress.Cookies.preserveOnce("SESSION");
   });
-  after(() => {
-    cy.clearCookies();
-    cy.task("stopWiremock");
-  });
   describe("Account creation w/ SMS MFA", () => {
+    before(() => {
+      // cy.restartWiremock("accountCreation");
+      cy.clearCookies();
+      cy.resetWiremock();
+    });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=h971awbXda7y7jGaxN8f");
       cy.contains("Create your password");
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
     });
     it("sets a password", () => {
       cy.setPassword();
@@ -103,13 +97,14 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.checkA11y();
+      cy.checkAccessibility();
     });
   });
 
   describe("Account creation w/ Okta Verify MFA", () => {
     before(() => {
-      cy.restartWiremock("accountCreation");
+      cy.clearCookies();
+      cy.resetWiremock();
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=NOr20VqF5M6m8AnwcSUJ");
@@ -133,13 +128,15 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.checkA11y();
+      cy.checkAccessibility();
     });
   });
 
   describe("Account creation w/ Google Authenticator MFA", () => {
     before(() => {
-      cy.restartWiremock("accountCreation");
+      cy.clearCookies();
+      cy.resetWiremock();
+
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=gqYPzH1FlPzVr0U3tQ7H");
@@ -163,13 +160,14 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.checkA11y();
+      cy.checkAccessibility();
     });
   });
 
   describe("Account creation w/ Voice Call MFA", () => {
     before(() => {
-      cy.restartWiremock("accountCreation");
+      cy.clearCookies();
+      cy.resetWiremock();
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=wN5mR-8SXao1TP2PLaFe");
@@ -193,13 +191,14 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.checkA11y();
+      cy.checkAccessibility();
     });
   });
 
   describe("Account creation w/ Email MFA", () => {
     before(() => {
-      cy.restartWiremock("accountCreation");
+      cy.clearCookies();
+      cy.resetWiremock();
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=4OVwdVhc6M1I-UwvLrNX");
@@ -220,7 +219,7 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.checkA11y();
+      cy.checkAccessibility();
     });
   });
 });
