@@ -98,15 +98,14 @@ const ManageEmails: React.FC<Props> = ({
 
   const onEmailChange = (index: number, newEmail = "") => {
     const newEmails = Array.from(emailsOrDefault);
-
     newEmails[index] = newEmail;
-
     updateEmails(newEmails);
   };
 
   const onEmailRemove = (index: number) => {
     const newEmails = Array.from(emailsOrDefault);
     newEmails.splice(index, 1);
+    document.getElementById("add-email-btn")?.focus();
     updateEmails(newEmails);
   };
 
@@ -114,6 +113,9 @@ const ManageEmails: React.FC<Props> = ({
     const newEmails = Array.from(emailsOrDefault);
     newEmails.push("");
     updateEmails(newEmails);
+    setTimeout(() => {
+      document.getElementsByName(`email-${newEmails.length - 1}`)?.[0].focus();
+    }, 100);
   };
 
   return (
@@ -136,6 +138,11 @@ const ManageEmails: React.FC<Props> = ({
                   ? t("patient.form.contact.additionalEmail")
                   : t("patient.form.contact.email")
               }
+              aria-label={
+                idx > 0
+                  ? `${t("patient.form.contact.additionalEmail")} #${idx}`
+                  : t("patient.form.contact.email")
+              }
               onBlur={() => {
                 validateField(idx);
               }}
@@ -150,7 +157,7 @@ const ManageEmails: React.FC<Props> = ({
                   className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   data-testid={`delete-email-${idx}`}
                   onClick={() => onEmailRemove(idx)}
-                  aria-label={`Delete email ${email.trim()}`}
+                  aria-label={`Delete email #${idx} ${email.trim()}`}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
@@ -167,6 +174,7 @@ const ManageEmails: React.FC<Props> = ({
         variant="unstyled"
         label={t("patient.form.contact.addEmail")}
         icon="plus"
+        id={"add-email-btn"}
       />
     </div>
   );

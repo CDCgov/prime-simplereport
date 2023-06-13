@@ -180,6 +180,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
     clearError(index, "type", "number");
     newPhoneNumbers.splice(index, 1);
+    document.getElementById("add-phone-number-btn")?.focus();
     updatePhoneNumbers(newPhoneNumbers);
   };
 
@@ -190,6 +191,9 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       number: "",
     });
     updatePhoneNumbers(newPhoneNumbers);
+    setTimeout(() => {
+      document.getElementsByName("number")?.[phoneNumbers.length].focus();
+    }, 100);
   };
 
   const generatePhoneNumberRows = () => {
@@ -212,6 +216,11 @@ const ManagePhoneNumbers: React.FC<Props> = ({
                   ? t("patient.form.contact.primaryPhoneNumber")
                   : t("patient.form.contact.additionalPhoneNumber")
               }
+              ariaLabel={
+                isPrimary
+                  ? t("patient.form.contact.primaryPhoneNumber")
+                  : `${t("patient.form.contact.additionalPhoneNumber")} #${idx}`
+              }
               required={isPrimary}
               formObject={phoneNumber}
               validate={(field) => validateField(idx, field)}
@@ -227,7 +236,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
                 <button
                   className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   onClick={() => onPhoneNumberRemove(idx)}
-                  aria-label={`Delete phone number ${phoneNumber.number.trim()}`}
+                  aria-label={`Delete phone number #${idx} ${phoneNumber.number.trim()}`}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
@@ -260,6 +269,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         variant="unstyled"
         label={t("patient.form.contact.addNumber")}
         icon="plus"
+        id={"add-phone-number-btn"}
       />
       {phoneNumbers.some((pn) => pn.type === "MOBILE") && (
         <RadioGroup
