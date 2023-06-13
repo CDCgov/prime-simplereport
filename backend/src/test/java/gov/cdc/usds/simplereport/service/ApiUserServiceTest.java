@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -9,9 +10,11 @@ import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -32,6 +35,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @Autowired OktaRepository _oktaRepo;
 
   @Autowired OrganizationService _organizationService;
+  @Autowired FacilityRepository facilityRepository;
   @Autowired private TestDataFactory _dataFactory;
 
   // The next several retrieval tests expect the demo users as they are defined in the
@@ -136,10 +140,19 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @WithSimpleReportOrgAdminUser
   void createUserInCurrentOrg_orgAdmin_success() {
     initSampleData();
-
+    var facilityIdSet =
+        facilityRepository
+            .findAllByOrganization(_organizationService.getCurrentOrganization())
+            .stream()
+            .map(IdentifiedEntity::getInternalId)
+            .collect(Collectors.toSet());
     UserInfo newUserInfo =
         _service.createUserInCurrentOrg(
-            "newuser@example.com", new PersonName("First", "Middle", "Last", "Jr"), Role.USER);
+            "newuser@example.com",
+            new PersonName("First", "Middle", "Last", "Jr"),
+            Role.USER,
+            false,
+            facilityIdSet);
 
     assertEquals("newuser@example.com", newUserInfo.getEmail());
 
@@ -148,13 +161,19 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     assertEquals("Middle", personName.getMiddleName());
     assertEquals("Last", personName.getLastName());
     assertEquals("Jr", personName.getSuffix());
+    assertThat(facilityIdSet)
+        .hasSameElementsAs(
+            newUserInfo.getFacilities().stream()
+                .map(IdentifiedEntity::getInternalId)
+                .collect(Collectors.toSet()));
+    assertThat(newUserInfo.getRoles())
+        .hasSameElementsAs(List.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
   }
 
   @Test
   @WithSimpleReportOrgAdminUser
   void createUserInCurrentOrg_reprovisionDeletedUser_success() {
     initSampleData();
-
     // disable a user from this organization
     ApiUser orgUser = _apiUserRepo.findByLoginEmail("nobody@example.com").get();
     orgUser.setIsDeleted(true);
@@ -163,16 +182,37 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     UserInfo reprovisionedUserInfo =
         _service.createUserInCurrentOrg(
-            "nobody@example.com", new PersonName("First", "Middle", "Last", "Jr"), Role.USER);
+            "nobody@example.com",
+            new PersonName("First", "Middle", "Last", "Jr"),
+            Role.USER,
+            true,
+            Set.of());
 
     // the user will be re-enabled and updated
     assertEquals("nobody@example.com", reprovisionedUserInfo.getEmail());
 
+    var facilities =
+        facilityRepository
+            .findAllByOrganization(_organizationService.getCurrentOrganization())
+            .stream()
+            .map(IdentifiedEntity::getInternalId)
+            .toList();
     PersonName personName = reprovisionedUserInfo.getNameInfo();
     assertEquals("First", personName.getFirstName());
     assertEquals("Middle", personName.getMiddleName());
     assertEquals("Last", personName.getLastName());
     assertEquals("Jr", personName.getSuffix());
+    assertThat(
+            reprovisionedUserInfo.getFacilities().stream()
+                .map(IdentifiedEntity::getInternalId)
+                .toList())
+        .hasSameElementsAs(facilities);
+    assertThat(reprovisionedUserInfo.getRoles())
+        .hasSameElementsAs(
+            List.of(
+                OrganizationRole.NO_ACCESS,
+                OrganizationRole.USER,
+                OrganizationRole.ALL_FACILITIES));
   }
 
   @Test
@@ -187,7 +227,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             ConflictingUserException.class,
             () ->
                 _service.createUserInCurrentOrg(
-                    "allfacilities@example.com", personName, Role.USER));
+                    "allfacilities@example.com", personName, Role.USER, false, Set.of()));
 
     assertEquals("A user with this email address already exists.", caught.getMessage());
   }
@@ -208,7 +248,9 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     ConflictingUserException caught =
         assertThrows(
             ConflictingUserException.class,
-            () -> _service.createUserInCurrentOrg("captain@pirate.com", personName, Role.USER));
+            () ->
+                _service.createUserInCurrentOrg(
+                    "captain@pirate.com", personName, Role.USER, false, Set.of()));
 
     assertEquals("A user with this email address already exists.", caught.getMessage());
   }
