@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -40,13 +41,19 @@ describe("SecurityQuestion", () => {
   });
 
   it("can choose a security question and type an answer", async () => {
-    await userEvent.selectOptions(
-      screen.getByLabelText("Security question", { exact: false }),
-      ["In what city or town was your first job?"]
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Security question", { exact: false }),
+          ["In what city or town was your first job?"]
+        )
     );
-    await userEvent.type(
-      screen.getByLabelText("Answer", { exact: false }),
-      "New York"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Answer", { exact: false }),
+          "New York"
+        )
     );
     expect(
       screen.getByText("In what city or town was your first job?")
@@ -54,35 +61,47 @@ describe("SecurityQuestion", () => {
   });
 
   it("requires a security question", async () => {
-    await userEvent.type(
-      screen.getByLabelText("Answer", { exact: false }),
-      "New York"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Answer", { exact: false }),
+          "New York"
+        )
     );
-    await userEvent.click(screen.getByText("Continue"));
+    await act(async () => await userEvent.click(screen.getByText("Continue")));
     expect(screen.getByText("Select a security question")).toBeInTheDocument();
   });
 
   it("requires a security answer", async () => {
-    await userEvent.selectOptions(
-      screen.getByLabelText("Security question", { exact: false }),
-      ["In what city or town was your first job?"]
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Security question", { exact: false }),
+          ["In what city or town was your first job?"]
+        )
     );
-    await userEvent.click(screen.getByText("Continue"));
+    await act(async () => await userEvent.click(screen.getByText("Continue")));
     expect(
       screen.getByText("Answer must be at least 4 characters")
     ).toBeInTheDocument();
   });
 
   it("succeeds on submit w/ valid responses", async () => {
-    await userEvent.selectOptions(
-      screen.getByLabelText("Security question", { exact: false }),
-      ["In what city or town was your first job?"]
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Security question", { exact: false }),
+          ["In what city or town was your first job?"]
+        )
     );
-    await userEvent.type(
-      screen.getByLabelText("Answer", { exact: false }),
-      "Valid answer"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Answer", { exact: false }),
+          "Valid answer"
+        )
     );
-    await userEvent.click(screen.getByText("Continue"));
+    await act(async () => await userEvent.click(screen.getByText("Continue")));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating security question …")
     );
@@ -92,15 +111,21 @@ describe("SecurityQuestion", () => {
   });
 
   it("fails on submit with invalid response and displays API error", async () => {
-    await userEvent.selectOptions(
-      screen.getByLabelText("Security question", { exact: false }),
-      ["In what city or town was your first job?"]
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Security question", { exact: false }),
+          ["In what city or town was your first job?"]
+        )
     );
-    await userEvent.type(
-      screen.getByLabelText("Answer", { exact: false }),
-      "Invalid answer"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Answer", { exact: false }),
+          "Invalid answer"
+        )
     );
-    await userEvent.click(screen.getByText("Continue"));
+    await act(async () => await userEvent.click(screen.getByText("Continue")));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating security question …")
     );
