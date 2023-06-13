@@ -6,6 +6,7 @@ import {
   fireEvent,
   within,
   waitFor,
+  act,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
@@ -208,7 +209,7 @@ describe("EditPatient", () => {
 
       expect(saveAndStartButton).toBeEnabled();
 
-      await userEvent.click(saveAndStartButton);
+      await act(async () => await userEvent.click(saveAndStartButton));
 
       await waitFor(() => {
         expect(
@@ -235,7 +236,7 @@ describe("EditPatient", () => {
 
       expect(saveButton).toBeEnabled();
 
-      await userEvent.click(saveButton);
+      await act(async () => await userEvent.click(saveButton));
 
       await waitFor(() => {
         expect(
@@ -333,23 +334,29 @@ describe("EditPatient", () => {
     });
 
     it("displays a validation failure alert if phone type not entered", async () => {
-      await userEvent.click(
-        screen.queryAllByText("Add another number", {
-          exact: false,
-        })[0]
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.queryAllByText("Add another number", {
+              exact: false,
+            })[0]
+          )
       );
       // Do not enter phone type for additional number
-      await userEvent.type(
-        await screen.findByTestId("phoneInput-2"),
-        "6378908987"
+      await act(
+        async () =>
+          await userEvent.type(
+            await screen.findByTestId("phoneInput-2"),
+            "6378908987"
+          )
       );
-      await userEvent.click((await screen.findAllByText("Save changes"))[0]);
-
-      expect(
-        await screen.findByText("Phone type is required", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
+      await act(
+        async () =>
+          await userEvent.click((await screen.findAllByText("Save changes"))[0])
+      );
+      await waitFor(() =>
+        expect(screen.queryAllByText(/Phone type is required/i)).toHaveLength(2)
+      );
     });
   });
 
