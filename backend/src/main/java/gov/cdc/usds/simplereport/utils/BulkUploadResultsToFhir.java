@@ -27,6 +27,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -289,6 +290,8 @@ public class BulkUploadResultsToFhir {
             UUID.randomUUID().toString(),
             UUID.randomUUID().toString());
 
+    var testResultDate = LocalDateTime.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
+
     var observation =
         List.of(
             FhirConverter.convertToObservation(
@@ -306,6 +309,7 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
+                    .issued(Date.from(testResultDate.atZone(ZoneId.systemDefault()).toInstant()))
                     .build()));
 
     LocalDate symptomOnsetDate = null;
@@ -332,13 +336,12 @@ public class BulkUploadResultsToFhir {
             testOrderLoinc,
             UUID.randomUUID().toString());
 
-    var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
     var diagnosticReport =
         FhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+            Date.from(testResultDate.atZone(ZoneId.systemDefault()).toInstant()),
             new Date());
 
     return FhirConverter.createFhirBundle(

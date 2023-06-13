@@ -29,6 +29,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
@@ -67,6 +68,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -627,6 +629,7 @@ class FhirConverterTest {
                 .testkitNameId("testKitName")
                 .equipmentUid("equipmentUid")
                 .deviceModel("modelName")
+                .issued(Date.from(Instant.parse("2023-06-10T23:15:00.00Z")))
                 .build());
 
     assertThat(actual.getId()).isEqualTo("id-123");
@@ -643,6 +646,7 @@ class FhirConverterTest {
         .isEqualTo("resultCode");
     assertThat(actual.getNote()).isEmpty();
     assertThat(actual.getMethod().getCodingFirstRep().getDisplay()).isEqualTo("modelName");
+    assertThat(actual.getIssued()).isEqualTo("2023-06-10T23:15:00.00Z");
   }
 
   @Test
@@ -660,7 +664,8 @@ class FhirConverterTest {
             null,
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            Date.from(Instant.parse("2023-06-10T23:15:00.00Z")));
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -675,6 +680,10 @@ class FhirConverterTest {
         .isEqualTo("260373001");
     assertThat(actual.getNote()).isEmpty();
     assertThat(actual.getMethod().getCodingFirstRep().getDisplay()).isEqualTo("modelName");
+    assertThat(actual.getIssued()).isEqualTo("2023-06-10T23:15:00.00Z");
+    // todo: remove the following before merge - added to illustrate date comparison across time
+    // zones
+    assertThat(actual.getIssued()).isEqualTo("2023-06-10T16:15:00.000-07:00");
   }
 
   @Test
@@ -692,7 +701,8 @@ class FhirConverterTest {
             "Oopsy Daisy",
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            new Date());
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
@@ -715,7 +725,8 @@ class FhirConverterTest {
             null,
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            new Date());
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay())
@@ -734,7 +745,8 @@ class FhirConverterTest {
             null,
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            new Date());
 
     assertThat(actual).isNull();
   }
@@ -751,7 +763,8 @@ class FhirConverterTest {
             null,
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            new Date());
 
     assertThat(actual).isNull();
   }
@@ -783,7 +796,11 @@ class FhirConverterTest {
 
     var actual =
         convertToObservation(
-            Set.of(covidResult, fluResult), device, TestCorrectionStatus.ORIGINAL, null);
+            Set.of(covidResult, fluResult),
+            device,
+            TestCorrectionStatus.ORIGINAL,
+            null,
+            Date.from(Instant.parse("2023-06-10T23:15:00.00Z")));
 
     assertThat(actual).hasSize(2);
     String covidSerialized =
@@ -832,7 +849,12 @@ class FhirConverterTest {
         device, "supportedDiseaseTestPerformed", List.of(covidDiseaseTestPerformedCode));
 
     var actual =
-        convertToObservation(Set.of(result), device, TestCorrectionStatus.CORRECTED, "woops");
+        convertToObservation(
+            Set.of(result),
+            device,
+            TestCorrectionStatus.CORRECTED,
+            "woops",
+            Date.from(Instant.parse("2023-06-10T23:15:00.00Z")));
 
     String actualSerialized = parser.encodeResourceToString(actual.get(0));
     var expectedSerialized1 =
@@ -953,7 +975,9 @@ class FhirConverterTest {
             StandardCharsets.UTF_8);
     expectedSerialized =
         expectedSerialized.replace(
-            "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(date).getValueAsString());
+            "$EFFECTIVE_DATE_TIME_TESTED",
+            new DateTimeType(date, TemporalPrecisionEnum.MILLI, TimeZone.getTimeZone("utc"))
+                .getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
@@ -970,7 +994,9 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
     assertThat(((DateTimeType) actual.getEffective()).getAsV3())
-        .isEqualTo(new DateTimeType(date).getAsV3());
+        .isEqualTo(
+            new DateTimeType(date, TemporalPrecisionEnum.MILLI, TimeZone.getTimeZone("utc"))
+                .getAsV3());
     assertThat((actual.getIssued())).isEqualTo(date);
   }
 
@@ -1470,7 +1496,9 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
     expectedSerialized =
         expectedSerialized.replace(
-            "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(dateTested).getValueAsString());
+            "$EFFECTIVE_DATE_TIME_TESTED",
+            new DateTimeType(dateTested, TemporalPrecisionEnum.MILLI, TimeZone.getTimeZone("utc"))
+                .getValueAsString());
     expectedSerialized =
         expectedSerialized.replace(
             "$PROVENANCE_RECORDED_DATE",

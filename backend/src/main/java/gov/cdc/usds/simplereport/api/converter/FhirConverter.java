@@ -33,6 +33,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFIL
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
 
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
@@ -64,6 +65,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -489,7 +491,8 @@ public class FhirConverter {
       Set<Result> results,
       DeviceType deviceType,
       TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      String correctionReason,
+      Date resultDate) {
     return results.stream()
         .map(
             result -> {
@@ -515,7 +518,8 @@ public class FhirConverter {
                   correctionReason,
                   testkitNameId,
                   equipmentUid,
-                  deviceType.getModel());
+                  deviceType.getModel(),
+                  resultDate);
             })
         .collect(Collectors.toList());
   }
@@ -534,7 +538,8 @@ public class FhirConverter {
       String correctionReason,
       String testkitNameId,
       String equipmentUid,
-      String deviceModel) {
+      String deviceModel,
+      Date resultDate) {
     if (result != null && result.getDisease() != null) {
 
       return convertToObservation(
@@ -550,6 +555,7 @@ public class FhirConverter {
               .testkitNameId(testkitNameId)
               .equipmentUid(equipmentUid)
               .deviceModel(deviceModel)
+              .issued(resultDate)
               .build());
     }
     return null;
@@ -581,6 +587,9 @@ public class FhirConverter {
     observation
         .addInterpretation()
         .addCoding(convertToAbnormalFlagInterpretation(props.getResultCode()));
+
+    observation.setIssued(props.getIssued());
+    observation.getIssuedElement().setTimeZone(TimeZone.getTimeZone("utc"));
 
     return observation;
   }
@@ -797,7 +806,9 @@ public class FhirConverter {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(new DateTimeType(dateTested))
+            .setEffective(
+                new DateTimeType(
+                    dateTested, TemporalPrecisionEnum.MILLI, TimeZone.getTimeZone("utc")))
             .setIssued(dateUpdated);
     diagnosticReport.setId(id);
     if (StringUtils.isNotBlank(code)) {
@@ -826,7 +837,8 @@ public class FhirConverter {
                     testEvent.getResults(),
                     testEvent.getDeviceType(),
                     testEvent.getCorrectionStatus(),
-                    testEvent.getReasonForCorrection()))
+                    testEvent.getReasonForCorrection(),
+                    testEvent.getDateTested()))
             .aoeObservations(
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(), testEvent.getSurveyData()))
