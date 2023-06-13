@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitFor,
@@ -54,14 +55,17 @@ describe("Verify SMS MFA", () => {
     expect(
       screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
-    await userEvent.type(
-      screen.getByLabelText("One-time security code", { exact: false }),
-      "123456"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("One-time security code", { exact: false }),
+          "123456"
+        )
     );
 
     expect(screen.getByText("Submit")).toBeEnabled();
 
-    await userEvent.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Verifying security code …", { exact: false })
     );
@@ -80,11 +84,14 @@ describe("Verify SMS MFA", () => {
     expect(
       screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
-    await userEvent.type(
-      screen.getByLabelText("One-time security code", { exact: false }),
-      "999999"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("One-time security code", { exact: false }),
+          "999999"
+        )
     );
-    await userEvent.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     expect(await screen.findByText(/Verifying security code/i));
     await waitFor(() =>
       expect(
@@ -101,7 +108,7 @@ describe("Verify SMS MFA", () => {
   });
 
   it("requires a security code to be entered", async () => {
-    await userEvent.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText(
