@@ -192,7 +192,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     });
     updatePhoneNumbers(newPhoneNumbers);
     setTimeout(() => {
-      document.getElementsByName("number")?.[phoneNumbers.length].focus();
+      document.getElementsByName("number")?.[phoneNumbers.length]?.focus();
     }, 100);
   };
 
