@@ -158,6 +158,8 @@ input UserInput {
   email: String!
   organizationExternalId: String!
   role: Role!
+  accessAllFacilities: Boolean = false
+  facilities: [ID!]
 }
 
 type ApiUser {
@@ -487,6 +489,7 @@ type Mutation {
     suffix: String
     email: String!
     role: Role!
+    user: UserInput
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
