@@ -350,7 +350,6 @@ Object {
                             </abbr>
                           </label>
                           <input
-                            aria-label="Primary phone number"
                             aria-required="true"
                             class="usa-input"
                             data-testid="phoneInput-0"
@@ -523,7 +522,6 @@ Object {
                               Email address
                             </label>
                             <input
-                              aria-label="Email address"
                               aria-required="false"
                               class="usa-input"
                               data-testid="email-0"
@@ -3206,7 +3204,6 @@ Object {
                           </abbr>
                         </label>
                         <input
-                          aria-label="Primary phone number"
                           aria-required="true"
                           class="usa-input"
                           data-testid="phoneInput-0"
@@ -3379,7 +3376,6 @@ Object {
                             Email address
                           </label>
                           <input
-                            aria-label="Email address"
                             aria-required="false"
                             class="usa-input"
                             data-testid="email-0"
