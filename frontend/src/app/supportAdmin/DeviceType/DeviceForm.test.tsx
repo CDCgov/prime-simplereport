@@ -9,13 +9,16 @@ import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDisease
 import mockSupportedDiseaseTestPerformedMultiplex from "./mocks/mockSupportedDiseaseTestPerformedMultiplex";
 
 const addValue = async (name: string, value: string) => {
-  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+  await act(
+    async () =>
+      await userEvent.type(screen.getByLabelText(name, { exact: false }), value)
+  );
 };
 
 const clearAndEnterInput = async (fieldToEdit: string, newValue: string) => {
   const label = screen.getAllByLabelText(fieldToEdit)[0];
-  await userEvent.clear(label);
-  await userEvent.type(label, newValue);
+  await act(async () => await userEvent.clear(label));
+  await act(async () => await userEvent.type(label, newValue));
 };
 
 describe("create new device", () => {
@@ -39,7 +42,9 @@ describe("create new device", () => {
 
   it("validates all form fields and displays error as needed", async () => {
     await addValue("Equipment Uid", "123");
-    await userEvent.click(screen.getByText("Save changes"));
+    await act(
+      async () => await userEvent.click(screen.getByText("Save changes"))
+    );
     await waitFor(() =>
       expect(screen.getAllByText("This is a required field")).toHaveLength(8)
     );
@@ -47,12 +52,18 @@ describe("create new device", () => {
     await addValue("Manufacturer", "Solvey");
     await addValue("Model", "rx350");
     await addValue("Test length", "15");
-    await userEvent.click(
-      screen.getByText("Swab (445297001)", { exact: false })
+    await act(
+      async () =>
+        await userEvent.click(
+          screen.getByText("Swab (445297001)", { exact: false })
+        )
     );
-    await userEvent.selectOptions(
-      screen.getByLabelText("Supported disease *"),
-      "COVID-19"
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Supported disease *"),
+          "COVID-19"
+        )
     );
     await addValue("Test performed code *", "1920-12");
     await addValue("Test ordered code *", "2102-91");
@@ -69,29 +80,47 @@ describe("create new device", () => {
       await addValue("Manufacturer", "Mesa Biotech");
       await addValue("Model", "Accula SARS-Cov-2 Test*");
       await addValue("Test length", "10");
-      await userEvent.click(
-        screen.getByText("Swab (445297001)", { exact: false })
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByText("Swab (445297001)", { exact: false })
+          )
       );
 
-      await userEvent.selectOptions(
-        screen.getByLabelText("Supported disease *"),
-        "COVID-19"
+      await act(
+        async () =>
+          await userEvent.selectOptions(
+            screen.getByLabelText("Supported disease *"),
+            "COVID-19"
+          )
       );
-      await userEvent.type(
-        screen.getByLabelText("Test performed code *"),
-        "1920-12"
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByLabelText("Test performed code *"),
+            "1920-12"
+          )
       );
-      await userEvent.type(
-        screen.getByLabelText("Test ordered code *"),
-        "2102-91"
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByLabelText("Test ordered code *"),
+            "2102-91"
+          )
       );
-      await userEvent.type(
-        screen.getByLabelText("Testkit Name Id"),
-        "testkitNameId123"
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByLabelText("Testkit Name Id"),
+            "testkitNameId123"
+          )
       );
-      await userEvent.type(
-        screen.getByLabelText("Equipment Uid"),
-        "equipmentUid321"
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByLabelText("Equipment Uid"),
+            "equipmentUid321"
+          )
       );
     });
 
@@ -100,7 +129,9 @@ describe("create new device", () => {
     });
 
     it("on form submission calls the save callback once", async () => {
-      await userEvent.click(screen.getByText("Save changes"));
+      await act(
+        async () => await userEvent.click(screen.getByText("Save changes"))
+      );
       await waitFor(() =>
         expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
           internalId: undefined,
@@ -231,7 +262,9 @@ describe("update existing devices", () => {
   });
 
   it("shows a list of devices to select from", async () => {
-    await userEvent.click(screen.getByTestId("combo-box-select"));
+    await act(
+      async () => await userEvent.click(screen.getByTestId("combo-box-select"))
+    );
     expect(screen.getAllByText("Tesla Emitter")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Fission Energizer")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Covalent Observer")[1]).toBeInTheDocument();
@@ -353,7 +386,10 @@ describe("update existing devices", () => {
         "e286f2a8-38e2-445b-80a5-c16507a96b66",
         "14924488-268f-47db-bea6-aa706971a098",
       ]);
-      await userEvent.click(screen.getAllByLabelText("Delete disease")[0]);
+      await act(
+        async () =>
+          await userEvent.click(screen.getAllByLabelText("Delete disease")[0])
+      );
       expect(
         screen
           .getAllByLabelText("Supported disease *")
@@ -400,32 +436,54 @@ describe("update existing devices", () => {
 
         await addValue("Manufacturer", " LLC");
         await addValue("Model", "X");
-        await userEvent.click(snomedInput);
-        await userEvent.click(within(snomedList).getByText("eye"));
+        await act(async () => await userEvent.click(snomedInput));
+        await act(
+          async () => await userEvent.click(within(snomedList).getByText("eye"))
+        );
         await clearAndEnterInput("Test ordered code *", "LP 321");
-        await userEvent.click(screen.getByText("Add another disease"));
-        await userEvent.selectOptions(
-          screen.getAllByLabelText("Supported disease *")[1],
-          "Flu A"
+        await act(
+          async () =>
+            await userEvent.click(screen.getByText("Add another disease"))
         );
-        await userEvent.type(
-          screen.getAllByLabelText("Test performed code *")[1],
-          "LP 123"
+        await act(
+          async () =>
+            await userEvent.selectOptions(
+              screen.getAllByLabelText("Supported disease *")[1],
+              "Flu A"
+            )
         );
-        await userEvent.type(
-          screen.getAllByLabelText("Test ordered code *")[1],
-          "LP 444"
+        await act(
+          async () =>
+            await userEvent.type(
+              screen.getAllByLabelText("Test performed code *")[1],
+              "LP 123"
+            )
         );
-        await userEvent.type(
-          screen.getAllByLabelText("Testkit Name Id")[1],
-          "testkitNameId123"
+        await act(
+          async () =>
+            await userEvent.type(
+              screen.getAllByLabelText("Test ordered code *")[1],
+              "LP 444"
+            )
         );
-        await userEvent.type(
-          screen.getAllByLabelText("Equipment Uid")[1],
-          "equipmentUid321"
+        await act(
+          async () =>
+            await userEvent.type(
+              screen.getAllByLabelText("Testkit Name Id")[1],
+              "testkitNameId123"
+            )
+        );
+        await act(
+          async () =>
+            await userEvent.type(
+              screen.getAllByLabelText("Equipment Uid")[1],
+              "equipmentUid321"
+            )
         );
 
-        await userEvent.click(screen.getByText("Save changes"));
+        await act(
+          async () => await userEvent.click(screen.getByText("Save changes"))
+        );
 
         await waitFor(() =>
           expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
@@ -463,7 +521,9 @@ describe("update existing devices", () => {
         });
         await clearAndEnterInput("Test performed code *", "950-9501");
         await clearAndEnterInput("Test ordered code *", "1059-059");
-        await userEvent.click(screen.getByText("Save changes"));
+        await act(
+          async () => await userEvent.click(screen.getByText("Save changes"))
+        );
 
         await waitFor(() =>
           expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
