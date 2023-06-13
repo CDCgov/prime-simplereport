@@ -108,7 +108,7 @@ describe("ManagePhoneNumbers", () => {
     await act(
       async () =>
         await userEvent.click(
-          await screen.findByLabelText("Delete phone number 404-867-5309")
+          await screen.findByLabelText("Delete phone number #1 404-867-5309")
         )
     );
     await waitFor(() => {

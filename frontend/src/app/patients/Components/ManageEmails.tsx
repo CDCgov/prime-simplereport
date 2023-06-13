@@ -114,7 +114,7 @@ const ManageEmails: React.FC<Props> = ({
     newEmails.push("");
     updateEmails(newEmails);
     setTimeout(() => {
-      document.getElementsByName(`email-${newEmails.length - 1}`)?.[0].focus();
+      document.getElementsByName(`email-${newEmails.length - 1}`)?.[0]?.focus();
     }, 100);
   };
 

@@ -350,6 +350,7 @@ Object {
                             </abbr>
                           </label>
                           <input
+                            aria-label="Primary phone number"
                             aria-required="true"
                             class="usa-input"
                             data-testid="phoneInput-0"
@@ -425,6 +426,7 @@ Object {
                     </div>
                     <button
                       class="usa-button usa-button--unstyled margin-top-2"
+                      id="add-phone-number-btn"
                       type="button"
                     >
                       <svg
@@ -521,6 +523,7 @@ Object {
                               Email address
                             </label>
                             <input
+                              aria-label="Email address"
                               aria-required="false"
                               class="usa-input"
                               data-testid="email-0"
@@ -534,6 +537,7 @@ Object {
                       </div>
                       <button
                         class="usa-button usa-button--unstyled margin-top-2"
+                        id="add-email-btn"
                         type="button"
                       >
                         <svg
@@ -3202,6 +3206,7 @@ Object {
                           </abbr>
                         </label>
                         <input
+                          aria-label="Primary phone number"
                           aria-required="true"
                           class="usa-input"
                           data-testid="phoneInput-0"
@@ -3277,6 +3282,7 @@ Object {
                   </div>
                   <button
                     class="usa-button usa-button--unstyled margin-top-2"
+                    id="add-phone-number-btn"
                     type="button"
                   >
                     <svg
@@ -3373,6 +3379,7 @@ Object {
                             Email address
                           </label>
                           <input
+                            aria-label="Email address"
                             aria-required="false"
                             class="usa-input"
                             data-testid="email-0"
@@ -3386,6 +3393,7 @@ Object {
                     </div>
                     <button
                       class="usa-button usa-button--unstyled margin-top-2"
+                      id="add-email-btn"
                       type="button"
                     >
                       <svg
