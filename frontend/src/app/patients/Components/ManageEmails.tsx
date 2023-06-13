@@ -104,8 +104,12 @@ const ManageEmails: React.FC<Props> = ({
 
   const onEmailRemove = (index: number) => {
     const newEmails = Array.from(emailsOrDefault);
+    const lastEmailRemoved = index === newEmails.length - 1;
     newEmails.splice(index, 1);
-    document.getElementById("add-email-btn")?.focus();
+    lastEmailRemoved
+      ? document.getElementById("add-email-btn")?.focus()
+      : document.getElementsByName(`email-${index}`)?.[0]?.focus();
+
     updateEmails(newEmails);
   };
 
@@ -138,11 +142,6 @@ const ManageEmails: React.FC<Props> = ({
                   ? t("patient.form.contact.additionalEmail")
                   : t("patient.form.contact.email")
               }
-              aria-label={
-                idx > 0
-                  ? `${t("patient.form.contact.additionalEmail")} #${idx}`
-                  : t("patient.form.contact.email")
-              }
               onBlur={() => {
                 validateField(idx);
               }}
@@ -157,7 +156,7 @@ const ManageEmails: React.FC<Props> = ({
                   className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   data-testid={`delete-email-${idx}`}
                   onClick={() => onEmailRemove(idx)}
-                  aria-label={`Delete email #${idx} ${email.trim()}`}
+                  aria-label={`Delete additional email ${email.trim()}`}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>

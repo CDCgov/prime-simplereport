@@ -7,7 +7,6 @@ interface Props<T> {
   field: keyof T;
   formObject: T;
   label: string | React.ReactNode;
-  ariaLabel?: string;
   className?: string;
   onChange: (field: keyof T) => (value: string) => void;
   validate: (field: keyof T) => Promise<void>;
@@ -26,7 +25,6 @@ export const Input = <T extends { [key: string]: any }>({
   idString,
   formObject,
   label,
-  ariaLabel,
   className,
   onChange,
   validate,
@@ -53,7 +51,6 @@ export const Input = <T extends { [key: string]: any }>({
     <TextInput
       idString={idString}
       label={label}
-      aria-label={ariaLabel}
       name={String(field)}
       value={formObject[field] || ""}
       onChange={onChangeHandler}
