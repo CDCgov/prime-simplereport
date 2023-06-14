@@ -67,7 +67,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -589,7 +588,7 @@ public class FhirConverter {
         .addCoding(convertToAbnormalFlagInterpretation(props.getResultCode()));
 
     observation.setIssued(props.getIssued());
-    observation.getIssuedElement().setTimeZone(TimeZone.getTimeZone("utc"));
+    observation.getIssuedElement().setTimeZoneZulu(true).setPrecision(TemporalPrecisionEnum.SECOND);
 
     return observation;
   }
@@ -802,9 +801,7 @@ public class FhirConverter {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(
-                new DateTimeType(
-                    dateTested, TemporalPrecisionEnum.MILLI, TimeZone.getTimeZone("utc")))
+            .setEffective(new DateTimeType(dateTested).setTimeZoneZulu(true))
             .setIssued(dateUpdated);
 
     // Allows EffectiveDateTimeType to be mocked during tests

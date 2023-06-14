@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
@@ -46,7 +45,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -955,8 +953,7 @@ class FhirConverterTest {
     expectedSerialized =
         expectedSerialized.replace(
             "$EFFECTIVE_DATE_TIME_TESTED",
-            new DateTimeType(date, TemporalPrecisionEnum.MILLI, TimeZone.getTimeZone("utc"))
-                .getValueAsString());
+            new DateTimeType(date).setTimeZoneZulu(true).getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
@@ -973,10 +970,8 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
-    assertThat(((DateTimeType) actual.getEffective()).getAsV3())
-        .isEqualTo(
-            new DateTimeType(date, TemporalPrecisionEnum.MILLI, TimeZone.getTimeZone("utc"))
-                .getAsV3());
+    assertThat(((DateTimeType) actual.getEffective()).getValueAsString())
+        .isEqualTo(new DateTimeType(date).setTimeZoneZulu(true).getValueAsString());
     assertThat((actual.getIssued())).isEqualTo(date);
   }
 
@@ -1484,8 +1479,7 @@ class FhirConverterTest {
     expectedSerialized =
         expectedSerialized.replace(
             "$EFFECTIVE_DATE_TIME_TESTED",
-            new DateTimeType(dateTested, TemporalPrecisionEnum.MILLI, TimeZone.getTimeZone("utc"))
-                .getValueAsString());
+            new DateTimeType(dateTested).setTimeZoneZulu(true).getValueAsString());
     expectedSerialized =
         expectedSerialized.replace(
             "$PROVENANCE_RECORDED_DATE",
