@@ -3,7 +3,6 @@ import React, { useEffect } from "react";
 import { getUrl } from "../../utils/url";
 import USAGovBanner from "../USAGovBanner";
 import SRToastContainer from "../SRToastContainer";
-import TouchpointsButton from "../../analytics/TouchpointsButton";
 
 declare global {
   interface Window {
@@ -54,7 +53,8 @@ const Page: React.FC<Props> = ({ header, children, isPatientApp }) => {
         <SRToastContainer />
       </main>
       <footer>
-        <TouchpointsButton />
+        {/*Disabled due to https://github.com/CDCgov/prime-simplereport/issues/5863*/}
+        {/*<TouchpointsButton />*/}
       </footer>
     </div>
   );

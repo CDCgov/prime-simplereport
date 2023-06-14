@@ -1,5 +1,6 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import selectEvent from "react-select-event";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
@@ -10,7 +11,10 @@ import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDisease
 const mockUpdateDeviceType = jest.fn();
 
 const addValue = async (name: string, value: string) => {
-  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+  await act(
+    async () =>
+      await userEvent.type(screen.getByLabelText(name, { exact: false }), value)
+  );
 };
 
 jest.mock("../../../generated/graphql", () => {
@@ -152,27 +156,50 @@ describe("ManageDeviceTypeFormContainer", () => {
   it("should update the selected device", async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    await userEvent.click(screen.getByTestId("combo-box-select"));
-    await userEvent.click(screen.getAllByText("Covalent Observer")[1]);
+    await act(() => {
+      selectEvent.select(
+        screen.getByLabelText(/select device/i),
+        "Covalent Observer"
+      );
+    });
 
     await addValue("Manufacturer", " LLC");
     await addValue("Model", "D");
-    await userEvent.selectOptions(
-      screen.getByLabelText("Supported disease *"),
-      "COVID-19"
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Supported disease *"),
+          "COVID-19"
+        )
     );
-    await userEvent.clear(screen.getByLabelText("Test performed code *"));
-    await userEvent.type(
-      screen.getByLabelText("Test performed code *"),
-      "LP 123"
+    await act(
+      async () =>
+        await userEvent.clear(screen.getByLabelText("Test performed code *"))
+    );
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Test performed code *"),
+          "LP 123"
+        )
     );
 
-    await userEvent.clear(screen.getByLabelText("Test ordered code *"));
-    await userEvent.type(
-      screen.getByLabelText("Test ordered code *"),
-      "LP 321"
+    await act(
+      async () =>
+        await userEvent.clear(screen.getByLabelText("Test ordered code *"))
     );
-    await userEvent.click(screen.getByText("Save changes"));
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Test ordered code *"),
+          "LP 321"
+        )
+    );
+
+    expect(screen.getByText("Save changes")).toBeEnabled();
+    await act(
+      async () => await userEvent.click(screen.getByText("Save changes"))
+    );
 
     await waitFor(() =>
       expect(mockUpdateDeviceType).toHaveBeenCalledWith({

@@ -51,30 +51,10 @@ const PendingOrganizations = ({
   const [verifyInProgress, setVerifyInProgress] = useState<boolean>(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [editOrg] = useEditPendingOrganizationMutation();
-  //Updated 1/24/22 - legacy check to protect against deletion/editing of old orgs
-  // that will make the backend complain. Will write a custom job to delete them
-  // all at some point.
-  const checkIfOrgIsUsingOldOrgSchema = (
-    orgToCheck: PendingOrganization | null
-  ) => {
-    if (orgToCheck === null) {
-      return false;
-    }
-    const requiredFieldNotSet =
-      orgToCheck.adminEmail === null ||
-      orgToCheck.adminFirstName === null ||
-      orgToCheck.adminLastName === null ||
-      orgToCheck.adminPhone === null;
-    const createdBeforeSchemaChangeDate =
-      Date.parse(orgToCheck.createdAt) < Date.parse("2021-11-02T18:16:08Z");
-    return requiredFieldNotSet || createdBeforeSchemaChangeDate;
-  };
 
   const handleUpdateOrg = async (org: PendingOrganizationFormValues) => {
-    const orgUsesOldSchema = checkIfOrgIsUsingOldOrgSchema(orgToVerify);
-
     // Return nothing if no verification is set
-    if (orgToVerify === null || orgUsesOldSchema) {
+    if (orgToVerify === null) {
       return Promise.reject();
     }
     let updatedOrg;
@@ -124,8 +104,8 @@ const PendingOrganizations = ({
           break;
         }
       }
-      const orgUsesOldSchema = checkIfOrgIsUsingOldOrgSchema(orgToVerify);
-      if (anyValueDifferent && !orgUsesOldSchema) {
+
+      if (anyValueDifferent) {
         // submit changed values and generate new externalId
         const newOrgData = await handleUpdateOrg(org);
         const updatedOrgExternalId = newOrgData?.data?.editPendingOrganization;
@@ -247,7 +227,6 @@ const PendingOrganizations = ({
                 handleUpdate={handleUpdateOrg}
                 handleClose={handleClose}
                 isUpdating={isUpdating}
-                orgUsingOldSchema={checkIfOrgIsUsingOldOrgSchema(orgToVerify)}
                 isVerifying={verifyInProgress}
               />
             ) : null}
@@ -272,9 +251,9 @@ const PendingOrganizations = ({
                 <thead>
                   <tr>
                     <th scope="col">Organization name</th>
-                    <th scope="row">Administrator</th>
-                    <th scope="row">Contact information</th>
-                    <th scope="row">Created</th>
+                    <th scope="col">Administrator</th>
+                    <th scope="col">Contact information</th>
+                    <th scope="col">Created</th>
                     <th scope="col">External ID</th>
                     <th scope="col" aria-hidden></th>
                     <th scope="col" aria-hidden></th>

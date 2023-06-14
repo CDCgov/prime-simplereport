@@ -4,68 +4,11 @@ resource "azurerm_monitor_diagnostic_setting" "collect_appserviceconsolelogs" {
   target_resource_id         = var.app_service_id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.global.id
 
-  log {
-    category = "AppServiceAntivirusScanAuditLogs"
-    enabled  = false
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-  log {
+  enabled_log {
     category = "AppServiceConsoleLogs"
-    enabled  = true
     retention_policy {
       days    = 7
       enabled = true
-    }
-  }
-  log {
-    category = "AppServiceFileAuditLogs"
-    enabled  = false
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-  log {
-    category = "AppServiceHTTPLogs"
-    enabled  = false
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-  log {
-    category = "AppServiceIPSecAuditLogs"
-    enabled  = false
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-  log {
-    category = "AppServicePlatformLogs"
-    enabled  = false
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-  log {
-    category = "AppServiceAppLogs"
-    enabled  = false
-    retention_policy {
-      days    = 0
-      enabled = false
-    }
-  }
-  log {
-    category = "AppServiceAuditLogs"
-    enabled  = false
-    retention_policy {
-      days    = 0
-      enabled = false
     }
   }
   metric {

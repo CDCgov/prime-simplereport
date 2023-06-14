@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -12,6 +13,7 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
@@ -37,7 +39,6 @@ import org.springframework.test.context.TestPropertySource;
     })
 class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
-  private static final String FAKE_SWAB_TYPE = "012345678";
   private static final int STANDARD_TEST_LENGTH = 15;
   @Autowired private DeviceTypeRepository _deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
@@ -106,6 +107,44 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     DeviceType dummyDevice = mock(DeviceType.class);
     when(this._deviceTypeRepoMock.findDeviceTypeByName(anyString())).thenReturn(dummyDevice);
     assertEquals(this.deviceTypeServiceWithMock.getDeviceType(deviceName), dummyDevice);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void createDuplicateDeviceType_error() {
+    // GIVEN
+    SpecimenType swab = specimenTypeRepository.save(new SpecimenType("Hair", "000111222"));
+    SupportedDisease disease = _diseaseService.covid();
+
+    CreateDeviceType createDeviceType =
+        CreateDeviceType.builder()
+            .name("A")
+            .model("B")
+            .manufacturer("C")
+            .swabTypes(List.of(swab.getInternalId()))
+            .supportedDiseaseTestPerformed(
+                List.of(
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(disease.getInternalId())
+                        .testPerformedLoincCode("loinc1")
+                        .equipmentUid("equipmentUid1")
+                        .testkitNameId("testkitNameId1")
+                        .testOrderedLoincCode("loinc3")
+                        .build()))
+            .testLength(1)
+            .build();
+
+    _service.createDeviceType(createDeviceType);
+
+    // WHEN trying to create a device with the same model/manufacturer
+    IllegalGraphqlArgumentException exception =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _service.createDeviceType(createDeviceType));
+
+    // THEN
+    assertThat(exception.getMessage())
+        .isEqualTo("an active device type already exists with the same manufacturer and model");
   }
 
   @Test

@@ -261,7 +261,7 @@ const ManageUsers: React.FC<Props> = ({
       const fullName = displayFullName(firstName, "", lastName);
       updateEditUserNameModal(false);
       showSuccess("", `User name changed to ${fullName}`);
-      queryUserWithPermissions();
+      await queryUserWithPermissions();
     } catch (e: any) {
       setError(e);
     }
@@ -277,6 +277,7 @@ const ManageUsers: React.FC<Props> = ({
       });
       updateEditUserEmailModal(false);
       showSuccess("", `User email address changed to ${emailAddress}`);
+      await queryUserWithPermissions();
       await getUsers();
     } catch (e: any) {}
   };

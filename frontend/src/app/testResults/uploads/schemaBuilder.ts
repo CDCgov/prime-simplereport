@@ -225,8 +225,6 @@ export const schemaBuilder = (facilityId: string | null) => {
                 ],
                 description: [
                   `Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
-                  "<br/>",
-                  'You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html" class="usa-link" target="_blank" rel="noreferrer noopener">CDC website</a>. Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column B.',
                 ],
               },
               {
@@ -244,8 +242,6 @@ export const schemaBuilder = (facilityId: string | null) => {
                 ],
                 description: [
                   `Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
-                  "<br/>",
-                  'You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html" class="usa-link" target="_blank" rel="noreferrer noopener">CDC website</a>. Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column F.',
                 ],
               },
               {
@@ -263,8 +259,6 @@ export const schemaBuilder = (facilityId: string | null) => {
                 ],
                 description: [
                   `Use one of the common values below, or find your device on the ${deviceCodeLookupLink}.`,
-                  "<br/>",
-                  'You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html" class="usa-link" target="_blank" rel="noreferrer noopener">CDC website</a>. Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column E.',
                 ],
               },
               {
@@ -332,21 +326,15 @@ export const schemaBuilder = (facilityId: string | null) => {
                 colHeader: "specimen_type",
                 required: true,
                 requested: false,
-                acceptedValues: [
-                  "<mark><code>Nasal Swab</code></mark>",
-                  "<mark><code>Nasopharyngeal Swab</code></mark>",
-                  "<mark><code>Anterior Nares Swab</code></mark>",
-                  "<mark><code>Throat Swab</code></mark>",
-                  "<mark><code>Oropharyngeal Swab</code></mark>",
-                  "<mark><code>Whole Blood</code></mark>",
-                  "<mark><code>Plasma</code></mark>",
-                  "<mark><code>Serum</code></mark>",
-                  "SNOMED code from lookup table, example: <em>697989009</em>",
+                examples: [
+                  "<em>258607008</em>",
+                  "<em>258500001</em>",
+                  "<em>445297001</em>",
                 ],
                 description: [
-                  `Use one of the common values below, or find your device on the ${deviceCodeLookupLink}.`,
-                  "<br/>",
-                  'You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the <a href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html" class="usa-link" target="_blank" rel="noreferrer noopener">CDC website</a>. Download the spreadsheet, go to the "LOINC Mapping" tab, and copy either the SNOMED code or text value for your device from column D.',
+                  "The SNOMED code representing the type of biological sample used for testing.",
+                  "<br />",
+                  `Find the specimen type for your device on the ${deviceCodeLookupLink} and copy the SNOMED code for the given specimen.`,
                 ],
               },
             ],

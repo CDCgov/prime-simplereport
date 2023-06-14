@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
 import Modal from "react-modal";
 
-import Alert from "../../../commonComponents/Alert";
 import { PendingOrganization } from "../../../../generated/graphql";
 import Button from "../../../commonComponents/Button/Button";
 import Input from "../../../commonComponents/Input";
@@ -17,6 +16,14 @@ import {
   PendingOrganizationErrors,
 } from "./modal_utils";
 
+const getEditBtnLabel = (isUpdating: boolean) => {
+  return isUpdating ? "Updating..." : "Edit only";
+};
+
+const getVerifyBtnLabel = (isVerifying: boolean) => {
+  return isVerifying ? "Verifying..." : "Verify";
+};
+
 const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
   organization,
   handleUpdate,
@@ -24,7 +31,6 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
   handleVerify,
   isUpdating,
   isVerifying,
-  orgUsingOldSchema,
 }) => {
   const [org, setOrg] = useState<PendingOrganizationFormValues>({
     name: organization.name,
@@ -68,7 +74,7 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      handleUpdate(org);
+      await handleUpdate(org);
     } else {
       setErrors(validation.errors);
     }
@@ -80,13 +86,12 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
       schema: pendingOrganizationSchema,
     });
     if (validation.valid) {
-      handleVerify(org);
+      await handleVerify(org);
     } else {
       setErrors(validation.errors);
     }
   };
   const commonInputProps = {
-    disabled: orgUsingOldSchema,
     formObject: org,
     onChange,
     required: true,
@@ -186,17 +191,6 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
           </button>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
-        {orgUsingOldSchema ? (
-          <div data-testid="old-schema-explanation">
-            <Alert
-              type="warning"
-              title={"Need to edit organization details?"}
-              body="You'll need to verify identity first, then contact support@simplereport.gov to request changes to organization information."
-            />
-          </div>
-        ) : (
-          <></>
-        )}
         <div>
           <Input {...commonInputProps} label="Organization name" field="name" />
           <Input
@@ -232,14 +226,14 @@ const ConfirmOrgVerificationModal: React.FC<VerficationModalProps> = ({
               className="margin-right-2"
               variant="outline"
               onClick={onSave}
-              label={isUpdating ? "Updating..." : "Edit only"}
-              disabled={isVerifying || isUpdating || orgUsingOldSchema}
+              label={getEditBtnLabel(isUpdating)}
+              disabled={isVerifying || isUpdating}
             />
             <Button
               className="margin-right-205"
               id="verify-button"
               onClick={() => setVerifyConfirmation(true)}
-              label={isVerifying ? "Verifying..." : "Verify"}
+              label={getVerifyBtnLabel(isVerifying)}
               disabled={isVerifying || isUpdating}
             />
           </div>

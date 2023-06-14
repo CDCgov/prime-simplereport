@@ -1,11 +1,17 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { DeepPartial } from "redux";
 import configureStore from "redux-mock-store";
 
 import { RootState } from "../store";
+import * as SRToast from "../utils/srToast";
 
 import ManageOrganizationContainer, {
   GET_ORGANIZATION,
@@ -16,63 +22,173 @@ import ManageOrganizationContainer, {
 const mockStore = configureStore<DeepPartial<RootState>>([]);
 
 describe("ManageOrganization", () => {
-  it("does not allow org name change for regular admins", async () => {
-    const store = mockStore({ user: { isAdmin: false } });
-    render(
-      <Provider store={store}>
-        <MockedProvider mocks={mocks}>
-          <ManageOrganizationContainer />
-        </MockedProvider>
-      </Provider>
-    );
-    const saveButton = await screen.findByText("Save settings");
-    await screen.findByText(
-      /the organization name is used for reporting to public health departments\. please contact if you need to change it\./i
-    );
-    expect(
-      screen.queryByRole("textbox", { name: /organization name required/i })
-    ).not.toBeInTheDocument();
-    expect(saveButton).toBeDisabled();
-  });
-  it("allows org name and type change for super admins", async () => {
-    const store = mockStore({ user: { isAdmin: true } });
-    render(
-      <Provider store={store}>
-        <MockedProvider mocks={mocks}>
-          <ManageOrganizationContainer />
-        </MockedProvider>
-      </Provider>
-    );
-    const orgNameInput = await screen.findByLabelText("Organization name", {
-      exact: false,
-    });
-    const orgTypeInput = await screen.findByLabelText("Organization type", {
-      exact: false,
-    });
-    const saveButton = screen.getByText("Save settings");
-    expect(orgNameInput).toBeEnabled();
-    await userEvent.type(orgNameInput, "Penny Lane");
-    await userEvent.selectOptions(orgTypeInput, "other");
-    expect(saveButton).toBeEnabled();
-    await userEvent.click(saveButton);
+  const adminStore = mockStore({ user: { isAdmin: true } });
+
+  let showSuccessSpy: jest.SpyInstance;
+
+  beforeAll(() => {
+    showSuccessSpy = jest.spyOn(SRToast, "showSuccess");
   });
 
-  it("allows org type change for regular admins", async () => {
-    const store = mockStore({ user: { isAdmin: false } });
-    render(
-      <Provider store={store}>
-        <MockedProvider mocks={mocks}>
-          <ManageOrganizationContainer />
-        </MockedProvider>
-      </Provider>
-    );
-    const orgTypeInput = await screen.findByLabelText("Organization type", {
-      exact: false,
+  describe("Displays right content depending on user role", () => {
+    it("does not allow org name change for regular admins", async () => {
+      const store = mockStore({ user: { isAdmin: false } });
+      render(
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <ManageOrganizationContainer />
+          </MockedProvider>
+        </Provider>
+      );
+      const saveButton = await screen.findByText("Save settings");
+      await screen.findByText(
+        /the organization name is used for reporting to public health departments\. please contact if you need to change it\./i
+      );
+      expect(
+        screen.queryByRole("textbox", { name: /organization name required/i })
+      ).not.toBeInTheDocument();
+      expect(saveButton).toBeDisabled();
     });
-    const saveButton = screen.getByText("Save settings");
-    await userEvent.selectOptions(orgTypeInput, "hospice");
-    expect(saveButton).toBeEnabled();
-    await userEvent.click(saveButton);
+
+    it("allows org name and type change for super admins", async () => {
+      render(
+        <Provider store={adminStore}>
+          <MockedProvider mocks={mocks}>
+            <ManageOrganizationContainer />
+          </MockedProvider>
+        </Provider>
+      );
+
+      const orgNameInput = await screen.findByLabelText("Organization name", {
+        exact: false,
+      });
+      const orgTypeInput = await screen.findByLabelText("Organization type", {
+        exact: false,
+      });
+
+      expect(orgNameInput).toBeEnabled();
+      fireEvent.change(orgNameInput, { target: { value: "Penny Lane" } });
+      fireEvent.change(orgTypeInput, { target: { value: "other" } });
+
+      const saveButton = screen.getByText("Save settings");
+      expect(saveButton).toBeEnabled();
+      fireEvent.click(saveButton);
+      await waitFor(() =>
+        expect(showSuccessSpy).toHaveBeenCalledWith(
+          "The settings for the organization have been updated",
+          "Updated organization"
+        )
+      );
+    });
+
+    it("allows org type change for regular admins", async () => {
+      const store = mockStore({ user: { isAdmin: false } });
+      render(
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <ManageOrganizationContainer />
+          </MockedProvider>
+        </Provider>
+      );
+      const orgTypeInput = await screen.findByLabelText("Organization type", {
+        exact: false,
+      });
+
+      fireEvent.change(orgTypeInput, { target: { value: "hospice" } });
+
+      const saveButton = screen.getByText("Save settings");
+      expect(saveButton).toBeEnabled();
+      fireEvent.click(saveButton);
+      await waitFor(() =>
+        expect(showSuccessSpy).toHaveBeenCalledWith(
+          "The settings for the organization have been updated",
+          "Updated organization"
+        )
+      );
+    });
+  });
+
+  describe("Validates form data", function () {
+    it("checks error messages", async () => {
+      render(
+        <Provider store={adminStore}>
+          <MockedProvider mocks={mocks}>
+            <ManageOrganizationContainer />
+          </MockedProvider>
+        </Provider>
+      );
+
+      await waitForElementToBeRemoved(screen.queryByText(/loading\.\.\./i));
+      fireEvent.change(screen.getByLabelText(/organization name \*/i), {
+        target: { value: "" },
+      });
+
+      const saveButton = screen.getByText("Save settings");
+      expect(saveButton).toBeEnabled();
+      fireEvent.click(saveButton);
+
+      await waitFor(() =>
+        expect(screen.queryByText(/The organization's name cannot be blank/i))
+      );
+      expect(screen.queryByText(/An organization type must be selected/i));
+    });
+
+    it("detects dirty state after first org data update", async () => {
+      render(
+        <Provider store={adminStore}>
+          <MockedProvider
+            mocks={[
+              mocks[0],
+              {
+                request: {
+                  query: ADMIN_SET_ORGANIZATION,
+                  variables: {
+                    name: "Strawberry Fields 2",
+                    type: "camp",
+                  },
+                },
+                result: {
+                  data: {
+                    adminUpdateOrganization: null,
+                  },
+                },
+              },
+            ]}
+          >
+            <ManageOrganizationContainer />
+          </MockedProvider>
+        </Provider>
+      );
+
+      // Updates the form
+      await waitForElementToBeRemoved(screen.queryByText(/loading\.\.\./i));
+      fireEvent.change(screen.getByLabelText(/organization type \*/i), {
+        target: { value: "camp" },
+      });
+      fireEvent.change(screen.getByLabelText(/organization name \*/i), {
+        target: { value: "Strawberry Fields 2" },
+      });
+      const saveButton = screen.getByText("Save settings");
+      expect(saveButton).toBeEnabled();
+      fireEvent.click(saveButton);
+      await waitFor(() =>
+        expect(showSuccessSpy).toHaveBeenCalledWith(
+          "The settings for the organization have been updated",
+          "Updated organization"
+        )
+      );
+      expect(saveButton).toBeDisabled();
+
+      // checks that the form validation properly handles isDirty check
+      fireEvent.change(screen.getByLabelText(/organization name \*/i), {
+        target: { value: "Strawberry Fields 3" },
+      });
+      await waitFor(() => expect(saveButton).toBeEnabled());
+      fireEvent.change(screen.getByLabelText(/organization name \*/i), {
+        target: { value: "Strawberry Fields 2" },
+      });
+      await waitFor(() => expect(saveButton).toBeDisabled());
+    });
   });
 });
 
@@ -109,6 +225,9 @@ const mocks = [
       variables: {
         type: "hospice",
       },
+    },
+    result: {
+      data: { updateOrganization: null },
     },
   },
 ];

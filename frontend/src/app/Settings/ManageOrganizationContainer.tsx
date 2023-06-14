@@ -84,6 +84,7 @@ const ManageOrganizationContainer: any = () => {
         "There was an error updating the organization settings",
         "Error updating organization"
       );
+      throw e;
     }
   };
 

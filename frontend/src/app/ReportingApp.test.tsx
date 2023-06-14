@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
+  act,
   render,
   screen,
   waitFor,
@@ -252,8 +253,11 @@ describe("App", () => {
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading account information...")
     );
-    await userEvent.click(
-      screen.getAllByText("Testing Site", { exact: false })[0]
+    await act(
+      async () =>
+        await userEvent.click(
+          screen.getAllByText("Testing Site", { exact: false })[0]
+        )
     );
     expect(
       await screen.findByText("COVID-19 testing data")
@@ -280,7 +284,10 @@ describe("App", () => {
       exact: false,
     });
     expect(trainingWelcome).toBeInTheDocument();
-    await userEvent.click(screen.getByText("Got it", { exact: false }));
+    await act(
+      async () =>
+        await userEvent.click(screen.getByText("Got it", { exact: false }))
+    );
     expect(trainingWelcome).not.toBeInTheDocument();
   });
 

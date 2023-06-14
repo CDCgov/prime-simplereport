@@ -36,14 +36,19 @@ public class CsvValidatorUtils {
   private static final String PHONE_NUMBER_REGEX = "^[1-9]\\d{2}-\\d{3}-\\d{4}$";
 
   // MM/DD/YYYY OR M/D/YYYY
-  private static final String DATE_REGEX = "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}$";
+  // Month and day values of 0 or 00 are invalid, but format of 01 to 09 is still allowed.
+  // Months are limited to values between 1 and 12
+  // Days are limited to values between 1 and 31
+  private static final String DATE_REGEX =
+      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}$";
 
   // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
   private static final String DATE_TIME_REGEX =
-      "^\\d{1,2}\\/\\d{1,2}\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
+      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
+  private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
-  private static final String ALPHABET_REGEX = "^[a-zA-Z]+$";
+  private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final Set<String> VALID_STATE_CODES =
       Stream.concat(
               STATE_CODES.stream().map(String::toLowerCase),
@@ -118,16 +123,7 @@ public class CsvValidatorUtils {
           "u", UNKNOWN_CODE);
   private static final Set<String> TEST_RESULT_VALUES =
       Set.of("positive", "negative", "not detected", "detected", "invalid result");
-  private static final Set<String> SPECIMEN_TYPE_VALUES =
-      Set.of(
-          "nasal swab",
-          "nasopharyngeal swab",
-          "anterior nares swab",
-          "throat swab",
-          "oropharyngeal swab",
-          "whole blood",
-          "plasma",
-          "serum");
+
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
           "22232009", "hospital",
@@ -170,8 +166,44 @@ public class CsvValidatorUtils {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
   }
 
-  public static List<FeedbackMessage> validateSpecimenType(ValueOrError input) {
-    return validateSpecificValueOrSNOMED(input, SPECIMEN_TYPE_VALUES);
+  public static List<FeedbackMessage> validateSpecimenType(
+      ValueOrError input, Map<String, String> specimenNameSNOMEDMap) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = parseString(input.getValue());
+
+    if (value == null) {
+      return errors;
+    }
+
+    boolean nonSNOMEDValue = value.matches(ALPHABET_REGEX);
+
+    if (nonSNOMEDValue) {
+      if (!specimenNameSNOMEDMap.containsKey(value.toLowerCase())) {
+        errors.add(
+            FeedbackMessage.builder()
+                .scope(ITEM_SCOPE)
+                .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+                .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+                .fieldRequired(true)
+                .fieldHeader(input.getHeader())
+                .build());
+      }
+
+      return errors;
+    }
+
+    if (!value.matches(SNOMED_REGEX)) {
+      errors.add(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(true)
+              .fieldHeader(input.getHeader())
+              .build());
+    }
+
+    return errors;
   }
 
   public static List<FeedbackMessage> validateResidence(ValueOrError input) {
@@ -236,8 +268,13 @@ public class CsvValidatorUtils {
       PAST_DATE_FLEXIBLE_FORMATTER.parse(input.getValue());
     } catch (DateTimeParseException e) {
       errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
     }
     return errors;
   }
@@ -267,10 +304,20 @@ public class CsvValidatorUtils {
 
   public static ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
     String value = row.get(name);
-    if (isRequired && (value == null || value.trim().isEmpty())) {
-      return new ValueOrError(new FeedbackMessage(ITEM_SCOPE, getRequiredValueErrorMessage(name)));
+    if (value != null && !value.isBlank()) {
+      value = value.strip();
     }
-    return new ValueOrError(value, name);
+    if (isRequired && (value == null || value.isBlank())) {
+      return new ValueOrError(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(name)
+              .message(getRequiredValueErrorMessage(name))
+              .errorType(FeedbackMessage.ErrorType.MISSING_DATA)
+              .fieldRequired(true)
+              .build());
+    }
+    return new ValueOrError(value, name, isRequired);
   }
 
   public static List<FeedbackMessage> hasMissingRequiredHeaders(
@@ -283,10 +330,14 @@ public class CsvValidatorUtils {
             requiredField -> {
               if (!columns.contains(requiredField)) {
                 var feedback =
-                    new FeedbackMessage(
-                        CsvValidatorUtils.ITEM_SCOPE,
-                        "The header for column " + requiredField + " is missing or invalid.",
-                        null);
+                    FeedbackMessage.builder()
+                        .scope(CsvValidatorUtils.ITEM_SCOPE)
+                        .message(
+                            "The header for column " + requiredField + " is missing or invalid.")
+                        .fieldHeader(requiredField)
+                        .errorType(FeedbackMessage.ErrorType.MISSING_HEADER)
+                        .fieldRequired(true)
+                        .build();
                 errors.add(feedback);
               }
             });
@@ -388,8 +439,13 @@ public class CsvValidatorUtils {
     }
     if (!value.matches(regex)) {
       errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
     }
     return errors;
   }
@@ -403,8 +459,13 @@ public class CsvValidatorUtils {
     }
     if (!acceptableValues.contains(value.toLowerCase())) {
       errors.add(
-          new FeedbackMessage(
-              ITEM_SCOPE, getInValidValueErrorMessage(input.getValue(), input.getHeader())));
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(input.isRequired())
+              .build());
     }
     return errors;
   }
@@ -418,24 +479,31 @@ public class CsvValidatorUtils {
 
   @Getter
   public static class ValueOrError {
-    public final List<FeedbackMessage> error;
-    public final String value;
-    public final String header;
+    private final List<FeedbackMessage> error;
+    private final String value;
+    private final String header;
+    private final boolean required;
 
-    public ValueOrError(String value, String header) {
+    public ValueOrError(String value, String header, boolean required) {
       this.value = value;
       this.error = Collections.emptyList();
       this.header = header;
+      this.required = required;
+    }
+
+    public ValueOrError(String value, String header) {
+      this(value, header, false);
     }
 
     public ValueOrError(FeedbackMessage error) {
       this.value = null;
       this.header = null;
       this.error = List.of(error);
+      this.required = error.isFieldRequired();
     }
 
     public List<FeedbackMessage> getPossibleError() {
-      return this.error;
+      return this.getError();
     }
   }
 }

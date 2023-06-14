@@ -32,17 +32,28 @@ variable "acr_server" {
   default     = "simplereportacr.azurecr.io"
 }
 
-# Rollback info
-variable "rollback_tag" {
-  description = "The tag to rollback to"
+variable "acr_image_tag" {
+  description = "Database client ACR tag to deploy"
   type        = string
 }
-variable "spring_datasource_url" {
-  description = "The JDBC URL for the database"
-  type        = string
-  sensitive   = true
-}
+
+# Client container specifics
 variable "subnet_id" {
   description = "The subnet to deploy the container instance to"
+  type        = string
+}
+
+variable "storage_account_name" {
+  description = "The name of the Azure storage account for data export"
+  type        = string
+}
+
+variable "storage_account_key" {
+  description = "The key for the Azure storage account for data export"
+  type        = string
+}
+
+variable "storage_share_name" {
+  description = "The name of the Azure storage account share for data export"
   type        = string
 }

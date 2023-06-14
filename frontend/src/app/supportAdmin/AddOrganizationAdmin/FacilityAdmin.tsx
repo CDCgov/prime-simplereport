@@ -1,90 +1,35 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
+import { FieldErrors, UseFormRegister, RegisterOptions } from "react-hook-form";
 
-import Input from "../../commonComponents/Input";
-import { showError } from "../../utils/srToast";
 import { camelToSentenceCase } from "../../utils/text";
+import TextInput from "../../commonComponents/TextInput";
+import { emailRegex } from "../../utils/email";
 
-import {
-  FacilityAdminErrors,
-  facilityAdminSchema,
-} from "./facilityAdminSchema";
+import { OrganizationAdminFormData } from "./AddOrganizationAdminForm";
 
-export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
-  const [errors, setErrors] = useState<FacilityAdminErrors>({});
-
-  const clearError = useCallback(
-    (field: keyof FacilityAdminErrors) => {
-      if (errors[field]) {
-        setErrors({ ...errors, [field]: undefined });
-      }
-    },
-    [errors]
-  );
-
-  const validateField = useCallback(
-    async (field: keyof FacilityAdminErrors) => {
-      try {
-        clearError(field);
-        await facilityAdminSchema.validateAt(field, admin);
-      } catch (e: any) {
-        setErrors((existingErrors) => ({
-          ...existingErrors,
-          [field]: e.errors?.join(", "),
-        }));
-      }
-    },
-    [admin, clearError]
-  );
-
-  const validateAdmin = async () => {
-    try {
-      await facilityAdminSchema.validate(admin, { abortEarly: false });
-      return "";
-    } catch (e: any) {
-      const newErrors = e.inner.reduce(
-        (
-          acc: FacilityAdminErrors,
-          el: { path: keyof FacilityAdminErrors; message: string }
-        ) => {
-          acc[el.path] = el.message;
-          return acc;
-        },
-        {} as FacilityAdminErrors
-      );
-      setErrors(newErrors);
-      showError(
-        "Please check the form to make sure you complete all of the required fields.",
-        "Form Errors"
-      );
-      return "error";
-    }
-  };
-
-  return { errors, validateField, validateAdmin };
-};
 interface Props {
   admin: FacilityAdmin;
-  updateAdmin: (admin: FacilityAdmin) => void;
+  register: UseFormRegister<OrganizationAdminFormData>;
+  errors: FieldErrors<OrganizationAdminFormData>;
 }
 
-const FacilityAdmin: React.FC<Props> = ({ admin, updateAdmin }) => {
-  const onChange =
-    <K extends keyof FacilityAdmin>(field: K) =>
-    (value: FacilityAdmin[K]) => {
-      updateAdmin({ ...admin, [field]: value });
-    };
-
-  const { errors, validateField } = useFacilityAdminValidation(admin);
-
-  const getValidationStatus = (field: keyof FacilityAdmin) =>
-    errors[field] ? "error" : undefined;
-
-  const fields = {
-    ["firstName" as keyof FacilityAdmin]: true,
-    ["middleName" as keyof FacilityAdmin]: false,
-    ["lastName" as keyof FacilityAdmin]: true,
-    ["suffix" as keyof FacilityAdmin]: false,
-    ["email" as keyof FacilityAdmin]: true,
+const FacilityAdmin: React.FC<Props> = ({ admin, register, errors }) => {
+  const fields: { [key: string]: RegisterOptions } = {
+    ["firstName" as keyof FacilityAdmin]: {
+      required: `First name is missing`,
+    },
+    ["middleName" as keyof FacilityAdmin]: { required: false },
+    ["lastName" as keyof FacilityAdmin]: {
+      required: `Last name is missing`,
+    },
+    ["suffix" as keyof FacilityAdmin]: { required: false },
+    ["email" as keyof FacilityAdmin]: {
+      required: `Email is missing`,
+      pattern: {
+        value: emailRegex,
+        message: "Invalid email address",
+      },
+    },
   };
 
   return (
@@ -95,19 +40,20 @@ const FacilityAdmin: React.FC<Props> = ({ admin, updateAdmin }) => {
         </h2>
       </div>
       <div className="usa-card__body usa-form usa-form--large">
-        {Object.entries(fields).map(([key, required]) => {
+        {Object.entries(fields).map(([key, validation]) => {
           const field = key as keyof FacilityAdmin;
           return (
-            <Input
+            <TextInput
               label={camelToSentenceCase(field)}
-              field={field}
               key={field}
-              formObject={admin}
-              onChange={onChange}
-              errors={errors}
-              validate={validateField}
-              getValidationStatus={getValidationStatus}
-              required={required}
+              name={field}
+              value={admin[field] || undefined}
+              validationStatus={
+                errors?.admin?.[field]?.type ? "error" : undefined
+              }
+              errorMessage={errors?.admin?.[field]?.message}
+              required={!!validation.required}
+              registrationProps={register(`admin.${field}`, validation)}
             />
           );
         })}

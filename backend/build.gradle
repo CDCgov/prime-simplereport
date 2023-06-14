@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.10'
+    id 'org.springframework.boot' version '2.7.12'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
@@ -28,6 +28,7 @@ jar {
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-actuator'
     implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
@@ -53,7 +54,6 @@ dependencies {
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.0'
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
 
     // UI layer dependencies
     implementation 'org.json:json:20230227'
@@ -62,7 +62,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.7'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
@@ -71,7 +71,7 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:3.4.9'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.4.13'
 
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
@@ -91,10 +91,7 @@ dependencies {
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.16.1'
-    implementation 'com.azure:azure-core-http-netty:1.13.2'
-    implementation 'com.azure:azure-core:1.38.0'
-    implementation 'com.azure:azure-storage-common:12.20.1'
+    implementation 'com.azure:azure-storage-queue:12.17.0'
 
     // RandomStringUtils to generate PatientSelfRegistrationLink
     implementation 'org.apache.commons:commons-lang3:3.12.0'
@@ -127,8 +124,8 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.4.3'
-    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:5.6.109' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://app.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3358779.
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.4.4'
+    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.0.4' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://app.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3358779.
 
     implementation 'commons-validator:commons-validator:1.7'
 }

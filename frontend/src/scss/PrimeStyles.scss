@@ -847,6 +847,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   padding: 0.5rem 1rem;
 }
 
+.usa-table thead tr:hover {
+  background-color: transparent;
+}
+
 .usa-select,
 .usa-range,
 .usa-input,

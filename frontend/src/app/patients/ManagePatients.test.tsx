@@ -1,7 +1,10 @@
 import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import {
+  act,
+  fireEvent,
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -76,7 +79,7 @@ describe("ManagePatients", () => {
     render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     const input = await screen.findByLabelText(PATIENT_TERM_CAP);
-    await userEvent.type(input, "Al");
+    await act(async () => await userEvent.type(input, "Al"));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Abramcik", { exact: false })
     );
@@ -87,7 +90,7 @@ describe("ManagePatients", () => {
     render(<TestContainer />);
     expect(await screen.findByText(patients[0].lastName, { exact: false }));
     const page2 = screen.getByRole("link", { name: "Page 2" });
-    await userEvent.click(page2);
+    await act(async () => await userEvent.click(page2));
     expect(await screen.findByText(patients[20].lastName, { exact: false }));
   });
 
@@ -97,26 +100,56 @@ describe("ManagePatients", () => {
       expect(await screen.findByText(patients[0].lastName, { exact: false }));
 
       const menu = (await screen.findAllByText("More actions"))[0];
-      await userEvent.click(menu);
-      await userEvent.click(await screen.findByText(`Archive ${PATIENT_TERM}`));
+      await act(async () => await userEvent.click(menu));
+      await act(
+        async () =>
+          await userEvent.click(
+            await screen.findByText(`Archive ${PATIENT_TERM}`)
+          )
+      );
 
       expect(await screen.findByText("Yes, I'm sure", { exact: false }));
-      await userEvent.click(screen.getByText("No, go back", { exact: false }));
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByText("No, go back", { exact: false })
+          )
+      );
       expect(
         await screen.findByText(patients[0].lastName, { exact: false })
       ).toBeInTheDocument();
+    });
+
+    it("when exiting archive modal, the action button is refocused", async () => {
+      render(<TestContainer />);
+      const menu = (await screen.findAllByText("More actions"))[0];
+      await act(async () => await userEvent.click(menu));
+      await screen.findByText(`Archive ${PATIENT_TERM}`);
+      fireEvent.click(screen.getByText(`Archive ${PATIENT_TERM}`));
+      await screen.findByText("No, go back");
+      await act(
+        async () => await userEvent.click(screen.getByText("No, go back"))
+      );
+
+      await waitFor(() =>
+        expect(screen.queryByText("No, go back")).not.toBeInTheDocument()
+      );
+
+      expect(
+        screen.getByTestId(`action_${patients[0].internalId}`, { exact: false })
+      ).toHaveFocus();
     });
 
     it("can start test", async () => {
       render(<TestContainer />);
       expect(await screen.findByText(patients[0].lastName, { exact: false }));
       const menu = (await screen.findAllByText("More actions"))[0];
-      await userEvent.click(menu);
+      await act(async () => await userEvent.click(menu));
 
       const startTestButton = await screen.findByText("Start test");
       expect(startTestButton).toBeInTheDocument();
 
-      await userEvent.click(startTestButton);
+      await act(async () => await userEvent.click(startTestButton));
       expect(await screen.findByText("Testing Queue!", { exact: false }));
     });
   });
@@ -146,7 +179,7 @@ describe("ManagePatients", () => {
     const addPatientsButton = await screen.findByText("Add patients");
     expect(addPatientsButton).toBeInTheDocument();
 
-    await userEvent.click(addPatientsButton);
+    await act(async () => await userEvent.click(addPatientsButton));
     expect(
       await screen.findByText("Import from spreadsheet")
     ).toBeInTheDocument();

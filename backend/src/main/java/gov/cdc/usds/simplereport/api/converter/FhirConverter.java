@@ -65,6 +65,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.extern.slf4j.Slf4j;
@@ -415,9 +416,15 @@ public class FhirConverter {
 
     patient.setId(props.getId());
     patient.addIdentifier().setValue(props.getId());
-    convertPhoneNumbersToContactPoint(props.getPhoneNumbers()).forEach(patient::addTelecom);
-    convertEmailsToContactPoint(ContactPointUse.HOME, props.getEmails())
-        .forEach(patient::addTelecom);
+
+    if (!CollectionUtils.isEmpty(props.getPhoneNumbers())) {
+      convertPhoneNumbersToContactPoint(props.getPhoneNumbers()).forEach(patient::addTelecom);
+    }
+
+    if (!CollectionUtils.isEmpty(props.getEmails())) {
+      convertEmailsToContactPoint(ContactPointUse.HOME, props.getEmails())
+          .forEach(patient::addTelecom);
+    }
     return patient;
   }
 
@@ -486,13 +493,21 @@ public class FhirConverter {
     return results.stream()
         .map(
             result -> {
-              Optional<DeviceTypeDisease> deviceTypeDisease =
+              List<DeviceTypeDisease> deviceTypeDiseaseEntries =
                   deviceType.getSupportedDiseaseTestPerformed().stream()
                       .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
-                      .findFirst();
-              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease);
-              String equipmentUid = getEquipmentUid(deviceTypeDisease);
-              String testkitNameId = getTestkitNameId(deviceTypeDisease);
+                      .toList();
+              String testPerformedLoincCode =
+                  deviceTypeDiseaseEntries.stream()
+                      .findFirst()
+                      .map(DeviceTypeDisease::getTestPerformedLoincCode)
+                      .orElse(null);
+              String equipmentUid =
+                  getCommonDiseaseValue(
+                      deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+              String testkitNameId =
+                  getCommonDiseaseValue(
+                      deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
               return convertToObservation(
                   result,
                   testPerformedLoincCode,
@@ -505,16 +520,11 @@ public class FhirConverter {
         .collect(Collectors.toList());
   }
 
-  private static String getTestkitNameId(Optional<DeviceTypeDisease> deviceTypeDisease) {
-    return deviceTypeDisease.map(DeviceTypeDisease::getTestkitNameId).orElse(null);
-  }
-
-  private static String getEquipmentUid(Optional<DeviceTypeDisease> deviceTypeDisease) {
-    return deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
-  }
-
-  private static String getTestPerformedLoincCode(Optional<DeviceTypeDisease> deviceTypeDisease) {
-    return deviceTypeDisease.map(DeviceTypeDisease::getTestPerformedLoincCode).orElse(null);
+  public static String getCommonDiseaseValue(
+      List<DeviceTypeDisease> deviceTypeDiseases,
+      Function<DeviceTypeDisease, String> diseaseValue) {
+    List<String> distinctValues = deviceTypeDiseases.stream().map(diseaseValue).distinct().toList();
+    return distinctValues.size() == 1 ? distinctValues.get(0) : null;
   }
 
   public static Observation convertToObservation(
@@ -617,41 +627,43 @@ public class FhirConverter {
     }
   }
 
-  public static Set<Observation> convertToAOEObservations(
-      String eventId, AskOnEntrySurvey surveyData) {
+  public static Set<Observation> convertToAOEObservation(
+      String eventId, Boolean symptomatic, LocalDate symptomOnsetDate) {
     var observations = new HashSet<Observation>();
     var symptomaticCode =
         createLoincConcept(
             LOINC_AOE_SYMPTOMATIC,
             "Has symptoms related to condition of interest",
             "Has symptoms related to condition of interest");
-    if (surveyData.getNoSymptoms()) {
-      // user reported as not symptomatic
+    observations.add(
+        createAOEObservation(
+            eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(symptomatic)));
+
+    if (Boolean.TRUE.equals(symptomatic) && symptomOnsetDate != null) {
       observations.add(
           createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(false)));
-    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
-      // user reported as symptomatic
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(true)));
-      if (surveyData.getSymptomOnsetDate() != null) {
-        observations.add(
-            createAOEObservation(
-                eventId + LOINC_AOE_SYMPTOM_ONSET,
-                createLoincConcept(
-                    LOINC_AOE_SYMPTOM_ONSET,
-                    "Illness or injury onset date and time",
-                    "Illness or injury onset date and time"),
-                new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
-      }
-    } else {
-      // if neither no symptoms nor any symptoms checked, AoE form was not completed
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(null)));
+              eventId + LOINC_AOE_SYMPTOM_ONSET,
+              createLoincConcept(
+                  LOINC_AOE_SYMPTOM_ONSET,
+                  "Illness or injury onset date and time",
+                  "Illness or injury onset date and time"),
+              new DateTimeType(symptomOnsetDate.toString())));
     }
     return observations;
+  }
+
+  public static Set<Observation> convertToAOEObservations(
+      String eventId, AskOnEntrySurvey surveyData) {
+    Boolean symptomatic = null;
+    if (surveyData.getNoSymptoms()) {
+      symptomatic = false;
+    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
+      symptomatic = true;
+    } // implied else: AoE form was not completed. Symptomatic set to null
+
+    var symptomOnsetDate = surveyData.getSymptomOnsetDate();
+
+    return convertToAOEObservation(eventId, symptomatic, symptomOnsetDate);
   }
 
   public static Observation createAOEObservation(

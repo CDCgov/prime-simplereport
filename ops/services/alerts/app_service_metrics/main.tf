@@ -232,35 +232,6 @@ ${local.skip_on_weekends}
   }
 }
 
-resource "azurerm_monitor_scheduled_query_rules_alert" "batched_uploader_function_not_triggering" {
-  name                = "${var.env}-batched-uploader-function-not-triggering"
-  description         = "QueueBatchedReportStreamUploader is not triggering on schedule"
-  location            = data.azurerm_resource_group.app.location
-  resource_group_name = var.rg_name
-  severity            = var.severity
-  frequency           = 5
-  time_window         = 7
-  enabled             = contains(var.disabled_alerts, "batched_uploader_function_not_triggering") ? false : true
-
-  data_source_id = var.app_insights_id
-
-  query = <<-QUERY
-requests
-${local.skip_on_weekends}
-| where timestamp >= ago(7m) 
-    and operation_Name =~ 'QueueBatchedReportStreamUploader'
-  QUERY
-
-  trigger {
-    operator  = "Equal"
-    threshold = 0
-  }
-
-  action {
-    action_group = var.action_group_ids
-  }
-}
-
 resource "azurerm_monitor_scheduled_query_rules_alert" "bulk_results_upload" {
   name                = "${var.env}-bulk_results_upload"
   description         = "${local.env_title} alert when bulk uploads fail"
@@ -372,35 +343,6 @@ ${local.skip_on_weekends}
   trigger {
     operator  = "GreaterThan"
     threshold = 4
-  }
-
-  action {
-    action_group = var.action_group_ids
-  }
-}
-
-resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_function_not_triggering" {
-  name                = "${var.env}-fhir-batched-uploader-function-not-triggering"
-  description         = "FHIRTestEventReporter is not triggering on schedule"
-  location            = data.azurerm_resource_group.app.location
-  resource_group_name = var.rg_name
-  severity            = var.severity
-  frequency           = 5
-  time_window         = 7
-  enabled             = contains(var.disabled_alerts, "fhir_batched_uploader_function_not_triggering") ? false : true
-
-  data_source_id = var.app_insights_id
-
-  query = <<-QUERY
-requests
-${local.skip_on_weekends}
-| where timestamp >= ago(7m) 
-    and operation_Name =~ 'FHIRTestEventReporter'
-  QUERY
-
-  trigger {
-    operator  = "Equal"
-    threshold = 0
   }
 
   action {

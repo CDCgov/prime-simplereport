@@ -97,7 +97,7 @@ class DemoExperianServiceTest extends BaseServiceTest<DemoExperianService> {
   private IdentityVerificationAnswersRequest createValidAnswersRequest(UUID uuid) {
     IdentityVerificationAnswersRequest request = new IdentityVerificationAnswersRequest();
     request.setSessionId(uuid.toString());
-    request.setAnswers(Arrays.asList(1, 4, 2, 1));
+    request.setAnswers(Arrays.asList(1, 4, 2, 1, 3));
     return request;
   }
 }
