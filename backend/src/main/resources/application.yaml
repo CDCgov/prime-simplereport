@@ -136,8 +136,8 @@ twilio:
 logging:
   queueSize: 500
   pattern:
-    console: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": \"%replace(%m%wEx){'[\r\n]+', '\\n'}%nopex\"}%n"
-    json-log: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": %replace(%m%wEx){'[\r\n]+', '\\n'}%nopex}%n"
+    console: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"org-id\": \"%X{org-id}\", \"api-user\": \"%X{api-user}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": \"%replace(%m%wEx){'[\r\n]+', '\\n'}%nopex\"}%n"
+    json-log: "{\"time\": \"%d{yyyy-MM-dd HH:mm:ss.SSS}\", \"org-id\": \"%X{org-id}\", \"api-user\": \"%X{api-user}\", \"level\": \"%p\", \"source\": \"%logger{39}:%L\", \"message\": %replace(%m%wEx){'[\r\n]+', '\\n'}%nopex}%n"
 hibernate.query.interceptor.error-level: ERROR
 datahub:
   url: ${DATAHUB_URL:http://localhost:9561}

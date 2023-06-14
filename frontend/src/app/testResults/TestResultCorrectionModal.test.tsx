@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import "./TestResultCorrectionModal.scss";
 import userEvent from "@testing-library/user-event";
 import configureStore from "redux-mock-store";
@@ -156,7 +156,10 @@ describe("TestResultCorrectionModal", () => {
     });
 
     it("sends a GraphQL request to perform the removal", async () => {
-      await userEvent.click(await screen.findByText("Yes, I'm sure"));
+      await act(
+        async () =>
+          await userEvent.click(await screen.findByText("Yes, I'm sure"))
+      );
 
       await waitFor(() => {
         expect(markAsErrorMockDidComplete).toBe(true);
@@ -209,13 +212,16 @@ describe("TestResultCorrectionModal", () => {
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      await userEvent.selectOptions(
-        dropdown,
-        TestCorrectionReasons.INCORRECT_RESULT
+      await act(
+        async () =>
+          await userEvent.selectOptions(
+            dropdown,
+            TestCorrectionReasons.INCORRECT_RESULT
+          )
       );
 
       const submitButton = await screen.findByText("Yes, I'm sure");
-      await userEvent.click(submitButton);
+      await act(async () => await userEvent.click(submitButton));
       await waitFor(() => {
         expect(markAsCorrectMockDidComplete).toBe(true);
       });
@@ -286,7 +292,10 @@ describe("TestResultCorrectionModal", () => {
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      await userEvent.selectOptions(dropdown, TestCorrectionReasons.OTHER);
+      await act(
+        async () =>
+          await userEvent.selectOptions(dropdown, TestCorrectionReasons.OTHER)
+      );
 
       expect(
         await screen.findByText("Additional information", { exact: false })
@@ -318,7 +327,7 @@ describe("TestResultCorrectionModal", () => {
       const correctionActionOption = screen.getByLabelText(
         TestCorrectionActions.CORRECT_RESULT
       );
-      await userEvent.click(correctionActionOption);
+      await act(async () => await userEvent.click(correctionActionOption));
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
@@ -328,12 +337,12 @@ describe("TestResultCorrectionModal", () => {
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
-      await userEvent.type(additionalDetails, "no");
+      await act(async () => await userEvent.type(additionalDetails, "no"));
 
       const correctionActionOption = screen.getByLabelText(
         TestCorrectionActions.CORRECT_RESULT
       );
-      await userEvent.click(correctionActionOption);
+      await act(async () => await userEvent.click(correctionActionOption));
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
@@ -343,7 +352,9 @@ describe("TestResultCorrectionModal", () => {
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
-      await userEvent.type(additionalDetails, "Some good reason");
+      await act(
+        async () => await userEvent.type(additionalDetails, "Some good reason")
+      );
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
@@ -354,15 +365,18 @@ describe("TestResultCorrectionModal", () => {
         const additionalDetails = await screen.findByTestId(
           "additionalInformation"
         );
-        await userEvent.type(additionalDetails, "Some good reason");
+        await act(
+          async () =>
+            await userEvent.type(additionalDetails, "Some good reason")
+        );
         const correctionActionOption = screen.getByLabelText(
           TestCorrectionActions.MARK_AS_ERROR,
           { exact: false }
         );
-        await userEvent.click(correctionActionOption);
+        await act(async () => await userEvent.click(correctionActionOption));
 
         const submitButton = await screen.findByText("Yes, I'm sure");
-        await userEvent.click(submitButton);
+        await act(async () => await userEvent.click(submitButton));
         await waitFor(() => {
           expect(markAsErrorMockDidComplete).toBe(true);
         });
@@ -372,16 +386,19 @@ describe("TestResultCorrectionModal", () => {
         const additionalDetails = await screen.findByTestId(
           "additionalInformation"
         );
-        await userEvent.type(additionalDetails, "Some good reason");
+        await act(
+          async () =>
+            await userEvent.type(additionalDetails, "Some good reason")
+        );
 
         const correctionActionOption = screen.getAllByLabelText(
           TestCorrectionActions.CORRECT_RESULT,
           { exact: false }
         )[0];
 
-        await userEvent.click(correctionActionOption);
+        await act(async () => await userEvent.click(correctionActionOption));
         const submitButton = await screen.findByText("Yes, I'm sure");
-        await userEvent.click(submitButton);
+        await act(async () => await userEvent.click(submitButton));
         await waitFor(() => expect(markAsCorrectionMockDidComplete).toBe(true));
       });
     });
