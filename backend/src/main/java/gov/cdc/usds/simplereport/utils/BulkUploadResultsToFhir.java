@@ -360,7 +360,9 @@ public class BulkUploadResultsToFhir {
               row.getTestingLabCity().getValue(),
               row.getTestingLabState().getValue(),
               row.getTestingLabZipCode().getValue());
-      zoneOffset = ZoneOffset.ofHours(testResultTimezoneInfo.utcOffset);
+      if (testResultTimezoneInfo != null) {
+        zoneOffset = ZoneOffset.ofHours(testResultTimezoneInfo.utcOffset);
+      }
     } catch (InvalidAddressException exception) {
       log.error("Unable to find timezone by testing lab address");
     }
