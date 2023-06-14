@@ -129,6 +129,17 @@ public class BulkUploadResultsToFhir {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
     var testEventId = row.getAccessionNumber().getValue();
+
+    LocalDateTime testResultDate;
+    TemporalAccessor temporalAccessor =
+        dateTimeFormatter.parseBest(
+            row.getTestResultDate().getValue(), LocalDateTime::from, LocalDate::from);
+    if (temporalAccessor instanceof LocalDateTime) {
+      testResultDate = (LocalDateTime) temporalAccessor;
+    } else {
+      testResultDate = ((LocalDate) temporalAccessor).atStartOfDay();
+    }
+
     var patientAddr =
         new StreetAddress(
             row.getPatientStreet().getValue(),
@@ -293,16 +304,6 @@ public class BulkUploadResultsToFhir {
             null,
             uuidGenerator.randomUUID().toString(),
             uuidGenerator.randomUUID().toString());
-
-    LocalDateTime testResultDate;
-    TemporalAccessor temporalAccessor =
-        dateTimeFormatter.parseBest(
-            row.getTestResultDate().getValue(), LocalDateTime::from, LocalDate::from);
-    if (temporalAccessor instanceof LocalDateTime) {
-      testResultDate = (LocalDateTime) temporalAccessor;
-    } else {
-      testResultDate = ((LocalDate) temporalAccessor).atStartOfDay();
-    }
 
     var observation =
         List.of(
