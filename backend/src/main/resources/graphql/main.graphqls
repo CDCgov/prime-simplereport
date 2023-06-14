@@ -487,8 +487,8 @@ type Mutation {
     middleName: String
     lastName: String
     suffix: String
-    email: String!
-    role: Role!
+    email: String
+    role: Role
     user: UserInput
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
