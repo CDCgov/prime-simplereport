@@ -27,7 +27,7 @@ interface Props {
   errorMessage?: React.ReactNode;
   validationStatus?: "error" | "success";
   selectClassName?: string;
-  hintText?: string;
+  hintText?: string | React.ReactNode;
   registrationProps?: UseFormRegisterReturn<any>;
 }
 

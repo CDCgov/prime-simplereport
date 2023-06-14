@@ -45,13 +45,13 @@ const validFacility: Facility = {
   orderingProvider: {
     firstName: "Frank",
     lastName: "Grimes",
-    NPI: "000",
+    NPI: "1231231231",
     street: null,
     zipCode: null,
     state: null,
     middleName: null,
     suffix: null,
-    phone: "phone",
+    phone: "2015592381",
     streetTwo: null,
     city: null,
   },
@@ -187,7 +187,7 @@ describe("FacilityForm", () => {
       });
       await act(async () => await userEvent.clear(facilityNameInput));
       await act(async () => await userEvent.tab());
-      const nameWarning = await screen.findByText("Facility name is missing");
+      const nameWarning = await screen.findByText("Facility name is required");
       expect(nameWarning).toBeInTheDocument();
       await act(
         async () => await userEvent.type(facilityNameInput, "Test facility A")
@@ -202,7 +202,7 @@ describe("FacilityForm", () => {
       await act(async () => await userEvent.clear(facilityStreetAddressInput));
       await act(async () => await userEvent.tab());
       const streetAddressWarning = await screen.findByText(
-        "Facility street is missing"
+        "Facility street is required"
       );
       expect(streetAddressWarning).toBeInTheDocument();
       await act(
@@ -216,7 +216,7 @@ describe("FacilityForm", () => {
       await act(async () => await userEvent.clear(facilityZipCodeInput));
       await act(async () => await userEvent.tab());
       const facilityZipCodeWarning = await screen.findByText(
-        "Facility zip code is missing"
+        "Facility ZIP code is required"
       );
       expect(facilityZipCodeWarning).toBeInTheDocument();
     });
@@ -450,7 +450,7 @@ describe("FacilityForm", () => {
         expect(saveFacility).toBeCalledTimes(1);
       });
 
-      it("doesn't allow a Z-CLIA for a non-Washington state", async () => {
+      it("doesn't allow a Z-CLIA for a non (WA, NM, VT, IL, WY) state", async () => {
         const marylandFacility: Facility = validFacility;
         marylandFacility.state = "MD";
         render(
@@ -786,13 +786,23 @@ describe("FacilityForm", () => {
       await validateAddress(saveFacility, "suggested address");
       expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
       expect(saveFacility).toBeCalledWith({
-        ...validFacility,
-        name: "La Croix Facility",
-        ...addresses[0].good,
+        facility: {
+          name: "La Croix Facility",
+          cliaNumber: "12D4567890",
+          phone: "(202) 395-3080",
+          email: null,
+          ...addresses[0].good,
+        },
         orderingProvider: {
-          ...validFacility.orderingProvider,
+          firstName: "Frank",
+          lastName: "Grimes",
+          NPI: "1231231231",
+          middleName: null,
+          suffix: null,
+          phone: "(201) 559-2381",
           ...addresses[1].good,
         },
+        devices: ["device-1", "device-2"],
       });
     });
 

@@ -1,142 +1,54 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
+import {
+  getBestSuggestion,
+  getZipCodeData,
+  isValidZipCodeForState,
+  suggestionIsCloseEnough,
+} from "../../utils/smartyStreets";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { showError } from "../../utils/srToast";
-import { stateCodes, urls } from "../../../config/constants";
-import { getStateNameFromCode, requiresOrderProvider } from "../../utils/state";
-import {
-  getBestSuggestion,
-  suggestionIsCloseEnough,
-  isValidZipCodeForState,
-  getZipCodeData,
-} from "../../utils/smartyStreets";
 import {
   AddressConfirmationModal,
   AddressSuggestionConfig,
 } from "../../commonComponents/AddressConfirmationModal";
 import Prompt from "../../utils/Prompt";
-import { focusOnFirstInputWithError } from "../../utils/formValidation";
+import { formatPhoneNumberParens } from "../../utils/text";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
-import { FacilityErrors, facilitySchema } from "./facilitySchema";
 
-export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
-
-export const useFacilityValidation = (facility: Facility) => {
-  const [errors, setErrors] = useState<FacilityErrors>({});
-  const focusOnce = useRef(false);
-
-  const clearError = useCallback(
-    (field: keyof FacilityErrors) => {
-      if (errors[field]) {
-        setErrors({ ...errors, [field]: undefined });
-      }
-    },
-    [errors]
-  );
-
-  const validateField = useCallback(
-    async (field: keyof FacilityErrors) => {
-      try {
-        clearError(field);
-        await facilitySchema.validateAt(field, facility, {
-          context: {
-            orderingProviderIsRequired: requiresOrderProvider(facility.state),
-          },
-        });
-      } catch (e: any) {
-        const errorMessage =
-          field === "state" && stateCodes.includes(facility[field])
-            ? createStateError(facility.state)
-            : e.errors.join(", ");
-        setErrors((existingErrors) => ({
-          ...existingErrors,
-          [field]: errorMessage,
-        }));
-      }
-    },
-    [facility, clearError]
-  );
-
-  const validateFacility = async () => {
-    try {
-      await facilitySchema.validate(facility, {
-        abortEarly: false,
-        context: {
-          orderingProviderIsRequired: requiresOrderProvider(facility.state),
-        },
-      });
-      return "";
-    } catch (e: any) {
-      const errors = e.inner.reduce(
-        (
-          acc: FacilityErrors,
-          el: { path: keyof FacilityErrors; message: string }
-        ) => {
-          acc[el.path] =
-            el.path === "state" ? createStateError(facility.state) : el.message;
-          return acc;
-        },
-        {} as FacilityErrors
-      );
-      setErrors(errors);
-      focusOnce.current = true;
-      showError(
-        "Please check the form to make sure you complete all of the required fields.",
-        "Form Errors"
-      );
-      return "error";
-    }
+export type FacilityFormData = {
+  facility: {
+    name: string;
+    phone: string;
+    email: string | null;
+    street: string;
+    streetTwo: string | null;
+    city: string | null;
+    zipCode: string;
+    state: string;
+    cliaNumber: string;
   };
-
-  /**
-   * Focus on fields with errors
-   */
-  useEffect(() => {
-    if (
-      focusOnce.current &&
-      (errors.name ||
-        errors.phone ||
-        errors.street ||
-        errors.zipCode ||
-        errors.state ||
-        errors.cliaNumber ||
-        errors.deviceTypes ||
-        errors["orderingProvider.firstName"] ||
-        errors["orderingProvider.lastName"] ||
-        errors["orderingProvider.NPI"] ||
-        errors["orderingProvider.phone"])
-    ) {
-      focusOnFirstInputWithError();
-      focusOnce.current = false;
-    }
-  }, [errors]);
-
-  return { errors, clearError, validateField, validateFacility };
-};
-
-const createStateError = (stateCode: string | number) => {
-  return (
-    <>
-      <span>
-        SimpleReport isn’t currently supported in{" "}
-        {getStateNameFromCode(stateCode)}.
-      </span>
-      <span className="display-block margin-top-05">
-        See a{" "}
-        <a href={urls.FACILITY_INFO}>
-          {" "}
-          list of states where SimpleReport is supported
-        </a>
-        .
-      </span>
-    </>
-  );
+  orderingProvider: {
+    firstName: string | null;
+    middleName: string | null;
+    lastName: string | null;
+    suffix: string | null;
+    NPI: string | null;
+    street: string | null;
+    streetTwo: string | null;
+    city: string | null;
+    state: string;
+    zipCode: string | null;
+    phone: string | null;
+  };
+  devices: string[];
 };
 
 type AddressOptions = "facility" | "provider";
@@ -144,48 +56,91 @@ type AddressOptions = "facility" | "provider";
 export interface Props {
   facility: Facility;
   deviceTypes: FacilityFormDeviceType[];
-  saveFacility: (facility: Facility) => void;
+  saveFacility: (facilityFormData: FacilityFormData) => void;
   newOrg?: boolean;
 }
 
+const getDefaultValues = (facility: Facility) => {
+  return {
+    facility: {
+      name: facility.name,
+      phone: facility.phone
+        ? formatPhoneNumberParens(facility.phone) ?? ""
+        : "",
+      email: facility.email,
+      street: facility.street,
+      streetTwo: facility.streetTwo,
+      city: facility.city,
+      zipCode: facility.zipCode,
+      state: facility.state,
+      cliaNumber: facility.cliaNumber,
+    },
+    orderingProvider: {
+      firstName: facility.orderingProvider.firstName,
+      middleName: facility.orderingProvider.middleName,
+      lastName: facility.orderingProvider.lastName,
+      suffix: facility.orderingProvider.suffix,
+      NPI: facility.orderingProvider.NPI,
+      phone: facility.orderingProvider.phone
+        ? formatPhoneNumberParens(facility.orderingProvider.phone) ?? ""
+        : null,
+      street: facility.orderingProvider.street,
+      streetTwo: facility.orderingProvider.streetTwo,
+      city: facility.orderingProvider.city,
+      zipCode: facility.orderingProvider.zipCode,
+      state: facility.orderingProvider.state ?? "",
+    },
+    devices: facility.deviceTypes.length
+      ? facility.deviceTypes.map((device) => device.internalId)
+      : [],
+  };
+};
 const FacilityForm: React.FC<Props> = (props) => {
-  const [facility, updateFormData] = useState<Facility>(props.facility);
-  const [formChanged, updateFormChanged] = useState<boolean>(false);
+  const facility = props.facility;
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [suggestedAddresses, setSuggestedAddresses] = useState<
     AddressSuggestionConfig<AddressOptions>[]
   >([]);
+  const {
+    watch,
+    register,
+    handleSubmit,
+    setFocus,
+    control,
+    setValue,
+    setError,
+    getValues,
+    getFieldState,
+    clearErrors,
+    formState: { errors, isSubmitting, isDirty },
+  } = useForm({
+    mode: "onBlur",
+    defaultValues: getDefaultValues(facility),
+  });
 
-  const updateForm: typeof updateFormData = (data) => {
-    updateFormData(data);
-    updateFormChanged(true);
+  const updateSelectedDevices = (selectedItems: string[]) => {
+    setValue("devices", selectedItems, { shouldDirty: true });
+    if (selectedItems.length === 0) {
+      setError("devices", {
+        type: "required",
+        message: "There must be at least one device",
+      });
+    } else {
+      clearErrors("devices");
+    }
   };
 
-  const updateFacility = (newFacility: Facility) => {
-    updateForm({
-      ...facility,
-      ...newFacility,
-    });
-  };
-
-  const updateProvider = (orderingProvider: Provider) => {
-    updateForm({
-      ...facility,
-      orderingProvider,
-    });
-  };
-
-  const updateSelectedDevices = (deviceTypes: DeviceType[]) => {
-    updateForm((facility) => ({
-      ...facility,
-      deviceTypes,
-    }));
-  };
-
-  const { errors, clearError, validateField, validateFacility } =
-    useFacilityValidation(facility);
-
-  const getFacilityAddress = (f: Nullable<Facility>): AddressWithMetaData => {
+  const getFacilityAddress = (f: {
+    name: string;
+    phone: string;
+    email: string | null;
+    street: string;
+    streetTwo: string | null;
+    city: string | null;
+    zipCode: string;
+    state: string;
+    cliaNumber: string;
+  }): AddressWithMetaData => {
     return {
       street: f.street || "",
       streetTwo: f.streetTwo,
@@ -226,8 +181,8 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   const validateFacilityAddresses = async () => {
-    const originalFacilityAddress = getFacilityAddress(facility);
-
+    let updatedValues = getUpdatedValues();
+    const originalFacilityAddress = getFacilityAddress(updatedValues.facility);
     const zipCodeData = await getZipCodeData(originalFacilityAddress.zipCode);
     const isValidZipForState = isValidZipCodeForState(
       originalFacilityAddress.state,
@@ -235,7 +190,11 @@ const FacilityForm: React.FC<Props> = (props) => {
     );
 
     if (!isValidZipForState) {
-      showError("Invalid ZIP code for this state", "Form Errors");
+      setError("facility.zipCode", {
+        type: "validZipForState",
+        message: "Invalid ZIP code for this state",
+      });
+      setFocus("facility.zipCode", { shouldSelect: true });
       return;
     }
 
@@ -261,7 +220,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     }
 
     if (facilityCloseEnough && providerCloseEnough) {
-      props.saveFacility(facility);
+      props.saveFacility(updatedValues);
     } else {
       const suggestions: AddressSuggestionConfig<AddressOptions>[] = [];
       if (!facilityCloseEnough) {
@@ -286,37 +245,78 @@ const FacilityForm: React.FC<Props> = (props) => {
     }
   };
 
+  const getUpdatedValues = (
+    addresses?: Partial<Record<AddressOptions, AddressWithMetaData>>
+  ) => {
+    const values = getValues();
+    let adjustedFacility: FacilityFormData;
+
+    if (addresses) {
+      adjustedFacility = {
+        facility: {
+          ...values.facility,
+          ...addresses.facility,
+        },
+        orderingProvider: {
+          ...values.orderingProvider,
+          ...addresses.provider,
+        },
+        devices: values.devices || [],
+      };
+    } else {
+      adjustedFacility = {
+        facility: {
+          ...values.facility,
+        },
+        orderingProvider: {
+          ...values.orderingProvider,
+        },
+        devices: values.devices || [],
+      };
+    }
+
+    return adjustedFacility;
+  };
+
   const updateAddressesAndSave = (
     addresses: Partial<Record<AddressOptions, AddressWithMetaData>>
   ) => {
-    const adjustedFacility: Facility = {
-      ...facility,
-      ...addresses.facility,
-      orderingProvider: {
-        ...facility.orderingProvider,
-        ...addresses.provider,
-      },
-    };
-    updateFormData(adjustedFacility);
+    const adjustedFacility = getUpdatedValues(addresses);
+    setValue("facility", adjustedFacility.facility);
+    setValue("orderingProvider", adjustedFacility.orderingProvider);
     props.saveFacility(adjustedFacility);
   };
 
-  const validateAndSaveFacility = async () => {
-    if ((await validateFacility()) === "error") {
-      return;
-    }
+  const onSubmit = async (facilityData: FacilityFormData) => {
+    const { facility, orderingProvider, devices } = facilityData;
+    setValue("facility", facility);
+    setValue("orderingProvider", orderingProvider);
+    setValue("devices", devices);
+    clearErrors();
     await validateFacilityAddresses();
   };
+
+  const onError = () => {
+    showError(
+      "Please check the form to make sure you complete all of the required fields.",
+      "Form Errors"
+    );
+  };
+
+  const formCurrentValues = watch();
 
   return (
     <>
       <Prompt
-        when={formChanged}
+        when={isDirty}
         message={
           "\nYour changes are not saved yet!\n\nClick OK to delete your answers and leave, or Cancel to return and save your progress."
         }
       />
-      <div className="padding-bottom-2">
+      <form
+        className="usa-form maxw-none"
+        onSubmit={handleSubmit(onSubmit, onError)}
+      >
         <div className="prime-container card-container">
           <div className="usa-card__header">
             <div>
@@ -354,11 +354,10 @@ const FacilityForm: React.FC<Props> = (props) => {
               }}
             >
               <Button
-                className="margin-right-0"
-                type="button"
-                onClick={validateAndSaveFacility}
+                className="margin-right-0 margin-top-05"
+                type="submit"
                 label="Save changes"
-                disabled={!formChanged}
+                disabled={isSubmitting || !isDirty}
               />
             </div>
           </div>
@@ -369,35 +368,46 @@ const FacilityForm: React.FC<Props> = (props) => {
             <RequiredMessage />
             <FacilityInformation
               facility={facility}
-              updateFacility={updateFacility}
-              errors={errors}
-              validateField={validateField}
               newOrg={props.newOrg}
+              errors={errors}
+              register={register}
+              formCurrentValues={formCurrentValues}
+              setError={setError}
+              getFieldState={getFieldState}
             />
           </div>
         </div>
         <OrderingProviderSettings
-          facility={facility}
-          updateProvider={updateProvider}
-          errors={errors}
-          validateField={validateField}
           newOrg={props.newOrg}
-        />
-        <ManageDevices
-          deviceTypes={props.deviceTypes}
-          selectedDevices={facility.deviceTypes}
-          updateSelectedDevices={updateSelectedDevices}
           errors={errors}
-          clearError={clearError}
-          newOrg={props.newOrg}
+          register={register}
+          formCurrentValues={formCurrentValues}
         />
-        <div className="float-right margin-bottom-4 margin-top-4">
+        <Controller
+          render={({ field: { name, ref } }) => (
+            <ManageDevices
+              deviceTypes={props.deviceTypes}
+              newOrg={props.newOrg}
+              errors={errors}
+              formCurrentValues={formCurrentValues}
+              registrationProps={{
+                inputTextRef: ref,
+                setFocus: () => setFocus(name),
+              }}
+              onChange={updateSelectedDevices}
+            />
+          )}
+          defaultValue={formCurrentValues.devices}
+          name="devices"
+          control={control}
+          rules={{ required: "There must be at least one device" }}
+        />
+        <div className="float-right margin-bottom-4 margin-top-1">
           <Button
             className="margin-right-0"
-            type="button"
-            onClick={validateAndSaveFacility}
+            type="submit"
             label="Save changes"
-            disabled={!formChanged}
+            disabled={isSubmitting || !isDirty}
           />
         </div>
         <AddressConfirmationModal
@@ -409,7 +419,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           }}
           onClose={() => setAddressModalOpen(false)}
         />
-      </div>
+      </form>
     </>
   );
 };
