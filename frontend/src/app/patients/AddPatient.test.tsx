@@ -477,7 +477,7 @@ describe("AddPatient", () => {
             )
         );
 
-        await waitFor(() => expect(screen.queryByText(/Race is missing/i)));
+        await waitFor(() => expect(screen.queryByText("Race is missing")));
       });
     });
 
