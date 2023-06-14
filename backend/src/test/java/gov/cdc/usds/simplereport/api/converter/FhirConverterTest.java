@@ -681,9 +681,6 @@ class FhirConverterTest {
     assertThat(actual.getNote()).isEmpty();
     assertThat(actual.getMethod().getCodingFirstRep().getDisplay()).isEqualTo("modelName");
     assertThat(actual.getIssued()).isEqualTo("2023-06-10T23:15:00.00Z");
-    // todo: remove the following before merge - added to illustrate date comparison across time
-    // zones
-    assertThat(actual.getIssued()).isEqualTo("2023-06-10T16:15:00.000-07:00");
   }
 
   @Test
