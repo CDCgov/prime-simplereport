@@ -358,8 +358,10 @@ describe("PendingOrganizationsContainer", () => {
           await act(
             async () => await userEvent.click(screen.getByText(/Edit only/i))
           );
-          expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
-            "DC Space Camp"
+          await waitFor(() =>
+            expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
+              "DC Space Camp"
+            )
           );
           await waitForElementToBeRemoved(
             screen.queryByText(/Organization details/i)
@@ -542,9 +544,13 @@ describe("PendingOrganizationsContainer", () => {
       await waitForElementToBeRemoved(() =>
         screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
       );
-      expect(
-        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
-      ).not.toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          screen.queryByText(
+            "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+          )
+        ).not.toBeInTheDocument()
+      );
     });
   });
 });
