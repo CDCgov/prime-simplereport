@@ -982,7 +982,7 @@ export type UserInput = {
   lastName?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  organizationExternalId: Scalars["String"];
+  organizationExternalId?: InputMaybe<Scalars["String"]>;
   role: Role;
   suffix?: InputMaybe<Scalars["String"]>;
 };

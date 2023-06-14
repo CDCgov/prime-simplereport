@@ -156,7 +156,7 @@ input UserInput {
   lastName: String
   suffix: String
   email: String!
-  organizationExternalId: String!
+  organizationExternalId: String
   role: Role!
   accessAllFacilities: Boolean = false
   facilities: [ID!]
