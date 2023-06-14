@@ -58,6 +58,26 @@ export function groupErrors(
   });
   return errors;
 }
+export function getErrorMessage(error: EnhancedFeedbackMessage) {
+  if (error.message) {
+    const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+){1,7})/g;
+    return (
+      <span data-testid="error-message">
+        {error.message.split(headerRegex).map((value) => (
+          <span key={`span-${value}`}>
+            {headerRegex.test(value) ? (
+              <mark data-testid="highlighted-header">
+                <code>{value}</code>
+              </mark>
+            ) : (
+              value
+            )}
+          </span>
+        ))}
+      </span>
+    );
+  }
+}
 
 export function getGuidance(error: EnhancedFeedbackMessage) {
   const fieldsAcceptSpecificValues = new Set([
@@ -74,11 +94,24 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
     "test_result_status",
   ]);
 
-  const getMissingHeaderErrorGuidance = (header: string) =>
-    `Include a column with ${header} as the header.`;
+  const highlightHeader = (header: string) => (
+    <mark>
+      <code>{header}</code>
+    </mark>
+  );
 
-  const getMissingDataErrorGuidance = (header: string) =>
-    `${header} is a required field. Include values in each row under this column.`;
+  const getMissingHeaderErrorGuidance = (header: string) => (
+    <span data-testid="guidance">
+      Include a column with {highlightHeader(header)} as the header.
+    </span>
+  );
+
+  const getMissingDataErrorGuidance = (header: string) => (
+    <span data-testid="guidance">
+      {highlightHeader(header)} is a required field. Include values in each row
+      under this column.
+    </span>
+  );
 
   const getInvalidDataErrorGuidance = (
     header: string,
@@ -91,46 +124,37 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
       </HashLink>
     );
 
-    let guidance;
-    if (required) {
-      if (specificValues) {
-        guidance = (
-          <div>
-            Choose from the accepted values listed under {header} {guideLink}.
-          </div>
-        );
-      } else {
-        guidance = (
-          <div>
-            Follow the instructions under {header} {guideLink}.
-          </div>
-        );
-      }
+    if (specificValues) {
+      return (
+        <span data-testid="guidance">
+          {required ? (
+            <span>Choose </span>
+          ) : (
+            <span>If including {highlightHeader(header)}, choose </span>
+          )}
+          from the accepted values listed under {highlightHeader(header)}{" "}
+          {guideLink}.
+        </span>
+      );
     } else {
-      if (specificValues) {
-        guidance = (
-          <div>
-            If including {header}, choose from the accepted values listed under{" "}
-            {header} {guideLink}.
-          </div>
-        );
-      } else {
-        guidance = (
-          <div>
-            If including {header}, follow the instructions under {header}{" "}
-            {guideLink}.
-          </div>
-        );
-      }
+      return (
+        <span data-testid="guidance">
+          {required ? (
+            <span>Follow </span>
+          ) : (
+            <span>If including {highlightHeader(header)}, follow </span>
+          )}
+          the instructions under {highlightHeader(header)} {guideLink}.
+        </span>
+      );
     }
-    return guidance;
   };
 
-  if (error.errorType === "MISSING_HEADER") {
+  if (error.fieldHeader && error.errorType === "MISSING_HEADER") {
     return getMissingHeaderErrorGuidance(error.fieldHeader);
-  } else if (error.errorType === "MISSING_DATA") {
+  } else if (error.fieldHeader && error.errorType === "MISSING_DATA") {
     return getMissingDataErrorGuidance(error.fieldHeader);
-  } else if (error.errorType === "INVALID_DATA") {
+  } else if (error.fieldHeader && error.errorType === "INVALID_DATA") {
     return getInvalidDataErrorGuidance(
       error.fieldHeader,
       error.fieldRequired,
@@ -453,7 +477,7 @@ const Uploads = () => {
                     {errors.map((e) => {
                       return (
                         <tr key={(e?.message || "") + (e?.indices || "")}>
-                          <td>{e?.["message"]} </td>
+                          <td>{e && getErrorMessage(e)} </td>
                           <td>
                             <div>{e && getGuidance(e)}</div>
                           </td>
