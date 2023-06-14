@@ -1,5 +1,6 @@
 import {
   act,
+  fireEvent,
   render,
   screen,
   waitFor,
@@ -537,12 +538,7 @@ describe("PendingOrganizationsContainer", () => {
         })
       ).toBeInTheDocument();
       expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
-      await act(
-        async () =>
-          await userEvent.click(
-            await screen.findByText("Delete", { exact: true })
-          )
-      );
+      fireEvent.click(await screen.findByText("Delete", { exact: true }));
       await waitForElementToBeRemoved(() =>
         screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
       );
