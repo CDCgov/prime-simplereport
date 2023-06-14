@@ -5,31 +5,39 @@ inputs:
     description: boolean that represents if the banner is active (on) or inactive (off)
     required: true
     default: true
+  env:
+    description: environment where the banner has been updated
+    required: true
+    default: "prod"
 runs:
   uses: composite
+  using: composite
   steps:
-    - id: generate-subject
-      shell: bash
-      run: |
-        if [[ "true" == "${{ inputs.status-active }}" ]]
-                    then echo "email-subject='Simple Report maintenance banner is ON'" >> $GITHUB_OUTPUT
-                    else echo "email-subject='Simple Report maintenance banner is OFF'" >> $GITHUB_OUTPUT
-        fi
-    - id: generate-body
-      shell: bash
-      run: |
-        if [[ "true" == "${{ inputs.status-active }}" ]]
-                 then echo "email-body='The maintenance banner is now being displayed in the Simple Report application.'" >> $GITHUB_OUTPUT
-                 else echo "email-body='The maintenance banner has been removed from the Simple Report application.'" >> $GITHUB_OUTPUT
-        fi
     - name: send email to support team
-      uses: dawidd6/action-send-mail@v3
-      with:
-        server_address: smtp.gmail.com
-        server_port: 465
-        username: ${{ secrets.GMAIL_USER }}
-        password: ${{ secrets.GMAIL_PASS }}
-        subject: ${{ steps.generate-subject.outputs.email-subject }}
-        body: ${{ steps.generate-body.outputs.email-body }}
-        to: ${{ secrets.SUPPORT_MAIL_ADDRESS }}
-        from: ${{ secrets.APP_GMAIL_ADDRESS }}
+      shell: bash
+      run: |
+        if [[ "true" == "${{ inputs.status-active }}" ]]
+        then
+          export EMAIL_SUBJECT="Simple Report maintenance banner is ON"
+          export EMAIL_CONTENT="The maintenance banner is now being displayed in the Simple Report application."
+        else
+          export EMAIL_SUBJECT="Simple Report maintenance banner is OFF"
+          export EMAIL_CONTENT="The maintenance banner has been removed from the Simple Report application."
+        fi
+        
+        if [[ "prod" == "${{ inputs.env }}" ]]
+        then
+          export APIKEY=${{ secrets.EMAIL_APIKEY_PROD }}
+          export TO_EMAIL=${{ secrets.NOTIFICATION_EMAIL_RECIPIENT }}
+        else 
+          export APIKEY=${{ secrets.EMAIL_APIKEY_TEST }}
+          export TO_EMAIL=${{ secrets.NOTIFICATION_EMAIL_RECIPIENT }}
+        fi
+        
+        export FROM_EMAIL="${{ secrets.NOTIFICATION_EMAIL_SENDER }}"
+        
+        curl --request POST \
+          --url https://api.sendgrid.com/v3/mail/send \
+          --header 'Authorization: Bearer ${APIKEY}' \
+          --header 'Content-Type: application/json' \
+          --data '{"personalizations": [{"to": [{"email": "johanna@skylight.digital"}]}],"from": {"email": ${FROM_EMAIL},"subject": ${EMAIL_SUBJECT},"content": [{"type": "text/plain", "value": ${EMAIL_CONTENT}}]}'

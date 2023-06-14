@@ -48,6 +48,7 @@ jobs:
           yarn run maintenance:deploy
       - name: Notify support team
         uses: ./.github/actions/banner-status-notification
-        if: ${{ success() && github.event.inputs.env == 'stg'}}
+        if: ${{ success() }}
         with:
           status-active: ${{ github.event.inputs.active == 'true' }}
+          env: ${{ github.event.inputs.env }}
