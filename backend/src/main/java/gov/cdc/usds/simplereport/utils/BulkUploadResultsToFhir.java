@@ -1,8 +1,6 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAOEObservation;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getCommonDiseaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
@@ -27,7 +25,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -60,6 +57,10 @@ public class BulkUploadResultsToFhir {
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
   private final GitProperties gitProperties;
+  private final UUIDGenerator uuidGenerator;
+  private final DateGenerator dateGenerator;
+  private final ZoneIdGenerator zoneIdGenerator;
+  private final FhirConverter fhirConverter;
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
@@ -161,7 +162,7 @@ public class BulkUploadResultsToFhir {
             : emptyList();
 
     var patient =
-        FhirConverter.convertToPatient(
+        fhirConverter.convertToPatient(
             ConvertToPatientProps.builder()
                 .id(row.getPatientId().getValue())
                 .name(
@@ -182,7 +183,7 @@ public class BulkUploadResultsToFhir {
                 .build());
 
     var testingLabOrg =
-        FhirConverter.convertToOrganization(
+        fhirConverter.convertToOrganization(
             orgId.toString(),
             row.getTestingLabName().getValue(),
             row.getTestingLabClia().getValue(),
@@ -208,8 +209,8 @@ public class BulkUploadResultsToFhir {
               row.getOrderingFacilityZipCode().getValue(),
               null);
       orderingFacility =
-          FhirConverter.convertToOrganization(
-              UUID.randomUUID().toString(),
+          fhirConverter.convertToOrganization(
+              uuidGenerator.randomUUID().toString(),
               row.getOrderingFacilityName().getValue(),
               row.getTestingLabClia().getValue(),
               row.getOrderingFacilityPhoneNumber().getValue(),
@@ -219,7 +220,7 @@ public class BulkUploadResultsToFhir {
     }
 
     var practitioner =
-        FhirConverter.convertToPractitioner(
+        fhirConverter.convertToPractitioner(
             row.getOrderingProviderId().getValue(),
             new PersonName(
                 row.getOrderingProviderFirstName().getValue(),
@@ -237,7 +238,7 @@ public class BulkUploadResultsToFhir {
     String diseaseName = null;
     String testOrderLoinc = null;
 
-    UUID deviceId = UUID.randomUUID();
+    UUID deviceId = uuidGenerator.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
     var modelName = row.getEquipmentModelName().getValue();
     var matchingDevice =
@@ -253,9 +254,11 @@ public class BulkUploadResultsToFhir {
               .toList();
       manufacturer = matchingDevice.getManufacturer();
       equipmentUid =
-          getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+          fhirConverter.getCommonDiseaseValue(
+              deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
       testKitNameId =
-          getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
+          fhirConverter.getCommonDiseaseValue(
+              deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
       deviceId =
           deviceTypeDiseaseEntries.stream()
               .findFirst()
@@ -278,20 +281,20 @@ public class BulkUploadResultsToFhir {
               + ")");
     }
 
-    var device = FhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
+    var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
     var specimen =
-        FhirConverter.convertToSpecimen(
+        fhirConverter.convertToSpecimen(
             getSpecimenTypeSnomed(row.getSpecimenType().getValue()),
             getDescriptionValue(row.getSpecimenType().getValue()),
             null,
             null,
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString());
+            uuidGenerator.randomUUID().toString(),
+            uuidGenerator.randomUUID().toString());
 
     var observation =
         List.of(
-            FhirConverter.convertToObservation(
+            fhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
                     .diseaseCode(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
@@ -299,7 +302,7 @@ public class BulkUploadResultsToFhir {
                     .correctionStatus(
                         mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
                     .correctionReason(null)
-                    .id(UUID.randomUUID().toString())
+                    .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
                         Translators.convertConceptCodeToConceptName(
                             getDescriptionValue(row.getTestResult().getValue())))
@@ -324,24 +327,25 @@ public class BulkUploadResultsToFhir {
       symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().getValue().toLowerCase());
     }
 
-    var aoeObservations = convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
+    var aoeObservations =
+        fhirConverter.convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
 
     var serviceRequest =
-        FhirConverter.convertToServiceRequest(
+        fhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderLoinc,
-            UUID.randomUUID().toString());
+            uuidGenerator.randomUUID().toString());
 
     var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
     var diagnosticReport =
-        FhirConverter.convertToDiagnosticReport(
+        fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            new Date());
+            Date.from(testDate.atStartOfDay(zoneIdGenerator.getSystemZoneId()).toInstant()),
+            dateGenerator.newDate());
 
-    return FhirConverter.createFhirBundle(
+    return fhirConverter.createFhirBundle(
         CreateFhirBundleProps.builder()
             .patient(patient)
             .testingLab(testingLabOrg)
@@ -353,7 +357,7 @@ public class BulkUploadResultsToFhir {
             .aoeObservations(aoeObservations)
             .serviceRequest(serviceRequest)
             .diagnosticReport(diagnosticReport)
-            .currentDate(new Date())
+            .currentDate(dateGenerator.newDate())
             .gitProperties(gitProperties)
             .processingId(processingModeCode)
             .build());
