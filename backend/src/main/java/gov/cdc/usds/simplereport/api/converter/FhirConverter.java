@@ -794,8 +794,8 @@ public class FhirConverter {
             .setEffective(new DateTimeType(dateTested))
             .setIssued(dateUpdated);
 
-    diagnosticReport.getEffectiveDateTimeType().setTimeZoneZulu(true);
-    diagnosticReport.getIssuedElement().setTimeZoneZulu(true);
+    diagnosticReport.getEffectiveDateTimeType().setTimeZone(TimeZone.getTimeZone("utc"));
+    diagnosticReport.getIssuedElement().setTimeZone(TimeZone.getTimeZone("utc"));
 
     diagnosticReport.setId(id);
     if (StringUtils.isNotBlank(code)) {
@@ -938,7 +938,7 @@ public class FhirConverter {
             .setTimestamp(props.getCurrentDate())
             .setIdentifier(new Identifier().setValue(props.getDiagnosticReport().getId()));
 
-    bundle.getTimestampElement().setTimeZoneZulu(true);
+    bundle.getTimestampElement().setTimeZone(TimeZone.getTimeZone("utc"));
 
     entryList.forEach(
         pair ->
@@ -963,7 +963,7 @@ public class FhirConverter {
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
     provenance.setRecorded(dateTested);
-    provenance.getRecordedElement().setTimeZoneZulu(true);
+    provenance.getRecordedElement().setTimeZone(TimeZone.getTimeZone("utc"));
     return provenance;
   }
 

@@ -4,7 +4,7 @@
     "value": "123"
   },
   "type": "message",
-  "timestamp": "2023-05-24T19:33:06.472Z",
+  "timestamp": "2023-05-24T19:33:06.472+00:00",
   "entry": [
     {
       "fullUrl": "MessageHeader/00000000-0000-0000-0000-000000000010",
@@ -70,7 +70,7 @@
       "resource": {
         "resourceType": "Provenance",
         "id": "00000000-0000-0000-0000-000000000009",
-        "recorded": "2023-05-24T19:33:06.472Z",
+        "recorded": "2023-05-24T19:33:06.472+00:00",
         "activity": {
           "coding": [
             {
@@ -116,8 +116,8 @@
         "subject": {
           "reference": "Patient/1234"
         },
-        "effectiveDateTime": "2021-12-20T19:00:00Z",
-        "issued": "2023-05-24T19:33:06.472Z",
+        "effectiveDateTime": "2021-12-20T19:00:00+00:00",
+        "issued": "2023-05-24T19:33:06.472+00:00",
         "specimen": [
           {
             "reference": "Specimen/00000000-0000-0000-0000-000000000004"
