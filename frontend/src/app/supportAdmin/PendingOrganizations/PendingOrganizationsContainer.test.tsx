@@ -173,7 +173,7 @@ describe("PendingOrganizationsContainer", () => {
   describe("loading organizations", () => {
     beforeEach(() => {
       render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={[EmptyOrganizationsQuery]}>
           <PendingOrganizationsContainer />
         </MockedProvider>
       );
