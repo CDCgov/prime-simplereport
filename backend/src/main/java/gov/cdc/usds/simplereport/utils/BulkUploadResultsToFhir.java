@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -290,7 +291,15 @@ public class BulkUploadResultsToFhir {
             UUID.randomUUID().toString(),
             UUID.randomUUID().toString());
 
-    var testResultDate = LocalDateTime.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
+    LocalDateTime testResultDate;
+    TemporalAccessor temporalAccessor =
+        dateTimeFormatter.parseBest(
+            row.getTestResultDate().getValue(), LocalDateTime::from, LocalDate::from);
+    if (temporalAccessor instanceof LocalDateTime) {
+      testResultDate = (LocalDateTime) temporalAccessor;
+    } else {
+      testResultDate = ((LocalDate) temporalAccessor).atStartOfDay();
+    }
 
     var observation =
         List.of(
