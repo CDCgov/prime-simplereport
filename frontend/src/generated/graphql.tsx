@@ -256,12 +256,12 @@ export type MutationAddUserArgs = {
 };
 
 export type MutationAddUserToCurrentOrgArgs = {
-  email: Scalars["String"];
+  email?: InputMaybe<Scalars["String"]>;
   firstName?: InputMaybe<Scalars["String"]>;
   lastName?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  role: Role;
+  role?: InputMaybe<Role>;
   suffix?: InputMaybe<Scalars["String"]>;
   user?: InputMaybe<UserInput>;
 };
