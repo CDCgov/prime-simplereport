@@ -378,7 +378,7 @@ describe("AddPatient", () => {
               })
             )
         );
-        expect(await screen.findByText("Patients!"));
+        expect(await screen.findByText("Patients!")).toBeInTheDocument();
       });
       it("surfaces an error if invalid zip code for state", async () => {
         zipCodeSpy.mockReturnValue(false);
@@ -477,7 +477,9 @@ describe("AddPatient", () => {
             )
         );
 
-        await waitFor(() => expect(screen.queryByText("Race is missing")));
+        await waitFor(() =>
+          expect(screen.queryByText("Error: Race is missing"))
+        );
       });
     });
 
@@ -512,7 +514,7 @@ describe("AddPatient", () => {
               "STUDENT"
             )
         );
-        expect(await screen.findByText("Student ID"));
+        expect(await screen.findByText("Student ID")).toBeInTheDocument();
       });
     });
 
