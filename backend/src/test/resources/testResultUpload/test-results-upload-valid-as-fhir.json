@@ -116,7 +116,7 @@
         "subject": {
           "reference": "Patient/1234"
         },
-        "effectiveDateTime": "2021-12-20T00:00:00Z",
+        "effectiveDateTime": "2021-12-20T19:00:00Z",
         "issued": "2023-05-24T19:33:06.472Z",
         "specimen": [
           {

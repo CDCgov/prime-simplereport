@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.utils;
 import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonNodesEqual;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -11,27 +12,27 @@ import static org.mockito.Mockito.when;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
+import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.hl7.fhir.r4.model.BaseDateTimeType;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Observation;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
@@ -41,45 +42,35 @@ import org.springframework.boot.info.GitProperties;
 public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
   private static ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
+  private static AddressValidationService addressValidationService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
   private final UUIDGenerator uuidGenerator = new UUIDGenerator();
   private final DateGenerator dateGenerator = new DateGenerator();
-  private static ZoneIdGenerator zoneIdGenerator;
-  private static FhirDateTimeUtil fhirDateTimeUtil;
 
   BulkUploadResultsToFhir sut;
 
   @BeforeAll
-  public static void init() {
+  public static void init() throws SmartyException, IOException, InterruptedException {
     gitProperties = mock(GitProperties.class);
-    zoneIdGenerator = mock(ZoneIdGenerator.class);
-    fhirDateTimeUtil = mock(FhirDateTimeUtil.class);
+    addressValidationService = mock(AddressValidationService.class);
 
     when(gitProperties.getCommitTime()).thenReturn(commitTime);
     when(gitProperties.getShortCommitId()).thenReturn("short-commit-id");
-    when(zoneIdGenerator.getSystemZoneId()).thenReturn(ZoneId.of("UTC"));
-    when(fhirDateTimeUtil.getBaseDateTimeType(Mockito.any(BaseDateTimeType.class)))
-        .thenAnswer(
-            (Answer<BaseDateTimeType>)
-                invocation -> {
-                  BaseDateTimeType localBaseDateTimeType = invocation.getArgument(0);
-                  return localBaseDateTimeType.setTimeZoneZulu(true);
-                });
   }
 
   @BeforeEach
   public void beforeEach() {
     resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
-    FhirConverter fhirConverter = new FhirConverter(uuidGenerator, fhirDateTimeUtil);
+    FhirConverter fhirConverter = new FhirConverter(uuidGenerator);
     sut =
         new BulkUploadResultsToFhir(
             resultsUploaderDeviceValidationService,
+            addressValidationService,
             gitProperties,
             uuidGenerator,
             dateGenerator,
-            zoneIdGenerator,
             fhirConverter);
   }
 
@@ -180,7 +171,7 @@ public class BulkUploadResultsToFhirTest {
 
   @Test
   void convertExistingCsv_matchesFhirJson() throws IOException {
-    // Configure mocks for random UUIDs and Date timestamp
+    // Mock random UUIDs
     var mockedUUIDGenerator = mock(UUIDGenerator.class);
     when(mockedUUIDGenerator.randomUUID())
         .thenAnswer(
@@ -205,7 +196,7 @@ public class BulkUploadResultsToFhirTest {
               }
             });
 
-    // Construct UTC date object
+    // Mock constructed UTC date object
     String dateString = "2023-05-24T19:33:06.472Z";
     Instant instant = Instant.parse(dateString);
     Date date = Date.from(instant);
@@ -213,17 +204,26 @@ public class BulkUploadResultsToFhirTest {
     var mockedDateGenerator = mock(DateGenerator.class);
     when(mockedDateGenerator.newDate()).thenReturn(date);
 
-    sut =
-        new BulkUploadResultsToFhir(
-            resultsUploaderDeviceValidationService,
-            gitProperties,
-            mockedUUIDGenerator,
-            mockedDateGenerator,
-            zoneIdGenerator,
-            new FhirConverter(mockedUUIDGenerator, fhirDateTimeUtil));
+    // Mock timezone retrieval from address
+    when(addressValidationService.getTimezoneByAddress(any(), any(), any(), any(), any()))
+        .thenReturn(
+            TimezoneInfo.builder()
+                .timezone("Central")
+                .utcOffset(-5)
+                .obeysDaylightSavings(true)
+                .build());
 
     when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+
+    sut =
+        new BulkUploadResultsToFhir(
+            resultsUploaderDeviceValidationService,
+            addressValidationService,
+            gitProperties,
+            mockedUUIDGenerator,
+            mockedDateGenerator,
+            new FhirConverter(mockedUUIDGenerator));
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid.csv");
 

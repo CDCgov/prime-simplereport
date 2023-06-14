@@ -22,9 +22,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
+import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
+import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -56,10 +61,10 @@ public class BulkUploadResultsToFhir {
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
+  private final AddressValidationService addressValidationService;
   private final GitProperties gitProperties;
   private final UUIDGenerator uuidGenerator;
   private final DateGenerator dateGenerator;
-  private final ZoneIdGenerator zoneIdGenerator;
   private final FhirConverter fhirConverter;
 
   @Value("${simple-report.processing-mode-code:P}")
@@ -336,13 +341,37 @@ public class BulkUploadResultsToFhir {
             testOrderLoinc,
             uuidGenerator.randomUUID().toString());
 
-    var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
+    var testResultDateString = row.getTestResultDate().getValue();
+    var testResultDateTime =
+        LocalDate.parse(testResultDateString, dateTimeFormatter).atStartOfDay();
+
+    // keep the time value if it is available
+    if (testResultDateString.contains(":")) {
+      testResultDateTime = LocalDateTime.parse(testResultDateString, dateTimeFormatter);
+    }
+
+    // attempt to get the specific timezone of the data, but use UTC if unable
+    var zoneOffset = ZoneOffset.UTC;
+    try {
+      TimezoneInfo testResultTimezoneInfo =
+          addressValidationService.getTimezoneByAddress(
+              row.getTestingLabStreet().getValue(),
+              row.getTestingLabStreet2().getValue(),
+              row.getTestingLabCity().getValue(),
+              row.getTestingLabState().getValue(),
+              row.getTestingLabZipCode().getValue());
+      zoneOffset = ZoneOffset.ofHours(testResultTimezoneInfo.utcOffset);
+    } catch (InvalidAddressException exception) {
+      log.error("Unable to find timezone by testing lab address");
+    }
+    var dateTested = Date.from(testResultDateTime.toInstant(zoneOffset));
+
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            Date.from(testDate.atStartOfDay(zoneIdGenerator.getSystemZoneId()).toInstant()),
+            dateTested,
             dateGenerator.newDate());
 
     return fhirConverter.createFhirBundle(

@@ -12,7 +12,10 @@ import com.smartystreets.api.us_street.MatchType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
+import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
+import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import java.io.IOException;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,7 +51,7 @@ public class AddressValidationService {
     return lookup;
   }
 
-  public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
+  private List<Candidate> getLookupResults(Lookup lookup) {
     try {
       _client.send(lookup);
     } catch (SmartyException | IOException ex) {
@@ -60,7 +63,11 @@ public class AddressValidationService {
       Thread.currentThread().interrupt();
     }
 
-    var results = lookup.getResult();
+    return lookup.getResult();
+  }
+
+  public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
+    var results = getLookupResults(lookup);
 
     if (results.isEmpty()) {
       return new StreetAddress(
@@ -95,5 +102,27 @@ public class AddressValidationService {
       String fieldName) {
     Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
     return getValidatedAddress(lookup, fieldName);
+  }
+
+  public TimezoneInfo getTimezoneByAddress(Lookup lookup) {
+    var results = getLookupResults(lookup);
+
+    if (results.isEmpty()) {
+      throw new InvalidAddressException("The server is unable to verify the address you entered.");
+    }
+
+    Candidate addressMatch = results.get(0);
+
+    return TimezoneInfo.builder()
+        .timezone(addressMatch.getMetadata().getTimeZone())
+        .utcOffset((int) addressMatch.getMetadata().getUtcOffset())
+        .obeysDaylightSavings(addressMatch.getMetadata().obeysDst())
+        .build();
+  }
+
+  public TimezoneInfo getTimezoneByAddress(
+      String street1, String street2, String city, String state, String postalCode) {
+    Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
+    return getTimezoneByAddress(lookup);
   }
 }
