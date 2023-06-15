@@ -33,6 +33,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFIL
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
 
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
@@ -56,8 +57,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
-import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -211,6 +211,24 @@ public class FhirConverter {
 
   public Date convertToDate(@NotNull LocalDate date) {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+  }
+
+  /**
+   * @param zonedDateTime the date time with a time zone, not null
+   * @param temporalPrecisionEnum precision of the date time, defaults to {@code
+   *     TemporalPrecisionEnum.SECOND}
+   * @return the DateTimeType object created from the Instant of the ZonedDateTime and its time zone
+   *     offset
+   */
+  public DateTimeType convertToDateTimeType(
+      @NotNull ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
+    if (temporalPrecisionEnum == null) {
+      temporalPrecisionEnum = TemporalPrecisionEnum.SECOND;
+    }
+    return new DateTimeType(
+        Date.from(zonedDateTime.toInstant()),
+        TemporalPrecisionEnum.SECOND,
+        TimeZone.getTimeZone(zonedDateTime.getZone()));
   }
 
   public Address convertToAddress(@NotNull StreetAddress address, String country) {
@@ -779,24 +797,41 @@ public class FhirConverter {
               testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
     }
 
+    // Should we set the local time zone of the TestEvent facility?
+    var dateTested =
+        ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneId.of("UTC"));
+
     return convertToDiagnosticReport(
         status,
         code,
         Objects.toString(testEvent.getInternalId(), ""),
-        testEvent.getDateTested(),
+        dateTested,
         testEvent.getUpdatedAt());
   }
 
+  /**
+   * @param status
+   * @param code
+   * @param id
+   * @param dateTimeTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
+   *     time/time-period for report.
+   * @param dateUpdated Used to set {@code DiagnosticReport.issued}, the instant this version was
+   *     made.
+   * @return DiagnosticReport
+   */
   public DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code, String id, Date dateTested, Date dateUpdated) {
+      DiagnosticReportStatus status,
+      String code,
+      String id,
+      ZonedDateTime dateTimeTested,
+      Date dateUpdated) {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(new DateTimeType(dateTested))
+            .setEffective(convertToDateTimeType(dateTimeTested, null))
             .setIssued(dateUpdated);
 
-    diagnosticReport.getEffectiveDateTimeType().setTimeZone(TimeZone.getTimeZone("utc"));
-    diagnosticReport.getIssuedElement().setTimeZone(TimeZone.getTimeZone("utc"));
+    diagnosticReport.getIssuedElement().setTimeZoneZulu(true);
 
     diagnosticReport.setId(id);
     if (StringUtils.isNotBlank(code)) {
@@ -939,7 +974,7 @@ public class FhirConverter {
             .setTimestamp(props.getCurrentDate())
             .setIdentifier(new Identifier().setValue(props.getDiagnosticReport().getId()));
 
-    bundle.getTimestampElement().setTimeZone(TimeZone.getTimeZone("utc"));
+    bundle.getTimestampElement().setTimeZoneZulu(true);
 
     entryList.forEach(
         pair ->
@@ -964,7 +999,7 @@ public class FhirConverter {
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
     provenance.setRecorded(dateTested);
-    provenance.getRecordedElement().setTimeZone(TimeZone.getTimeZone("utc"));
+    provenance.getRecordedElement().setTimeZoneZulu(true);
     return provenance;
   }
 

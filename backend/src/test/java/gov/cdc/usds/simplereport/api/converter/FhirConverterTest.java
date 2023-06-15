@@ -36,6 +36,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -943,10 +944,11 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_Strings_valid() {
-    var date = new Date();
+    var dateTested = ZonedDateTime.now(ZoneId.of("UTC"));
+    var dateUpdated = new Date();
     var actual =
         fhirConverter.convertToDiagnosticReport(
-            DiagnosticReportStatus.FINAL, "95422-2", "id-123", date, date);
+            DiagnosticReportStatus.FINAL, "95422-2", "id-123", dateTested, dateUpdated);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -954,8 +956,8 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
     assertThat(((DateTimeType) actual.getEffective()).getAsV3())
-        .isEqualTo(new DateTimeType(date).getAsV3());
-    assertThat((actual.getIssued())).isEqualTo(date);
+        .isEqualTo(new DateTimeType(Date.from(dateTested.toInstant())).getAsV3());
+    assertThat((actual.getIssued())).isEqualTo(dateUpdated);
   }
 
   @Test

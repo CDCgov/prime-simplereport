@@ -31,8 +31,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,10 +127,41 @@ public class BulkUploadResultsToFhir {
         .collect(Collectors.toList());
   }
 
+  private ZonedDateTime getZonedTestResultDate(
+      TestResultRow row, DateTimeFormatter dateTimeFormatter) {
+    LocalDateTime testResultDateTime;
+    TemporalAccessor temporalAccessor =
+        dateTimeFormatter.parseBest(
+            row.getTestResultDate().getValue(), LocalDateTime::from, LocalDate::from);
+    if (temporalAccessor instanceof LocalDateTime) {
+      testResultDateTime = (LocalDateTime) temporalAccessor;
+    } else {
+      testResultDateTime = ((LocalDate) temporalAccessor).atStartOfDay();
+    }
+
+    // Attempt to get the specific timezone of the data
+    ZoneId localZoneId =
+        addressValidationService.getZoneIdByAddress(
+            row.getTestingLabStreet().getValue(),
+            row.getTestingLabStreet2().getValue(),
+            row.getTestingLabCity().getValue(),
+            row.getTestingLabState().getValue(),
+            row.getTestingLabZipCode().getValue());
+
+    // If specific timezone is not found, use UTC by default
+    if (localZoneId == null) {
+      localZoneId = ZoneId.of("UTC");
+    }
+
+    return ZonedDateTime.of(testResultDateTime, localZoneId);
+  }
+
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
     var testEventId = row.getAccessionNumber().getValue();
+    var testResultDate = getZonedTestResultDate(row, dateTimeFormatter);
+
     var patientAddr =
         new StreetAddress(
             row.getPatientStreet().getValue(),
@@ -340,38 +371,12 @@ public class BulkUploadResultsToFhir {
             testOrderLoinc,
             uuidGenerator.randomUUID().toString());
 
-    var testResultDateString = row.getTestResultDate().getValue();
-    var testResultDateTime =
-        LocalDate.parse(testResultDateString, dateTimeFormatter).atStartOfDay();
-
-    // keep the time value if it is available
-    if (testResultDateString.contains(":")) {
-      testResultDateTime = LocalDateTime.parse(testResultDateString, dateTimeFormatter);
-    }
-
-    // attempt to get the specific timezone of the data, but use UTC if unable
-    ZoneId localZoneId =
-        addressValidationService.getZoneIdByAddress(
-            row.getTestingLabStreet().getValue(),
-            row.getTestingLabStreet2().getValue(),
-            row.getTestingLabCity().getValue(),
-            row.getTestingLabState().getValue(),
-            row.getTestingLabZipCode().getValue());
-
-    if (localZoneId == null) {
-      localZoneId = ZoneId.of("UTC");
-    }
-
-    // ZonedDateTime takes into account whether to apply daylight savings
-    ZonedDateTime zonedDateTime = ZonedDateTime.of(testResultDateTime, localZoneId);
-    var dateTested = Date.from(zonedDateTime.toInstant());
-
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            dateTested,
+            testResultDate,
             dateGenerator.newDate());
 
     return fhirConverter.createFhirBundle(

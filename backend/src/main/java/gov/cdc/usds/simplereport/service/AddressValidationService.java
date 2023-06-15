@@ -121,6 +121,7 @@ public class AddressValidationService {
         .build();
   }
 
+  /** Returns ZoneId of the address or null if not found. */
   public ZoneId getZoneIdByAddress(
       String street1, String street2, String city, String state, String postalCode) {
     Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
