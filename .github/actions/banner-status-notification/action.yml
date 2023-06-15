@@ -38,9 +38,9 @@ runs:
         for i in $(echo $TO_EMAIL | tr ";" "\n")
         do
          email_array+="{\"email\":\"$i\"},"
-       done
+        done
   
-       export FROM_EMAIL="${{ secrets.NOTIFICATION_EMAIL_SENDER }}"
+        export FROM_EMAIL="${{ secrets.NOTIFICATION_EMAIL_SENDER }}"
         
         curl --request POST \
           --url https://api.sendgrid.com/v3/mail/send \
