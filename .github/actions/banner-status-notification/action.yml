@@ -53,15 +53,11 @@ runs:
         do
          email_array+="{\"email\":\"$i\"},"
         done
-        
-        echo "$email_array"
-        echo $EMAIL_SUBJECT
-        echo $EMAIL_CONTENT
-  
+
         export FROM_EMAIL="${{ inputs.email-sender }}"
-        
+       
         curl --request POST \
           --url https://api.sendgrid.com/v3/mail/send \
-          --header 'Authorization: Bearer $APIKEY' \
+          --header 'Authorization: Bearer "$APIKEY"' \
           --header 'Content-Type: application/json' \
-          --data '{"personalizations": [{"to": [$email_array]}],"from": {"email": $FROM_EMAIL,"subject": $EMAIL_SUBJECT,"content": [{"type": "text/plain", "value": $EMAIL_CONTENT}]}'
+          --data '{"personalizations": [{"to": [{"email":"johanna@skylight.digital"},]}],"from": {"email": "$FROM_EMAIL"},"subject": "$EMAIL_SUBJECT","content": [{"type": "text/plain", "value": "$EMAIL_CONTENT"}]}'
