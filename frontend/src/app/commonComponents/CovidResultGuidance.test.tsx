@@ -3,6 +3,7 @@ import { render } from "@testing-library/react";
 import { TEST_RESULTS } from "../testResults/constants";
 
 import CovidResultGuidance from "./CovidResultGuidance";
+import "../../i18n";
 
 describe("CovidResultGuidance", () => {
   const cases = [
