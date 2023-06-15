@@ -41,9 +41,9 @@ describe("Getting a test result from a patient link", () => {
 
     cy.checkA11y(); // DoB entry page
 
-    cy.get('input[name="birthMonth"]').type(birthMonth);
-    cy.get('input[name="birthDay"]').type(birthDay);
-    cy.get('input[name="birthYear"]').type(birthYear);
+    cy.get('input[name="month"]').type(birthMonth);
+    cy.get('input[name="day"]').type(birthDay);
+    cy.get('input[name="year"]').type(birthYear);
     cy.get("#dob-submit-button").click();
   });
   it("shows the test result", () => {

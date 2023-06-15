@@ -425,6 +425,7 @@ Object {
                     </div>
                     <button
                       class="usa-button usa-button--unstyled margin-top-2"
+                      id="add-phone-number-btn"
                       type="button"
                     >
                       <svg
@@ -534,6 +535,7 @@ Object {
                       </div>
                       <button
                         class="usa-button usa-button--unstyled margin-top-2"
+                        id="add-email-btn"
                         type="button"
                       >
                         <svg
@@ -3277,6 +3279,7 @@ Object {
                   </div>
                   <button
                     class="usa-button usa-button--unstyled margin-top-2"
+                    id="add-phone-number-btn"
                     type="button"
                   >
                     <svg
@@ -3386,6 +3389,7 @@ Object {
                     </div>
                     <button
                       class="usa-button usa-button--unstyled margin-top-2"
+                      id="add-email-btn"
                       type="button"
                     >
                       <svg
