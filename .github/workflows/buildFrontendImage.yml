@@ -22,7 +22,7 @@ jobs:
 
   frontend_changes:
     with:
-      what_to_check: backend/db-setup
+      what_to_check: frontend
     uses: ./.github/workflows/checkForChanges.yml
 
   build_and_push_frontend_image:
@@ -60,7 +60,7 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: backend/db-setup
+          context: frontend
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
