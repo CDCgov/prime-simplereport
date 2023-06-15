@@ -20,9 +20,7 @@ import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +35,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @Autowired OrganizationService _organizationService;
   @Autowired FacilityRepository facilityRepository;
   @Autowired private TestDataFactory _dataFactory;
+  Set<UUID> emptySet = Collections.emptySet();
 
   // The next several retrieval tests expect the demo users as they are defined in the
   // no-security and no-okta-mgmt profiles
@@ -227,7 +226,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             ConflictingUserException.class,
             () ->
                 _service.createUserInCurrentOrg(
-                    "allfacilities@example.com", personName, Role.USER, false, Set.of()));
+                    "allfacilities@example.com", personName, Role.USER, false, emptySet));
 
     assertEquals("A user with this email address already exists.", caught.getMessage());
   }
@@ -250,7 +249,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             ConflictingUserException.class,
             () ->
                 _service.createUserInCurrentOrg(
-                    "captain@pirate.com", personName, Role.USER, false, Set.of()));
+                    "captain@pirate.com", personName, Role.USER, false, emptySet));
 
     assertEquals("A user with this email address already exists.", caught.getMessage());
   }
