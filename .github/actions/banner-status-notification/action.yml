@@ -27,17 +27,23 @@ runs:
         
         if [[ "prod" == "${{ inputs.env }}" ]]
         then
-          export APIKEY=${{ secrets.EMAIL_APIKEY_PROD }}
-          export TO_EMAIL=${{ secrets.NOTIFICATION_EMAIL_RECIPIENT }}
+          export APIKEY=${{ secrets.NOTIFICATION_EMAIL_APIKEY_PROD }}
+          export TO_EMAIL="${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_PROD }}"
         else 
-          export APIKEY=${{ secrets.EMAIL_APIKEY_TEST }}
-          export TO_EMAIL=${{ secrets.NOTIFICATION_EMAIL_RECIPIENT }}
+          export APIKEY=${{ secrets.NOTIFICATION_EMAIL_APIKEY_TEST }}
+          export TO_EMAIL="${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_TEST }}"
         fi
         
-        export FROM_EMAIL="${{ secrets.NOTIFICATION_EMAIL_SENDER }}"
+        email_array=""
+        for i in $(echo $TO_EMAIL | tr ";" "\n")
+        do
+         email_array+="{\"email\":\"$i\"},"
+       done
+  
+       export FROM_EMAIL="${{ secrets.NOTIFICATION_EMAIL_SENDER }}"
         
         curl --request POST \
           --url https://api.sendgrid.com/v3/mail/send \
-          --header 'Authorization: Bearer ${APIKEY}' \
+          --header 'Authorization: Bearer $APIKEY' \
           --header 'Content-Type: application/json' \
-          --data '{"personalizations": [{"to": [{"email": "johanna@skylight.digital"}]}],"from": {"email": ${FROM_EMAIL},"subject": ${EMAIL_SUBJECT},"content": [{"type": "text/plain", "value": ${EMAIL_CONTENT}}]}'
+          --data '{"personalizations": [{"to": [$email_array]}],"from": {"email": $FROM_EMAIL,"subject": $EMAIL_SUBJECT,"content": [{"type": "text/plain", "value": $EMAIL_CONTENT}]}'
