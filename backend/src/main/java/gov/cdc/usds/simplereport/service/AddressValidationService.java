@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
 import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +105,7 @@ public class AddressValidationService {
     return getValidatedAddress(lookup, fieldName);
   }
 
-  public TimezoneInfo getTimezoneByAddress(Lookup lookup) {
+  public TimezoneInfo getTimezoneInfoByLookup(Lookup lookup) {
     var results = getLookupResults(lookup);
 
     if (results.isEmpty()) {
@@ -114,15 +115,29 @@ public class AddressValidationService {
     Candidate addressMatch = results.get(0);
 
     return TimezoneInfo.builder()
-        .timezone(addressMatch.getMetadata().getTimeZone())
+        .timezoneCommonName(addressMatch.getMetadata().getTimeZone())
         .utcOffset((int) addressMatch.getMetadata().getUtcOffset())
         .obeysDaylightSavings(addressMatch.getMetadata().obeysDst())
         .build();
   }
 
-  public TimezoneInfo getTimezoneByAddress(
+  public ZoneId getZoneIdByAddress(
       String street1, String street2, String city, String state, String postalCode) {
     Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
-    return getTimezoneByAddress(lookup);
+    return getZoneIdByLookup(lookup);
+  }
+
+  public ZoneId getZoneIdByLookup(Lookup lookup) {
+    TimezoneInfo timezoneInfo = null;
+    try {
+      timezoneInfo = getTimezoneInfoByLookup(lookup);
+    } catch (InvalidAddressException exception) {
+      log.error("Unable to find timezone by testing lab address");
+    }
+    if (timezoneInfo == null) {
+      return null;
+    }
+
+    return ZoneId.of("US/" + timezoneInfo.timezoneCommonName);
   }
 }

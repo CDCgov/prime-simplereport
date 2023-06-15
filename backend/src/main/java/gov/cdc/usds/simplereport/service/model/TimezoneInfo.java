@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public class TimezoneInfo {
-  public String timezone;
+  public String timezoneCommonName;
   public int utcOffset;
   public boolean obeysDaylightSavings;
 }

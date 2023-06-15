@@ -24,12 +24,11 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
-import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
-import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -351,22 +350,21 @@ public class BulkUploadResultsToFhir {
     }
 
     // attempt to get the specific timezone of the data, but use UTC if unable
-    var zoneOffset = ZoneOffset.UTC;
-    try {
-      TimezoneInfo testResultTimezoneInfo =
-          addressValidationService.getTimezoneByAddress(
-              row.getTestingLabStreet().getValue(),
-              row.getTestingLabStreet2().getValue(),
-              row.getTestingLabCity().getValue(),
-              row.getTestingLabState().getValue(),
-              row.getTestingLabZipCode().getValue());
-      if (testResultTimezoneInfo != null) {
-        zoneOffset = ZoneOffset.ofHours(testResultTimezoneInfo.utcOffset);
-      }
-    } catch (InvalidAddressException exception) {
-      log.error("Unable to find timezone by testing lab address");
+    ZoneId localZoneId =
+        addressValidationService.getZoneIdByAddress(
+            row.getTestingLabStreet().getValue(),
+            row.getTestingLabStreet2().getValue(),
+            row.getTestingLabCity().getValue(),
+            row.getTestingLabState().getValue(),
+            row.getTestingLabZipCode().getValue());
+
+    if (localZoneId == null) {
+      localZoneId = ZoneId.of("UTC");
     }
-    var dateTested = Date.from(testResultDateTime.toInstant(zoneOffset));
+
+    // ZonedDateTime takes into account whether to apply daylight savings
+    ZonedDateTime zonedDateTime = ZonedDateTime.of(testResultDateTime, localZoneId);
+    var dateTested = Date.from(zonedDateTime.toInstant());
 
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(

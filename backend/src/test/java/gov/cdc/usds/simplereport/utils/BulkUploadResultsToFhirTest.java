@@ -16,13 +16,13 @@ import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
-import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -205,13 +205,8 @@ public class BulkUploadResultsToFhirTest {
     when(mockedDateGenerator.newDate()).thenReturn(date);
 
     // Mock timezone retrieval from address
-    when(addressValidationService.getTimezoneByAddress(any(), any(), any(), any(), any()))
-        .thenReturn(
-            TimezoneInfo.builder()
-                .timezone("Central")
-                .utcOffset(-5)
-                .obeysDaylightSavings(true)
-                .build());
+    when(addressValidationService.getZoneIdByAddress(any(), any(), any(), any(), any()))
+        .thenReturn(ZoneId.of("US/Central"));
 
     when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));

@@ -12,7 +12,9 @@ import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Lookup;
 import com.smartystreets.api.us_street.Metadata;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -62,6 +64,43 @@ class AddressValidationServiceTest {
     StreetAddress address = s.getValidatedAddress(lookup, null);
 
     assertEquals("User entered street", address.getStreetOne());
+  }
+
+  @Test
+  void returnsCorrectZoneIdByLookup() {
+    ArrayList<Candidate> results = new ArrayList<Candidate>();
+    results.add(getMockTimeZoneInfoResult());
+    Lookup lookup = mock(Lookup.class);
+    when(lookup.getResult()).thenReturn(results);
+
+    ZoneId zoneId = s.getZoneIdByLookup(lookup);
+
+    assertEquals(zoneId, ZoneId.of("US/Central"));
+  }
+
+  @Test
+  void returnsCorrectTimeZoneInfoByLookup() {
+    ArrayList<Candidate> results = new ArrayList<>();
+    results.add(getMockResult());
+    Lookup lookup = mock(Lookup.class);
+    when(lookup.getResult()).thenReturn(results);
+
+    TimezoneInfo timeZoneInfo = s.getTimezoneInfoByLookup(lookup);
+
+    assertEquals(results.get(0).getMetadata().getTimeZone(), timeZoneInfo.timezoneCommonName);
+    assertEquals(results.get(0).getMetadata().getUtcOffset(), timeZoneInfo.utcOffset);
+    assertEquals(results.get(0).getMetadata().obeysDst(), timeZoneInfo.obeysDaylightSavings);
+  }
+
+  private Candidate getMockTimeZoneInfoResult() {
+    Metadata metadata = mock(Metadata.class);
+    when(metadata.getTimeZone()).thenReturn("Central");
+    when(metadata.getUtcOffset()).thenReturn(-5.0);
+    when(metadata.obeysDst()).thenReturn(true);
+
+    Candidate result = mock(Candidate.class);
+    when(result.getMetadata()).thenReturn(metadata);
+    return result;
   }
 
   private Candidate getMockResult() {
