@@ -157,7 +157,7 @@ const ManageUsersContainer = () => {
 
   return (
     <ManageUsers
-      users={data.usersWithStatus || []}
+      users={data.usersWithStatus ?? []}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
