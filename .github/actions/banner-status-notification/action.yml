@@ -58,6 +58,6 @@ runs:
        
         curl --request POST \
           --url https://api.sendgrid.com/v3/mail/send \
-          --header 'Authorization: Bearer "$APIKEY"' \
-          --header 'Content-Type: application/json' \
-          --data '{"personalizations": [{"to": [{"email":"johanna@skylight.digital"},]}],"from": {"email": "$FROM_EMAIL"},"subject": "$EMAIL_SUBJECT","content": [{"type": "text/plain", "value": "$EMAIL_CONTENT"}]}'
+          --header "Authorization: Bearer $APIKEY" \
+          --header "Content-Type: application/json" \
+          --data "{\"personalizations\": [{\"to\": [{\"email\":\"$email_array\"},]}],\"from\": {\"email\": \"$FROM_EMAIL\"},\"subject\": \"$EMAIL_SUBJECT\",\"content\": [{\"type\": \"text/plain\", \"value\": \"$EMAIL_CONTENT\"}]}"
