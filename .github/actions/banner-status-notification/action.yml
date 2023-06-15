@@ -42,10 +42,10 @@ runs:
         if [[ "prod" == "${{ inputs.env }}" ]]
         then
           export APIKEY = ${{ inputs.apikey-prod }}
-          export TO_EMAIL = ${{ inputs.email-recipient-prod }}
+          export TO_EMAIL = "${{ inputs.email-recipient-prod }}"
         else 
           export APIKEY = ${{ inputs.apikey-test }}
-          export TO_EMAIL = ${{ inputs.email-recipient-test }}
+          export TO_EMAIL = "${{ inputs.email-recipient-test }}"
         fi
         
         email_array=""
