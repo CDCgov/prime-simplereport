@@ -52,3 +52,8 @@ jobs:
         with:
           status-active: ${{ github.event.inputs.active == 'true' }}
           env: ${{ github.event.inputs.env }}
+          email-sender: ${{ secrets.NOTIFICATION_EMAIL_SENDER }}
+          apikey-prod: ${{ secrets.NOTIFICATION_EMAIL_APIKEY_PROD }}
+          apikey-test: ${{ secrets.NOTIFICATION_EMAIL_APIKEY_TEST }}
+          email-recipient-prod: ${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_PROD }}
+          email-recipient-test: ${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_TEST }}

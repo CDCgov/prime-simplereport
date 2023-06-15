@@ -9,6 +9,21 @@ inputs:
     description: environment where the banner has been updated
     required: true
     default: "prod"
+  email-sender:
+      description: from email address
+      required: true
+  apikey-prod:
+    description: sendgrid apikey for production environment
+    required: true
+  apikey-test:
+    description: sendgrid apikey for non production environments
+    required: true
+  email-recipient-prod:
+    description: list of recipients of the notification for production environment
+    required: true
+  email-recipient-test:
+    description: list of recipients of the notification for non production environments
+    required: true
 runs:
   using: composite
   steps:
@@ -26,11 +41,11 @@ runs:
         
         if [[ "prod" == "${{ inputs.env }}" ]]
         then
-          export APIKEY=${{ secrets.NOTIFICATION_EMAIL_APIKEY_PROD }}
-          export TO_EMAIL="${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_PROD }}"
+          export APIKEY=${{ inputs.apikey-prod }}
+          export TO_EMAIL="${{ inputs.email-recipient-prod }}"
         else 
-          export APIKEY=${{ secrets.NOTIFICATION_EMAIL_APIKEY_TEST }}
-          export TO_EMAIL="${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_TEST }}"
+          export APIKEY=${{ inputs.apikey-test }}
+          export TO_EMAIL="${{ inputs.email-recipient-test }}"
         fi
         
         email_array=""
@@ -39,7 +54,7 @@ runs:
          email_array+="{\"email\":\"$i\"},"
         done
   
-        export FROM_EMAIL="${{ secrets.NOTIFICATION_EMAIL_SENDER }}"
+        export FROM_EMAIL="${{ inputs.email-sender }}"
         
         curl --request POST \
           --url https://api.sendgrid.com/v3/mail/send \
