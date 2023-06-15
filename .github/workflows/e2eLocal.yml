@@ -1,31 +1,15 @@
 name: Run end-to-end tests
 
 on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - "**"
+  workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-e2e-local
   cancel-in-progress: true
 
 jobs:
 
-  build_cypress_image:
-    uses: ./.github/workflows/buildCypressImage.yml
-
-  build_backend_image:
-    uses: ./.github/workflows/buildBackendImage.yml
-
-  build_database_image:
-    uses: ./.github/workflows/buildDatabaseImage.yml
-
   cypress-local-env:
-    needs: [build_backend_image, build_cypress_image, build_database_image]
     runs-on: ubuntu-latest
     steps:
 

@@ -1,17 +1,10 @@
 name: Test
 
-# Run this on pushes to any branch that change a backend file or the workflow definition
 on:
-  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-  pull_request:
-    branches:
-      - "**"
-  push:
-    branches:
-      - main
+  workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-test
   cancel-in-progress: true
 
 env:

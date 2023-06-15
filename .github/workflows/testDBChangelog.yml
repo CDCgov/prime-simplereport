@@ -1,19 +1,11 @@
-name: Test Liquibase rollbacks
+name: Test Liquibase Actions
 
 # Run this on pushes to any branch that changes a Liquibase changelog
 on:
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - "**"
-  push:
-    branches:
-      - main
-    paths:
-      - backend/src/main/resources/db/changelog/db.changelog-master.yaml
+  workflow_call:
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-test-db-liquibase-action
   cancel-in-progress: true
 
 defaults:
