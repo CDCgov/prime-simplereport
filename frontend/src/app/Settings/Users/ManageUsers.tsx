@@ -215,9 +215,9 @@ const ManageUsers: React.FC<Props> = ({
           lastName,
           email,
           role,
-          facilities: organization?.testingFacility.map(({ id }) => id) || [],
+          facilities: organization?.testingFacility.map(({ id }) => id) ?? [],
           accessAllFacilities:
-            permissions?.includes(UserPermission.AccessAllFacilities) || false,
+            permissions?.includes(UserPermission.AccessAllFacilities) ?? false,
         },
       });
       const addedUser = data?.addUserToCurrentOrg?.id;
