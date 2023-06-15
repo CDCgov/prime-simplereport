@@ -2036,21 +2036,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   </a>
                   , then copy the value for this field.
                 </div>
-                <div>
-                  <br />
-                </div>
-                <div>
-                  You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the 
-                  <a
-                    class="usa-link"
-                    href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    CDC website
-                  </a>
-                  . Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column B.
-                </div>
               </div>
             </div>
             <div
@@ -2156,21 +2141,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                     device code lookup tool
                   </a>
                   , then copy the value for this field.
-                </div>
-                <div>
-                  <br />
-                </div>
-                <div>
-                  You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the 
-                  <a
-                    class="usa-link"
-                    href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    CDC website
-                  </a>
-                  . Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column F.
                 </div>
               </div>
             </div>
@@ -2299,21 +2269,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                     device code lookup tool
                   </a>
                   .
-                </div>
-                <div>
-                  <br />
-                </div>
-                <div>
-                  You can also search the LIVD SARS-CoV-2 Test Codes spreadsheet on the 
-                  <a
-                    class="usa-link"
-                    href="https://www.cdc.gov/csels/dls/sars-cov-2-livd-codes.html"
-                    rel="noreferrer noopener"
-                    target="_blank"
-                  >
-                    CDC website
-                  </a>
-                  . Download the spreadsheet, go to the "LOINC Mapping" tab, and find the value for your device in column E.
                 </div>
               </div>
             </div>

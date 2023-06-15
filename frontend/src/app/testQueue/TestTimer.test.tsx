@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
@@ -97,7 +97,7 @@ describe("TestTimerWidget", () => {
 
       const startTimer = await screen.findByRole("button");
 
-      await userEvent.click(startTimer);
+      await act(async () => await userEvent.click(startTimer));
       expect(trackEventMock).toHaveBeenCalled();
       expect(trackEventMock).toHaveBeenCalledTimes(1);
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -112,7 +112,7 @@ describe("TestTimerWidget", () => {
       const timerButton = await screen.findByRole("button");
 
       // Start timer
-      await userEvent.click(timerButton);
+      await act(async () => await userEvent.click(timerButton));
       await screen.findByText("15:00");
 
       // The timer does not enter the countdown state instantly, so clicking the
@@ -121,7 +121,7 @@ describe("TestTimerWidget", () => {
       await waitFor(() => findTimer("internal-id")?.tick(Date.now()));
 
       // Reset timer
-      await userEvent.click(timerButton);
+      await act(async () => await userEvent.click(timerButton));
       await screen.findByText("15:00");
 
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -135,7 +135,7 @@ describe("TestTimerWidget", () => {
 
       const timerButton = await screen.findByRole("button");
 
-      await userEvent.click(timerButton);
+      await act(async () => await userEvent.click(timerButton));
       await screen.findByText("0:00");
 
       await screen.findByText("RESULT READY");

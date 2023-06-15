@@ -189,7 +189,7 @@ describe("TestQueue", () => {
 
   describe("clicking on test questionnaire", () => {
     beforeEach(async () => {
-      await render(
+      render(
         <MemoryRouter>
           <MockedProvider mocks={mocks}>
             <Provider store={store}>

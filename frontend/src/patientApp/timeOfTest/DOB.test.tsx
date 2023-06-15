@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -95,10 +96,21 @@ describe("DOB (valid UUID)", () => {
 
   it("Checks to make sure it is actually a possible date", async () => {
     // GIVEN
-    await userEvent.type(await screen.findByLabelText("Month"), "31");
-    await userEvent.type(await screen.findByLabelText("Day"), "7");
-    await userEvent.type(await screen.findByLabelText("Year"), "1990");
-    await userEvent.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "2")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "31")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1990")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -107,14 +119,23 @@ describe("DOB (valid UUID)", () => {
     expect(error).toHaveTextContent(
       "Error: Date of birth must be a valid date"
     );
+    expect(await screen.findByLabelText("Day")).toHaveFocus();
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 
   it("Does not allow partial dates", async () => {
     // GIVEN
-    await userEvent.type(await screen.findByLabelText("Month"), "7");
-    await userEvent.type(await screen.findByLabelText("Day"), "31");
-    await userEvent.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "7")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "31")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -123,15 +144,27 @@ describe("DOB (valid UUID)", () => {
     expect(error).toHaveTextContent(
       "Error: Date of birth must be a valid date"
     );
+    expect(await screen.findByLabelText("Year")).toHaveFocus();
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 
   it("Checks to make sure it is a date after 1900", async () => {
     // GIVEN
-    await userEvent.type(await screen.findByLabelText("Month"), "08");
-    await userEvent.type(await screen.findByLabelText("Day"), "21");
-    await userEvent.type(await screen.findByLabelText("Year"), "1899");
-    await userEvent.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1899")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -140,15 +173,27 @@ describe("DOB (valid UUID)", () => {
     expect(error).toHaveTextContent(
       "Error: Date of birth must be after 1900 and before the current year"
     );
+    expect(await screen.findByLabelText("Year")).toHaveFocus();
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 
   it("Checks to make sure it is a date before this year", async () => {
     // GIVEN
-    await userEvent.type(await screen.findByLabelText("Month"), "08");
-    await userEvent.type(await screen.findByLabelText("Day"), "21");
-    await userEvent.type(await screen.findByLabelText("Year"), "2237");
-    await userEvent.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "2237")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -157,16 +202,28 @@ describe("DOB (valid UUID)", () => {
     expect(error).toHaveTextContent(
       "Error: Date of birth must be after 1900 and before the current year"
     );
+    expect(await screen.findByLabelText("Year")).toHaveFocus();
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 
   it("Rejects the wrong date (not what is stored for the user)", async () => {
     // GIVEN
     validateDateOfBirthSpy.mockRejectedValue({ status: 403 });
-    await userEvent.type(await screen.findByLabelText("Month"), "08");
-    await userEvent.type(await screen.findByLabelText("Day"), "22");
-    await userEvent.type(await screen.findByLabelText("Year"), "1987");
-    await userEvent.click(await screen.findByText("Continue"));
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "22")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1987")
+    );
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
 
     // WHEN
     const error = await screen.findByRole("alert");
@@ -183,12 +240,23 @@ describe("DOB (valid UUID)", () => {
     validateDateOfBirthSpy.mockImplementation(
       () => new Promise((res) => setTimeout(() => res({} as any), 300))
     );
-    await userEvent.type(await screen.findByLabelText("Month"), "08");
-    await userEvent.type(await screen.findByLabelText("Day"), "21");
-    await userEvent.type(await screen.findByLabelText("Year"), "1987");
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1987")
+    );
 
     // WHEN
-    await userEvent.click(await screen.findByText("Continue"));
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating birth date...")
     );
@@ -203,12 +271,23 @@ describe("DOB (valid UUID)", () => {
       () =>
         new Promise((res, rej) => setTimeout(() => rej({ status: 410 }), 300))
     );
-    await userEvent.type(await screen.findByLabelText("Month"), "08");
-    await userEvent.type(await screen.findByLabelText("Day"), "21");
-    await userEvent.type(await screen.findByLabelText("Year"), "1987");
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1987")
+    );
 
     // WHEN
-    await userEvent.click(await screen.findByText("Continue"));
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating birth date...")
     );
@@ -229,12 +308,23 @@ describe("DOB (valid UUID)", () => {
       () =>
         new Promise((res, rej) => setTimeout(() => rej({ status: 404 }), 300))
     );
-    await userEvent.type(await screen.findByLabelText("Month"), "08");
-    await userEvent.type(await screen.findByLabelText("Day"), "21");
-    await userEvent.type(await screen.findByLabelText("Year"), "1987");
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Month"), "08")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "21")
+    );
+    await act(
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Year"), "1987")
+    );
 
     // WHEN
-    await userEvent.click(await screen.findByText("Continue"));
+    await act(
+      async () => await userEvent.click(await screen.findByText("Continue"))
+    );
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating birth date...")
     );
