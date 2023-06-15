@@ -10,7 +10,6 @@ inputs:
     required: true
     default: "prod"
 runs:
-  uses: composite
   using: composite
   steps:
     - name: send email to support team
