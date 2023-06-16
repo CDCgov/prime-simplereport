@@ -98,10 +98,11 @@ describe("DOB (valid UUID)", () => {
     // GIVEN
     await act(
       async () =>
-        await userEvent.type(await screen.findByLabelText("Month"), "31")
+        await userEvent.type(await screen.findByLabelText("Month"), "2")
     );
     await act(
-      async () => await userEvent.type(await screen.findByLabelText("Day"), "7")
+      async () =>
+        await userEvent.type(await screen.findByLabelText("Day"), "31")
     );
     await act(
       async () =>
@@ -118,6 +119,7 @@ describe("DOB (valid UUID)", () => {
     expect(error).toHaveTextContent(
       "Error: Date of birth must be a valid date"
     );
+    expect(await screen.findByLabelText("Day")).toHaveFocus();
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 
@@ -142,6 +144,7 @@ describe("DOB (valid UUID)", () => {
     expect(error).toHaveTextContent(
       "Error: Date of birth must be a valid date"
     );
+    expect(await screen.findByLabelText("Year")).toHaveFocus();
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 
@@ -170,6 +173,7 @@ describe("DOB (valid UUID)", () => {
     expect(error).toHaveTextContent(
       "Error: Date of birth must be after 1900 and before the current year"
     );
+    expect(await screen.findByLabelText("Year")).toHaveFocus();
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 
@@ -198,6 +202,7 @@ describe("DOB (valid UUID)", () => {
     expect(error).toHaveTextContent(
       "Error: Date of birth must be after 1900 and before the current year"
     );
+    expect(await screen.findByLabelText("Year")).toHaveFocus();
     expect(validateDateOfBirthSpy).not.toHaveBeenCalled();
   });
 

@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import java.util.List;
+import java.util.UUID;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,4 +17,6 @@ public class UserInput {
   private String email;
   private String organizationExternalId;
   private Role role;
+  boolean accessAllFacilities;
+  List<UUID> facilities;
 }

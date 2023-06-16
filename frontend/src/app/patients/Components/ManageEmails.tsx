@@ -98,15 +98,18 @@ const ManageEmails: React.FC<Props> = ({
 
   const onEmailChange = (index: number, newEmail = "") => {
     const newEmails = Array.from(emailsOrDefault);
-
     newEmails[index] = newEmail;
-
     updateEmails(newEmails);
   };
 
   const onEmailRemove = (index: number) => {
     const newEmails = Array.from(emailsOrDefault);
+    const lastEmailRemoved = index === newEmails.length - 1;
     newEmails.splice(index, 1);
+    lastEmailRemoved
+      ? document.getElementById("add-email-btn")?.focus()
+      : document.getElementsByName(`email-${index}`)?.[0]?.focus();
+
     updateEmails(newEmails);
   };
 
@@ -114,6 +117,9 @@ const ManageEmails: React.FC<Props> = ({
     const newEmails = Array.from(emailsOrDefault);
     newEmails.push("");
     updateEmails(newEmails);
+    setTimeout(() => {
+      document.getElementsByName(`email-${newEmails.length - 1}`)?.[0]?.focus();
+    }, 100);
   };
 
   return (
@@ -150,7 +156,7 @@ const ManageEmails: React.FC<Props> = ({
                   className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   data-testid={`delete-email-${idx}`}
                   onClick={() => onEmailRemove(idx)}
-                  aria-label={`Delete email ${email.trim()}`}
+                  aria-label={`Delete additional email ${email.trim()}`}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
@@ -167,6 +173,7 @@ const ManageEmails: React.FC<Props> = ({
         variant="unstyled"
         label={t("patient.form.contact.addEmail")}
         icon="plus"
+        id={"add-email-btn"}
       />
     </div>
   );
