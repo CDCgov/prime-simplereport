@@ -799,9 +799,10 @@ public class FhirConverter {
               testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
     }
 
-    // Should we set the local time zone of the TestEvent facility?
-    var dateTested =
-        ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneId.of("UTC"));
+    ZonedDateTime dateTested = null;
+    if (testEvent.getDateTested() != null) {
+      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneId.of("UTC"));
+    }
 
     return convertToDiagnosticReport(
         status,
@@ -827,10 +828,13 @@ public class FhirConverter {
       String id,
       ZonedDateTime dateTimeTested,
       Date dateUpdated) {
+    var effectiveDateTime =
+        dateTimeTested == null ? new DateTimeType() : convertToDateTimeType(dateTimeTested, null);
+
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(convertToDateTimeType(dateTimeTested, null))
+            .setEffective(effectiveDateTime)
             .setIssued(dateUpdated);
 
     diagnosticReport.getIssuedElement().setTimeZoneZulu(true);
