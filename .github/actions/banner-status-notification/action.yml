@@ -38,8 +38,8 @@ runs:
       run: |
         if [[ "true" == "${{ inputs.status-active }}" ]]
         then
-          banner_header=${{ inputs.banner-header }}
-          banner_msg=${{ inputs.banner-msg }}
+          banner_header="${{ inputs.banner-header }}"
+          banner_msg="${{ inputs.banner-msg }}"
           export EMAIL_SUBJECT="Maintenance banner is ON"
           export EMAIL_CONTENT="The maintenance banner is currently displayed on the SimpleReport app. We’ll send another automated email when the banner is removed.\n\n Message currently displayed: \" $banner_header \"."
         else
