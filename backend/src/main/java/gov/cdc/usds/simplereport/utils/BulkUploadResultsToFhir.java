@@ -344,6 +344,9 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
+                    .issued(
+                        Date.from(
+                            testResultDate.atZone(zoneIdGenerator.getSystemZoneId()).toInstant()))
                     .build()));
 
     LocalDate symptomOnsetDate = null;

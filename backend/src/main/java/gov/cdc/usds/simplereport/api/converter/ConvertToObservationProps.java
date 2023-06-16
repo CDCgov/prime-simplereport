@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.converter;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import java.util.Date;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,4 +18,5 @@ public class ConvertToObservationProps {
   private String testkitNameId;
   private String equipmentUid;
   private String deviceModel;
+  private Date issued;
 }

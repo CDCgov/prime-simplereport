@@ -608,6 +608,7 @@ class FhirConverterTest {
                 .testkitNameId("testKitName")
                 .equipmentUid("equipmentUid")
                 .deviceModel("modelName")
+                .issued(Date.from(Instant.parse("2023-06-10T23:15:00.00Z")))
                 .build());
 
     assertThat(actual.getId()).isEqualTo("id-123");
@@ -624,6 +625,7 @@ class FhirConverterTest {
         .isEqualTo("resultCode");
     assertThat(actual.getNote()).isEmpty();
     assertThat(actual.getMethod().getCodingFirstRep().getDisplay()).isEqualTo("modelName");
+    assertThat(actual.getIssued()).isEqualTo("2023-06-10T23:15:00.00Z");
   }
 
   @Test
@@ -641,7 +643,8 @@ class FhirConverterTest {
             null,
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            Date.from(Instant.parse("2023-06-10T23:15:00.00Z")));
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.FINAL.getDisplay());
@@ -656,6 +659,7 @@ class FhirConverterTest {
         .isEqualTo("260373001");
     assertThat(actual.getNote()).isEmpty();
     assertThat(actual.getMethod().getCodingFirstRep().getDisplay()).isEqualTo("modelName");
+    assertThat(actual.getIssued()).isEqualTo("2023-06-10T23:15:00.00Z");
   }
 
   @Test
@@ -673,7 +677,8 @@ class FhirConverterTest {
             "Oopsy Daisy",
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            new Date());
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay()).isEqualTo(ObservationStatus.CORRECTED.getDisplay());
@@ -696,7 +701,8 @@ class FhirConverterTest {
             null,
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            new Date());
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getStatus().getDisplay())
@@ -715,7 +721,8 @@ class FhirConverterTest {
             null,
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            new Date());
 
     assertThat(actual).isNull();
   }
@@ -732,7 +739,8 @@ class FhirConverterTest {
             null,
             "testkitName",
             "equipmentUid",
-            "modelName");
+            "modelName",
+            new Date());
 
     assertThat(actual).isNull();
   }
@@ -764,7 +772,11 @@ class FhirConverterTest {
 
     var actual =
         fhirConverter.convertToObservation(
-            Set.of(covidResult, fluResult), device, TestCorrectionStatus.ORIGINAL, null);
+            Set.of(covidResult, fluResult),
+            device,
+            TestCorrectionStatus.ORIGINAL,
+            null,
+            Date.from(Instant.parse("2023-06-10T23:15:00.00Z")));
 
     assertThat(actual).hasSize(2);
     String covidSerialized =
@@ -814,7 +826,11 @@ class FhirConverterTest {
 
     var actual =
         fhirConverter.convertToObservation(
-            Set.of(result), device, TestCorrectionStatus.CORRECTED, "woops");
+            Set.of(result),
+            device,
+            TestCorrectionStatus.CORRECTED,
+            "woops",
+            Date.from(Instant.parse("2023-06-10T23:15:00.00Z")));
 
     String actualSerialized = parser.encodeResourceToString(actual.get(0));
     var expectedSerialized1 =
@@ -935,7 +951,8 @@ class FhirConverterTest {
             StandardCharsets.UTF_8);
     expectedSerialized =
         expectedSerialized.replace(
-            "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(date).getValueAsString());
+            "$EFFECTIVE_DATE_TIME_TESTED",
+            new DateTimeType(date).setTimeZoneZulu(true).getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
@@ -1461,7 +1478,8 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
     expectedSerialized =
         expectedSerialized.replace(
-            "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(dateTested).getValueAsString());
+            "$EFFECTIVE_DATE_TIME_TESTED",
+            new DateTimeType(dateTested).setTimeZoneZulu(true).getValueAsString());
     expectedSerialized =
         expectedSerialized.replace("$PROVENANCE_RECORDED_DATE", date.toInstant().toString());
     expectedSerialized =

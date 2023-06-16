@@ -508,7 +508,8 @@ public class FhirConverter {
       Set<Result> results,
       DeviceType deviceType,
       TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      String correctionReason,
+      Date resultDate) {
     return results.stream()
         .map(
             result -> {
@@ -534,7 +535,8 @@ public class FhirConverter {
                   correctionReason,
                   testkitNameId,
                   equipmentUid,
-                  deviceType.getModel());
+                  deviceType.getModel(),
+                  resultDate);
             })
         .collect(Collectors.toList());
   }
@@ -553,7 +555,8 @@ public class FhirConverter {
       String correctionReason,
       String testkitNameId,
       String equipmentUid,
-      String deviceModel) {
+      String deviceModel,
+      Date resultDate) {
     if (result != null && result.getDisease() != null) {
 
       return convertToObservation(
@@ -569,6 +572,7 @@ public class FhirConverter {
               .testkitNameId(testkitNameId)
               .equipmentUid(equipmentUid)
               .deviceModel(deviceModel)
+              .issued(resultDate)
               .build());
     }
     return null;
@@ -600,6 +604,9 @@ public class FhirConverter {
     observation
         .addInterpretation()
         .addCoding(convertToAbnormalFlagInterpretation(props.getResultCode()));
+
+    observation.setIssued(props.getIssued());
+    observation.getIssuedElement().setTimeZoneZulu(true).setPrecision(TemporalPrecisionEnum.SECOND);
 
     return observation;
   }
@@ -866,7 +873,8 @@ public class FhirConverter {
                     testEvent.getResults(),
                     testEvent.getDeviceType(),
                     testEvent.getCorrectionStatus(),
-                    testEvent.getReasonForCorrection()))
+                    testEvent.getReasonForCorrection(),
+                    testEvent.getDateTested()))
             .aoeObservations(
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(), testEvent.getSurveyData()))
