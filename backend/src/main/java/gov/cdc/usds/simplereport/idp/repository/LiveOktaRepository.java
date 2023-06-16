@@ -431,11 +431,18 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public UserStatus getUserStatus(String username) {
-    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
-    throwErrorIfEmpty(
-        users.stream(), "Cannot retrieve Okta user's status with unrecognized username");
-    User user = users.single();
-    return user.getStatus();
+    var searchUsersStream =
+        _client.listUsers(null, null, generateLoginSearchTerm(username), null, null).stream();
+    var user = searchUsersStream.findFirst();
+    if (user.isEmpty()) {
+      var qUsersStream = _client.listUsers(username, null, null, null, null).stream();
+      user = qUsersStream.findFirst();
+    }
+    return user.orElseThrow(
+            () ->
+                new IllegalGraphqlArgumentException(
+                    "Cannot retrieve Okta user's status with unrecognized username"))
+        .getStatus();
   }
 
   public void reactivateUser(String username) {
