@@ -987,14 +987,16 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_TestOrder_valid() {
     var testOrder = TestDataBuilder.createTestOrderWithMultiplexDevice();
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual =
+        fhirConverter.convertToServiceRequest(
+            testOrder, Date.from(Instant.parse("2023-06-22T10:30:00.00Z")));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.ACTIVE);
     assertThat(actual.getIntent()).isEqualTo(ServiceRequestIntent.ORDER);
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
-    assertThat(actual.getExtension()).hasSize(1);
+    assertThat(actual.getExtension()).hasSize(2);
     assertThat(
             actual
                 .castToCodeableConcept(
@@ -1017,6 +1019,15 @@ class FhirConverterTest {
                 .get(0)
                 .getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0119");
+    assertThat(
+            actual
+                .castToDateTime(
+                    actual
+                        .getExtensionByUrl(
+                            "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date")
+                        .getValue())
+                .getValue())
+        .isEqualTo("2023-06-22T10:30:00.00Z");
   }
 
   @Test
@@ -1025,7 +1036,7 @@ class FhirConverterTest {
         new TestOrder(
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.markComplete();
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual = fhirConverter.convertToServiceRequest(testOrder, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
   }
@@ -1036,7 +1047,7 @@ class FhirConverterTest {
         new TestOrder(
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.cancelOrder();
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual = fhirConverter.convertToServiceRequest(testOrder, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.REVOKED);
   }
@@ -1047,7 +1058,7 @@ class FhirConverterTest {
         new TestOrder(
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(false));
     testOrder.cancelOrder();
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual = fhirConverter.convertToServiceRequest(testOrder, new Date());
 
     assertThat(actual.getCode().getCoding()).isEmpty();
   }
@@ -1055,17 +1066,30 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_Strings_valid() {
     var actual =
-        fhirConverter.convertToServiceRequest(ServiceRequestStatus.COMPLETED, "94533-7", "id-123");
+        fhirConverter.convertToServiceRequest(
+            ServiceRequestStatus.COMPLETED,
+            "94533-7",
+            "id-123",
+            Date.from(Instant.parse("2023-06-22T10:35:00.00Z")));
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("94533-7");
+    assertThat(
+            actual
+                .castToDateTime(
+                    actual
+                        .getExtensionByUrl(
+                            "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date")
+                        .getValue())
+                .getValue())
+        .isEqualTo("2023-06-22T10:35:00.00Z");
   }
 
   @Test
   void convertToServiceRequest_Strings_null() {
-    var actual = fhirConverter.convertToServiceRequest(null, null, null);
+    var actual = fhirConverter.convertToServiceRequest(null, null, null, new Date());
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
@@ -1078,7 +1102,9 @@ class FhirConverterTest {
     testOrder.markComplete();
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual =
+        fhirConverter.convertToServiceRequest(
+            testOrder, Date.from(Instant.parse("2023-06-22T10:35:00.00Z")));
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =

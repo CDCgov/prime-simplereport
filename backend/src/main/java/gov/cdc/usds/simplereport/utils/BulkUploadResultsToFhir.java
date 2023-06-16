@@ -131,13 +131,23 @@ public class BulkUploadResultsToFhir {
     var testEventId = row.getAccessionNumber().getValue();
 
     LocalDateTime testResultDate;
-    TemporalAccessor temporalAccessor =
+    TemporalAccessor temporalAccessorResultDate =
         dateTimeFormatter.parseBest(
             row.getTestResultDate().getValue(), LocalDateTime::from, LocalDate::from);
-    if (temporalAccessor instanceof LocalDateTime) {
-      testResultDate = (LocalDateTime) temporalAccessor;
+    if (temporalAccessorResultDate instanceof LocalDateTime) {
+      testResultDate = (LocalDateTime) temporalAccessorResultDate;
     } else {
-      testResultDate = ((LocalDate) temporalAccessor).atStartOfDay();
+      testResultDate = ((LocalDate) temporalAccessorResultDate).atStartOfDay();
+    }
+
+    LocalDateTime orderTestDate;
+    TemporalAccessor temporalAccessorOrderDate =
+        dateTimeFormatter.parseBest(
+            row.getOrderTestDate().getValue(), LocalDateTime::from, LocalDate::from);
+    if (temporalAccessorOrderDate instanceof LocalDateTime) {
+      orderTestDate = (LocalDateTime) temporalAccessorOrderDate;
+    } else {
+      orderTestDate = ((LocalDate) temporalAccessorOrderDate).atStartOfDay();
     }
 
     var patientAddr =
@@ -350,7 +360,8 @@ public class BulkUploadResultsToFhir {
         fhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderLoinc,
-            uuidGenerator.randomUUID().toString());
+            uuidGenerator.randomUUID().toString(),
+            Date.from(orderTestDate.atZone(zoneIdGenerator.getSystemZoneId()).toInstant()));
 
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(

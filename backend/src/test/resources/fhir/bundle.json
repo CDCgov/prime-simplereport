@@ -324,6 +324,10 @@
                 }
               ]
             }
+          },
+          {
+            "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime":"$EFFECTIVE_DATE_TIME_TESTED"
           }
         ],
         "status":"active",

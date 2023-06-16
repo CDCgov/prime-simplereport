@@ -20,6 +20,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SY
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_EFFECTIVE_DATE_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTICIONER_IDENTIFIER_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
@@ -719,7 +720,7 @@ public class FhirConverter {
     observation.setValue(valueCodeableConcept);
   }
 
-  public ServiceRequest convertToServiceRequest(@NotNull TestOrder order) {
+  public ServiceRequest convertToServiceRequest(@NotNull TestOrder order, Date orderTestDate) {
     ServiceRequestStatus serviceRequestStatus = null;
     switch (order.getOrderStatus()) {
       case PENDING:
@@ -741,11 +742,14 @@ public class FhirConverter {
               order.getDeviceType().getSupportedDiseaseTestPerformed());
     }
     return convertToServiceRequest(
-        serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
+        serviceRequestStatus,
+        deviceLoincCode,
+        Objects.toString(order.getInternalId(), ""),
+        orderTestDate);
   }
 
   public ServiceRequest convertToServiceRequest(
-      ServiceRequestStatus status, String requestedCode, String id) {
+      ServiceRequestStatus status, String requestedCode, String id, Date orderEffectiveDate) {
     var serviceRequest = new ServiceRequest();
     serviceRequest.setId(id);
     serviceRequest.setIntent(ServiceRequestIntent.ORDER);
@@ -764,6 +768,12 @@ public class FhirConverter {
                     new Coding()
                         .setSystem(ORDER_CONTROL_CODE_SYSTEM)
                         .setCode(ORDER_CONTROL_CODE_OBSERVATIONS)));
+
+    serviceRequest
+        .addExtension()
+        .setUrl(ORDER_EFFECTIVE_DATE_EXTENSION_URL)
+        .setValue(new DateTimeType(orderEffectiveDate).setTimeZoneZulu(true));
+
     return serviceRequest;
   }
 
@@ -847,7 +857,8 @@ public class FhirConverter {
             .aoeObservations(
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(), testEvent.getSurveyData()))
-            .serviceRequest(convertToServiceRequest(testEvent.getOrder()))
+            .serviceRequest(
+                convertToServiceRequest(testEvent.getOrder(), testEvent.getDateTested()))
             .diagnosticReport(convertToDiagnosticReport(testEvent))
             .currentDate(currentDate)
             .gitProperties(gitProperties)

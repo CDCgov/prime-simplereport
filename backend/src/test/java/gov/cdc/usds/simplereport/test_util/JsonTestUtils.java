@@ -65,6 +65,7 @@ public class JsonTestUtils {
       if (expectedFieldValue.isObject() && actualFieldValue.isObject()) {
         assertJsonNodesEqual(expectedFieldValue, actualFieldValue, ignoredFields, fieldPath);
       } else if (expectedFieldValue.isArray() && actualFieldValue.isArray()) {
+        assertThat(expectedFieldValue.size()).isEqualTo(actualFieldValue.size());
         for (int i = 0; i < expectedFieldValue.size(); i++) {
           assertJsonNodesEqual(
               expectedFieldValue.get(i),
