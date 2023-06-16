@@ -40,10 +40,8 @@ runs:
         then
           banner_header="${{ inputs.banner-header }}"
           banner_msg="${{ inputs.banner-msg }}"
-          echo $banner_header
-          echo $banner_msg
           export EMAIL_SUBJECT="Maintenance banner is ON"
-          export EMAIL_CONTENT="The maintenance banner is currently displayed on the SimpleReport app. We’ll send another automated email when the banner is removed.\n\n Message currently displayed: \" $banner_header - $banner_msg \""
+          export EMAIL_CONTENT="The maintenance banner is currently displayed on the SimpleReport app. We’ll send another automated email when the banner is removed.\n\n Message currently displayed:  $banner_header | $banner_msg "
         else
           export EMAIL_SUBJECT="Maintenance banner is OFF"
           export EMAIL_CONTENT="The maintenance banner has been removed from the SimpleReport app."
