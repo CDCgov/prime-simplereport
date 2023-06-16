@@ -256,7 +256,7 @@ export type MutationAddUserArgs = {
 };
 
 export type MutationAddUserToCurrentOrgArgs = {
-  userInput?: InputMaybe<UserInput>;
+  userInput: UserInput;
 };
 
 export type MutationAdminUpdateOrganizationArgs = {

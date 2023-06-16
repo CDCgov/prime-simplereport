@@ -482,7 +482,7 @@ type Mutation {
     facilityInfo: AddFacilityInput!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
-    userInput: UserInput
+    userInput: UserInput!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
