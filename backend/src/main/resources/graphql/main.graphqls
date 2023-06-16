@@ -482,13 +482,6 @@ type Mutation {
     facilityInfo: AddFacilityInput!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
-    name: NameInput
-    firstName: String
-    middleName: String
-    lastName: String
-    suffix: String
-    email: String
-    role: Role
     userInput: UserInput
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
