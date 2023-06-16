@@ -23,8 +23,8 @@ resource "azurerm_service_plan" "service_plan" {
 
 # The following code snippet creates a Linux App Service and configures it to run a Docker container. 
 # It also creates a firewall rule allowing the load balancer to route traffic to the App Service.
-# The docker_image variable is defined in the variables.tf file.
-# The docker_image_tag variable is defined in the variables.tf file.
+# We do not define an application_stack for this web app service.
+# This is done in the staging slot, and we swap the slots after it becomes healthy.
 resource "azurerm_linux_web_app" "service" {
   name                      = "${var.name}-${var.env}"
   app_settings              = local.all_app_settings
@@ -60,11 +60,6 @@ resource "azurerm_linux_web_app" "service" {
       support_credentials = false
     }
 
-    application_stack {
-      docker_image     = var.docker_image
-      docker_image_tag = var.docker_image_tag
-    }
-
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
@@ -75,7 +70,6 @@ resource "azurerm_linux_web_app" "service" {
 
 # Creates a staging slot for the Linux Web App
 # This is used for staging the deployment of the new code
-
 resource "azurerm_linux_web_app_slot" "staging" {
   name                      = "staging"
   app_service_id            = azurerm_linux_web_app.service.id
@@ -109,6 +103,8 @@ resource "azurerm_linux_web_app_slot" "staging" {
       support_credentials = false
     }
 
+    # This application stack is what we use to deploy the docker image to the staging slot
+    # After it becomes healthy, we swap the staging slot with the production slot to complete the deployment
     application_stack {
       docker_image     = var.docker_image
       docker_image_tag = var.docker_image_tag

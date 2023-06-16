@@ -178,8 +178,14 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   const onPhoneNumberRemove = (index: number) => {
     const newPhoneNumbers = Array.from(phoneNumbersOrDefault);
+    const lastNumberRemoved = index === newPhoneNumbers.length - 1;
+
     clearError(index, "type", "number");
     newPhoneNumbers.splice(index, 1);
+
+    lastNumberRemoved
+      ? document.getElementById("add-phone-number-btn")?.focus()
+      : document.getElementsByName("number")?.[index]?.focus();
     updatePhoneNumbers(newPhoneNumbers);
   };
 
@@ -190,6 +196,9 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       number: "",
     });
     updatePhoneNumbers(newPhoneNumbers);
+    setTimeout(() => {
+      document.getElementsByName("number")?.[phoneNumbers.length]?.focus();
+    }, 100);
   };
 
   const generatePhoneNumberRows = () => {
@@ -227,7 +236,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
                 <button
                   className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   onClick={() => onPhoneNumberRemove(idx)}
-                  aria-label={`Delete phone number ${phoneNumber.number.trim()}`}
+                  aria-label={`Delete additional phone number ${phoneNumber.number.trim()}`}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
@@ -260,6 +269,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
         variant="unstyled"
         label={t("patient.form.contact.addNumber")}
         icon="plus"
+        id={"add-phone-number-btn"}
       />
       {phoneNumbers.some((pn) => pn.type === "MOBILE") && (
         <RadioGroup
