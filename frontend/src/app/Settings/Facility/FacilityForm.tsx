@@ -114,7 +114,6 @@ const FacilityForm: React.FC<Props> = (props) => {
     clearErrors,
     formState: { errors, isSubmitting, isDirty },
   } = useForm({
-    mode: "onBlur",
     defaultValues: getDefaultValues(facility),
   });
 

@@ -95,7 +95,6 @@ const FacilityInformation: React.FC<Props> = ({
           validationStatus={errors?.facility?.email?.type ? "error" : undefined}
           errorMessage={errors?.facility?.email?.message}
           registrationProps={register("facility.email", {
-            required: false,
             pattern: {
               value: emailRegex,
               message: "Email is incorrectly formatted",
@@ -119,15 +118,13 @@ const FacilityInformation: React.FC<Props> = ({
           label="Street address 2"
           name="facility-streetTwo"
           value={formCurrentValues.facility?.streetTwo ?? undefined}
-          registrationProps={register("facility.streetTwo", {
-            required: false,
-          })}
+          registrationProps={register("facility.streetTwo")}
         />
         <TextInput
           label="City"
           name="facility-city"
           value={formCurrentValues.facility?.city ?? undefined}
-          registrationProps={register("facility.city", { required: false })}
+          registrationProps={register("facility.city")}
         />
         <TextInput
           label="ZIP code"
@@ -166,7 +163,6 @@ const FacilityInformation: React.FC<Props> = ({
               </span>
             )
           }
-          onChange={() => {}}
           validationStatus={errors?.facility?.state?.type ? "error" : undefined}
           errorMessage={errors?.facility?.state?.message}
           selectClassName="usa-input--medium"

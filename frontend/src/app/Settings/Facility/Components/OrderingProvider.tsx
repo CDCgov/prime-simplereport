@@ -69,9 +69,7 @@ const OrderingProvider: React.FC<Props> = ({
           label="Middle name"
           name="middleName"
           value={formCurrentValues.orderingProvider.middleName ?? undefined}
-          registrationProps={register("orderingProvider.middleName", {
-            required: false,
-          })}
+          registrationProps={register("orderingProvider.middleName")}
         />
         <TextInput
           label="Last name"
@@ -92,9 +90,7 @@ const OrderingProvider: React.FC<Props> = ({
           label="Suffix"
           name="suffix"
           value={formCurrentValues.orderingProvider.suffix ?? undefined}
-          registrationProps={register("orderingProvider.suffix", {
-            required: false,
-          })}
+          registrationProps={register("orderingProvider.suffix")}
         />
         <TextInput
           label="National Provider Identifier (NPI)"
@@ -151,25 +147,19 @@ const OrderingProvider: React.FC<Props> = ({
           label="Street address 1"
           name="op-street"
           value={formCurrentValues.orderingProvider.street ?? undefined}
-          registrationProps={register("orderingProvider.street", {
-            required: false,
-          })}
+          registrationProps={register("orderingProvider.street")}
         />
         <TextInput
           label="Street address 2"
           name="op-streetTwo"
           value={formCurrentValues.orderingProvider.streetTwo ?? undefined}
-          registrationProps={register("orderingProvider.streetTwo", {
-            required: false,
-          })}
+          registrationProps={register("orderingProvider.streetTwo")}
         />
         <TextInput
           label="City"
           name="op-city"
           value={formCurrentValues.orderingProvider.city ?? undefined}
-          registrationProps={register("orderingProvider.city", {
-            required: false,
-          })}
+          registrationProps={register("orderingProvider.city")}
         />
         <TextInput
           label="ZIP code"
@@ -180,7 +170,6 @@ const OrderingProvider: React.FC<Props> = ({
           }
           errorMessage={errors?.orderingProvider?.zipCode?.message}
           registrationProps={register("orderingProvider.zipCode", {
-            required: false,
             validate: {
               validZip: (zipCode: string) =>
                 zipCode?.length
@@ -196,9 +185,7 @@ const OrderingProvider: React.FC<Props> = ({
           name="op-state"
           selectedValue={formCurrentValues.orderingProvider.state}
           value={formCurrentValues.orderingProvider.state}
-          registrationProps={register("orderingProvider.state", {
-            required: false,
-          })}
+          registrationProps={register("orderingProvider.state")}
           onChange={() => {}}
           options={stateCodes.map((c) => ({ label: c, value: c }))}
           defaultSelect
