@@ -42,7 +42,7 @@ jobs:
         run: |
           export MAINTENANCE_BOOLEAN=$( if [ "${{ github.event.inputs.active }}" = "true" ]; then echo true; else echo false; fi )
           export MAINTENANCE_HEADER="${{ github.event.inputs.header }}"
-          export MAINTENANCE_MESSAGE="${{ github.event.inputs.message }}"
+          export MAINTENANCE_MESSAGE="${{ github.event.inputs.header }}"
           export MAINTENANCE_ENV=${{ github.event.inputs.env }}
           echo "{\"active\": $MAINTENANCE_BOOLEAN, \"header\": \"$MAINTENANCE_HEADER\", \"message\": \"$MAINTENANCE_MESSAGE\"}" > maintenance.json
           yarn run maintenance:deploy
@@ -57,5 +57,5 @@ jobs:
           apikey-test: ${{ secrets.NOTIFICATION_EMAIL_APIKEY_TEST }}
           email-recipient-prod: ${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_PROD }}
           email-recipient-test: ${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_TEST }}
-          banner-header: $MAINTENANCE_HEADER
-          banner-msg: $MAINTENANCE_MESSAGE
+          banner-header: ${{ github.event.inputs.header }}
+          banner-msg: ${{ github.event.inputs.header }}
