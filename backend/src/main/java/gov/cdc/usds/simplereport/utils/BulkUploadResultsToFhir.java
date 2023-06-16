@@ -25,8 +25,10 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -127,6 +129,17 @@ public class BulkUploadResultsToFhir {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
     var testEventId = row.getAccessionNumber().getValue();
+
+    LocalDateTime testResultDate;
+    TemporalAccessor temporalAccessor =
+        dateTimeFormatter.parseBest(
+            row.getTestResultDate().getValue(), LocalDateTime::from, LocalDate::from);
+    if (temporalAccessor instanceof LocalDateTime) {
+      testResultDate = (LocalDateTime) temporalAccessor;
+    } else {
+      testResultDate = ((LocalDate) temporalAccessor).atStartOfDay();
+    }
+
     var patientAddr =
         new StreetAddress(
             row.getPatientStreet().getValue(),
@@ -309,6 +322,9 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
+                    .issued(
+                        Date.from(
+                            testResultDate.atZone(zoneIdGenerator.getSystemZoneId()).toInstant()))
                     .build()));
 
     LocalDate symptomOnsetDate = null;
@@ -336,13 +352,12 @@ public class BulkUploadResultsToFhir {
             testOrderLoinc,
             uuidGenerator.randomUUID().toString());
 
-    var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            Date.from(testDate.atStartOfDay(zoneIdGenerator.getSystemZoneId()).toInstant()),
+            Date.from(testResultDate.atZone(zoneIdGenerator.getSystemZoneId()).toInstant()),
             dateGenerator.newDate());
 
     return fhirConverter.createFhirBundle(

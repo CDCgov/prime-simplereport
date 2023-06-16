@@ -450,7 +450,8 @@
               }
             }
           ]
-        }
+        },
+        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
       }
     },
     {
@@ -522,7 +523,8 @@
               }
             }
           ]
-        }
+        },
+        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
       }
     },
     {
@@ -594,7 +596,8 @@
               }
             }
           ]
-        }
+        },
+        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
       }
     },
     {
