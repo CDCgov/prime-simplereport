@@ -34,10 +34,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1465,15 +1463,9 @@ class FhirConverterTest {
         expectedSerialized.replace(
             "$EFFECTIVE_DATE_TIME_TESTED", new DateTimeType(dateTested).getValueAsString());
     expectedSerialized =
-        expectedSerialized.replace(
-            "$PROVENANCE_RECORDED_DATE",
-            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
+        expectedSerialized.replace("$PROVENANCE_RECORDED_DATE", date.toInstant().toString());
     expectedSerialized =
-        expectedSerialized.replace(
-            "$BUNDLE_TIMESTAMP",
-            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
+        expectedSerialized.replace("$BUNDLE_TIMESTAMP", date.toInstant().toString());
     expectedSerialized =
         expectedSerialized.replace(
             "$SPECIMEN_IDENTIFIER",
