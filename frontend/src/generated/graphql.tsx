@@ -3318,7 +3318,7 @@ export const AddUserToCurrentOrgDocument = gql`
     $facilities: [ID!]
   ) {
     addUserToCurrentOrg(
-      user: {
+      userInput: {
         firstName: $firstName
         lastName: $lastName
         email: $email
