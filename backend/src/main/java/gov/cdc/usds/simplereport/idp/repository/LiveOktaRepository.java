@@ -317,10 +317,8 @@ public class LiveOktaRepository implements OktaRepository {
 
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
-    var searchUserStream =
+    var userStream =
         _client.listUsers(null, null, generateLoginSearchTerm(username), null, null).stream();
-    var qUserStream = _client.listUsers(username, null, null, null, null).stream();
-    var userStream = Stream.concat(searchUserStream, qUserStream).distinct();
     User user =
         userStream
             .findFirst()
@@ -573,10 +571,8 @@ public class LiveOktaRepository implements OktaRepository {
       return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
     }
 
-    var searchUserStream =
+    var userStream =
         _client.listUsers(null, null, generateLoginSearchTerm(username), null, null).stream();
-    var qUserStream = _client.listUsers(username, null, null, null, null).stream();
-    var userStream = Stream.concat(searchUserStream, qUserStream).distinct();
     User user =
         userStream
             .findFirst()
