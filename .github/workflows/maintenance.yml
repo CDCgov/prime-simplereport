@@ -57,3 +57,5 @@ jobs:
           apikey-test: ${{ secrets.NOTIFICATION_EMAIL_APIKEY_TEST }}
           email-recipient-prod: ${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_PROD }}
           email-recipient-test: ${{ secrets.NOTIFICATION_EMAIL_RECIPIENT_TEST }}
+          banner-header: $MAINTENANCE_HEADER
+          banner-msg: $MAINTENANCE_MESSAGE

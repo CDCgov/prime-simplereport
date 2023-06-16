@@ -24,6 +24,12 @@ inputs:
   email-recipient-test:
     description: list of recipients of the notification for non production environments
     required: true
+  banner-header:
+    description: banner subject being displayed
+    required: true
+  banner-msg:
+    description: banner content being displayed
+    required: true
 runs:
   using: composite
   steps:
@@ -32,11 +38,15 @@ runs:
       run: |
         if [[ "true" == "${{ inputs.status-active }}" ]]
         then
-          export EMAIL_SUBJECT="Simple Report maintenance banner is ON"
-          export EMAIL_CONTENT="The maintenance banner is now being displayed in the Simple Report application."
+          banner_header=${{ inputs.banner-header }}v
+          banner_msg=${{ inputs.banner-msg }}
+          export EMAIL_SUBJECT="Maintenance banner is ON"
+          export EMAIL_CONTENT="The maintenance banner is currently displayed on the SimpleReport app. \
+            We’ll send another automated email when the banner is removed.\n\n\
+            Message currently displayed \"$banner_header - $banner_msg\"."
         else
-          export EMAIL_SUBJECT="Simple Report maintenance banner is OFF"
-          export EMAIL_CONTENT="The maintenance banner has been removed from the Simple Report application."
+          export EMAIL_SUBJECT="Maintenance banner is OFF"
+          export EMAIL_CONTENT="The maintenance banner has been removed from the SimpleReport app."
         fi
         
         if [[ "prod" == "${{ inputs.env }}" ]]
