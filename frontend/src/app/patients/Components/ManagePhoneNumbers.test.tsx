@@ -60,9 +60,7 @@ describe("ManagePhoneNumbers", () => {
     await act(async () => await userEvent.tab());
     const addButton = screen.getByText("Add another number", { exact: false });
     await act(async () => await userEvent.click(addButton));
-    const second = await screen.findByLabelText("Additional phone", {
-      exact: false,
-    });
+    const second = await screen.findByLabelText(/^Additional phone number/);
     await act(async () => await userEvent.clear(second));
     await act(async () => await userEvent.tab());
     await waitFor(() => {
@@ -101,14 +99,14 @@ describe("ManagePhoneNumbers", () => {
     await act(async () => await userEvent.type(primary, "202-867-5309"));
     const addButton = screen.getByText("Add another number", { exact: false });
     await act(async () => await userEvent.click(addButton));
-    const second = await screen.findByLabelText("Additional phone", {
-      exact: false,
-    });
+    const second = await screen.findByLabelText(/^Additional phone number/);
     await act(async () => await userEvent.type(second, "404-867-5309"));
     await act(
       async () =>
         await userEvent.click(
-          await screen.findByLabelText("Delete phone number 404-867-5309")
+          await screen.findByLabelText(
+            "Delete additional phone number 404-867-5309"
+          )
         )
     );
     await waitFor(() => {
