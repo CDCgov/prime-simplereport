@@ -33,6 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -344,9 +345,7 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
-                    .issued(
-                        Date.from(
-                            testResultDate.atZone(zoneIdGenerator.getSystemZoneId()).toInstant()))
+                    .issued(Date.from(testResultDate.toInstant()))
                     .build()));
 
     LocalDate symptomOnsetDate = null;
