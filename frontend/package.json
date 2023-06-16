@@ -22,7 +22,7 @@
     "@types/react-transition-group": "^4.4.5",
     "@types/testing-library__jest-dom": "^5.14.5",
     "apollo-upload-client": "^17.0.0",
-    "browserslist": "4.21.5",
+    "browserslist": "4.21.9",
     "classnames": "^2.2.6",
     "flagged": "^2.0.8",
     "google-libphonenumber": "^3.2.26",
