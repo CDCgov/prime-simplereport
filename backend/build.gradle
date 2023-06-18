@@ -16,6 +16,7 @@ sourceCompatibility = '17'
 
 ext {
     set('springCloudVersion', "2021.0.3")
+    set('spring-security.version', '5.8.3')
 }
 repositories {
     mavenCentral()
@@ -128,6 +129,9 @@ dependencies {
     implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.0.4' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://app.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3358779.
 
     implementation 'commons-validator:commons-validator:1.7'
+
+    // Remove after springboot 3 migration
+    implementation "org.springframework.boot:spring-boot-starter-security"
 }
 
 dependencyManagement {
