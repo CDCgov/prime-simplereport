@@ -637,7 +637,7 @@ public class LiveOktaRepository implements OktaRepository {
     var user = searchUsersStream.findFirst();
     if (user.isEmpty()) {
       var qUsersStream = _client.listUsers(username, null, null, null, null).stream();
-      user = qUsersStream.findFirst();
+      user = qUsersStream.filter(u -> u.getProfile().getLogin().equals(username)).findFirst();
     }
     return user.orElseThrow(() -> new IllegalGraphqlArgumentException(errorMessage));
   }
