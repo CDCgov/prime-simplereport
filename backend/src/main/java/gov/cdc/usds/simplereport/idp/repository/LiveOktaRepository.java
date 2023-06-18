@@ -144,7 +144,7 @@ public class LiveOktaRepository implements OktaRepository {
             .stream();
     var qResults =
         _client.listGroups(generateGroupOrgPrefix(organizationExternalId), null, null).stream();
-    var orgGroups = Stream.concat(searchResults, qResults).distinct().collect(Collectors.toList());
+    var orgGroups = Stream.concat(searchResults, qResults).distinct().toList();
     throwErrorIfEmpty(
         orgGroups.stream(),
         String.format(
@@ -408,7 +408,7 @@ public class LiveOktaRepository implements OktaRepository {
     user.resetFactors();
   }
 
-  public void setUserIsActive(String username, Boolean active) {
+  public void setUserIsActive(String username, boolean active) {
     UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot update active status of Okta user with unrecognized username");
