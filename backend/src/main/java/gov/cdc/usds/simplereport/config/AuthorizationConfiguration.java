@@ -8,14 +8,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 /**
  * Configuration (mostly static) for method-level or object-level security in the application (as
  * opposed to request-level security, which lives in {@link SecurityConfiguration}).
  */
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 public class AuthorizationConfiguration {
 
   /**
