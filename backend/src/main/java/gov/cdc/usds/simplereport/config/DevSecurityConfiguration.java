@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 /** Stub no-op configuration for development and test environments. */
@@ -17,14 +18,10 @@ public class DevSecurityConfiguration {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     log.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
-    http.cors()
-        .and()
-        .authorizeHttpRequests()
-        .requestMatchers("/**")
-        .permitAll()
-        .and()
-        .csrf()
-        .disable();
+    http.authorizeHttpRequests(
+            authorizeRequest -> authorizeRequest.requestMatchers("/**").permitAll())
+        .csrf(AbstractHttpConfigurer::disable)
+        .cors();
     return http.build();
   }
 }
