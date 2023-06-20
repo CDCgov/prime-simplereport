@@ -34,17 +34,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
@@ -959,11 +950,12 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_Strings_valid() {
-    var dateTested = ZonedDateTime.now(ZoneId.of("UTC"));
-    var dateUpdated = new Date();
+    var date = new Date();
+    var expectedDateTimeType =
+        (DateTimeType) new DateTimeType(Date.from(date.toInstant())).setTimeZoneZulu(true);
     var actual =
         fhirConverter.convertToDiagnosticReport(
-            DiagnosticReportStatus.FINAL, "95422-2", "id-123", dateTested, dateUpdated);
+            DiagnosticReportStatus.FINAL, "95422-2", "id-123", date, date);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -971,8 +963,8 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
     assertThat(((DateTimeType) actual.getEffective()).getAsV3())
-        .isEqualTo(new DateTimeType(Date.from(dateTested.toInstant())).getAsV3());
-    assertThat((actual.getIssued())).isEqualTo(dateUpdated);
+        .isEqualTo(expectedDateTimeType.getAsV3());
+    assertThat((actual.getIssued())).isEqualTo(date);
   }
 
   @Test

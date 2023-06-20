@@ -806,16 +806,11 @@ public class FhirConverter {
               testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
     }
 
-    ZonedDateTime dateTested = null;
-    if (testEvent.getDateTested() != null) {
-      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneId.of("UTC"));
-    }
-
     return convertToDiagnosticReport(
         status,
         code,
         Objects.toString(testEvent.getInternalId(), ""),
-        dateTested,
+        testEvent.getDateTested(),
         testEvent.getUpdatedAt());
   }
 
@@ -823,25 +818,18 @@ public class FhirConverter {
    * @param status
    * @param code
    * @param id
-   * @param dateTimeTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
+   * @param dateTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
    *     time/time-period for report.
    * @param dateUpdated Used to set {@code DiagnosticReport.issued}, the instant this version was
    *     made.
    * @return DiagnosticReport
    */
   public DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status,
-      String code,
-      String id,
-      ZonedDateTime dateTimeTested,
-      Date dateUpdated) {
-    var effectiveDateTime =
-        dateTimeTested == null ? new DateTimeType() : convertToDateTimeType(dateTimeTested, null);
-
+      DiagnosticReportStatus status, String code, String id, Date dateTested, Date dateUpdated) {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(effectiveDateTime)
+            .setEffective(new DateTimeType(dateTested).setTimeZoneZulu(true))
             .setIssued(dateUpdated);
 
     diagnosticReport.getIssuedElement().setTimeZoneZulu(true);

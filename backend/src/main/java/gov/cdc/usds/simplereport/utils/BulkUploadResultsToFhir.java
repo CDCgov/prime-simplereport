@@ -161,7 +161,7 @@ public class BulkUploadResultsToFhir {
     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
     var testEventId = row.getAccessionNumber().getValue();
-    var testResultDate = getZonedTestResultDate(row, dateTimeFormatter);
+    var testResultDateTime = getZonedTestResultDate(row, dateTimeFormatter);
 
     var patientAddr =
         new StreetAddress(
@@ -345,7 +345,7 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
-                    .issued(Date.from(testResultDate.toInstant()))
+                    .issued(Date.from(testResultDateTime.toInstant()))
                     .build()));
 
     LocalDate symptomOnsetDate = null;
@@ -378,7 +378,7 @@ public class BulkUploadResultsToFhir {
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            testResultDate,
+            Date.from(testResultDateTime.toInstant()),
             dateGenerator.newDate());
 
     return fhirConverter.createFhirBundle(
