@@ -46,6 +46,11 @@ public class SecurityConfiguration {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return applicationSecurityFilterChain(http);
+  }
+
+  public static SecurityFilterChain applicationSecurityFilterChain(HttpSecurity http)
+      throws Exception {
     http.authorizeHttpRequests(
             authorizeRequest ->
                 authorizeRequest
