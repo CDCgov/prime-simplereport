@@ -41,7 +41,7 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
   protected void configure(HttpSecurity http) throws Exception {
     http.cors()
         .and()
-        .authorizeRequests()
+        .authorizeHttpRequests()
         .antMatchers("/")
         .permitAll()
         .antMatchers(HttpMethod.OPTIONS, "/**")
