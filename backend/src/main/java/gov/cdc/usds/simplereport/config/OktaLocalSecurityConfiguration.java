@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -29,7 +29,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Profile("!" + BeanProfiles.NO_SECURITY + " & " + BeanProfiles.CREATE_SAMPLE_DEVICES)
 @ConditionalOnWebApplication
 @Slf4j
-public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class OktaLocalSecurityConfiguration {
 
   public interface OktaAttributes {
     String EMAIL = "email";
@@ -37,8 +37,8 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
     String LAST_NAME = "family_name";
   }
 
-  @Override
-  protected void configure(HttpSecurity http) throws Exception {
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.cors()
         .and()
         .authorizeHttpRequests()
@@ -103,6 +103,7 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
             new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST));
 
     Okta.configureResourceServer401ResponseBody(http);
+    return http.build();
   }
 
   @Bean
