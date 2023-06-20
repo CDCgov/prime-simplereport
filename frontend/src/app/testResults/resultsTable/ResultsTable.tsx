@@ -179,6 +179,11 @@ const generateResultRows = (
         <td className="patient-name-cell">
           <Button
             variant="unstyled"
+            ariaLabel={`Click for more detailed results information for ${displayFullName(
+              r.patient?.firstName,
+              r.patient?.middleName,
+              r.patient?.lastName
+            )}`}
             label={displayFullName(
               r.patient?.firstName,
               r.patient?.middleName,

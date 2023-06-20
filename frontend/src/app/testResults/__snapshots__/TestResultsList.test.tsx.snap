@@ -394,6 +394,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="patient-name-cell"
               >
                 <button
+                  aria-label="Click for more detailed results information for Gerard, Sam G"
                   class="usa-button usa-button--unstyled sr-link__primary"
                   type="button"
                 >
@@ -473,6 +474,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="patient-name-cell"
               >
                 <button
+                  aria-label="Click for more detailed results information for Colleer, Barde X"
                   class="usa-button usa-button--unstyled sr-link__primary"
                   type="button"
                 >
@@ -552,6 +554,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="patient-name-cell"
               >
                 <button
+                  aria-label="Click for more detailed results information for Cragell, Barb Whitaker"
                   class="usa-button usa-button--unstyled sr-link__primary"
                   type="button"
                 >
