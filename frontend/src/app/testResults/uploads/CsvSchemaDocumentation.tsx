@@ -1,5 +1,3 @@
-import { Buffer } from "buffer";
-
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -62,9 +60,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
       <div data-testid="subheader" className="margin-bottom-3">
         {item.subHeader?.map((subHeader) => (
           <p
-            key={`${item.colHeader}-subheader-${Buffer.from(subHeader).toString(
-              "base64"
-            )}`}
+            key={`${item.colHeader}-subheader-${subHeader}`}
             dangerouslySetInnerHTML={{ __html: `${subHeader}` }}
           />
         ))}
@@ -84,9 +80,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           <div className="grid-col-8">
             {item.description?.map((line) => (
               <div
-                key={`${item.colHeader}-description-${Buffer.from(
-                  line
-                ).toString("base64")}`}
+                key={`${item.colHeader}-description-${line}`}
                 dangerouslySetInnerHTML={{ __html: `${line}` }}
               />
             ))}
@@ -117,9 +111,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
             {item.examples?.map((value) => (
               <li
                 className={item.examples!.length > 1 ? "bullet-list" : ""}
-                key={`${item.colHeader}-examples-${Buffer.from(value).toString(
-                  "base64"
-                )}`}
+                key={`${item.colHeader}-examples-${value}`}
                 dangerouslySetInnerHTML={{ __html: `<em>${value}</em>` }}
               />
             ))}
@@ -136,9 +128,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
             {item.acceptedValues?.map((value) => (
               <li
                 className={item.acceptedValues!.length > 1 ? "bullet-list" : ""}
-                key={`${item.colHeader}-accepted-values-${Buffer.from(
-                  value
-                ).toString("base64")}`}
+                key={`${item.colHeader}-accepted-values-${value}`}
                 dangerouslySetInnerHTML={{ __html: `${value}` }}
               />
             ))}
@@ -343,17 +333,10 @@ const CsvSchemaDocumentation = () => {
               .map((val) => val.title)
               .reduce((acc, cur) => acc + cur);
             return (
-              <ul
-                key={`toc-${Buffer.from(sectionTitles).toString("base64")}`}
-                className=""
-              >
+              <ul key={`toc-${sectionTitles}`} className="">
                 {field.sections?.map((section) => {
                   return (
-                    <li
-                      key={`${Buffer.from(sectionTitles).toString(
-                        "base64"
-                      )}-link-${Buffer.from(section.title).toString("base64")}`}
-                    >
+                    <li key={`${sectionTitles}-link-${section.title}`}>
                       <a href={`#${section.slug}`} className="usa-link">
                         {section.title}
                       </a>
@@ -372,17 +355,13 @@ const CsvSchemaDocumentation = () => {
           return (
             <div
               data-testid="fieldDiv"
-              key={`field-${Buffer.from(sectionTitles).toString("base64")}`}
+              key={`field-${sectionTitles}`}
               className="margin-bottom-5"
             >
               {field.sections?.map((section) => {
                 return (
                   <div
-                    key={`${Buffer.from(sectionTitles).toString(
-                      "base64"
-                    )}-section-${Buffer.from(section.title).toString(
-                      "base64"
-                    )}`}
+                    key={`sectionTiles-section-${section.title}`}
                     className="margin-top-9"
                   >
                     <h4 id={`${section.slug}`}>{section.title}</h4>
