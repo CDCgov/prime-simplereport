@@ -489,7 +489,7 @@ type Mutation {
     suffix: String
     email: String
     role: Role
-    user: UserInput
+    userInput: UserInput
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
