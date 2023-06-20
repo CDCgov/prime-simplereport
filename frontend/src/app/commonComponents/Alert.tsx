@@ -63,18 +63,18 @@ const Alert = ({
     return "region";
   };
 
-  const id = `${getIdentifiedRole()}-${Date.now()}`;
+  const getId = () => `${getIdentifiedRole()}-${Date.now()}`;
 
   return (
     <div
       className={classes}
-      id={id}
+      id={getId()}
       role={getIdentifiedRole()}
-      aria-labelledby={`${id}-body`}
+      aria-labelledby={`${getId()}-body`}
     >
       <div className="usa-alert__body">
         {title && <div className="usa-alert__heading text-bold">{title}</div>}
-        <div id={`${id}-body`} className="usa-alert__text">
+        <div id={`${getId()}-body`} className="usa-alert__text">
           {body || children}
         </div>
       </div>
