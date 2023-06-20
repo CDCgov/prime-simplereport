@@ -31,6 +31,8 @@ public class UserMutationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @MutationMapping
   public User addUser(@Argument UserInput user) {
+    Set<UUID> facilitySet =
+        user.getFacilities() == null ? Set.of() : new HashSet<>(user.getFacilities());
     UserInfo userInfo =
         _us.createUser(
             user.getEmail(),
@@ -41,7 +43,9 @@ public class UserMutationResolver {
                 user.getLastName(),
                 user.getSuffix()),
             user.getOrganizationExternalId(),
-            user.getRole());
+            user.getRole(),
+            user.isAccessAllFacilities(),
+            facilitySet);
     return new User(userInfo);
   }
 
@@ -53,9 +57,28 @@ public class UserMutationResolver {
       @Argument String lastName,
       @Argument String suffix,
       @Argument String email,
-      @Argument Role role) {
-    name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUserInCurrentOrg(email, name, role);
+      @Argument Role role,
+      @Argument UserInput userInput) {
+    UserInfo user;
+    if (userInput != null) {
+      Set<UUID> facilitySet =
+          userInput.getFacilities() == null ? Set.of() : new HashSet<>(userInput.getFacilities());
+      user =
+          _us.createUserInCurrentOrg(
+              userInput.getEmail(),
+              Translators.consolidateNameArguments(
+                  userInput.getName(),
+                  userInput.getFirstName(),
+                  userInput.getMiddleName(),
+                  userInput.getLastName(),
+                  userInput.getSuffix()),
+              userInput.getRole(),
+              userInput.isAccessAllFacilities(),
+              facilitySet);
+    } else {
+      name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
+      user = _us.createUserInCurrentOrg(email, name, role, false, Set.of());
+    }
     return new User(user);
   }
 

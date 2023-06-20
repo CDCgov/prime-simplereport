@@ -80,19 +80,30 @@ public class ApiUserService {
   }
 
   public UserInfo createUser(
-      String username, PersonName name, String organizationExternalId, Role role) {
+      String username,
+      PersonName name,
+      String organizationExternalId,
+      Role role,
+      boolean accessAllFacilities,
+      Set<UUID> facilities) {
     Organization org = _orgService.getOrganization(organizationExternalId);
-    return createUserHelper(username, name, org, role);
+    return createUserHelper(username, name, org, role, accessAllFacilities, facilities);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public UserInfo createUserInCurrentOrg(String username, PersonName name, Role role) {
+  public UserInfo createUserInCurrentOrg(
+      String username,
+      PersonName name,
+      Role role,
+      boolean accessAllFacilities,
+      Set<UUID> facilities) {
     Organization org = _orgService.getCurrentOrganization();
 
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmailIncludeArchived(username.toLowerCase());
     return found
-        .map(apiUser -> reprovisionUser(apiUser, name, org, role))
-        .orElseGet(() -> createUserHelper(username, name, org, role));
+        .map(apiUser -> reprovisionUser(apiUser, name, org, role, accessAllFacilities, facilities))
+        .orElseGet(
+            () -> createUserHelper(username, name, org, role, accessAllFacilities, facilities));
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -112,7 +123,13 @@ public class ApiUserService {
     }
   }
 
-  private UserInfo reprovisionUser(ApiUser apiUser, PersonName name, Organization org, Role role) {
+  private UserInfo reprovisionUser(
+      ApiUser apiUser,
+      PersonName name,
+      Organization org,
+      Role role,
+      boolean accessAllFacilities,
+      Set<UUID> facilities) {
     if (!apiUser.isDeleted()) {
       // an enabled user with this email address exists (in some org)
       throw new ConflictingUserException();
@@ -130,11 +147,16 @@ public class ApiUserService {
     IdentityAttributes userIdentity = new IdentityAttributes(apiUser.getLoginEmail(), name);
     _oktaRepo.reprovisionUser(userIdentity);
 
-    // for now, all re-enabled users have no access to facilities unless they are admins
-    Set<OrganizationRole> roles =
-        EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
+    Set<Facility> facilitiesFound = Set.of();
+    if (!facilities.isEmpty()) {
+      facilitiesFound = _orgService.getFacilities(org, facilities);
+    }
     Optional<OrganizationRoleClaims> roleClaims =
-        _oktaRepo.updateUserPrivileges(apiUser.getLoginEmail(), org, Set.of(), roles);
+        _oktaRepo.updateUserPrivileges(
+            apiUser.getLoginEmail(),
+            org,
+            facilitiesFound,
+            getOrganizationRoles(role, accessAllFacilities));
 
     apiUser.setNameInfo(name);
     apiUser.setIsDeleted(false);
@@ -151,16 +173,28 @@ public class ApiUserService {
     return user;
   }
 
-  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role)
+  private UserInfo createUserHelper(
+      String username,
+      PersonName name,
+      Organization org,
+      Role role,
+      boolean accessAllFacilities,
+      Set<UUID> facilities)
       throws ConflictingUserException {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     boolean active = org.getIdentityVerified();
-    // for now, all new users have no access to any facilities by default unless they are admins
-    Set<OrganizationRole> roles =
-        EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
+    Set<Facility> facilitiesFound = Set.of();
+    if (!facilities.isEmpty()) {
+      facilitiesFound = _orgService.getFacilities(org, facilities);
+    }
     Optional<OrganizationRoleClaims> roleClaims =
-        _oktaRepo.createUser(userIdentity, org, Set.of(), roles, active);
+        _oktaRepo.createUser(
+            userIdentity,
+            org,
+            facilitiesFound,
+            getOrganizationRoles(role, accessAllFacilities),
+            active);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
@@ -294,8 +328,7 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    UserInfo user = new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
-    return user;
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
   }
 
   // This method is to re-send the invitation email to join SimpleReport
@@ -310,8 +343,7 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    UserInfo user = new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
-    return user;
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
   }
 
   private ApiUser getApiUser(UUID id) {
@@ -321,15 +353,15 @@ public class ApiUserService {
   private ApiUser getApiUser(UUID id, Boolean includeArchived) {
     Optional<ApiUser> found =
         includeArchived ? _apiUserRepo.findByIdIncludeArchived(id) : _apiUserRepo.findById(id);
-    if (!found.isPresent()) {
+    if (found.isEmpty()) {
       throw new NonexistentUserException();
     }
-    ApiUser user = found.get();
-    return user;
+    return found.get();
   }
 
   private Set<OrganizationRole> getOrganizationRoles(Role role, boolean accessAllFacilities) {
-    Set<OrganizationRole> result = EnumSet.of(role.toOrganizationRole());
+    Set<OrganizationRole> result =
+        EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
     if (accessAllFacilities) {
       result.add(OrganizationRole.ALL_FACILITIES);
     }
