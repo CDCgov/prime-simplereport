@@ -160,7 +160,6 @@ describe("FacilityForm", () => {
           />
         </MemoryRouter>
       );
-      const saveButton = await screen.getAllByText("Save changes")[0];
       await act(
         async () =>
           await userEvent.type(
@@ -168,7 +167,7 @@ describe("FacilityForm", () => {
             "Bar Facility"
           )
       );
-      await act(async () => await userEvent.click(saveButton));
+      await clickSaveButton();
       await validateAddress(saveFacility);
     });
 

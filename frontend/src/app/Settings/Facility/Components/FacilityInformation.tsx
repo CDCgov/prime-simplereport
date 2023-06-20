@@ -16,6 +16,7 @@ import { emailRegex } from "../../../utils/email";
 import { phoneNumberIsValid } from "../../../patients/personSchema";
 import { FacilityFormData } from "../FacilityForm";
 import { zipCodeRegex } from "../../../utils/address";
+import { facilityInfoErrMsgs } from "../constants";
 
 interface Props {
   facility: Facility;
@@ -66,7 +67,7 @@ const FacilityInformation: React.FC<Props> = ({
           value={formCurrentValues.facility?.name}
           required
           registrationProps={register("facility.name", {
-            required: "Facility name is required",
+            required: facilityInfoErrMsgs.name.required,
           })}
           validationStatus={errors?.facility?.name?.type ? "error" : undefined}
           errorMessage={errors?.facility?.name?.message}
@@ -77,11 +78,11 @@ const FacilityInformation: React.FC<Props> = ({
           value={formCurrentValues.facility?.phone}
           required
           registrationProps={register("facility.phone", {
-            required: "Facility phone number is required",
+            required: facilityInfoErrMsgs.phone.required,
             validate: {
               valid: (facPhone: string) =>
                 phoneNumberIsValid(facPhone) ||
-                "Facility phone number is invalid",
+                facilityInfoErrMsgs.phone.invalid,
             },
           })}
           validationStatus={errors?.facility?.phone?.type ? "error" : undefined}
@@ -97,7 +98,7 @@ const FacilityInformation: React.FC<Props> = ({
           registrationProps={register("facility.email", {
             pattern: {
               value: emailRegex,
-              message: "Email is incorrectly formatted",
+              message: facilityInfoErrMsgs.email.invalid,
             },
           })}
         />
@@ -111,7 +112,7 @@ const FacilityInformation: React.FC<Props> = ({
           }
           errorMessage={errors?.facility?.street?.message}
           registrationProps={register("facility.street", {
-            required: "Facility street is required",
+            required: facilityInfoErrMsgs.street.required,
           })}
         />
         <TextInput
@@ -136,10 +137,10 @@ const FacilityInformation: React.FC<Props> = ({
           }
           errorMessage={errors?.facility?.zipCode?.message}
           registrationProps={register("facility.zipCode", {
-            required: "Facility ZIP code is required",
+            required: facilityInfoErrMsgs.zip.required,
             pattern: {
               value: zipCodeRegex,
-              message: "Facility ZIP code is invalid",
+              message: facilityInfoErrMsgs.zip.invalid,
             },
           })}
           className="usa-input--medium"
@@ -168,11 +169,11 @@ const FacilityInformation: React.FC<Props> = ({
           selectClassName="usa-input--medium"
           data-testid="facility-state-dropdown"
           registrationProps={register("facility.state", {
-            required: "Facility state is required",
+            required: facilityInfoErrMsgs.state.required,
             validate: {
               liveJurisdiction: (state: string) =>
                 isLiveState(state) ||
-                `SimpleReport isn’t currently supported in ${getStateNameFromCode(
+                `${facilityInfoErrMsgs.state.invalid} ${getStateNameFromCode(
                   state
                 )}.`,
             },
@@ -197,15 +198,14 @@ const FacilityInformation: React.FC<Props> = ({
           }
           errorMessage={errors?.facility?.cliaNumber?.message}
           registrationProps={register("facility.cliaNumber", {
-            required: "Facility CLIA number is required",
+            required: facilityInfoErrMsgs.clia.required,
             validate: {
               validCLIA: (clia: string) =>
                 (stateRequiresCLIANumberValidation(
                   formCurrentValues.facility.state
                 )
                   ? isValidCLIANumber(clia, formCurrentValues.facility.state)
-                  : true) ||
-                "CLIA numbers must be 10 characters (##D#######), or a special temporary number from CA, IL, VT, WA, WY, or the Department of Defense",
+                  : true) || facilityInfoErrMsgs.clia.invalid,
             },
           })}
         />

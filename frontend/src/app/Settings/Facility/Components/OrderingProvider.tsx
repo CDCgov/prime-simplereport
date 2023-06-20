@@ -7,6 +7,7 @@ import TextInput from "../../../commonComponents/TextInput";
 import { phoneNumberIsValid } from "../../../patients/personSchema";
 import { FacilityFormData } from "../FacilityForm";
 import { zipCodeRegex } from "../../../utils/address";
+import { orderingProviderErrMsgs } from "../constants";
 
 interface Props {
   newOrg?: boolean;
@@ -60,9 +61,7 @@ const OrderingProvider: React.FC<Props> = ({
           }
           errorMessage={errors?.orderingProvider?.firstName?.message}
           registrationProps={register("orderingProvider.firstName", {
-            required: isRequired
-              ? "Ordering provider first name is required"
-              : "",
+            required: isRequired ? orderingProviderErrMsgs.first.required : "",
           })}
         />
         <TextInput
@@ -81,9 +80,7 @@ const OrderingProvider: React.FC<Props> = ({
           }
           errorMessage={errors?.orderingProvider?.lastName?.message}
           registrationProps={register("orderingProvider.lastName", {
-            required: isRequired
-              ? "Ordering provider last name is required"
-              : "",
+            required: isRequired ? orderingProviderErrMsgs.last.required : "",
           })}
         />
         <TextInput
@@ -107,14 +104,11 @@ const OrderingProvider: React.FC<Props> = ({
           required={isRequired}
           value={formCurrentValues.orderingProvider.NPI ?? undefined}
           registrationProps={register("orderingProvider.NPI", {
-            required: isRequired
-              ? "NPI should be a 10-digit numerical value (##########)"
-              : "",
+            required: isRequired ? orderingProviderErrMsgs.npi.required : "",
             validate: {
               validNPI: (npi: string) =>
                 npi?.length
-                  ? isValidNPI(npi) ||
-                    "NPI should be a 10-digit numerical value (##########)"
+                  ? isValidNPI(npi) || orderingProviderErrMsgs.npi.required
                   : true,
             },
           })}
@@ -133,12 +127,12 @@ const OrderingProvider: React.FC<Props> = ({
           }
           errorMessage={errors?.orderingProvider?.phone?.message}
           registrationProps={register("orderingProvider.phone", {
-            required: isRequired ? "Ordering provider phone is required" : "",
+            required: isRequired ? orderingProviderErrMsgs.phone.required : "",
             validate: {
               validPhone: (opPhone: string) =>
                 opPhone?.length
                   ? phoneNumberIsValid(opPhone) ||
-                    "Ordering provider phone number is invalid"
+                    orderingProviderErrMsgs.phone.invalid
                   : true,
             },
           })}
@@ -174,7 +168,7 @@ const OrderingProvider: React.FC<Props> = ({
               validZip: (zipCode: string) =>
                 zipCode?.length
                   ? zipCodeRegex.test(zipCode) ||
-                    "Ordering provider ZIP code is invalid"
+                    orderingProviderErrMsgs.zip.invalid
                   : true,
             },
           })}

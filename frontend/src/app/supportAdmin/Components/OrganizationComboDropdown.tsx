@@ -4,6 +4,7 @@ import { Control, Controller } from "react-hook-form";
 
 import Required from "../../commonComponents/Required";
 import { showError } from "../../utils/srToast";
+import { FORM_ERROR_TITLE } from "../../../config/constants";
 
 export interface OrganizationOption {
   name: string;
@@ -20,7 +21,7 @@ export const useOrganizationDropDownValidation = (
       return "combo box cleared";
     }
     if (organizationExternalId === null || organizationExternalId === "") {
-      showError("Please select an organization.", "Form Errors");
+      showError("Please select an organization.", FORM_ERROR_TITLE);
       return "error";
     }
 

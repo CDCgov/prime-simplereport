@@ -18,10 +18,12 @@ import {
 } from "../../commonComponents/AddressConfirmationModal";
 import Prompt from "../../utils/Prompt";
 import { formatPhoneNumberParens } from "../../utils/text";
+import { FORM_ERROR_MSG, FORM_ERROR_TITLE } from "../../../config/constants";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
+import { deviceRequiredErrMsg, facilityInfoErrMsgs } from "./constants";
 
 export type FacilityFormData = {
   facility: {
@@ -122,7 +124,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     if (selectedItems.length === 0) {
       setError("devices", {
         type: "required",
-        message: "There must be at least one device",
+        message: deviceRequiredErrMsg,
       });
     } else {
       clearErrors("devices");
@@ -191,7 +193,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     if (!isValidZipForState) {
       setError("facility.zipCode", {
         type: "validZipForState",
-        message: "Invalid ZIP code for this state",
+        message: facilityInfoErrMsgs.zip.stateInvalid,
       });
       setFocus("facility.zipCode", { shouldSelect: true });
       return;
@@ -296,10 +298,7 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   const onError = () => {
-    showError(
-      "Please check the form to make sure you complete all of the required fields.",
-      "Form Errors"
-    );
+    showError(FORM_ERROR_MSG, FORM_ERROR_TITLE);
   };
 
   const formCurrentValues = watch();
@@ -399,7 +398,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           defaultValue={formCurrentValues.devices}
           name="devices"
           control={control}
-          rules={{ required: "There must be at least one device" }}
+          rules={{ required: deviceRequiredErrMsg }}
         />
         <div className="float-right margin-bottom-4 margin-top-1">
           <Button
