@@ -135,12 +135,17 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      contentLabel="Unsaved changes to current user"
+      contentLabel={`Result details for ${
+        patient ? formatFullName(patient) : "selected patient"
+      }`}
       ariaHideApp={process.env.NODE_ENV !== "test"}
       onRequestClose={closeModal}
     >
       <div className="display-flex flex-justify">
-        <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+        <h1
+          id="result-detail-title"
+          className="font-heading-lg margin-top-05 margin-bottom-0"
+        >
           Result details
         </h1>
         <div className="sr-time-of-test-buttons">
@@ -169,6 +174,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           </span>
           <span
             className={classnames("font-sans-lg", removed && strikeClasses)}
+            aria-describedby="result-detail-title"
           >
             {patient ? formatFullName(patient) : "--"}
           </span>
@@ -184,6 +190,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           </span>
           <span
             className={classnames("font-sans-lg", removed && strikeClasses)}
+            aria-describedby="result-detail-title"
           >
             {patient?.birthDate
               ? formatDateWithTimeOption(patient.birthDate)
@@ -198,6 +205,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
             label="COVID-19 result"
             value={displayResult["covidResult"]}
             removed={removed}
+            aria-describedby="result-detail-title"
           />
 
           {multiplexEnabled ? (
@@ -206,11 +214,13 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
                 label="Flu A result"
                 value={displayResult["fluAResult"]}
                 removed={removed}
+                aria-describedby="result-detail-title"
               />
               <DetailsRow
                 label="Flu B result"
                 value={displayResult["fluBResult"]}
                 removed={removed}
+                aria-describedby="result-detail-title"
               />
             </>
           ) : (
@@ -220,11 +230,13 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
             label="Test date"
             value={dateTested && formatDateWithTimeOption(dateTested, true)}
             removed={removed}
+            aria-describedby="result-detail-title"
           />
           <DetailsRow
             label="Device"
             value={deviceType && deviceType.name}
             removed={removed}
+            aria-describedby="result-detail-title"
           />
           <DetailsRow
             label="Symptoms"
@@ -232,22 +244,26 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
               symptomList.length > 0 ? symptomList.join(", ") : "No symptoms"
             }
             removed={removed}
+            aria-describedby="result-detail-title"
           />
           <DetailsRow
             label="Symptom onset"
             value={symptomOnset && formatDateWithTimeOption(symptomOnset)}
             removed={removed}
+            aria-describedby="result-detail-title"
           />
           <DetailsRow
             label="Pregnant?"
             value={pregnancy && pregnancyMap[pregnancy]}
             removed={removed}
+            aria-describedby="result-detail-title"
           />
           <DetailsRow
             label="Submitted by"
             value={createdBy?.name && formatFullName(createdBy.name)}
             removed={removed}
             last
+            aria-describedby="result-detail-title"
           />
         </tbody>
       </table>
