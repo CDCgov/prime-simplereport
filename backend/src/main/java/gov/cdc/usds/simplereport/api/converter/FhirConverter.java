@@ -59,7 +59,6 @@ import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -67,7 +66,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -213,24 +211,6 @@ public class FhirConverter {
 
   public Date convertToDate(@NotNull LocalDate date) {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
-  }
-
-  /**
-   * @param zonedDateTime the date time with a time zone, not null
-   * @param temporalPrecisionEnum precision of the date time, defaults to {@code
-   *     TemporalPrecisionEnum.SECOND}
-   * @return the DateTimeType object created from the Instant of the ZonedDateTime and its time zone
-   *     offset
-   */
-  public DateTimeType convertToDateTimeType(
-      @NotNull ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
-    if (temporalPrecisionEnum == null) {
-      temporalPrecisionEnum = TemporalPrecisionEnum.SECOND;
-    }
-    return new DateTimeType(
-        Date.from(zonedDateTime.toInstant()),
-        TemporalPrecisionEnum.SECOND,
-        TimeZone.getTimeZone(zonedDateTime.getZone()));
   }
 
   public Address convertToAddress(@NotNull StreetAddress address, String country) {
@@ -815,9 +795,9 @@ public class FhirConverter {
   }
 
   /**
-   * @param status
-   * @param code
-   * @param id
+   * @param status Diagnostic report status
+   * @param code LOINC code
+   * @param id Diagnostic report id
    * @param dateTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
    *     time/time-period for report.
    * @param dateUpdated Used to set {@code DiagnosticReport.issued}, the instant this version was
