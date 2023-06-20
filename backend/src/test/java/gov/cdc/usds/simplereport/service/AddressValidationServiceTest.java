@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -12,6 +13,7 @@ import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Lookup;
 import com.smartystreets.api.us_street.Metadata;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
 import gov.cdc.usds.simplereport.service.model.TimezoneInfo;
 import java.io.IOException;
 import java.time.ZoneId;
@@ -90,6 +92,15 @@ class AddressValidationServiceTest {
     assertEquals(results.get(0).getMetadata().getTimeZone(), timeZoneInfo.timezoneCommonName);
     assertEquals(results.get(0).getMetadata().getUtcOffset(), timeZoneInfo.utcOffset);
     assertEquals(results.get(0).getMetadata().obeysDst(), timeZoneInfo.obeysDaylightSavings);
+  }
+
+  @Test
+  void throwsInvalidAddressExceptionOnEmptyResults() {
+    ArrayList<Candidate> results = new ArrayList<>();
+    Lookup lookup = mock(Lookup.class);
+    when(lookup.getResult()).thenReturn(results);
+
+    assertThrows(InvalidAddressException.class, () -> s.getTimezoneInfoByLookup(lookup));
   }
 
   private Candidate getMockTimeZoneInfoResult() {
