@@ -42,13 +42,13 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
     http.cors()
         .and()
         .authorizeHttpRequests()
-        .antMatchers("/")
+        .requestMatchers("/")
         .permitAll()
-        .antMatchers(HttpMethod.OPTIONS, "/**")
+        .requestMatchers(HttpMethod.OPTIONS, "/**")
         .permitAll()
-        .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
+        .requestMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
         .permitAll()
-        .antMatchers("/echo/**", "/authTest/**")
+        .requestMatchers("/echo/**", "/authTest/**")
         .permitAll()
         .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
         .permitAll()
@@ -57,34 +57,34 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
 
         // Patient experience authorization is handled in PatientExperienceController
         // If this configuration changes, please update the documentation on both sides
-        .antMatchers(HttpMethod.POST, WebConfiguration.PATIENT_EXPERIENCE)
+        .requestMatchers(HttpMethod.POST, WebConfiguration.PATIENT_EXPERIENCE)
         .permitAll()
-        .antMatchers(HttpMethod.GET, WebConfiguration.PATIENT_EXPERIENCE)
+        .requestMatchers(HttpMethod.GET, WebConfiguration.PATIENT_EXPERIENCE)
         .permitAll()
 
         // Twilio callback authorization is handled in the controller
-        .antMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
+        .requestMatchers(HttpMethod.POST, WebConfiguration.TWILIO_CALLBACK)
         .permitAll()
 
         // Feature Flags that apply at app level
-        .antMatchers(HttpMethod.GET, WebConfiguration.FEATURE_FLAGS)
+        .requestMatchers(HttpMethod.GET, WebConfiguration.FEATURE_FLAGS)
         .permitAll()
 
         // ReportStreamResponse callback authorization is handled in the controller
-        .antMatchers(HttpMethod.POST, WebConfiguration.RS_QUEUE_CALLBACK)
+        .requestMatchers(HttpMethod.POST, WebConfiguration.RS_QUEUE_CALLBACK)
         .permitAll()
 
         // Account requests are unauthorized
-        .antMatchers(
+        .requestMatchers(
             HttpMethod.POST,
             WebConfiguration.ACCOUNT_REQUEST + "/**",
             WebConfiguration.IDENTITY_VERIFICATION + "/**")
         .permitAll()
 
         // User account creation request authorization is handled in UserAccountCreationController
-        .antMatchers(HttpMethod.POST, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
+        .requestMatchers(HttpMethod.POST, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
         .permitAll()
-        .antMatchers(HttpMethod.GET, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
+        .requestMatchers(HttpMethod.GET, WebConfiguration.USER_ACCOUNT_REQUEST + "/**")
         .permitAll()
 
         // Anything else goes through Okta
