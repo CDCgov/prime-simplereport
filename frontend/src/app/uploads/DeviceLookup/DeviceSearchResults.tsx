@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
 import {
   DeviceType,
@@ -34,21 +33,26 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
     resultsContent = (
       <div
         className={
-          "display-flex flex-column flex-align-center margin-x-7 margin-y-2"
+          "display-flex flex-column flex-align-center margin-x-2 margin-y-2"
         }
       >
         <div className="margin-bottom-105">
           No device found matching <strong>{queryString}</strong>.
         </div>
-        <div>
-          Please try a different search term, or follow the instructions on the{" "}
-          <Link to="/app">Upload Guide</Link> to look up the device code.
-        </div>
+        <span>
+          Please try a different search term from the device's name or
+          manufacturer. <br /> If you need help, contact{" "}
+          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>
+          .
+        </span>
       </div>
     );
   } else {
     resultsContent = (
-      <table className="usa-table usa-table--borderless">
+      <table
+        className="usa-table usa-table--borderless"
+        aria-describedby={"device-result-table-desc"}
+      >
         <thead>
           <tr>
             <th scope="col">Manufacturer</th>
@@ -99,7 +103,16 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
     );
   }
   const results = (
-    <div className="card-container shadow-3 results-dropdown" ref={dropDownRef}>
+    <div
+      className="card-container shadow-3 results-dropdown"
+      ref={dropDownRef}
+      aria-live="polite"
+      role="region"
+      aria-atomic="true"
+    >
+      <div className="usa-sr-only" id={"device-result-table-desc"}>
+        device search results
+      </div>
       <div className="usa-card__body results-dropdown__body">
         {resultsContent}
       </div>

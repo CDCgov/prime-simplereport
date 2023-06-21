@@ -256,13 +256,14 @@ export type MutationAddUserArgs = {
 };
 
 export type MutationAddUserToCurrentOrgArgs = {
-  email: Scalars["String"];
+  email?: InputMaybe<Scalars["String"]>;
   firstName?: InputMaybe<Scalars["String"]>;
   lastName?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  role: Role;
+  role?: InputMaybe<Role>;
   suffix?: InputMaybe<Scalars["String"]>;
+  userInput?: InputMaybe<UserInput>;
 };
 
 export type MutationAdminUpdateOrganizationArgs = {
@@ -974,12 +975,14 @@ export type User = {
 };
 
 export type UserInput = {
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
   email: Scalars["String"];
+  facilities?: InputMaybe<Array<Scalars["ID"]>>;
   firstName?: InputMaybe<Scalars["String"]>;
   lastName?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
   name?: InputMaybe<NameInput>;
-  organizationExternalId: Scalars["String"];
+  organizationExternalId?: InputMaybe<Scalars["String"]>;
   role: Role;
   suffix?: InputMaybe<Scalars["String"]>;
 };
@@ -1247,6 +1250,8 @@ export type AddUserToCurrentOrgMutationVariables = Exact<{
   lastName: Scalars["String"];
   email: Scalars["String"];
   role: Role;
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  facilities?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
 }>;
 
 export type AddUserToCurrentOrgMutation = {
@@ -3309,12 +3314,18 @@ export const AddUserToCurrentOrgDocument = gql`
     $lastName: String!
     $email: String!
     $role: Role!
+    $accessAllFacilities: Boolean
+    $facilities: [ID!]
   ) {
     addUserToCurrentOrg(
-      firstName: $firstName
-      lastName: $lastName
-      email: $email
-      role: $role
+      userInput: {
+        firstName: $firstName
+        lastName: $lastName
+        email: $email
+        role: $role
+        accessAllFacilities: $accessAllFacilities
+        facilities: $facilities
+      }
     ) {
       id
     }
@@ -3342,6 +3353,8 @@ export type AddUserToCurrentOrgMutationFn = Apollo.MutationFunction<
  *      lastName: // value for 'lastName'
  *      email: // value for 'email'
  *      role: // value for 'role'
+ *      accessAllFacilities: // value for 'accessAllFacilities'
+ *      facilities: // value for 'facilities'
  *   },
  * });
  */

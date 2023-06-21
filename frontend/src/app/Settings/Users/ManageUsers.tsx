@@ -199,7 +199,6 @@ const ManageUsers: React.FC<Props> = ({
   };
 
   const handleAddUserToOrg = async (newUserInvite: Partial<SettingsUser>) => {
-    // TODO: validate form
     try {
       setIsUpdating(true);
       const {
@@ -211,21 +210,20 @@ const ManageUsers: React.FC<Props> = ({
         permissions,
       } = newUserInvite;
       const { data } = await addUserToOrg({
-        variables: { firstName, lastName, email, role: role },
+        variables: {
+          firstName,
+          lastName,
+          email,
+          role,
+          facilities: organization?.testingFacility.map(({ id }) => id) ?? [],
+          accessAllFacilities:
+            permissions?.includes(UserPermission.AccessAllFacilities) ?? false,
+        },
       });
       const addedUser = data?.addUserToCurrentOrg?.id;
       if (!addedUser) {
         throw new Error("Error adding user");
       }
-      await updateUserPrivileges({
-        variables: {
-          id: addedUser,
-          role: role,
-          facilities: organization?.testingFacility.map(({ id }) => id) || [],
-          accessAllFacilities:
-            permissions?.includes(UserPermission.AccessAllFacilities) || false,
-        },
-      });
 
       await getUsers();
       const fullName = displayFullName(firstName, "", lastName);

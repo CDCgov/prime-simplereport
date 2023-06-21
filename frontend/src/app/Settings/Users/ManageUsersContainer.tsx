@@ -96,12 +96,18 @@ const ADD_USER_TO_ORG = gql`
     $lastName: String!
     $email: String!
     $role: Role!
+    $accessAllFacilities: Boolean
+    $facilities: [ID!]
   ) {
     addUserToCurrentOrg(
-      firstName: $firstName
-      lastName: $lastName
-      email: $email
-      role: $role
+      userInput: {
+        firstName: $firstName
+        lastName: $lastName
+        email: $email
+        role: $role
+        accessAllFacilities: $accessAllFacilities
+        facilities: $facilities
+      }
     ) {
       id
     }
@@ -151,7 +157,7 @@ const ManageUsersContainer = () => {
 
   return (
     <ManageUsers
-      users={data.usersWithStatus || []}
+      users={data.usersWithStatus ?? []}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}

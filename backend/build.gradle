@@ -7,7 +7,7 @@ plugins {
     id 'jacoco'
     id 'org.sonarqube' version '4.0.0.2929'
     id 'com.gorylenko.gradle-git-properties' version '2.4.1'
-    id "com.diffplug.spotless" version "6.16.0"
+    id "com.diffplug.spotless" version "6.19.0"
 }
 
 group = 'gov.cdc.usds'
@@ -91,7 +91,7 @@ dependencies {
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.17.0'
+    implementation 'com.azure:azure-storage-queue:12.17.1'
 
     // RandomStringUtils to generate PatientSelfRegistrationLink
     implementation 'org.apache.commons:commons-lang3:3.12.0'
