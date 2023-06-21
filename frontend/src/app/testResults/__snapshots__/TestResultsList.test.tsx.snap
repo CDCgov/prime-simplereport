@@ -394,7 +394,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="patient-name-cell"
               >
                 <button
-                  aria-label="Click for more detailed results information for Gerard, Sam G"
+                  aria-label="Click for more detailed results information for Gerard, Sam G conducted on March 19th 2021, 7:27:21 pm"
                   class="usa-button usa-button--unstyled sr-link__primary"
                   type="button"
                 >
@@ -474,7 +474,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="patient-name-cell"
               >
                 <button
-                  aria-label="Click for more detailed results information for Colleer, Barde X"
+                  aria-label="Click for more detailed results information for Colleer, Barde X conducted on March 18th 2021, 7:27:21 pm"
                   class="usa-button usa-button--unstyled sr-link__primary"
                   type="button"
                 >
@@ -554,7 +554,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="patient-name-cell"
               >
                 <button
-                  aria-label="Click for more detailed results information for Cragell, Barb Whitaker"
+                  aria-label="Click for more detailed results information for Cragell, Barb Whitaker conducted on March 17th 2021, 7:27:23 pm"
                   class="usa-button usa-button--unstyled sr-link__primary"
                   type="button"
                 >
