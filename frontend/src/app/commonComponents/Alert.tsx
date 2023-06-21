@@ -28,7 +28,7 @@ export interface AlertContent {
 interface Props {
   type: AlertType;
   role?: "alert" | "alertdialog" | "region";
-  title?: React.ReactNode;
+  title?: string;
   body?: React.ReactNode;
   children?: React.ReactNode;
   slim?: boolean;
@@ -63,18 +63,20 @@ const Alert = ({
     return "region";
   };
 
-  const id = (() => `${getIdentifiedRole()}-${Date.now()}`)();
+  const id = `${getIdentifiedRole()}-${Date.now()}`;
+  const bodyId = `body-${getIdentifiedRole()}-${Date.now()}`;
 
   return (
     <div
       className={classes}
       id={id}
       role={getIdentifiedRole()}
-      aria-labelledby={`${id}-body`}
+      aria-label={title ? `Alert: ${title}` : undefined}
+      aria-labelledby={title ? undefined : bodyId}
     >
       <div className="usa-alert__body">
         {title && <div className="usa-alert__heading text-bold">{title}</div>}
-        <div id={`${id}-body`} className="usa-alert__text">
+        <div id={bodyId} className="usa-alert__text">
           {body || children}
         </div>
       </div>
