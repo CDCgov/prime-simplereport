@@ -142,6 +142,28 @@ describe("Component ResultsTable", () => {
     expect(screen.getByText("Flu B")).toBeInTheDocument();
   });
 
+  it("renders multiple results for the same patient with different aria labels", () => {
+    render(
+      <ResultsTable
+        results={TEST_RESULTS_MULTIPLEX_CONTENT}
+        setPrintModalId={setPrintModalIdFn}
+        setMarkCorrectionId={setMarkCorrectionIdFn}
+        setDetailsModalId={setDetailsModalIdFn}
+        setTextModalId={setTextModalIdFn}
+        setEmailModalTestResultId={setEmailModalTestResultIdFn}
+        hasMultiplexResults={true}
+        hasFacility={false}
+      />
+    );
+
+    const userResults = screen.getAllByText(
+      "Purrington, Rupert G"
+    ) as HTMLButtonElement[];
+
+    const userAriaLabels = userResults.map((r) => r.getAttribute("aria-label"));
+    expect(new Set(userAriaLabels).size).toBe(userResults.length);
+  });
+
   describe("actions menu", () => {
     describe("text result action", () => {
       it("includes `Text result` if patient has mobile number", async () => {
