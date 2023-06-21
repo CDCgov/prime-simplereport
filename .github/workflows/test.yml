@@ -2,6 +2,13 @@ name: Test
 
 on:
   workflow_call:
+    secrets:
+      TWILIO_ACCOUNT_SID:
+        description: secrets.TWILIO_TEST_ACCOUNT_SID
+        required: true
+      TWILIO_AUTH_TOKEN:
+        description: secrets.TWILIO_TEST_AUTH_TOKEN
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-test
@@ -22,11 +29,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{env.JAVA_VERSION}}
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Cache Java Dependencies
         uses: actions/cache@v3.3.1
         with:
@@ -39,8 +46,8 @@ jobs:
       - name: Run tests
         env:
           OKTA_TESTING_DISABLEHTTPS: true
-          TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
-          TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Cache backend coverage results
         uses: actions/cache@v3.3.1
@@ -58,10 +65,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{env.NODE_VERSION}}
+      - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
       - name: Cache yarn
         uses: actions/cache@v3.3.1
         with:
@@ -134,8 +141,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Sonar analysis
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
@@ -146,11 +153,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{env.JAVA_VERSION}}
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Cache Java dependencies
         uses: actions/cache@v3.3.1
         with:
@@ -164,11 +171,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{env.JAVA_VERSION}}
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Cache Java dependencies
         uses: actions/cache@v3.3.1
         with:
@@ -182,10 +189,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{env.NODE_VERSION}}
+      - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v3.6.0
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
       - name: Cache yarn
         uses: actions/cache@v3.3.1
         with:

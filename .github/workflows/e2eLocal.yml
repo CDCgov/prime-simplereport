@@ -2,6 +2,19 @@ name: Run end-to-end tests
 
 on:
   workflow_call:
+    secrets:
+      OKTA_API_KEY:
+        required: true
+      SMARTY_AUTH_ID:
+        required: true
+      SMARTY_AUTH_TOKEN:
+        required: true
+      CYPRESS_OKTA_USERNAME:
+        required: true
+      CYPRESS_OKTA_PASSWORD:
+        required: true
+      CYPRESS_OKTA_SECRET:
+        required: true
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-e2e-local
@@ -16,10 +29,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    # - name: Set Swap Space
-    #   uses: ./.github/actions/set-swap-space
-    #   with:
-    #     swap-size-gb: 10
+    - name: Set Swap Space
+      uses: ./.github/actions/set-swap-space
+      with:
+        swap-size-gb: 10
 
     - name: Generate certs
       run: |
