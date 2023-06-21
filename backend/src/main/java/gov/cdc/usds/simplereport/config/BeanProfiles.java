@@ -11,14 +11,19 @@ public final class BeanProfiles {
 
   /** Profile for mocking and bypassing Okta management API (TEST OR DEMO ONLY) */
   public static final String NO_OKTA_MGMT = "no-okta-mgmt";
+
   /** Profile for mocking and bypassing Okta authentication API (TEST OR DEMO ONLY) */
   public static final String NO_OKTA_AUTH = "no-okta-auth";
+
   /** Profile for mocking and bypassing most security (TEST OR DEMO ONLY) */
   public static final String NO_SECURITY = "no-security";
+
   /** Profile for local development, sometimes also used for QA/Demo environments. */
   public static final String DEVELOPMENT = "dev";
+
   /** Profile that creates sample data on application startup. */
   public static final String CREATE_SAMPLE_DATA = "create-sample-data";
+
   /** Profile that creates sample devices on application startup (for e2e tests). */
   public static final String CREATE_SAMPLE_DEVICES = "create-sample-devices";
 
