@@ -23,6 +23,9 @@ logging:
     # org.hibernate.type: TRACE
     # Always have our own debug logging turned on in dev environments:
     gov.cdc.usds: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.core.io.support: DEBUG
+    org.springframework.context.annotation: DEBUG
 twilio:
   enabled: false
 datahub:
