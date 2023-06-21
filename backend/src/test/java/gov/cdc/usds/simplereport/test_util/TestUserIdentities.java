@@ -39,6 +39,7 @@ public class TestUserIdentities {
       new IdentityAttributes(STANDARD_USER, "Bobbity", "Bob", "Bobberoo", null);
   public static final IdentityAttributes SITE_ADMIN_USER_ATTRIBUTES =
       new IdentityAttributes(SITE_ADMIN_USER, "Ruby", "Raven", "Reynolds", null);
+
   /**
    * Set the security context to hold a particular user, then run some code, then reset the user.
    *
@@ -55,6 +56,7 @@ public class TestUserIdentities {
       context.setAuthentication(original);
     }
   }
+
   /**
    * Set the security context to hold the "default" user ({@link STANDARD_USER}), then run some
    * code, then reset the user.
