@@ -129,6 +129,85 @@ const data = [
     symptoms: '{"someSymptom":"true"}',
     __typename: "TestResult",
   },
+  {
+    internalId: "41b64baa-2ede-4f05-8c6e-66f8638644bd",
+    dateTested: "2021-03-20T19:27:21.052Z",
+    results: [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }],
+    correctionStatus: "ORIGINAL",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "f74ad245-3a69-44b5-bb6d-efe06308bb85",
+      firstName: "Rupert",
+      middleName: "G",
+      lastName: "Purrington",
+      birthDate: "1960-11-07",
+      gender: "male",
+      role: "RESIDENT",
+      lookupId: null,
+      email: "sam@gerard.com",
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Ethan",
+        middleName: "",
+        lastName: "Entry",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
+    },
+    noSymptoms: false,
+    symptoms: '{"someSymptom":"true"}',
+    __typename: "TestResult",
+  },
+  {
+    internalId: "bee09228-9063-45ac-93fd-35e8ca86aff5",
+    dateTested: "2021-03-20T19:28:21.052Z",
+    dateUpdated: "2021-03-20T19:29:21.052Z",
+    results: [{ disease: { name: "COVID-19" }, testResult: "POSITIVE" }],
+    correctionStatus: "CORRECTED",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "f74ad245-3a69-44b5-bb6d-efe06308bb85",
+      firstName: "Rupert",
+      middleName: "G",
+      lastName: "Purrington",
+      birthDate: "1960-11-07",
+      gender: "male",
+      role: "RESIDENT",
+      lookupId: null,
+      email: "sam@gerard.com",
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Ethan",
+        middleName: "",
+        lastName: "Entry",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    facility: {
+      name: "Facility 1",
+    },
+    noSymptoms: false,
+    symptoms: '{"someSymptom":"true"}',
+    __typename: "TestResult",
+  },
 ];
 const TEST_RESULTS_MULTIPLEX = {
   content: data,
