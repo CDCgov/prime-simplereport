@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gov.cdc.usds.simplereport.api.apiuser.UserAccountCreationController;
+import gov.cdc.usds.simplereport.config.DevSecurityConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
@@ -28,7 +29,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 @Import({
   DemoAuthenticationConfiguration.class,
   DemoOktaAuthentication.class,
-  DemoOktaRepository.class
+  DemoOktaRepository.class,
+  DevSecurityConfiguration.class
 })
 @WebMvcTest(
     controllers = UserAccountCreationController.class,
