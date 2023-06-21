@@ -213,7 +213,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-3 of 3"));
+    expect(await screen.findByText("Showing 1-5 of 5"));
     expect(
       screen.getByRole("columnheader", { name: /covid-19/i })
     ).toBeInTheDocument();
@@ -287,7 +287,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-3 of 3"));
+    expect(await screen.findByText("Showing 1-5 of 5"));
 
     expect(
       screen.getByRole("columnheader", { name: /covid-19/i })
