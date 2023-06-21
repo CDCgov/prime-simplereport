@@ -3,6 +3,10 @@ name: Test Liquibase Actions
 # Run this on pushes to any branch that changes a Liquibase changelog
 on:
   workflow_call:
+    inputs:
+      DOCKER_DATABASE_IMAGE_VERSION:
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-test-db-liquibase-action
@@ -18,6 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Start DB
+        env:
+          DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
         run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
       - name: Build rollback image
         run: docker compose -f docker-compose.db-liquibase-action.yml build

@@ -155,8 +155,6 @@ checkstyleTest {
 }
 
 jacocoTestReport {
-    // When trying to run `gradle test` in ci, it was failing with the following error:
-    // Could not set unknown property 'enabled' for Report xml of type org.gradle.api.reporting.internal.TaskGeneratedSingleFileReport.
     reports {
         xml.enabled = true
     }

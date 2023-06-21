@@ -35,25 +35,33 @@ jobs:
       - build_nginx_image
     uses: ./.github/workflows/e2eLocal.yml
     secrets:
-      OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
-      SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
-      SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
       CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
       CYPRESS_OKTA_PASSWORD: ${{ secrets.CYPRESS_OKTA_PASSWORD }}
       CYPRESS_OKTA_SECRET: ${{ secrets.CYPRESS_OKTA_SECRET }}
+      OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
+      SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
+      SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
+    with:
+      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
+      DOCKER_CYPRESS_IMAGE_VERSION: ${{ needs.build_cypress_image.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+      DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_frontend_image.outputs.version }}
+      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
 
-  test:
-    needs: 
-      - build_backend_image
+  tests:
+    needs:
       - build_database_image
-      - build_frontend_image
     uses: ./.github/workflows/test.yml
     secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_TEST_ACCOUNT_SID }}
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TEST_AUTH_TOKEN }}
+    with:
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
 
-  test_db_liquibase_action:
-    needs: 
-      - build_backend_image
+  liquibase_action_checks:
+    needs:
       - build_database_image
     uses: ./.github/workflows/testDBChangelog.yml
+    with:
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}

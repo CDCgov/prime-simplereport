@@ -3,12 +3,19 @@ name: Test
 on:
   workflow_call:
     secrets:
+      SONAR_TOKEN:
+        description: secrets.SONAR_TOKEN
+        required: true
       TWILIO_ACCOUNT_SID:
         description: secrets.TWILIO_TEST_ACCOUNT_SID
         required: true
       TWILIO_AUTH_TOKEN:
         description: secrets.TWILIO_TEST_AUTH_TOKEN
         required: true
+    inputs:
+      DOCKER_DATABASE_IMAGE_VERSION:
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-test
@@ -42,6 +49,8 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Start DB
+        env:
+          DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
         run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
       - name: Run tests
         env:

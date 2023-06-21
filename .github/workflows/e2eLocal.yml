@@ -15,6 +15,22 @@ on:
         required: true
       CYPRESS_OKTA_SECRET:
         required: true
+    inputs:
+      DOCKER_BACKEND_IMAGE_VERSION:
+        required: false
+        type: string
+      DOCKER_CYPRESS_IMAGE_VERSION:
+        required: false
+        type: string
+      DOCKER_DATABASE_IMAGE_VERSION:
+        required: false
+        type: string
+      DOCKER_FRONTEND_IMAGE_VERSION:
+        required: false
+        type: string
+      DOCKER_NGINX_IMAGE_VERSION:
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-e2e-local
@@ -73,9 +89,11 @@ jobs:
         CI: 1
         # docker settings
         DOCKER_CLIENT_TIMEOUT: 180
-        DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
-        DOCKER_CYPRESS_IMAGE_VERSION: ${{ needs.build_cypress_image.outputs.version }}
-        DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+        DOCKER_BACKEND_IMAGE_VERSION: ${{ inputs.DOCKER_BACKEND_IMAGE_VERSION }}
+        DOCKER_CYPRESS_IMAGE_VERSION: ${{ inputs.DOCKER_CYPRESS_IMAGE_VERSION }}
+        DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
+        DOCKER_FRONTEND_IMAGE_VERSION: ${{ inputs.DOCKER_FRONTEND_IMAGE_VERSION }}
+        DOCKER_NGINX_IMAGE_VERSION: ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}
         COMPOSE_HTTP_TIMEOUT: 180
         # backend settings
         SPRING_PROFILES_ACTIVE: e2e,db-dockerized
@@ -105,9 +123,11 @@ jobs:
       shell: bash
       run: |
         echo "::group::Run Cypress locally"
-        echo "Backend branch tag (or latest): ${{ needs.build_backend_image.outputs.version }}"
-        echo "Cypress branch tag (or latest): ${{ needs.build_cypress_image.outputs.version }}"
-        echo "Database branch tag (or latest): ${{ needs.build_database_image.outputs.version }}"
+        echo "Backend branch tag (or latest): ${{ inputs.DOCKER_BACKEND_IMAGE_VERSION }}"
+        echo "Cypress branch tag (or latest): ${{ inputs.DOCKER_CYPRESS_IMAGE_VERSION }}"
+        echo "Database branch tag (or latest): ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}"
+        echo "Frontend branch tag (or latest): ${{ inputs.DOCKER_FRONTEND_IMAGE_VERSION }}"
+        echo "Nginx branch tag (or latest): ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}"
         docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress
         echo "::endgroup::"
 
