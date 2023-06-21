@@ -10,6 +10,11 @@ on:
       - main
 
 jobs:
+  
+  set_swap:
+    uses: ./.github/actions/set-swap-space/action.yml
+    with:
+      swap-size-gb: 10
 
   build_backend_image:
     uses: ./.github/workflows/buildBackendImage.yml

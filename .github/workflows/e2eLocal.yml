@@ -16,10 +16,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Set Swap Space
-      uses: ./.github/actions/set-swap-space
-      with:
-        swap-size-gb: 10
+    # - name: Set Swap Space
+    #   uses: ./.github/actions/set-swap-space
+    #   with:
+    #     swap-size-gb: 10
 
     - name: Generate certs
       run: |
