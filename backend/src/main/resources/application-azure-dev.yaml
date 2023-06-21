@@ -17,3 +17,8 @@ simple-report:
       - https://dev.simplereport.gov
 twilio:
   enabled: true
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.core.io.support: DEBUG
+    org.springframework.context.annotation: DEBUG
