@@ -1,7 +1,7 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.12'
+    id 'org.springframework.boot' version '3.1.1'
     id 'org.liquibase.gradle' version '2.0.4'
-    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
     id 'checkstyle'
     id 'jacoco'
@@ -16,7 +16,6 @@ sourceCompatibility = '17'
 
 ext {
     set('springCloudVersion', "2021.0.3")
-    set('spring-security.version', '5.8.3')
 }
 repositories {
     mavenCentral()
@@ -43,6 +42,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
     // Security Pins (Sept 2022)
+    // todo: remove version
     implementation 'org.yaml:snakeyaml:1.33'
 
     // data layer dependencies
@@ -63,7 +63,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.7'
+    implementation 'com.okta.spring:okta-spring-boot-starter:3.0.4'
     implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
     runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
@@ -77,15 +77,18 @@ dependencies {
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
 
+    // todo: remove version
     // SendGrid for Email
+    implementation 'com.sendgrid:sendgrid-java:4.9.3'
     implementation 'com.sendgrid:sendgrid-java:4.9.3'
 
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    // todo: remove version
     // JPA Hibernate static metamodel generation
     implementation 'org.hibernate.orm:hibernate-jpamodelgen:6.2.1.Final'
-    annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
+    annotationProcessor 'org.hibernate:hibernate-jpamodelgen:6.2.1.Final'
 
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:18.1-hibernate-validator-6.2.0.Final'
@@ -95,6 +98,7 @@ dependencies {
     implementation 'com.azure:azure-storage-queue:12.17.1'
 
     // RandomStringUtils to generate PatientSelfRegistrationLink
+    // todo: remove version
     implementation 'org.apache.commons:commons-lang3:3.12.0'
 
     // Shedlock for scheduler synchronization
@@ -129,9 +133,6 @@ dependencies {
     implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.0.4' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://app.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3358779.
 
     implementation 'commons-validator:commons-validator:1.7'
-
-    // Remove after springboot 3 migration
-    implementation "org.springframework.boot:spring-boot-starter-security"
 }
 
 dependencyManagement {
