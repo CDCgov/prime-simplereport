@@ -92,6 +92,7 @@ const ManageUsers: React.FC<Props> = ({
   const [activeUser, updateActiveUser] = useState<LimitedUser>();
   const [userWithPermissions, updateUserWithPermissions] =
     useState<SettingsUser | null>();
+
   const [queryUserWithPermissions] = useGetUserLazyQuery({
     variables: { id: activeUser ? activeUser.id : loggedInUser.id },
     fetchPolicy: "no-cache",
@@ -152,8 +153,7 @@ const ManageUsers: React.FC<Props> = ({
       updateNextActiveUserId(nextActiveUserId);
       updateShowInProgressModal(true);
     } else {
-      updateActiveUser(usersState[nextActiveUserId]);
-      queryUserWithPermissions();
+      updateActiveUser(usersState[nextActiveUserId]); // this update will trigger the effect that performs the query
     }
   };
 
@@ -184,8 +184,8 @@ const ManageUsers: React.FC<Props> = ({
         ),
       },
     })
-      .then(() => {
-        getUsers();
+      .then(async () => {
+        await getUsers();
         updateIsUserEdited(false);
         const fullName = displayFullName(
           userWithPermissions?.firstName,
@@ -380,6 +380,7 @@ const ManageUsers: React.FC<Props> = ({
   };
 
   // Default to first user
+  // This triggers when the user selected is changed as well
   useEffect(() => {
     if (!activeUser && sortedUsers.length) {
       updateActiveUser(sortedUsers[0]);
