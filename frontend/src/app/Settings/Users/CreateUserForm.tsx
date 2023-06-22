@@ -18,11 +18,13 @@ import UserFacilitiesSettings from "./UserFacilitiesSettings";
 interface CreateUserFormProps {
   onClose: () => void;
   onSubmit: (newUserInvite: Partial<SettingsUser>) => void;
+  isUpdating: boolean;
 }
 
 const CreateUserForm: React.FC<CreateUserFormProps> = ({
   onClose,
   onSubmit,
+  isUpdating,
 }) => {
   const facilities = useSelector<RootState, UserFacilitySetting[]>(
     (state) => state.facilities
@@ -174,8 +176,8 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
           <Button
             className="margin-right-205"
             type={"submit"}
-            label={isSubmitting ? "Sending" : "Send invite"}
-            disabled={isSubmitting || !isDirty}
+            label={isSubmitting || isUpdating ? "Sending" : "Send invite"}
+            disabled={isSubmitting || !isDirty || isUpdating}
           />
         </div>
       </div>

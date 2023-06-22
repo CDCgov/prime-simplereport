@@ -433,6 +433,7 @@ const ManageUsers: React.FC<Props> = ({
         <CreateUserModal
           onClose={() => updateShowAddUserModal(false)}
           onSubmit={handleAddUserToOrg}
+          isUpdating={isUpdating}
         />
       ) : null}
       {!activeUser || !localUsers.length ? (

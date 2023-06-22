@@ -26,7 +26,11 @@ describe("CreateUserForm", () => {
     render(
       <Provider store={store}>
         <MockedProvider>
-          <CreateUserForm onSubmit={mockOnSubmit} onClose={mockOnClose} />
+          <CreateUserForm
+            onSubmit={mockOnSubmit}
+            onClose={mockOnClose}
+            isUpdating={false}
+          />
         </MockedProvider>
       </Provider>
     );

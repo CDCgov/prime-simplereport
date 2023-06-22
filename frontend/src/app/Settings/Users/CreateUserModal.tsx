@@ -9,9 +9,14 @@ import "./ManageUsers.scss";
 interface Props {
   onClose: () => void;
   onSubmit: (newUserInvite: Partial<SettingsUser>) => void;
+  isUpdating: boolean;
 }
 
-const CreateUserModal: React.FC<Props> = ({ onClose, onSubmit }) => {
+const CreateUserModal: React.FC<Props> = ({
+  onClose,
+  onSubmit,
+  isUpdating,
+}) => {
   return (
     <Modal
       isOpen={true}
@@ -27,7 +32,11 @@ const CreateUserModal: React.FC<Props> = ({ onClose, onSubmit }) => {
       ariaHideApp={process.env.NODE_ENV !== "test"}
       onRequestClose={onClose}
     >
-      <CreateUserForm onClose={onClose} onSubmit={onSubmit} />
+      <CreateUserForm
+        onClose={onClose}
+        onSubmit={onSubmit}
+        isUpdating={isUpdating}
+      />
     </Modal>
   );
 };
