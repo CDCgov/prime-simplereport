@@ -163,8 +163,9 @@ const SpecialStatusNotice: React.FC<{
 
 const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
   if (
-    !user?.organization?.testingFacility ||
-    user?.organization?.testingFacility.length === 0
+    user?.id &&
+    (!user?.organization?.testingFacility ||
+      user?.organization?.testingFacility.length === 0)
   ) {
     return (
       <Alert

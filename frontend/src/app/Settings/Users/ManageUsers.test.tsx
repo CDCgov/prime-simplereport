@@ -268,7 +268,7 @@ describe("ManageUsers", () => {
     });
     addUserToOrg = jest.fn(() =>
       Promise.resolve({
-        data: { addUserToCurrentOrg: { id: "added-user-id" } },
+        data: { addUserToCurrentOrg: { id: "a123" } },
       })
     );
     deleteUser = jest.fn((obj) =>
