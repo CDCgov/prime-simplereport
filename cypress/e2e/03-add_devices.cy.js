@@ -23,8 +23,8 @@ describe("Adding covid only and multiplex devices", () => {
 
     it("Adds a covid only device", () => {
       cy.visit("/admin/create-device-type");
-      cy.wait("@GetSpecimenTypes");
-      cy.wait("@GetSupportedDiseases");
+      cy.wait("@getSpecimenTypes");
+      cy.wait("@getSupportedDiseases");
       cy.contains("Device type");
       cy.contains("Save changes").should("be.not.enabled");
       cy.injectSRAxe();
@@ -34,16 +34,16 @@ describe("Adding covid only and multiplex devices", () => {
 
     it("Adds a multiplex device", () => {
       cy.visit("/admin/create-device-type");
-      cy.wait("@GetSpecimenTypes");
-      cy.wait("@GetSupportedDiseases");
+      cy.wait("@getSpecimenTypes");
+      cy.wait("@getSupportedDiseases");
       cy.addDevice(multiplexDevice);
     });
 
     it("Reviews multiplex device in edit page", () => {
       cy.visit("/admin/manage-devices");
-      cy.wait("@GetSpecimenTypes");
-      cy.wait("@GetSupportedDiseases");
-      cy.wait("@GetDeviceTypeList");
+      cy.wait("@getSpecimenTypes");
+      cy.wait("@getSupportedDiseases");
+      cy.wait("@getDeviceTypeList");
 
       cy.get('input[role="combobox"]').first().type(multiplexDevice.name);
       cy.get('li[id="selectDevice--list--option-0"]')
