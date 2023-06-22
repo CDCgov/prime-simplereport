@@ -134,7 +134,7 @@ Cypress.Commands.add("addDevice", (device) => {
     cy.get('input[name="supportedDiseases.2.testOrderedLoincCode"]').type("9500-6");
   }
   cy.contains("Save changes").should("be.enabled").click();
-  cy.wait("@gqlcreateDeviceTypeMutation");
+  cy.wait("@CreateDeviceType");
   cy.get(".Toastify").contains("Created Device");
 });
 
