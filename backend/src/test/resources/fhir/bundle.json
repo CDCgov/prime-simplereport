@@ -4,7 +4,7 @@
   "identifier": {
     "value": "45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
   },
-  "timestamp": "$BUNDLE_TIMESTAMP",
+  "timestamp": "$CURRENT_DATE_TZ",
   "entry":[
     {
       "fullUrl":"MessageHeader/$MESSAGE_HEADER_ID",
@@ -82,7 +82,7 @@
             }
           }
         ],
-        "recorded": "$PROVENANCE_RECORDED_DATE"
+        "recorded": "$CURRENT_DATE_TZ"
       }
     },
     {
@@ -105,6 +105,7 @@
             }
           ]
         },
+        "issued" : "$CURRENT_DATE_ZULU",
         "subject":{
           "reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
         },

@@ -777,7 +777,7 @@ public class FhirConverter {
     return serviceRequest;
   }
 
-  public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
+  public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent, Date currentDate) {
     DiagnosticReportStatus status = null;
     switch (testEvent.getCorrectionStatus()) {
       case ORIGINAL:
@@ -803,16 +803,21 @@ public class FhirConverter {
         code,
         Objects.toString(testEvent.getInternalId(), ""),
         testEvent.getDateTested(),
-        testEvent.getUpdatedAt());
+        currentDate);
   }
 
   public DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code, String id, Date dateTested, Date dateUpdated) {
+      DiagnosticReportStatus status, String code, String id, Date dateTested, Date currentDate) {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
             .setEffective(new DateTimeType(dateTested).setTimeZoneZulu(true))
-            .setIssued(dateUpdated);
+            .setIssued(currentDate);
+
+    diagnosticReport
+        .getIssuedElement()
+        .setTimeZoneZulu(true)
+        .setPrecision(TemporalPrecisionEnum.SECOND);
 
     // Allows EffectiveDateTimeType to be mocked during tests
     var localEffectiveDateTimeType = diagnosticReport.getEffectiveDateTimeType();
@@ -859,7 +864,7 @@ public class FhirConverter {
                     testEvent.getInternalId().toString(), testEvent.getSurveyData()))
             .serviceRequest(
                 convertToServiceRequest(testEvent.getOrder(), testEvent.getDateTested()))
-            .diagnosticReport(convertToDiagnosticReport(testEvent))
+            .diagnosticReport(convertToDiagnosticReport(testEvent, currentDate))
             .currentDate(currentDate)
             .gitProperties(gitProperties)
             .processingId(processingId)

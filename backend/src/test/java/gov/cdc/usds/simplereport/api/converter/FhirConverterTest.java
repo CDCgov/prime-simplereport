@@ -902,7 +902,7 @@ class FhirConverterTest {
     var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
     ReflectionTestUtils.setField(
         testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
-    var actual = fhirConverter.convertToDiagnosticReport(testEvent);
+    var actual = fhirConverter.convertToDiagnosticReport(testEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
     assertThat(actual.getCode().getCoding()).hasSize(1);
@@ -916,7 +916,7 @@ class FhirConverterTest {
     var correctedTestEvent =
         new TestEvent(invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo");
 
-    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent);
+    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.CORRECTED);
   }
@@ -927,7 +927,7 @@ class FhirConverterTest {
     var correctedTestEvent =
         new TestEvent(invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person");
 
-    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent);
+    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.ENTEREDINERROR);
   }
@@ -942,7 +942,9 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(
         testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
 
-    var actual = fhirConverter.convertToDiagnosticReport(testEvent);
+    var actual =
+        fhirConverter.convertToDiagnosticReport(
+            testEvent, Date.from(Instant.parse("2023-06-22T11:46:00.00Z")));
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -1508,14 +1510,13 @@ class FhirConverterTest {
             new DateTimeType(dateTested).setTimeZoneZulu(true).getValueAsString());
     expectedSerialized =
         expectedSerialized.replace(
-            "$PROVENANCE_RECORDED_DATE",
+            "$CURRENT_DATE_TZ",
             OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
                 .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
     expectedSerialized =
         expectedSerialized.replace(
-            "$BUNDLE_TIMESTAMP",
-            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
+            "$CURRENT_DATE_ZULU",
+            new DateTimeType(dateTested).setTimeZoneZulu(true).getValueAsString());
     expectedSerialized =
         expectedSerialized.replace(
             "$SPECIMEN_IDENTIFIER",
