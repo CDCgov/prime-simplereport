@@ -64,6 +64,19 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     status: "ACTIVE",
   },
   {
+    firstName: "Jane",
+    middleName: "",
+    lastName: "Doe",
+    suffix: "",
+    id: "a122",
+    email: "jane@example.com",
+    organization: { testingFacility: [] },
+    permissions: [UserPermission.ReadPatientList],
+    roleDescription: "user",
+    role: "USER",
+    status: "ACTIVE",
+  },
+  {
     ...loggedInUser,
     permissions: [],
     organization,
@@ -173,6 +186,30 @@ const mocks = [
   { ...mockGetUserRequest("a123") },
   { ...mockGetUserRequest("b1") },
   { ...mockGetUserRequest("b1") },
+  {
+    request: {
+      query: GetUserDocument,
+      variables: {
+        id: "a122",
+      },
+    },
+    result: {
+      data: {
+        user: {
+          id: "a122",
+          firstName: "Jane",
+          middleName: "",
+          lastName: "Doe",
+          roleDescription: "user",
+          role: "USER",
+          permissions: [UserPermission.ReadPatientList],
+          email: "jane@example.com",
+          organization: { testingFacility: [] },
+          status: "ACTIVE",
+        },
+      },
+    },
+  },
   {
     request: {
       query: GetUserDocument,
@@ -466,6 +503,29 @@ describe("ManageUsers", () => {
       expect(deleteUser).toBeCalledWith({
         variables: { deleted: true, id: users[0].id },
       });
+    });
+
+    it("focuses on next user after current is deleted", async () => {
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("tab", { name: /doe, jane/i }))
+      );
+      await waitFor(() =>
+        expect(screen.getByRole("heading", { name: /doe, jane/i }))
+      );
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByRole("button", {
+              name: "Delete user",
+            })
+          )
+      );
+      const sureButton = await screen.findByText("Yes", { exact: false });
+      await act(async () => await userEvent.click(sureButton));
+      await waitFor(() =>
+        expect(screen.getByRole("heading", { name: /bobberoo, bob/i }))
+      );
     });
 
     it("updates someone from user to admin", async () => {
