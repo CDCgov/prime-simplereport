@@ -45,13 +45,13 @@ const validFacility: Facility = {
   orderingProvider: {
     firstName: "Frank",
     lastName: "Grimes",
-    NPI: "000",
+    NPI: "1231231231",
     street: null,
     zipCode: null,
     state: null,
     middleName: null,
     suffix: null,
-    phone: "phone",
+    phone: "2015592381",
     streetTwo: null,
     city: null,
   },
@@ -160,7 +160,6 @@ describe("FacilityForm", () => {
           />
         </MemoryRouter>
       );
-      const saveButton = await screen.getAllByText("Save changes")[0];
       await act(
         async () =>
           await userEvent.type(
@@ -168,7 +167,7 @@ describe("FacilityForm", () => {
             "Bar Facility"
           )
       );
-      await act(async () => await userEvent.click(saveButton));
+      await clickSaveButton();
       await validateAddress(saveFacility);
     });
 
@@ -186,8 +185,8 @@ describe("FacilityForm", () => {
         exact: false,
       });
       await act(async () => await userEvent.clear(facilityNameInput));
-      await act(async () => await userEvent.tab());
-      const nameWarning = await screen.findByText("Facility name is missing");
+      await clickSaveButton();
+      const nameWarning = await screen.findByText("Facility name is required");
       expect(nameWarning).toBeInTheDocument();
       await act(
         async () => await userEvent.type(facilityNameInput, "Test facility A")
@@ -200,9 +199,9 @@ describe("FacilityForm", () => {
         }
       )[0];
       await act(async () => await userEvent.clear(facilityStreetAddressInput));
-      await act(async () => await userEvent.tab());
+      await clickSaveButton();
       const streetAddressWarning = await screen.findByText(
-        "Facility street is missing"
+        "Facility street is required"
       );
       expect(streetAddressWarning).toBeInTheDocument();
       await act(
@@ -214,9 +213,9 @@ describe("FacilityForm", () => {
         exact: false,
       })[0];
       await act(async () => await userEvent.clear(facilityZipCodeInput));
-      await act(async () => await userEvent.tab());
+      await clickSaveButton();
       const facilityZipCodeWarning = await screen.findByText(
-        "Facility zip code is missing"
+        "Facility ZIP code is required"
       );
       expect(facilityZipCodeWarning).toBeInTheDocument();
     });
@@ -251,12 +250,11 @@ describe("FacilityForm", () => {
           />
         </MemoryRouter>
       );
-      const saveButton = (await screen.findAllByText("Save changes"))[0];
       const emailInput = screen.getByLabelText("Email", {
         exact: false,
       });
       await act(async () => await userEvent.type(emailInput, "123-456-7890"));
-      await act(async () => await userEvent.tab());
+      await clickSaveButton();
 
       expect(
         await screen.findByText("Email is incorrectly formatted", {
@@ -264,14 +262,13 @@ describe("FacilityForm", () => {
         })
       ).toBeInTheDocument();
 
-      await act(async () => await userEvent.click(saveButton));
+      await clickSaveButton();
       expect(saveFacility).toBeCalledTimes(0);
 
       await act(
         async () => await userEvent.type(emailInput, "foofacility@example.com")
       );
-      await act(async () => await userEvent.click(saveButton));
-      await waitFor(async () => expect(saveButton).toBeEnabled());
+      await clickSaveButton();
       await validateAddress(saveFacility);
     });
 
@@ -291,7 +288,7 @@ describe("FacilityForm", () => {
       await act(
         async () => await userEvent.selectOptions(stateDropdownElement, "PW")
       );
-      await act(async () => await userEvent.tab());
+      await clickSaveButton();
       // There's a line break between these two statements, so they have to be separated
       const warning = await screen.findByText(
         "SimpleReport isn’t currently supported in",
@@ -359,7 +356,7 @@ describe("FacilityForm", () => {
         });
 
         await act(async () => await userEvent.type(cliaInput, "12F3456789"));
-        await act(async () => await userEvent.tab());
+        await clickSaveButton();
 
         expect(
           await screen.findByText(expectedError, {
@@ -367,9 +364,6 @@ describe("FacilityForm", () => {
           })
         ).toBeInTheDocument();
 
-        const saveButton = screen.getAllByText("Save changes")[0];
-        await act(async () => await userEvent.click(saveButton));
-        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
     });
@@ -450,7 +444,7 @@ describe("FacilityForm", () => {
         expect(saveFacility).toBeCalledTimes(1);
       });
 
-      it("doesn't allow a Z-CLIA for a non-Washington state", async () => {
+      it("doesn't allow a Z-CLIA for a non (WA, NM, VT, IL, WY) state", async () => {
         const marylandFacility: Facility = validFacility;
         marylandFacility.state = "MD";
         render(
@@ -469,7 +463,7 @@ describe("FacilityForm", () => {
 
         await act(async () => await userEvent.clear(cliaInput));
         await act(async () => await userEvent.type(cliaInput, "12Z3456789"));
-        await act(async () => await userEvent.tab());
+        await clickSaveButton();
 
         expect(
           await screen.findByText(expectedError, {
@@ -477,9 +471,6 @@ describe("FacilityForm", () => {
           })
         ).toBeInTheDocument();
 
-        const saveButton = screen.getAllByText("Save changes")[0];
-        await act(async () => await userEvent.click(saveButton));
-        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
       });
 
@@ -597,7 +588,7 @@ describe("FacilityForm", () => {
         });
 
         await act(async () => await userEvent.clear(npiInput));
-        await act(async () => await userEvent.tab());
+        await clickSaveButton();
 
         const expectedError =
           "NPI should be a 10-digit numerical value (##########)";
@@ -610,9 +601,7 @@ describe("FacilityForm", () => {
           })
         ).toBeInTheDocument();
 
-        const saveButton = screen.getAllByText("Save changes")[0];
-        await act(async () => await userEvent.click(saveButton));
-        await waitFor(async () => expect(saveButton).toBeEnabled());
+        await clickSaveButton();
         expect(saveFacility).toBeCalledTimes(0);
       });
 
@@ -633,7 +622,7 @@ describe("FacilityForm", () => {
 
         await act(async () => await userEvent.clear(npiInput));
         await act(async () => await userEvent.type(npiInput, "Facility name"));
-        await act(async () => await userEvent.tab());
+        await clickSaveButton();
 
         const expectedError =
           "NPI should be a 10-digit numerical value (##########)";
@@ -645,10 +634,46 @@ describe("FacilityForm", () => {
           })
         ).toBeInTheDocument();
 
-        const saveButton = screen.getAllByText("Save changes")[0];
-        await act(async () => await userEvent.click(saveButton));
-        await waitFor(async () => expect(saveButton).toBeEnabled());
         expect(saveFacility).toBeCalledTimes(0);
+      });
+
+      it("suggests address validation for ordering provider when address provided", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const opStreetInput = screen.getAllByLabelText("Street address 1", {
+          exact: false,
+        })[1];
+        await act(
+          async () => await userEvent.type(opStreetInput, "432 Green Street")
+        );
+        const opCityInput = screen.getAllByLabelText("City", {
+          exact: false,
+        })[1];
+        await act(async () => await userEvent.type(opCityInput, "Englewood"));
+        const stateDropdownElement = screen.getByTestId("op-state-dropdown");
+        fireEvent.change(stateDropdownElement, { target: { value: "NJ" } });
+        const opZIPInput = screen.getAllByLabelText("ZIP code", {
+          exact: false,
+        })[1];
+        await act(async () => await userEvent.type(opZIPInput, "07026"));
+        await clickSaveButton();
+        await screen.findByText("Address validation");
+        expect(
+          screen.getByText(
+            "Please select an option for ordering provider address to continue:"
+          )
+        ).toBeInTheDocument();
+        expect(screen.getByText("432 Green Street")).toBeInTheDocument();
+        expect(screen.getByText("Englewood, NJ 07026")).toBeInTheDocument();
+        expect(suggestionIsCloseEnoughSpy).toBeCalledTimes(2);
       });
     });
 
@@ -684,8 +709,7 @@ describe("FacilityForm", () => {
         // The spy function was called at least once
         expect(spy.mock.calls.length).toBeGreaterThan(0);
 
-        const saveButton = await screen.getAllByText("Save changes")[0];
-        await act(async () => await userEvent.click(saveButton));
+        await clickSaveButton();
         await validateAddress(saveFacility);
         expect(saveFacility).toBeCalledTimes(1);
       });
@@ -712,7 +736,7 @@ describe("FacilityForm", () => {
         exact: false,
       });
 
-      await attemptSaveDevices();
+      await clickSaveButton();
 
       await screen.findByText("There must be at least one device", {
         exact: false,
@@ -726,7 +750,7 @@ describe("FacilityForm", () => {
         exact: false,
       });
 
-      await attemptSaveDevices();
+      await clickSaveButton();
 
       await screen.findByText("There must be at least one device", {
         exact: false,
@@ -774,7 +798,6 @@ describe("FacilityForm", () => {
           />
         </MemoryRouter>
       );
-      const saveButton = screen.getAllByText("Save changes")[0];
       const facilityName = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
@@ -782,17 +805,27 @@ describe("FacilityForm", () => {
       await act(
         async () => await userEvent.type(facilityName, "La Croix Facility")
       );
-      await act(async () => await userEvent.click(saveButton));
+      await clickSaveButton();
       await validateAddress(saveFacility, "suggested address");
       expect(getIsValidZipForStateSpy).toBeCalledTimes(1);
       expect(saveFacility).toBeCalledWith({
-        ...validFacility,
-        name: "La Croix Facility",
-        ...addresses[0].good,
+        facility: {
+          name: "La Croix Facility",
+          cliaNumber: "12D4567890",
+          phone: "(202) 395-3080",
+          email: null,
+          ...addresses[0].good,
+        },
         orderingProvider: {
-          ...validFacility.orderingProvider,
+          firstName: "Frank",
+          lastName: "Grimes",
+          NPI: "1231231231",
+          middleName: null,
+          suffix: null,
+          phone: "(201) 559-2381",
           ...addresses[1].good,
         },
+        devices: ["device-1", "device-2"],
       });
     });
 
@@ -812,7 +845,6 @@ describe("FacilityForm", () => {
         </>
       );
 
-      const saveButton = screen.getAllByText("Save changes")[0];
       const facilityName = screen.getByLabelText("Testing facility name", {
         exact: false,
       });
@@ -820,7 +852,7 @@ describe("FacilityForm", () => {
       await act(
         async () => await userEvent.type(facilityName, "La Croix Facility")
       );
-      await act(async () => await userEvent.click(saveButton));
+      await clickSaveButton();
 
       await waitFor(() => expect(getIsValidZipForStateSpy).toBeCalledTimes(1));
       // Does not perform further address validation on invalid ZIP code for state
@@ -832,17 +864,16 @@ describe("FacilityForm", () => {
   });
 });
 
-async function attemptSaveDevices() {
-  const saveButtons = await screen.findAllByText("Save changes");
-  await waitFor(async () => expect(saveButtons[0]).toBeEnabled());
-  await act(async () => await userEvent.click(saveButtons[0]));
-}
-
 async function deleteAllDevices() {
   const pillContainer = screen.getByTestId("pill-container");
   const deleteButtons = within(pillContainer).getAllByRole("button");
   deleteButtons.forEach((button) => fireEvent.click(button));
 }
+
+const clickSaveButton = async () => {
+  const saveButton = await screen.getAllByText("Save changes")[0];
+  await act(async () => await userEvent.click(saveButton));
+};
 
 async function validateAddress(
   saveFacility: (facility: Facility) => void,

@@ -13,7 +13,7 @@ import {
   useUpdateFacilityMutation,
 } from "../../../generated/graphql";
 
-import FacilityForm from "./FacilityForm";
+import FacilityForm, { FacilityFormData } from "./FacilityForm";
 
 interface Props {
   newOrg?: boolean;
@@ -33,7 +33,9 @@ const FacilityFormContainer: any = (props: Props) => {
   const [addFacilityMutation] = useAddFacilityMutation();
 
   const [saveSuccess, updateSaveSuccess] = useState(false);
-  const [facilityData, setFacilityData] = useState<Facility | null>(null);
+  const [facilityData, setFacilityData] = useState<
+    FacilityFormData | undefined
+  >(undefined);
   const dispatch = useDispatch();
   if (loading) {
     return <p> Loading... </p>;
@@ -54,11 +56,13 @@ const FacilityFormContainer: any = (props: Props) => {
     );
   }
 
-  const saveFacility = async (facility: Facility) => {
+  const saveFacility = async (facilityData: FacilityFormData) => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Save Settings" });
     }
-    const provider = facility.orderingProvider;
+    const provider = facilityData.orderingProvider;
+    const facility = facilityData.facility;
+
     const facilityInfo = {
       testingFacilityName: facility.name,
       cliaNumber: facility.cliaNumber,
@@ -80,7 +84,7 @@ const FacilityFormContainer: any = (props: Props) => {
       orderingProviderState: provider.state,
       orderingProviderZipCode: provider.zipCode,
       orderingProviderPhone: provider.phone || null,
-      devices: facility.deviceTypes.map((d) => d.internalId),
+      devices: facilityData.devices,
     };
 
     const savedFacilityId = facilityId
@@ -95,7 +99,7 @@ const FacilityFormContainer: any = (props: Props) => {
         );
 
     setFacilityData(() => ({
-      ...facility,
+      ...facilityData,
       id: savedFacilityId as string,
     }));
 
