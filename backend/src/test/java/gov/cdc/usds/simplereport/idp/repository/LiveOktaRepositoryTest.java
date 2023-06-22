@@ -976,7 +976,7 @@ class LiveOktaRepositoryTest {
 
     Throwable caught =
         assertThrows(
-            IllegalGraphqlArgumentException.class, () -> _repo.setUserIsActive(username, null));
+            IllegalGraphqlArgumentException.class, () -> _repo.setUserIsActive(username, false));
     assertEquals(
         "Cannot update active status of Okta user with unrecognized username", caught.getMessage());
   }
