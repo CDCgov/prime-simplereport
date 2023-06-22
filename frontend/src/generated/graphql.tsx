@@ -256,14 +256,7 @@ export type MutationAddUserArgs = {
 };
 
 export type MutationAddUserToCurrentOrgArgs = {
-  email?: InputMaybe<Scalars["String"]>;
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  name?: InputMaybe<NameInput>;
-  role?: InputMaybe<Role>;
-  suffix?: InputMaybe<Scalars["String"]>;
-  userInput?: InputMaybe<UserInput>;
+  userInput: UserInput;
 };
 
 export type MutationAdminUpdateOrganizationArgs = {
