@@ -548,9 +548,11 @@ describe("PendingOrganizationsContainer", () => {
       ).toBeInTheDocument();
       expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
       fireEvent.click(await screen.findByText("Delete", { exact: true }));
+
       await waitForElementToBeRemoved(() =>
         screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
       );
+
       await waitFor(() =>
         expect(
           screen.queryByText(
