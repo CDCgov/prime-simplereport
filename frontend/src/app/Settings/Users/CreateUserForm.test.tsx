@@ -61,6 +61,22 @@ describe("CreateUserForm", () => {
         ).toBeInTheDocument();
       });
     });
+    it("Testing facility access errors get cleared when access level is selected", async () => {
+      fireEvent.change(screen.getByLabelText("Access level *"), {
+        target: { value: "ENTRY_ONLY" },
+      });
+      fireEvent.click(screen.getByText("Send invite"));
+      await waitFor(() =>
+        screen.findByText("At least one facility must be selected")
+      );
+
+      fireEvent.change(screen.getByLabelText("Access level *"), {
+        target: { value: "ADMIN" },
+      });
+      expect(
+        screen.queryByText("At least one facility must be selected")
+      ).not.toBeInTheDocument();
+    });
   });
   describe("Close", () => {
     it("Clicking `Go back` runs the onClose", () => {

@@ -72,6 +72,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
     watch,
     formState: { errors, isSubmitting, isDirty },
     setValue,
+    clearErrors,
   } = useForm<CreateUser>({
     defaultValues: {
       firstName: "",
@@ -153,6 +154,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
                   "ALL_FACILITIES",
                   ...facilities.map((facility) => facility.id),
                 ]);
+                clearErrors("facilityIds");
               }
             },
           })}
