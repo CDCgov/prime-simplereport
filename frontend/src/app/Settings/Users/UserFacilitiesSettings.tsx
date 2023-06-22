@@ -33,15 +33,11 @@ const UserFacilitiesSettings: React.FC<UserFacilitiesSettingProps> = ({
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;
-    if (value === "ALL_FACILITIES") {
-      if (checked) {
-        if (setValue) {
-          setValue("facilityIds", [
-            "ALL_FACILITIES",
-            ...allFacilities.map((facility) => facility.id),
-          ]);
-        }
-      }
+    if (value === "ALL_FACILITIES" && checked && setValue) {
+      setValue("facilityIds", [
+        "ALL_FACILITIES",
+        ...allFacilities.map((facility) => facility.id),
+      ]);
     }
   };
 
