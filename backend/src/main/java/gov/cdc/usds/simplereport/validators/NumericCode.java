@@ -32,6 +32,7 @@ public @interface NumericCode {
    * SNOMED code.
    */
   public static final int MIN_DIGITS = 6;
+
   /**
    * The maximum length of a numeric code string. We believe this to be wildly generous, since as
    * far as we know SNOMED codes top out at 18 characters.
