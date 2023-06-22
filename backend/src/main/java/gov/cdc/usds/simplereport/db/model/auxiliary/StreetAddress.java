@@ -5,12 +5,12 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import org.hibernate.annotations.Type;
 import org.springframework.boot.context.properties.ConstructorBinding;
 

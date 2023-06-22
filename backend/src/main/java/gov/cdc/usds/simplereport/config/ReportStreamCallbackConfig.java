@@ -5,7 +5,7 @@ import gov.cdc.usds.simplereport.db.repository.ReportStreamResponseRepository;
 import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties;
 import gov.cdc.usds.simplereport.service.ConfiguredReportStreamCallbackService;
 import gov.cdc.usds.simplereport.service.ReportStreamCallbackService;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

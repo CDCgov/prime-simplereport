@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import org.hibernate.annotations.NaturalId;
 import org.springframework.boot.context.properties.ConstructorBinding;
 

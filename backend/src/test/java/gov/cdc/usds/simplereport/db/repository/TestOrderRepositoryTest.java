@@ -19,9 +19,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import jakarta.persistence.PersistenceException;
 import java.time.LocalDate;
 import java.util.List;
-import javax.persistence.PersistenceException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

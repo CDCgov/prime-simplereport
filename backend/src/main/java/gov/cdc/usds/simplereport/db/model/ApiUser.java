@@ -1,10 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 

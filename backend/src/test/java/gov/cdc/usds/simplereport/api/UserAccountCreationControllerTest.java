@@ -12,7 +12,7 @@ import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfigur
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
