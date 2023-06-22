@@ -230,16 +230,19 @@ const ManageUsers: React.FC<Props> = ({
       }
 
       const fullName = displayFullName(firstName, "", lastName);
-      showSuccess(
-        "They will receive an invitation to create an account at the email address provided",
-        `Invitation sent to ${fullName}`
-      );
-      updateShowAddUserModal(false);
+
       await getUsers();
       updateActiveUser({
         ...newUserInvite,
         id: addedUser,
       } as LimitedUser);
+
+      showSuccess(
+        "They will receive an invitation to create an account at the email address provided",
+        `Invitation sent to ${fullName}`
+      );
+      updateShowAddUserModal(false);
+
       setIsUpdating(false);
     } catch (e: any) {
       setIsUpdating(false);
@@ -338,14 +341,16 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowDeleteUserModal(false);
+
       const nextUser: LimitedUser =
         sortedUsers[0].id === userId && sortedUsers.length > 1
           ? sortedUsers[1]
           : sortedUsers[0];
+
+      await getUsers();
       updateActiveUser(nextUser);
       showSuccess("", `User account removed for ${fullName}`);
-      await getUsers();
+      updateShowDeleteUserModal(false);
     } catch (e: any) {
       setError(e);
     }
