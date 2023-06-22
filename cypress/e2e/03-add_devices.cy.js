@@ -75,10 +75,7 @@ describe("Adding covid only and multiplex devices", () => {
         facility = res.body.data.organization.facilities[0];
         })
       cy.intercept("POST", graphqlURL, (req) => {
-        aliasQuery(req, "getDeviceTypeList");
-        aliasQuery(req, "GetManagedFacilities");
-        aliasQuery(req, "GetFacilities");
-        aliasMutation(req, "UpdateFacility");
+        aliasGraphqlOperations(req);
       });
     });
 
