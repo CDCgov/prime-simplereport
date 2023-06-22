@@ -1,5 +1,6 @@
 import React from "react";
 import classnames from "classnames";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Provides one of four standard alert types.
@@ -63,13 +64,12 @@ const Alert = ({
     return "region";
   };
 
-  const id = `${getIdentifiedRole()}-${Date.now()}`;
-  const bodyId = `body-${getIdentifiedRole()}-${Date.now()}`;
+  const bodyId = uuidv4();
 
   return (
     <div
       className={classes}
-      id={id}
+      id={uuidv4()}
       role={getIdentifiedRole()}
       aria-label={title ? `Alert: ${title}` : undefined}
       aria-labelledby={title ? undefined : bodyId}
