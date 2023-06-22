@@ -636,6 +636,45 @@ describe("FacilityForm", () => {
 
         expect(saveFacility).toBeCalledTimes(0);
       });
+
+      it("suggests address validation for ordering provider when address provided", async () => {
+        render(
+          <MemoryRouter>
+            <FacilityForm
+              facility={validFacility}
+              deviceTypes={devices}
+              saveFacility={saveFacility}
+            />
+          </MemoryRouter>
+        );
+
+        const opStreetInput = screen.getAllByLabelText("Street address 1", {
+          exact: false,
+        })[1];
+        await act(
+          async () => await userEvent.type(opStreetInput, "432 Green Street")
+        );
+        const opCityInput = screen.getAllByLabelText("City", {
+          exact: false,
+        })[1];
+        await act(async () => await userEvent.type(opCityInput, "Englewood"));
+        const stateDropdownElement = screen.getByTestId("op-state-dropdown");
+        fireEvent.change(stateDropdownElement, { target: { value: "NJ" } });
+        const opZIPInput = screen.getAllByLabelText("ZIP code", {
+          exact: false,
+        })[1];
+        await act(async () => await userEvent.type(opZIPInput, "07026"));
+        await clickSaveButton();
+        await screen.findByText("Address validation");
+        expect(
+          screen.getByText(
+            "Please select an option for ordering provider address to continue:"
+          )
+        ).toBeInTheDocument();
+        expect(screen.getByText("432 Green Street")).toBeInTheDocument();
+        expect(screen.getByText("Englewood, NJ 07026")).toBeInTheDocument();
+        expect(suggestionIsCloseEnoughSpy).toBeCalledTimes(2);
+      });
     });
 
     describe("when validation is not required for state", () => {

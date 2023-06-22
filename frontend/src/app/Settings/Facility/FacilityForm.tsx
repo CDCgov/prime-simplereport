@@ -152,13 +152,19 @@ const FacilityForm: React.FC<Props> = (props) => {
     };
   };
 
-  const getOrderingProviderAddress = (
-    f: Nullable<Facility>
-  ): AddressWithMetaData | undefined => {
-    if (!f.orderingProvider) {
-      return undefined;
-    }
-
+  const getOrderingProviderAddress = (f: {
+    firstName: string | null;
+    middleName: string | null;
+    lastName: string | null;
+    suffix: string | null;
+    NPI: string | null;
+    street: string | null;
+    streetTwo: string | null;
+    city: string | null;
+    state: string;
+    zipCode: string | null;
+    phone: string | null;
+  }): AddressWithMetaData | undefined => {
     const addressFields: (keyof Facility["orderingProvider"])[] = [
       "street",
       "streetTwo",
@@ -167,16 +173,16 @@ const FacilityForm: React.FC<Props> = (props) => {
       "zipCode",
     ];
 
-    if (addressFields.every((el) => !f.orderingProvider?.[el]?.trim())) {
+    if (addressFields.every((el) => !f[el]?.trim())) {
       return undefined;
     }
 
     return {
-      street: f.orderingProvider.street || "",
-      streetTwo: f.orderingProvider.streetTwo,
-      city: f.orderingProvider.city,
-      state: f.orderingProvider.state || "",
-      zipCode: f.orderingProvider.zipCode || "",
+      street: f.street || "",
+      streetTwo: f.streetTwo,
+      city: f.city,
+      state: f.state || "",
+      zipCode: f.zipCode || "",
       county: "",
     };
   };
@@ -208,8 +214,9 @@ const FacilityForm: React.FC<Props> = (props) => {
     );
     let providerCloseEnough = true;
     let suggestedOrderingProviderAddress: AddressWithMetaData | undefined;
-    const originalOrderingProviderAddress =
-      getOrderingProviderAddress(facility);
+    const originalOrderingProviderAddress = getOrderingProviderAddress(
+      updatedValues.orderingProvider
+    );
     if (originalOrderingProviderAddress) {
       suggestedOrderingProviderAddress = await getBestSuggestion(
         originalOrderingProviderAddress

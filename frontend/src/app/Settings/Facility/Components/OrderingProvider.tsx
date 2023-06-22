@@ -184,6 +184,7 @@ const OrderingProvider: React.FC<Props> = ({
           options={stateCodes.map((c) => ({ label: c, value: c }))}
           defaultSelect
           className="usa-input--medium"
+          data-testid="op-state-dropdown"
         />
       </div>
     </fieldset>
