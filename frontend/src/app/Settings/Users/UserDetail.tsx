@@ -403,7 +403,6 @@ const UserDetail: React.FC<Props> = ({
           {displayYou()}
         </h2>
         <UserStatusSubheading user={user} />
-        <NoFacilityWarning user={user} />
       </div>
       <SpecialStatusNotice
         userStatus={user.status || ""}
@@ -413,6 +412,7 @@ const UserDetail: React.FC<Props> = ({
           updateShowResendUserActivationEmailModal
         }
       />
+      <NoFacilityWarning user={user} />
       <nav
         className="prime-secondary-nav margin-top-4 padding-bottom-0"
         aria-label="User action navigation"
