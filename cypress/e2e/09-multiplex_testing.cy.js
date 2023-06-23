@@ -68,7 +68,7 @@ describe("Testing with multiplex devices", () => {
     cy.checkA11y();
     cy.get(`div[data-testid="test-card-${patient.internalId}"]`).within(
       () => {
-        cy.get('select[name="testDevice"]').select(multiplexDeviceName);
+        cy.get('select[name="testDevice"]').select(multiplexDeviceName).should('have.text', multiplexDeviceName);;
         cy.get('button[type="submit"]').as("submitBtn");
         cy.get("@submitBtn").should("be.disabled");
         cy.get(".multiplex-result-form").contains("COVID-19");

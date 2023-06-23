@@ -51,7 +51,7 @@ describe("Conducting a COVID test", () => {
   });
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
-      cy.get('select[name="testDevice"]').select(covidOnlyDeviceName);
+      cy.get('select[name="testDevice"]').select(covidOnlyDeviceName).should('have.text', covidOnlyDeviceName);;
       cy.get('.prime-radios input[value="NEGATIVE"]+label').click();
       cy.get(".prime-test-result-submit button").last().click();
     });
