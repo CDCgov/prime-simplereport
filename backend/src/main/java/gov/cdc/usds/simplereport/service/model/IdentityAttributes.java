@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.service.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import jakarta.validation.constraints.NotNull;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 /**
  * A container for all the attributes we extract from our OIDC token (initially just the username
@@ -11,7 +10,6 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 public class IdentityAttributes extends PersonName {
   private String username;
 
-  @ConstructorBinding
   public IdentityAttributes(
       String username, String firstName, String middleName, String lastName, String suffix) {
     super(firstName, middleName, lastName, suffix);

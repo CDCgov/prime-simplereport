@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 /**
  * Bound configuration for the default demo user, and possibly more demo users in the future if we
@@ -30,7 +29,6 @@ public class DemoUserConfiguration {
     this(null, allUsers, null);
   }
 
-  @ConstructorBinding
   public DemoUserConfiguration(
       DemoUser defaultUser, List<DemoUser> alternateUsers, List<String> siteAdminEmails) {
     super();
@@ -64,7 +62,6 @@ public class DemoUserConfiguration {
     return siteAdminEmails;
   }
 
-  @ConstructorBinding
   public static class DemoUser {
     private DemoAuthorization authorization;
     private IdentityAttributes identity;
@@ -88,7 +85,6 @@ public class DemoUserConfiguration {
     }
   }
 
-  @ConstructorBinding
   public static class DemoAuthorization implements PermissionHolder {
     private String organizationExternalId;
     private Set<String> facilities;

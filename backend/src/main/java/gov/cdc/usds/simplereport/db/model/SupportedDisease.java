@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** A disease that SimpleReport supports testing for. */
 @Entity
@@ -27,7 +26,6 @@ public class SupportedDisease extends IdentifiedEntity {
   @OneToMany(mappedBy = "supportedDisease")
   private List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
 
-  @ConstructorBinding
   public SupportedDisease(String name, String loinc) {
     this();
     this.name = name;

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 /** The durable (and non-deletable) representation of a POC test device model. */
 @Entity
@@ -46,7 +45,6 @@ public class DeviceType extends EternalAuditedEntity {
     /* no-op for hibernate */
   }
 
-  @ConstructorBinding
   public DeviceType(String name, String manufacturer, String model, int testLength) {
     super();
     this.name = name;

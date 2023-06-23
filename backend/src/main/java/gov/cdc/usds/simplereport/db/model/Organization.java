@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.db.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import org.hibernate.annotations.NaturalId;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 @Entity
 public class Organization extends EternalAuditedEntity {
@@ -24,7 +23,6 @@ public class Organization extends EternalAuditedEntity {
     /* for hibernate */
   }
 
-  @ConstructorBinding
   public Organization(String orgName, String orgType, String externalId, boolean identityVerified) {
     this();
     this.organizationName = orgName;

@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 @Entity
 @Table(name = "organization_queue")
@@ -33,7 +32,6 @@ public class OrganizationQueueItem extends EternalAuditedEntity {
   @JoinColumn(name = "verified_organization_id")
   private Organization verifiedOrganization;
 
-  @ConstructorBinding
   public OrganizationQueueItem(
       String orgName, String externalId, OrganizationAccountRequest requestData) {
     this();

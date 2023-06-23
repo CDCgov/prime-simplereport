@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import org.springframework.boot.context.properties.ConstructorBinding;
 
 @Entity
 public class Provider extends EternalAuditedEntity implements PersonEntity, LocatedEntity {
@@ -24,7 +23,6 @@ public class Provider extends EternalAuditedEntity implements PersonEntity, Loca
     /* for hibernate */
   }
 
-  @ConstructorBinding
   public Provider(
       String firstName,
       String middleName,
