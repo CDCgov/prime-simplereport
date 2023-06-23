@@ -67,13 +67,7 @@ const Alert = ({
   const bodyId = uuidv4();
 
   return (
-    <div
-      className={classes}
-      id={uuidv4()}
-      role={getIdentifiedRole()}
-      aria-label={title ? `Alert: ${title}` : undefined}
-      aria-labelledby={title ? undefined : bodyId}
-    >
+    <div className={classes} id={uuidv4()} role={getIdentifiedRole()}>
       <div className="usa-alert__body">
         {title && <div className="usa-alert__heading text-bold">{title}</div>}
         <div id={bodyId} className="usa-alert__text">
