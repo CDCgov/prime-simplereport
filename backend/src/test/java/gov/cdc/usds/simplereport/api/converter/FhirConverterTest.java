@@ -516,7 +516,8 @@ class FhirConverterTest {
             "53342003",
             "Internal nose structure (body structure)",
             "id-123",
-            "uuid-123");
+            "uuid-123",
+            Date.from(Instant.parse("2023-06-22T16:38:00Z")));
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getIdentifierFirstRep().getValue()).isEqualTo("uuid-123");
@@ -532,17 +533,20 @@ class FhirConverterTest {
         .isEqualTo("53342003");
     assertThat(actual.getCollection().getBodySite().getText())
         .isEqualTo("Internal nose structure (body structure)");
+    assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
+        .isEqualTo("2023-06-22T16:38:00Z");
   }
 
   @Test
   void convertToSpecimen_Strings_null() {
-    var actual = fhirConverter.convertToSpecimen(null, null, null, null, null, null);
+    var actual = fhirConverter.convertToSpecimen(null, null, null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
     assertThat(actual.getType().getCoding()).isEmpty();
     assertThat(actual.getCollection().getBodySite().getText()).isNull();
     assertThat(actual.getCollection().getBodySite().getCoding()).isEmpty();
+    assertThat(actual.getCollection().getCollected()).isNull();
   }
 
   @Test
@@ -556,7 +560,9 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
-    var actual = fhirConverter.convertToSpecimen(specimenType, UUID.randomUUID());
+    var actual =
+        fhirConverter.convertToSpecimen(
+            specimenType, UUID.randomUUID(), Date.from(Instant.parse("2023-06-22T13:16:00.00Z")));
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getType().getCoding()).hasSize(1);
@@ -571,6 +577,8 @@ class FhirConverterTest {
         .isEqualTo("53342003");
     assertThat(actual.getCollection().getBodySite().getText())
         .isEqualTo("Internal nose structure (body structure)");
+    assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
+        .isEqualTo("2023-06-22T13:16:00.00Z");
   }
 
   @Test
@@ -579,7 +587,9 @@ class FhirConverterTest {
     SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
     ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToSpecimen(specimenType, UUID.randomUUID());
+    var actual =
+        fhirConverter.convertToSpecimen(
+            specimenType, UUID.randomUUID(), Date.from(Instant.parse("2023-06-22T15:35:00.00Z")));
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =

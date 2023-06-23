@@ -454,7 +454,8 @@ public class FhirConverter {
       String collectionCode,
       String collectionName,
       String id,
-      String identifier) {
+      String identifier,
+      Date collectionDate) {
     var specimen = new Specimen();
     specimen.setId(id);
     specimen.addIdentifier().setValue(identifier);
@@ -474,17 +475,24 @@ public class FhirConverter {
       codeableConcept.setText(collectionName);
     }
 
+    if (collectionDate != null) {
+      var collection = specimen.getCollection();
+      collection.setCollected(new DateTimeType(collectionDate).setTimeZoneZulu(true));
+    }
+
     return specimen;
   }
 
-  public Specimen convertToSpecimen(@NotNull SpecimenType specimenType, UUID specimenIdentifier) {
+  public Specimen convertToSpecimen(
+      @NotNull SpecimenType specimenType, UUID specimenIdentifier, Date collectionDate) {
     return convertToSpecimen(
         specimenType.getTypeCode(),
         specimenType.getName(),
         specimenType.getCollectionLocationCode(),
         specimenType.getCollectionLocationName(),
         specimenType.getInternalId().toString(),
-        specimenIdentifier.toString());
+        specimenIdentifier.toString(),
+        collectionDate);
   }
 
   public List<Observation> convertToObservation(
@@ -851,7 +859,8 @@ public class FhirConverter {
             .orderingFacility(null)
             .practitioner(convertToPractitioner(testEvent.getProviderData()))
             .device(convertToDevice(testEvent.getDeviceType()))
-            .specimen(convertToSpecimen(testEvent.getSpecimenType(), uuidGenerator.randomUUID()))
+            .specimen(
+                convertToSpecimen(testEvent.getSpecimenType(), uuidGenerator.randomUUID(), null))
             .resultObservations(
                 convertToObservation(
                     testEvent.getResults(),

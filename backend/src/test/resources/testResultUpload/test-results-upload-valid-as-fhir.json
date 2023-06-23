@@ -333,6 +333,9 @@
         ],
         "subject": {
           "reference": "Patient/1234"
+        },
+        "collection" : {
+          "collectedDateTime":"2021-12-20T14:00:00Z"
         }
       }
     },

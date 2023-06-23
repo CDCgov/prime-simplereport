@@ -130,25 +130,8 @@ public class BulkUploadResultsToFhir {
 
     var testEventId = row.getAccessionNumber().getValue();
 
-    LocalDateTime testResultDate;
-    TemporalAccessor temporalAccessorResultDate =
-        dateTimeFormatter.parseBest(
-            row.getTestResultDate().getValue(), LocalDateTime::from, LocalDate::from);
-    if (temporalAccessorResultDate instanceof LocalDateTime) {
-      testResultDate = (LocalDateTime) temporalAccessorResultDate;
-    } else {
-      testResultDate = ((LocalDate) temporalAccessorResultDate).atStartOfDay();
-    }
-
-    LocalDateTime orderTestDate;
-    TemporalAccessor temporalAccessorOrderDate =
-        dateTimeFormatter.parseBest(
-            row.getOrderTestDate().getValue(), LocalDateTime::from, LocalDate::from);
-    if (temporalAccessorOrderDate instanceof LocalDateTime) {
-      orderTestDate = (LocalDateTime) temporalAccessorOrderDate;
-    } else {
-      orderTestDate = ((LocalDate) temporalAccessorOrderDate).atStartOfDay();
-    }
+    Date testResultDate =
+        parseRowDateTimeValue(row.getTestResultDate().getValue(), dateTimeFormatter);
 
     var patientAddr =
         new StreetAddress(
@@ -313,7 +296,8 @@ public class BulkUploadResultsToFhir {
             null,
             null,
             uuidGenerator.randomUUID().toString(),
-            uuidGenerator.randomUUID().toString());
+            uuidGenerator.randomUUID().toString(),
+            parseRowDateTimeValue(row.getSpecimenCollectionDate().getValue(), dateTimeFormatter));
 
     var observation =
         List.of(
@@ -332,9 +316,7 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
-                    .issued(
-                        Date.from(
-                            testResultDate.atZone(zoneIdGenerator.getSystemZoneId()).toInstant()))
+                    .issued(testResultDate)
                     .build()));
 
     LocalDate symptomOnsetDate = null;
@@ -361,14 +343,14 @@ public class BulkUploadResultsToFhir {
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderLoinc,
             uuidGenerator.randomUUID().toString(),
-            Date.from(orderTestDate.atZone(zoneIdGenerator.getSystemZoneId()).toInstant()));
+            parseRowDateTimeValue(row.getOrderTestDate().getValue(), dateTimeFormatter));
 
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            Date.from(testResultDate.atZone(zoneIdGenerator.getSystemZoneId()).toInstant()),
+            testResultDate,
             dateGenerator.newDate());
 
     return fhirConverter.createFhirBundle(
@@ -432,5 +414,18 @@ public class BulkUploadResultsToFhir {
       default:
         return TestCorrectionStatus.ORIGINAL;
     }
+  }
+
+  private Date parseRowDateTimeValue(String val, DateTimeFormatter dateTimeFormatter) {
+    if (val == null || val.trim().isBlank()) return null;
+    LocalDateTime ldt;
+    TemporalAccessor temporalAccessor =
+        dateTimeFormatter.parseBest(val, LocalDateTime::from, LocalDate::from);
+    if (temporalAccessor instanceof LocalDateTime) {
+      ldt = (LocalDateTime) temporalAccessor;
+    } else {
+      ldt = ((LocalDate) temporalAccessor).atStartOfDay();
+    }
+    return Date.from(ldt.atZone(zoneIdGenerator.getSystemZoneId()).toInstant());
   }
 }
