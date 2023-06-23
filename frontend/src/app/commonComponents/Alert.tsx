@@ -1,5 +1,6 @@
 import React from "react";
 import classnames from "classnames";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Provides one of four standard alert types.
@@ -63,14 +64,10 @@ const Alert = ({
     return "region";
   };
 
-  const bodyId = crypto.randomUUID();
+  const bodyId = uuidv4();
 
   return (
-    <div
-      className={classes}
-      id={crypto.randomUUID()}
-      role={getIdentifiedRole()}
-    >
+    <div className={classes} id={uuidv4()} role={getIdentifiedRole()}>
       <div className="usa-alert__body">
         {title && <div className="usa-alert__heading text-bold">{title}</div>}
         <div id={bodyId} className="usa-alert__text">
