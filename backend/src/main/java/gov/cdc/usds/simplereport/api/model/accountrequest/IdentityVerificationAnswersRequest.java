@@ -14,6 +14,7 @@ public class IdentityVerificationAnswersRequest {
   @JsonProperty @NotNull private String orgExternalId;
   // experian session id from getting questions
   @JsonProperty @NotNull private String sessionId;
+
   // when serializing for logging, do not write the answers
   @JsonProperty(access = Access.WRITE_ONLY)
   @NotNull

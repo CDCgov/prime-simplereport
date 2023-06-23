@@ -238,6 +238,7 @@ public class PersonService {
         buildPersonSearchFilter(
             facilityId, includeArchived, namePrefixMatch, includeArchivedFacilities));
   }
+
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
     return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), false);

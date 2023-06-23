@@ -7,7 +7,7 @@ plugins {
     id 'jacoco'
     id 'org.sonarqube' version '4.0.0.2929'
     id 'com.gorylenko.gradle-git-properties' version '2.4.1'
-    id "com.diffplug.spotless" version "6.16.0"
+    id "com.diffplug.spotless" version "6.19.0"
 }
 
 group = 'gov.cdc.usds'
@@ -53,7 +53,7 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.14'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.0'
 
     // UI layer dependencies

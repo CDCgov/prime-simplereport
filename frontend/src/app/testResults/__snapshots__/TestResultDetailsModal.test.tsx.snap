@@ -16,7 +16,7 @@ Object {
         class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
       >
         <div
-          aria-label="Unsaved changes to current user"
+          aria-label="Result details for First Middle Last"
           aria-modal="true"
           class="ReactModal__Content"
           role="dialog"
@@ -28,6 +28,7 @@ Object {
           >
             <h1
               class="font-heading-lg margin-top-05 margin-bottom-0"
+              id="result-detail-title"
             >
               Result details
             </h1>
@@ -66,6 +67,7 @@ Object {
                 Name
               </span>
               <span
+                aria-describedby="result-detail-title"
                 class="font-sans-lg"
               >
                 First Middle Last
@@ -80,6 +82,7 @@ Object {
                 Date of birth
               </span>
               <span
+                aria-describedby="result-detail-title"
                 class="font-sans-lg"
               >
                 08/07/1990
@@ -222,7 +225,7 @@ Object {
       class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
     >
       <div
-        aria-label="Unsaved changes to current user"
+        aria-label="Result details for First Middle Last"
         aria-modal="true"
         class="ReactModal__Content"
         role="dialog"
@@ -234,6 +237,7 @@ Object {
         >
           <h1
             class="font-heading-lg margin-top-05 margin-bottom-0"
+            id="result-detail-title"
           >
             Result details
           </h1>
@@ -272,6 +276,7 @@ Object {
               Name
             </span>
             <span
+              aria-describedby="result-detail-title"
               class="font-sans-lg"
             >
               First Middle Last
@@ -286,6 +291,7 @@ Object {
               Date of birth
             </span>
             <span
+              aria-describedby="result-detail-title"
               class="font-sans-lg"
             >
               08/07/1990
@@ -484,7 +490,7 @@ Object {
         class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
       >
         <div
-          aria-label="Unsaved changes to current user"
+          aria-label="Result details for First Middle Last"
           aria-modal="true"
           class="ReactModal__Content"
           role="dialog"
@@ -496,6 +502,7 @@ Object {
           >
             <h1
               class="font-heading-lg margin-top-05 margin-bottom-0"
+              id="result-detail-title"
             >
               Result details
             </h1>
@@ -534,6 +541,7 @@ Object {
                 Name
               </span>
               <span
+                aria-describedby="result-detail-title"
                 class="font-sans-lg"
               >
                 First Middle Last
@@ -548,6 +556,7 @@ Object {
                 Date of birth
               </span>
               <span
+                aria-describedby="result-detail-title"
                 class="font-sans-lg"
               >
                 08/07/1990
@@ -666,7 +675,7 @@ Object {
       class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
     >
       <div
-        aria-label="Unsaved changes to current user"
+        aria-label="Result details for First Middle Last"
         aria-modal="true"
         class="ReactModal__Content"
         role="dialog"
@@ -678,6 +687,7 @@ Object {
         >
           <h1
             class="font-heading-lg margin-top-05 margin-bottom-0"
+            id="result-detail-title"
           >
             Result details
           </h1>
@@ -716,6 +726,7 @@ Object {
               Name
             </span>
             <span
+              aria-describedby="result-detail-title"
               class="font-sans-lg"
             >
               First Middle Last
@@ -730,6 +741,7 @@ Object {
               Date of birth
             </span>
             <span
+              aria-describedby="result-detail-title"
               class="font-sans-lg"
             >
               08/07/1990

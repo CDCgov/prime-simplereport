@@ -144,7 +144,7 @@ public class LiveOktaRepository implements OktaRepository {
             .stream();
     var qResults =
         _client.listGroups(generateGroupOrgPrefix(organizationExternalId), null, null).stream();
-    var orgGroups = Stream.concat(searchResults, qResults).distinct().collect(Collectors.toList());
+    var orgGroups = Stream.concat(searchResults, qResults).distinct().toList();
     throwErrorIfEmpty(
         orgGroups.stream(),
         String.format(
@@ -317,17 +317,8 @@ public class LiveOktaRepository implements OktaRepository {
 
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
-    var searchUserStream =
-        _client.listUsers(null, null, generateLoginSearchTerm(username), null, null).stream();
-    var qUserStream = _client.listUsers(username, null, null, null, null).stream();
-    var userStream = Stream.concat(searchUserStream, qUserStream).distinct();
     User user =
-        userStream
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException(
-                        "Cannot update role of Okta user with unrecognized username"));
+        getUserOrThrowError(username, "Cannot update role of Okta user with unrecognized username");
 
     String orgId = org.getExternalId();
 
@@ -417,7 +408,7 @@ public class LiveOktaRepository implements OktaRepository {
     user.resetFactors();
   }
 
-  public void setUserIsActive(String username, Boolean active) {
+  public void setUserIsActive(String username, boolean active) {
     UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
         users.stream(), "Cannot update active status of Okta user with unrecognized username");
@@ -431,11 +422,9 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public UserStatus getUserStatus(String username) {
-    UserList users = _client.listUsers(null, null, generateLoginSearchTerm(username), null, null);
-    throwErrorIfEmpty(
-        users.stream(), "Cannot retrieve Okta user's status with unrecognized username");
-    User user = users.single();
-    return user.getStatus();
+    return getUserOrThrowError(
+            username, "Cannot retrieve Okta user's status with unrecognized username")
+        .getStatus();
   }
 
   public void reactivateUser(String username) {
@@ -573,18 +562,8 @@ public class LiveOktaRepository implements OktaRepository {
       return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
     }
 
-    var searchUserStream =
-        _client.listUsers(null, null, generateLoginSearchTerm(username), null, null).stream();
-    var qUserStream = _client.listUsers(username, null, null, null, null).stream();
-    var userStream = Stream.concat(searchUserStream, qUserStream).distinct();
-    User user =
-        userStream
-            .findFirst()
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException(
-                        "Cannot get org external ID for nonexistent user"));
-    return getOrganizationRoleClaimsForUser(user);
+    return getOrganizationRoleClaimsForUser(
+        getUserOrThrowError(username, "Cannot get org external ID for nonexistent user"));
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
@@ -650,5 +629,16 @@ public class LiveOktaRepository implements OktaRepository {
     if (stream.findAny().isEmpty()) {
       throw new IllegalGraphqlArgumentException(errorMessage);
     }
+  }
+
+  private User getUserOrThrowError(String username, String errorMessage) {
+    var searchUsersStream =
+        _client.listUsers(null, null, generateLoginSearchTerm(username), null, null).stream();
+    var user = searchUsersStream.findFirst();
+    if (user.isEmpty()) {
+      var qUsersStream = _client.listUsers(username, null, null, null, null).stream();
+      user = qUsersStream.filter(u -> u.getProfile().getLogin().equals(username)).findFirst();
+    }
+    return user.orElseThrow(() -> new IllegalGraphqlArgumentException(errorMessage));
   }
 }
