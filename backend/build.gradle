@@ -42,8 +42,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
     // Security Pins (Sept 2022)
-    // todo: remove version
-    implementation 'org.yaml:snakeyaml:1.33'
+    implementation 'org.yaml:snakeyaml'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -77,18 +76,15 @@ dependencies {
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
 
-    // todo: remove version
     // SendGrid for Email
-    implementation 'com.sendgrid:sendgrid-java:4.9.3'
-    implementation 'com.sendgrid:sendgrid-java:4.9.3'
+    implementation 'com.sendgrid:sendgrid-java'
+    implementation 'com.sendgrid:sendgrid-java'
 
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
-    // todo: remove version
     // JPA Hibernate static metamodel generation
-    implementation 'org.hibernate.orm:hibernate-jpamodelgen:6.2.1.Final'
-    annotationProcessor 'org.hibernate:hibernate-jpamodelgen:6.2.1.Final'
+    implementation 'org.hibernate.orm:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
     implementation 'com.graphql-java:graphql-java-extended-validation:18.1-hibernate-validator-6.2.0.Final'
@@ -98,8 +94,7 @@ dependencies {
     implementation 'com.azure:azure-storage-queue:12.17.1'
 
     // RandomStringUtils to generate PatientSelfRegistrationLink
-    // todo: remove version
-    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.apache.commons:commons-lang3'
 
     // Shedlock for scheduler synchronization
     implementation 'net.javacrumbs.shedlock:shedlock-core:4.42.0'
