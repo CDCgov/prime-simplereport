@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,7 +28,7 @@ public class TestResultUpload extends AuditedEntity {
   @Column private UUID reportId;
 
   @Column
-  @Type(type = "pg_enum")
+  @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private UploadStatus status;
 

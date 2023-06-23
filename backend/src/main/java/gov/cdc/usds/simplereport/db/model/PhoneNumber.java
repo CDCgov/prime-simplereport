@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -22,7 +23,7 @@ public class PhoneNumber extends AuditedEntity {
   private Person person;
 
   @Enumerated(EnumType.STRING)
-  @Type(type = "pg_enum")
+  @Type(PostgreSQLEnumType.class)
   @Column
   private PhoneType type;
 

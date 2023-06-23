@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -37,14 +38,14 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 
   @Deprecated
   @Column(nullable = true)
-  @Type(type = "pg_enum")
+  @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private TestResult result;
 
   @Column private Date dateTestedBackdate;
 
   @Column
-  @Type(type = "pg_enum")
+  @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private TestCorrectionStatus correctionStatus;
 

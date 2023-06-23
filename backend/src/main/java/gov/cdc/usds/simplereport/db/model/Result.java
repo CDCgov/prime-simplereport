@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SupportedDiseaseTestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,7 +43,7 @@ public class Result extends EternalAuditedEntity {
   private String resultSNOMED;
 
   @Column(name = "test_result", nullable = false)
-  @Type(type = "pg_enum")
+  @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private TestResult testResult;
 

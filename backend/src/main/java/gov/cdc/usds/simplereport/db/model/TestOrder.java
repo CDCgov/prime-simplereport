@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,7 +41,7 @@ public class TestOrder extends BaseTestInfo {
   @Column private LocalDate dateTested; // REMOVE THIS COLUMN
 
   @Column(nullable = false)
-  @Type(type = "pg_enum")
+  @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;
 
