@@ -15,7 +15,6 @@ type InputProps = JSX.IntrinsicElements["input"];
 type Checkbox = CheckboxProps & InputProps;
 interface Props {
   boxes: Checkbox[];
-  checkedValues?: { [key: string]: boolean | undefined };
   legend: React.ReactNode;
   legendSrOnly?: boolean;
   name: string;
@@ -33,7 +32,6 @@ const Checkboxes = (props: Props) => {
     boxes,
     name,
     legend,
-    checkedValues = {},
     onChange,
     legendSrOnly,
     validationStatus,
@@ -75,7 +73,7 @@ const Checkboxes = (props: Props) => {
                   <div className="usa-checkbox" key={uid(i)}>
                     <input
                       className="usa-checkbox__input"
-                      checked={checked || checkedValues?.[value] || false}
+                      checked={checked}
                       id={uid(i)}
                       onChange={onChange}
                       type="checkbox"
