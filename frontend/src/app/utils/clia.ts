@@ -1,8 +1,6 @@
-import { states, noCLIAValidationStates } from "../../config/constants";
+import { noCLIAValidationStates } from "../../config/constants";
 
-export function stateRequiresCLIANumberValidation(
-  state: keyof typeof states
-): boolean {
+export function stateRequiresCLIANumberValidation(state: string): boolean {
   return !noCLIAValidationStates.includes(state);
 }
 

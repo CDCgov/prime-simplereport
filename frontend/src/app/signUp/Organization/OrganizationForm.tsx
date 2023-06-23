@@ -13,6 +13,8 @@ import {
   organizationCreationSteps,
   stateCodes,
   liveJurisdictions,
+  FORM_ERROR_MSG,
+  FORM_ERROR_TITLE,
 } from "../../../config/constants";
 import Select from "../../commonComponents/Select";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
@@ -101,10 +103,7 @@ const OrganizationForm = () => {
     }
     setErrors(validation.errors);
     focusOnce.current = true;
-    showError(
-      "Please check the form to make sure you complete all of the required fields.",
-      "Form Errors"
-    );
+    showError(FORM_ERROR_MSG, FORM_ERROR_TITLE);
     setLoading(false);
   };
   /**
