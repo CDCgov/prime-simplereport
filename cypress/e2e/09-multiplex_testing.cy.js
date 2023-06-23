@@ -1,4 +1,4 @@
-import {aliasMutation, aliasQuery} from "../utils/graphql-test-utils";
+import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
 import {loginHooks} from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
 
@@ -36,10 +36,7 @@ describe("Testing with multiplex devices", () => {
 
   beforeEach(() => {
     cy.intercept("POST", graphqlURL, (req) => {
-      aliasQuery(req, "GetFacilityQueue");
-      aliasQuery(req, "GetPatientsByFacilityForQueue");
-      aliasQuery(req, "EditQueueItem");
-      aliasMutation(req, "SubmitQueueItem");
+      aliasGraphqlOperations(req)
     });
 
     // remove a test for the patient if it exists
@@ -53,11 +50,11 @@ describe("Testing with multiplex devices", () => {
 
   it("test patient", () => {
     cy.visit(`/queue?facility=${facility.id}`);
-    cy.wait("@gqlGetFacilityQueueQuery");
+    cy.wait("@GetFacilityQueue");
     cy.get('input[id="search-field-small"]').type(
       `${patient.lastName}, ${patient.firstName}`
     );
-    cy.wait("@gqlGetPatientsByFacilityForQueueQuery");
+    cy.wait("@GetPatientsByFacilityForQueue");
     cy.contains("Begin test").click();
     cy.get('button[id="aoe-form-save-button"]').click();
     cy.get(".Toastify").contains(`${patient.lastName}, ${patient.firstName}`);
@@ -81,13 +78,13 @@ describe("Testing with multiplex devices", () => {
           .should("not.be.checked")
           .siblings("label")
           .click();
-        cy.wait("@gqlEditQueueItemQuery");
-        cy.wait("@gqlGetFacilityQueueQuery");
+        cy.wait("@EditQueueItem");
+        cy.wait("@GetFacilityQueue");
         cy.get("@submitBtn").should("be.enabled").click();
       }
     );
     cy.contains("Submit anyway").click();
-    cy.wait("@gqlSubmitQueueItemMutation");
-    cy.wait("@gqlGetFacilityQueueQuery");
+    cy.wait("@SubmitQueueItem");
+    cy.wait("@GetFacilityQueue");
   });
 });
