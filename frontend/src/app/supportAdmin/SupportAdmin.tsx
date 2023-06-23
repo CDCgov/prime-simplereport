@@ -61,20 +61,20 @@ const SupportAdmin = () => {
                     </li>
                   </ul>
                 </div>
-                <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
-                  <h2 className="font-heading-md margin-bottom-0 margin-top-2">
-                    Beta
-                  </h2>
-                  <ul className="usa-list padding-left-2">
-                    {hivEnabled && (
+                {hivEnabled && (
+                  <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
+                    <h2 className="font-heading-md margin-bottom-0 margin-top-2">
+                      Beta
+                    </h2>
+                    <ul className="usa-list padding-left-2">
                       <li>
                         <LinkWithQuery to="/admin/hiv-csv-upload">
                           Beta - HIV CSV Upload
                         </LinkWithQuery>
                       </li>
-                    )}
-                  </ul>
-                </div>
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
           </div>
