@@ -47,7 +47,6 @@ const Template: Story<Props> = (args) => {
         onChange={(e) =>
           setFruits({ ...fruits, [e.target.value]: e.target.checked })
         }
-        checkedValues={fruits}
       />
     </div>
   );
