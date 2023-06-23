@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -40,11 +41,11 @@ public class TestResultUpload extends AuditedEntity {
   private Organization organization;
 
   @Column()
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private FeedbackMessage[] warnings;
 
   @Column()
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private FeedbackMessage[] errors;
 
   protected TestResultUpload() {}

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -35,15 +36,15 @@ import org.hibernate.annotations.Type;
 @Slf4j
 public class TestEvent extends BaseTestInfo {
   @Column
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private Person patientData;
 
   @Column
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private Provider providerData;
 
   @Column
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private AskOnEntrySurvey surveyData;
 
   @JsonIgnore

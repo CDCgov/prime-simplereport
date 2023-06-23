@@ -9,15 +9,8 @@
             value = "org.hibernate.id.uuid.CustomVersionOneStrategy")
       })
 })
-@TypeDefs({
-  @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class),
-})
 package gov.cdc.usds.simplereport.db.model;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.GenericGenerators;
 import org.hibernate.annotations.Parameter;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
-
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;

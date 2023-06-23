@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,7 +26,7 @@ public class OrganizationQueueItem extends EternalAuditedEntity {
   private String externalId;
 
   @Column(nullable = false)
-  @Type(type = "jsonb")
+  @Type(JsonBinaryType.class)
   private OrganizationAccountRequest requestData;
 
   @OneToOne(optional = true, fetch = FetchType.LAZY)
