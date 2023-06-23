@@ -14,9 +14,12 @@ const mockedUuids = [
   "0d33f293-ed86-4fc4-ad87-222222222222",
 ];
 let mockUuidIndex = 0;
-jest.mock("uuid", () => ({
-  v4: () => mockedUuids[mockUuidIndex++ % mockedUuids.length],
-}));
+
+Object.defineProperty(globalThis, "crypto", {
+  value: {
+    randomUUID: () => mockedUuids[mockUuidIndex++ % mockedUuids.length],
+  },
+});
 
 describe("SRToastContainer", () => {
   beforeEach(() => {
