@@ -122,9 +122,17 @@ public class AddressValidationService {
   }
 
   /** Returns ZoneId of the address or null if not found. */
-  public ZoneId getZoneIdByAddress(
-      String street1, String street2, String city, String state, String postalCode) {
-    Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
+  public ZoneId getZoneIdByAddress(StreetAddress address) {
+    if (address == null) {
+      return null;
+    }
+    Lookup lookup =
+        getStrictLookup(
+            address.getStreetOne(),
+            address.getStreetTwo(),
+            address.getCity(),
+            address.getState(),
+            address.getPostalCode());
     return getZoneIdByLookup(lookup);
   }
 
@@ -132,8 +140,8 @@ public class AddressValidationService {
     TimezoneInfo timezoneInfo = null;
     try {
       timezoneInfo = getTimezoneInfoByLookup(lookup);
-    } catch (InvalidAddressException exception) {
-      log.error("Unable to find timezone by testing lab address");
+    } catch (InvalidAddressException | IllegalGraphqlArgumentException exception) {
+      log.error("Unable to find timezone by testing lab address", exception);
     }
     if (timezoneInfo == null) {
       return null;

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConverter.FALLBACK_TIME_ZONE_ID;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
@@ -31,7 +32,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.TemporalAccessor;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -60,6 +60,8 @@ public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
   private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
   private final AddressValidationService addressValidationService;
   private final GitProperties gitProperties;
@@ -128,40 +130,49 @@ public class BulkUploadResultsToFhir {
         .collect(Collectors.toList());
   }
 
-  private ZonedDateTime getZonedTestResultDate(
-      TestResultRow row, DateTimeFormatter dateTimeFormatter) {
-    LocalDateTime testResultDateTime;
-    TemporalAccessor temporalAccessor =
-        dateTimeFormatter.parseBest(
-            row.getTestResultDate().getValue(), LocalDateTime::from, LocalDate::from);
+  public LocalDateTime parseToLocalDateTime(String value, DateTimeFormatter dateTimeFormatter) {
+    LocalDateTime localDateTime;
+    var temporalAccessor = dateTimeFormatter.parseBest(value, LocalDateTime::from, LocalDate::from);
     if (temporalAccessor instanceof LocalDateTime) {
-      testResultDateTime = (LocalDateTime) temporalAccessor;
+      localDateTime = (LocalDateTime) temporalAccessor;
     } else {
-      testResultDateTime = ((LocalDate) temporalAccessor).atStartOfDay();
+      localDateTime = ((LocalDate) temporalAccessor).atStartOfDay();
     }
+    return localDateTime;
+  }
 
-    // Attempt to get the specific timezone of the data
-    ZoneId localZoneId =
-        addressValidationService.getZoneIdByAddress(
+  public ZonedDateTime getZonedDateTimeByAddress(
+      LocalDateTime localDateTime, StreetAddress address) {
+    ZoneId localZoneId = addressValidationService.getZoneIdByAddress(address);
+    if (localZoneId == null) {
+      localZoneId = FALLBACK_TIME_ZONE_ID;
+    }
+    return ZonedDateTime.of(localDateTime, localZoneId);
+  }
+
+  /**
+   * @param row the test result row
+   * @return the test result date with time zone info based on the testing lab address. If the
+   *     address cannot be validated, default time zone used is {@link
+   *     FhirConverter#FALLBACK_TIME_ZONE_ID}
+   */
+  private ZonedDateTime getTestResultZonedDateTime(TestResultRow row) {
+    var localDateTime =
+        parseToLocalDateTime(row.getTestResultDate().getValue(), DATE_TIME_FORMATTER);
+    var testingLabAddress =
+        new StreetAddress(
             row.getTestingLabStreet().getValue(),
             row.getTestingLabStreet2().getValue(),
             row.getTestingLabCity().getValue(),
             row.getTestingLabState().getValue(),
-            row.getTestingLabZipCode().getValue());
-
-    // If specific timezone is not found, use UTC by default
-    if (localZoneId == null) {
-      localZoneId = ZoneId.of("UTC");
-    }
-
-    return ZonedDateTime.of(testResultDateTime, localZoneId);
+            row.getTestingLabZipCode().getValue(),
+            null);
+    return getZonedDateTimeByAddress(localDateTime, testingLabAddress);
   }
 
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
-
     var testEventId = row.getAccessionNumber().getValue();
-    var testResultDateTime = getZonedTestResultDate(row, dateTimeFormatter);
+    var testResultZonedDate = getTestResultZonedDateTime(row);
 
     var patientAddr =
         new StreetAddress(
@@ -210,7 +221,7 @@ public class BulkUploadResultsToFhir {
                 .phoneNumbers(patientPhoneNumbers)
                 .emails(patientEmails)
                 .gender(row.getPatientGender().getValue())
-                .dob(LocalDate.parse(row.getPatientDob().getValue(), dateTimeFormatter))
+                .dob(LocalDate.parse(row.getPatientDob().getValue(), DATE_TIME_FORMATTER))
                 .address(patientAddr)
                 .country(DEFAULT_COUNTRY)
                 .race(row.getPatientRace().getValue())
@@ -345,14 +356,15 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
-                    .issued(Date.from(testResultDateTime.toInstant()))
+                    .issued(Date.from(testResultZonedDate.toInstant()))
                     .build()));
 
     LocalDate symptomOnsetDate = null;
     if (row.getIllnessOnsetDate().getValue() != null
         && !row.getIllnessOnsetDate().getValue().trim().isBlank()) {
       try {
-        symptomOnsetDate = LocalDate.parse(row.getIllnessOnsetDate().getValue(), dateTimeFormatter);
+        symptomOnsetDate =
+            LocalDate.parse(row.getIllnessOnsetDate().getValue(), DATE_TIME_FORMATTER);
       } catch (DateTimeParseException e) {
         // empty values for optional fields come through as empty strings, not null
         log.error("Unable to parse date from CSV.");
@@ -378,7 +390,7 @@ public class BulkUploadResultsToFhir {
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            Date.from(testResultDateTime.toInstant()),
+            testResultZonedDate,
             dateGenerator.newDate());
 
     return fhirConverter.createFhirBundle(

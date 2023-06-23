@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
@@ -34,6 +35,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -90,6 +94,7 @@ class FhirConverterTest {
   private static final String tribalSystemUrl =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String snomedCode = "http://snomed.info/sct";
+  public static final ZoneId DEFAULT_TIME_ZONE_ID = ZoneId.of("US/Eastern");
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
 
@@ -950,7 +955,8 @@ class FhirConverterTest {
     expectedSerialized =
         expectedSerialized.replace(
             "$EFFECTIVE_DATE_TIME_TESTED",
-            new DateTimeType(date).setTimeZoneZulu(true).getValueAsString());
+            new DateTimeType(date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("US/Eastern"))
+                .getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
@@ -958,11 +964,16 @@ class FhirConverterTest {
   @Test
   void convertToDiagnosticReport_Strings_valid() {
     var date = new Date();
+    var zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), DEFAULT_TIME_ZONE_ID);
     var expectedDateTimeType =
-        (DateTimeType) new DateTimeType(Date.from(date.toInstant())).setTimeZoneZulu(true);
+        (DateTimeType)
+            new DateTimeType(
+                Date.from(zonedDateTime.toInstant()),
+                TemporalPrecisionEnum.SECOND,
+                TimeZone.getTimeZone(DEFAULT_TIME_ZONE_ID));
     var actual =
         fhirConverter.convertToDiagnosticReport(
-            DiagnosticReportStatus.FINAL, "95422-2", "id-123", date, date);
+            DiagnosticReportStatus.FINAL, "95422-2", "id-123", zonedDateTime, date);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -1478,6 +1489,12 @@ class FhirConverterTest {
     expectedSerialized =
         expectedSerialized.replace(
             "$EFFECTIVE_DATE_TIME_TESTED",
+            new DateTimeType(
+                    dateTested, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("US/Eastern"))
+                .getValueAsString());
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$ISSUED_DATE_TIME",
             new DateTimeType(dateTested).setTimeZoneZulu(true).getValueAsString());
     expectedSerialized =
         expectedSerialized.replace("$PROVENANCE_RECORDED_DATE", date.toInstant().toString());

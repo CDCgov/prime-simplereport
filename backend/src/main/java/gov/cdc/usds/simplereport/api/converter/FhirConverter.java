@@ -55,10 +55,12 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -66,6 +68,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -125,6 +128,8 @@ public class FhirConverter {
   private final UUIDGenerator uuidGenerator;
 
   private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
+  public static final ZoneId FALLBACK_TIME_ZONE_ID = ZoneId.of("US/Eastern");
+  private final AddressValidationService addressValidationService;
 
   public HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(
@@ -211,6 +216,27 @@ public class FhirConverter {
 
   public Date convertToDate(@NotNull LocalDate date) {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+  }
+
+  /**
+   * @param zonedDateTime the date time with a time zone, not null
+   * @param temporalPrecisionEnum precision of the date time, defaults to {@code
+   *     TemporalPrecisionEnum.MINUTE}
+   * @return the DateTimeType object created from the Instant of the ZonedDateTime and its time zone
+   *     offset
+   */
+  public DateTimeType convertToDateTimeType(
+      @NotNull ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
+    if (zonedDateTime == null) {
+      return null;
+    }
+    if (temporalPrecisionEnum == null) {
+      temporalPrecisionEnum = TemporalPrecisionEnum.SECOND;
+    }
+    return new DateTimeType(
+        Date.from(zonedDateTime.toInstant()),
+        temporalPrecisionEnum,
+        TimeZone.getTimeZone(zonedDateTime.getZone()));
   }
 
   public Address convertToAddress(@NotNull StreetAddress address, String country) {
@@ -786,11 +812,21 @@ public class FhirConverter {
               testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
     }
 
+    ZonedDateTime dateTested = null;
+    if (testEvent.getDateTested() != null) {
+      var zoneId =
+          addressValidationService.getZoneIdByAddress(testEvent.getFacility().getAddress());
+      if (zoneId == null) {
+        zoneId = FALLBACK_TIME_ZONE_ID;
+      }
+      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), zoneId);
+    }
+
     return convertToDiagnosticReport(
         status,
         code,
         Objects.toString(testEvent.getInternalId(), ""),
-        testEvent.getDateTested(),
+        dateTested,
         testEvent.getUpdatedAt());
   }
 
@@ -805,11 +841,15 @@ public class FhirConverter {
    * @return DiagnosticReport
    */
   public DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code, String id, Date dateTested, Date dateUpdated) {
+      DiagnosticReportStatus status,
+      String code,
+      String id,
+      ZonedDateTime dateTested,
+      Date dateUpdated) {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(new DateTimeType(dateTested).setTimeZoneZulu(true))
+            .setEffective(convertToDateTimeType(dateTested, null))
             .setIssued(dateUpdated);
 
     diagnosticReport.getIssuedElement().setTimeZoneZulu(true);

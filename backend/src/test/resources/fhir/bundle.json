@@ -451,7 +451,7 @@
             }
           ]
         },
-        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
+        "issued": "$ISSUED_DATE_TIME"
       }
     },
     {
@@ -524,7 +524,7 @@
             }
           ]
         },
-        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
+        "issued": "$ISSUED_DATE_TIME"
       }
     },
     {
@@ -597,7 +597,7 @@
             }
           ]
         },
-        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
+        "issued": "$ISSUED_DATE_TIME"
       }
     },
     {

@@ -63,7 +63,7 @@ public class BulkUploadResultsToFhirTest {
   @BeforeEach
   public void beforeEach() {
     resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
-    FhirConverter fhirConverter = new FhirConverter(uuidGenerator);
+    FhirConverter fhirConverter = new FhirConverter(uuidGenerator, addressValidationService);
     sut =
         new BulkUploadResultsToFhir(
             resultsUploaderDeviceValidationService,
@@ -205,8 +205,8 @@ public class BulkUploadResultsToFhirTest {
     when(mockedDateGenerator.newDate()).thenReturn(date);
 
     // Mock timezone retrieval from address
-    when(addressValidationService.getZoneIdByAddress(any(), any(), any(), any(), any()))
-        .thenReturn(ZoneId.of("US/Central"));
+    var mockedZoneId = ZoneId.of("US/Central");
+    when(addressValidationService.getZoneIdByAddress(any())).thenReturn(mockedZoneId);
 
     when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
@@ -218,7 +218,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator));
+            new FhirConverter(mockedUUIDGenerator, addressValidationService));
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
