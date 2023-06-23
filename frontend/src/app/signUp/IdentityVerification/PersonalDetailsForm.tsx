@@ -7,6 +7,8 @@ import { showError } from "../../utils/srToast";
 import { isFormValid, isFieldValid } from "../../utils/yupHelpers";
 import Input from "../../commonComponents/Input";
 import {
+  FORM_ERROR_MSG,
+  FORM_ERROR_TITLE,
   organizationCreationSteps,
   stateCodes,
 } from "../../../config/constants";
@@ -84,10 +86,7 @@ const PersonalDetailsForm = ({
     }
     setErrors(validation.errors);
     focusOnce.current = true;
-    showError(
-      "Please check the form to make sure you complete all of the required fields.",
-      "Form Errors"
-    );
+    showError(FORM_ERROR_MSG, FORM_ERROR_TITLE);
     setSaving(false);
   };
 

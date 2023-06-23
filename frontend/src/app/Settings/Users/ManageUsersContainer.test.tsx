@@ -5,6 +5,7 @@ import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
   render,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import configureStore from "redux-mock-store";
@@ -142,7 +143,14 @@ describe("ManageUsersContainer", () => {
   it("loads the component and displays users successfully", async () => {
     const { container } = renderComponentWithMocks(mocks, store);
     await waitForElementToBeRemoved(screen.queryByText("Loading..."));
-    await screen.findByText(/barnes, ben billy/i);
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("heading", {
+          level: 2,
+          description: /barnes, ben billy/i,
+        })
+      )
+    );
     await screen.findByText(/ben@example.com/i);
     expect(container).toMatchSnapshot();
     expect(document.title).toEqual("Manage users | SimpleReport");
