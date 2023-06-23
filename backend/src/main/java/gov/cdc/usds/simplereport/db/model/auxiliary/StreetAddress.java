@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @Embeddable
 public class StreetAddress {
 
-  @Type(type = "list-array")
+  @Type(ListArrayType.class)
   @Column
   private List<String> street = new ArrayList<>();
 

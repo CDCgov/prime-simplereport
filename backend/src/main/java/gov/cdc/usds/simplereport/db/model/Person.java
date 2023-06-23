@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -84,7 +85,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Column private String email;
 
-  @Type(type = "list-array")
+  @Type(ListArrayType.class)
   @Column
   private List<String> emails = new ArrayList<>();
 
