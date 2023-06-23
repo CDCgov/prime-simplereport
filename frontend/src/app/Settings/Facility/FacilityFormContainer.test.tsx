@@ -18,7 +18,7 @@ import {
 } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 
-import { Props as FacilityFormProps } from "./FacilityForm";
+import { FacilityFormData, Props as FacilityFormProps } from "./FacilityForm";
 import FacilityFormContainer from "./FacilityFormContainer";
 
 export const deviceTypes: FacilityFormDeviceType[] = [
@@ -44,6 +44,34 @@ const mockFacility: Facility = {
   phone: "(516) 432-1390",
   email: "testingsite@disorg.com",
   deviceTypes,
+  orderingProvider: {
+    firstName: "Fred",
+    middleName: null,
+    lastName: "Flintstone",
+    suffix: null,
+    NPI: "PEBBLES",
+    street: "123 Main Street",
+    streetTwo: "",
+    city: "Oz",
+    state: "KS",
+    zipCode: "12345",
+    phone: "(202) 555-1212",
+  },
+};
+
+const mockFacilityFormData: FacilityFormData = {
+  facility: {
+    cliaNumber: "99D1234567",
+    name: "Testing Site",
+    street: "1001 Rodeo Dr",
+    streetTwo: "qwqweqwe123123",
+    city: "Los Angeles",
+    state: "CA",
+    zipCode: "90000",
+    phone: "(516) 432-1390",
+    email: "testingsite@disorg.com",
+  },
+  devices: ["Fake Device 1"],
   orderingProvider: {
     firstName: "Fred",
     middleName: null,
@@ -122,7 +150,7 @@ const facilityVariables: any = {
   orderingProviderState: mockFacility.orderingProvider.state,
   orderingProviderZipCode: mockFacility.orderingProvider.zipCode,
   orderingProviderPhone: mockFacility.orderingProvider.phone || null,
-  devices: mockFacility.deviceTypes.map((d) => d.internalId),
+  devices: ["Fake Device 1"],
 };
 
 const store = configureStore([])({
@@ -158,6 +186,19 @@ const mocks = [
   },
   {
     request: {
+      query: UPDATE_FACILITY_MUTATION,
+      variables: { ...facilityVariables, facilityId: mockFacility.id },
+    },
+    result: {
+      data: {
+        updateFacility: {
+          id: mockFacility.id,
+        },
+      },
+    },
+  },
+  {
+    request: {
       query: ADD_FACILITY_MUTATION,
       variables: { ...facilityVariables },
     },
@@ -174,7 +215,10 @@ const mocks = [
 jest.mock("./FacilityForm", () => {
   return (f: FacilityFormProps) => {
     return (
-      <button type="submit" onClick={() => f.saveFacility(mockFacility)}>
+      <button
+        type="submit"
+        onClick={() => f.saveFacility(mockFacilityFormData)}
+      >
         Submit
       </button>
     );

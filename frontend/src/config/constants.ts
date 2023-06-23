@@ -3,6 +3,10 @@ export const PATIENT_TERM_CAP = "Patient";
 export const PATIENT_TERM_PLURAL = "patients";
 export const PATIENT_TERM_PLURAL_CAP = "Patients";
 
+export const FORM_ERROR_MSG =
+  "Please check the form to make sure you complete all of the required fields.";
+export const FORM_ERROR_TITLE = "Form Errors";
+
 // NOTE: Any time SimpleReport goes live in a new state, this file must be updated.
 // Otherwise, organizations will not be able to create facilities in the new state.
 export const liveJurisdictions = [
@@ -47,7 +51,7 @@ export const liveJurisdictions = [
 ];
 
 // States which do not require a valid CLIA number for a facility
-export const noCLIAValidationStates: (keyof typeof states)[] = ["CO"];
+export const noCLIAValidationStates: string[] = ["CO"];
 
 export const orderingProviderNotRequiredStates = ["ND"];
 
