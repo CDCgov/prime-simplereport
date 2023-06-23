@@ -44,7 +44,7 @@ const Pill = (props: PillProps) => (
   <div className="pill">
     {props.option.label}
     <Button
-      className="close-button usa-button--unstyled"
+      className="close-button usa-button--unstyled margin-top-0"
       onClick={() => props.onDelete(props.option)}
     >
       <FontAwesomeIcon
