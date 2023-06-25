@@ -52,7 +52,7 @@
     "smartystreets-javascript-sdk": "^2.1.2",
     "uswds": "2.14.0",
     "uuid": "^9.0.0",
-    "yup": "^0.32.9"
+    "yup": "^1.2.0"
   },
   "scripts": {
     "prestart": "rm -rf .eslintcache && yarn",
