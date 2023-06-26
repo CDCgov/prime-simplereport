@@ -226,7 +226,7 @@ public class FhirConverter {
    *     offset
    */
   public DateTimeType convertToDateTimeType(
-      @NotNull ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
+      ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
     if (zonedDateTime == null) {
       return null;
     }
