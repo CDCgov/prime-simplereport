@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /**
  * Bound configuration for the default demo user, and possibly more demo users in the future if we
@@ -25,6 +26,7 @@ public class DemoUserConfiguration {
   private Map<String, DemoUser> byUsername;
   private Set<String> siteAdminEmails;
 
+  @ConstructorBinding
   public DemoUserConfiguration(List<DemoUser> allUsers) {
     this(null, allUsers, null);
   }

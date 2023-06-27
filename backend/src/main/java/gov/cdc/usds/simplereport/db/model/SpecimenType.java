@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import org.hibernate.annotations.NaturalId;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /** A SNOMED-registered specimen type that can be used by one or more {@link DeviceType}s. */
 @Entity
@@ -24,6 +25,7 @@ public class SpecimenType extends EternalAuditedEntity {
 
   protected SpecimenType() {} // for hibernate
 
+  @ConstructorBinding
   public SpecimenType(
       String name, String typeCode, String collectionLocationName, String collectionLocationCode) {
     this(name, typeCode);
