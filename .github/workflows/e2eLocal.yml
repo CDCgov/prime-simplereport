@@ -128,7 +128,7 @@ jobs:
         echo "Database branch tag (or latest): ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}"
         echo "Frontend branch tag (or latest): ${{ inputs.DOCKER_FRONTEND_IMAGE_VERSION }}"
         echo "Nginx branch tag (or latest): ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}"
-        docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress
+        docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress --quiet-pull
         echo "::endgroup::"
 
     - name: Get docker logs
