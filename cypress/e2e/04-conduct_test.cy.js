@@ -1,7 +1,10 @@
 import { loginHooks } from "../support/e2e";
+import {graphqlURL} from "../utils/request-utils";
+import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
 
 describe("Conducting a COVID test", () => {
-  let patientName, lastName, covidOnlyDeviceName, queueCard;
+  let patientName, lastName, covidOnlyDeviceName;
+  const queueCard = "div.prime-queue-item:last-of-type";
   loginHooks();
 
   before("retrieve the patient name and covid device name", () => {
@@ -14,12 +17,20 @@ describe("Conducting a COVID test", () => {
     });
   });
 
+  beforeEach(() => {
+    cy.intercept("POST", graphqlURL, (req) => {
+      aliasGraphqlOperations(req)
+    });
+  });
+
   it("searches for the patient", () => {
     cy.visit("/");
     cy.get(".usa-nav-container");
     cy.get("#desktop-conduct-test-nav-link").click();
     cy.get("#search-field-small").type(lastName);
     cy.get(".results-dropdown").contains(lastName)
+
+    cy.wait("@GetPatientsByFacilityForQueue")
 
     cy.injectSRAxe();
     cy.checkA11y(); // Conduct Tests page
@@ -30,6 +41,7 @@ describe("Conducting a COVID test", () => {
         .contains("Begin test")
         .click();
     });
+
     cy.get(".ReactModal__Content").contains(
       "Are you experiencing any of the following symptoms?"
     );
@@ -37,14 +49,18 @@ describe("Conducting a COVID test", () => {
     // Test a11y on the AoE modal
     cy.checkA11y();
   });
-  it("fills out the pretest questions and submits", () => {
+  it("fills out the aoe questions and submits", () => {
     cy.get(".ReactModal__Content").within(() => {
       cy.get('input[name="no_symptoms"][value="no"]+label').click();
       cy.get('input[name="pregnancy"][value="60001007"]+label').click();
       cy.get("#aoe-form-save-button").click();
     });
+
+    cy.wait("@AddPatientToQueue");
+    cy.wait("@GetFacilityQueue", {timeout: 20000});
+
     cy.get(".prime-home").contains(patientName);
-    queueCard = "div.prime-queue-item:last-of-type";
+
     cy.get(queueCard).contains("COVID-19 results");
 
     cy.checkA11y(); // Test Card page
@@ -52,9 +68,25 @@ describe("Conducting a COVID test", () => {
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
       cy.get('select[name="testDevice"]').select(covidOnlyDeviceName);
+      cy.get('select[name="testDevice"]').find('option:selected').should('have.text', covidOnlyDeviceName);
+    });
+
+    // We cant wait on EditQueueItem because if the covid device was already selected,
+    // then it won't trigger a network call
+    cy.wait("@GetFacilityQueue", {timeout: 20000});
+
+    cy.get(queueCard).within(() => {
       cy.get('.prime-radios input[value="NEGATIVE"]+label').click();
+    });
+
+    cy.wait("@EditQueueItem");
+
+    cy.get(queueCard).within(() => {
       cy.get(".prime-test-result-submit button").last().click();
     });
+
+    cy.wait("@SubmitQueueItem");
+
     cy.contains(`Result for ${patientName} was saved and reported.`);
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
   });

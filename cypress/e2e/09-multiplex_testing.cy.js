@@ -50,7 +50,7 @@ describe("Testing with multiplex devices", () => {
 
   it("test patient", () => {
     cy.visit(`/queue?facility=${facility.id}`);
-    cy.wait("@GetFacilityQueue");
+    cy.wait("@GetFacilityQueue", {timeout: 20000});
     cy.get('input[id="search-field-small"]').type(
       `${patient.lastName}, ${patient.firstName}`
     );
@@ -63,28 +63,39 @@ describe("Testing with multiplex devices", () => {
     cy.contains(`${patient.lastName}, ${patient.firstName}`);
     cy.injectSRAxe();
     cy.checkA11y();
-    cy.get(`div[data-testid="test-card-${patient.internalId}"]`).within(
-      () => {
-        cy.get('select[name="testDevice"]').select(multiplexDeviceName);
-        cy.get('button[type="submit"]').as("submitBtn");
-        cy.get("@submitBtn").should("be.disabled");
-        cy.get(".multiplex-result-form").contains("COVID-19");
-        cy.get(".multiplex-result-form").contains("Flu A");
-        cy.get(".multiplex-result-form").contains("Flu B");
-        cy.get(".multiplex-result-form").contains(
-          "Mark test as inconclusive"
-        );
-        cy.get('input[name="inconclusive-tests"]')
-          .should("not.be.checked")
-          .siblings("label")
-          .click();
-        cy.wait("@EditQueueItem");
-        cy.wait("@GetFacilityQueue");
-        cy.get("@submitBtn").should("be.enabled").click();
-      }
-    );
+
+    const testCard = cy.get(`div[data-testid="test-card-${patient.internalId}"]`);
+    testCard.within(() => {
+      cy.get('select[name="testDevice"]').select(multiplexDeviceName);
+      cy.get('select[name="testDevice"]').find('option:selected').should('have.text', multiplexDeviceName);
+    });
+
+    // We cant wait on EditQueueItem because if the covid device was already selected,
+    // then it won't trigger a network call
+    cy.wait("@GetFacilityQueue", {timeout: 20000});
+
+    testCard.within(() => {
+      cy.get('button[type="submit"]').as("submitBtn");
+      cy.get("@submitBtn").should("be.disabled");
+      cy.get(".multiplex-result-form").contains("COVID-19");
+      cy.get(".multiplex-result-form").contains("Flu A");
+      cy.get(".multiplex-result-form").contains("Flu B");
+      cy.get(".multiplex-result-form").contains(
+        "Mark test as inconclusive"
+      );
+      cy.get('input[name="inconclusive-tests"]')
+        .should("not.be.checked")
+        .siblings("label")
+        .click();
+    });
+    cy.wait("@EditQueueItem");
+
+    testCard.within(() => {
+      cy.get("@submitBtn").should("be.enabled").click();
+    });
+
     cy.contains("Submit anyway").click();
     cy.wait("@SubmitQueueItem");
-    cy.wait("@GetFacilityQueue");
+    cy.wait("@GetFacilityQueue", {timeout: 20000});
   });
 });
