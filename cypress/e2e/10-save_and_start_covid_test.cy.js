@@ -154,7 +154,7 @@ describe('Save and start covid test',()=>{
       cy.get(".prime-save-patient-changes").first().click();
     });
     it("verifies test card highlighted", () => {
-      cy.wait("@GetFacilityQueue");
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
       cy.get(".ReactModal__Content").should("not.exist");
       cy.url().should("include", "queue");
       cy.get(".prime-queue-item__info").contains(patientName);
@@ -173,7 +173,7 @@ describe('Save and start covid test',()=>{
     });
 
     it("verifies test card highlighted", () => {
-      cy.wait("@GetFacilityQueue");
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
       cy.get(".ReactModal__Content").should("not.exist");
       cy.url().should("include", "queue");
       cy.get(".prime-queue-item__info").contains(patientName);

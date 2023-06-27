@@ -63,8 +63,8 @@ export const generateOrganization = () => {
 
 export const generateMultiplexDevice = () => {
   const multiplexDevice = {};
-  multiplexDevice.name = `${testNumber()}-${faker.company.companyName()}-multiplex-device`;
-  multiplexDevice.model = `${testNumber()}-${faker.company.companyName()}-multiplex-model`;
+  multiplexDevice.name = `multiplex-${testNumber()}-${faker.company.companyName()}-device`;
+  multiplexDevice.model = `multiplex-${testNumber()}-${faker.company.companyName()}-model`;
   multiplexDevice.manufacturer = `${testNumber()}-${faker.company.companyName()}`;
   multiplexDevice.isMultiplex = true;
   return multiplexDevice;
@@ -72,8 +72,8 @@ export const generateMultiplexDevice = () => {
 
 export const generateCovidOnlyDevice = () => {
   const covidOnlyDevice = {};
-  covidOnlyDevice.name = `${testNumber()}-${faker.company.companyName()}-covid-device`;
-  covidOnlyDevice.model = `${testNumber()}-${faker.company.companyName()}-covid-model`;
+  covidOnlyDevice.name = `covid-${testNumber()}-${faker.company.companyName()}-device`;
+  covidOnlyDevice.model = `covid-${testNumber()}-${faker.company.companyName()}-model`;
   covidOnlyDevice.manufacturer = `${testNumber()}-${faker.company.companyName()}`;
   covidOnlyDevice.isMultiplex = false
   return covidOnlyDevice;
