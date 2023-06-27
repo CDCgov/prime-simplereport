@@ -40,7 +40,7 @@ public class TestOrder extends BaseTestInfo {
 
   @Column private LocalDate dateTested; // REMOVE THIS COLUMN
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "TEST_ORDER_STATUS")
   @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private OrderStatus orderStatus;

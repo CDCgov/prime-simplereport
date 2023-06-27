@@ -28,7 +28,7 @@ public class TestResultUpload extends AuditedEntity {
 
   @Column private UUID reportId;
 
-  @Column
+  @Column(columnDefinition = "UPLOAD_STATUS")
   @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private UploadStatus status;

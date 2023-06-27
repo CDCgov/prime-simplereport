@@ -24,7 +24,7 @@ public class PhoneNumber extends AuditedEntity {
 
   @Enumerated(EnumType.STRING)
   @Type(PostgreSQLEnumType.class)
-  @Column
+  @Column(columnDefinition = "PHONE_TYPES")
   private PhoneType type;
 
   @Column private String number;

@@ -37,14 +37,14 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   private SpecimenType specimenType;
 
   @Deprecated
-  @Column(nullable = true)
+  @Column(nullable = true, columnDefinition = "TEST_RESULT")
   @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private TestResult result;
 
   @Column private Date dateTestedBackdate;
 
-  @Column
+  @Column(columnDefinition = "TEST_CORRECTION_STATUS")
   @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private TestCorrectionStatus correctionStatus;

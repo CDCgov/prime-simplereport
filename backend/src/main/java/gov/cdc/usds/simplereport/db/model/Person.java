@@ -105,6 +105,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
+  @Column(columnDefinition = "TEST_RESULT_DELIVERY")
   private TestResultDeliveryPreference testResultDeliveryPreference;
 
   protected Person() {

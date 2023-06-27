@@ -42,7 +42,7 @@ public class Result extends EternalAuditedEntity {
   @Column(name = "result", nullable = false)
   private String resultSNOMED;
 
-  @Column(name = "test_result", nullable = false)
+  @Column(name = "test_result", nullable = false, columnDefinition = "TEST_RESULT")
   @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
   private TestResult testResult;

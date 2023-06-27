@@ -32,7 +32,9 @@ import org.hibernate.annotations.Type;
 @Getter
 @Entity
 @Immutable
-@AttributeOverride(name = "result", column = @Column(nullable = false))
+@AttributeOverride(
+    name = "result",
+    column = @Column(nullable = false, columnDefinition = "TEST_RESULT"))
 @Slf4j
 public class TestEvent extends BaseTestInfo {
   @Column
