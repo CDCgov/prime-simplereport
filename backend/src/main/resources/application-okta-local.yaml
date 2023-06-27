@@ -1,5 +1,3 @@
-spring:
-  profiles.include: server-debug, create-sample-devices
 logging:
   level:
     # NOTE: look in application-dev.yaml for other things that might be worth turning on

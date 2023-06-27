@@ -6,8 +6,6 @@ logging:
     org.hibernate: off
     gov.cdc.usds.simplereport.service.AuditService: off
 spring:
-  profiles:
-    include: server-debug, create-sample-devices
   liquibase:
     simplereport:
       user: simple_report_migrations

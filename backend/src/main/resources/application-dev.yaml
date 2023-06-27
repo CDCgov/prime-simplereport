@@ -1,5 +1,4 @@
 spring:
-  profiles.include: no-security, no-okta-mgmt, server-debug, create-sample-data, local, no-okta-auth
   liquibase:
     simplereport:
       user: simple_report_migrations

@@ -1,5 +1,4 @@
 spring:
-  profiles.include: no-security,no-okta-mgmt, no-okta-auth, no-experian
   datasource:
     simplereport:
       hikari:

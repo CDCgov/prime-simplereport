@@ -1,6 +1,24 @@
 spring:
-  config:
-    use-legacy-processing: true
+  profiles:
+    group:
+      default: no-security,no-okta-mgmt,no-okta-auth,no-experian
+      dev: no-security, no-okta-mgmt, server-debug, create-sample-data, local, no-okta-auth
+      azure-dev: okta-dev, server-debug
+      azure-dev2: okta-dev2, server-debug
+      azure-dev3: okta-dev3, server-debug
+      azure-dev4: okta-dev4, server-debug
+      azure-dev5: okta-dev5, server-debug
+      azure-dev6: okta-dev6, server-debug
+      azure-dev7: okta-dev7, server-debug
+      azure-demo: no-security, no-okta-mgmt, create-sample-data, no-okta-auth
+      azure-pentest: okta-pentest
+      azure-prod: okta-prod
+      azure-stg: okta-stg
+      azure-test: okta-test, server-debug
+      azure-training: no-security, no-okta-mgmt, create-sample-data, no-okta-auth
+      okta-local: server-debug, create-sample-devices
+      prod: okta-prod
+      e2e: server-debug, create-sample-devices
   main:
     banner-mode: "OFF"
   datasource:
@@ -26,6 +44,7 @@ spring:
     properties:
       hibernate:
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
     simplereport:
       default-schema: ${spring.jpa.properties.hibernate.default_schema}
@@ -63,7 +82,7 @@ management:
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
-    client-id: ${OKTA_OAUTH2_CLIENT_ID}
+    client-id: ${OKTA_OAUTH2_CLIENT_ID:MISSING}
     client-secret: ${OKTA_OAUTH2_CLIENT_SECRET:MISSING}
     groups-claim: ${simple-report.authorization.role-claim}
   client:
