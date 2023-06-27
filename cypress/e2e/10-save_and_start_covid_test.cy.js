@@ -1,6 +1,6 @@
 import {generatePatient, loginHooks, testNumber} from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
-import {aliasQuery} from "../utils/graphql-test-utils";
+import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
 
 loginHooks();
 
@@ -21,7 +21,7 @@ describe('Save and start covid test',()=>{
 
   beforeEach(()=>{
     cy.intercept("POST", graphqlURL, (req) => {
-      aliasQuery(req, "GetFacilityQueue");
+      aliasGraphqlOperations(req);
     });
   });
 
@@ -154,7 +154,7 @@ describe('Save and start covid test',()=>{
       cy.get(".prime-save-patient-changes").first().click();
     });
     it("verifies test card highlighted", () => {
-      cy.wait("@gqlGetFacilityQueueQuery");
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
       cy.get(".ReactModal__Content").should("not.exist");
       cy.url().should("include", "queue");
       cy.get(".prime-queue-item__info").contains(patientName);
@@ -173,7 +173,7 @@ describe('Save and start covid test',()=>{
     });
 
     it("verifies test card highlighted", () => {
-      cy.wait("@gqlGetFacilityQueueQuery");
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
       cy.get(".ReactModal__Content").should("not.exist");
       cy.url().should("include", "queue");
       cy.get(".prime-queue-item__info").contains(patientName);

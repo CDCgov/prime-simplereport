@@ -1,0 +1,71 @@
+name: Maintenance banner status change notification
+description: Sends an email to the support team when the state of the maintenance banner changes in PROD
+inputs:
+  status-active:
+    description: boolean that represents if the banner is active (on) or inactive (off)
+    required: true
+    default: true
+  env:
+    description: environment where the banner has been updated
+    required: true
+    default: "prod"
+  email-sender:
+      description: from email address
+      required: true
+  apikey-prod:
+    description: sendgrid apikey for production environment
+    required: true
+  apikey-test:
+    description: sendgrid apikey for non production environments
+    required: true
+  email-recipient-prod:
+    description: list of recipients of the notification for production environment
+    required: true
+  email-recipient-test:
+    description: list of recipients of the notification for non production environments
+    required: true
+  banner-header:
+    description: banner subject being displayed
+    required: true
+  banner-msg:
+    description: banner content being displayed
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: send email to support team
+      shell: bash
+      run: |
+        if [[ "true" == "${{ inputs.status-active }}" ]]
+        then
+          banner_header="${{ inputs.banner-header }}"
+          banner_msg="${{ inputs.banner-msg }}"
+          export EMAIL_SUBJECT="Maintenance banner is ON"
+          export EMAIL_CONTENT="The maintenance banner is currently displayed on the SimpleReport app. We’ll send another automated email when the banner is removed.\n\n Message currently displayed:  $banner_header | $banner_msg "
+        else
+          export EMAIL_SUBJECT="Maintenance banner is OFF"
+          export EMAIL_CONTENT="The maintenance banner has been removed from the SimpleReport app."
+        fi
+        
+        if [[ "prod" == "${{ inputs.env }}" ]]
+        then
+          export APIKEY="${{ inputs.apikey-prod }}"
+          export TO_EMAIL="${{ inputs.email-recipient-prod }}"
+        else 
+          export APIKEY="${{ inputs.apikey-test }}"
+          export TO_EMAIL="${{ inputs.email-recipient-test }}"
+        fi
+        
+        email_array=""
+        for i in $(echo $TO_EMAIL | tr ";" "\n")
+        do
+         email_array+="{\"email\":\"$i\"},"
+        done
+
+        export FROM_EMAIL="${{ inputs.email-sender }}"
+       
+        curl --request POST \
+          --url https://api.sendgrid.com/v3/mail/send \
+          --header "Authorization: Bearer $APIKEY" \
+          --header "Content-Type: application/json" \
+          --data "{\"personalizations\": [{\"to\": [$email_array]}],\"from\": {\"email\": \"$FROM_EMAIL\"},\"subject\": \"$EMAIL_SUBJECT\",\"content\": [{\"type\": \"text/plain\", \"value\": \"$EMAIL_CONTENT\"}]}"

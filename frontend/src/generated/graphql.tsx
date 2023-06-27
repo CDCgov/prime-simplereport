@@ -256,14 +256,7 @@ export type MutationAddUserArgs = {
 };
 
 export type MutationAddUserToCurrentOrgArgs = {
-  email?: InputMaybe<Scalars["String"]>;
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  name?: InputMaybe<NameInput>;
-  role?: InputMaybe<Role>;
-  suffix?: InputMaybe<Scalars["String"]>;
-  userInput?: InputMaybe<UserInput>;
+  userInput: UserInput;
 };
 
 export type MutationAdminUpdateOrganizationArgs = {
@@ -1250,6 +1243,8 @@ export type AddUserToCurrentOrgMutationVariables = Exact<{
   lastName: Scalars["String"];
   email: Scalars["String"];
   role: Role;
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  facilities?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
 }>;
 
 export type AddUserToCurrentOrgMutation = {
@@ -3312,12 +3307,18 @@ export const AddUserToCurrentOrgDocument = gql`
     $lastName: String!
     $email: String!
     $role: Role!
+    $accessAllFacilities: Boolean
+    $facilities: [ID!]
   ) {
     addUserToCurrentOrg(
-      firstName: $firstName
-      lastName: $lastName
-      email: $email
-      role: $role
+      userInput: {
+        firstName: $firstName
+        lastName: $lastName
+        email: $email
+        role: $role
+        accessAllFacilities: $accessAllFacilities
+        facilities: $facilities
+      }
     ) {
       id
     }
@@ -3345,6 +3346,8 @@ export type AddUserToCurrentOrgMutationFn = Apollo.MutationFunction<
  *      lastName: // value for 'lastName'
  *      email: // value for 'email'
  *      role: // value for 'role'
+ *      accessAllFacilities: // value for 'accessAllFacilities'
+ *      facilities: // value for 'facilities'
  *   },
  * });
  */

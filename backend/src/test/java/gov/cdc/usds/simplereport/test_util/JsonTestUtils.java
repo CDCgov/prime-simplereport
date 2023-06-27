@@ -15,6 +15,7 @@ public class JsonTestUtils {
   public static void assertJsonNodesEqual(JsonNode expectedNode, JsonNode actualNode) {
     assertJsonNodesEqual(expectedNode, actualNode, null, "");
   }
+
   /**
    * A utility function that can be used to determine whether two JSON nodes are semantically
    * identical while also allowing certain fields to be ignored.

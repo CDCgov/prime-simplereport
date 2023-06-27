@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
 import { UserPermission } from "../../../generated/graphql";
@@ -14,7 +14,7 @@ const getHasAllFacilityAccess = (user: Partial<SettingsUser>) =>
   user.role === "ADMIN" ||
   user.permissions?.includes(UserPermission.AccessAllFacilities);
 
-const alphabeticalFacilitySort = (
+export const alphabeticalFacilitySort = (
   a: UserFacilitySetting,
   b: UserFacilitySetting
 ) => {
@@ -37,10 +37,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   onUpdateUser,
   showRequired,
 }) => {
-  const [isComponentVisible, setIsComponentVisible] = useState(false);
-
-  const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
-
   const facilityLookup: FacilityLookup = useMemo(
     () =>
       allFacilities.reduce((acc, { id, name }) => {
@@ -49,26 +45,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
       }, {} as FacilityLookup),
     [allFacilities]
   );
-
-  const handleClickOutside = (event: any) => {
-    // TODO: figure out this type
-    if (ref.current && ref.current.contains(event.target)) {
-      // inside click
-      // TODO: this doesn't capture the buttons inside the table
-    } else {
-      // outside click
-      if (isComponentVisible) {
-        setIsComponentVisible(false);
-      }
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  });
 
   const onRemoveFacility = (
     activeUser: Partial<SettingsUser>,
@@ -126,19 +102,15 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
       value: "ALL_FACILITIES",
       label: `Access all facilities (${allFacilities.length})`,
       disabled: isAdmin,
+      checked: hasAllFacilityAccess,
     },
     ...allFacilities.map((facility) => ({
       value: facility.id,
       label: facility.name,
       disabled: isAdmin,
+      checked: userFacilityLookup.has(facility.id),
     })),
   ];
-  const checkedValues: { [key: string]: boolean | undefined } = {
-    ALL_FACILITIES: hasAllFacilityAccess,
-  };
-  allFacilities.forEach((facility) => {
-    checkedValues[facility.id] = userFacilityLookup.has(facility.id);
-  });
 
   return (
     <>
@@ -154,7 +126,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         legend="Facilities"
         legendSrOnly
         name="facilities"
-        checkedValues={checkedValues}
         onChange={(e) => {
           const { value, checked } = e.target;
           if (value === "ALL_FACILITIES") {

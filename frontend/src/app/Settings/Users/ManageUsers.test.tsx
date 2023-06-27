@@ -381,15 +381,14 @@ describe("ManageUsers", () => {
       await waitFor(() => expect(sendButton).toBeEnabled());
       await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).toBeCalled());
-      expect(addUserToOrg).toBeCalledWith({ variables: newUser });
-      expect(updateUserPrivileges).toBeCalledWith({
+      expect(addUserToOrg).toBeCalledWith({
         variables: {
+          ...newUser,
           accessAllFacilities: true,
           facilities: ["1", "2"],
-          id: "added-user-id",
-          role: "USER",
         },
       });
+      expect(updateUserPrivileges).not.toBeCalled();
     });
 
     it("fails with invalid email address", async () => {
@@ -420,8 +419,8 @@ describe("ManageUsers", () => {
       await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).not.toBeCalled());
       expect(
-        screen.queryAllByText("Email must be a valid email address").length
-      ).toBe(1);
+        screen.getByText("Email address must be a valid email address")
+      ).toBeInTheDocument();
     });
 
     it("passes user details to the addUserToOrg function without a role", async () => {
@@ -447,7 +446,12 @@ describe("ManageUsers", () => {
       await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
-        variables: { ...newUser, role: "USER" },
+        variables: {
+          ...newUser,
+          role: "USER",
+          accessAllFacilities: true,
+          facilities: ["1", "2"],
+        },
       });
     });
 
@@ -694,7 +698,12 @@ describe("ManageUsers", () => {
 
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
-        variables: { ...newUser, role: "USER" },
+        variables: {
+          ...newUser,
+          role: "USER",
+          accessAllFacilities: true,
+          facilities: ["1", "2"],
+        },
       });
     });
   });
