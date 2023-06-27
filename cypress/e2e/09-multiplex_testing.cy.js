@@ -70,7 +70,8 @@ describe("Testing with multiplex devices", () => {
       cy.get('select[name="testDevice"]').find('option:selected').should('have.text', multiplexDeviceName);
     });
 
-    // We cant wait on EditQueueItem because if the covid device was already selected,
+    // We cant wait on EditQueueItem after selecting as device
+    // because if the multiplex device was already selected,
     // then it won't trigger a network call
     cy.wait("@GetFacilityQueue", {timeout: 20000});
 
