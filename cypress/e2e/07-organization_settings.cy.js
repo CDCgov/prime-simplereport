@@ -6,7 +6,7 @@ describe("Updating organization settings", () => {
   loginHooks();
   beforeEach(() => {
     cy.intercept('POST', graphqlURL, (req) => {
-      aliasGraphqlOperations(req)
+      aliasGraphqlOperations(req);
     });
   });
 
