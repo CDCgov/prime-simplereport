@@ -64,8 +64,8 @@ describe("Testing with multiplex devices", () => {
     cy.injectSRAxe();
     cy.checkA11y();
 
-    const testCard = cy.get(`div[data-testid="test-card-${patient.internalId}"]`);
-    testCard.within(() => {
+    const queueCard = `div[data-testid="test-card-${patient.internalId}"]`;
+    cy.get(queueCard).within(() => {
       cy.get('select[name="testDevice"]').select(multiplexDeviceName);
       cy.get('select[name="testDevice"]').find('option:selected').should('have.text', multiplexDeviceName);
     });
@@ -74,7 +74,7 @@ describe("Testing with multiplex devices", () => {
     // then it won't trigger a network call
     cy.wait("@GetFacilityQueue", {timeout: 20000});
 
-    testCard.within(() => {
+    cy.get(queueCard).within(() => {
       cy.get('button[type="submit"]').as("submitBtn");
       cy.get("@submitBtn").should("be.disabled");
       cy.get(".multiplex-result-form").contains("COVID-19");
@@ -90,7 +90,7 @@ describe("Testing with multiplex devices", () => {
     });
     cy.wait("@EditQueueItem");
 
-    testCard.within(() => {
+    cy.get(queueCard).within(() => {
       cy.get("@submitBtn").should("be.enabled").click();
     });
 
