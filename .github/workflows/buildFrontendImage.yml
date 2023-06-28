@@ -1,23 +1,40 @@
 name: Build frontend docker image
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - "frontend/package.json"
-      - "frontend/yarn.lock"
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      force_build:
+        description: Force build
+        required: false
+        default: false
+        type: boolean
+    outputs:
+      version:
+        description: docker image version
+        value: ${{ jobs.build_and_push_frontend_image.outputs.version }}
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/frontend
 
 jobs:
-  build-and-push-frontend-image:
+
+  frontend_changes:
+    with:
+      what_to_check: frontend
+    uses: ./.github/workflows/checkForChanges.yml
+
+  build_and_push_frontend_image:
+    # We want to build the image if there are changes in the frontend folder, or if we are forcing a build, or if we are on the main branch
+    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    needs: [frontend_changes]
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+    outputs:
+      version: ${{ steps.set.outputs.version }}
 
     steps:
       - name: Checkout repository
@@ -37,6 +54,8 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+            type=ref,event=branch
+            type=ref,event=pr
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -45,3 +64,8 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      - name: Set version output
+        shell: bash
+        id: set
+        run: echo "version=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}" >> "$GITHUB_OUTPUT"
