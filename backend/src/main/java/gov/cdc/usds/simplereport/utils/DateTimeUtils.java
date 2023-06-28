@@ -20,7 +20,7 @@ public class DateTimeUtils {
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
-  public static final String TIMEZONE_ABBREVIATION_SUFFIX_REGEX = "( [A-Z]{2,5})?$";
+  public static final String TIMEZONE_ABBREVIATION_SUFFIX_REGEX = "^.*( \\S+)$";
 
   public static ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 

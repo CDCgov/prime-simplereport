@@ -234,6 +234,7 @@ class CsvValidatorUtilsTest {
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 central", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 pacific time", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 123", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 ABC", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 ET2", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 denver", "datetime"));
     for (var datetime : invalidDateTimes) {
