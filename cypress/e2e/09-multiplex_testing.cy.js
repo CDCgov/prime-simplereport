@@ -1,4 +1,4 @@
-import {aliasMutation, aliasQuery} from "../utils/graphql-test-utils";
+import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
 import {loginHooks} from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
 
@@ -36,10 +36,7 @@ describe("Testing with multiplex devices", () => {
 
   beforeEach(() => {
     cy.intercept("POST", graphqlURL, (req) => {
-      aliasQuery(req, "GetFacilityQueue");
-      aliasQuery(req, "GetPatientsByFacilityForQueue");
-      aliasQuery(req, "EditQueueItem");
-      aliasMutation(req, "SubmitQueueItem");
+      aliasGraphqlOperations(req)
     });
 
     // remove a test for the patient if it exists
@@ -53,11 +50,11 @@ describe("Testing with multiplex devices", () => {
 
   it("test patient", () => {
     cy.visit(`/queue?facility=${facility.id}`);
-    cy.wait("@gqlGetFacilityQueueQuery");
+    cy.wait("@GetFacilityQueue", {timeout: 20000});
     cy.get('input[id="search-field-small"]').type(
       `${patient.lastName}, ${patient.firstName}`
     );
-    cy.wait("@gqlGetPatientsByFacilityForQueueQuery");
+    cy.wait("@GetPatientsByFacilityForQueue");
     cy.contains("Begin test").click();
     cy.get('button[id="aoe-form-save-button"]').click();
     cy.get(".Toastify").contains(`${patient.lastName}, ${patient.firstName}`);
@@ -66,28 +63,40 @@ describe("Testing with multiplex devices", () => {
     cy.contains(`${patient.lastName}, ${patient.firstName}`);
     cy.injectSRAxe();
     cy.checkA11y();
-    cy.get(`div[data-testid="test-card-${patient.internalId}"]`).within(
-      () => {
-        cy.get('select[name="testDevice"]').select(multiplexDeviceName);
-        cy.get('button[type="submit"]').as("submitBtn");
-        cy.get("@submitBtn").should("be.disabled");
-        cy.get(".multiplex-result-form").contains("COVID-19");
-        cy.get(".multiplex-result-form").contains("Flu A");
-        cy.get(".multiplex-result-form").contains("Flu B");
-        cy.get(".multiplex-result-form").contains(
-          "Mark test as inconclusive"
-        );
-        cy.get('input[name="inconclusive-tests"]')
-          .should("not.be.checked")
-          .siblings("label")
-          .click();
-        cy.wait("@gqlEditQueueItemQuery");
-        cy.wait("@gqlGetFacilityQueueQuery");
-        cy.get("@submitBtn").should("be.enabled").click();
-      }
-    );
+
+    const queueCard = `div[data-testid="test-card-${patient.internalId}"]`;
+    cy.get(queueCard).within(() => {
+      cy.get('select[name="testDevice"]').select(multiplexDeviceName);
+      cy.get('select[name="testDevice"]').find('option:selected').should('have.text', multiplexDeviceName);
+    });
+
+    // We cant wait on EditQueueItem after selecting as device
+    // because if the multiplex device was already selected,
+    // then it won't trigger a network call
+    cy.wait("@GetFacilityQueue", {timeout: 20000});
+
+    cy.get(queueCard).within(() => {
+      cy.get('button[type="submit"]').as("submitBtn");
+      cy.get("@submitBtn").should("be.disabled");
+      cy.get(".multiplex-result-form").contains("COVID-19");
+      cy.get(".multiplex-result-form").contains("Flu A");
+      cy.get(".multiplex-result-form").contains("Flu B");
+      cy.get(".multiplex-result-form").contains(
+        "Mark test as inconclusive"
+      );
+      cy.get('input[name="inconclusive-tests"]')
+        .should("not.be.checked")
+        .siblings("label")
+        .click();
+    });
+    cy.wait("@EditQueueItem");
+
+    cy.get(queueCard).within(() => {
+      cy.get("@submitBtn").should("be.enabled").click();
+    });
+
     cy.contains("Submit anyway").click();
-    cy.wait("@gqlSubmitQueueItemMutation");
-    cy.wait("@gqlGetFacilityQueueQuery");
+    cy.wait("@SubmitQueueItem");
+    cy.wait("@GetFacilityQueue", {timeout: 20000});
   });
 });
