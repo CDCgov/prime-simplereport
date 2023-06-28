@@ -4,7 +4,7 @@ import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
-import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_ABBREVIATION_SUFFIX_REGEX;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
 
 import com.fasterxml.jackson.databind.MappingIterator;
@@ -53,14 +53,7 @@ public class CsvValidatorUtils {
    * @see gov.cdc.usds.simplereport.utils.DateTimeUtils
    */
   private static final String DATE_TIME_REGEX =
-      // month
-      "^(0{0,1}[1-9]|1[0-2])\\/"
-          + // day
-          "(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/"
-          + // year
-          "\\d{4}"
-          + // optional time with optional timezone
-          "( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$"; //
+      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$";
 
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
@@ -303,7 +296,7 @@ public class CsvValidatorUtils {
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
     List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
     if (input.getValue() != null) {
-      if (errors.size() == 0 && input.getValue().matches(TIMEZONE_ABBREVIATION_SUFFIX_REGEX)) {
+      if (errors.size() == 0 && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
         errors.addAll(validateDateTimeZoneCode(input));
       }
     }

@@ -20,7 +20,8 @@ public class DateTimeUtils {
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
-  public static final String TIMEZONE_ABBREVIATION_SUFFIX_REGEX = "^.*( \\S+)$";
+  public static final String TIMEZONE_SUFFIX_REGEX =
+      "^(0?[1-9]|1[0-2])/(0?[1-9]|1\\d|2\\d|3[01])/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])( \\S+)$";
 
   public static ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 
@@ -80,7 +81,7 @@ public class DateTimeUtils {
   }
 
   public static boolean hasTimezoneSubstring(String value) {
-    return value.matches(TIMEZONE_ABBREVIATION_SUFFIX_REGEX);
+    return value.matches(TIMEZONE_SUFFIX_REGEX);
   }
 
   public static ZoneId parseZoneId(String timezoneCode) {
