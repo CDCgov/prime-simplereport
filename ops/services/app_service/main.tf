@@ -14,11 +14,12 @@ locals {
 }
 
 resource "azurerm_service_plan" "service_plan" {
-  name                = "${var.az_account}-appserviceplan-${var.env}"
-  location            = var.resource_group_location
-  os_type             = "Linux"
-  resource_group_name = var.resource_group_name
-  sku_name            = var.sku_name
+  name                   = "${var.az_account}-appserviceplan-${var.env}"
+  location               = var.resource_group_location
+  os_type                = "Linux"
+  resource_group_name    = var.resource_group_name
+  sku_name               = var.sku_name
+  zone_balancing_enabled = true
 }
 
 # The following code snippet creates a Linux App Service and configures it to run a Docker container. 

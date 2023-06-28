@@ -33,6 +33,9 @@ resource "azurerm_service_plan" "asp" {
   location            = var.location
   os_type             = "Linux"
   sku_name            = "EP1"
+  # NOTE: uncommenting this is how we can enable cross availability zone balancing
+  # it requires recreating this service plan, which will cause downtime
+  # zone_balancing_enabled = true
 }
 
 resource "azurerm_key_vault_access_policy" "functions" {
