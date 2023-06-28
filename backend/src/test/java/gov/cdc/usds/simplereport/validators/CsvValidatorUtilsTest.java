@@ -220,6 +220,7 @@ class CsvValidatorUtilsTest {
     validDateTimes.add(new ValueOrError("01/01/2023 11:11 AKST", "datetime"));
     validDateTimes.add(new ValueOrError("01/01/2023 11:11 HST", "datetime"));
     validDateTimes.add(new ValueOrError("01/01/2023 11:11 SST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 ", "datetime"));
     for (var datetime : validDateTimes) {
       assertThat(validateDateTime(datetime)).isEmpty();
     }
@@ -232,7 +233,6 @@ class CsvValidatorUtilsTest {
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 Eastern", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 central", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 pacific time", "datetime"));
-    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 ", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 123", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 ET2", "datetime"));
     invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 denver", "datetime"));

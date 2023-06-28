@@ -12,7 +12,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class DateTimeUtils {
+    /**
+     * Noon instead of midnight so that if fallback timezone of US/Eastern is used,
+     * value is still within the same calendar date (otherwise 6/27 00:00 ET is 6/26 21:00 PT)
+     */
+    private static final int DEFAULT_HOUR = 12;
     public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
+
+    public static final String TIMEZONE_ABBREVIATION_SUFFIX_REGEX = "( [A-Z]{2,5})?$";
 
     public static ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 
@@ -70,7 +77,7 @@ public class DateTimeUtils {
     }
 
     public static boolean hasTimezoneSubstring(String value) {
-        return value.split(" ").length == 3;
+        return value.matches(TIMEZONE_ABBREVIATION_SUFFIX_REGEX);
     }
 
     public static ZoneId parseZoneId(String timezoneCode) {
@@ -90,9 +97,7 @@ public class DateTimeUtils {
         if (temporalAccessor instanceof LocalDateTime) {
             localDateTime = (LocalDateTime) temporalAccessor;
         } else {
-            // Noon instead of midnight so that if fallback timezone of US/Eastern is used,
-            // value is still within the same calendar date (otherwise 6/27 00:00 ET is 6/26 21:00 PT)
-            localDateTime = ((LocalDate) temporalAccessor).atTime(12, 0, 0);
+            localDateTime = ((LocalDate) temporalAccessor).atTime(DEFAULT_HOUR, 0, 0);
         }
         return localDateTime;
     }
