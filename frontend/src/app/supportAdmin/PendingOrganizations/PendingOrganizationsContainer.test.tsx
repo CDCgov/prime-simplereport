@@ -401,18 +401,25 @@ describe("PendingOrganizationsContainer", () => {
               Array.from(await screen.findAllByText("Edit/Verify"))[1]
             )
         );
+
         await act(
           async () => await userEvent.click(screen.getByText("Verify"))
         );
+
+        expect(
+          await screen.findByLabelText(/verify organization/i)
+        ).toBeInTheDocument();
+
         await act(
           async () => await userEvent.click(screen.getByText("Yes, I'm sure"))
         );
 
-        await waitForElementToBeRemoved(
-          screen.queryByLabelText("Verify organization", {
-            exact: false,
-          })
+        await waitFor(() =>
+          expect(
+            screen.queryByLabelText(/verify organization/i)
+          ).not.toBeInTheDocument()
         );
+
         expect(await screen.findByText("A Real Hospital")).toBeInTheDocument();
         await waitFor(() =>
           expect(
@@ -541,9 +548,11 @@ describe("PendingOrganizationsContainer", () => {
       ).toBeInTheDocument();
       expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
       fireEvent.click(await screen.findByText("Delete", { exact: true }));
+
       await waitForElementToBeRemoved(() =>
         screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
       );
+
       await waitFor(() =>
         expect(
           screen.queryByText(
