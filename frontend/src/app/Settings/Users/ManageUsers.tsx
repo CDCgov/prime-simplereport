@@ -89,14 +89,9 @@ const ManageUsers: React.FC<Props> = ({
   resendUserActivationEmail,
   getUsers,
 }) => {
-  const [activeUser, updateActiveUser] = useState<LimitedUser>();
   const [userWithPermissions, updateUserWithPermissions] =
     useState<SettingsUser | null>();
-  const [queryUserWithPermissions] = useGetUserLazyQuery({
-    variables: { id: activeUser ? activeUser.id : loggedInUser.id },
-    fetchPolicy: "no-cache",
-    onCompleted: (data) => updateUserWithPermissions(data.user),
-  });
+
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
@@ -117,23 +112,31 @@ const ManageUsers: React.FC<Props> = ({
   const [isUserEdited, updateIsUserEdited] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error>();
-  // Maintain deleted user ID on client while request is in flight
-  const [deletedUserId, setDeletedUserId] = useState<string>();
-  // Maintain added user on client while request is in flight
-  const [addedUserId, setAddedUserId] = useState<string>();
 
   if (error) {
     throw error;
   }
 
+  /**
+   * Load data for the selected user
+   */
   // Local users will be more up-to-date than users, which only gets updated after server requests complete
   let localUsers = [...users];
-  if (deletedUserId) {
-    localUsers = localUsers.filter(({ id }) => id !== deletedUserId);
-  }
-
   const usersState: LimitedUsers = getLimitedUser(localUsers);
   const sortedUsers = sortUsers(usersState);
+  const [activeUser, updateActiveUser] = useState<LimitedUser>(
+    sortedUsers?.[0]
+  );
+
+  const [queryUserWithPermissions] = useGetUserLazyQuery({
+    variables: { id: activeUser ? activeUser.id : loggedInUser.id },
+    fetchPolicy: "no-cache",
+    onCompleted: (data) => updateUserWithPermissions(data.user),
+  });
+
+  useEffect(() => {
+    queryUserWithPermissions();
+  }, [activeUser, queryUserWithPermissions]);
 
   // only updates the local state
   const updateUser: UpdateUser = (key, value) => {
@@ -146,14 +149,16 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
+  /**
+   * Event Handlers
+   */
   // confirm with the user if they have unsaved edits and want to change users
   const onChangeActiveUser = (nextActiveUserId: string) => {
     if (isUserEdited) {
       updateNextActiveUserId(nextActiveUserId);
       updateShowInProgressModal(true);
     } else {
-      updateActiveUser(usersState[nextActiveUserId]);
-      queryUserWithPermissions();
+      updateActiveUser(usersState[nextActiveUserId]); // this update will trigger the effect that performs the query
     }
   };
 
@@ -163,7 +168,6 @@ const ManageUsers: React.FC<Props> = ({
     updateShowInProgressModal(false);
     if (nextActiveUserId) {
       updateActiveUser(usersState[nextActiveUserId]);
-      queryUserWithPermissions();
     }
   };
 
@@ -184,8 +188,8 @@ const ManageUsers: React.FC<Props> = ({
         ),
       },
     })
-      .then(() => {
-        getUsers();
+      .then(async () => {
+        await getUsers();
         updateIsUserEdited(false);
         const fullName = displayFullName(
           userWithPermissions?.firstName,
@@ -225,14 +229,20 @@ const ManageUsers: React.FC<Props> = ({
         throw new Error("Error adding user");
       }
 
-      await getUsers();
       const fullName = displayFullName(firstName, "", lastName);
+
+      await getUsers();
+      updateActiveUser({
+        ...newUserInvite,
+        id: addedUser,
+      } as LimitedUser);
+
       showSuccess(
         "They will receive an invitation to create an account at the email address provided",
         `Invitation sent to ${fullName}`
       );
       updateShowAddUserModal(false);
-      setAddedUserId(addedUser);
+
       setIsUpdating(false);
     } catch (e: any) {
       setIsUpdating(false);
@@ -331,10 +341,16 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowDeleteUserModal(false);
-      setDeletedUserId(userId);
-      showSuccess("", `User account removed for ${fullName}`);
+
+      const nextUser: LimitedUser =
+        sortedUsers[0].id === userId && sortedUsers.length > 1
+          ? sortedUsers[1]
+          : sortedUsers[0];
+
       await getUsers();
+      updateActiveUser(nextUser);
+      showSuccess("", `User account removed for ${fullName}`);
+      updateShowDeleteUserModal(false);
     } catch (e: any) {
       setError(e);
     }
@@ -379,47 +395,13 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
-  // Default to first user
-  useEffect(() => {
-    if (!activeUser && sortedUsers.length) {
-      updateActiveUser(sortedUsers[0]);
-      queryUserWithPermissions();
-    }
-  }, [activeUser, sortedUsers, queryUserWithPermissions]);
-
-  // Navigate to added user, if applicable
-  useEffect(() => {
-    if (addedUserId && usersState[addedUserId]) {
-      updateActiveUser(usersState[addedUserId]);
-      queryUserWithPermissions();
-      setAddedUserId(undefined);
-    }
-  }, [addedUserId, usersState, queryUserWithPermissions]);
-
-  // Navigate to correct user on user deletion (first sorted, unless the deleted user was first)
-  useEffect(() => {
-    if (deletedUserId) {
-      const nextUser: LimitedUser =
-        sortedUsers[0].id === deletedUserId && sortedUsers.length > 1
-          ? sortedUsers[1]
-          : sortedUsers[0];
-      updateActiveUser(nextUser);
-      queryUserWithPermissions();
-      setDeletedUserId(undefined);
-    }
-  }, [deletedUserId, sortedUsers, queryUserWithPermissions]);
-
-  // If there's no userWithPermisions, call the permissions query again
-  useEffect(() => {
-    if (userWithPermissions === undefined) {
-      queryUserWithPermissions();
-    }
-  }, [queryUserWithPermissions, userWithPermissions]);
-
   const user: SettingsUser = userWithPermissions
     ? userWithPermissions
     : emptySettingsUser;
 
+  /**
+   * HTML
+   */
   return (
     <div className="prime-container card-container manage-users-card">
       <div className="usa-card__header">
@@ -431,9 +413,9 @@ const ManageUsers: React.FC<Props> = ({
       </div>
       {showAddUserModal ? (
         <CreateUserModal
-          isUpdating={isUpdating}
           onClose={() => updateShowAddUserModal(false)}
           onSubmit={handleAddUserToOrg}
+          isUpdating={isUpdating}
         />
       ) : null}
       {!activeUser || !localUsers.length ? (
