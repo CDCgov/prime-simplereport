@@ -80,10 +80,10 @@ describe("Conducting a COVID test", () => {
       cy.get('.prime-radios input[value="NEGATIVE"]+label').click();
     });
 
-    cy.wait("@GetFacilityQueue", {timeout: 20000});
+    cy.wait("@EditQueueItem");
 
     cy.get(queueCard).within(() => {
-      cy.get(".prime-test-result-submit button").last().should("be.enabled").click();
+      cy.get(".prime-test-result-submit button").last().click();
     });
 
     cy.wait("@SubmitQueueItem");
