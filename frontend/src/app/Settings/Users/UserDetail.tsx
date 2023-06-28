@@ -9,6 +9,7 @@ import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactiva
 import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
 import Prompt from "../../utils/Prompt";
 import { OktaUserStatus } from "../../utils/user";
+import Alert from "../../commonComponents/Alert";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
@@ -22,6 +23,7 @@ import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import EditUserNameModal from "./EditUserNameModal";
 import EditUserEmailModal from "./EditUserEmailModal";
 import ResetUserMfaModal from "./ResetUserMfaModal";
+
 import "./ManageUsers.scss";
 
 interface Props {
@@ -157,6 +159,23 @@ const SpecialStatusNotice: React.FC<{
       {userStatusInfo()}
     </div>
   );
+};
+
+const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
+  if (
+    user?.id &&
+    (!user?.organization?.testingFacility ||
+      user?.organization?.testingFacility.length === 0)
+  ) {
+    return (
+      <Alert
+        type={"warning"}
+        title={"No facility assigned"}
+        body={"All users must have access to at least one facility"}
+      />
+    );
+  }
+  return null;
 };
 
 const UserDetail: React.FC<Props> = ({
@@ -393,6 +412,7 @@ const UserDetail: React.FC<Props> = ({
           updateShowResendUserActivationEmailModal
         }
       />
+      <NoFacilityWarning user={user} />
       <nav
         className="prime-secondary-nav margin-top-4 padding-bottom-0"
         aria-label="User action navigation"
