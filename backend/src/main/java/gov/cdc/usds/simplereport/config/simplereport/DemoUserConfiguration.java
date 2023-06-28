@@ -26,11 +26,11 @@ public class DemoUserConfiguration {
   private Map<String, DemoUser> byUsername;
   private Set<String> siteAdminEmails;
 
-  @ConstructorBinding
   public DemoUserConfiguration(List<DemoUser> allUsers) {
     this(null, allUsers, null);
   }
 
+  @ConstructorBinding
   public DemoUserConfiguration(
       DemoUser defaultUser, List<DemoUser> alternateUsers, List<String> siteAdminEmails) {
     super();
@@ -68,6 +68,7 @@ public class DemoUserConfiguration {
     private DemoAuthorization authorization;
     private IdentityAttributes identity;
 
+    @ConstructorBinding
     public DemoUser(DemoAuthorization authorization, IdentityAttributes identity) {
       super();
       this.authorization = authorization;
@@ -92,6 +93,7 @@ public class DemoUserConfiguration {
     private Set<String> facilities;
     private Set<OrganizationRole> grantedRoles;
 
+    @ConstructorBinding
     public DemoAuthorization(
         String organizationExternalId, Set<String> facilities, Set<OrganizationRole> grantedRoles) {
       super();
