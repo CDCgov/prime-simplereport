@@ -86,6 +86,7 @@ describe("Testing with multiplex devices", () => {
       );
       cy.get('input[name="inconclusive-tests"]')
         .should("not.be.checked")
+        .should("be.enabled")
         .siblings("label")
         .click();
     });
