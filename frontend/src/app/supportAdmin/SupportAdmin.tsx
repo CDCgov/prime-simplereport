@@ -1,5 +1,4 @@
 import { useFeature } from "flagged";
-import React from "react";
 
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
