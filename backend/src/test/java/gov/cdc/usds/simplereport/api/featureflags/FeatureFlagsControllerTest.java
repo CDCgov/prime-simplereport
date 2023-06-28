@@ -14,7 +14,7 @@ class FeatureFlagsControllerTest {
 
   @BeforeEach
   void setup() {
-    _mockFeatureFlagConfig.setMultiplexEnabled(true);
+    _mockFeatureFlagConfig.getFeatureFlagProperties().setMultiplexEnabled(true);
     this.featureFlagsController = new FeatureFlagsController();
     ReflectionTestUtils.setField(
         this.featureFlagsController, "featureFlags", _mockFeatureFlagConfig);
@@ -22,6 +22,8 @@ class FeatureFlagsControllerTest {
 
   @Test
   void endpointReturnsFeatureFlagsConfigObj() {
-    assertEquals(this._mockFeatureFlagConfig, this.featureFlagsController.getFeatureFlags());
+    assertEquals(
+        this._mockFeatureFlagConfig.getFeatureFlagProperties(),
+        this.featureFlagsController.getFeatureFlags());
   }
 }

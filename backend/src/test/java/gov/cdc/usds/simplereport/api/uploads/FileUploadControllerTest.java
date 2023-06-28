@@ -37,7 +37,7 @@ class FileUploadControllerTest {
     FeedbackMessage[] empty = {};
     var expected =
         new TestResultUpload(UUID.randomUUID(), UploadStatus.SUCCESS, 0, null, empty, empty);
-    when(featureFlagsConfig.isHivEnabled()).thenReturn(true);
+    when(featureFlagsConfig.getFeatureFlagProperties().isHivEnabled()).thenReturn(true);
     when(file.getContentType()).thenReturn("text/csv");
     when(file.getInputStream()).thenReturn(stream);
     when(testResultUploadService.processHIVResultCSV(stream)).thenReturn(expected);
@@ -51,7 +51,7 @@ class FileUploadControllerTest {
   @Test
   void handleHIVResultsUpload_handlesIoException() throws IOException {
     var file = mock(MultipartFile.class);
-    when(featureFlagsConfig.isHivEnabled()).thenReturn(true);
+    when(featureFlagsConfig.getFeatureFlagProperties().isHivEnabled()).thenReturn(true);
     when(file.getContentType()).thenReturn("text/csv");
     when(file.getInputStream()).thenThrow(IOException.class);
 
