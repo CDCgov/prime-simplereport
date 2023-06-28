@@ -111,19 +111,21 @@ public class BulkUploadResultsToFhir {
       futureTestEvents.add(future);
     }
 
-    List<String> bundles = futureTestEvents.stream()
-        .map(
-            future -> {
-              try {
-                return future.get();
-              } catch (InterruptedException | ExecutionException e) {
-                log.error("Bulk upload failure to convert to fhir.", e);
-                Thread.currentThread().interrupt();
-                throw new CsvProcessingException("Unable to process file.");
-              }
-            })
-        .collect(Collectors.toList());
+    List<String> bundles =
+        futureTestEvents.stream()
+            .map(
+                future -> {
+                  try {
+                    return future.get();
+                  } catch (InterruptedException | ExecutionException e) {
+                    log.error("Bulk upload failure to convert to fhir.", e);
+                    Thread.currentThread().interrupt();
+                    throw new CsvProcessingException("Unable to process file.");
+                  }
+                })
+            .collect(Collectors.toList());
 
+    // Clear cache to free memory
     addressValidationService.clearAddressTimezoneLookupCache();
 
     return bundles;
@@ -157,11 +159,14 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderZipCode().getValue(),
             null);
 
+    // Must be zoned because DateTimeType fields on FHIR bundle objects require
+    // a Date as a specific moment of time. Otherwise, parsing the string to a
+    // LocalDateTime cannot accurately place it on a timeline because there is
+    // no way to know if 00:00 refers to 12am ET or 12am PT or 12am UTC, each of
+    // which is a different moment of time and potentially even a different day
     var testResultDate =
-            convertToZonedDateTime(
-                    row.getTestResultDate().getValue(),
-                    addressValidationService,
-                    testingLabAddr);
+        convertToZonedDateTime(
+            row.getTestResultDate().getValue(), addressValidationService, testingLabAddr);
 
     List<PhoneNumber> patientPhoneNumbers =
         StringUtils.isNotBlank(row.getPatientPhoneNumber().getValue())

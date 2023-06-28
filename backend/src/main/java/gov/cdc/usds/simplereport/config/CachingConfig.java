@@ -12,14 +12,14 @@ public class CachingConfig {
 
   public static final String DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP =
       "deviceModelAndTestPerformedCodeMap";
-
   public static final String SPECIMEN_NAME_AND_SNOMED_MAP = "specimenTypeNameSNOMEDMap";
-
-  public static final String ADDRESS_TIMEZONE_LOOKUP_MAP = "addressLookupMap";
+  public static final String ADDRESS_TIMEZONE_LOOKUP_MAP = "addressTimezoneLookupMap";
 
   @Bean
   public CacheManager cacheManager() {
     return new ConcurrentMapCacheManager(
-        DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP, SPECIMEN_NAME_AND_SNOMED_MAP, ADDRESS_TIMEZONE_LOOKUP_MAP);
+        DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP,
+        SPECIMEN_NAME_AND_SNOMED_MAP,
+        ADDRESS_TIMEZONE_LOOKUP_MAP);
   }
 }

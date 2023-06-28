@@ -56,10 +56,12 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
+import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -791,6 +793,12 @@ public class FhirConverter {
     return serviceRequest;
   }
 
+  /**
+   * Used during single entry FHIR conversion
+   *
+   * @param testEvent single entry test event
+   * @return DiagnosticReport
+   */
   public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
     DiagnosticReportStatus status = null;
     switch (testEvent.getCorrectionStatus()) {
@@ -814,12 +822,9 @@ public class FhirConverter {
 
     ZonedDateTime dateTested = null;
     if (testEvent.getDateTested() != null) {
-      var zoneId =
-          addressValidationService.getZoneIdByAddress(testEvent.getFacility().getAddress());
-      if (zoneId == null) {
-        zoneId = FALLBACK_TIME_ZONE_ID;
-      }
-      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), zoneId);
+      // getDateTested returns a Date representing an exact moment of time so
+      // finding a specific timezone for the TestEvent is not required to ensure it is accurate
+      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC);
     }
 
     return convertToDiagnosticReport(
@@ -862,6 +867,14 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
+  /**
+   * @param testEvent The single entry test event created in {@code TestOrderService}
+   * @param gitProperties
+   * @param currentDate
+   * @param processingId
+   * @return FHIR bundle
+   * @see TestOrderService
+   */
   public Bundle createFhirBundle(
       @NotNull TestEvent testEvent,
       GitProperties gitProperties,

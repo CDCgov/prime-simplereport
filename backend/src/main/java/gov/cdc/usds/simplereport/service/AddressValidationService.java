@@ -157,7 +157,7 @@ public class AddressValidationService {
     return ZoneId.of("US/" + timezoneInfo.timezoneCommonName);
   }
 
-  @CacheEvict(cacheNames=ADDRESS_TIMEZONE_LOOKUP_MAP, allEntries=true)
+  @CacheEvict(cacheNames = ADDRESS_TIMEZONE_LOOKUP_MAP, allEntries = true)
   public void clearAddressTimezoneLookupCache() {
     log.info("clear address timezone lookup cache");
   }
