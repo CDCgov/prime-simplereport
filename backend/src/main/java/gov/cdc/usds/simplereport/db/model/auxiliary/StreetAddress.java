@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import org.hibernate.annotations.Type;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /** An embeddable address type for patients, facilities and providers. */
 @Embeddable
@@ -47,6 +48,7 @@ public class StreetAddress {
   }
 
   /** Convenience constructor for situations where we have a two-line address already */
+  @ConstructorBinding
   public StreetAddress(
       String street1, String street2, String city, String state, String postalCode, String county) {
     this(null, city, state, postalCode, county);
