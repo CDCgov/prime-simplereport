@@ -47,10 +47,14 @@ public class CsvValidatorUtils {
 
   // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
   private static final String DATE_TIME_REGEX =
-      "^(0{0,1}[1-9]|1[0-2])\\/" + // month
-      "(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/" + // day
-      "\\d{4}" + // year
-      "( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( [A-Z]{2,5})?)?$"; // optional time with optional timezone
+      "^(0{0,1}[1-9]|1[0-2])\\/"
+          + // month
+          "(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/"
+          + // day
+          "\\d{4}"
+          + // year
+          "( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( [A-Z]{2,5})?)?$"; // optional time with optional
+  // timezone
 
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
@@ -305,8 +309,9 @@ public class CsvValidatorUtils {
     String value = input.getValue();
     String timezoneCode = value.substring(value.lastIndexOf(' ')).trim();
     if (!ZoneId.getAvailableZoneIds().contains(timezoneCode)
-            && !validTimeZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
-      errors.add(FeedbackMessage.builder()
+        && !validTimeZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
+      errors.add(
+          FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))

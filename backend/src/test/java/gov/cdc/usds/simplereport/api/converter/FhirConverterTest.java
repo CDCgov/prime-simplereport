@@ -955,7 +955,7 @@ class FhirConverterTest {
     expectedSerialized =
         expectedSerialized.replace(
             "$EFFECTIVE_DATE_TIME_TESTED",
-            new DateTimeType(date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("US/Eastern"))
+            new DateTimeType(date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("UTC"))
                 .getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
@@ -1489,8 +1489,7 @@ class FhirConverterTest {
     expectedSerialized =
         expectedSerialized.replace(
             "$EFFECTIVE_DATE_TIME_TESTED",
-            new DateTimeType(
-                    dateTested, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("US/Eastern"))
+            new DateTimeType(dateTested, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("UTC"))
                 .getValueAsString());
     expectedSerialized =
         expectedSerialized.replace(

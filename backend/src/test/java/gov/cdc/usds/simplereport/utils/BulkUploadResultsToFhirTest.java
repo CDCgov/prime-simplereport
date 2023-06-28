@@ -63,7 +63,7 @@ public class BulkUploadResultsToFhirTest {
   @BeforeEach
   public void beforeEach() {
     resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
-    FhirConverter fhirConverter = new FhirConverter(uuidGenerator, addressValidationService);
+    FhirConverter fhirConverter = new FhirConverter(uuidGenerator);
     sut =
         new BulkUploadResultsToFhir(
             resultsUploaderDeviceValidationService,
@@ -218,7 +218,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator, addressValidationService));
+            new FhirConverter(mockedUUIDGenerator));
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid.csv");
 

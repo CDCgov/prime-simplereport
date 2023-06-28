@@ -55,7 +55,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
@@ -130,8 +129,6 @@ public class FhirConverter {
   private final UUIDGenerator uuidGenerator;
 
   private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
-  public static final ZoneId FALLBACK_TIME_ZONE_ID = ZoneId.of("US/Eastern");
-  private final AddressValidationService addressValidationService;
 
   public HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(
@@ -869,9 +866,9 @@ public class FhirConverter {
 
   /**
    * @param testEvent The single entry test event created in {@code TestOrderService}
-   * @param gitProperties
-   * @param currentDate
-   * @param processingId
+   * @param gitProperties Git properties
+   * @param currentDate Current date
+   * @param processingId Processing id
    * @return FHIR bundle
    * @see TestOrderService
    */
