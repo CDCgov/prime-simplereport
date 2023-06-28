@@ -1,7 +1,8 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.FALLBACK_TIME_ZONE_ID;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
@@ -27,10 +28,6 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,8 +57,6 @@ public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
   private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
   private final AddressValidationService addressValidationService;
   private final GitProperties gitProperties;
@@ -116,7 +111,7 @@ public class BulkUploadResultsToFhir {
       futureTestEvents.add(future);
     }
 
-    return futureTestEvents.stream()
+    List<String> bundles = futureTestEvents.stream()
         .map(
             future -> {
               try {
@@ -128,51 +123,14 @@ public class BulkUploadResultsToFhir {
               }
             })
         .collect(Collectors.toList());
-  }
 
-  public LocalDateTime parseToLocalDateTime(String value, DateTimeFormatter dateTimeFormatter) {
-    LocalDateTime localDateTime;
-    var temporalAccessor = dateTimeFormatter.parseBest(value, LocalDateTime::from, LocalDate::from);
-    if (temporalAccessor instanceof LocalDateTime) {
-      localDateTime = (LocalDateTime) temporalAccessor;
-    } else {
-      localDateTime = ((LocalDate) temporalAccessor).atStartOfDay();
-    }
-    return localDateTime;
-  }
+    addressValidationService.clearAddressTimezoneLookupCache();
 
-  public ZonedDateTime getZonedDateTimeByAddress(
-      LocalDateTime localDateTime, StreetAddress address) {
-    ZoneId localZoneId = addressValidationService.getZoneIdByAddress(address);
-    if (localZoneId == null) {
-      localZoneId = FALLBACK_TIME_ZONE_ID;
-    }
-    return ZonedDateTime.of(localDateTime, localZoneId);
-  }
-
-  /**
-   * @param row the test result row
-   * @return the test result date with time zone info based on the testing lab address. If the
-   *     address cannot be validated, default time zone used is {@link
-   *     FhirConverter#FALLBACK_TIME_ZONE_ID}
-   */
-  private ZonedDateTime getTestResultZonedDateTime(TestResultRow row) {
-    var localDateTime =
-        parseToLocalDateTime(row.getTestResultDate().getValue(), DATE_TIME_FORMATTER);
-    var testingLabAddress =
-        new StreetAddress(
-            row.getTestingLabStreet().getValue(),
-            row.getTestingLabStreet2().getValue(),
-            row.getTestingLabCity().getValue(),
-            row.getTestingLabState().getValue(),
-            row.getTestingLabZipCode().getValue(),
-            null);
-    return getZonedDateTimeByAddress(localDateTime, testingLabAddress);
+    return bundles;
   }
 
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
     var testEventId = row.getAccessionNumber().getValue();
-    var testResultZonedDate = getTestResultZonedDateTime(row);
 
     var patientAddr =
         new StreetAddress(
@@ -198,6 +156,12 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderState().getValue(),
             row.getOrderingProviderZipCode().getValue(),
             null);
+
+    var testResultDate =
+            convertToZonedDateTime(
+                    row.getTestResultDate().getValue(),
+                    addressValidationService,
+                    testingLabAddr);
 
     List<PhoneNumber> patientPhoneNumbers =
         StringUtils.isNotBlank(row.getPatientPhoneNumber().getValue())
@@ -356,7 +320,7 @@ public class BulkUploadResultsToFhir {
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
-                    .issued(Date.from(testResultZonedDate.toInstant()))
+                    .issued(Date.from(testResultDate.toInstant()))
                     .build()));
 
     LocalDate symptomOnsetDate = null;
@@ -390,7 +354,7 @@ public class BulkUploadResultsToFhir {
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            testResultZonedDate,
+            testResultDate,
             dateGenerator.newDate());
 
     return fhirConverter.createFhirBundle(

@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +46,10 @@ public class CsvValidatorUtils {
 
   // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
   private static final String DATE_TIME_REGEX =
-      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
+      "^(0{0,1}[1-9]|1[0-2])\\/" + // month
+      "(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/" + // day
+      "\\d{4}" + // year
+      "( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( [A-Z]{2,5})?)?$"; // optional time with optional timezone
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
@@ -284,7 +289,32 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    return validateRegex(input, DATE_TIME_REGEX);
+    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
+    // If value passes regex and has 3 space-delimited substrings, last substring must be timezone code
+    if (input.getValue() != null) {
+      int substrings = input.getValue().split(" ").length;
+      if (errors.size() == 0 && substrings == 3) {
+        errors.addAll(validateDateTimeZoneCode(input));
+      }
+    }
+    return errors;
+  }
+
+  public static List<FeedbackMessage> validateDateTimeZoneCode(ValueOrError input) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = input.getValue();
+    String timezoneCode = value.substring(value.lastIndexOf(' ')).trim();
+    if (!ZoneId.getAvailableZoneIds().contains(timezoneCode)
+            && !validTimeZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
+      errors.add(FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .fieldRequired(false)
+              .build());
+    }
+    return errors;
   }
 
   public static List<FeedbackMessage> validateEmail(ValueOrError input) {

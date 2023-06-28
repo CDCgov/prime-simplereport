@@ -15,9 +15,11 @@ public class CachingConfig {
 
   public static final String SPECIMEN_NAME_AND_SNOMED_MAP = "specimenTypeNameSNOMEDMap";
 
+  public static final String ADDRESS_TIMEZONE_LOOKUP_MAP = "addressLookupMap";
+
   @Bean
   public CacheManager cacheManager() {
     return new ConcurrentMapCacheManager(
-        DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP, SPECIMEN_NAME_AND_SNOMED_MAP);
+        DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP, SPECIMEN_NAME_AND_SNOMED_MAP, ADDRESS_TIMEZONE_LOOKUP_MAP);
   }
 }
