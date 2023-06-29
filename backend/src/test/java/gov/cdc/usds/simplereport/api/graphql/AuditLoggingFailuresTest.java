@@ -45,7 +45,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 /**
@@ -60,7 +59,6 @@ import org.springframework.web.reactive.function.client.WebClientRequestExceptio
  * in any case what the graphql tests use, so there is no additional cost).
  */
 @Slf4j
-@TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class AuditLoggingFailuresTest extends BaseGraphqlTest {
 
   @Autowired private TestRestTemplate _restTemplate;

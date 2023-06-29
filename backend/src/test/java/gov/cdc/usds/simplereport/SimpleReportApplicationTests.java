@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-@SpringBootTest(
-    webEnvironment = WebEnvironment.RANDOM_PORT,
-    properties = {"hibernate.query.interceptor.error-level=EXCEPTION"})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SimpleReportApplicationTests {
 
   @Autowired private SimpleReportApplication application;
