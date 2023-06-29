@@ -27,6 +27,7 @@ import { deviceRequiredErrMsg, facilityInfoErrMsgs } from "./constants";
 
 export type FacilityFormData = {
   facility: {
+    id?: string;
     name: string;
     phone: string;
     email: string | null;
@@ -114,7 +115,7 @@ const FacilityForm: React.FC<Props> = (props) => {
     getValues,
     getFieldState,
     clearErrors,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isDirty },
   } = useForm({
     defaultValues: getDefaultValues(facility),
   });
@@ -362,7 +363,7 @@ const FacilityForm: React.FC<Props> = (props) => {
                 className="margin-right-0 margin-top-05"
                 type="submit"
                 label="Save changes"
-                disabled={isSubmitting || !isDirty}
+                disabled={!isDirty}
               />
             </div>
           </div>
@@ -412,7 +413,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             className="margin-right-0"
             type="submit"
             label="Save changes"
-            disabled={isSubmitting || !isDirty}
+            disabled={!isDirty}
           />
         </div>
         <AddressConfirmationModal
