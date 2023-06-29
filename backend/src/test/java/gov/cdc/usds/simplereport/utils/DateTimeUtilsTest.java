@@ -25,6 +25,7 @@ public class DateTimeUtilsTest {
   void testConvertToZonedDateTime_withValidTimezoneSuffix() {
     var date = "6/28/2023 14:00 MST";
     var address = new StreetAddress(null, null, null, null, null);
+    when(addressValidationService.getZoneIdByAddress(any())).thenCallRealMethod();
     var expectedZonedDateTime =
         ZonedDateTime.of(2023, 6, 28, 14, 0, 0, 0, ZoneId.of("US/Mountain"));
 
@@ -49,6 +50,7 @@ public class DateTimeUtilsTest {
   void testConvertToZonedDateTime_withFallback() {
     var date = "6/28/2023 14:00";
     var address = new StreetAddress(null, null, null, null, null);
+    when(addressValidationService.getZoneIdByAddress(any())).thenCallRealMethod();
     var expectedZonedDateTime = ZonedDateTime.of(2023, 6, 28, 14, 0, 0, 0, ZoneId.of("US/Eastern"));
 
     var actualZonedDateTime = convertToZonedDateTime(date, addressValidationService, address);
@@ -60,6 +62,7 @@ public class DateTimeUtilsTest {
   void testConvertToZonedDateTime_withICANNTzIdentifier() {
     var date = "6/28/2023 14:00 US/Samoa";
     var address = new StreetAddress(null, null, null, null, null);
+    when(addressValidationService.getZoneIdByAddress(any())).thenCallRealMethod();
     var expectedZonedDateTime = ZonedDateTime.of(2023, 6, 28, 14, 0, 0, 0, ZoneId.of("US/Samoa"));
 
     var actualZonedDateTime = convertToZonedDateTime(date, addressValidationService, address);

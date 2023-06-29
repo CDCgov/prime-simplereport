@@ -295,10 +295,10 @@ public class CsvValidatorUtils {
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
     List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
-    if (input.getValue() != null) {
-      if (errors.size() == 0 && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
-        errors.addAll(validateDateTimeZoneCode(input));
-      }
+    if (input.getValue() != null
+        && errors.isEmpty()
+        && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
+      errors.addAll(validateDateTimeZoneCode(input));
     }
     return errors;
   }

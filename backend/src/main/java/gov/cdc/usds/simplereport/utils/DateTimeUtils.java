@@ -6,10 +6,14 @@ import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DateTimeUtils {
   /**
    * Noon instead of midnight so that if fallback timezone of US/Eastern is used, value is still
@@ -23,35 +27,44 @@ public class DateTimeUtils {
   public static final String TIMEZONE_SUFFIX_REGEX =
       "^(0?[1-9]|1[0-2])/(0?[1-9]|1\\d|2\\d|3[01])/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])( \\S+)$";
 
-  public static ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
+  public static final ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 
-  public static Map<String, ZoneId> validTimeZoneIdMap =
+  private static final ZoneId easternTimeZoneId = ZoneId.of("US/Eastern");
+  private static final ZoneId centralTimeZoneId = ZoneId.of("US/Central");
+  private static final ZoneId mountainTimeZoneId = ZoneId.of("US/Mountain");
+  private static final ZoneId pacificTimeZoneId = ZoneId.of("US/Pacific");
+  private static final ZoneId alaskaTimeZoneId = ZoneId.of("US/Alaska");
+  private static final ZoneId hawaiiTimeZoneId = ZoneId.of("US/Hawaii");
+  private static final ZoneId aleutianTimeZoneId = ZoneId.of("US/Aleutian");
+  private static final ZoneId samoaTimeZoneId = ZoneId.of("US/Samoa");
+
+  public static final Map<String, ZoneId> validTimeZoneIdMap =
       Map.ofEntries(
-          Map.entry("UTC", ZoneId.of("UTC")),
-          Map.entry("UT", ZoneId.of("UTC")),
-          Map.entry("GMT", ZoneId.of("UTC")),
-          Map.entry("Z", ZoneId.of("UTC")),
-          Map.entry("ET", ZoneId.of("US/Eastern")),
-          Map.entry("EST", ZoneId.of("US/Eastern")),
-          Map.entry("EDT", ZoneId.of("US/Eastern")),
-          Map.entry("CT", ZoneId.of("US/Central")),
-          Map.entry("CST", ZoneId.of("US/Central")),
-          Map.entry("CDT", ZoneId.of("US/Central")),
-          Map.entry("MT", ZoneId.of("US/Mountain")),
-          Map.entry("MST", ZoneId.of("US/Mountain")),
-          Map.entry("MDT", ZoneId.of("US/Mountain")),
-          Map.entry("PT", ZoneId.of("US/Pacific")),
-          Map.entry("PST", ZoneId.of("US/Pacific")),
-          Map.entry("PDT", ZoneId.of("US/Pacific")),
-          Map.entry("AK", ZoneId.of("US/Alaska")),
-          Map.entry("AKDT", ZoneId.of("US/Alaska")),
-          Map.entry("AKST", ZoneId.of("US/Alaska")),
-          Map.entry("HI", ZoneId.of("US/Hawaii")),
-          Map.entry("HST", ZoneId.of("US/Hawaii")),
-          Map.entry("HDT", ZoneId.of("US/Aleutian")),
-          Map.entry("AS", ZoneId.of("US/Samoa")),
-          Map.entry("ASM", ZoneId.of("US/Samoa")),
-          Map.entry("SST", ZoneId.of("US/Samoa")));
+          Map.entry("UTC", ZoneOffset.UTC),
+          Map.entry("UT", ZoneOffset.UTC),
+          Map.entry("GMT", ZoneOffset.UTC),
+          Map.entry("Z", ZoneOffset.UTC),
+          Map.entry("ET", easternTimeZoneId),
+          Map.entry("EST", easternTimeZoneId),
+          Map.entry("EDT", easternTimeZoneId),
+          Map.entry("CT", centralTimeZoneId),
+          Map.entry("CST", centralTimeZoneId),
+          Map.entry("CDT", centralTimeZoneId),
+          Map.entry("MT", mountainTimeZoneId),
+          Map.entry("MST", mountainTimeZoneId),
+          Map.entry("MDT", mountainTimeZoneId),
+          Map.entry("PT", pacificTimeZoneId),
+          Map.entry("PST", pacificTimeZoneId),
+          Map.entry("PDT", pacificTimeZoneId),
+          Map.entry("AK", alaskaTimeZoneId),
+          Map.entry("AKDT", alaskaTimeZoneId),
+          Map.entry("AKST", alaskaTimeZoneId),
+          Map.entry("HI", hawaiiTimeZoneId),
+          Map.entry("HST", hawaiiTimeZoneId),
+          Map.entry("HDT", aleutianTimeZoneId),
+          Map.entry("AS", samoaTimeZoneId),
+          Map.entry("ASM", samoaTimeZoneId),
+          Map.entry("SST", samoaTimeZoneId));
 
   public static ZonedDateTime convertToZonedDateTime(
       String dateString,
