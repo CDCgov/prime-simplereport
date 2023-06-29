@@ -40,6 +40,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.service.datasource.QueryCountService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -1291,10 +1292,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(p, facility);
 
     // count queries
-    long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    long startQueryCount = QueryCountService.get().getSelect();
     _service.getFacilityTestEventsResults(
         facility.getInternalId(), null, null, null, null, null, 0, 50);
-    long firstPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    long firstPassTotal = QueryCountService.get().getSelect() - startQueryCount;
 
     // add more data
     _dataFactory.createTestEvent(p, facility);
@@ -1304,10 +1305,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _dataFactory.createTestEvent(p, facility);
 
     // count queries again and make sure queries made didn't increase
-    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    startQueryCount = QueryCountService.get().getSelect();
     _service.getFacilityTestEventsResults(
         facility.getInternalId(), null, null, null, null, null, 0, 50);
-    long secondPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    long secondPassTotal = QueryCountService.get().getSelect() - startQueryCount;
     assertEquals(firstPassTotal, secondPassTotal);
   }
 
@@ -1347,9 +1348,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         facilityId, p1, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
 
     // get the first query count
-    long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    long startQueryCount = QueryCountService.get().getSelect();
     _service.getQueue(facility.getInternalId());
-    long firstRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    long firstRunCount = QueryCountService.get().getSelect() - startQueryCount;
 
     for (int ii = 0; ii < 2; ii++) {
       // add more tests to the queue. (which needs more patients)
@@ -1380,9 +1381,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
           facilityId, p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
     }
 
-    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    startQueryCount = QueryCountService.get().getSelect();
     _service.getQueue(facility.getInternalId());
-    long secondRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    long secondRunCount = QueryCountService.get().getSelect() - startQueryCount;
     assertEquals(firstRunCount, secondRunCount);
   }
 

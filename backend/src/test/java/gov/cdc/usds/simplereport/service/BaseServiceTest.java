@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
@@ -15,6 +14,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import net.ttddyy.dsproxy.QueryCountHolder;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
@@ -52,7 +52,6 @@ public abstract class BaseServiceTest<T> {
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired protected T _service;
-  @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
   @MockBean private CurrentOrganizationRolesContextHolder _currentOrganizationRolesContextHolder;
 
   private static final String SPRING_SECURITY_DENIED = "Access is denied";
@@ -63,14 +62,14 @@ public abstract class BaseServiceTest<T> {
     resetOkta();
     initCurrentUser();
     initDiseases();
-    _hibernateQueryInterceptor.startQueryCount(); // also resets count
+    QueryCountHolder.clear();
   }
 
   @AfterEach
   protected void afterEach() {
     // see output saved to backend/build/test-results/test
     LoggerFactory.getLogger(BaseServiceTest.class)
-        .info("Hibernate Total queries: {}", _hibernateQueryInterceptor.getQueryCount());
+        .info("Hibernate Total queries: {}", QueryCountHolder.getGrandTotal());
   }
 
   public void clearDb() {
