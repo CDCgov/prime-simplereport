@@ -16,7 +16,6 @@ Cypress.Commands.add("setPassword", () => {
   cy.get('input[name="confirm-password"]').type(pass);
   cy.get(submitButton).click();
   cy.contains("Select your security question");
-  cy.injectSRAxe();
   cy.checkA11y();
 });
 
@@ -27,7 +26,6 @@ Cypress.Commands.add("setSecurityQuestion", () => {
   cy.get('input[name="answer"]').type("Jane Doe");
   cy.get(submitButton).click();
   cy.contains("Set up authentication");
-  cy.injectSRAxe();
   cy.checkA11y();
 });
 
@@ -41,7 +39,6 @@ Cypress.Commands.add("mfaSelect", (choice) => {
 
 Cypress.Commands.add("enterPhoneNumber", () => {
   cy.contains("Get your security code via");
-  cy.injectSRAxe();
   cy.checkA11y();
   cy.get('input[name="phone-number"]').type("530867530");
   cy.contains("Get your security code via").click();
@@ -53,7 +50,6 @@ Cypress.Commands.add("enterPhoneNumber", () => {
 
 Cypress.Commands.add("scanQrCode", () => {
   cy.contains("Get your security code via");
-  cy.injectSRAxe();
   cy.checkA11y();
   cy.get(submitButton).click();
 });
@@ -61,7 +57,6 @@ Cypress.Commands.add("scanQrCode", () => {
 Cypress.Commands.add("verifySecurityCode", (code) => {
   cy.contains("Verify your security code.");
   cy.contains('One-time security code');
-  cy.injectSRAxe();
   cy.checkA11y();
   cy.get('input[name="security-code"]').type(code);
   cy.get(submitButton).first().click();
@@ -108,7 +103,6 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.injectSRAxe();
       cy.checkA11y();
     });
   });
@@ -120,6 +114,7 @@ describe("Okta account creation", () => {
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=NOr20VqF5M6m8AnwcSUJ");
       cy.contains("Create your password");
+      cy.injectSRAxe();
     });
     it("sets a password", () => {
       cy.setPassword();
@@ -138,7 +133,6 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.injectSRAxe();
       cy.checkA11y();
     });
   });
@@ -150,6 +144,7 @@ describe("Okta account creation", () => {
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=gqYPzH1FlPzVr0U3tQ7H");
       cy.contains("Create your password");
+      cy.injectSRAxe();
     });
     it("sets a password", () => {
       cy.setPassword();
@@ -168,7 +163,6 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.injectSRAxe();
       cy.checkA11y();
     });
   });
@@ -180,6 +174,7 @@ describe("Okta account creation", () => {
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=wN5mR-8SXao1TP2PLaFe");
       cy.contains("Create your password");
+      cy.injectSRAxe();
     });
     it("sets a password", () => {
       cy.setPassword();
@@ -198,7 +193,6 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.injectSRAxe();
       cy.checkA11y();
     });
   });
@@ -210,6 +204,7 @@ describe("Okta account creation", () => {
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=4OVwdVhc6M1I-UwvLrNX");
       cy.contains("Create your password");
+      cy.injectSRAxe();
     });
     it("sets a password", () => {
       cy.setPassword();
@@ -225,7 +220,6 @@ describe("Okta account creation", () => {
     });
     it("displays a success message", () => {
       cy.contains("Account set up complete");
-      cy.injectSRAxe();
       cy.checkA11y();
     });
   });
