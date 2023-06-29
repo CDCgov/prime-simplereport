@@ -22,6 +22,7 @@ Object {
             >
               <div>
                 <div
+                  aria-label="Alert: Problems saving data to server"
                   class="usa-alert usa-alert--error"
                   id="4ed92920-e42f-4b08-985f-111111111111"
                   role="alert"
@@ -89,6 +90,7 @@ Object {
           >
             <div>
               <div
+                aria-label="Alert: Problems saving data to server"
                 class="usa-alert usa-alert--error"
                 id="4ed92920-e42f-4b08-985f-111111111111"
                 role="alert"
@@ -213,6 +215,7 @@ Object {
             >
               <div>
                 <div
+                  aria-label="Alert: Success"
                   class="usa-alert usa-alert--success"
                   id="4ed92920-e42f-4b08-985f-111111111111"
                   role="region"
@@ -280,6 +283,7 @@ Object {
           >
             <div>
               <div
+                aria-label="Alert: Success"
                 class="usa-alert usa-alert--success"
                 id="4ed92920-e42f-4b08-985f-111111111111"
                 role="region"
