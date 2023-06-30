@@ -105,7 +105,6 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     assertEquals(List.of("submitQueueItem"), event.getGraphqlErrorPaths());
   }
 
-  // I tweaked the behavior to not return the original error message in order to improve security
   @Test
   void graphqlQuery_auditFailure_noDataReturned() {
     doThrow(new IllegalArgumentException("naughty naughty"))
@@ -119,7 +118,7 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         assertThrows(WebClientRequestException.class, () -> runQuery("update-time-of-test", args))
             .getMessage();
     assertEquals(
-        "Request processing failed; nested exception is header: Something went wrong; body: Please check for errors and try again; nested exception is org.springframework.web.util.NestedServletException: Request processing failed; nested exception is header: Something went wrong; body: Please check for errors and try again",
+        "Request processing failed: header: Something went wrong; body: Please check for errors and try again",
         clientErrorMessage);
   }
 
