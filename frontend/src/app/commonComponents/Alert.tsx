@@ -1,5 +1,6 @@
 import React from "react";
 import classnames from "classnames";
+import { v4 as uuidv4 } from "uuid";
 
 /**
  * Provides one of four standard alert types.
@@ -28,7 +29,7 @@ export interface AlertContent {
 interface Props {
   type: AlertType;
   role?: "alert" | "alertdialog" | "region";
-  title?: React.ReactNode;
+  title?: string;
   body?: React.ReactNode;
   children?: React.ReactNode;
   slim?: boolean;
@@ -63,18 +64,18 @@ const Alert = ({
     return "region";
   };
 
-  const id = `${getIdentifiedRole()}-${Date.now()}`;
+  const bodyId = uuidv4();
 
   return (
     <div
       className={classes}
-      id={id}
+      id={uuidv4()}
       role={getIdentifiedRole()}
-      aria-labelledby={`${id}-body`}
+      aria-label={title ? `Alert: ${title}` : undefined}
     >
       <div className="usa-alert__body">
         {title && <div className="usa-alert__heading text-bold">{title}</div>}
-        <div id={`${id}-body`} className="usa-alert__text">
+        <div id={bodyId} className="usa-alert__text">
           {body || children}
         </div>
       </div>
