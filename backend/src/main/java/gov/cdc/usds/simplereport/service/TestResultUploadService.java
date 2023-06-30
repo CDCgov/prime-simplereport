@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.ResultUploadError;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
@@ -285,6 +286,10 @@ public class TestResultUploadService {
     TestResultUpload result = null;
     if (response != null) {
       var status = UploadResponse.parseStatus(response.getOverallStatus());
+
+      for (var error : response.getErrors()) {
+        error.setSource(ResultUploadErrorSource.REPORTSTREAM);
+      }
 
       result =
           new TestResultUpload(

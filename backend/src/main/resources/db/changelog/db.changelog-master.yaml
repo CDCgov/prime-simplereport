@@ -4735,6 +4735,10 @@ databaseChangeLog:
             remarks: Create the enumerations for upload error types
             sql: |
               CREATE TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR as ENUM('HEADER_ERROR', 'INVALID_DATA', 'MISSING_DATA', 'INCORRECT_STRUCTURE');
+        - sql:
+            remarks: Create the enumerations for upload error sources
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.RESULT_UPLOAD_ERROR_SOURCE as ENUM('SIMPLEREPORT', 'REPORTSTREAM');
         - createTable:
             tableName: result_upload_error
             remarks: A collection of errors for bulk upload submission attempts.
@@ -4767,6 +4771,10 @@ databaseChangeLog:
                   name: required
                   type: boolean
                   remarks: Boolean value indicating whether the field is required
+              - column:
+                  name: source
+                  type: ${database.defaultSchemaName}.result_upload_error_source
+                  remarks: The system (SimpleReport or ReportStream) that returned the error
               - column:
                   name: message
                   type: text

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import javax.persistence.Column;
@@ -10,15 +11,9 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Type;
 
-@Getter
-@Setter
 @Entity
-@Slf4j
 @Table(name = "result_upload_error")
 public class ResultUploadError extends AuditedEntity {
   @ManyToOne(fetch = FetchType.LAZY)
@@ -34,15 +29,19 @@ public class ResultUploadError extends AuditedEntity {
   @Enumerated(EnumType.STRING)
   private ResultUploadErrorType type;
 
-  @Column()
+  @Column
   @Type(type = "text")
   private String field;
 
-  @Column()
+  @Column
+  @Type(type = "pg_enum")
+  private ResultUploadErrorSource source;
+
+  @Column
   @Type(type = "boolean")
   private boolean required;
 
-  @Column()
+  @Column
   @Type(type = "text")
   private String message;
 
@@ -51,6 +50,7 @@ public class ResultUploadError extends AuditedEntity {
   public ResultUploadError(Organization organization, FeedbackMessage feedbackMessage) {
     this.organization = organization;
     this.type = feedbackMessage.getErrorType();
+    this.source = feedbackMessage.getSource();
     this.field = feedbackMessage.getFieldHeader();
     this.required = feedbackMessage.isFieldRequired();
     this.message = feedbackMessage.getMessage();
@@ -61,6 +61,7 @@ public class ResultUploadError extends AuditedEntity {
     this.upload = upload;
     this.organization = organization;
     this.type = feedbackMessage.getErrorType();
+    this.source = feedbackMessage.getSource();
     this.field = feedbackMessage.getFieldHeader();
     this.required = feedbackMessage.isFieldRequired();
     this.message = feedbackMessage.getMessage();

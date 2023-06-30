@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service.model.reportstream;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import java.io.Serializable;
 import java.util.List;
@@ -23,4 +24,5 @@ public class FeedbackMessage implements Serializable {
   private String fieldHeader;
   private boolean fieldRequired;
   private ResultUploadErrorType errorType;
+  private ResultUploadErrorSource source;
 }
