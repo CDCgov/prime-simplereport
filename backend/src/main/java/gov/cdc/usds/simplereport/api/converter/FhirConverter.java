@@ -20,6 +20,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SY
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_EFFECTIVE_DATE_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTICIONER_IDENTIFIER_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
@@ -453,7 +454,8 @@ public class FhirConverter {
       String collectionCode,
       String collectionName,
       String id,
-      String identifier) {
+      String identifier,
+      Date collectionDate) {
     var specimen = new Specimen();
     specimen.setId(id);
     specimen.addIdentifier().setValue(identifier);
@@ -473,17 +475,24 @@ public class FhirConverter {
       codeableConcept.setText(collectionName);
     }
 
+    if (collectionDate != null) {
+      var collection = specimen.getCollection();
+      collection.setCollected(new DateTimeType(collectionDate).setTimeZoneZulu(true));
+    }
+
     return specimen;
   }
 
-  public Specimen convertToSpecimen(@NotNull SpecimenType specimenType, UUID specimenIdentifier) {
+  public Specimen convertToSpecimen(
+      @NotNull SpecimenType specimenType, UUID specimenIdentifier, Date collectionDate) {
     return convertToSpecimen(
         specimenType.getTypeCode(),
         specimenType.getName(),
         specimenType.getCollectionLocationCode(),
         specimenType.getCollectionLocationName(),
         specimenType.getInternalId().toString(),
-        specimenIdentifier.toString());
+        specimenIdentifier.toString(),
+        collectionDate);
   }
 
   public List<Observation> convertToObservation(
@@ -719,7 +728,7 @@ public class FhirConverter {
     observation.setValue(valueCodeableConcept);
   }
 
-  public ServiceRequest convertToServiceRequest(@NotNull TestOrder order) {
+  public ServiceRequest convertToServiceRequest(@NotNull TestOrder order, Date orderTestDate) {
     ServiceRequestStatus serviceRequestStatus = null;
     switch (order.getOrderStatus()) {
       case PENDING:
@@ -741,11 +750,14 @@ public class FhirConverter {
               order.getDeviceType().getSupportedDiseaseTestPerformed());
     }
     return convertToServiceRequest(
-        serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
+        serviceRequestStatus,
+        deviceLoincCode,
+        Objects.toString(order.getInternalId(), ""),
+        orderTestDate);
   }
 
   public ServiceRequest convertToServiceRequest(
-      ServiceRequestStatus status, String requestedCode, String id) {
+      ServiceRequestStatus status, String requestedCode, String id, Date orderEffectiveDate) {
     var serviceRequest = new ServiceRequest();
     serviceRequest.setId(id);
     serviceRequest.setIntent(ServiceRequestIntent.ORDER);
@@ -764,10 +776,16 @@ public class FhirConverter {
                     new Coding()
                         .setSystem(ORDER_CONTROL_CODE_SYSTEM)
                         .setCode(ORDER_CONTROL_CODE_OBSERVATIONS)));
+
+    serviceRequest
+        .addExtension()
+        .setUrl(ORDER_EFFECTIVE_DATE_EXTENSION_URL)
+        .setValue(new DateTimeType(orderEffectiveDate).setTimeZoneZulu(true));
+
     return serviceRequest;
   }
 
-  public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
+  public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent, Date currentDate) {
     DiagnosticReportStatus status = null;
     switch (testEvent.getCorrectionStatus()) {
       case ORIGINAL:
@@ -793,16 +811,21 @@ public class FhirConverter {
         code,
         Objects.toString(testEvent.getInternalId(), ""),
         testEvent.getDateTested(),
-        testEvent.getUpdatedAt());
+        currentDate);
   }
 
   public DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code, String id, Date dateTested, Date dateUpdated) {
+      DiagnosticReportStatus status, String code, String id, Date dateTested, Date currentDate) {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
             .setEffective(new DateTimeType(dateTested).setTimeZoneZulu(true))
-            .setIssued(dateUpdated);
+            .setIssued(currentDate);
+
+    diagnosticReport
+        .getIssuedElement()
+        .setTimeZoneZulu(true)
+        .setPrecision(TemporalPrecisionEnum.SECOND);
 
     // Allows EffectiveDateTimeType to be mocked during tests
     var localEffectiveDateTimeType = diagnosticReport.getEffectiveDateTimeType();
@@ -836,7 +859,8 @@ public class FhirConverter {
             .orderingFacility(null)
             .practitioner(convertToPractitioner(testEvent.getProviderData()))
             .device(convertToDevice(testEvent.getDeviceType()))
-            .specimen(convertToSpecimen(testEvent.getSpecimenType(), uuidGenerator.randomUUID()))
+            .specimen(
+                convertToSpecimen(testEvent.getSpecimenType(), uuidGenerator.randomUUID(), null))
             .resultObservations(
                 convertToObservation(
                     testEvent.getResults(),
@@ -847,8 +871,9 @@ public class FhirConverter {
             .aoeObservations(
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(), testEvent.getSurveyData()))
-            .serviceRequest(convertToServiceRequest(testEvent.getOrder()))
-            .diagnosticReport(convertToDiagnosticReport(testEvent))
+            .serviceRequest(
+                convertToServiceRequest(testEvent.getOrder(), testEvent.getDateTested()))
+            .diagnosticReport(convertToDiagnosticReport(testEvent, currentDate))
             .currentDate(currentDate)
             .gitProperties(gitProperties)
             .processingId(processingId)
