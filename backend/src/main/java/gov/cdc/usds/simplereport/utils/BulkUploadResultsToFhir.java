@@ -306,7 +306,8 @@ public class BulkUploadResultsToFhir {
             null,
             null,
             uuidGenerator.randomUUID().toString(),
-            uuidGenerator.randomUUID().toString());
+            uuidGenerator.randomUUID().toString(),
+            parseRowDateTimeValue(row.getSpecimenCollectionDate().getValue(), dateTimeFormatter));
 
     var observation =
         List.of(
@@ -352,7 +353,8 @@ public class BulkUploadResultsToFhir {
         fhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderLoinc,
-            uuidGenerator.randomUUID().toString());
+            uuidGenerator.randomUUID().toString(),
+            parseRowDateTimeValue(row.getOrderTestDate().getValue(), dateTimeFormatter));
 
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
@@ -423,5 +425,18 @@ public class BulkUploadResultsToFhir {
       default:
         return TestCorrectionStatus.ORIGINAL;
     }
+  }
+
+  private Date parseRowDateTimeValue(String val, DateTimeFormatter dateTimeFormatter) {
+    if (val == null || val.trim().isBlank()) return null;
+    LocalDateTime ldt;
+    TemporalAccessor temporalAccessor =
+        dateTimeFormatter.parseBest(val, LocalDateTime::from, LocalDate::from);
+    if (temporalAccessor instanceof LocalDateTime) {
+      ldt = (LocalDateTime) temporalAccessor;
+    } else {
+      ldt = ((LocalDate) temporalAccessor).atStartOfDay();
+    }
+    return Date.from(ldt.atZone(zoneIdGenerator.getSystemZoneId()).toInstant());
   }
 }

@@ -117,7 +117,7 @@
           "reference": "Patient/1234"
         },
         "effectiveDateTime": "2021-12-20T14:00:00-06:00",
-        "issued": "2023-05-24T19:33:06.472Z",
+        "issued": "2023-05-24T19:33:06Z",
         "specimen": [
           {
             "reference": "Specimen/00000000-0000-0000-0000-000000000004"
@@ -333,6 +333,9 @@
         ],
         "subject": {
           "reference": "Patient/1234"
+        },
+        "collection" : {
+          "collectedDateTime":"2021-12-20T14:00:00Z"
         }
       }
     },
@@ -352,6 +355,10 @@
                 }
               ]
             }
+          },
+          {
+            "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime":"2021-12-20T14:00:00Z"
           }
         ],
         "status": "completed",
