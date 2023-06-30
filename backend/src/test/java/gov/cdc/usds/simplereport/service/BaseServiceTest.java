@@ -53,7 +53,7 @@ public abstract class BaseServiceTest<T> {
   @Autowired protected T _service;
   @MockBean private CurrentOrganizationRolesContextHolder _currentOrganizationRolesContextHolder;
 
-  private static final String SPRING_SECURITY_DENIED = "Access is denied";
+  private static final String SPRING_SECURITY_DENIED = "Access Denied";
 
   @BeforeEach
   protected void beforeEach() {

@@ -289,10 +289,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void adminUpdateOrganization_not_allowed() {
-    AccessDeniedException caught =
-        assertThrows(
-            AccessDeniedException.class, () -> _service.updateOrganization("Foo org", "k12"));
-    assertEquals("Access is denied", caught.getMessage());
+    assertSecurityError(() -> _service.updateOrganization("Foo org", "k12"));
   }
 
   @Test
