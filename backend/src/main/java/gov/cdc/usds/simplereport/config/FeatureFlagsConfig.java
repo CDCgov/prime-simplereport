@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.repository.FeatureFlagRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,10 +14,11 @@ import org.springframework.stereotype.Component;
 @EnableScheduling
 @RequiredArgsConstructor
 @Slf4j
+@EnableConfigurationProperties(FeatureFlagProperties.class)
 public class FeatureFlagsConfig {
   private final FeatureFlagRepository _repo;
 
-  @Getter private FeatureFlagProperties featureFlagProperties;
+  @Getter private final FeatureFlagProperties featureFlagProperties;
 
   @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
