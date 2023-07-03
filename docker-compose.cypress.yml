@@ -5,6 +5,7 @@ services:
       dockerfile: cypress/Dockerfile
     image: ghcr.io/cdcgov/prime-simplereport/cypress:${DOCKER_CYPRESS_IMAGE_VERSION:-latest}
     container_name: cypress
+    shm_size: "512M"
     restart: "no"
     environment:
       CYPRESS_OKTA_USERNAME: $CYPRESS_OKTA_USERNAME

@@ -34,7 +34,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -602,16 +601,15 @@ public class ApiUserService {
 
     List<Facility> facilities = _orgService.getFacilities(org);
     Set<Facility> facilitiesSet = new HashSet<>(facilities);
-    Map<UUID, Facility> facilitiesByUUID =
-        facilities.stream().collect(Collectors.toMap(Facility::getInternalId, Function.identity()));
 
     boolean allFacilityAccess = claims.grantsAllFacilityAccess();
     Set<Facility> accessibleFacilities =
         allFacilityAccess
             ? facilitiesSet
-            : claims.getFacilities().stream()
-                .map(facilitiesByUUID::get)
+            : facilities.stream()
+                .filter(f -> claims.getFacilities().contains(f.getInternalId()))
                 .collect(Collectors.toSet());
+
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
     return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser), status);

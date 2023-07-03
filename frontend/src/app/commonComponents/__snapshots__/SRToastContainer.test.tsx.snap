@@ -22,9 +22,9 @@ Object {
             >
               <div>
                 <div
-                  aria-labelledby="alert-1667580636341-body"
+                  aria-label="Alert: Problems saving data to server"
                   class="usa-alert usa-alert--error"
-                  id="alert-1667580636341"
+                  id="4ed92920-e42f-4b08-985f-111111111111"
                   role="alert"
                 >
                   <div
@@ -37,7 +37,7 @@ Object {
                     </div>
                     <div
                       class="usa-alert__text"
-                      id="alert-1667580636341-body"
+                      id="299f6497-fba4-4bdc-9108-000000000000"
                     >
                       Please check for missing data or typos.
                     </div>
@@ -90,9 +90,9 @@ Object {
           >
             <div>
               <div
-                aria-labelledby="alert-1667580636341-body"
+                aria-label="Alert: Problems saving data to server"
                 class="usa-alert usa-alert--error"
-                id="alert-1667580636341"
+                id="4ed92920-e42f-4b08-985f-111111111111"
                 role="alert"
               >
                 <div
@@ -105,7 +105,7 @@ Object {
                   </div>
                   <div
                     class="usa-alert__text"
-                    id="alert-1667580636341-body"
+                    id="299f6497-fba4-4bdc-9108-000000000000"
                   >
                     Please check for missing data or typos.
                   </div>
@@ -215,9 +215,9 @@ Object {
             >
               <div>
                 <div
-                  aria-labelledby="region-1667580636341-body"
+                  aria-label="Alert: Success"
                   class="usa-alert usa-alert--success"
-                  id="region-1667580636341"
+                  id="4ed92920-e42f-4b08-985f-111111111111"
                   role="region"
                 >
                   <div
@@ -230,7 +230,7 @@ Object {
                     </div>
                     <div
                       class="usa-alert__text"
-                      id="region-1667580636341-body"
+                      id="299f6497-fba4-4bdc-9108-000000000000"
                     >
                       A new patient has been added.
                     </div>
@@ -283,9 +283,9 @@ Object {
           >
             <div>
               <div
-                aria-labelledby="region-1667580636341-body"
+                aria-label="Alert: Success"
                 class="usa-alert usa-alert--success"
-                id="region-1667580636341"
+                id="4ed92920-e42f-4b08-985f-111111111111"
                 role="region"
               >
                 <div
@@ -298,7 +298,7 @@ Object {
                   </div>
                   <div
                     class="usa-alert__text"
-                    id="region-1667580636341-body"
+                    id="299f6497-fba4-4bdc-9108-000000000000"
                   >
                     A new patient has been added.
                   </div>
