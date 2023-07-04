@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.fasterxml.jackson.databind.JsonNode;
 import java.util.Iterator;
 import java.util.Set;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class JsonTestUtils {
 
   /**
@@ -75,7 +77,8 @@ public class JsonTestUtils {
               fieldPath + "[" + i + "]");
         }
       } else { // Otherwise assert values are equal
-        assertThat(actualFieldValue.toString()).isEqualTo(expectedFieldValue.toString());
+        log.debug("Comparing " + fieldPath);
+        assertThat(actualFieldValue.toString()).hasToString(expectedFieldValue.toString());
       }
     }
   }

@@ -56,7 +56,7 @@ import org.springframework.stereotype.Component;
 public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
-  private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
+  private static final String SNOMED_REGEX = "(^\\d{9}$)|(^\\d{15}$)";
   private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
   private final AddressValidationService addressValidationService;
   private final GitProperties gitProperties;
@@ -167,6 +167,16 @@ public class BulkUploadResultsToFhir {
     var testResultDate =
         convertToZonedDateTime(
             row.getTestResultDate().getValue(), addressValidationService, testingLabAddr);
+
+    var orderTestDate =
+        convertToZonedDateTime(
+            row.getOrderTestDate().getValue(), addressValidationService, providerAddr);
+
+    var specimenCollectionDate =
+        StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
+            ? convertToZonedDateTime(
+                row.getSpecimenCollectionDate().getValue(), addressValidationService, providerAddr)
+            : orderTestDate;
 
     List<PhoneNumber> patientPhoneNumbers =
         StringUtils.isNotBlank(row.getPatientPhoneNumber().getValue())
@@ -307,7 +317,7 @@ public class BulkUploadResultsToFhir {
             null,
             uuidGenerator.randomUUID().toString(),
             uuidGenerator.randomUUID().toString(),
-            parseRowDateTimeValue(row.getSpecimenCollectionDate().getValue(), dateTimeFormatter));
+            specimenCollectionDate);
 
     var observation =
         List.of(
@@ -354,7 +364,7 @@ public class BulkUploadResultsToFhir {
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderLoinc,
             uuidGenerator.randomUUID().toString(),
-            parseRowDateTimeValue(row.getOrderTestDate().getValue(), dateTimeFormatter));
+            orderTestDate);
 
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(
@@ -425,18 +435,5 @@ public class BulkUploadResultsToFhir {
       default:
         return TestCorrectionStatus.ORIGINAL;
     }
-  }
-
-  private Date parseRowDateTimeValue(String val, DateTimeFormatter dateTimeFormatter) {
-    if (val == null || val.trim().isBlank()) return null;
-    LocalDateTime ldt;
-    TemporalAccessor temporalAccessor =
-        dateTimeFormatter.parseBest(val, LocalDateTime::from, LocalDate::from);
-    if (temporalAccessor instanceof LocalDateTime) {
-      ldt = (LocalDateTime) temporalAccessor;
-    } else {
-      ldt = ((LocalDate) temporalAccessor).atStartOfDay();
-    }
-    return Date.from(ldt.atZone(zoneIdGenerator.getSystemZoneId()).toInstant());
   }
 }

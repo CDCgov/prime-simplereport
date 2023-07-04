@@ -478,7 +478,7 @@ public class FhirConverter {
       String collectionName,
       String id,
       String identifier,
-      Date collectionDate) {
+      ZonedDateTime collectionDate) {
     var specimen = new Specimen();
     specimen.setId(id);
     specimen.addIdentifier().setValue(identifier);
@@ -500,14 +500,14 @@ public class FhirConverter {
 
     if (collectionDate != null) {
       var collection = specimen.getCollection();
-      collection.setCollected(new DateTimeType(collectionDate).setTimeZoneZulu(true));
+      collection.setCollected(convertToDateTimeType(collectionDate, TemporalPrecisionEnum.SECOND));
     }
 
     return specimen;
   }
 
   public Specimen convertToSpecimen(
-      @NotNull SpecimenType specimenType, UUID specimenIdentifier, Date collectionDate) {
+      @NotNull SpecimenType specimenType, UUID specimenIdentifier, ZonedDateTime collectionDate) {
     return convertToSpecimen(
         specimenType.getTypeCode(),
         specimenType.getName(),
@@ -620,7 +620,7 @@ public class FhirConverter {
         .addCoding(convertToAbnormalFlagInterpretation(props.getResultCode()));
 
     observation.setIssued(props.getIssued());
-    observation.getIssuedElement().setTimeZoneZulu(true).setPrecision(TemporalPrecisionEnum.SECOND);
+    observation.getIssuedElement().setTimeZoneZulu(true);
 
     return observation;
   }
@@ -751,7 +751,8 @@ public class FhirConverter {
     observation.setValue(valueCodeableConcept);
   }
 
-  public ServiceRequest convertToServiceRequest(@NotNull TestOrder order, Date orderTestDate) {
+  public ServiceRequest convertToServiceRequest(
+      @NotNull TestOrder order, ZonedDateTime orderTestDate) {
     ServiceRequestStatus serviceRequestStatus = null;
     switch (order.getOrderStatus()) {
       case PENDING:
@@ -780,7 +781,10 @@ public class FhirConverter {
   }
 
   public ServiceRequest convertToServiceRequest(
-      ServiceRequestStatus status, String requestedCode, String id, Date orderEffectiveDate) {
+      ServiceRequestStatus status,
+      String requestedCode,
+      String id,
+      ZonedDateTime orderEffectiveDate) {
     var serviceRequest = new ServiceRequest();
     serviceRequest.setId(id);
     serviceRequest.setIntent(ServiceRequestIntent.ORDER);
@@ -803,7 +807,7 @@ public class FhirConverter {
     serviceRequest
         .addExtension()
         .setUrl(ORDER_EFFECTIVE_DATE_EXTENSION_URL)
-        .setValue(new DateTimeType(orderEffectiveDate).setTimeZoneZulu(true));
+        .setValue(convertToDateTimeType(orderEffectiveDate, TemporalPrecisionEnum.SECOND));
 
     return serviceRequest;
   }
@@ -811,7 +815,9 @@ public class FhirConverter {
   /**
    * Used during single entry FHIR conversion
    *
-   * @param testEvent single entry test event
+   * @param testEvent Single entry test event.
+   * @param currentDate Used to set {@code DiagnosticReport.issued}, the instant this version was *
+   *     made.
    * @return DiagnosticReport
    */
   public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent, Date currentDate) {
@@ -892,6 +898,11 @@ public class FhirConverter {
       Date currentDate,
       String processingId) {
 
+    ZonedDateTime dateTested =
+        testEvent.getDateTested() != null
+            ? ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC)
+            : null;
+
     return createFhirBundle(
         CreateFhirBundleProps.builder()
             .patient(convertToPatient(testEvent.getPatient()))
@@ -911,8 +922,7 @@ public class FhirConverter {
             .aoeObservations(
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(), testEvent.getSurveyData()))
-            .serviceRequest(
-                convertToServiceRequest(testEvent.getOrder(), testEvent.getDateTested()))
+            .serviceRequest(convertToServiceRequest(testEvent.getOrder(), dateTested))
             .diagnosticReport(convertToDiagnosticReport(testEvent, currentDate))
             .currentDate(currentDate)
             .gitProperties(gitProperties)

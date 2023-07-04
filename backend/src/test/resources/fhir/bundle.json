@@ -4,7 +4,7 @@
   "identifier": {
     "value": "45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
   },
-  "timestamp": "$CURRENT_DATE_TZ",
+  "timestamp": "$CURRENT_DATE_ZULU",
   "entry":[
     {
       "fullUrl":"MessageHeader/$MESSAGE_HEADER_ID",
@@ -82,7 +82,7 @@
             }
           }
         ],
-        "recorded": "$CURRENT_DATE_TZ"
+        "recorded": "$CURRENT_DATE_ZULU"
       }
     },
     {
@@ -456,7 +456,7 @@
             }
           ]
         },
-        "issued": "$ISSUED_DATE_TIME"
+        "issued": "$CURRENT_DATE_ZULU"
       }
     },
     {
@@ -529,7 +529,7 @@
             }
           ]
         },
-        "issued": "$ISSUED_DATE_TIME"
+        "issued": "$CURRENT_DATE_ZULU"
       }
     },
     {
@@ -602,7 +602,7 @@
             }
           ]
         },
-        "issued": "$ISSUED_DATE_TIME"
+        "issued": "$CURRENT_DATE_ZULU"
       }
     },
     {
