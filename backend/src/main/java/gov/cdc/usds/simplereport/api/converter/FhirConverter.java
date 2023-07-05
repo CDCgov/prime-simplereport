@@ -218,8 +218,12 @@ public class FhirConverter {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 
+  public DateTimeType convertToDateTimeType(ZonedDateTime zonedDateTime) {
+    return convertToDateTimeType(zonedDateTime, TemporalPrecisionEnum.SECOND);
+  }
+
   /**
-   * @param zonedDateTime the date time with a time zone, not null
+   * @param zonedDateTime the date time with a time zone
    * @param temporalPrecisionEnum precision of the date time, defaults to {@code
    *     TemporalPrecisionEnum.MINUTE}
    * @return the DateTimeType object created from the Instant of the ZonedDateTime and its time zone
@@ -478,7 +482,8 @@ public class FhirConverter {
       String collectionName,
       String id,
       String identifier,
-      ZonedDateTime collectionDate) {
+      ZonedDateTime collectionDate,
+      ZonedDateTime receivedTime) {
     var specimen = new Specimen();
     specimen.setId(id);
     specimen.addIdentifier().setValue(identifier);
@@ -500,14 +505,21 @@ public class FhirConverter {
 
     if (collectionDate != null) {
       var collection = specimen.getCollection();
-      collection.setCollected(convertToDateTimeType(collectionDate, TemporalPrecisionEnum.SECOND));
+      collection.setCollected(convertToDateTimeType(collectionDate));
+    }
+
+    if (receivedTime != null) {
+      specimen.setReceivedTimeElement(convertToDateTimeType(receivedTime));
     }
 
     return specimen;
   }
 
   public Specimen convertToSpecimen(
-      @NotNull SpecimenType specimenType, UUID specimenIdentifier, ZonedDateTime collectionDate) {
+      @NotNull SpecimenType specimenType,
+      UUID specimenIdentifier,
+      ZonedDateTime collectionDate,
+      ZonedDateTime receivedTime) {
     return convertToSpecimen(
         specimenType.getTypeCode(),
         specimenType.getName(),
@@ -515,7 +527,8 @@ public class FhirConverter {
         specimenType.getCollectionLocationName(),
         specimenType.getInternalId().toString(),
         specimenIdentifier.toString(),
-        collectionDate);
+        collectionDate,
+        receivedTime);
   }
 
   public List<Observation> convertToObservation(
@@ -911,7 +924,8 @@ public class FhirConverter {
             .practitioner(convertToPractitioner(testEvent.getProviderData()))
             .device(convertToDevice(testEvent.getDeviceType()))
             .specimen(
-                convertToSpecimen(testEvent.getSpecimenType(), uuidGenerator.randomUUID(), null))
+                convertToSpecimen(
+                    testEvent.getSpecimenType(), uuidGenerator.randomUUID(), null, null))
             .resultObservations(
                 convertToObservation(
                     testEvent.getResults(),

@@ -521,7 +521,8 @@ class FhirConverterTest {
             "Internal nose structure (body structure)",
             "id-123",
             "uuid-123",
-            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T16:38:00.000Z"), ZoneOffset.UTC));
+            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T16:38:00.000Z"), ZoneOffset.UTC),
+            ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern")));
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getIdentifierFirstRep().getValue()).isEqualTo("uuid-123");
@@ -543,7 +544,7 @@ class FhirConverterTest {
 
   @Test
   void convertToSpecimen_Strings_null() {
-    var actual = fhirConverter.convertToSpecimen(null, null, null, null, null, null, null);
+    var actual = fhirConverter.convertToSpecimen(null, null, null, null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
@@ -551,6 +552,7 @@ class FhirConverterTest {
     assertThat(actual.getCollection().getBodySite().getText()).isNull();
     assertThat(actual.getCollection().getBodySite().getCoding()).isEmpty();
     assertThat(actual.getCollection().getCollected()).isNull();
+    assertThat(actual.getReceivedTime()).isNull();
   }
 
   @Test
@@ -564,11 +566,13 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
+    var collectionDate =
+        ZonedDateTime.ofInstant(Instant.parse("2023-06-22T13:16:00.000Z"), ZoneOffset.UTC);
+    var receivedTime = ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"));
+
     var actual =
         fhirConverter.convertToSpecimen(
-            specimenType,
-            UUID.randomUUID(),
-            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T13:16:00.000Z"), ZoneOffset.UTC));
+            specimenType, UUID.randomUUID(), collectionDate, receivedTime);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getType().getCoding()).hasSize(1);
@@ -585,6 +589,8 @@ class FhirConverterTest {
         .isEqualTo("Internal nose structure (body structure)");
     assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
         .isEqualTo("2023-06-22T13:16:00.00Z");
+    assertThat(actual.getReceivedTimeElement().getValueAsString())
+        .isEqualTo("2023-06-23T12:00:00-04:00");
   }
 
   @Test
@@ -597,7 +603,8 @@ class FhirConverterTest {
         fhirConverter.convertToSpecimen(
             specimenType,
             UUID.randomUUID(),
-            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T15:35:00.000Z"), ZoneOffset.UTC));
+            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T15:35:00.000Z"), ZoneOffset.UTC),
+            ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern")));
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =

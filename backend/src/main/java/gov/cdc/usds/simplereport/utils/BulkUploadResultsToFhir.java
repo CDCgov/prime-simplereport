@@ -178,6 +178,14 @@ public class BulkUploadResultsToFhir {
                 row.getSpecimenCollectionDate().getValue(), addressValidationService, providerAddr)
             : orderTestDate;
 
+    var testingLabSpecimenReceivedDate =
+        StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
+            ? convertToZonedDateTime(
+                row.getTestingLabSpecimenReceivedDate().getValue(),
+                addressValidationService,
+                testingLabAddr)
+            : orderTestDate;
+
     List<PhoneNumber> patientPhoneNumbers =
         StringUtils.isNotBlank(row.getPatientPhoneNumber().getValue())
             ? List.of(new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().getValue()))
@@ -317,7 +325,8 @@ public class BulkUploadResultsToFhir {
             null,
             uuidGenerator.randomUUID().toString(),
             uuidGenerator.randomUUID().toString(),
-            specimenCollectionDate);
+            specimenCollectionDate,
+            testingLabSpecimenReceivedDate);
 
     var observation =
         List.of(
