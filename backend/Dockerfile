@@ -5,6 +5,7 @@ WORKDIR /app/backend
 
 # Only copy dependency-related files
 COPY build.gradle gradle.properties settings.gradle /app/backend/
+
 RUN chown -R gradle:gradle /app
 USER gradle
 

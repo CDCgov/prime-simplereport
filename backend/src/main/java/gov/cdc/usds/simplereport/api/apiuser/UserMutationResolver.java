@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,6 +32,8 @@ public class UserMutationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @MutationMapping
   public User addUser(@Argument UserInput user) {
+    Set<UUID> facilitySet =
+        user.getFacilities() == null ? Set.of() : new HashSet<>(user.getFacilities());
     UserInfo userInfo =
         _us.createUser(
             user.getEmail(),
@@ -41,21 +44,31 @@ public class UserMutationResolver {
                 user.getLastName(),
                 user.getSuffix()),
             user.getOrganizationExternalId(),
-            user.getRole());
+            user.getRole(),
+            user.isAccessAllFacilities(),
+            facilitySet);
     return new User(userInfo);
   }
 
   @MutationMapping
-  public User addUserToCurrentOrg(
-      @Argument PersonName name,
-      @Argument String firstName,
-      @Argument String middleName,
-      @Argument String lastName,
-      @Argument String suffix,
-      @Argument String email,
-      @Argument Role role) {
-    name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
-    UserInfo user = _us.createUserInCurrentOrg(email, name, role);
+  public User addUserToCurrentOrg(@Argument UserInput userInput) {
+    Set<UUID> facilitySet =
+        userInput.getFacilities() == null
+            ? Collections.emptySet()
+            : new HashSet<>(userInput.getFacilities());
+    var user =
+        _us.createUserInCurrentOrg(
+            userInput.getEmail(),
+            Translators.consolidateNameArguments(
+                userInput.getName(),
+                userInput.getFirstName(),
+                userInput.getMiddleName(),
+                userInput.getLastName(),
+                userInput.getSuffix()),
+            userInput.getRole(),
+            userInput.isAccessAllFacilities(),
+            facilitySet);
+
     return new User(user);
   }
 

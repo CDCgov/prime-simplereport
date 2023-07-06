@@ -64,6 +64,19 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     status: "ACTIVE",
   },
   {
+    firstName: "Jane",
+    middleName: "",
+    lastName: "Doe",
+    suffix: "",
+    id: "a122",
+    email: "jane@example.com",
+    organization: { testingFacility: [] },
+    permissions: [UserPermission.ReadPatientList],
+    roleDescription: "user",
+    role: "USER",
+    status: "ACTIVE",
+  },
+  {
     ...loggedInUser,
     permissions: [],
     organization,
@@ -177,6 +190,30 @@ const mocks = [
     request: {
       query: GetUserDocument,
       variables: {
+        id: "a122",
+      },
+    },
+    result: {
+      data: {
+        user: {
+          id: "a122",
+          firstName: "Jane",
+          middleName: "",
+          lastName: "Doe",
+          roleDescription: "user",
+          role: "USER",
+          permissions: [UserPermission.ReadPatientList],
+          email: "jane@example.com",
+          organization: { testingFacility: [] },
+          status: "ACTIVE",
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: GetUserDocument,
+      variables: {
         id: "b234",
       },
     },
@@ -268,7 +305,7 @@ describe("ManageUsers", () => {
     });
     addUserToOrg = jest.fn(() =>
       Promise.resolve({
-        data: { addUserToCurrentOrg: { id: "added-user-id" } },
+        data: { addUserToCurrentOrg: { id: "a123" } },
       })
     );
     deleteUser = jest.fn((obj) =>
@@ -381,15 +418,14 @@ describe("ManageUsers", () => {
       await waitFor(() => expect(sendButton).toBeEnabled());
       await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).toBeCalled());
-      expect(addUserToOrg).toBeCalledWith({ variables: newUser });
-      expect(updateUserPrivileges).toBeCalledWith({
+      expect(addUserToOrg).toBeCalledWith({
         variables: {
+          ...newUser,
           accessAllFacilities: true,
           facilities: ["1", "2"],
-          id: "added-user-id",
-          role: "USER",
         },
       });
+      expect(updateUserPrivileges).not.toBeCalled();
     });
 
     it("fails with invalid email address", async () => {
@@ -420,8 +456,8 @@ describe("ManageUsers", () => {
       await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).not.toBeCalled());
       expect(
-        screen.queryAllByText("Email must be a valid email address").length
-      ).toBe(1);
+        screen.getByText("Email address must be a valid email address")
+      ).toBeInTheDocument();
     });
 
     it("passes user details to the addUserToOrg function without a role", async () => {
@@ -447,7 +483,12 @@ describe("ManageUsers", () => {
       await act(async () => await userEvent.click(sendButton));
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
-        variables: { ...newUser, role: "USER" },
+        variables: {
+          ...newUser,
+          role: "USER",
+          accessAllFacilities: true,
+          facilities: ["1", "2"],
+        },
       });
     });
 
@@ -462,6 +503,29 @@ describe("ManageUsers", () => {
       expect(deleteUser).toBeCalledWith({
         variables: { deleted: true, id: users[0].id },
       });
+    });
+
+    it("focuses on next user after current is deleted", async () => {
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("tab", { name: /doe, jane/i }))
+      );
+      await waitFor(() =>
+        expect(screen.getByRole("heading", { name: /doe, jane/i }))
+      );
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByRole("button", {
+              name: "Delete user",
+            })
+          )
+      );
+      const sureButton = await screen.findByText("Yes", { exact: false });
+      await act(async () => await userEvent.click(sureButton));
+      await waitFor(() =>
+        expect(screen.getByRole("heading", { name: /bobberoo, bob/i }))
+      );
     });
 
     it("updates someone from user to admin", async () => {
@@ -694,7 +758,12 @@ describe("ManageUsers", () => {
 
       await waitFor(() => expect(addUserToOrg).toBeCalled());
       expect(addUserToOrg).toBeCalledWith({
-        variables: { ...newUser, role: "USER" },
+        variables: {
+          ...newUser,
+          role: "USER",
+          accessAllFacilities: true,
+          facilities: ["1", "2"],
+        },
       });
     });
   });

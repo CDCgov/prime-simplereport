@@ -55,7 +55,7 @@ describe("Organization sign up",() => {
     cy.injectSRAxe();
     cy.checkA11y();
 
-    cy.contains("Organizations pending identify verification").click();
+    cy.contains("Identity verification").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
 
     cy.contains("td", `${organization.name}`);
@@ -105,16 +105,16 @@ describe("Organization sign up",() => {
     cy.checkA11y();
   });
   it("fills out the form for a new facility", () => {
-    cy.get('input[name="name"]').type(facility.name);
-    cy.get('input[name="facility-phone"]').first().type("5308675309");
-    cy.get('input[name="facility-street"]').first().type("123 Beach Way");
-    cy.get('input[name="facility-zipCode"]').first().type("90210");
-    cy.get('select[name="facility-state"]').first().select("CA");
-    cy.get('input[name="cliaNumber"]').type("12D4567890");
-    cy.get('input[name="firstName"]').type("Phil");
-    cy.get('input[name="lastName"]').type("McTester");
-    cy.get('input[name="NPI"]').type("1234567890");
-    cy.get('input[name="op-phone"]').last().type("5308675309");
+    cy.get('input[name="facility.name"]').type(facility.name);
+    cy.get('input[name="facility.phone"]').first().type("5308675309");
+    cy.get('input[name="facility.street"]').first().type("123 Beach Way");
+    cy.get('input[name="facility.zipCode"]').first().type("90210");
+    cy.get('select[name="facility.state"]').first().select("CA");
+    cy.get('input[name="facility.cliaNumber"]').type("12D4567890");
+    cy.get('input[name="orderingProvider.firstName"]').type("Phil");
+    cy.get('input[name="orderingProvider.lastName"]').type("McTester");
+    cy.get('input[name="orderingProvider.NPI"]').type("1234567890");
+    cy.get('input[name="orderingProvider.phone"]').last().type("5308675309");
     cy.contains("Save changes").last().click();
     cy.get(
       '.modal__container input[name="addressSelect-facility"][value="userAddress"]+label'
