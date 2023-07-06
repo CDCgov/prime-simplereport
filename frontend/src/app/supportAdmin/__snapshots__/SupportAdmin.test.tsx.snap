@@ -47,7 +47,7 @@ exports[`SupportAdming loads menu categories 1`] = `
                       class=""
                       href="/admin/pending-organizations"
                     >
-                      Identify verification
+                      Identity verification
                     </a>
                   </li>
                   <li>
@@ -153,7 +153,7 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                       class=""
                       href="/admin/pending-organizations"
                     >
-                      Identify verification
+                      Identity verification
                     </a>
                   </li>
                   <li>
