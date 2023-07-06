@@ -39,7 +39,7 @@ const SupportAdmin = () => {
                 <CategoryMenu heading="Organization">
                   <li>
                     <LinkWithQuery to={`/admin/pending-organizations`}>
-                      Identify verification
+                      Identity verification
                     </LinkWithQuery>
                   </li>
                   <li>
