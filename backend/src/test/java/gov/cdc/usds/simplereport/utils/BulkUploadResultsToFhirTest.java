@@ -27,7 +27,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.DateTimeType;
+import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Specimen;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -248,5 +252,66 @@ public class BulkUploadResultsToFhirTest {
     var elapsedTime = endTime - startTime;
 
     assertTrue(elapsedTime < 20000, "Bundle processing took more than 20 seconds for 5000 rows");
+  }
+
+  @Test
+  void convertExistingCsv_populatesBlankFields() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-with-blank-fields.csv");
+    var orderTestDate = Instant.parse("2021-12-20T14:00:00-06:00");
+    var testResultDate = Instant.parse("2021-12-23T14:00:00-06:00");
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+    when(resultsUploaderCachingService.getZoneIdByAddress(any()))
+        .thenReturn(ZoneId.of("US/Central"));
+
+    var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
+    var first = serializedBundles.get(0);
+    var deserializedBundle = (Bundle) parser.parseResource(first);
+
+    var specimen =
+        (Specimen)
+            deserializedBundle.getEntry().stream()
+                .filter(entry -> entry.getFullUrl().contains("Specimen/"))
+                .findFirst()
+                .get()
+                .getResource();
+
+    var diagnosticReport =
+        (DiagnosticReport)
+            deserializedBundle.getEntry().stream()
+                .filter(entry -> entry.getFullUrl().contains("DiagnosticReport/"))
+                .findFirst()
+                .get()
+                .getResource();
+
+    var organizations =
+        new java.util.ArrayList<>(
+            deserializedBundle.getEntry().stream()
+                .filter(entry -> entry.getFullUrl().contains("Organization/"))
+                .map(org -> (Organization) org.getResource())
+                .toList());
+
+    organizations.removeIf(org -> org.hasName() && org.getName().equals("SimpleReport"));
+
+    // Order test date should populate specimen collection date (aka collected)
+    assertThat(((DateTimeType) specimen.getCollection().getCollected()).getValue())
+        .isEqualTo(orderTestDate);
+    // Order test date should populate testing lab specimen received date (aka received time)
+    assertThat(specimen.getReceivedTime()).isEqualTo(orderTestDate);
+    // Test result date should populate date result released (aka issued)
+    assertThat(diagnosticReport.getIssued()).isEqualTo(testResultDate);
+    // Testing lab should populate ordering facility
+    assertThat(organizations).hasSize(2);
+    assertThat(organizations.get(0).getAddress()).hasSize(1);
+    assertThat(organizations.get(1).getAddress()).hasSize(1);
+    assertThat(organizations.get(0).getAddress().get(0).getLine().get(0))
+        .hasToString(organizations.get(1).getAddress().get(0).getLine().get(0).toString());
+    assertThat(organizations.get(0).getAddress().get(0).getCity())
+        .isEqualTo(organizations.get(1).getAddress().get(0).getCity());
+    assertThat(organizations.get(0).getAddress().get(0).getState())
+        .isEqualTo(organizations.get(1).getAddress().get(0).getState());
+    assertThat(organizations.get(0).getAddress().get(0).getPostalCode())
+        .isEqualTo(organizations.get(1).getAddress().get(0).getPostalCode());
   }
 }

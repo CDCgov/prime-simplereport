@@ -235,13 +235,13 @@ public class BulkUploadResultsToFhir {
             DEFAULT_COUNTRY);
 
     Organization orderingFacility = null;
-    if (row.getOrderingFacilityStreet().getValue() != null
-        || row.getOrderingFacilityStreet2().getValue() != null
-        || row.getOrderingFacilityCity().getValue() != null
-        || row.getOrderingFacilityState().getValue() != null
-        || row.getOrderingFacilityZipCode().getValue() != null
-        || row.getOrderingFacilityName().getValue() != null
-        || row.getOrderingFacilityPhoneNumber().getValue() != null) {
+    if (StringUtils.isNotEmpty(row.getOrderingFacilityStreet().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityStreet2().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityCity().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityState().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityZipCode().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityName().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityPhoneNumber().getValue())) {
       var orderingFacilityAddr =
           new StreetAddress(
               row.getOrderingFacilityStreet().getValue(),
@@ -259,6 +259,10 @@ public class BulkUploadResultsToFhir {
               null,
               orderingFacilityAddr,
               DEFAULT_COUNTRY);
+    }
+
+    if (orderingFacility == null) {
+      orderingFacility = testingLabOrg;
     }
 
     var practitioner =

@@ -116,8 +116,8 @@
         "subject": {
           "reference": "Patient/1234"
         },
-        "effectiveDateTime": "2021-12-20T14:00:00-06:00",
-        "issued": "2021-12-20T14:00:00-06:00",
+        "effectiveDateTime": "2021-12-23T14:00:00-06:00",
+        "issued": "2021-12-24T14:00:00-06:00",
         "specimen": [
           {
             "reference": "Specimen/00000000-0000-0000-0000-000000000004"
@@ -220,7 +220,7 @@
             "value": "01D1058442"
           }
         ],
-        "name": "My Urgent Care",
+        "name": "My Testing Lab",
         "telecom": [
           {
             "system": "phone",
@@ -231,7 +231,7 @@
         "address": [
           {
             "line": [
-              "400 Main Street"
+              "300 North Street"
             ],
             "city": "Birmingham",
             "state": "AL",
@@ -335,7 +335,7 @@
           "reference": "Patient/1234"
         },
         "collection" : {
-          "collectedDateTime":"2021-12-20T14:00:00-06:00"
+          "collectedDateTime":"2021-12-21T14:00:00-06:00"
         }
       }
     },
@@ -494,7 +494,7 @@
         "device": {
           "reference": "Device/00000000-0000-0000-0000-000000000003"
         },
-        "issued": "2021-12-20T20:00:00.000Z"
+        "issued": "2021-12-23T20:00:00.000Z"
       }
     },
     {
