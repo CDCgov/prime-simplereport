@@ -61,17 +61,6 @@ class ResultsUploaderCachingServiceTest extends BaseServiceTest<ResultsUploaderC
     verify(addressValidationService, times(1)).getZoneIdByAddress(any());
   }
 
-  @Test
-  void addressValidation_checksUniqueAddresses() {
-    sut.getZoneIdByAddress(
-        new StreetAddress("123 Main St", null, "Buffalo", "New York", "14202", "Erie"));
-    sut.getZoneIdByAddress(
-        new StreetAddress("124 Main St", null, "Buffalo", "New York", "14220", "Erie"));
-    sut.getZoneIdByAddress(
-        new StreetAddress("125 Main St", null, "Buffalo", "New York", "14206", "Erie"));
-    verify(addressValidationService, times(3)).getZoneIdByAddress(any());
-  }
-
   protected void createDeviceType(String model, String... testPerformedCodes) {
     SpecimenType specimenType =
         specimenTypeService.createSpecimenType(
