@@ -1,9 +1,9 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Local e2e" type="js.build_tools.npm">
+  <configuration default="false" name="e2e local headless" type="js.build_tools.npm">
     <package-json value="$PROJECT_DIR$/cypress/package.json" />
     <command value="run" />
     <scripts>
-      <script value="e2e:local" />
+      <script value="e2e:local:run" />
     </scripts>
     <node-interpreter value="project" />
     <envs />
