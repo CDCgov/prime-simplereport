@@ -52,7 +52,7 @@ public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
-  private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
+  private final ResultsUploaderCachingService resultsUploaderCachingService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
   private final BulkUploadResultsToFhir fhirConverter;
@@ -252,8 +252,7 @@ public class TestResultUploadService {
               try {
                 var csvContent =
                     translateSpecimenNameToSNOMED(
-                        content,
-                        resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap());
+                        content, resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap());
 
                 response = _client.uploadCSV(csvContent);
               } catch (FeignException e) {

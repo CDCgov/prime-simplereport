@@ -14,8 +14,7 @@ import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
-import gov.cdc.usds.simplereport.service.AddressValidationService;
-import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -41,8 +40,7 @@ import org.springframework.boot.info.GitProperties;
 @ExtendWith(MockitoExtension.class)
 public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
-  private static ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
-  private static AddressValidationService addressValidationService;
+  private static ResultsUploaderCachingService resultsUploaderCachingService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
@@ -54,7 +52,6 @@ public class BulkUploadResultsToFhirTest {
   @BeforeAll
   public static void init() throws SmartyException, IOException, InterruptedException {
     gitProperties = mock(GitProperties.class);
-    addressValidationService = mock(AddressValidationService.class);
 
     when(gitProperties.getCommitTime()).thenReturn(commitTime);
     when(gitProperties.getShortCommitId()).thenReturn("short-commit-id");
@@ -62,12 +59,11 @@ public class BulkUploadResultsToFhirTest {
 
   @BeforeEach
   public void beforeEach() {
-    resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
+    resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
     FhirConverter fhirConverter = new FhirConverter(uuidGenerator);
     sut =
         new BulkUploadResultsToFhir(
-            resultsUploaderDeviceValidationService,
-            addressValidationService,
+            resultsUploaderCachingService,
             gitProperties,
             uuidGenerator,
             dateGenerator,
@@ -86,8 +82,7 @@ public class BulkUploadResultsToFhirTest {
             .map(Bundle.BundleEntryComponent::getFullUrl)
             .collect(Collectors.toList());
 
-    verify(resultsUploaderDeviceValidationService, times(1))
-        .getModelAndTestPerformedCodeToDeviceMap();
+    verify(resultsUploaderCachingService, times(1)).getModelAndTestPerformedCodeToDeviceMap();
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(14);
     assertThat(resourceUrls).hasSize(14);
@@ -131,7 +126,7 @@ public class BulkUploadResultsToFhirTest {
   @Test
   void convertExistingCsv_observationValuesPresent() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
 
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
@@ -206,15 +201,14 @@ public class BulkUploadResultsToFhirTest {
 
     // Mock timezone retrieval from address
     var mockedZoneId = ZoneId.of("US/Central");
-    when(addressValidationService.getZoneIdByAddress(any())).thenReturn(mockedZoneId);
+    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenReturn(mockedZoneId);
 
-    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
 
     sut =
         new BulkUploadResultsToFhir(
-            resultsUploaderDeviceValidationService,
-            addressValidationService,
+            resultsUploaderCachingService,
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
@@ -243,7 +237,7 @@ public class BulkUploadResultsToFhirTest {
   void convertExistingCsv_meetsProcessingSpeed() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-5000-rows.csv");
 
-    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
 
     var startTime = System.currentTimeMillis();

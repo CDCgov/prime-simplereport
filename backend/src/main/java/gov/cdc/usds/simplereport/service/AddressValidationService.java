@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
-import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
 
 import com.smartystreets.api.ClientBuilder;
 import com.smartystreets.api.exceptions.SmartyException;
@@ -20,8 +19,6 @@ import java.time.ZoneId;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -128,7 +125,6 @@ public class AddressValidationService {
    * @param address the StreetAddress to find the timezone id of
    * @return ZoneId of the address or null if not found
    */
-  @Cacheable(ADDRESS_TIMEZONE_LOOKUP_MAP)
   public ZoneId getZoneIdByAddress(StreetAddress address) {
     if (address == null) {
       return null;
@@ -155,10 +151,5 @@ public class AddressValidationService {
     }
 
     return ZoneId.of("US/" + timezoneInfo.timezoneCommonName);
-  }
-
-  @CacheEvict(cacheNames = ADDRESS_TIMEZONE_LOOKUP_MAP, allEntries = true)
-  public void clearAddressTimezoneLookupCache() {
-    log.info("clear address timezone lookup cache");
   }
 }

@@ -24,8 +24,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.service.AddressValidationService;
-import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -57,8 +56,7 @@ public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final String SNOMED_REGEX = "(^\\d{9}$)|(^\\d{15}$)";
-  private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
-  private final AddressValidationService addressValidationService;
+  private final ResultsUploaderCachingService resultsUploaderCachingService;
   private final GitProperties gitProperties;
   private final UUIDGenerator uuidGenerator;
   private final DateGenerator dateGenerator;
@@ -126,7 +124,7 @@ public class BulkUploadResultsToFhir {
             .collect(Collectors.toList());
 
     // Clear cache to free memory
-    addressValidationService.clearAddressTimezoneLookupCache();
+    resultsUploaderCachingService.clearAddressTimezoneLookupCache();
 
     return bundles;
   }
@@ -166,23 +164,25 @@ public class BulkUploadResultsToFhir {
     // which is a different moment of time and potentially even a different day
     var testResultDate =
         convertToZonedDateTime(
-            row.getTestResultDate().getValue(), addressValidationService, testingLabAddr);
+            row.getTestResultDate().getValue(), resultsUploaderCachingService, testingLabAddr);
 
     var orderTestDate =
         convertToZonedDateTime(
-            row.getOrderTestDate().getValue(), addressValidationService, providerAddr);
+            row.getOrderTestDate().getValue(), resultsUploaderCachingService, providerAddr);
 
     var specimenCollectionDate =
         StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
             ? convertToZonedDateTime(
-                row.getSpecimenCollectionDate().getValue(), addressValidationService, providerAddr)
+                row.getSpecimenCollectionDate().getValue(),
+                resultsUploaderCachingService,
+                providerAddr)
             : orderTestDate;
 
     var testingLabSpecimenReceivedDate =
         StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
             ? convertToZonedDateTime(
                 row.getTestingLabSpecimenReceivedDate().getValue(),
-                addressValidationService,
+                resultsUploaderCachingService,
                 testingLabAddr)
             : orderTestDate;
 
@@ -276,9 +276,9 @@ public class BulkUploadResultsToFhir {
     var testPerformedCode = row.getTestPerformedCode().getValue();
     var modelName = row.getEquipmentModelName().getValue();
     var matchingDevice =
-        resultsUploaderDeviceValidationService
+        resultsUploaderCachingService
             .getModelAndTestPerformedCodeToDeviceMap()
-            .get(ResultsUploaderDeviceValidationService.getMapKey(modelName, testPerformedCode));
+            .get(ResultsUploaderCachingService.getMapKey(modelName, testPerformedCode));
 
     if (matchingDevice != null) {
       List<DeviceTypeDisease> deviceTypeDiseaseEntries =
@@ -410,7 +410,7 @@ public class BulkUploadResultsToFhir {
 
   private String getSpecimenTypeSnomed(String input) {
     if (input.matches(ALPHABET_REGEX)) {
-      return resultsUploaderDeviceValidationService
+      return resultsUploaderCachingService
           .getSpecimenTypeNameToSNOMEDMap()
           .get(input.toLowerCase());
     } else if (input.matches(SNOMED_REGEX)) {

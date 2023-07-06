@@ -1,12 +1,15 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_AND_SNOMED_MAP;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -23,9 +26,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ResultsUploaderDeviceValidationService {
+public class ResultsUploaderCachingService {
   private final DeviceTypeRepository deviceTypeRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
+  private final AddressValidationService addressValidationService;
 
   private static final Map<String, String> specimenSNOMEDMap =
       Map.ofEntries(
@@ -130,5 +134,15 @@ public class ResultsUploaderDeviceValidationService {
 
   public static String getMapKey(String model, String testPerformedCode) {
     return model.toLowerCase() + "|" + testPerformedCode.toLowerCase();
+  }
+
+  @Cacheable(ADDRESS_TIMEZONE_LOOKUP_MAP)
+  public ZoneId getZoneIdByAddress(StreetAddress address) {
+    return addressValidationService.getZoneIdByAddress(address);
+  }
+
+  @CacheEvict(cacheNames = ADDRESS_TIMEZONE_LOOKUP_MAP, allEntries = true)
+  public void clearAddressTimezoneLookupCache() {
+    log.info("clear address timezone lookup cache");
   }
 }

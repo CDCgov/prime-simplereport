@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.utils;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.service.AddressValidationService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -68,7 +68,7 @@ public class DateTimeUtils {
 
   public static ZonedDateTime convertToZonedDateTime(
       String dateString,
-      AddressValidationService addressValidationService,
+      ResultsUploaderCachingService resultsUploaderCachingService,
       StreetAddress addressForTimezone) {
     ZoneId zoneId;
     LocalDateTime localDateTime;
@@ -82,7 +82,7 @@ public class DateTimeUtils {
         zoneId = FALLBACK_TIMEZONE_ID;
       }
     } else { // Otherwise try to get timezone by address
-      zoneId = addressValidationService.getZoneIdByAddress(addressForTimezone);
+      zoneId = resultsUploaderCachingService.getZoneIdByAddress(addressForTimezone);
       // If that fails, use fallback
       if (zoneId == null) {
         zoneId = FALLBACK_TIMEZONE_ID;
