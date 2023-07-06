@@ -20,15 +20,17 @@ describe("Updating organization settings", () => {
     cy.checkAccessibility();
   });
   it("attempts an empty selection for organization type", () => {
+    cy.get('select[name="type"]').find('option:selected').should('have.text','Camp');
     cy.get('select[name="type"]').select("- Select -");
-    cy.contains("Save settings").click();
+    cy.contains("Save settings").should("be.enabled").click();
   });
   it("displays a validation toast", () => {
     cy.contains("An organization type must be selected");
   });
   it("attempts a valid selection for organization type", () => {
     cy.get('select[name="type"]').select("Nursing home");
-    cy.contains("Save settings").click();
+    cy.contains("Save settings").should("be.enabled").click();
+    cy.wait("@AdminSetOrganization")
   });
   it("displays a success toast", () => {
     cy.get(".Toastify").contains("Updated organization");
