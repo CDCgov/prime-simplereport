@@ -13,7 +13,11 @@ RUN cd backend && ./gradlew clean build -x test -x checkstyleMain -x spotlessChe
 FROM eclipse-temurin:17-jdk-alpine
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
+RUN adduser -D appUser
+
 COPY --from=build /app/backend/build/libs/*.jar app.jar
+
+USER appUser
 
 ENTRYPOINT ["java","-jar","/app.jar"]
 

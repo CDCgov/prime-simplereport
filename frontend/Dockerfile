@@ -2,8 +2,7 @@ FROM node:18-alpine as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 # Add bash and git
-RUN apk add --no-cache bash git
-
+RUN apk add --no-cache git
 
 ARG REACT_APP_BASE_URL
 ARG REACT_APP_BACKEND_URL
@@ -30,9 +29,7 @@ ENV REACT_APP_SMARTY_STREETS_KEY $REACT_APP_SMARTY_STREETS_KEY
 # Create directory for app, grant ownership to node user
 RUN mkdir -p /app/frontend/node_modules
 
-
 WORKDIR /app/frontend
-# Run app as non-privileged user
 
 # Copy over yarn dependency files before src
 # so it caches via docker for subsequent builds
@@ -47,18 +44,20 @@ ADD ./backend/ /app/backend
 ADD ./frontend /app/frontend
 ADD ./.git /app/.git
 
-
 #e2e specific, disable content security
 RUN echo "REACT_APP_CONTENT_SECURITY_POLICY_DEFAULT_SRC=''" >> .env.production.local
 RUN echo "REACT_APP_CONTENT_SECURITY_POLICY_SCRIPT_SRC=''" >> .env.production.local
 
 RUN yarn run build
 
-
 # production environment
 FROM node:18-alpine
 RUN npm install -g serve
 WORKDIR /app/frontend
 COPY --from=build /app/frontend/build /app/frontend/build
+
+# Run app as non-privileged user
+USER node
+
 EXPOSE 3000
 CMD ["serve", "-s", "build"]
