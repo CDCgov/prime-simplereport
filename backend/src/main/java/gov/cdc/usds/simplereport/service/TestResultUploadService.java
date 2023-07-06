@@ -287,8 +287,10 @@ public class TestResultUploadService {
     if (response != null) {
       var status = UploadResponse.parseStatus(response.getOverallStatus());
 
-      for (var error : response.getErrors()) {
-        error.setSource(ResultUploadErrorSource.REPORTSTREAM);
+      if (response.getErrors() != null) {
+        for (var error : response.getErrors()) {
+          error.setSource(ResultUploadErrorSource.REPORTSTREAM);
+        }
       }
 
       result =
