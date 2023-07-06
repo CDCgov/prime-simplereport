@@ -287,12 +287,6 @@ public class TestResultUploadService {
     if (response != null) {
       var status = UploadResponse.parseStatus(response.getOverallStatus());
 
-      if (response.getErrors() != null) {
-        for (var error : response.getErrors()) {
-          error.setSource(ResultUploadErrorSource.REPORTSTREAM);
-        }
-      }
-
       result =
           new TestResultUpload(
               response.getId(),
@@ -307,6 +301,10 @@ public class TestResultUploadService {
       TestResultUpload finalResult = result;
 
       if (response.getErrors() != null && response.getErrors().length > 0) {
+        for (var error : response.getErrors()) {
+          error.setSource(ResultUploadErrorSource.REPORTSTREAM);
+        }
+
         errorRepository.saveAll(
             Arrays.stream(response.getErrors())
                 .map(feedbackMessage -> new ResultUploadError(finalResult, org, feedbackMessage))
