@@ -16,7 +16,7 @@
     },
     {
       "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
-      "valueDateTime":"2023-06-22T10:35:00+00:00"
+      "valueDateTime":"2023-06-22T06:35:00-04:00"
     }
   ],
   "intent": "order",

@@ -218,6 +218,11 @@ public class FhirConverter {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 
+  /**
+   * @param zonedDateTime the date time with a time zone
+   * @return the DateTimeType object created from the ZonedDateTime, it's timezone, and second
+   *     temporal precision
+   */
   public DateTimeType convertToDateTimeType(ZonedDateTime zonedDateTime) {
     return convertToDateTimeType(zonedDateTime, TemporalPrecisionEnum.SECOND);
   }
@@ -225,9 +230,8 @@ public class FhirConverter {
   /**
    * @param zonedDateTime the date time with a time zone
    * @param temporalPrecisionEnum precision of the date time, defaults to {@code
-   *     TemporalPrecisionEnum.MINUTE}
-   * @return the DateTimeType object created from the Instant of the ZonedDateTime and its time zone
-   *     offset
+   *     TemporalPrecisionEnum.SECOND}
+   * @return the DateTimeType object created from the ZonedDateTime and it's timezone
    */
   public DateTimeType convertToDateTimeType(
       ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
@@ -238,6 +242,23 @@ public class FhirConverter {
       temporalPrecisionEnum = TemporalPrecisionEnum.SECOND;
     }
     return new DateTimeType(
+        Date.from(zonedDateTime.toInstant()),
+        temporalPrecisionEnum,
+        TimeZone.getTimeZone(zonedDateTime.getZone()));
+  }
+
+  /**
+   * @param zonedDateTime the date time with a time zone
+   * @param temporalPrecisionEnum precision of the date time, defaults to {@code
+   *     TemporalPrecisionEnum.MILLI}
+   * @return the InstantType object created from the Instant of the ZonedDateTime and its time zone
+   *     offset
+   */
+  public InstantType convertToInstantType(
+      ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
+    if (zonedDateTime == null) return null;
+    if (temporalPrecisionEnum == null) temporalPrecisionEnum = TemporalPrecisionEnum.MILLI;
+    return new InstantType(
         Date.from(zonedDateTime.toInstant()),
         temporalPrecisionEnum,
         TimeZone.getTimeZone(zonedDateTime.getZone()));
@@ -860,9 +881,12 @@ public class FhirConverter {
       // finding a specific timezone for the TestEvent is not required to ensure it is accurate
       dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC);
     }
+    ZonedDateTime dateIssued = null;
+    if (currentDate != null)
+      dateIssued = ZonedDateTime.ofInstant(currentDate.toInstant(), ZoneOffset.UTC);
 
     return convertToDiagnosticReport(
-        status, code, Objects.toString(testEvent.getInternalId(), ""), dateTested, currentDate);
+        status, code, Objects.toString(testEvent.getInternalId(), ""), dateTested, dateIssued);
   }
 
   /**
@@ -871,8 +895,9 @@ public class FhirConverter {
    * @param id Diagnostic report id
    * @param dateTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
    *     time/time-period for report.
-   * @param currentDate Used to set {@code DiagnosticReport.issued}, the instant this version was
-   *     made.
+   * @param dateIssued Used to set {@code DiagnosticReport.issued}, the date and time that this
+   *     version of the report was made available to providers, typically after the report was
+   *     reviewed and verified.
    * @return DiagnosticReport
    */
   public DiagnosticReport convertToDiagnosticReport(
@@ -880,14 +905,12 @@ public class FhirConverter {
       String code,
       String id,
       ZonedDateTime dateTested,
-      Date currentDate) {
+      ZonedDateTime dateIssued) {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(convertToDateTimeType(dateTested, null))
-            .setIssued(currentDate);
-
-    diagnosticReport.getIssuedElement().setTimeZoneZulu(true);
+            .setEffective(convertToDateTimeType(dateTested))
+            .setIssuedElement(convertToInstantType(dateIssued, TemporalPrecisionEnum.SECOND));
 
     diagnosticReport.setId(id);
     if (StringUtils.isNotBlank(code)) {

@@ -521,7 +521,8 @@ class FhirConverterTest {
             "Internal nose structure (body structure)",
             "id-123",
             "uuid-123",
-            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T16:38:00.000Z"), ZoneOffset.UTC),
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T16:38:00.000Z"), DEFAULT_TIME_ZONE_ID),
             ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern")));
 
     assertThat(actual.getId()).isEqualTo("id-123");
@@ -567,7 +568,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
     var collectionDate =
-        ZonedDateTime.ofInstant(Instant.parse("2023-06-22T13:16:00.000Z"), ZoneOffset.UTC);
+        ZonedDateTime.ofInstant(Instant.parse("2023-06-22T13:16:00.000Z"), DEFAULT_TIME_ZONE_ID);
     var receivedTime = ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"));
 
     var actual =
@@ -603,7 +604,8 @@ class FhirConverterTest {
         fhirConverter.convertToSpecimen(
             specimenType,
             UUID.randomUUID(),
-            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T15:35:00.000Z"), ZoneOffset.UTC),
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T15:35:00.000Z"), DEFAULT_TIME_ZONE_ID),
             ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern")));
 
     String actualSerialized = parser.encodeResourceToString(actual);
@@ -967,9 +969,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(
         testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
 
-    var actual =
-        fhirConverter.convertToDiagnosticReport(
-            testEvent, Date.from(Instant.parse("2023-06-22T11:46:00.000Z")));
+    var actual = fhirConverter.convertToDiagnosticReport(testEvent, date);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -979,8 +979,9 @@ class FhirConverterTest {
             StandardCharsets.UTF_8);
     expectedSerialized =
         expectedSerialized.replace(
-            "$EFFECTIVE_DATE_TIME_TESTED",
-            new DateTimeType(date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("UTC"))
+            "$CURRENT_DATE_TIMEZONE",
+            new DateTimeType(
+                    date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone(ZoneOffset.UTC))
                 .getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
@@ -998,7 +999,7 @@ class FhirConverterTest {
                 TimeZone.getTimeZone(DEFAULT_TIME_ZONE_ID));
     var actual =
         fhirConverter.convertToDiagnosticReport(
-            DiagnosticReportStatus.FINAL, "95422-2", "id-123", zonedDateTime, date);
+            DiagnosticReportStatus.FINAL, "95422-2", "id-123", zonedDateTime, zonedDateTime);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
@@ -1007,7 +1008,7 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
     assertThat(((DateTimeType) actual.getEffective()).getAsV3())
         .isEqualTo(expectedDateTimeType.getAsV3());
-    assertThat((actual.getIssued())).isEqualTo(date);
+    assertThat(actual.getIssued()).isEqualTo(date);
   }
 
   @Test
@@ -1025,7 +1026,8 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToServiceRequest(
             testOrder,
-            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T10:30:00.000Z"), ZoneOffset.UTC));
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T10:30:00.000Z"), DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.ACTIVE);
     assertThat(actual.getIntent()).isEqualTo(ServiceRequestIntent.ORDER);
@@ -1073,7 +1075,7 @@ class FhirConverterTest {
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.markComplete();
     var actual =
-        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(ZoneOffset.UTC));
+        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
   }
@@ -1085,7 +1087,7 @@ class FhirConverterTest {
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.cancelOrder();
     var actual =
-        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(ZoneOffset.UTC));
+        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.REVOKED);
   }
@@ -1097,7 +1099,7 @@ class FhirConverterTest {
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(false));
     testOrder.cancelOrder();
     var actual =
-        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(ZoneOffset.UTC));
+        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getCode().getCoding()).isEmpty();
   }
@@ -1109,7 +1111,8 @@ class FhirConverterTest {
             ServiceRequestStatus.COMPLETED,
             "94533-7",
             "id-123",
-            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T10:35:00.000Z"), ZoneOffset.UTC));
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID));
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
     assertThat(actual.getCode().getCoding()).hasSize(1);
@@ -1129,7 +1132,8 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_Strings_null() {
     var actual =
-        fhirConverter.convertToServiceRequest(null, null, null, ZonedDateTime.now(ZoneOffset.UTC));
+        fhirConverter.convertToServiceRequest(
+            null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
@@ -1145,7 +1149,8 @@ class FhirConverterTest {
     var actual =
         fhirConverter.convertToServiceRequest(
             testOrder,
-            ZonedDateTime.ofInstant(Instant.parse("2023-06-22T10:35:00.000Z"), ZoneOffset.UTC));
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID));
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -1538,7 +1543,7 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/bundle.json")),
             StandardCharsets.UTF_8);
 
-    var expectedDateTested =
+    var expectedCurrentDateTimezone =
         new DateTimeType(date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("UTC"))
             .getValueAsString();
     var expectedCurrentDateZulu = new InstantType(date).setTimeZoneZulu(true).getValueAsString();
@@ -1547,7 +1552,7 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
     expectedSerialized =
-        expectedSerialized.replace("$EFFECTIVE_DATE_TIME_TESTED", expectedDateTested);
+        expectedSerialized.replace("$CURRENT_DATE_TIMEZONE", expectedCurrentDateTimezone);
     expectedSerialized = expectedSerialized.replace("$CURRENT_DATE_ZULU", expectedCurrentDateZulu);
     expectedSerialized =
         expectedSerialized.replace(

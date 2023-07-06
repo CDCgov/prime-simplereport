@@ -117,7 +117,7 @@
           "reference": "Patient/1234"
         },
         "effectiveDateTime": "2021-12-20T14:00:00-06:00",
-        "issued": "2023-05-24T19:33:06.472Z",
+        "issued": "2021-12-20T14:00:00-06:00",
         "specimen": [
           {
             "reference": "Specimen/00000000-0000-0000-0000-000000000004"

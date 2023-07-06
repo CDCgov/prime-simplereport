@@ -186,6 +186,14 @@ public class BulkUploadResultsToFhir {
                 testingLabAddr)
             : orderTestDate;
 
+    var dateResultReleased =
+        StringUtils.isNotBlank(row.getDateResultReleased().getValue())
+            ? convertToZonedDateTime(
+                row.getDateResultReleased().getValue(),
+                resultsUploaderCachingService,
+                testingLabAddr)
+            : testResultDate;
+
     List<PhoneNumber> patientPhoneNumbers =
         StringUtils.isNotBlank(row.getPatientPhoneNumber().getValue())
             ? List.of(new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().getValue()))
@@ -381,7 +389,7 @@ public class BulkUploadResultsToFhir {
             testPerformedCode,
             testEventId,
             testResultDate,
-            dateGenerator.newDate());
+            dateResultReleased);
 
     return fhirConverter.createFhirBundle(
         CreateFhirBundleProps.builder()
