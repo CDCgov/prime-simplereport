@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DateTimeUtilsTest {
@@ -21,53 +22,39 @@ public class DateTimeUtilsTest {
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
   }
 
+  @BeforeEach
+  public void beforeEach() {
+    when(resultsUploaderCachingService.getZoneIdByAddress(any()))
+        .thenReturn(ZoneId.of("US/Eastern"));
+  }
+
+  void testConvertToZonedDateTime(String dateString, ZoneId expectedZoneId) {
+    var address = new StreetAddress(null, null, null, null, null);
+    var actualZonedDateTime =
+        convertToZonedDateTime(dateString, resultsUploaderCachingService, address);
+    var expectedZonedDateTime = ZonedDateTime.of(2023, 6, 28, 14, 0, 0, 0, expectedZoneId);
+    assertThat(actualZonedDateTime).hasToString(expectedZonedDateTime.toString());
+  }
+
   @Test
   void testConvertToZonedDateTime_withValidTimezoneSuffix() {
-    var date = "6/28/2023 14:00 MST";
-    var address = new StreetAddress(null, null, null, null, null);
-    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenCallRealMethod();
-    var expectedZonedDateTime =
-        ZonedDateTime.of(2023, 6, 28, 14, 0, 0, 0, ZoneId.of("US/Mountain"));
-
-    var actualZonedDateTime = convertToZonedDateTime(date, resultsUploaderCachingService, address);
-
-    assertThat(actualZonedDateTime.toString()).isEqualTo(expectedZonedDateTime.toString());
+    testConvertToZonedDateTime("6/28/2023 14:00 MST", ZoneId.of("US/Mountain"));
   }
 
   @Test
   void testConvertToZonedDateTime_withAddress() {
-    var date = "6/28/2023 14:00";
     when(resultsUploaderCachingService.getZoneIdByAddress(any()))
         .thenReturn(ZoneId.of("US/Pacific"));
-    var address = new StreetAddress(null, null, null, null, null);
-    var expectedZonedDateTime = ZonedDateTime.of(2023, 6, 28, 14, 0, 0, 0, ZoneId.of("US/Pacific"));
-
-    var actualZonedDateTime = convertToZonedDateTime(date, resultsUploaderCachingService, address);
-
-    assertThat(actualZonedDateTime.toString()).isEqualTo(expectedZonedDateTime.toString());
+    testConvertToZonedDateTime("6/28/2023 14:00", ZoneId.of("US/Pacific"));
   }
 
   @Test
   void testConvertToZonedDateTime_withFallback() {
-    var date = "6/28/2023 14:00";
-    var address = new StreetAddress(null, null, null, null, null);
-    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenCallRealMethod();
-    var expectedZonedDateTime = ZonedDateTime.of(2023, 6, 28, 14, 0, 0, 0, ZoneId.of("US/Eastern"));
-
-    var actualZonedDateTime = convertToZonedDateTime(date, resultsUploaderCachingService, address);
-
-    assertThat(actualZonedDateTime.toString()).isEqualTo(expectedZonedDateTime.toString());
+    testConvertToZonedDateTime("6/28/2023 14:00", ZoneId.of("US/Eastern"));
   }
 
   @Test
   void testConvertToZonedDateTime_withICANNTzIdentifier() {
-    var date = "6/28/2023 14:00 US/Samoa";
-    var address = new StreetAddress(null, null, null, null, null);
-    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenCallRealMethod();
-    var expectedZonedDateTime = ZonedDateTime.of(2023, 6, 28, 14, 0, 0, 0, ZoneId.of("US/Samoa"));
-
-    var actualZonedDateTime = convertToZonedDateTime(date, resultsUploaderCachingService, address);
-
-    assertThat(actualZonedDateTime).hasToString(expectedZonedDateTime.toString());
+    testConvertToZonedDateTime("6/28/2023 14:00 US/Samoa", ZoneId.of("US/Samoa"));
   }
 }

@@ -25,7 +25,7 @@ public class DateTimeUtils {
       DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
 
   public static final String TIMEZONE_SUFFIX_REGEX =
-      "^(0?[1-9]|1[0-2])/(0?[1-9]|1\\d|2\\d|3[01])/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])( \\S+)$";
+      "^(0?[1-9]|1[0-2])/(0?[1-9]|1\\d|2\\d|3[01])/\\d{4}( ([0-1]?\\d|2[0-3]):[0-5]\\d)( \\S+)$";
 
   public static final ZoneId FALLBACK_TIMEZONE_ID = ZoneId.of("US/Eastern");
 
