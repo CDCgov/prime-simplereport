@@ -3,7 +3,6 @@ LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplerepo
 
 WORKDIR /app/
 
-# Only copy dependency-related files
 ADD ./backend /app/backend
 ADD ./.git /app/.git
 

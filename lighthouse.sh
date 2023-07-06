@@ -1,12 +1,12 @@
 #!/bin/bash
 
-echo "start docker containers"
+echo "Starting docker containers"
 docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --quiet-pull
 
 echo "Waiting for backend to start at https://localhost.simplereport.gov/api/health"
 http_response=0
 polls=0
-while [[ $http_response != "200" && $polls -lt 360 ]]; do
+while [[ $http_response != "200" && $polls -lt 180 ]]; do
   ((polls++))
   sleep 2
   echo "Waiting for backend to start at https://localhost.simplereport.gov/api/health"

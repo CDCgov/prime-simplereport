@@ -12,4 +12,4 @@ gradle -Dorg.gradle.java.home=$JAVA_HOME --no-daemon -t build -x test -x checkst
 echo "Continuous build started."
 # Start bootRun without build. It will live reload when the previous process rebuilds
 echo "Starting bootRun..."
-gradle -Dorg.gradle.java.home=$JAVA_HOME --no-daemon -x build -x test -x checkstyleMain -x checkstyleTest bootRun
+gradle -Dorg.gradle.java.home=$JAVA_HOME --no-daemon -x build -x test -x checkstyleMain -x checkstyleTest -x spotlessCheck bootRun

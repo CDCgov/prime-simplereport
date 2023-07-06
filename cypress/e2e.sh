@@ -23,7 +23,7 @@ echo
 
 http_response=0
 polls=0
-while [[ $http_response != "200" && $polls -lt 360 ]]; do
+while [[ $http_response != "200" && $polls -lt 72 ]]; do
   ((polls++))
   sleep 5
   echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
@@ -38,7 +38,7 @@ echo
 
 result=0
 polls=0
-while [[ $result -ne 1 && $polls -lt 240 ]]; do
+while [[ $result -ne 1 && $polls -lt 48 ]]; do
   ((polls++))
   sleep 5
   echo "Waiting for frontend to start at ${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}"

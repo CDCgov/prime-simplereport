@@ -140,7 +140,7 @@ Cypress.Commands.add("removeOrganizationAccess", () => {
 
 
 Cypress.Commands.add("resetWiremock", () => {
-  cy.request("POST", "http://wiremock:8088/__admin/reset");
+  return !isLocalRun && cy.request("POST", "http://wiremock:8088/__admin/reset");
 });
 
 Cypress.Commands.add("makePOSTRequest", (requestBody) => {

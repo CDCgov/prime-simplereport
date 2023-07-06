@@ -70,7 +70,6 @@ describe("Okta account creation", () => {
   });
   describe("Account creation w/ SMS MFA", () => {
     before(() => {
-      // cy.restartWiremock("accountCreation");
       cy.clearCookies();
       cy.resetWiremock();
     });
