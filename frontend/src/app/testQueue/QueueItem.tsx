@@ -285,6 +285,11 @@ const QueueItem = ({
   useEffect(() => {
     // Update test card changes from server
 
+    if (dirtyState) {
+      // dont update if not done saving changes
+      return;
+    }
+
     if (deviceId !== queueItem.deviceType.internalId) {
       updateDeviceId(queueItem.deviceType.internalId);
     }
