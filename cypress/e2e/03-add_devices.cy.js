@@ -67,12 +67,12 @@ describe("Adding covid only and multiplex devices", () => {
   context("Manage facilities - add devices", () => {
     beforeEach(() => {
       cy.makePOSTRequest({
-        operationName: "GetManagedFacilities",
+        operationName: "WhoAmI",
         variables: {},
         query:
-          "query GetManagedFacilities {\n  organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}",
+          "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
       }).then((res) => {
-        facility = res.body.data.organization.facilities[0];
+        facility = res.body.data.whoami.organization.facilities[0];
         })
       cy.intercept("POST", graphqlURL, (req) => {
         aliasGraphqlOperations(req);

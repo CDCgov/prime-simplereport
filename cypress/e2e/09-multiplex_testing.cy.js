@@ -8,10 +8,10 @@ describe("Testing with multiplex devices", () => {
 
   before(() => {
     cy.makePOSTRequest({
-      operationName: "GetManagedFacilities",
+      operationName: "WhoAmI",
       variables: {},
       query:
-        "query GetManagedFacilities {\n  organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}",
+          "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
     }).then((res) => {
       facility = res.body.data.organization.facilities[0];
       cy.makePOSTRequest({
