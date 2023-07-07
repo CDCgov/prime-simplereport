@@ -344,6 +344,20 @@ const QueueItem = ({
     return false;
   };
 
+  const isFluOnlyDevice = (deviceId: string) => {
+    if (devicesMap.has(deviceId)) {
+      return (
+        devicesMap
+          .get(deviceId)!
+          .supportedDiseaseTestPerformed.filter(
+            (disease) =>
+              disease.supportedDisease.name === MULTIPLEX_DISEASES.COVID_19
+          ).length === 0
+      );
+    }
+    return false;
+  };
+
   const doesDeviceSupportMultiplexAndCovidOnlyResult = (deviceId: string) => {
     if (devicesMap.has(deviceId)) {
       const deviceTypeCovidDiseases = devicesMap
@@ -1028,6 +1042,7 @@ const QueueItem = ({
                   deviceSupportsCovidOnlyResult={doesDeviceSupportMultiplexAndCovidOnlyResult(
                     deviceId
                   )}
+                  isFluOnly={isFluOnlyDevice(deviceId)}
                   onSubmit={onTestResultSubmit}
                   onChange={onTestResultChange}
                 />
