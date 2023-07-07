@@ -73,7 +73,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -158,7 +157,7 @@ public class FhirConverter {
 
   public List<ContactPoint> convertPhoneNumbersToContactPoint(
       @NotNull List<PhoneNumber> phoneNumber) {
-    return phoneNumber.stream().map(this::convertToContactPoint).collect(Collectors.toList());
+    return phoneNumber.stream().map(this::convertToContactPoint).toList();
   }
 
   public ContactPoint convertToContactPoint(@NotNull PhoneNumber phoneNumber) {
@@ -187,9 +186,7 @@ public class FhirConverter {
   }
 
   public List<ContactPoint> convertEmailsToContactPoint(ContactPointUse use, List<String> emails) {
-    return emails.stream()
-        .map(email -> convertEmailToContactPoint(use, email))
-        .collect(Collectors.toList());
+    return emails.stream().map(email -> convertEmailToContactPoint(use, email)).toList();
   }
 
   public ContactPoint convertEmailToContactPoint(ContactPointUse use, @NotNull String email) {
@@ -203,11 +200,9 @@ public class FhirConverter {
 
   public AdministrativeGender convertToAdministrativeGender(@NotNull String gender) {
     switch (gender.toLowerCase()) {
-      case "male":
-      case "m":
+      case "male", "m":
         return AdministrativeGender.MALE;
-      case "female":
-      case "f":
+      case "female", "f":
         return AdministrativeGender.FEMALE;
       default:
         return AdministrativeGender.UNKNOWN;
@@ -496,41 +491,33 @@ public class FhirConverter {
     return device;
   }
 
-  public Specimen convertToSpecimen(
-      String specimenCode,
-      String specimenName,
-      String collectionCode,
-      String collectionName,
-      String id,
-      String identifier,
-      ZonedDateTime collectionDate,
-      ZonedDateTime receivedTime) {
+  public Specimen convertToSpecimen(ConvertToSpecimenProps props) {
     var specimen = new Specimen();
-    specimen.setId(id);
-    specimen.addIdentifier().setValue(identifier);
-    if (StringUtils.isNotBlank(specimenCode)) {
+    specimen.setId(props.getId());
+    specimen.addIdentifier().setValue(props.getIdentifier());
+    if (StringUtils.isNotBlank(props.getSpecimenCode())) {
       var codeableConcept = specimen.getType();
       var coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(specimenCode);
-      codeableConcept.setText(specimenName);
+      coding.setCode(props.getSpecimenCode());
+      codeableConcept.setText(props.getSpecimenName());
     }
-    if (StringUtils.isNotBlank(collectionCode)) {
+    if (StringUtils.isNotBlank(props.getCollectionCode())) {
       var collection = specimen.getCollection();
       var codeableConcept = collection.getBodySite();
       var coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(collectionCode);
-      codeableConcept.setText(collectionName);
+      coding.setCode(props.getCollectionCode());
+      codeableConcept.setText(props.getCollectionName());
     }
 
-    if (collectionDate != null) {
+    if (props.getCollectionDate() != null) {
       var collection = specimen.getCollection();
-      collection.setCollected(convertToDateTimeType(collectionDate));
+      collection.setCollected(convertToDateTimeType(props.getCollectionDate()));
     }
 
-    if (receivedTime != null) {
-      specimen.setReceivedTimeElement(convertToDateTimeType(receivedTime));
+    if (props.getReceivedTime() != null) {
+      specimen.setReceivedTimeElement(convertToDateTimeType(props.getReceivedTime()));
     }
 
     return specimen;
@@ -542,14 +529,16 @@ public class FhirConverter {
       ZonedDateTime collectionDate,
       ZonedDateTime receivedTime) {
     return convertToSpecimen(
-        specimenType.getTypeCode(),
-        specimenType.getName(),
-        specimenType.getCollectionLocationCode(),
-        specimenType.getCollectionLocationName(),
-        specimenType.getInternalId().toString(),
-        specimenIdentifier.toString(),
-        collectionDate,
-        receivedTime);
+        ConvertToSpecimenProps.builder()
+            .specimenCode(specimenType.getTypeCode())
+            .specimenName(specimenType.getName())
+            .collectionCode(specimenType.getCollectionLocationCode())
+            .collectionName(specimenType.getCollectionLocationName())
+            .id(specimenType.getInternalId().toString())
+            .identifier(specimenIdentifier.toString())
+            .collectionDate(collectionDate)
+            .receivedTime(receivedTime)
+            .build());
   }
 
   public List<Observation> convertToObservation(
@@ -586,7 +575,7 @@ public class FhirConverter {
                   deviceType.getModel(),
                   resultDate);
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public String getCommonDiseaseValue(
@@ -728,7 +717,7 @@ public class FhirConverter {
 
   public Set<Observation> convertToAOEObservations(String eventId, AskOnEntrySurvey surveyData) {
     Boolean symptomatic = null;
-    if (surveyData.getNoSymptoms()) {
+    if (Boolean.TRUE.equals(surveyData.getNoSymptoms())) {
       symptomatic = false;
     } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
       symptomatic = true;

@@ -31,12 +31,17 @@ public class ResultsUploaderCachingService {
   private final SpecimenTypeRepository specimenTypeRepository;
   private final AddressValidationService addressValidationService;
 
+  private static final String NASAL_SWAB_SNOMED = "445297001";
+  private static final String NASAL_THROAT_SWAB_SNOMED = "433801000124107";
+  private static final String BRONCHOALVEOLAR_LAVAGE = "258607008";
+  private static final String DRIED_BLOOD_SPOT = "440500007";
+
   private static final Map<String, String> specimenSNOMEDMap =
       Map.ofEntries(
-          Map.entry("swab of internal nose", "445297001"),
-          Map.entry("nasal swab", "445297001"),
-          Map.entry("nasal", "445297001"),
-          Map.entry("varied", "445297001"),
+          Map.entry("swab of internal nose", NASAL_SWAB_SNOMED),
+          Map.entry("nasal swab", NASAL_SWAB_SNOMED),
+          Map.entry("nasal", NASAL_SWAB_SNOMED),
+          Map.entry("varied", NASAL_SWAB_SNOMED),
           Map.entry("nasopharyngeal swab", "258500001"),
           Map.entry("mid-turbinate nasal swab", "871810001"),
           Map.entry("anterior nares swab", "697989009"),
@@ -64,17 +69,17 @@ public class ResultsUploaderCachingService {
           Map.entry("blood specimen", "119297000"),
           Map.entry("capillary blood specimen", "122554006"),
           Map.entry("fingerstick whole blood", "122554006"),
-          Map.entry("dried blood spot specimen", "440500007"),
-          Map.entry("dried blood spot", "440500007"),
-          Map.entry("fingerstick blood dried blood spot", "440500007"),
-          Map.entry("nasopharyngeal and oropharyngeal swab", "433801000124107"),
-          Map.entry("nasal and throat swab combination", "433801000124107"),
-          Map.entry("nasal and throat swab", "433801000124107"),
+          Map.entry("dried blood spot specimen", DRIED_BLOOD_SPOT),
+          Map.entry("dried blood spot", DRIED_BLOOD_SPOT),
+          Map.entry("fingerstick blood dried blood spot", DRIED_BLOOD_SPOT),
+          Map.entry("nasopharyngeal and oropharyngeal swab", NASAL_THROAT_SWAB_SNOMED),
+          Map.entry("nasal and throat swab combination", NASAL_THROAT_SWAB_SNOMED),
+          Map.entry("nasal and throat swab", NASAL_THROAT_SWAB_SNOMED),
           Map.entry("lower respiratory fluid sample", "309171007"),
           Map.entry("lower respiratory tract aspirates", "309171007"),
-          Map.entry("bronchoalveolar lavage fluid sample", "258607008"),
-          Map.entry("bronchoalveolar lavage fluid", "258607008"),
-          Map.entry("bronchoalveolar lavage", "258607008"));
+          Map.entry("bronchoalveolar lavage fluid sample", BRONCHOALVEOLAR_LAVAGE),
+          Map.entry("bronchoalveolar lavage fluid", BRONCHOALVEOLAR_LAVAGE),
+          Map.entry("bronchoalveolar lavage", BRONCHOALVEOLAR_LAVAGE));
 
   @Cacheable(DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP)
   public Map<String, DeviceType> getModelAndTestPerformedCodeToDeviceMap() {

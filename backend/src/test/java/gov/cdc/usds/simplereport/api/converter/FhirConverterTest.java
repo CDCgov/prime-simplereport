@@ -513,17 +513,22 @@ class FhirConverterTest {
 
   @Test
   void convertToSpecimen_Strings_valid() {
+    var collectionDate =
+        ZonedDateTime.ofInstant(Instant.parse("2023-06-22T16:38:00.000Z"), DEFAULT_TIME_ZONE_ID);
+    var receivedTime = ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"));
+
     var actual =
         fhirConverter.convertToSpecimen(
-            "258500001",
-            "Nasopharyngeal swab",
-            "53342003",
-            "Internal nose structure (body structure)",
-            "id-123",
-            "uuid-123",
-            ZonedDateTime.ofInstant(
-                Instant.parse("2023-06-22T16:38:00.000Z"), DEFAULT_TIME_ZONE_ID),
-            ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern")));
+            ConvertToSpecimenProps.builder()
+                .specimenCode("258500001")
+                .specimenName("Nasopharyngeal swab")
+                .collectionCode("53342003")
+                .collectionName("Internal nose structure (body structure)")
+                .id("id-123")
+                .identifier("uuid-123")
+                .collectionDate(collectionDate)
+                .receivedTime(receivedTime)
+                .build());
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getIdentifierFirstRep().getValue()).isEqualTo("uuid-123");
@@ -545,7 +550,7 @@ class FhirConverterTest {
 
   @Test
   void convertToSpecimen_Strings_null() {
-    var actual = fhirConverter.convertToSpecimen(null, null, null, null, null, null, null, null);
+    var actual = fhirConverter.convertToSpecimen(ConvertToSpecimenProps.builder().build());
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();

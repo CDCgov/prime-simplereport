@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.converter.ConvertToObservationProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToPatientProps;
+import gov.cdc.usds.simplereport.api.converter.ConvertToSpecimenProps;
 import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
@@ -37,7 +38,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -121,7 +121,7 @@ public class BulkUploadResultsToFhir {
                     throw new CsvProcessingException("Unable to process file.");
                   }
                 })
-            .collect(Collectors.toList());
+            .toList();
 
     // Clear cache to free memory
     resultsUploaderCachingService.clearAddressTimezoneLookupCache();
@@ -331,14 +331,16 @@ public class BulkUploadResultsToFhir {
 
     var specimen =
         fhirConverter.convertToSpecimen(
-            getSpecimenTypeSnomed(row.getSpecimenType().getValue()),
-            getDescriptionValue(row.getSpecimenType().getValue()),
-            null,
-            null,
-            uuidGenerator.randomUUID().toString(),
-            uuidGenerator.randomUUID().toString(),
-            specimenCollectionDate,
-            testingLabSpecimenReceivedDate);
+            ConvertToSpecimenProps.builder()
+                .specimenCode(getSpecimenTypeSnomed(row.getSpecimenType().getValue()))
+                .specimenName(getDescriptionValue(row.getSpecimenType().getValue()))
+                .collectionCode(null)
+                .collectionName(null)
+                .id(uuidGenerator.randomUUID().toString())
+                .identifier(uuidGenerator.randomUUID().toString())
+                .collectionDate(specimenCollectionDate)
+                .receivedTime(testingLabSpecimenReceivedDate)
+                .build());
 
     var observation =
         List.of(
