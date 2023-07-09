@@ -11,7 +11,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@microsoft/applicationinsights-react-js": "^3.4.3",
-    "@microsoft/applicationinsights-web": "^2.5.10",
+    "@microsoft/applicationinsights-web": "^3.0.2",
     "@szhsin/react-menu": "^1.5.0",
     "@testing-library/react": "^14.0.0",
     "@testing-library/user-event": "14.1.1",
