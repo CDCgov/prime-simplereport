@@ -98,8 +98,8 @@ public class DateTimeUtils {
   }
 
   public static ZoneId parseZoneId(String timezoneCode) {
-    if (validTimeZoneIdMap.containsKey(timezoneCode)) {
-      return validTimeZoneIdMap.get(timezoneCode);
+    if (validTimeZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
+      return validTimeZoneIdMap.get(timezoneCode.toUpperCase());
     }
     return ZoneId.of(timezoneCode);
   }
