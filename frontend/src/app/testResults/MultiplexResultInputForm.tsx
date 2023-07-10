@@ -193,6 +193,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
         covidIsFilled &&
         !fluAIsFilled &&
         !fluBIsFilled) ||
+      (isFluOnly && fluAIsFilled && fluBIsFilled) ||
       (covidIsFilled && fluAIsFilled && fluBIsFilled)
     );
   };
