@@ -96,10 +96,11 @@ public class TestResultUploadService {
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream) {
-
     TestResultUpload validationErrorResult = new TestResultUpload(UploadStatus.FAILURE);
 
     Organization org = _orgService.getCurrentOrganization();
+
+    var submissionId = UUID.randomUUID();
 
     byte[] content;
     try {
@@ -115,7 +116,7 @@ public class TestResultUploadService {
       validationErrorResult.setErrors(errors.toArray(FeedbackMessage[]::new));
 
       errorRepository.saveAll(
-          errors.stream().map(error -> new ResultUploadError(org, error)).toList());
+          errors.stream().map(error -> new ResultUploadError(org, error, submissionId)).toList());
 
       return validationErrorResult;
     }
@@ -139,9 +140,9 @@ public class TestResultUploadService {
         if (csvResponse.get() == null) {
           throw new DependencyFailureException("Unable to parse Report Stream response.");
         }
-        csvResult = saveSubmissionToDb(csvResponse.get(), org);
+        csvResult = saveSubmissionToDb(csvResponse.get(), org, submissionId);
         if (fhirResponse != null) {
-          saveSubmissionToDb(fhirResponse.get(), org);
+          saveSubmissionToDb(fhirResponse.get(), org, submissionId);
         }
       } catch (ExecutionException | InterruptedException e) {
         log.error("Error Processing Bulk Result Upload.", e);
@@ -282,7 +283,8 @@ public class TestResultUploadService {
     }
   }
 
-  private TestResultUpload saveSubmissionToDb(UploadResponse response, Organization org) {
+  private TestResultUpload saveSubmissionToDb(
+      UploadResponse response, Organization org, UUID submissionId) {
     TestResultUpload result = null;
     if (response != null) {
       var status = UploadResponse.parseStatus(response.getOverallStatus());
@@ -290,6 +292,7 @@ public class TestResultUploadService {
       result =
           new TestResultUpload(
               response.getId(),
+              submissionId,
               status,
               response.getReportItemCount(),
               org,
@@ -307,7 +310,9 @@ public class TestResultUploadService {
 
         errorRepository.saveAll(
             Arrays.stream(response.getErrors())
-                .map(feedbackMessage -> new ResultUploadError(finalResult, org, feedbackMessage))
+                .map(
+                    feedbackMessage ->
+                        new ResultUploadError(finalResult, org, feedbackMessage, submissionId))
                 .toList());
       }
     }
@@ -318,6 +323,7 @@ public class TestResultUploadService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public TestResultUpload processHIVResultCSV(InputStream csvStream) {
     FeedbackMessage[] empty = {};
-    return new TestResultUpload(UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
+    return new TestResultUpload(
+        UUID.randomUUID(), UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
   }
 }

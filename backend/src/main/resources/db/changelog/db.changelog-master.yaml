@@ -4746,19 +4746,15 @@ databaseChangeLog:
               - column:
                   name: upload_id
                   type: uuid
-                  remarks: The internal ID for the `upload` associated with this error
-                  constraints:
-                    nullable: true
-                    foreignKeyName: fk__result_upload_error__upload
-                    references: upload
+                  remarks: The internal ID for the upload associated with this error
               - column:
                   name: org_id
                   type: uuid
                   remarks: The internal ID for the organization which submitted the upload
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk__result_upload_error__organization
-                    references: organization
+              - column:
+                  name: submission_id
+                  type: uuid
+                  remarks: Identifier shared by an individual error and its overall submission
               - column:
                   name: type
                   type: ${database.defaultSchemaName}.test_result_upload_error
@@ -4814,9 +4810,18 @@ databaseChangeLog:
                     nullable: false
                     references: api_user
                     foreignKeyName: fk__result_upload_error__updated_by
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: submission_id
+                  type: uuid
       rollback:
           - dropTable:
               tableName: result_upload_error
+          - dropColumn:
+              tableName: upload
+              columnName: submission_id
           - sql:
               sql: |
                 DROP TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR;
