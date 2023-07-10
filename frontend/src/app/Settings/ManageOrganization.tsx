@@ -8,16 +8,9 @@ import Alert from "../commonComponents/Alert";
 import Select from "../commonComponents/Select";
 import { OrganizationTypeEnum } from "../signUp/Organization/utils";
 
-import { EditableOrganization } from "./ManageOrganizationContainer";
-
-type OrganizationFormData = {
-  name: string;
-  type: OrganizationType;
-};
-
 interface ManageOrganizationProps {
-  organization: EditableOrganization;
-  onSave: (organization: EditableOrganization) => Promise<void>;
+  organization: OrganizationForm;
+  onSave: (organization: OrganizationForm) => Promise<void>;
   canEditOrganizationName: boolean;
 }
 
@@ -35,7 +28,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
     formState: { errors, isSubmitting, isDirty },
     reset,
     watch,
-  } = useForm<OrganizationFormData>({
+  } = useForm<OrganizationForm>({
     defaultValues: { type: organization.type, name: organization.name },
   });
   const formCurrentValues = watch();
@@ -43,7 +36,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   /**
    * Submit organization data
    */
-  const onSubmit = async (orgData: OrganizationFormData) => {
+  const onSubmit = async (orgData: OrganizationForm) => {
     const updatedOrganization = {
       ...organization,
       name: canEditOrganizationName ? orgData.name : organization.name,

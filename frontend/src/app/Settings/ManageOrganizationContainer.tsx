@@ -10,11 +10,6 @@ import { useGetCurrentOrganizationQuery } from "../../generated/graphql";
 
 import ManageOrganization from "./ManageOrganization";
 
-interface EditableOrganization {
-  name: string;
-  type: OrganizationType;
-}
-
 export const ADMIN_SET_ORGANIZATION = gql`
   mutation AdminSetOrganization($name: String!, $type: String!) {
     adminUpdateOrganization(name: $name, type: $type)
@@ -52,7 +47,7 @@ const ManageOrganizationContainer: any = () => {
     return <p>Error: setting not found</p>;
   }
 
-  const onSave = async ({ name, type }: EditableOrganization) => {
+  const onSave = async ({ name, type }: OrganizationForm) => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Save Organization" });
     }
@@ -78,7 +73,7 @@ const ManageOrganizationContainer: any = () => {
 
   return (
     <ManageOrganization
-      organization={data.whoami.organization}
+      organization={data.whoami.organization as OrganizationForm}
       onSave={onSave}
       canEditOrganizationName={isSuperUser}
     />
