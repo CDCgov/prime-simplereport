@@ -96,6 +96,7 @@ services:
       - ./wiremock/stubs/:/home/wiremock
     container_name: wiremock
     restart: "unless-stopped"
+    command: --local-response-templating
     expose:
       - "8080"
 volumes:
