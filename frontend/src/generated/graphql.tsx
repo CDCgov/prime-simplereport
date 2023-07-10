@@ -1154,25 +1154,6 @@ export type UpdateFacilityMutation = {
   updateFacility?: { __typename?: "Facility"; id: string } | null;
 };
 
-export type AdminSetOrganizationMutationVariables = Exact<{
-  name: Scalars["String"];
-  type: Scalars["String"];
-}>;
-
-export type AdminSetOrganizationMutation = {
-  __typename?: "Mutation";
-  adminUpdateOrganization?: string | null;
-};
-
-export type SetOrganizationMutationVariables = Exact<{
-  type: Scalars["String"];
-}>;
-
-export type SetOrganizationMutation = {
-  __typename?: "Mutation";
-  updateOrganization?: string | null;
-};
-
 export type AllSelfRegistrationLinksQueryVariables = Exact<{
   [key: string]: never;
 }>;
@@ -1353,6 +1334,25 @@ export type GetCurrentOrganizationQuery = {
       type: string;
     } | null;
   };
+};
+
+export type AdminSetOrganizationMutationVariables = Exact<{
+  name: Scalars["String"];
+  type: Scalars["String"];
+}>;
+
+export type AdminSetOrganizationMutation = {
+  __typename?: "Mutation";
+  adminUpdateOrganization?: string | null;
+};
+
+export type SetOrganizationMutationVariables = Exact<{
+  type: Scalars["String"];
+}>;
+
+export type SetOrganizationMutation = {
+  __typename?: "Mutation";
+  updateOrganization?: string | null;
 };
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
@@ -2884,103 +2884,6 @@ export type UpdateFacilityMutationOptions = Apollo.BaseMutationOptions<
   UpdateFacilityMutation,
   UpdateFacilityMutationVariables
 >;
-export const AdminSetOrganizationDocument = gql`
-  mutation AdminSetOrganization($name: String!, $type: String!) {
-    adminUpdateOrganization(name: $name, type: $type)
-  }
-`;
-export type AdminSetOrganizationMutationFn = Apollo.MutationFunction<
-  AdminSetOrganizationMutation,
-  AdminSetOrganizationMutationVariables
->;
-
-/**
- * __useAdminSetOrganizationMutation__
- *
- * To run a mutation, you first call `useAdminSetOrganizationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAdminSetOrganizationMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [adminSetOrganizationMutation, { data, loading, error }] = useAdminSetOrganizationMutation({
- *   variables: {
- *      name: // value for 'name'
- *      type: // value for 'type'
- *   },
- * });
- */
-export function useAdminSetOrganizationMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    AdminSetOrganizationMutation,
-    AdminSetOrganizationMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    AdminSetOrganizationMutation,
-    AdminSetOrganizationMutationVariables
-  >(AdminSetOrganizationDocument, options);
-}
-export type AdminSetOrganizationMutationHookResult = ReturnType<
-  typeof useAdminSetOrganizationMutation
->;
-export type AdminSetOrganizationMutationResult =
-  Apollo.MutationResult<AdminSetOrganizationMutation>;
-export type AdminSetOrganizationMutationOptions = Apollo.BaseMutationOptions<
-  AdminSetOrganizationMutation,
-  AdminSetOrganizationMutationVariables
->;
-export const SetOrganizationDocument = gql`
-  mutation SetOrganization($type: String!) {
-    updateOrganization(type: $type)
-  }
-`;
-export type SetOrganizationMutationFn = Apollo.MutationFunction<
-  SetOrganizationMutation,
-  SetOrganizationMutationVariables
->;
-
-/**
- * __useSetOrganizationMutation__
- *
- * To run a mutation, you first call `useSetOrganizationMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSetOrganizationMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [setOrganizationMutation, { data, loading, error }] = useSetOrganizationMutation({
- *   variables: {
- *      type: // value for 'type'
- *   },
- * });
- */
-export function useSetOrganizationMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    SetOrganizationMutation,
-    SetOrganizationMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    SetOrganizationMutation,
-    SetOrganizationMutationVariables
-  >(SetOrganizationDocument, options);
-}
-export type SetOrganizationMutationHookResult = ReturnType<
-  typeof useSetOrganizationMutation
->;
-export type SetOrganizationMutationResult =
-  Apollo.MutationResult<SetOrganizationMutation>;
-export type SetOrganizationMutationOptions = Apollo.BaseMutationOptions<
-  SetOrganizationMutation,
-  SetOrganizationMutationVariables
->;
 export const AllSelfRegistrationLinksDocument = gql`
   query AllSelfRegistrationLinks {
     whoami {
@@ -3735,6 +3638,103 @@ export type GetCurrentOrganizationLazyQueryHookResult = ReturnType<
 export type GetCurrentOrganizationQueryResult = Apollo.QueryResult<
   GetCurrentOrganizationQuery,
   GetCurrentOrganizationQueryVariables
+>;
+export const AdminSetOrganizationDocument = gql`
+  mutation AdminSetOrganization($name: String!, $type: String!) {
+    adminUpdateOrganization(name: $name, type: $type)
+  }
+`;
+export type AdminSetOrganizationMutationFn = Apollo.MutationFunction<
+  AdminSetOrganizationMutation,
+  AdminSetOrganizationMutationVariables
+>;
+
+/**
+ * __useAdminSetOrganizationMutation__
+ *
+ * To run a mutation, you first call `useAdminSetOrganizationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAdminSetOrganizationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [adminSetOrganizationMutation, { data, loading, error }] = useAdminSetOrganizationMutation({
+ *   variables: {
+ *      name: // value for 'name'
+ *      type: // value for 'type'
+ *   },
+ * });
+ */
+export function useAdminSetOrganizationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    AdminSetOrganizationMutation,
+    AdminSetOrganizationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    AdminSetOrganizationMutation,
+    AdminSetOrganizationMutationVariables
+  >(AdminSetOrganizationDocument, options);
+}
+export type AdminSetOrganizationMutationHookResult = ReturnType<
+  typeof useAdminSetOrganizationMutation
+>;
+export type AdminSetOrganizationMutationResult =
+  Apollo.MutationResult<AdminSetOrganizationMutation>;
+export type AdminSetOrganizationMutationOptions = Apollo.BaseMutationOptions<
+  AdminSetOrganizationMutation,
+  AdminSetOrganizationMutationVariables
+>;
+export const SetOrganizationDocument = gql`
+  mutation SetOrganization($type: String!) {
+    updateOrganization(type: $type)
+  }
+`;
+export type SetOrganizationMutationFn = Apollo.MutationFunction<
+  SetOrganizationMutation,
+  SetOrganizationMutationVariables
+>;
+
+/**
+ * __useSetOrganizationMutation__
+ *
+ * To run a mutation, you first call `useSetOrganizationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetOrganizationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setOrganizationMutation, { data, loading, error }] = useSetOrganizationMutation({
+ *   variables: {
+ *      type: // value for 'type'
+ *   },
+ * });
+ */
+export function useSetOrganizationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SetOrganizationMutation,
+    SetOrganizationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SetOrganizationMutation,
+    SetOrganizationMutationVariables
+  >(SetOrganizationDocument, options);
+}
+export type SetOrganizationMutationHookResult = ReturnType<
+  typeof useSetOrganizationMutation
+>;
+export type SetOrganizationMutationResult =
+  Apollo.MutationResult<SetOrganizationMutation>;
+export type SetOrganizationMutationOptions = Apollo.BaseMutationOptions<
+  SetOrganizationMutation,
+  SetOrganizationMutationVariables
 >;
 export const GetTopLevelDashboardMetricsNewDocument = gql`
   query GetTopLevelDashboardMetricsNew(

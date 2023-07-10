@@ -12,12 +12,13 @@ import configureStore from "redux-mock-store";
 
 import { RootState } from "../store";
 import * as SRToast from "../utils/srToast";
-import { GetCurrentOrganizationDocument } from "../../generated/graphql";
+import {
+  AdminSetOrganizationDocument,
+  GetCurrentOrganizationDocument,
+  SetOrganizationDocument,
+} from "../../generated/graphql";
 
-import ManageOrganizationContainer, {
-  SET_ORGANIZATION,
-  ADMIN_SET_ORGANIZATION,
-} from "./ManageOrganizationContainer";
+import ManageOrganizationContainer from "./ManageOrganizationContainer";
 
 const mockStore = configureStore<DeepPartial<RootState>>([]);
 
@@ -146,7 +147,7 @@ describe("ManageOrganization", () => {
               mocks[0],
               {
                 request: {
-                  query: ADMIN_SET_ORGANIZATION,
+                  query: AdminSetOrganizationDocument,
                   variables: {
                     name: "Strawberry Fields 2",
                     type: "camp",
@@ -214,7 +215,7 @@ const mocks = [
   },
   {
     request: {
-      query: ADMIN_SET_ORGANIZATION,
+      query: AdminSetOrganizationDocument,
       variables: {
         name: "Penny Lane",
         type: "other",
@@ -228,7 +229,7 @@ const mocks = [
   },
   {
     request: {
-      query: SET_ORGANIZATION,
+      query: SetOrganizationDocument,
       variables: {
         type: "hospice",
       },

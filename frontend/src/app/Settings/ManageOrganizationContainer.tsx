@@ -1,26 +1,17 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { gql, useMutation } from "@apollo/client";
 
 import { getAppInsights } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
 import { RootState, updateOrganization } from "../store";
 import { useDocumentTitle } from "../utils/hooks";
-import { useGetCurrentOrganizationQuery } from "../../generated/graphql";
+import {
+  useAdminSetOrganizationMutation,
+  useGetCurrentOrganizationQuery,
+  useSetOrganizationMutation,
+} from "../../generated/graphql";
 
 import ManageOrganization from "./ManageOrganization";
-
-export const ADMIN_SET_ORGANIZATION = gql`
-  mutation AdminSetOrganization($name: String!, $type: String!) {
-    adminUpdateOrganization(name: $name, type: $type)
-  }
-`;
-
-export const SET_ORGANIZATION = gql`
-  mutation SetOrganization($type: String!) {
-    updateOrganization(type: $type)
-  }
-`;
 
 const ManageOrganizationContainer: any = () => {
   useDocumentTitle("Manage organization");
@@ -32,8 +23,8 @@ const ManageOrganizationContainer: any = () => {
   const isSuperUser = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
-  const [adminSetOrganization] = useMutation(ADMIN_SET_ORGANIZATION);
-  const [setOrganization] = useMutation(SET_ORGANIZATION);
+  const [adminSetOrganization] = useAdminSetOrganizationMutation();
+  const [setOrganization] = useSetOrganizationMutation();
   const appInsights = getAppInsights();
 
   if (loading) {

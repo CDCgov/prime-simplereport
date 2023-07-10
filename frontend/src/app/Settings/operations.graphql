@@ -6,3 +6,11 @@ query GetCurrentOrganization {
         }
     }
 }
+
+mutation AdminSetOrganization($name: String!, $type: String!) {
+    adminUpdateOrganization(name: $name, type: $type)
+}
+
+mutation SetOrganization($type: String!) {
+    updateOrganization(type: $type)
+}
