@@ -1,31 +1,19 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 
 import { getAppInsights } from "../TelemetryService";
 import { showError, showSuccess } from "../utils/srToast";
 import { RootState, updateOrganization } from "../store";
 import { useDocumentTitle } from "../utils/hooks";
+import { useGetCurrentOrganizationQuery } from "../../generated/graphql";
 
 import ManageOrganization from "./ManageOrganization";
 
-interface Data {
-  organization: {
-    name: string;
-    type: OrganizationType;
-  };
+interface EditableOrganization {
+  name: string;
+  type: OrganizationType;
 }
-
-export type EditableOrganization = Data["organization"];
-
-export const GET_ORGANIZATION = gql`
-  query GetOrganization {
-    organization {
-      name
-      type
-    }
-  }
-`;
 
 export const ADMIN_SET_ORGANIZATION = gql`
   mutation AdminSetOrganization($name: String!, $type: String!) {
@@ -42,7 +30,7 @@ export const SET_ORGANIZATION = gql`
 const ManageOrganizationContainer: any = () => {
   useDocumentTitle("Manage organization");
 
-  const { data, loading, error } = useQuery<Data, {}>(GET_ORGANIZATION, {
+  const { data, loading, error } = useGetCurrentOrganizationQuery({
     fetchPolicy: "no-cache",
   });
   const dispatch = useDispatch();
@@ -90,7 +78,7 @@ const ManageOrganizationContainer: any = () => {
 
   return (
     <ManageOrganization
-      organization={data.organization}
+      organization={data.whoami.organization}
       onSave={onSave}
       canEditOrganizationName={isSuperUser}
     />

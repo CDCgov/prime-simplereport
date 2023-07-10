@@ -12,9 +12,9 @@ import configureStore from "redux-mock-store";
 
 import { RootState } from "../store";
 import * as SRToast from "../utils/srToast";
+import { GetCurrentOrganizationDocument } from "../../generated/graphql";
 
 import ManageOrganizationContainer, {
-  GET_ORGANIZATION,
   SET_ORGANIZATION,
   ADMIN_SET_ORGANIZATION,
 } from "./ManageOrganizationContainer";
@@ -130,7 +130,9 @@ describe("ManageOrganization", () => {
       await waitFor(() =>
         expect(screen.queryByText(/The organization's name cannot be blank/i))
       );
-      expect(screen.queryByText(/An organization type must be selected/i));
+      expect(
+        screen.getByText(/An organization type must be selected/i)
+      ).toBeInTheDocument();
     });
 
     it("detects dirty state after first org data update", async () => {
@@ -195,12 +197,14 @@ describe("ManageOrganization", () => {
 const mocks = [
   {
     request: {
-      query: GET_ORGANIZATION,
+      query: GetCurrentOrganizationDocument,
     },
     result: {
       data: {
-        organization: {
-          name: "Strawberry Fields",
+        whoami: {
+          organization: {
+            name: "Strawberry Fields",
+          },
         },
       },
     },

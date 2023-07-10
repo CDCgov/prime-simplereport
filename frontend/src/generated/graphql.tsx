@@ -1154,17 +1154,6 @@ export type UpdateFacilityMutation = {
   updateFacility?: { __typename?: "Facility"; id: string } | null;
 };
 
-export type GetOrganizationQueryVariables = Exact<{ [key: string]: never }>;
-
-export type GetOrganizationQuery = {
-  __typename?: "Query";
-  organization?: {
-    __typename?: "Organization";
-    name: string;
-    type: string;
-  } | null;
-};
-
 export type AdminSetOrganizationMutationVariables = Exact<{
   name: Scalars["String"];
   type: Scalars["String"];
@@ -1348,6 +1337,22 @@ export type ResetUserMfaMutationVariables = Exact<{
 export type ResetUserMfaMutation = {
   __typename?: "Mutation";
   resetUserMfa?: { __typename?: "User"; id: string } | null;
+};
+
+export type GetCurrentOrganizationQueryVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type GetCurrentOrganizationQuery = {
+  __typename?: "Query";
+  whoami: {
+    __typename?: "User";
+    organization?: {
+      __typename?: "Organization";
+      name: string;
+      type: string;
+    } | null;
+  };
 };
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
@@ -2879,64 +2884,6 @@ export type UpdateFacilityMutationOptions = Apollo.BaseMutationOptions<
   UpdateFacilityMutation,
   UpdateFacilityMutationVariables
 >;
-export const GetOrganizationDocument = gql`
-  query GetOrganization {
-    organization {
-      name
-      type
-    }
-  }
-`;
-
-/**
- * __useGetOrganizationQuery__
- *
- * To run a query within a React component, call `useGetOrganizationQuery` and pass it any options that fit your needs.
- * When your component renders, `useGetOrganizationQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useGetOrganizationQuery({
- *   variables: {
- *   },
- * });
- */
-export function useGetOrganizationQuery(
-  baseOptions?: Apollo.QueryHookOptions<
-    GetOrganizationQuery,
-    GetOrganizationQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useQuery<GetOrganizationQuery, GetOrganizationQueryVariables>(
-    GetOrganizationDocument,
-    options
-  );
-}
-export function useGetOrganizationLazyQuery(
-  baseOptions?: Apollo.LazyQueryHookOptions<
-    GetOrganizationQuery,
-    GetOrganizationQueryVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useLazyQuery<
-    GetOrganizationQuery,
-    GetOrganizationQueryVariables
-  >(GetOrganizationDocument, options);
-}
-export type GetOrganizationQueryHookResult = ReturnType<
-  typeof useGetOrganizationQuery
->;
-export type GetOrganizationLazyQueryHookResult = ReturnType<
-  typeof useGetOrganizationLazyQuery
->;
-export type GetOrganizationQueryResult = Apollo.QueryResult<
-  GetOrganizationQuery,
-  GetOrganizationQueryVariables
->;
 export const AdminSetOrganizationDocument = gql`
   mutation AdminSetOrganization($name: String!, $type: String!) {
     adminUpdateOrganization(name: $name, type: $type)
@@ -3728,6 +3675,66 @@ export type ResetUserMfaMutationResult =
 export type ResetUserMfaMutationOptions = Apollo.BaseMutationOptions<
   ResetUserMfaMutation,
   ResetUserMfaMutationVariables
+>;
+export const GetCurrentOrganizationDocument = gql`
+  query GetCurrentOrganization {
+    whoami {
+      organization {
+        name
+        type
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetCurrentOrganizationQuery__
+ *
+ * To run a query within a React component, call `useGetCurrentOrganizationQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetCurrentOrganizationQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetCurrentOrganizationQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetCurrentOrganizationQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetCurrentOrganizationQuery,
+    GetCurrentOrganizationQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetCurrentOrganizationQuery,
+    GetCurrentOrganizationQueryVariables
+  >(GetCurrentOrganizationDocument, options);
+}
+export function useGetCurrentOrganizationLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetCurrentOrganizationQuery,
+    GetCurrentOrganizationQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetCurrentOrganizationQuery,
+    GetCurrentOrganizationQueryVariables
+  >(GetCurrentOrganizationDocument, options);
+}
+export type GetCurrentOrganizationQueryHookResult = ReturnType<
+  typeof useGetCurrentOrganizationQuery
+>;
+export type GetCurrentOrganizationLazyQueryHookResult = ReturnType<
+  typeof useGetCurrentOrganizationLazyQuery
+>;
+export type GetCurrentOrganizationQueryResult = Apollo.QueryResult<
+  GetCurrentOrganizationQuery,
+  GetCurrentOrganizationQueryVariables
 >;
 export const GetTopLevelDashboardMetricsNewDocument = gql`
   query GetTopLevelDashboardMetricsNew(
