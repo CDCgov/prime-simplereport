@@ -1031,57 +1031,63 @@ export type GetManagedFacilitiesQueryVariables = Exact<{
 
 export type GetManagedFacilitiesQuery = {
   __typename?: "Query";
-  organization?: {
-    __typename?: "Organization";
-    facilities: Array<{
-      __typename?: "Facility";
-      id: string;
-      cliaNumber?: string | null;
-      name: string;
-    }>;
-  } | null;
+  whoami: {
+    __typename?: "User";
+    organization?: {
+      __typename?: "Organization";
+      facilities: Array<{
+        __typename?: "Facility";
+        id: string;
+        cliaNumber?: string | null;
+        name: string;
+      }>;
+    } | null;
+  };
 };
 
 export type GetFacilitiesQueryVariables = Exact<{ [key: string]: never }>;
 
 export type GetFacilitiesQuery = {
   __typename?: "Query";
-  organization?: {
-    __typename?: "Organization";
-    internalId: string;
-    testingFacility: Array<{
-      __typename?: "Facility";
-      id: string;
-      cliaNumber?: string | null;
-      name: string;
-      street?: string | null;
-      streetTwo?: string | null;
-      city?: string | null;
-      state?: string | null;
-      zipCode?: string | null;
-      phone?: string | null;
-      email?: string | null;
-      deviceTypes: Array<{
-        __typename?: "DeviceType";
+  whoami: {
+    __typename?: "User";
+    organization?: {
+      __typename?: "Organization";
+      internalId: string;
+      testingFacility: Array<{
+        __typename?: "Facility";
+        id: string;
+        cliaNumber?: string | null;
         name: string;
-        internalId: string;
-      }>;
-      orderingProvider?: {
-        __typename?: "Provider";
-        firstName?: string | null;
-        middleName?: string | null;
-        lastName?: string | null;
-        suffix?: string | null;
-        NPI?: string | null;
         street?: string | null;
         streetTwo?: string | null;
         city?: string | null;
         state?: string | null;
         zipCode?: string | null;
         phone?: string | null;
-      } | null;
-    }>;
-  } | null;
+        email?: string | null;
+        deviceTypes: Array<{
+          __typename?: "DeviceType";
+          name: string;
+          internalId: string;
+        }>;
+        orderingProvider?: {
+          __typename?: "Provider";
+          firstName?: string | null;
+          middleName?: string | null;
+          lastName?: string | null;
+          suffix?: string | null;
+          NPI?: string | null;
+          street?: string | null;
+          streetTwo?: string | null;
+          city?: string | null;
+          state?: string | null;
+          zipCode?: string | null;
+          phone?: string | null;
+        } | null;
+      }>;
+    } | null;
+  };
   deviceTypes: Array<{
     __typename?: "DeviceType";
     internalId: string;
@@ -2477,11 +2483,13 @@ export type WhoAmIQueryResult = Apollo.QueryResult<
 >;
 export const GetManagedFacilitiesDocument = gql`
   query GetManagedFacilities {
-    organization {
-      facilities {
-        id
-        cliaNumber
-        name
+    whoami {
+      organization {
+        facilities {
+          id
+          cliaNumber
+          name
+        }
       }
     }
   }
@@ -2538,35 +2546,37 @@ export type GetManagedFacilitiesQueryResult = Apollo.QueryResult<
 >;
 export const GetFacilitiesDocument = gql`
   query GetFacilities {
-    organization {
-      internalId
-      testingFacility {
-        id
-        cliaNumber
-        name
-        street
-        streetTwo
-        city
-        state
-        zipCode
-        phone
-        email
-        deviceTypes {
+    whoami {
+      organization {
+        internalId
+        testingFacility {
+          id
+          cliaNumber
           name
-          internalId
-        }
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          suffix
-          NPI
           street
           streetTwo
           city
           state
           zipCode
           phone
+          email
+          deviceTypes {
+            name
+            internalId
+          }
+          orderingProvider {
+            firstName
+            middleName
+            lastName
+            suffix
+            NPI
+            street
+            streetTwo
+            city
+            state
+            zipCode
+            phone
+          }
         }
       }
     }
