@@ -4,12 +4,11 @@ backend/.gradle/
 frontend/build/
 frontend/node_modules/
 nginx/
-ops/
+ops/services/app_functions/report_stream_batched_publisher/functions/node_modules/
 docs/
 .github/
 .run/
 node_modules/
-wiremock/
 cypress/node_modules/
 cypress/screenshots/
 cypress/videos/
