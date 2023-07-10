@@ -1,9 +1,11 @@
 FROM nginx:1.25-alpine as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
-WORKDIR certs
+RUN curl -JLO "https://github.com/FiloSottile/mkcert/releases/download/v1.4.4/mkcert-v1.4.4-linux-amd64"
+RUN chmod +x mkcert-v1.4.4-linux-amd64
+RUN cp mkcert-v1.4.4-linux-amd64 /usr/local/bin/mkcert
 
-RUN apk add mkcert --repository=http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+WORKDIR certs
 RUN mkcert -install
 RUN mkcert localhost.simplereport.gov
 RUN mv localhost.simplereport.gov.pem localhost.simplereport.gov.crt
