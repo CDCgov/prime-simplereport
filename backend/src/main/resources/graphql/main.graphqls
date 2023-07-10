@@ -367,10 +367,6 @@ type UploadSubmissionPage {
 # Queries and mutations for everyday use
 
 type Query {
-  organization: Organization
-    @deprecated(
-      reason: "this information is already loaded from the 'whoami' endpoint"
-    )
   deviceType: [DeviceType!]!
     @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType!]!
