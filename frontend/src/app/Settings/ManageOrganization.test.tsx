@@ -128,10 +128,13 @@ describe("ManageOrganization", () => {
       fireEvent.click(saveButton);
 
       await waitFor(() =>
-        expect(screen.queryByText(/The organization's name cannot be blank/i))
+        expect(screen.getByLabelText("Organization name *")).toHaveFocus()
       );
       expect(
-        screen.getByText(/An organization type must be selected/i)
+        screen.getByText("The organization's name cannot be blank")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("An organization type must be selected")
       ).toBeInTheDocument();
     });
 
