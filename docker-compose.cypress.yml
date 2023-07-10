@@ -26,8 +26,6 @@ services:
       - ./cypress/screenshots/:/app/cypress/screenshots/
       - ./cypress/videos/:/app/cypress/videos/
       - ./.git/:/app/.git/
-    expose:
-      - "8088"
     command:
       ["-s", "$SPEC_PATH", "-r", "$TEST_ENV"]
   backend:

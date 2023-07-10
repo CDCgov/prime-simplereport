@@ -91,11 +91,13 @@ services:
       - '8025:8025'
     image: mailhog/mailhog
   wiremock:
-    build:
-      context: wiremock
-    image: ghcr.io/cdcgov/prime-simplereport/wiremock:${DOCKER_WIREMOCK_IMAGE_VERSION:-latest}
+    image: wiremock/wiremock:2.32.0-alpine
+    volumes:
+      - ./wiremock/stubs/:/home/wiremock
     container_name: wiremock
     restart: "unless-stopped"
+    expose:
+      - "8080"
 volumes:
   db-data:
   node_modules:

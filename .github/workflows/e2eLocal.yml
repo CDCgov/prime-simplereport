@@ -31,9 +31,6 @@ on:
       DOCKER_NGINX_IMAGE_VERSION:
         required: false
         type: string
-      DOCKER_WIREMOCK_IMAGE_VERSION:
-        required: false
-        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-e2e-local
@@ -81,7 +78,6 @@ jobs:
         DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
         DOCKER_FRONTEND_IMAGE_VERSION: ${{ inputs.DOCKER_FRONTEND_IMAGE_VERSION }}
         DOCKER_NGINX_IMAGE_VERSION: ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}
-        DOCKER_WIREMOCK_IMAGE_VERSION: ${{ inputs.DOCKER_WIREMOCK_IMAGE_VERSION }}
         COMPOSE_HTTP_TIMEOUT: 180
         # backend settings
         SPRING_PROFILES_ACTIVE: e2e,db-dockerized
@@ -92,7 +88,7 @@ jobs:
         SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
         SPRING_LIQUIBASE_ENABLED: "true"
         GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
-        WIREMOCK_URL: "http://wiremock:8088"
+        WIREMOCK_URL: "http://wiremock:8080"
         # cypress settings
         CYPRESS_OKTA_REDIRECT_URI: "https%3A%2F%2Flocalhost.simplereport.gov%2Fapp"
         CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
@@ -102,7 +98,7 @@ jobs:
         SPEC_PATH: "cypress/e2e/**"
         TEST_ENV: "https://localhost.simplereport.gov"
         # frontend settings
-        REACT_APP_OKTA_URL: "http://wiremock:8088"
+        REACT_APP_OKTA_URL: "http://wiremock:8080"
         REACT_APP_OKTA_CLIENT_ID: 0oa1k0163nAwfVxNW1d7
         REACT_APP_BASE_URL: https://localhost.simplereport.gov
         REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
@@ -117,7 +113,6 @@ jobs:
         echo "Database branch tag (or latest): ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}"
         echo "Frontend branch tag (or latest): ${{ inputs.DOCKER_FRONTEND_IMAGE_VERSION }}"
         echo "Nginx branch tag (or latest): ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}"
-        echo "Wiremock branch tag (or latest): ${{ inputs.DOCKER_WIREMOCK_IMAGE_VERSION }}"
         docker compose -f docker-compose.yml -f docker-compose.cypress.yml up --abort-on-container-exit --attach cypress --exit-code-from cypress --quiet-pull
         echo "::endgroup::"
 

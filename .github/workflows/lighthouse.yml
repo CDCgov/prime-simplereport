@@ -11,9 +11,6 @@ on:
       DOCKER_NGINX_IMAGE_VERSION:
         required: false
         type: string
-      DOCKER_WIREMOCK_IMAGE_VERSION:
-        required: false
-        type: string
       DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION:
         required: false
         type: string
@@ -66,7 +63,6 @@ jobs:
         DOCKER_BACKEND_IMAGE_VERSION: ${{ inputs.DOCKER_BACKEND_IMAGE_VERSION }}
         DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
         DOCKER_NGINX_IMAGE_VERSION: ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}
-        DOCKER_WIREMOCK_IMAGE_VERSION: ${{ inputs.DOCKER_WIREMOCK_IMAGE_VERSION }}
         DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ inputs.DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION }}
       shell: bash
       run: |
@@ -74,7 +70,6 @@ jobs:
         echo "Backend branch tag (or latest): ${{ inputs.DOCKER_BACKEND_IMAGE_VERSION }}"
         echo "Database branch tag (or latest): ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}"
         echo "Nginx branch tag (or latest): ${{ inputs.DOCKER_NGINX_IMAGE_VERSION }}"
-        echo "Wiremock branch tag (or latest): ${{ inputs.DOCKER_WIREMOCK_IMAGE_VERSION }}"
         echo "Frontend branch tag (or latest): ${{ inputs.DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION }}"
         echo "::endgroup::"
         

@@ -29,9 +29,6 @@ jobs:
   build_nginx_image:
     uses: ./.github/workflows/buildNginxImage.yml
 
-  build_wiremock_image:
-    uses: ./.github/workflows/buildWiremockImage.yml
-
   e2e_local:
     needs:
       - build_backend_image
@@ -39,7 +36,6 @@ jobs:
       - build_database_image
       - build_frontend_image
       - build_nginx_image
-      - build_wiremock_image
     uses: ./.github/workflows/e2eLocal.yml
     secrets:
       CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
@@ -54,14 +50,11 @@ jobs:
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_frontend_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
-      DOCKER_WIREMOCK_IMAGE_VERSION: ${{ needs.build_wiremock_image.outputs.version }}
-
   lighthouse:
     needs:
       - build_backend_image
       - build_database_image
       - build_nginx_image
-      - build_wiremock_image
       - build_frontend_lighthouse_image
     uses: ./.github/workflows/lighthouse.yml
     with:
@@ -69,8 +62,6 @@ jobs:
       DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
-      DOCKER_WIREMOCK_IMAGE_VERSION: ${{ needs.build_wiremock_image.outputs.version }}
-
   tests:
     needs:
       - build_database_image
