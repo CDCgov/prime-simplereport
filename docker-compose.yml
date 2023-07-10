@@ -96,9 +96,9 @@ services:
       - ./wiremock/stubs/:/home/wiremock
     container_name: wiremock
     restart: "unless-stopped"
-    command: --local-response-templating
+    command: --local-response-templating --port=8088
     expose:
-      - "8080"
+      - "8088"
 volumes:
   db-data:
   node_modules:

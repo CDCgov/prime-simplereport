@@ -66,7 +66,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            "REACT_APP_OKTA_URL=http://wiremock:8080"
+            "REACT_APP_OKTA_URL=http://wiremock:8088"
             "REACT_APP_OKTA_CLIENT_ID=0oa1k0163nAwfVxNW1d7"
             "REACT_APP_BASE_URL=https://localhost.simplereport.gov"
             "REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api"
