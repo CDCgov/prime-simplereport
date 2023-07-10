@@ -48,17 +48,35 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
     mockCreationTime("2020-02-17 00:00");
     uploadRepository.save(
         new TestResultUpload(
-            REPORT_ID_1, UploadStatus.SUCCESS, 30, currentOrganization, null, null));
+            REPORT_ID_1,
+            UUID.randomUUID(),
+            UploadStatus.SUCCESS,
+            30,
+            currentOrganization,
+            null,
+            null));
 
     mockCreationTime("2021-02-17 00:00");
     uploadRepository.save(
         new TestResultUpload(
-            REPORT_ID_2, UploadStatus.PENDING, 20, currentOrganization, null, null));
+            REPORT_ID_2,
+            UUID.randomUUID(),
+            UploadStatus.PENDING,
+            20,
+            currentOrganization,
+            null,
+            null));
 
     mockCreationTime("2022-02-17 00:00");
     uploadRepository.save(
         new TestResultUpload(
-            REPORT_ID_3, UploadStatus.PENDING, 10, currentOrganization, null, null));
+            REPORT_ID_3,
+            UUID.randomUUID(),
+            UploadStatus.PENDING,
+            10,
+            currentOrganization,
+            null,
+            null));
   }
 
   @Test
@@ -127,7 +145,13 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
 
     uploadRepository.save(
         new TestResultUpload(
-            REPORT_ID_2, UploadStatus.FAILURE, 20, currentOrganization, null, null));
+            REPORT_ID_2,
+            UUID.randomUUID(),
+            UploadStatus.FAILURE,
+            20,
+            currentOrganization,
+            null,
+            null));
 
     // WHEN
     Page<TestResultUpload> uploadSubmissions =

@@ -197,6 +197,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var result =
         new TestResultUpload(
             response.getReportId(),
+            UUID.randomUUID(),
             UploadStatus.PENDING,
             response.getReportItemCount(),
             orgServiceMock.getCurrentOrganization(),
@@ -474,6 +475,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var csvResult =
         new TestResultUpload(
             csvReportId,
+            UUID.randomUUID(),
             UploadStatus.PENDING,
             5,
             org,
@@ -525,6 +527,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var csvResult =
         new TestResultUpload(
             csvReportId,
+            UUID.randomUUID(),
             UploadStatus.PENDING,
             5,
             org,
