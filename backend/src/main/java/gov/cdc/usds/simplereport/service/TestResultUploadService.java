@@ -201,15 +201,18 @@ public class TestResultUploadService {
 
     testResultDate =
         convertToZonedDateTime(testResultDate, resultsUploaderCachingService, testingLabAddr)
+            .toOffsetDateTime()
             .toString();
     orderTestDate =
         convertToZonedDateTime(orderTestDate, resultsUploaderCachingService, providerAddr)
+            .toOffsetDateTime()
             .toString();
 
     specimenCollectionDate =
         StringUtils.isNotBlank(specimenCollectionDate)
             ? convertToZonedDateTime(
                     specimenCollectionDate, resultsUploaderCachingService, providerAddr)
+                .toOffsetDateTime()
                 .toString()
             : orderTestDate;
 
@@ -217,6 +220,7 @@ public class TestResultUploadService {
         StringUtils.isNotBlank(specimenReceivedDate)
             ? convertToZonedDateTime(
                     specimenReceivedDate, resultsUploaderCachingService, providerAddr)
+                .toOffsetDateTime()
                 .toString()
             : orderTestDate;
 
@@ -224,6 +228,7 @@ public class TestResultUploadService {
         StringUtils.isNotBlank(dateResultReleased)
             ? convertToZonedDateTime(
                     dateResultReleased, resultsUploaderCachingService, providerAddr)
+                .toOffsetDateTime()
                 .toString()
             : testResultDate;
 
