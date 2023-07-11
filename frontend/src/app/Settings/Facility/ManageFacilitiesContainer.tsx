@@ -18,7 +18,7 @@ const ManageFacilitiesContainer: any = () => {
     };
   };
 
-  const settingsData = data as SettingsData;
+  const settingsData = data?.whoami as SettingsData;
 
   if (loading) {
     return <p> Loading... </p>;
