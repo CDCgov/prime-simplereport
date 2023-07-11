@@ -21,7 +21,7 @@ import static java.util.Collections.emptyList;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
-import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.ArrayList;
@@ -213,7 +213,7 @@ public class TestResultRow implements FileRow {
           "92977-8",
           "9531-5",
           "9534-9");
-  private ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
+  private ResultsUploaderCachingService resultsUploaderCachingService;
 
   private static final List<String> requiredFields =
       List.of(
@@ -252,10 +252,9 @@ public class TestResultRow implements FileRow {
           TESTING_LAB_ZIP_CODE_FIELD);
 
   public TestResultRow(
-      Map<String, String> rawRow,
-      ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService) {
+      Map<String, String> rawRow, ResultsUploaderCachingService resultsUploaderCachingService) {
     this(rawRow);
-    this.resultsUploaderDeviceValidationService = resultsUploaderDeviceValidationService;
+    this.resultsUploaderCachingService = resultsUploaderCachingService;
   }
 
   public TestResultRow(Map<String, String> rawRow) {
@@ -383,10 +382,10 @@ public class TestResultRow implements FileRow {
       String equipmentModelName, String testPerformedCode) {
     return equipmentModelName != null
         && testPerformedCode != null
-        && resultsUploaderDeviceValidationService
+        && resultsUploaderCachingService
             .getModelAndTestPerformedCodeToDeviceMap()
             .containsKey(
-                ResultsUploaderDeviceValidationService.getMapKey(
+                ResultsUploaderCachingService.getMapKey(
                     removeTrailingAsterisk(equipmentModelName), testPerformedCode));
   }
 
@@ -456,7 +455,7 @@ public class TestResultRow implements FileRow {
     errors.addAll(validateTestResultStatus(testResultStatus));
     errors.addAll(
         validateSpecimenType(
-            specimenType, resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap()));
+            specimenType, resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap()));
 
     errors.addAll(validateClia(testingLabClia));
 
