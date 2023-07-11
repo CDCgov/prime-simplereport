@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
-import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import gov.cdc.usds.simplereport.test_util.TestErrorMessageUtil;
@@ -405,7 +405,7 @@ class TestResultRowTest {
     invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
     var testResultRow =
-        new TestResultRow(invalidIndividualFields, mockResultsUploaderDeviceValidationService());
+        new TestResultRow(invalidIndividualFields, mockResultsUploaderCachingService());
 
     var actual = testResultRow.validateIndividualValues();
 
@@ -419,10 +419,10 @@ class TestResultRowTest {
     individualFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
   }
 
-  private ResultsUploaderDeviceValidationService mockResultsUploaderDeviceValidationService() {
-    var resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
-    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+  private ResultsUploaderCachingService mockResultsUploaderCachingService() {
+    var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceType()));
-    return resultsUploaderDeviceValidationService;
+    return resultsUploaderCachingService;
   }
 }
