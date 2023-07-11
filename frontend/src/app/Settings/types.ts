@@ -12,7 +12,7 @@ type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
 interface FacilityFormDeviceType {
   internalId: string;
   name: string;
-  testLength?: number | undefined;
+  testLength?: number;
 }
 
 interface SpecimenType {

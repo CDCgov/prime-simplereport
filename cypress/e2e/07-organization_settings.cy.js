@@ -12,7 +12,7 @@ describe("Updating organization settings", () => {
 
   it("navigates to the org settings page", () => {
     cy.visit("/settings/organization");
-    cy.wait("@GetOrganization");
+    cy.wait("@GetCurrentOrganization");
     cy.get(".prime-container.settings-tab").contains("Manage organization");
 
     // Test a11y on the Manage organization page
