@@ -1,43 +1,47 @@
 query GetManagedFacilities {
-  organization {
-    facilities {
-      id
-      cliaNumber
-      name
+  whoami {
+    organization {
+      facilities {
+        id
+        cliaNumber
+        name
+      }
     }
   }
 }
 
 query GetFacilities {
-  organization {
-    internalId
-    testingFacility {
-      id
-      cliaNumber
-      name
-      street
-      streetTwo
-      city
-      state
-      zipCode
-      phone
-      email
-      deviceTypes {
+  whoami {
+    organization {
+      internalId
+      testingFacility {
+        id
+        cliaNumber
         name
-        internalId
-      }
-      orderingProvider {
-        firstName
-        middleName
-        lastName
-        suffix
-        NPI
         street
         streetTwo
         city
         state
         zipCode
         phone
+        email
+        deviceTypes {
+          name
+          internalId
+        }
+        orderingProvider {
+          firstName
+          middleName
+          lastName
+          suffix
+          NPI
+          street
+          streetTwo
+          city
+          state
+          zipCode
+          phone
+        }
       }
     }
   }
