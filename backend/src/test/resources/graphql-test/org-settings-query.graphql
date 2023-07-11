@@ -1,26 +1,13 @@
 {
-  organization {
-    internalId
-    name
-    externalId
-    testingFacility {
-      id
-      cliaNumber
+  whoami {
+    organization {
+      internalId
       name
-      street
-      streetTwo
-      city
-      county
-      state
-      zipCode
-      phone
-      email
-      orderingProvider {
-        firstName
-        middleName
-        lastName
-        suffix
-        NPI
+      externalId
+      testingFacility {
+        id
+        cliaNumber
+        name
         street
         streetTwo
         city
@@ -28,9 +15,24 @@
         state
         zipCode
         phone
+        email
+        orderingProvider {
+          firstName
+          middleName
+          lastName
+          suffix
+          NPI
+          street
+          streetTwo
+          city
+          county
+          state
+          zipCode
+          phone
+          __typename
+        }
         __typename
       }
-      __typename
     }
   }
 }
