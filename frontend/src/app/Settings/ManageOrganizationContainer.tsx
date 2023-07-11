@@ -6,6 +6,7 @@ import { showError, showSuccess } from "../utils/srToast";
 import { RootState, updateOrganization } from "../store";
 import { useDocumentTitle } from "../utils/hooks";
 import {
+  Organization,
   useAdminSetOrganizationMutation,
   useGetCurrentOrganizationQuery,
   useSetOrganizationMutation,
@@ -38,7 +39,7 @@ const ManageOrganizationContainer: any = () => {
     return <p>Error: setting not found</p>;
   }
 
-  const onSave = async ({ name, type }: OrganizationForm) => {
+  const onSave = async ({ name, type }: Organization) => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Save Organization" });
     }
@@ -64,7 +65,7 @@ const ManageOrganizationContainer: any = () => {
 
   return (
     <ManageOrganization
-      organization={data.whoami.organization as OrganizationForm}
+      organization={data.whoami.organization as Organization}
       onSave={onSave}
       canEditOrganizationName={isSuperUser}
     />

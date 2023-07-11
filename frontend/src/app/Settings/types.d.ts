@@ -150,8 +150,3 @@ type OrganizationType =
   | "camp"
   | "lab"
   | "other";
-
-interface OrganizationForm {
-  name: string;
-  type: OrganizationType;
-}

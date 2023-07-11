@@ -7,10 +7,11 @@ import RequiredMessage from "../commonComponents/RequiredMessage";
 import Alert from "../commonComponents/Alert";
 import Select from "../commonComponents/Select";
 import { OrganizationTypeEnum } from "../signUp/Organization/utils";
+import { Organization } from "../../generated/graphql";
 
 interface ManageOrganizationProps {
-  organization: OrganizationForm;
-  onSave: (organization: OrganizationForm) => Promise<void>;
+  organization: Organization;
+  onSave: (organization: Organization) => Promise<void>;
   canEditOrganizationName: boolean;
 }
 
@@ -28,7 +29,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
     formState: { errors, isSubmitting, isDirty },
     reset,
     watch,
-  } = useForm<OrganizationForm>({
+  } = useForm<Organization>({
     defaultValues: { type: organization.type, name: organization.name },
   });
   const formCurrentValues = watch();
@@ -36,7 +37,7 @@ const ManageOrganization: React.FC<ManageOrganizationProps> = ({
   /**
    * Submit organization data
    */
-  const onSubmit = async (orgData: OrganizationForm) => {
+  const onSubmit = async (orgData: Organization) => {
     const updatedOrganization = {
       ...organization,
       name: canEditOrganizationName ? orgData.name : organization.name,
