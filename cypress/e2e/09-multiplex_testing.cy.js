@@ -7,13 +7,13 @@ describe("Testing with multiplex devices", () => {
   let patient, facility, multiplexDeviceName;
 
   before(() => {
-    cy.makePOSTRequest({
-      operationName: "GetManagedFacilities",
-      variables: {},
-      query:
-        "query GetManagedFacilities {\n  organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}",
-    }).then((res) => {
-      facility = res.body.data.organization.facilities[0];
+      cy.makePOSTRequest({
+        operationName: "WhoAmI",
+        variables: {},
+        query:
+            "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
+      }).then((res) => {
+      facility = res.body.data.whoami.organization.facilities[0];
       cy.makePOSTRequest({
         operationName: "GetPatientsByFacility",
         variables: {

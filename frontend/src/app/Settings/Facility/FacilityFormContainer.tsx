@@ -113,7 +113,7 @@ const FacilityFormContainer: any = (props: Props) => {
   };
 
   const getFacilityData = (): Facility => {
-    const facility = data?.organization?.testingFacility.find(
+    const facility = data?.whoami?.organization?.testingFacility.find(
       (f) => f.id === facilityId
     );
     if (facility) {
