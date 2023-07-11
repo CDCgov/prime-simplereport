@@ -34,7 +34,7 @@ public class FileValidator<T extends FileRow> {
           FeedbackMessage.builder()
               .scope(CsvValidatorUtils.ITEM_SCOPE)
               .message("File is missing headers and other required data")
-              .source(ResultUploadErrorSource.SIMPLEREPORT)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .build();
       mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
     }
@@ -57,7 +57,7 @@ public class FileValidator<T extends FileRow> {
                 .message(
                     "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.")
                 .indices(new ArrayList<>(List.of(rowNumber)))
-                .source(ResultUploadErrorSource.SIMPLEREPORT)
+                .source(ResultUploadErrorSource.SIMPLE_REPORT)
                 .build();
         mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
         continue;

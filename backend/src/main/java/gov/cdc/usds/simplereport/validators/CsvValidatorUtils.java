@@ -186,7 +186,7 @@ public class CsvValidatorUtils {
                 .scope(ITEM_SCOPE)
                 .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
                 .errorType(ResultUploadErrorType.INVALID_DATA)
-                .source(ResultUploadErrorSource.SIMPLEREPORT)
+                .source(ResultUploadErrorSource.SIMPLE_REPORT)
                 .fieldRequired(true)
                 .fieldHeader(input.getHeader())
                 .build());
@@ -201,7 +201,7 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
-              .source(ResultUploadErrorSource.SIMPLEREPORT)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .fieldRequired(true)
               .fieldHeader(input.getHeader())
               .build());
@@ -277,7 +277,7 @@ public class CsvValidatorUtils {
               .fieldHeader(input.getHeader())
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
-              .source(ResultUploadErrorSource.SIMPLEREPORT)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .fieldRequired(input.isRequired())
               .build());
     }
@@ -318,7 +318,7 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .fieldHeader(name)
               .message(getRequiredValueErrorMessage(name))
-              .source(ResultUploadErrorSource.SIMPLEREPORT)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .errorType(ResultUploadErrorType.MISSING_DATA)
               .fieldRequired(true)
               .build());
@@ -340,7 +340,7 @@ public class CsvValidatorUtils {
                         .scope(CsvValidatorUtils.ITEM_SCOPE)
                         .message(
                             "The header for column " + requiredField + " is missing or invalid.")
-                        .source(ResultUploadErrorSource.SIMPLEREPORT)
+                        .source(ResultUploadErrorSource.SIMPLE_REPORT)
                         .fieldHeader(requiredField)
                         .errorType(ResultUploadErrorType.MISSING_HEADER)
                         .fieldRequired(true)
@@ -449,7 +449,7 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
-              .source(ResultUploadErrorSource.SIMPLEREPORT)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
@@ -471,7 +471,7 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
-              .source(ResultUploadErrorSource.SIMPLEREPORT)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
               .build());

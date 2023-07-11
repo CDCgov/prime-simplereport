@@ -305,7 +305,7 @@ public class TestResultUploadService {
 
       if (response.getErrors() != null && response.getErrors().length > 0) {
         for (var error : response.getErrors()) {
-          error.setSource(ResultUploadErrorSource.REPORTSTREAM);
+          error.setSource(ResultUploadErrorSource.REPORT_STREAM);
         }
 
         errorRepository.saveAll(

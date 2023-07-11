@@ -4738,7 +4738,7 @@ databaseChangeLog:
         - sql:
             remarks: Create the enumerations for upload error sources
             sql: |
-              CREATE TYPE ${database.defaultSchemaName}.RESULT_UPLOAD_ERROR_SOURCE as ENUM('SIMPLEREPORT', 'REPORTSTREAM');
+              CREATE TYPE ${database.defaultSchemaName}.RESULT_UPLOAD_ERROR_SOURCE as ENUM('SIMPLE_REPORT', 'REPORT_STREAM');
         - createTable:
             tableName: result_upload_error
             remarks: A collection of errors for bulk upload submission attempts.

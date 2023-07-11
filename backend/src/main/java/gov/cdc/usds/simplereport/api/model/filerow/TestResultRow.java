@@ -371,7 +371,7 @@ public class TestResultRow implements FileRow {
             .fieldRequired(true)
             .fieldHeader(EQUIPMENT_MODEL_NAME)
             .errorType(ResultUploadErrorType.INVALID_DATA)
-            .source(ResultUploadErrorSource.SIMPLEREPORT)
+            .source(ResultUploadErrorSource.SIMPLE_REPORT)
             .build());
   }
 
