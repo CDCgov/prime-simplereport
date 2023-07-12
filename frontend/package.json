@@ -55,7 +55,7 @@
   },
   "scripts": {
     "prestart": "rm -rf .eslintcache && yarn",
-    "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) npm-run-all -p watch-css start-js",
+    "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) npm-run-all -p start-js",
     "start-js": "react-scripts start",
     "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt && cd build && mv *touchpoints*.* static/",
