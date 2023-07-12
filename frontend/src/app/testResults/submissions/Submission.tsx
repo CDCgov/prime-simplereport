@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
+import { Icon } from "@trussworks/react-uswds";
 
-import iconSprite from "../../../../node_modules/@uswds/uswds/img/sprite.svg";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { formatDateWithTimeOption } from "../../utils/date";
@@ -43,14 +43,9 @@ const Submission = () => {
         <div className="usa-card__header">
           <div>
             <div className="display-flex flex-align-center">
-              <svg
-                className="usa-icon text-base margin-left-neg-2px"
-                aria-hidden="true"
-                focusable="false"
-                role="img"
-              >
-                <use xlinkHref={iconSprite + "#arrow_back"}></use>
-              </svg>
+              <Icon.ArrowBack
+                className={"text-base margin-left-neg-2px"}
+              ></Icon.ArrowBack>
               <LinkWithQuery
                 to={`/results/upload/submissions/`}
                 className="margin-left-05"

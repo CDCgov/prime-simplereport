@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { NavigateOptions, NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { Icon } from "@trussworks/react-uswds";
 
-import iconSprite from "../../../node_modules/@uswds/uswds/img/sprite.svg";
 import {
   PATIENT_TERM_CAP,
   PATIENT_TERM_PLURAL_CAP,
@@ -303,14 +303,9 @@ const EditPatient = (props: Props) => {
                 <div className="display-flex flex-justify">
                   <div>
                     <div className="display-flex flex-align-center">
-                      <svg
-                        className="usa-icon text-base margin-left-neg-2px"
-                        aria-hidden="true"
-                        focusable="false"
-                        role="img"
-                      >
-                        <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                      </svg>
+                      <Icon.ArrowBack
+                        className={"text-base margin-left-neg-2px"}
+                      ></Icon.ArrowBack>
                       {props.fromQueue ? (
                         <NavLink
                           to={`/queue?facility=${props.facilityId}`}
