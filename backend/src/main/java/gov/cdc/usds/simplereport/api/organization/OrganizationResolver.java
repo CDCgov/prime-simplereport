@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.organization;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
@@ -69,6 +70,7 @@ public class OrganizationResolver {
    * @return a list of pending organizations
    */
   @QueryMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<ApiPendingOrganization> pendingOrganizations() {
     return _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
         .map(ApiPendingOrganization::new)
