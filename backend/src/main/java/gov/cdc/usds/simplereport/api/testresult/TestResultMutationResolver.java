@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import java.util.List;
@@ -24,6 +25,7 @@ public class TestResultMutationResolver {
   private final TestEventReportingService fhirReportingService;
 
   @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public boolean resendToReportStream(
       @Argument List<UUID> testEventIds, @Argument boolean fhirOnly) {
     testEventRepository
