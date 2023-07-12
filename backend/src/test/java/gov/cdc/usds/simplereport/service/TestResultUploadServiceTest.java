@@ -74,7 +74,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private DataHubClient dataHubMock;
   @Mock private TestResultUploadRepository repoMock;
   @Mock private OrganizationService orgServiceMock;
-  @Mock private ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationServiceMock;
+  @Mock private ResultsUploaderCachingService resultsUploaderCachingServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
@@ -399,7 +399,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     response.setErrors(new FeedbackMessage[] {});
     response.setWarnings(new FeedbackMessage[] {});
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
-    when(resultsUploaderDeviceValidationServiceMock.getSpecimenTypeNameToSNOMEDMap())
+    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
 
     // WHEN

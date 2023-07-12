@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
-import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.ByteArrayInputStream;
@@ -79,13 +79,13 @@ class FileValidatorTest {
 
   @BeforeEach
   public void setup() {
-    var resultsUploaderDeviceValidationService = mock(ResultsUploaderDeviceValidationService.class);
-    when(resultsUploaderDeviceValidationService.getModelAndTestPerformedCodeToDeviceMap())
+    var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
         .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceType()));
-    when(resultsUploaderDeviceValidationService.getSpecimenTypeNameToSNOMEDMap())
+    when(resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     testResultFileValidator =
-        new FileValidator<>(row -> new TestResultRow(row, resultsUploaderDeviceValidationService));
+        new FileValidator<>(row -> new TestResultRow(row, resultsUploaderCachingService));
   }
 
   @Test

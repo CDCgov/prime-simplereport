@@ -66,6 +66,7 @@ public class OrganizationResolver {
    * @return a list of pending organizations
    */
   @QueryMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<ApiPendingOrganization> pendingOrganizations() {
     return _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
         .map(ApiPendingOrganization::new)
