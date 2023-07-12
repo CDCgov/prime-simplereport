@@ -200,4 +200,45 @@ class CsvValidatorUtilsTest {
       assertThat(validateDateTime(datetime)).hasSize(1);
     }
   }
+
+  @Test
+  void validDateTimeWithTimeZone() {
+    var validDateTimes = new ArrayList<ValueOrError>();
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 ET", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 EST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 EDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 CT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 CST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 CDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 MT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 MST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 MDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 PT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 PST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 PDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 AKDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 AKST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 HST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 SST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 ", "datetime"));
+    for (var datetime : validDateTimes) {
+      assertThat(validateDateTime(datetime)).isEmpty();
+    }
+  }
+
+  @Test
+  void invalidDateTimeWithTimeZone() {
+    var invalidDateTimes = new ArrayList<ValueOrError>();
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 New York", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 Eastern", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 central", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 pacific time", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 123", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 ABC", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 ET2", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 denver", "datetime"));
+    for (var datetime : invalidDateTimes) {
+      assertThat(validateDateTime(datetime)).hasSize(1);
+    }
+  }
 }
