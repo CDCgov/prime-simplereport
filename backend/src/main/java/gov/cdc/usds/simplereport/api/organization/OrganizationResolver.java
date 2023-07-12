@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.organization;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -32,7 +33,12 @@ public class OrganizationResolver {
   @QueryMapping
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public ApiOrganization organization(@Argument UUID id) {
-    var org = _organizationService.getOrganizationById(id);
+    Organization org;
+    try {
+      org = _organizationService.getOrganizationById(id);
+    } catch (IllegalGraphqlArgumentException e) {
+      return null;
+    }
     var facilities = _organizationService.getFacilities(org);
     return new ApiOrganization(org, facilities);
   }
