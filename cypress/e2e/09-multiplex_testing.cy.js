@@ -20,10 +20,10 @@ describe("Testing with multiplex devices", () => {
           facilityId: facility.id,
           pageNumber: 0,
           pageSize: 1,
-          includeArchived: false,
+          archivedStatus: "UNARCHIVED",
         },
         query:
-          "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $includeArchived: Boolean, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    includeArchived: $includeArchived\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}",
+          "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $archivedStatus: ArchivedStatus, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    archivedStatus: $archivedStatus\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}",
       }).then((res) => {
         patient = res.body.data.patients[0];
       });

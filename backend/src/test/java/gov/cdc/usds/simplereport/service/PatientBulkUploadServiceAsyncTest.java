@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ArchivedStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -405,11 +406,11 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
 
   private List<Person> fetchDatabasePatients() {
     return this._personService.getPatients(
-        null, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null, false);
+        null, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, ArchivedStatus.UNARCHIVED, null, false);
   }
 
   private List<Person> fetchDatabasePatientsForFacility(UUID facilityId) {
     return this._personService.getPatients(
-        facilityId, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, false, null, false);
+        facilityId, PATIENT_PAGE_OFFSET, PATIENT_PAGE_SIZE, ArchivedStatus.UNARCHIVED, null, false);
   }
 }
