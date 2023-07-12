@@ -97,28 +97,37 @@ export function areUniquePhoneNumbers(phoneNumbers: any) {
 
   return new Set(validPhoneNumbers).size === validPhoneNumbers.length;
 }
+function isIncompletePhoneNumber(phoneNumber: any) {
+  return !phoneNumber || !phoneNumber.number || !phoneNumber.type;
+}
 
+function isFullyBlankPhoneNumber(phoneNumber: any) {
+  return !phoneNumber || (!phoneNumber.number && !phoneNumber.type);
+}
+
+function isPartiallyBlankPhoneNumber(phoneNumber: any) {
+  return !phoneNumber.number || !phoneNumber.type;
+}
 export function areValidPhoneNumbers(phoneNumbers: any) {
   // At least one phone number is required
   if (!phoneNumbers || phoneNumbers.length === 0) {
     return false;
   }
-
   return phoneNumbers.every((phoneNumber: any, idx: number) => {
     // The first phone number is considered the "primary" phone number and must
     // be provided
     if (idx === 0) {
-      if (!phoneNumber || !phoneNumber.number || !phoneNumber.type) {
+      if (isIncompletePhoneNumber(phoneNumber)) {
         return false;
       }
     } else {
       // Subsequent phone numbers are optional and may be fully blank...
-      if (!phoneNumber || (!phoneNumber.number && !phoneNumber.type)) {
+      if (isFullyBlankPhoneNumber(phoneNumber)) {
         return true;
       }
 
       // ...but not partially blank...
-      if (!phoneNumber.number || !phoneNumber.type) {
+      if (isPartiallyBlankPhoneNumber(phoneNumber)) {
         return false;
       }
     }
@@ -145,12 +154,12 @@ export function isValidBirthdate18n(t: TFunction) {
     }
     if (parsedDate.year() < 1900) {
       return this.createError({
-        message: t("patient.form.errors.birthDate.past", undefined),
+        message: t("patient.form.errors.birthDate.past") || "",
       });
     }
     if (parsedDate.isAfter(moment())) {
       return this.createError({
-        message: t("patient.form.errors.birthDate.future", undefined),
+        message: t("patient.form.errors.birthDate.future") || "",
       });
     }
     return true;
@@ -169,7 +178,7 @@ function isValidEmail18n(t: TFunction) {
 
     if (email && email.length > MAX_LENGTH) {
       return this.createError({
-        message: t("patient.form.errors.fieldLength", undefined),
+        message: t("patient.form.errors.fieldLength") || "",
       });
     }
 
@@ -188,6 +197,35 @@ function areValidEmails18n(t: TFunction) {
     return emails.every(validator);
   };
 }
+
+const getPhoneNumberSchema = (t: TFunction) => {
+  return yup
+    .array()
+    .test(
+      "phone-numbers",
+      t("patient.form.errors.phoneNumbers") || "",
+      areValidPhoneNumbers
+    )
+    .test(
+      "phone-numbers",
+      t("patient.form.errors.phoneNumbersDuplicate") || "",
+      areUniquePhoneNumbers
+    )
+    .test(
+      "phone-numbers",
+      t("patient.form.errors.phoneNumbersType") || "",
+      hasPhoneType
+    )
+    .required();
+};
+
+const getRequiredAddressSchema = (t: TFunction, key: string) => {
+  return yup
+    .string()
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
+    .required(t(key) || "");
+};
+
 const updateFieldSchemata: (
   t: TFunction
 ) => Record<keyof PersonUpdate, yup.AnySchema> = (t) => ({
@@ -196,91 +234,58 @@ const updateFieldSchemata: (
     .mixed()
     .oneOf(
       [...getValues(ROLE_VALUES), "UNKNOWN", "", null],
-      t("patient.form.errors.role", undefined)
+      t("patient.form.errors.role") || ""
     ),
   telephone: yup.mixed().optional(),
-  phoneNumbers: yup
-    .array()
-    .test(
-      "phone-numbers",
-      t("patient.form.errors.phoneNumbers", undefined),
-      areValidPhoneNumbers
-    )
-    .test(
-      "phone-numbers",
-      t("patient.form.errors.phoneNumbersDuplicate", undefined),
-      areUniquePhoneNumbers
-    )
-    .test(
-      "phone-numbers",
-      t("patient.form.errors.phoneNumbersType", undefined),
-      hasPhoneType
-    )
-    .required(),
+  phoneNumbers: getPhoneNumberSchema(t),
   emails: yup
     .array()
-    .test(
-      "emails",
-      t("patient.form.errors.email", undefined),
-      areValidEmails18n(t)
-    )
+    .test("emails", t("patient.form.errors.email") || "", areValidEmails18n(t))
     .nullable(),
-  street: yup
-    .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
-    .required(t("patient.form.errors.street", undefined)),
+  street: getRequiredAddressSchema(t, "patient.form.errors.street"),
   streetTwo: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
     .nullable(),
-  city: yup
-    .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
-    .required(t("patient.form.errors.city", undefined)),
+  city: getRequiredAddressSchema(t, "patient.form.errors.city"),
   county: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
     .nullable(),
-  state: yup.string().required(t("patient.form.errors.state", undefined)),
-  zipCode: yup
-    .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
-    .required(t("patient.form.errors.zipCode", undefined)),
-  country: yup.string().required(t("patient.form.errors.country", undefined)),
+  state: yup.string().required(t("patient.form.errors.state") || ""),
+  zipCode: getRequiredAddressSchema(t, "patient.form.errors.zipCode"),
+  country: yup.string().required(t("patient.form.errors.country") || ""),
   race: yup
     .mixed()
-    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race", undefined)),
+    .oneOf(getValues(RACE_VALUES), t("patient.form.errors.race") || ""),
   ethnicity: yup
     .mixed()
     .oneOf(
       getValues(ETHNICITY_VALUES),
-      t("patient.form.errors.ethnicity", undefined)
+      t("patient.form.errors.ethnicity") || ""
     ),
   gender: yup
     .mixed()
-    .oneOf(
-      getValues(GENDER_VALUES),
-      t("patient.form.errors.gender", undefined)
-    ),
+    .oneOf(getValues(GENDER_VALUES), t("patient.form.errors.gender") || ""),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
     .mixed()
     .oneOf(
       [...getValues(TRIBAL_AFFILIATION_VALUES), "", null],
-      t("patient.form.errors.tribalAffiliation", undefined)
+      t("patient.form.errors.tribalAffiliation") || ""
     ),
   preferredLanguage: yup
     .mixed()
     .oneOf(
       [...languages, "", null],
-      t("patient.form.errors.preferredLanguage", undefined)
+      t("patient.form.errors.preferredLanguage") || ""
     ),
   testResultDelivery: yup
     .mixed()
     .oneOf(
       [...Object.values(TestResultDeliveryPreferences), "", null],
-      t("patient.form.errors.testResultDelivery", undefined)
+      t("patient.form.errors.testResultDelivery") || ""
     ),
 });
 
@@ -289,10 +294,10 @@ const updatePhoneNumberSchemata: (
 ) => Record<keyof PhoneNumber, yup.AnySchema> = (t) => ({
   number: yup
     .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
     .test(
       "phone-number",
-      t("patient.form.errors.telephone", undefined),
+      t("patient.form.errors.telephone") || "",
       phoneNumberIsValid
     )
     .required(),
@@ -300,15 +305,15 @@ const updatePhoneNumberSchemata: (
     .mixed()
     .oneOf(
       getValues(PHONE_TYPE_VALUES),
-      t("patient.form.errors.phoneNumbersType", undefined)
+      t("patient.form.errors.phoneNumbersType") || ""
     ),
 });
 
 const translateUpdateEmailSchemata = (t: TFunction) => {
   return yup
     .string()
-    .email(t("patient.form.errors.email", undefined))
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+    .email(t("patient.form.errors.email") || "")
+    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
     .nullable();
 };
 
@@ -320,25 +325,21 @@ const translatePersonUpdateSchema: TranslatedSchema<PersonUpdateFields> = (t) =>
 
 const translatePersonSchema: TranslatedSchema<RequiredPersonFields> = (t) =>
   yup.object({
-    firstName: yup
-      .string()
-      .required(t("patient.form.errors.firstName", undefined)),
+    firstName: yup.string().required(t("patient.form.errors.firstName") || ""),
     middleName: yup.string().nullable(),
-    lastName: yup
-      .string()
-      .required(t("patient.form.errors.lastName", undefined)),
+    lastName: yup.string().required(t("patient.form.errors.lastName") || ""),
     birthDate: yup
       .string()
       .test(
         "birth-date",
-        t("patient.form.errors.birthDate.base", undefined),
+        t("patient.form.errors.birthDate.base") || "",
         isValidBirthdate18n(t)
       )
-      .required(t("patient.form.errors.birthDate.base", undefined)),
+      .required(t("patient.form.errors.birthDate.base") || ""),
     facilityId: yup
       .string()
       .nullable()
-      .min(1, t("patient.form.errors.facilityId", undefined)) as any,
+      .min(1, t("patient.form.errors.facilityId") || "") as any,
     ...updateFieldSchemata(t),
   });
 
@@ -348,24 +349,24 @@ const translateSelfRegistrationSchema: TranslatedSchema<
   yup.object({
     firstName: yup
       .string()
-      .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
-      .required(t("patient.form.errors.firstName", undefined)),
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
+      .required(t("patient.form.errors.firstName") || ""),
     middleName: yup
       .string()
-      .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined))
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
       .nullable(),
     lastName: yup
       .string()
-      .required(t("patient.form.errors.lastName", undefined))
-      .max(MAX_LENGTH, t("patient.form.errors.fieldLength", undefined)),
+      .required(t("patient.form.errors.lastName") || "")
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || ""),
     birthDate: yup
       .string()
       .test(
         "birth-date",
-        t("patient.form.errors.birthDate.base", undefined),
+        t("patient.form.errors.birthDate.base") || "",
         isValidBirthdate18n(t)
       )
-      .required(t("patient.form.errors.birthDate.base", undefined)),
+      .required(t("patient.form.errors.birthDate.base") || ""),
     ...updateFieldSchemata(t),
   });
 

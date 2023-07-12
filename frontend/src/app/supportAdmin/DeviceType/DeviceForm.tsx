@@ -77,11 +77,7 @@ const DeviceForm = (props: Props) => {
       manufacturer: deviceData.manufacturer,
       model: deviceData.model,
       name: deviceData.name,
-      supportedDiseases: deviceData.supportedDiseases.map(
-        (supportedDisease: SupportedDiseasesFormData) =>
-          supportedDisease.supportedDisease
-      ),
-      supportedDiseaseTestPerformed: deviceData.supportedDiseases?.map(
+      supportedDiseaseTestPerformed: deviceData.supportedDiseases.map(
         (supportedDisease: SupportedDiseasesFormData) => {
           const convertedSupportedDisease = {
             supportedDisease: supportedDisease.supportedDisease,
@@ -155,9 +151,6 @@ const DeviceForm = (props: Props) => {
           manufacturer: device.manufacturer,
           model: device.model,
           swabTypes: device.swabTypes?.map((swab) => swab.internalId),
-          supportedDiseases:
-            device.supportedDiseases?.map((disease) => disease.internalId) ||
-            [],
           testLength: device.testLength ? device.testLength : 15,
           supportedDiseaseTestPerformed:
             device.supportedDiseaseTestPerformed?.map(

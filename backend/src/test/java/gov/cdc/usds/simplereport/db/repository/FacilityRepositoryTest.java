@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -27,8 +28,8 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
   @Test
   void smokeTestDeviceOperations() {
     List<DeviceType> configuredDevices = new ArrayList<>();
-    DeviceType bill = _devices.save(new DeviceType("Bill", "Weasleys", "1", "12345-6", "E", 15));
-    DeviceType percy = _devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7", "E", 15));
+    DeviceType bill = _devices.save(new DeviceType("Bill", "Weasleys", "1", 15));
+    DeviceType percy = _devices.save(new DeviceType("Percy", "Weasleys", "2", 15));
     SpecimenType spec = _specimens.save(new SpecimenType("Troll Bogies", "0001111234"));
     Provider mccoy =
         _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
@@ -38,16 +39,18 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     Facility saved =
         _repo.save(
             new Facility(
-                org,
-                "Third Floor",
-                "123456",
-                getAddress(),
-                "555-867-5309",
-                "facility@test.com",
-                mccoy,
-                bill,
-                spec,
-                configuredDevices));
+                FacilityBuilder.builder()
+                    .org(org)
+                    .facilityName("Third Floor")
+                    .cliaNumber("123456")
+                    .facilityAddress(getAddress())
+                    .phone("555-867-5309")
+                    .email("facility@test.com")
+                    .orderingProvider(mccoy)
+                    .defaultDeviceType(bill)
+                    .defaultSpecimenType(spec)
+                    .configuredDevices(configuredDevices)
+                    .build()));
     Optional<Facility> maybe = _repo.findByOrganizationAndFacilityName(org, "Third Floor");
     assertTrue(maybe.isPresent(), "should find the facility");
     Facility found = maybe.get();

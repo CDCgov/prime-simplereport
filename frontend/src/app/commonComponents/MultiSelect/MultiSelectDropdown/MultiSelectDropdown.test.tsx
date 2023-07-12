@@ -1,4 +1,10 @@
-import { render, fireEvent, screen } from "@testing-library/react";
+import {
+  render,
+  fireEvent,
+  screen,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -76,7 +82,10 @@ describe("MultiSelectDropdown component", () => {
       />
     );
 
-    await userEvent.click(screen.getByTestId("multi-select-toggle"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getByTestId("multi-select-toggle"))
+    );
 
     expect(screen.getByTestId("multi-select-option-list")).toBeVisible();
   });
@@ -91,7 +100,10 @@ describe("MultiSelectDropdown component", () => {
       />
     );
 
-    await userEvent.click(screen.getByTestId("multi-select-input"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getByTestId("multi-select-input"))
+    );
 
     expect(screen.getByTestId("multi-select-option-list")).toBeVisible();
   });
@@ -106,7 +118,10 @@ describe("MultiSelectDropdown component", () => {
       />
     );
 
-    await userEvent.type(screen.getByTestId("multi-select-input"), "b");
+    await act(
+      async () =>
+        await userEvent.type(screen.getByTestId("multi-select-input"), "b")
+    );
 
     expect(screen.getByTestId("multi-select-option-list")).toBeVisible();
   });
@@ -134,7 +149,10 @@ describe("MultiSelectDropdown component", () => {
         disabled={true}
       />
     );
-    await userEvent.click(screen.getByTestId("multi-select-toggle"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getByTestId("multi-select-toggle"))
+    );
 
     expect(screen.getByTestId("multi-select-option-list")).not.toBeVisible();
   });
@@ -168,7 +186,10 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.click(screen.getByTestId("multi-select-input"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-input"))
+      );
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
@@ -185,7 +206,10 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.click(screen.getByTestId("multi-select-input"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-input"))
+      );
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
@@ -203,7 +227,7 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      await userEvent.type(input, "a");
+      await act(async () => await userEvent.type(input, "a"));
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
@@ -221,14 +245,20 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      await userEvent.type(input, "yu");
-      await userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await act(async () => await userEvent.type(input, "yu"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-toggle"))
+      );
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toEqual(6);
 
-      await userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-toggle"))
+      );
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toEqual(6);
@@ -245,8 +275,13 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      await userEvent.type(input, "ap");
-      await userEvent.click(screen.getByTestId("multi-select-option-Apples"));
+      await act(async () => await userEvent.type(input, "ap"));
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByTestId("multi-select-option-Apples")
+          )
+      );
 
       expect(
         screen.getByTestId("multi-select-option-list").children.length
@@ -263,7 +298,10 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.type(screen.getByTestId("multi-select-input"), "zz");
+      await act(
+        async () =>
+          await userEvent.type(screen.getByTestId("multi-select-input"), "zz")
+      );
 
       const firstItem = screen.getByTestId("multi-select-option-list")
         .children[0];
@@ -283,8 +321,8 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      await userEvent.type(input, "apple");
-      await userEvent.clear(input);
+      await act(async () => await userEvent.type(input, "apple"));
+      await act(async () => await userEvent.clear(input));
       expect(
         screen.getByTestId("multi-select-option-list").children.length
       ).toEqual(fruitOptions.length);
@@ -302,9 +340,12 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.type(
-        screen.getByTestId("multi-select-input"),
-        "zzz{enter}"
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByTestId("multi-select-input"),
+            "zzz{enter}"
+          )
       );
 
       expect(screen.getByTestId("multi-select-option-list")).not.toBeVisible();
@@ -322,9 +363,12 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.type(
-        screen.getByTestId("multi-select-input"),
-        "zzz{enter}"
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByTestId("multi-select-input"),
+            "zzz{enter}"
+          )
       );
 
       expect(screen.getByTestId("multi-select-option-list")).not.toBeVisible();
@@ -343,8 +387,11 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.type(screen.getByTestId("multi-select-input"), "a");
-      await userEvent.tab();
+      await act(
+        async () =>
+          await userEvent.type(screen.getByTestId("multi-select-input"), "a")
+      );
+      await act(async () => await userEvent.tab());
 
       const firstItem = screen.getByTestId("multi-select-option-list")
         .children[0];
@@ -362,8 +409,11 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.click(screen.getByTestId("multi-select-input")); // open menu
-      await userEvent.tab();
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-input"))
+      ); // open menu
+      await act(async () => await userEvent.tab());
 
       expect(screen.getByTestId("multi-select-option-Apples")).toHaveFocus();
       expect(screen.getByTestId("multi-select-option-Apples")).toHaveAttribute(
@@ -383,11 +433,14 @@ describe("MultiSelectDropdown component", () => {
         />
       );
       // focus oranges
-      await userEvent.type(screen.getByTestId("multi-select-input"), "oran");
-      await userEvent.tab();
+      await act(
+        async () =>
+          await userEvent.type(screen.getByTestId("multi-select-input"), "oran")
+      );
+      await act(async () => await userEvent.tab());
 
       // select oranges
-      await userEvent.tab();
+      await act(async () => await userEvent.tab());
 
       expect(onChange).toHaveBeenLastCalledWith({
         label: "Oranges",
@@ -406,8 +459,8 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const comboBoxInput = screen.getByTestId("multi-select-input");
-      await userEvent.type(comboBoxInput, "zzz");
-      await userEvent.tab();
+      await act(async () => await userEvent.type(comboBoxInput, "zzz"));
+      await act(async () => await userEvent.tab());
 
       expect(comboBoxInput).not.toHaveFocus();
     });
@@ -423,11 +476,17 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.type(screen.getByTestId("multi-select-input"), "Ora");
-      await userEvent.tab();
-      await userEvent.type(
-        screen.getByTestId("multi-select-option-Oranges"),
-        "{enter}"
+      await act(
+        async () =>
+          await userEvent.type(screen.getByTestId("multi-select-input"), "Ora")
+      );
+      await act(async () => await userEvent.tab());
+      await act(
+        async () =>
+          await userEvent.type(
+            screen.getByTestId("multi-select-option-Oranges"),
+            "{enter}"
+          )
       );
 
       expect(onChange).toHaveBeenLastCalledWith({
@@ -446,8 +505,11 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.type(screen.getByTestId("multi-select-input"), "a");
-      await userEvent.tab();
+      await act(
+        async () =>
+          await userEvent.type(screen.getByTestId("multi-select-input"), "a")
+      );
+      await act(async () => await userEvent.tab());
       fireEvent.keyDown(screen.getByTestId("multi-select-option-Apples"), {
         key: "ArrowDown",
       });
@@ -465,8 +527,11 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.type(screen.getByTestId("multi-select-input"), "a");
-      await userEvent.tab();
+      await act(
+        async () =>
+          await userEvent.type(screen.getByTestId("multi-select-input"), "a")
+      );
+      await act(async () => await userEvent.tab());
       fireEvent.keyDown(screen.getByTestId("multi-select-option-Apples"), {
         key: "ArrowDown",
       });
@@ -490,7 +555,10 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.click(screen.getByTestId("multi-select-input"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-input"))
+      );
       fireEvent.keyDown(screen.getByTestId("multi-select-input"), {
         key: "ArrowDown",
       });
@@ -509,20 +577,19 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      fireEvent.click(screen.getByTestId("multi-select-input"));
-      await userEvent.hover(
-        screen.getByTestId("multi-select-option-Strawberries")
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-toggle"))
       );
-      fireEvent.keyDown(
-        screen.getByTestId("multi-select-option-Strawberries"),
-        {
-          key: "ArrowDown",
-        }
+      // clicks down arrow 7 times total to get to last option and then ensure focus is not lost when clicking down arrow again
+      for (let i = 0; i < 7; i++) {
+        await act(async () => await userEvent.keyboard("{ArrowDown}"));
+      }
+      await waitFor(() =>
+        expect(
+          screen.getByTestId("multi-select-option-Strawberries")
+        ).toHaveFocus()
       );
-
-      expect(
-        screen.getByTestId("multi-select-option-Strawberries")
-      ).toHaveFocus();
     });
 
     it("does not close menu when an option is selected and the first option is focused and up arrow is pressed", async () => {
@@ -536,7 +603,12 @@ describe("MultiSelectDropdown component", () => {
       );
 
       // Apple is the item at top of list
-      await userEvent.hover(screen.getByTestId("multi-select-option-Apples"));
+      await act(
+        async () =>
+          await userEvent.hover(
+            screen.getByTestId("multi-select-option-Apples")
+          )
+      );
       fireEvent.keyDown(screen.getByTestId("multi-select-option-Apples"), {
         key: "ArrowUp",
       });
@@ -560,7 +632,7 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const comboBoxInput = screen.getByTestId("multi-select-input");
-      await userEvent.type(comboBoxInput, "a{enter}");
+      await act(async () => await userEvent.type(comboBoxInput, "a{enter}"));
       expect(comboBoxInput).toHaveValue("");
     });
   });
@@ -598,7 +670,10 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.dblClick(screen.getByTestId("multi-select-input"));
+      await act(
+        async () =>
+          await userEvent.dblClick(screen.getByTestId("multi-select-input"))
+      );
 
       expect(screen.getByTestId("multi-select-input")).toHaveAttribute(
         "aria-expanded",
@@ -638,8 +713,11 @@ describe("MultiSelectDropdown component", () => {
       );
 
       fireEvent.click(screen.getByTestId("multi-select-input"));
-      await userEvent.hover(
-        screen.getByTestId("multi-select-option-Blueberries")
+      await act(
+        async () =>
+          await userEvent.hover(
+            screen.getByTestId("multi-select-option-Blueberries")
+          )
       );
 
       fireEvent.blur(screen.getByTestId("multi-select-option-Blueberries"));
@@ -712,8 +790,16 @@ describe("MultiSelectDropdown component", () => {
         </>
       );
 
-      await userEvent.click(screen.getByTestId("multi-select-toggle"));
-      await userEvent.click(screen.getByTestId("multi-select-option-Apples"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-toggle"))
+      );
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByTestId("multi-select-option-Apples")
+          )
+      );
       fireEvent.blur(screen.getByTestId("multi-select-input"));
 
       expect(onChange).toHaveBeenLastCalledWith({
@@ -733,12 +819,18 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      await userEvent.type(input, "gr");
+      await act(async () => await userEvent.type(input, "gr"));
 
-      await userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-toggle"))
+      );
       expect(input).toHaveValue("gr");
 
-      await userEvent.click(screen.getByTestId("multi-select-toggle"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-toggle"))
+      );
       expect(input).toHaveValue("gr");
     });
 
@@ -754,7 +846,7 @@ describe("MultiSelectDropdown component", () => {
       );
 
       const input = screen.getByTestId("multi-select-input");
-      await userEvent.type(input, "Gr");
+      await act(async () => await userEvent.type(input, "Gr"));
       fireEvent.click(screen.getByTestId("multi-select-option-Grapes"));
 
       expect(onChange).toHaveBeenLastCalledWith({
@@ -773,22 +865,39 @@ describe("MultiSelectDropdown component", () => {
         />
       );
 
-      await userEvent.click(screen.getByTestId("multi-select-toggle"));
-      await userEvent.hover(
-        screen.getByTestId("multi-select-option-Blueberries")
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-toggle"))
+      );
+      await act(
+        async () =>
+          await userEvent.hover(
+            screen.getByTestId("multi-select-option-Blueberries")
+          )
       );
 
-      expect(screen.getByTestId("multi-select-option-Blueberries")).toHaveClass(
-        "usa-combo-box__list-option--focused"
-      );
+      await waitFor(() => {
+        expect(
+          screen.getByTestId("multi-select-option-Blueberries")
+        ).toHaveClass("usa-combo-box__list-option--focused");
+      });
 
-      await userEvent.hover(screen.getByTestId("multi-select-option-Grapes"));
-      expect(
-        screen.getByTestId("multi-select-option-Blueberries")
-      ).not.toHaveClass("usa-combo-box__list-option--focused");
-      expect(screen.getByTestId("multi-select-option-Grapes")).toHaveClass(
-        "usa-combo-box__list-option--focused"
+      await act(
+        async () =>
+          await userEvent.hover(
+            screen.getByTestId("multi-select-option-Grapes")
+          )
       );
+      await waitFor(() => {
+        expect(
+          screen.getByTestId("multi-select-option-Blueberries")
+        ).not.toHaveClass("usa-combo-box__list-option--focused");
+      });
+      await waitFor(() => {
+        expect(screen.getByTestId("multi-select-option-Grapes")).toHaveClass(
+          "usa-combo-box__list-option--focused"
+        );
+      });
     });
 
     it("clears focus when clicking outside of the component", async () => {
@@ -804,8 +913,13 @@ describe("MultiSelectDropdown component", () => {
         </>
       );
 
-      await userEvent.click(screen.getByTestId("multi-select-input"));
-      await userEvent.click(screen.getByTestId("outside"));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByTestId("multi-select-input"))
+      );
+      await act(
+        async () => await userEvent.click(screen.getByTestId("outside"))
+      );
       expect(screen.getByTestId("multi-select-input")).not.toHaveFocus();
     });
   });
@@ -824,7 +938,7 @@ describe("MultiSelectDropdown component", () => {
 
       // open options list
       fireEvent.click(screen.getByTestId("multi-select-input"));
-      await userEvent.tab();
+      await act(async () => await userEvent.tab());
 
       Object.values(list.children).forEach((node) => {
         if (node === screen.getByTestId("multi-select-option-Apples")) {
@@ -848,7 +962,10 @@ describe("MultiSelectDropdown component", () => {
           noResults="NOTHING"
         />
       );
-      await userEvent.type(screen.getByTestId("multi-select-input"), "zzz");
+      await act(
+        async () =>
+          await userEvent.type(screen.getByTestId("multi-select-input"), "zzz")
+      );
       const firstItem = screen.getByTestId("multi-select-option-list")
         .children[0];
       expect(firstItem).toHaveTextContent("NOTHING");

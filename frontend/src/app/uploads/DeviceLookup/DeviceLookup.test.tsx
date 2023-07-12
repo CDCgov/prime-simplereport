@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitFor,
@@ -8,9 +9,23 @@ import {
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 
+import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
+
 import DeviceLookup from "./DeviceLookup";
 
 window.scrollTo = jest.fn();
+
+const duplicateSupportedDiseaseTestPerformed = {
+  supportedDisease: {
+    internalId: "177cfdfa-1ce5-404f-bd39-5492f87868f4",
+    loinc: "96741-4",
+    name: "COVID-19",
+  },
+  testPerformedLoincCode: "0000-0",
+  equipmentUid: "equipmentUid987",
+  testkitNameId: "testkitNameId987",
+  testOrderedLoincCode: "9999-9",
+};
 
 const devices = [
   {
@@ -20,33 +35,20 @@ const devices = [
     manufacturer: "Celoxitin",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "n123" }],
-    supportedDiseases: [
-      { internalId: "123", name: "COVID-19", loinc: "1234-1" },
-    ],
-    supportedDiseaseTestPerformed: [
-      {
-        supportedDisease: {
-          internalId: "123",
-          name: "COVID-19",
-          loinc: "1234-1",
-        },
-        testPerformedLoincCode: "1234-1",
-        equipmentUid: "equipmentUid123",
-        testkitNameId: "testkitNameId123",
-        testOrderedLoincCode: "1432-1",
-      },
-    ],
+    supportedDiseaseTestPerformed:
+      mockSupportedDiseaseTestPerformedCovid.concat(
+        duplicateSupportedDiseaseTestPerformed
+      ),
   },
   {
     internalId: "some-guid",
     name: "covid-mctester",
     model: "Giselle",
-    manufacturer: "yo-mama",
+    manufacturer: "mctester manufacturer",
     loincCode: "8675309",
     testLength: 15,
     swabTypes: [{ internalId: "123", name: "nose", typeCode: "nose-code" }],
-    supportedDiseases: [],
-    supportedDiseaseTestPerformed: [],
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
   },
 ];
 
@@ -63,7 +65,13 @@ describe("Device lookup", () => {
   });
 
   it("displays no results message if no matches found", async () => {
-    await userEvent.type(screen.getByLabelText("Select device"), "noresults");
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Select device"),
+          "noresults"
+        )
+    );
     await waitFor(() => {
       expect(
         screen.getByText("No device found matching", { exact: false })
@@ -72,19 +80,27 @@ describe("Device lookup", () => {
   });
 
   it("dropdown displays devices", async () => {
-    await userEvent.type(screen.getByLabelText("Select device"), "model");
+    await act(
+      async () =>
+        await userEvent.type(screen.getByLabelText("Select device"), "model")
+    );
 
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
 
     expect(screen.getByText("Celoxitin")).toBeInTheDocument();
     expect(screen.getByText("Model A")).toBeInTheDocument();
-    expect(screen.getByText("COVID-19")).toBeInTheDocument();
+
+    // eslint-disable-next-line jest-dom/prefer-in-document
+    expect(screen.getAllByText("COVID-19")).toHaveLength(1);
   });
 
   it("selected device displays device info", async () => {
-    await userEvent.type(screen.getByLabelText("Select device"), "model");
+    await act(
+      async () =>
+        await userEvent.type(screen.getByLabelText("Select device"), "model")
+    );
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    await userEvent.click(screen.getByText("Select"));
+    await act(async () => await userEvent.click(screen.getByText("Select")));
 
     expect(screen.getByText("Acme Emitter (RT-PCR)")).toBeInTheDocument();
 
@@ -92,9 +108,12 @@ describe("Device lookup", () => {
     expect(model).toBeDisabled();
     expect(model).toHaveValue("Model A");
 
-    const loinc = screen.getByLabelText("Test performed code (COVID-19)");
-    expect(loinc).toBeDisabled();
-    expect(loinc).toHaveValue("1234-1");
+    const loinc = screen.getAllByLabelText("Test performed code (COVID-19)");
+
+    // eslint-disable-next-line jest-dom/prefer-in-document
+    expect(loinc).toHaveLength(1);
+    expect(loinc[0]).toBeDisabled();
+    expect(loinc[0]).toHaveValue("1234-1");
 
     const testResults = screen.getByLabelText("Test result");
     expect(within(testResults).getByText("Positive")).toBeInTheDocument();
@@ -116,15 +135,18 @@ describe("Device lookup", () => {
 
     jest.spyOn(navigator.clipboard, "writeText");
 
-    await userEvent.type(screen.getByLabelText("Select device"), "model");
+    await act(
+      async () =>
+        await userEvent.type(screen.getByLabelText("Select device"), "model")
+    );
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    await userEvent.click(screen.getByText("Select"));
+    await act(async () => await userEvent.click(screen.getByText("Select")));
 
     const button = screen.getByLabelText(
       "Copy equipment model name for Acme Emitter (RT-PCR)"
     );
 
-    await userEvent.click(button);
+    await act(async () => await userEvent.click(button));
 
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Model A");
   });

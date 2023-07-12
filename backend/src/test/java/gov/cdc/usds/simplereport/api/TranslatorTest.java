@@ -275,9 +275,11 @@ class TranslatorTest {
     assertEquals(true, parseYesNoUnk("yEs"));
     assertEquals(false, parseYesNoUnk("n"));
     assertEquals(false, parseYesNoUnk("nO"));
-    assertNull(parseYesNoUnk("unknown"));
+    assertNull(parseYesNoUnk("u"));
+    assertNull(parseYesNoUnk("U"));
     assertNull(parseYesNoUnk("unk"));
-    assertNull(parseYesNoUnk("Unknown"));
+    assertNull(parseYesNoUnk("Unk"));
+    assertNull(parseYesNoUnk("UNK"));
   }
 
   @Test
@@ -286,6 +288,11 @@ class TranslatorTest {
         IllegalGraphqlArgumentException.class,
         () -> {
           parseYesNoUnk("positive");
+        });
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> {
+          parseYesNoUnk("unknown");
         });
   }
 
@@ -416,37 +423,37 @@ class TranslatorTest {
 
   @Test
   void convertsPositiveLoincToTestResult() {
-    TestResult result = Translators.convertLoincToResult("260373001");
+    TestResult result = Translators.convertSnomedToResult("260373001");
     assertEquals(TestResult.POSITIVE, result);
   }
 
   @Test
   void convertsNegativeLoincToTestResult() {
-    TestResult result = Translators.convertLoincToResult("260415000");
+    TestResult result = Translators.convertSnomedToResult("260415000");
     assertEquals(TestResult.NEGATIVE, result);
   }
 
   @Test
   void convertsUnknownLoincToTestResult() {
-    TestResult result = Translators.convertLoincToResult("blah");
+    TestResult result = Translators.convertSnomedToResult("blah");
     assertEquals(TestResult.UNDETERMINED, result);
   }
 
   @Test
   void convertsPositiveTestResultToAppropriateLoinc() {
-    String loinc = Translators.convertTestResultToLoinc(TestResult.POSITIVE);
+    String loinc = Translators.convertTestResultToSnomed(TestResult.POSITIVE);
     assertEquals("260373001", loinc);
   }
 
   @Test
   void convertsNegativeTestResultToAppropriateLoinc() {
-    String loinc = Translators.convertTestResultToLoinc(TestResult.NEGATIVE);
+    String loinc = Translators.convertTestResultToSnomed(TestResult.NEGATIVE);
     assertEquals("260415000", loinc);
   }
 
   @Test
   void convertsUnknownTestResultToAppropriateLoinc() {
-    String loinc = Translators.convertTestResultToLoinc(TestResult.UNDETERMINED);
+    String loinc = Translators.convertTestResultToSnomed(TestResult.UNDETERMINED);
     assertEquals("455371000124106", loinc);
   }
 

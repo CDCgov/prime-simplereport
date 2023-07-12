@@ -57,7 +57,6 @@ input CreateDeviceType {
   manufacturer: String!
   model: String!
   swabTypes: [ID!]!
-  supportedDiseases: [ID!]
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
   testLength: Int!
 }
@@ -68,7 +67,6 @@ input UpdateDeviceType {
   manufacturer: String!
   model: String!
   swabTypes: [ID!]!
-  supportedDiseases: [ID!]
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformedInput!]!
   testLength: Int!
 }
@@ -86,10 +84,7 @@ type DeviceType {
   name: String!
   manufacturer: String!
   model: String!
-  loincCode: String @deprecated(reason: "loincCode is deprecated. Use supportedDiseaseTestPerformed instead.")
-  swabType: String @deprecated(reason: "swabType is deprecated. Use swabTypes instead.")
   swabTypes: [SpecimenType!]!
-  supportedDiseases: [SupportedDisease!]!
   supportedDiseaseTestPerformed: [SupportedDiseaseTestPerformed!]!
   testLength: Int!
 }
@@ -123,11 +118,6 @@ type SpecimenType {
   collectionLocationCode: String
 }
 
-type TestDescription {
-  name(nameType: String = "long"): String!
-  loincCode: String!
-}
-
 type PhoneNumber {
   type: PhoneType
   number: String
@@ -157,6 +147,19 @@ type User {
   role: Role
   roles: [Role!]! @deprecated(reason: "Users have only one role now")
   status: String
+}
+
+input UserInput {
+  name: NameInput
+  firstName: String
+  middleName: String
+  lastName: String
+  suffix: String
+  email: String!
+  organizationExternalId: String
+  role: Role!
+  accessAllFacilities: Boolean = false
+  facilities: [ID!]
 }
 
 type ApiUser {
@@ -232,6 +235,7 @@ type Patient
   preferredLanguage: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
+
 # TestResult and TestOrder should have the same properties
 type TestOrder {
   id: ID!
@@ -265,7 +269,6 @@ type TestResult {
   result: String @deprecated(reason: "use results as source of truth")
   results: [MultiplexResult]
   dateTested: DateTime
-  testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser
@@ -321,10 +324,10 @@ type PatientLink {
 type PendingOrganization {
   externalId: String!
   name: String!
-  adminFirstName: String
-  adminLastName: String
-  adminEmail: String
-  adminPhone: String
+  adminFirstName: String!
+  adminLastName: String!
+  adminEmail: String!
+  adminPhone: String!
   createdAt: DateTime!
 }
 
@@ -351,6 +354,9 @@ type FeedbackMessage {
   scope: String
   message: String
   indices: [Int]
+  fieldHeader: String!
+  errorType: String!
+  fieldRequired: Boolean!
 }
 
 type UploadSubmissionPage {
@@ -470,115 +476,13 @@ type Query {
 
 type Mutation {
   updateFacility(
-    facilityId: ID!
-    testingFacilityName: String!
-    cliaNumber: String
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
-    phone: String
-    email: String
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceIds: [ID]!
+    facilityInfo: UpdateFacilityInput!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
-    testingFacilityName: String!
-    cliaNumber: String
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
-    phone: String
-    email: String
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceIds: [ID]!
+    facilityInfo: AddFacilityInput!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  addFacilityNew(
-    testingFacilityName: String!
-    cliaNumber: String
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
-    phone: String
-    email: String
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceIds: [ID]!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
-  updateFacilityNew(
-    facilityId: ID!
-    testingFacilityName: String!
-    cliaNumber: String
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
-    phone: String
-    email: String
-    orderingProviderFirstName: String
-    orderingProviderMiddleName: String
-    orderingProviderLastName: String
-    orderingProviderSuffix: String
-    orderingProviderNPI: String
-    orderingProviderStreet: String
-    orderingProviderStreetTwo: String
-    orderingProviderCity: String
-    orderingProviderCounty: String
-      @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String
-    orderingProviderZipCode: String
-    orderingProviderPhone: String
-    deviceIds: [ID]!
-  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
-    name: NameInput
-    firstName: String
-    middleName: String
-    lastName: String
-    suffix: String
-    email: String!
-    role: Role!
+    userInput: UserInput!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!

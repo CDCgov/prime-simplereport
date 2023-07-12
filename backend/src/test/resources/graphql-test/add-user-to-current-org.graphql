@@ -5,34 +5,36 @@ mutation addUserToCurrentOrgOp(
     $suffix: String
     $email: String!
     $role: Role!
-    ){
-  addUserToCurrentOrg(
-    name: {
-      firstName: $firstName
-      middleName: $middleName
-      lastName: $lastName
-      suffix: $suffix
-    }
-    email: $email
-    role: $role
-  ) {
-      id,
-      firstName,
-      middleName,
-      lastName,
-      suffix,
-      email,
-      permissions,
-      role,
-      roles,
-      organization {
-        name
-        externalId
-        facilities {
-          name
-          id
+){
+    addUserToCurrentOrg(
+        userInput: {
+            name: {
+                firstName: $firstName
+                middleName: $middleName
+                lastName: $lastName
+                suffix: $suffix
+            }
+            email: $email
+            role: $role
         }
-      }
+    ) {
+        id,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        email,
+        permissions,
+        role,
+        roles,
+        organization {
+            name
+            externalId
+            facilities {
+                name
+                id
+            }
+        }
     }
 }
 
@@ -43,32 +45,34 @@ mutation addUserToCurrentOrgLegacyOp(
     $suffix: String
     $email: String!
     $role: Role!
-    ){
-  addUserToCurrentOrg(
-    firstName: $firstName
-    middleName: $middleName
-    lastName: $lastName
-    suffix: $suffix
-    email: $email
-    role: $role
-  ) {
-      id,
-      firstName,
-      middleName,
-      lastName,
-      suffix,
-      email,
-      permissions,
-      role,
-      roles,
-      organization {
-        name
-        externalId
-        facilities {
-          name
-          id
+){
+    addUserToCurrentOrg(
+        userInput: {
+            firstName: $firstName
+            middleName: $middleName
+            lastName: $lastName
+            suffix: $suffix
+            email: $email
+            role: $role
         }
-      }
+    ) {
+        id,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        email,
+        permissions,
+        role,
+        roles,
+        organization {
+            name
+            externalId
+            facilities {
+                name
+                id
+            }
+        }
     }
 }
 
@@ -78,30 +82,32 @@ mutation addUserToCurrentOrgNovel(
     $name: NameInput
     $email: String!
     $role: Role!
-    ){
-  addUserToCurrentOrg(
-    name: $name
-    firstName: $firstName
-    lastName: $lastName
-    email: $email
-    role: $role
-  ) {
-      id,
-      firstName,
-      middleName,
-      lastName,
-      suffix,
-      email,
-      permissions,
-      role,
-      roles,
-      organization {
-        name
-        externalId
-        facilities {
-          name
-          id
+){
+    addUserToCurrentOrg(
+        userInput: {
+            name: $name
+            firstName: $firstName
+            lastName: $lastName
+            email: $email
+            role: $role
         }
-      }
+    ) {
+        id,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        email,
+        permissions,
+        role,
+        roles,
+        organization {
+            name
+            externalId
+            facilities {
+                name
+                id
+            }
+        }
     }
 }

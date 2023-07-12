@@ -1,6 +1,7 @@
 import React, { ReactElement, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Button, FormGroup } from "@trussworks/react-uswds";
+import { Maybe } from "graphql/jsutils/Maybe";
 
 import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
@@ -16,8 +17,151 @@ import {
   MAX_CSV_UPLOAD_BYTES,
   MAX_CSV_UPLOAD_ROW_COUNT,
 } from "../../../config/constants";
+import { HashLink } from "../../commonComponents/HashLink";
 
 const REPORT_MAX_ITEM_COLUMNS = 2000;
+
+export type EnhancedFeedbackMessage = FeedbackMessage & {
+  indicesRange: string[];
+};
+
+export function groupErrors(
+  errors: Array<EnhancedFeedbackMessage | undefined | null>
+) {
+  const extractNumbers = (
+    array: Maybe<Maybe<number>[]> | undefined
+  ): Array<number> =>
+    array ? array.filter((element): element is number => !!element) : [];
+
+  const computeRange = (start: number, end: number) =>
+    start === end ? `${start}` : `${start} - ${end}`;
+
+  errors.forEach((error) => {
+    const indices = extractNumbers(error?.indices).sort((a, b) => a - b);
+
+    if (error && indices && indices.length > 0) {
+      error.indicesRange = [];
+      let startRange = indices[0];
+      let endRange = indices[0];
+
+      for (let i = 1; i < indices.length; i++) {
+        if (endRange + 1 !== indices[i]) {
+          // end of the consecutive numbers
+          error.indicesRange.push(computeRange(startRange, endRange));
+          startRange = indices[i];
+        }
+        endRange = indices[i];
+      }
+      // end of the array
+      error.indicesRange.push(computeRange(startRange, endRange));
+    }
+  });
+  return errors;
+}
+export function getErrorMessage(error: EnhancedFeedbackMessage) {
+  if (error.message) {
+    const headerRegex = /([a-z0-9]+(?:_[a-z0-9]+){1,7})/g;
+    return (
+      <span data-testid="error-message">
+        {error.message.split(headerRegex).map((value) => (
+          <span key={`span-${value}`}>
+            {headerRegex.test(value) ? (
+              <mark data-testid="highlighted-header">
+                <code>{value}</code>
+              </mark>
+            ) : (
+              value
+            )}
+          </span>
+        ))}
+      </span>
+    );
+  }
+}
+
+export function getGuidance(error: EnhancedFeedbackMessage) {
+  const fieldsAcceptSpecificValues = new Set([
+    "patient_gender",
+    "patient_race",
+    "patient_ethnicity",
+    "pregnant",
+    "employed_in_healthcare",
+    "symptomatic_for_disease",
+    "resident_congregate_setting",
+    "residence_type",
+    "hospitalized",
+    "icu",
+    "test_result_status",
+  ]);
+
+  const highlightHeader = (header: string) => (
+    <mark>
+      <code>{header}</code>
+    </mark>
+  );
+
+  const getMissingHeaderErrorGuidance = (header: string) => (
+    <span data-testid="guidance">
+      Include a column with {highlightHeader(header)} as the header.
+    </span>
+  );
+
+  const getMissingDataErrorGuidance = (header: string) => (
+    <span data-testid="guidance">
+      {highlightHeader(header)} is a required field. Include values in each row
+      under this column.
+    </span>
+  );
+
+  const getInvalidDataErrorGuidance = (
+    header: string,
+    required: boolean,
+    specificValues: boolean
+  ) => {
+    const guideLink = (
+      <HashLink pathname="/results/upload/submit/guide" hash={header}>
+        <u>in the upload guide</u>
+      </HashLink>
+    );
+
+    if (specificValues) {
+      return (
+        <span data-testid="guidance">
+          {required ? (
+            <span>Choose </span>
+          ) : (
+            <span>If including {highlightHeader(header)}, choose </span>
+          )}
+          from the accepted values listed under {highlightHeader(header)}{" "}
+          {guideLink}.
+        </span>
+      );
+    } else {
+      return (
+        <span data-testid="guidance">
+          {required ? (
+            <span>Follow </span>
+          ) : (
+            <span>If including {highlightHeader(header)}, follow </span>
+          )}
+          the instructions under {highlightHeader(header)} {guideLink}.
+        </span>
+      );
+    }
+  };
+
+  if (error.fieldHeader && error.errorType === "MISSING_HEADER") {
+    return getMissingHeaderErrorGuidance(error.fieldHeader);
+  } else if (error.fieldHeader && error.errorType === "MISSING_DATA") {
+    return getMissingDataErrorGuidance(error.fieldHeader);
+  } else if (error.fieldHeader && error.errorType === "INVALID_DATA") {
+    return getInvalidDataErrorGuidance(
+      error.fieldHeader,
+      error.fieldRequired,
+      fieldsAcceptSpecificValues.has(error.fieldHeader)
+    );
+  }
+}
 
 const Uploads = () => {
   useDocumentTitle("Upload spreadsheet");
@@ -36,7 +180,7 @@ const Uploads = () => {
   const [reportId, setReportId] = useState<string | null>(null);
 
   const [errors, setErrors] = useState<
-    Array<FeedbackMessage | undefined | null>
+    Array<EnhancedFeedbackMessage | undefined | null>
   >([]);
   const [errorMessage, setErrorMessage] = useState<ReactElement | null>(null);
   const [isFileValid, setFileValid] = useState<boolean>(true);
@@ -142,7 +286,7 @@ const Uploads = () => {
           has not been accepted.
         </>
       );
-      const errorMessage = {} as FeedbackMessage;
+      const errorMessage = {} as EnhancedFeedbackMessage;
       errorMessage.message = "Invalid File";
       setErrors([errorMessage]);
       setFileValid(false);
@@ -190,7 +334,7 @@ const Uploads = () => {
               file has not been accepted.
             </>
           );
-          setErrors(response.errors);
+          setErrors(groupErrors(response.errors));
           setFileValid(false);
           appInsights?.trackEvent({
             name: "Spreadsheet upload validation failure",
@@ -324,18 +468,29 @@ const Uploads = () => {
                 <table className="usa-table usa-table--borderless">
                   <thead>
                     <tr>
-                      <th>Error description</th>
-                      <th>Location of error</th>
+                      <th>Error</th>
+                      <th>Guidance</th>
+                      <th>Row(s)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {errors.map((e, i) => {
+                    {errors.map((e) => {
                       return (
-                        <tr key={"error_" + i}>
-                          <td>{e?.["message"]} </td>
+                        <tr key={(e?.message || "") + (e?.indices || "")}>
+                          <td>{e && getErrorMessage(e)} </td>
                           <td>
-                            {e?.["indices"] &&
-                              "Row(s): " + e?.["indices"]?.join(", ")}
+                            <div>{e && getGuidance(e)}</div>
+                          </td>
+                          <td>
+                            {e?.indicesRange &&
+                              e?.indicesRange.map((range) => {
+                                return (
+                                  <div key={range}>
+                                    {range}
+                                    <br />
+                                  </div>
+                                );
+                              })}
                           </td>
                         </tr>
                       );

@@ -1,6 +1,5 @@
 query GetFacilityResultsWithCountMultiplex(
   $facilityId: ID!
-  $nameType: String = "long"
 ) {
   testResultsPage(facilityId: $facilityId) {
     content {
@@ -22,9 +21,6 @@ query GetFacilityResultsWithCountMultiplex(
         middleName
         lastName
         lookupId
-      }
-      testPerformed {
-        name(nameType: $nameType)
       }
       patientLink {
         internalId

@@ -1,13 +1,15 @@
-import { render, screen, within } from "@testing-library/react";
+import { act, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
 import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
+import { TestResult } from "../../../generated/graphql";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
-const TEST_RESULTS_MULTIPLEX_CONTENT = TEST_RESULTS_MULTIPLEX.content;
+const TEST_RESULTS_MULTIPLEX_CONTENT =
+  TEST_RESULTS_MULTIPLEX.content as TestResult[];
 describe("Method generateTableHeaders", () => {
   const table = (headers: JSX.Element) => (
     <table>
@@ -100,7 +102,7 @@ describe("Component ResultsTable", () => {
   it("checks table with covid results", () => {
     render(
       <ResultsTable
-        results={[TEST_RESULT_COVID.content[0]]}
+        results={[TEST_RESULT_COVID.content[0]] as TestResult[]}
         setPrintModalId={setPrintModalIdFn}
         setMarkCorrectionId={setMarkCorrectionIdFn}
         setDetailsModalId={setDetailsModalIdFn}
@@ -140,6 +142,28 @@ describe("Component ResultsTable", () => {
     expect(screen.getByText("Flu B")).toBeInTheDocument();
   });
 
+  it("renders multiple results for the same patient with different aria labels", () => {
+    render(
+      <ResultsTable
+        results={TEST_RESULTS_MULTIPLEX_CONTENT}
+        setPrintModalId={setPrintModalIdFn}
+        setMarkCorrectionId={setMarkCorrectionIdFn}
+        setDetailsModalId={setDetailsModalIdFn}
+        setTextModalId={setTextModalIdFn}
+        setEmailModalTestResultId={setEmailModalTestResultIdFn}
+        hasMultiplexResults={true}
+        hasFacility={false}
+      />
+    );
+
+    const userResults = screen.getAllByText(
+      "Purrington, Rupert G"
+    ) as HTMLButtonElement[];
+
+    const userAriaLabels = userResults.map((r) => r.getAttribute("aria-label"));
+    expect(new Set(userAriaLabels).size).toBe(userResults.length);
+  });
+
   describe("actions menu", () => {
     describe("text result action", () => {
       it("includes `Text result` if patient has mobile number", async () => {
@@ -164,7 +188,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        await userEvent.click(moreActions);
+        await act(async () => await userEvent.click(moreActions));
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -193,7 +217,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        await userEvent.click(moreActions);
+        await act(async () => await userEvent.click(moreActions));
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -202,7 +226,9 @@ describe("Component ResultsTable", () => {
     });
     describe("email result action", () => {
       it("includes `Email result` if patient email address", async () => {
-        const testResultPatientEmail = [TEST_RESULTS_MULTIPLEX_CONTENT[0]];
+        const testResultPatientEmail: TestResult[] = [
+          TEST_RESULTS_MULTIPLEX_CONTENT[0],
+        ];
 
         render(
           <ResultsTable
@@ -221,7 +247,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        await userEvent.click(moreActions);
+        await act(async () => await userEvent.click(moreActions));
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -248,7 +274,7 @@ describe("Component ResultsTable", () => {
           "button"
         )[1];
 
-        await userEvent.click(moreActions);
+        await act(async () => await userEvent.click(moreActions));
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();

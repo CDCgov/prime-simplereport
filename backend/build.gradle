@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.8'
+    id 'org.springframework.boot' version '2.7.12'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
@@ -7,7 +7,7 @@ plugins {
     id 'jacoco'
     id 'org.sonarqube' version '4.0.0.2929'
     id 'com.gorylenko.gradle-git-properties' version '2.4.1'
-    id "com.diffplug.spotless" version "6.16.0"
+    id "com.diffplug.spotless" version "6.19.0"
 }
 
 group = 'gov.cdc.usds'
@@ -28,6 +28,7 @@ jar {
 dependencies {
     // core infrastructure
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-actuator'
     implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure'
 
@@ -41,7 +42,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
     // Security Pins (Sept 2022)
-    implementation 'org.yaml:snakeyaml:1.31'
+    implementation 'org.yaml:snakeyaml:1.33'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -51,18 +52,17 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.57'
-    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.0'
-    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.14'
+    implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.15'
 
     // UI layer dependencies
-    implementation 'org.json:json:20220924'
+    implementation 'org.json:json:20230227'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
-    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.6'
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.1.7'
     implementation ('com.okta.sdk:okta-sdk-api:10.2.2') {
         exclude group: 'org.slf4j', module: 'slf4j-simple'
     }
@@ -73,19 +73,19 @@ dependencies {
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
 
     // App insights instrumentation
-    implementation 'com.microsoft.azure:applicationinsights-core:3.4.9'
+    implementation 'com.microsoft.azure:applicationinsights-core:3.4.13'
 
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
 
     // SendGrid for Email
-    implementation 'com.sendgrid:sendgrid-java:4.7.2'
+    implementation 'com.sendgrid:sendgrid-java:4.9.3'
 
     // For local Email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // JPA Hibernate static metamodel generation
-    implementation 'org.hibernate.orm:hibernate-jpamodelgen:6.1.7.Final'
+    implementation 'org.hibernate.orm:hibernate-jpamodelgen:6.2.1.Final'
     annotationProcessor 'org.hibernate:hibernate-jpamodelgen'
 
     // graphql-java-extended-validation schema directives
@@ -93,10 +93,7 @@ dependencies {
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.15.+'
-    implementation 'com.azure:azure-core-http-netty:1.11.9'
-    implementation 'com.azure:azure-core:1.27.0'
-    implementation 'com.azure:azure-storage-common:12.15.1'
+    implementation 'com.azure:azure-storage-queue:12.17.1'
 
     // RandomStringUtils to generate PatientSelfRegistrationLink
     implementation 'org.apache.commons:commons-lang3:3.12.0'
@@ -129,8 +126,10 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.2.5'
-    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:5.6.97' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://security.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3245104.
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.4.4'
+    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.0.4' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://app.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3358779.
+
+    implementation 'commons-validator:commons-validator:1.7'
 }
 
 dependencyManagement {
@@ -245,4 +244,3 @@ tasks.named('test') {
     }
     maxHeapSize = "1024m"
 }
-

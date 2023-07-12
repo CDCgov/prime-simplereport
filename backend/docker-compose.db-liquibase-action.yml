@@ -1,0 +1,18 @@
+version: "3.2"
+services:
+  db_liquibase_action:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile.db-liquibase-action
+    image: simple-report-api-build
+    container_name: db_liquibase_action
+    environment:
+      LIQUIBASE_ROLLBACK_TAG: ${LIQUIBASE_ROLLBACK_TAG:-}
+      LIQUIBASE_ACTION: ${LIQUIBASE_ACTION:-validate}
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://db:5432/simple_report}
+    networks:
+      - default
+networks:
+  default:
+    external: true
+    name: prime-simplereport_default

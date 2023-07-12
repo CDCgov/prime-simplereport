@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.config;
 
-import gov.cdc.usds.simplereport.logging.PatientExperienceLoggingInterceptor;
+import gov.cdc.usds.simplereport.logging.RestLoggingInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -26,9 +26,10 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String FEATURE_FLAGS = "/feature-flags";
   public static final String PATIENT_UPLOAD = "/upload/patients";
   public static final String RESULT_UPLOAD = "/upload/results";
+  public static final String HIV_RESULT_UPLOAD = "/upload/hiv-results";
   public static final String GRAPH_QL = "/graphql";
 
-  @Autowired private PatientExperienceLoggingInterceptor _loggingInterceptor;
+  @Autowired private RestLoggingInterceptor _loggingInterceptor;
 
   @Override
   public void addViewControllers(ViewControllerRegistry registry) {

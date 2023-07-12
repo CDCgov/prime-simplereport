@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -62,11 +63,14 @@ describe("Verify Google Auth MFA", () => {
         exact: false,
       })
     ).toBeInTheDocument();
-    await userEvent.type(
-      screen.getByLabelText("One-time security code", { exact: false }),
-      "123456"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("One-time security code", { exact: false }),
+          "123456"
+        )
     );
-    await userEvent.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Verifying security code …")
     );
@@ -74,10 +78,10 @@ describe("Verify Google Auth MFA", () => {
       screen.queryByText("Enter your security code")
     ).not.toBeInTheDocument();
     expect(
-      screen.getByText(
+      await screen.findByText(
         "To start using SimpleReport, visit the website to log in to your account."
       )
-    ).toBeInTheDocument();
+    );
   });
 
   it("shows an error for an invalid security code", async () => {
@@ -86,11 +90,14 @@ describe("Verify Google Auth MFA", () => {
         exact: false,
       })
     ).toBeInTheDocument();
-    await userEvent.type(
-      screen.getByLabelText("One-time security code", { exact: false }),
-      "999999"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("One-time security code", { exact: false }),
+          "999999"
+        )
     );
-    await userEvent.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Verifying security code …")
     );
@@ -103,7 +110,7 @@ describe("Verify Google Auth MFA", () => {
   });
 
   it("requires a security code to be entered", async () => {
-    await userEvent.click(screen.getByText("Submit"));
+    await act(async () => await userEvent.click(screen.getByText("Submit")));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText(

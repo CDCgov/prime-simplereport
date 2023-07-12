@@ -3,9 +3,12 @@ package gov.cdc.usds.simplereport.validators;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateFormat;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateSpecimenType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -18,6 +21,7 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -111,5 +115,130 @@ class CsvValidatorUtilsTest {
   void validCountryCode() {
     var countryCode = new ValueOrError("USA", "country");
     assertThat(validateCountry(countryCode)).isEmpty();
+  }
+
+  @Test
+  void validSpecimenName() {
+    var specimenType = new ValueOrError("Oral saliva sample", "specimen_type");
+    assertThat(validateSpecimenType(specimenType, Map.of("oral saliva sample", "000111222")))
+        .isEmpty();
+  }
+
+  @Test
+  void validSpecimenSNOMED() {
+    var specimenType = new ValueOrError("012345678", "specimen_type");
+    assertThat(validateSpecimenType(specimenType, Map.of("oral saliva sample", "000111222")))
+        .isEmpty();
+  }
+
+  @Test
+  void invalidSpecimenSNOMED() {
+    // too many characters
+    var specimenType = new ValueOrError("0123456789", "specimen_type");
+    assertThat(validateSpecimenType(specimenType, Map.of("oral saliva sample", "000111222")))
+        .hasSize(1);
+  }
+
+  @Test
+  void validDateFormat() {
+    var validDates = new ArrayList<ValueOrError>();
+    validDates.add(new ValueOrError("01/01/2023", "date"));
+    validDates.add(new ValueOrError("1/1/2023", "date"));
+    validDates.add(new ValueOrError("1/01/2023", "date"));
+    validDates.add(new ValueOrError("01/1/2023", "date"));
+    validDates.add(new ValueOrError("1/31/2023", "date"));
+    validDates.add(new ValueOrError("12/01/2023", "date"));
+    for (var date : validDates) {
+      assertThat(validateDateFormat(date)).isEmpty();
+    }
+  }
+
+  @Test
+  void invalidDateFormat() {
+    var invalidDates = new ArrayList<ValueOrError>();
+    invalidDates.add(new ValueOrError("00/01/2023", "date"));
+    invalidDates.add(new ValueOrError("1/32/2023", "date"));
+    invalidDates.add(new ValueOrError("1/1/23", "date"));
+    invalidDates.add(new ValueOrError("11/00/2023", "date"));
+    invalidDates.add(new ValueOrError("0/31/2023", "date"));
+    invalidDates.add(new ValueOrError("10/0/2023", "date"));
+    invalidDates.add(new ValueOrError("00/00/2023", "date"));
+    invalidDates.add(new ValueOrError("0/0/2023", "date"));
+    invalidDates.add(new ValueOrError("0/0/202", "date"));
+    for (var date : invalidDates) {
+      assertThat(validateDateFormat(date)).hasSize(1);
+    }
+  }
+
+  @Test
+  void validDateTime() {
+    var validDateTimes = new ArrayList<ValueOrError>();
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11", "datetime"));
+    validDateTimes.add(new ValueOrError("1/1/2023 12:34", "datetime"));
+    validDateTimes.add(new ValueOrError("1/01/2023 23:59", "datetime"));
+    validDateTimes.add(new ValueOrError("01/1/2023 00:00", "datetime"));
+    validDateTimes.add(new ValueOrError("1/31/2023 05:50", "datetime"));
+    validDateTimes.add(new ValueOrError("12/01/2023 1:01", "datetime"));
+    for (var datetime : validDateTimes) {
+      assertThat(validateDateTime(datetime)).isEmpty();
+    }
+  }
+
+  @Test
+  void invalidDateTime() {
+    var invalidDateTimes = new ArrayList<ValueOrError>();
+    invalidDateTimes.add(new ValueOrError("00/01/2023 11:60", "datetime"));
+    invalidDateTimes.add(new ValueOrError("1/32/2023 1:50", "datetime"));
+    invalidDateTimes.add(new ValueOrError("1/1/23 12:34", "datetime"));
+    invalidDateTimes.add(new ValueOrError("11/00/2023 52:37", "datetime"));
+    invalidDateTimes.add(new ValueOrError("0/31/2023 5:29", "datetime"));
+    invalidDateTimes.add(new ValueOrError("10/0/2023 6:15", "datetime"));
+    invalidDateTimes.add(new ValueOrError("00/00/2023 07:30", "datetime"));
+    invalidDateTimes.add(new ValueOrError("0/0/2023 10:23", "datetime"));
+    invalidDateTimes.add(new ValueOrError("0/0/202 11:11", "datetime"));
+    for (var datetime : invalidDateTimes) {
+      assertThat(validateDateTime(datetime)).hasSize(1);
+    }
+  }
+
+  @Test
+  void validDateTimeWithTimeZone() {
+    var validDateTimes = new ArrayList<ValueOrError>();
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 ET", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 EST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 EDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 CT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 CST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 CDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 MT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 MST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 MDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 PT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 PST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 PDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 AKDT", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 AKST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 HST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 SST", "datetime"));
+    validDateTimes.add(new ValueOrError("01/01/2023 11:11 ", "datetime"));
+    for (var datetime : validDateTimes) {
+      assertThat(validateDateTime(datetime)).isEmpty();
+    }
+  }
+
+  @Test
+  void invalidDateTimeWithTimeZone() {
+    var invalidDateTimes = new ArrayList<ValueOrError>();
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 New York", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 Eastern", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 central", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 pacific time", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 123", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 ABC", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 ET2", "datetime"));
+    invalidDateTimes.add(new ValueOrError("01/01/2023 11:11 denver", "datetime"));
+    for (var datetime : invalidDateTimes) {
+      assertThat(validateDateTime(datetime)).hasSize(1);
+    }
   }
 }

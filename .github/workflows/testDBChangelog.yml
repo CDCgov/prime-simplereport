@@ -1,45 +1,37 @@
-name: Test Liquibase rollbacks
+name: Test Liquibase Actions
 
 # Run this on pushes to any branch that changes a Liquibase changelog
 on:
-  workflow_dispatch:
-  pull_request:
-    branches:
-      - "**"
-  push:
-    branches:
-      - main
-    paths:
-      - backend/src/main/resources/db/changelog/db.changelog-master.yaml
+  workflow_call:
+    inputs:
+      DOCKER_DATABASE_IMAGE_VERSION:
+        required: false
+        type: string
 
-env:
-  JAVA_VERSION: 17
-  JAVA_DISTRIBUTION: 'zulu'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-test-db-liquibase-action
+  cancel-in-progress: true
 
 defaults:
   run:
     working-directory: backend
 
 jobs:
-  test-db-rollback:
+  test-db-liquibase-action:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{env.JAVA_VERSION}}
-        uses: actions/setup-java@v3
-        with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
-      - name: Cache Java Dependencies
-        uses: actions/cache@v3.3.1
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Start DB
+        env:
+          DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
         run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
+      - name: Build rollback image
+        run: docker compose -f docker-compose.db-liquibase-action.yml build
       - name: Run forward migrations
-        run: ./gradlew liquibaseUpdate
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --entrypoint "gradle liquibaseUpdate" db_liquibase_action
+      - name: Run liquibase validation
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --env "LIQUIBASE_ACTION=validate" db_liquibase_action
+      - name: Run liquibase clear checksums
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --env "LIQUIBASE_ACTION=clear-checksums" db_liquibase_action
       - name: Test rolling back on last 20 migrations
-        run: ./gradlew liquibaseRollbackCount -PliquibaseCommandValue=20
+        run: docker compose -f docker-compose.db-liquibase-action.yml run --entrypoint "gradle liquibaseRollbackCount -PliquibaseCommandValue=20" db_liquibase_action

@@ -32,6 +32,10 @@ import QueueItem, {
   QueriedTestOrder,
   QueueItemProps,
 } from "./QueueItem";
+import mockSupportedDiseaseCovid from "./mocks/mockSupportedDiseaseCovid";
+import mockSupportedDiseaseMultiplex, {
+  mockSupportedDiseaseFlu,
+} from "./mocks/mockSupportedDiseaseMultiplex";
 
 jest.mock("../TelemetryService", () => ({
   getAppInsights: jest.fn(),
@@ -55,11 +59,13 @@ const device1Name = "LumiraDX";
 const device2Name = "Abbott BinaxNow";
 const device3Name = "BD Veritor";
 const device4Name = "Multiplex";
+const device5Name = "MultiplexAndCovidOnly";
 
 const device1Id = "ee4f40b7-ac32-4709-be0a-56dd77bb9609";
 const device2Id = "5c711888-ba37-4b2e-b347-311ca364efdb";
 const device3Id = "32b2ca2a-75e6-4ebd-a8af-b50c7aea1d10";
 const device4Id = "67109f6f-eaee-49d3-b8ff-c61b79a9da8e";
+const device5Id = "da524a8e-672d-4ff4-a4ec-c1e14d0337db";
 
 const deletedDeviceId = "8ab0cafa-8e36-48d6-91fc-6352405e1d91";
 const deletedDeviceName = "Deleted";
@@ -142,13 +148,7 @@ describe("QueueItem", () => {
         internalId: device1Id,
         name: device1Name,
         testLength: 15,
-        supportedDiseases: [
-          {
-            internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-            loinc: "96741-4",
-            name: "COVID-19",
-          },
-        ],
+        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
         swabTypes: [
           {
             name: specimen1Name,
@@ -166,13 +166,7 @@ describe("QueueItem", () => {
         internalId: device2Id,
         name: device2Name,
         testLength: 15,
-        supportedDiseases: [
-          {
-            internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-            loinc: "96741-4",
-            name: "COVID-19",
-          },
-        ],
+        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
         swabTypes: [
           {
             name: specimen1Name,
@@ -185,13 +179,7 @@ describe("QueueItem", () => {
         internalId: device3Id,
         name: device3Name,
         testLength: 15,
-        supportedDiseases: [
-          {
-            internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-            loinc: "96741-4",
-            name: "COVID-19",
-          },
-        ],
+        supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
         swabTypes: [
           {
             name: specimen1Name,
@@ -209,21 +197,35 @@ describe("QueueItem", () => {
         internalId: device4Id,
         name: device4Name,
         testLength: 15,
-        supportedDiseases: [
+        supportedDiseaseTestPerformed: mockSupportedDiseaseMultiplex,
+        swabTypes: [
           {
-            internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-            loinc: "96741-4",
-            name: "COVID-19",
+            name: specimen1Name,
+            internalId: specimen1Id,
+            typeCode: "445297001",
           },
           {
-            internalId: "e286f2a8-38e2-445b-80a5-c16507a96b66",
-            loinc: "LP14239-5",
-            name: "Flu A",
+            name: specimen2Name,
+            internalId: specimen2Id,
+            typeCode: "258500001",
+          },
+        ],
+      },
+      {
+        internalId: device5Id,
+        name: device5Name,
+        testLength: 15,
+        supportedDiseaseTestPerformed: [
+          ...mockSupportedDiseaseFlu,
+          {
+            supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
+            testPerformedLoincCode: "123456",
+            testOrderedLoincCode: "445566",
           },
           {
-            internalId: "14924488-268f-47db-bea6-aa706971a098",
-            loinc: "LP14240-3",
-            name: "Flu B",
+            supportedDisease: mockSupportedDiseaseCovid[0].supportedDisease,
+            testPerformedLoincCode: "123456",
+            testOrderedLoincCode: "778899",
           },
         ],
         swabTypes: [
@@ -264,7 +266,7 @@ describe("QueueItem", () => {
   ) => {
     props = props || testProps;
 
-    render(
+    const { container } = render(
       <PrimeErrorBoundary>
         <Provider store={store}>
           <MemoryRouter>
@@ -284,6 +286,7 @@ describe("QueueItem", () => {
       </PrimeErrorBoundary>
     );
     await new Promise((resolve) => setTimeout(resolve, 501));
+    return container;
   };
 
   beforeEach(() => {
@@ -297,12 +300,22 @@ describe("QueueItem", () => {
       trackEvent: trackEventMock,
     }));
     jest.spyOn(console, "error").mockImplementation(() => {});
+    jest.spyOn(global.Math, "random").mockReturnValue(1);
   });
 
   afterEach(() => {
     Date.now = nowFn;
     (getAppInsights as jest.Mock).mockReset();
     jest.spyOn(console, "error").mockRestore();
+    jest.spyOn(global.Math, "random").mockRestore();
+  });
+
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("matches snapshot", async () => {
+    expect(await renderQueueItem()).toMatchSnapshot();
   });
 
   it("correctly renders the test queue", async () => {
@@ -357,11 +370,12 @@ describe("QueueItem", () => {
       "device-type-dropdown"
     )) as HTMLSelectElement;
 
-    expect(deviceDropdown.options.length).toEqual(4);
+    expect(deviceDropdown.options.length).toEqual(5);
     expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
     expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
     expect(deviceDropdown.options[2].label).toEqual("LumiraDX");
     expect(deviceDropdown.options[3].label).toEqual("Multiplex");
+    expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
     await userEvent.selectOptions(deviceDropdown, "Abbott BinaxNow");
 
@@ -472,13 +486,7 @@ describe("QueueItem", () => {
           name: deletedDeviceName,
           model: "test",
           testLength: 12,
-          supportedDiseases: [
-            {
-              internalId: "6e67ea1c-f9e8-4b3f-8183-b65383ac1283",
-              loinc: "96741-4",
-              name: "COVID-19",
-            },
-          ],
+          supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
         },
         correctionStatus: "CORRECTED",
         reasonForCorrection: TestCorrectionReason.INCORRECT_RESULT,
@@ -488,12 +496,14 @@ describe("QueueItem", () => {
     await renderQueueItem({ props, mocks });
 
     const deviceDropdown = await getDeciceTypeDropdown();
-    expect(deviceDropdown.options.length).toEqual(5);
+    expect(deviceDropdown.options.length).toEqual(6);
     expect(deviceDropdown.options[0].label).toEqual("");
     expect(deviceDropdown.options[1].label).toEqual("Abbott BinaxNow");
     expect(deviceDropdown.options[2].label).toEqual("BD Veritor");
     expect(deviceDropdown.options[3].label).toEqual("LumiraDX");
     expect(deviceDropdown.options[4].label).toEqual("Multiplex");
+    expect(deviceDropdown.options[5].label).toEqual("MultiplexAndCovidOnly");
+
     expect(deviceDropdown.value).toEqual("");
 
     const swabDropdown = await getSpecimenTypeDropdown();
@@ -626,11 +636,12 @@ describe("QueueItem", () => {
     await renderQueueItem({ props, mocks });
 
     const deviceDropdown = await getDeciceTypeDropdown();
-    expect(deviceDropdown.options.length).toEqual(4);
+    expect(deviceDropdown.options.length).toEqual(5);
     expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
     expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
     expect(deviceDropdown.options[2].label).toEqual("LumiraDX");
     expect(deviceDropdown.options[3].label).toEqual("Multiplex");
+    expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
     expect(deviceDropdown.value).toEqual(device2Id);
 
     const swabDropdown = await getSpecimenTypeDropdown();
@@ -813,11 +824,12 @@ describe("QueueItem", () => {
       await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeciceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(4);
+      expect(deviceDropdown.options.length).toEqual(5);
       expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
       expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
       expect(deviceDropdown.options[2].label).toEqual("LumiraDX");
       expect(deviceDropdown.options[3].label).toEqual("Multiplex");
+      expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
       // select results
       await userEvent.click(
@@ -856,11 +868,12 @@ describe("QueueItem", () => {
       expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
 
       const deviceDropdown = await getDeciceTypeDropdown();
-      expect(deviceDropdown.options.length).toEqual(4);
+      expect(deviceDropdown.options.length).toEqual(5);
       expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
       expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
       expect(deviceDropdown.options[2].label).toEqual("LumiraDX");
       expect(deviceDropdown.options[3].label).toEqual("Multiplex");
+      expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
       // Change device type to a multiplex device
       await userEvent.selectOptions(deviceDropdown, device4Name);
@@ -1227,6 +1240,43 @@ describe("QueueItem", () => {
     expect(
       screen.queryByText(testProps.queueItem.patient.phoneNumbers![1]!.number!)
     ).not.toBeInTheDocument();
+  });
+
+  describe("when device supports covid only and multiplex", () => {
+    it("should allow you to submit covid only results", async () => {
+      await renderQueueItem({});
+
+      const deviceDropdown = await getDeciceTypeDropdown();
+      expect(deviceDropdown.options.length).toEqual(5);
+      expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
+      expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
+      expect(deviceDropdown.options[2].label).toEqual("LumiraDX");
+      expect(deviceDropdown.options[3].label).toEqual("Multiplex");
+      expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
+
+      // Change device type to multiplex
+      await userEvent.selectOptions(deviceDropdown, device4Name);
+      await new Promise((resolve) => setTimeout(resolve, 501));
+
+      // select results
+      await userEvent.click(
+        within(
+          screen.getByTestId(`covid-test-result-${queueItemInfo.internalId}`)
+        ).getByLabelText("Positive", { exact: false })
+      );
+      await new Promise((resolve) => setTimeout(resolve, 501));
+
+      // Notice submit is disabled
+      expect(screen.getByText("Submit")).toBeDisabled();
+
+      // Change device type to multiplex that supports covid only
+      await userEvent.selectOptions(deviceDropdown, device5Name);
+      await new Promise((resolve) => setTimeout(resolve, 501));
+      expect(deviceDropdown.value).toEqual(device5Id);
+
+      // Notice submit is enabled
+      expect(screen.getByText("Submit")).toBeEnabled();
+    });
   });
 
   describe("telemetry", () => {

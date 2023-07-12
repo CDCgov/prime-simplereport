@@ -2,7 +2,7 @@ import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-import {
+import React, {
   ChangeEventHandler,
   useCallback,
   useEffect,
@@ -13,12 +13,12 @@ import {
 import moment from "moment";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { Label } from "@trussworks/react-uswds";
-import { useSelector } from "react-redux";
 
 import { displayFullName, facilityDisplayName } from "../utils";
 import { isValidDate } from "../utils/date";
 import { getParameterFromUrl } from "../utils/url";
 import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
+import { useAppSelector } from "../store";
 import Pagination from "../commonComponents/Pagination";
 import {
   COVID_RESULTS,
@@ -43,9 +43,11 @@ import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
 import {
+  TestResult,
   GetFacilityResultsMultiplexWithCountQuery,
   useGetAllFacilitiesQuery,
   useGetFacilityResultsMultiplexWithCountQuery,
+  Maybe,
 } from "../../generated/graphql";
 import { waitForElement } from "../utils/elements";
 
@@ -132,6 +134,20 @@ const setFocusOnActionMenu = (id: string, actionName: string) => {
   });
 };
 
+const ErrorMessage: React.FC<{ message: string | undefined }> = ({
+  message,
+}) => {
+  if (message) {
+    return (
+      <span className="usa-error-message" role="alert">
+        <span className="usa-sr-only">Error: </span>
+        {message}
+      </span>
+    );
+  }
+  return null;
+};
+
 export const DetachedTestResultsList = ({
   data,
   pageNumber,
@@ -144,12 +160,19 @@ export const DetachedTestResultsList = ({
   clearFilterParams,
   maxDate = moment().format("YYYY-MM-DD"),
 }: DetachedTestResultsListProps) => {
-  const [printModalId, setPrintModalId] = useState(undefined);
-  const [markCorrectionId, setMarkCorrectionId] = useState(undefined);
-  const [detailsModalId, setDetailsModalId] = useState<string>();
-  const [textModalId, setTextModalId] = useState<string>();
-  const [emailModalTestResultId, setEmailModalTestResultId] =
-    useState<string>();
+  const [printModalId, setPrintModalId] = useState<Maybe<string> | undefined>(
+    undefined
+  );
+  const [markCorrectionId, setMarkCorrectionId] = useState<
+    Maybe<string> | undefined
+  >(undefined);
+  const [detailsModalId, setDetailsModalId] = useState<
+    Maybe<string> | undefined
+  >();
+  const [textModalId, setTextModalId] = useState<Maybe<string> | undefined>();
+  const [emailModalTestResultId, setEmailModalTestResultId] = useState<
+    Maybe<string> | undefined
+  >();
   const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
@@ -164,8 +187,13 @@ export const DetachedTestResultsList = ({
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const isOrgAdmin = hasPermission(
-    useSelector((state) => (state as any).user.permissions),
+    useAppSelector((state) => state.user.permissions),
     appPermissions.settings.canView
+  );
+
+  const canAddPatient = hasPermission(
+    useAppSelector((state) => state.user.permissions),
+    appPermissions.people.canEdit
   );
 
   const [queryPatients, { data: patientData, loading: patientLoading }] =
@@ -365,7 +393,11 @@ export const DetachedTestResultsList = ({
   const viewableFacilities: any[] = (facilitiesData?.facilities || []).filter(
     (e) => e != null
   );
-
+  viewableFacilities.sort((a, b) => {
+    if (a.isDeleted && !b.isDeleted) return 1;
+    if (!a.isDeleted && b.isDeleted) return -1;
+    return 0;
+  });
   const facilityOptions = (
     isOrgAdmin
       ? [
@@ -376,17 +408,15 @@ export const DetachedTestResultsList = ({
         ]
       : []
   ).concat(
-    viewableFacilities
-      .sort((a, b) => {
-        if (a.isDeleted && !b.isDeleted) return 1;
-        if (!a.isDeleted && b.isDeleted) return -1;
-        return 0;
-      })
-      .map((f) => ({
-        label: facilityDisplayName(f.name, !!f.isDeleted),
-        value: f.id,
-      }))
+    viewableFacilities.map((f) => ({
+      label: facilityDisplayName(f.name, !!f.isDeleted),
+      value: f.id,
+    }))
   );
+
+  function getDateOrEmptyString(date: string | null | undefined) {
+    return date ? moment(date).format("YYYY-MM-DD") : "";
+  }
 
   return (
     <div className="grid-row">
@@ -435,6 +465,7 @@ export const DetachedTestResultsList = ({
           <div
             id="test-results-search-by-patient-input"
             className="position-relative bg-base-lightest"
+            role="search"
           >
             <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
               <div className="person-search">
@@ -454,52 +485,33 @@ export const DetachedTestResultsList = ({
                   shouldShowSuggestions={showDropdown}
                   loading={debounced !== queryString || patientLoading}
                   dropDownRef={dropDownRef}
+                  canAddPatient={canAddPatient}
                 />
               </div>
               <div className="usa-form-group date-filter-group">
                 <Label htmlFor="start-date">Date range (start)</Label>
-                {startDateError && (
-                  <span className="usa-error-message" role="alert">
-                    <span className="usa-sr-only">Error: </span>
-                    {startDateError}
-                  </span>
-                )}
+                <ErrorMessage message={startDateError} />
                 <input
                   id="start-date"
                   type="date"
                   className="usa-input"
                   min="2000-01-01"
                   max={maxDate}
-                  aria-label="Start Date"
                   onChange={(e) => processStartDate(e.target.value)}
-                  defaultValue={
-                    filterParams.startDate
-                      ? moment(filterParams.startDate).format("YYYY-MM-DD")
-                      : ""
-                  }
+                  defaultValue={getDateOrEmptyString(filterParams.startDate)}
                 />
               </div>
               <div className="usa-form-group date-filter-group">
                 <Label htmlFor="end-date">Date range (end)</Label>
-                {endDateError && (
-                  <span className="usa-error-message" role="alert">
-                    <span className="usa-sr-only">Error: </span>
-                    {endDateError}
-                  </span>
-                )}
+                <ErrorMessage message={endDateError} />
                 <input
                   id="end-date"
                   type="date"
                   className="usa-input"
                   min="2000-01-01"
                   max={maxDate}
-                  aria-label="End Date"
                   onChange={(e) => processEndDate(e.target.value)}
-                  defaultValue={
-                    filterParams.endDate
-                      ? moment(filterParams.endDate).format("YYYY-MM-DD")
-                      : ""
-                  }
+                  defaultValue={getDateOrEmptyString(filterParams.endDate)}
                 />
               </div>
               <Select
@@ -531,7 +543,7 @@ export const DetachedTestResultsList = ({
                 defaultSelect
                 onChange={setFilterParams("role")}
               />
-              {facilityOptions && facilityOptions.length > 1 ? (
+              {facilityOptions?.length > 1 ? (
                 <Select
                   label="Testing facility"
                   name="facility"
@@ -554,7 +566,7 @@ export const DetachedTestResultsList = ({
         </div>
         <div title="filtered-result">
           <ResultsTable
-            results={testResults}
+            results={testResults as TestResult[]}
             setPrintModalId={setPrintModalId}
             setMarkCorrectionId={setMarkCorrectionId}
             setDetailsModalId={setDetailsModalId}

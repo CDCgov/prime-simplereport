@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import i18n from "../../../i18n";
@@ -37,14 +37,14 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Enter bad info and blur
-    await userEvent.type(primary, "not a number");
-    await userEvent.tab();
+    await act(async () => await userEvent.type(primary, "not a number"));
+    await act(async () => await userEvent.tab());
     expect(
       await screen.findByText("Phone number is missing or invalid")
     ).toBeInTheDocument();
     // Enter good info and blur
-    await userEvent.type(primary, "202-867-5309");
-    await userEvent.tab();
+    await act(async () => await userEvent.type(primary, "202-867-5309"));
+    await act(async () => await userEvent.tab());
     await waitFor(() =>
       expect(
         screen.queryByText("Phone number is missing or invalid")
@@ -56,23 +56,21 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Show two errors
-    await userEvent.clear(primary);
-    await userEvent.tab();
+    await act(async () => await userEvent.clear(primary));
+    await act(async () => await userEvent.tab());
     const addButton = screen.getByText("Add another number", { exact: false });
-    await userEvent.click(addButton);
-    const second = await screen.findByLabelText("Additional phone", {
-      exact: false,
-    });
-    await userEvent.clear(second);
-    await userEvent.tab();
+    await act(async () => await userEvent.click(addButton));
+    const second = await screen.findByLabelText(/^Additional phone number/);
+    await act(async () => await userEvent.clear(second));
+    await act(async () => await userEvent.tab());
     await waitFor(() => {
       expect(
         screen.getAllByText("Phone number is missing or invalid").length
       ).toBe(2);
     });
     // Fix one of the errors
-    await userEvent.type(primary, "3018675309");
-    await userEvent.tab();
+    await act(async () => await userEvent.type(primary, "3018675309"));
+    await act(async () => await userEvent.tab());
     await waitFor(() => {
       expect(
         screen.getAllByText("Phone number is missing or invalid").length
@@ -84,8 +82,8 @@ describe("ManagePhoneNumbers", () => {
       exact: false,
     });
     // Show two errors
-    await userEvent.clear(primary);
-    await userEvent.tab();
+    await act(async () => await userEvent.clear(primary));
+    await act(async () => await userEvent.tab());
 
     await waitFor(() => {
       i18n.changeLanguage("es");
@@ -98,15 +96,18 @@ describe("ManagePhoneNumbers", () => {
     const primary = await screen.findByLabelText("Primary phone", {
       exact: false,
     });
-    await userEvent.type(primary, "202-867-5309");
+    await act(async () => await userEvent.type(primary, "202-867-5309"));
     const addButton = screen.getByText("Add another number", { exact: false });
-    await userEvent.click(addButton);
-    const second = await screen.findByLabelText("Additional phone", {
-      exact: false,
-    });
-    await userEvent.type(second, "404-867-5309");
-    await userEvent.click(
-      await screen.findByLabelText("Delete phone number 404-867-5309")
+    await act(async () => await userEvent.click(addButton));
+    const second = await screen.findByLabelText(/^Additional phone number/);
+    await act(async () => await userEvent.type(second, "404-867-5309"));
+    await act(
+      async () =>
+        await userEvent.click(
+          await screen.findByLabelText(
+            "Delete additional phone number 404-867-5309"
+          )
+        )
     );
     await waitFor(() => {
       expect(second).not.toBeInTheDocument();

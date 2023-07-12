@@ -1,14 +1,25 @@
 name: Test
 
-# Run this on pushes to any branch that change a backend file or the workflow definition
 on:
-  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-  pull_request:
-    branches:
-      - "**"
-  push:
-    branches:
-      - main
+  workflow_call:
+    secrets:
+      SONAR_TOKEN:
+        description: secrets.SONAR_TOKEN
+        required: true
+      TWILIO_ACCOUNT_SID:
+        description: secrets.TWILIO_TEST_ACCOUNT_SID
+        required: true
+      TWILIO_AUTH_TOKEN:
+        description: secrets.TWILIO_TEST_AUTH_TOKEN
+        required: true
+    inputs:
+      DOCKER_DATABASE_IMAGE_VERSION:
+        required: false
+        type: string
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-test
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: 18
@@ -23,27 +34,13 @@ defaults:
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
-    services:
-      test-db:
-        image: postgres:13-alpine3.16
-        env:
-          POSTGRES_PASSWORD: this_is_a_super_secure_admin_password
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-          --name sr_test_db
-        ports:
-          - 5432:5432
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{env.JAVA_VERSION}}
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Cache Java Dependencies
         uses: actions/cache@v3.3.1
         with:
@@ -51,22 +48,15 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-      - name: Set up postgresql sidecar
+      - name: Start DB
         env:
-          PGHOST: localhost
-          PGPASSFILE: db-setup/.pgpass_ci
-          POSTGRES_USER: postgres
-          POSTGRES_DB: postgres
-          LIB_DIR: db-setup
-        run: |
-          chmod 0600 $PGPASSFILE
-          db-setup/create-db.sh
-          docker restart --time 0 sr_test_db
+          DOCKER_DATABASE_IMAGE_VERSION: ${{ inputs.DOCKER_DATABASE_IMAGE_VERSION }}
+        run: touch ../.env && docker compose -f ../docker-compose.yml up -d db
       - name: Run tests
         env:
           OKTA_TESTING_DISABLEHTTPS: true
-          TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
-          TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Cache backend coverage results
         uses: actions/cache@v3.3.1
@@ -84,10 +74,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v3.6.0
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3.7.0
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
       - name: Cache yarn
         uses: actions/cache@v3.3.1
         with:
@@ -160,8 +150,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Sonar analysis
         if: ${{ github.actor != 'dependabot[bot]' }}
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
@@ -172,11 +162,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{env.JAVA_VERSION}}
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Cache Java dependencies
         uses: actions/cache@v3.3.1
         with:
@@ -190,11 +180,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK ${{env.JAVA_VERSION}}
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
         uses: actions/setup-java@v3
         with:
-          java-version: ${{env.JAVA_VERSION}}
-          distribution: ${{env.JAVA_DISTRIBUTION}}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
       - name: Cache Java dependencies
         uses: actions/cache@v3.3.1
         with:
@@ -208,10 +198,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{env.NODE_VERSION}}
-        uses: actions/setup-node@v3.6.0
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v3.7.0
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
       - name: Cache yarn
         uses: actions/cache@v3.3.1
         with:

@@ -23,6 +23,7 @@ import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
+import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.TenantDataAccessService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
@@ -87,6 +88,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationService.class,
   ApiUserService.class,
   DiseaseService.class,
+  ResultService.class,
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,
   CurrentAccountRequestContextHolder.class,
@@ -103,6 +105,8 @@ public class SliceTestConfiguration {
 
   private static final String DEFAULT_ROLE_PREFIX =
       TestUserIdentities.TEST_ROLE_PREFIX + TestUserIdentities.DEFAULT_ORGANIZATION + ":";
+  private static final String OTHER_ORG_ROLE_PREFIX =
+      TestUserIdentities.TEST_ROLE_PREFIX + TestUserIdentities.OTHER_ORGANIZATION + ":";
 
   public static final class Role {
     public static final String SITE_ADMIN = "SR-UNITTEST-ADMINS";
@@ -116,6 +120,11 @@ public class SliceTestConfiguration {
         SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "NO_ACCESS";
     public static final String DEFAULT_ORG_ALL_FACILITIES =
         SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ALL_FACILITIES";
+
+    public static final String OTHER_ORG_NO_ACCESS =
+        SliceTestConfiguration.OTHER_ORG_ROLE_PREFIX + "NO_ACCESS";
+    public static final String OTHER_ORG_USER =
+        SliceTestConfiguration.OTHER_ORG_ROLE_PREFIX + "USER";
   }
 
   @Bean
@@ -192,4 +201,12 @@ public class SliceTestConfiguration {
       authorities = {Role.SITE_ADMIN})
   @Inherited
   public @interface WithSimpleReportSiteAdminUser {}
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target({ElementType.METHOD, ElementType.TYPE})
+  @WithMockUser(
+      username = TestUserIdentities.OTHER_ORG_USER,
+      authorities = {Role.OTHER_ORG_NO_ACCESS, Role.OTHER_ORG_USER})
+  @Inherited
+  public @interface WithSimpleReportOtherOrgUser {}
 }

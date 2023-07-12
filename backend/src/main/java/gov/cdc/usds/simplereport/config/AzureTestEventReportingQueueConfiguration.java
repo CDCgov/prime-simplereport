@@ -7,6 +7,7 @@ import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -14,7 +15,9 @@ import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties
 import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
+import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -45,9 +48,11 @@ class AzureTestEventReportingQueueConfiguration {
   TestEventReportingService fhirQueueReportingService(
       FhirContext context,
       @Qualifier("fhirQueueClient") QueueAsyncClient queueClient,
-      GitProperties gitProperties) {
+      GitProperties gitProperties,
+      FhirConverter fhirConverter) {
     log.info("Configured for queue={}", queueClient.getQueueName());
-    return new AzureStorageQueueFhirReportingService(context, queueClient, gitProperties);
+    return new AzureStorageQueueFhirReportingService(
+        context, queueClient, gitProperties, fhirConverter);
   }
 
   @Bean
@@ -60,14 +65,19 @@ class AzureTestEventReportingQueueConfiguration {
   @Bean(name = "csvQueueReportingService")
   @ConditionalOnMissingBean(name = "csvQueueReportingService")
   TestEventReportingService noOpCSVReportingService() {
-    return new NoOpReportingService();
+    return NoOpCovidReportingService.builder().build();
   }
 
   @Profile(PROD)
   @Bean(name = "fhirQueueReportingService")
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
-  TestEventReportingService noOpFhirReportingService() {
-    return new NoOpReportingService();
+  TestEventReportingService noOpFhirReportingService(
+      FhirContext context, GitProperties gitProperties, FhirConverter fhirConverter) {
+    return NoOpFHIRReportingService.builder()
+        .fhirContext(context)
+        .gitProperties(gitProperties)
+        .fhirConverter(fhirConverter)
+        .build();
   }
 
   @Profile("!" + PROD)
@@ -75,14 +85,20 @@ class AzureTestEventReportingQueueConfiguration {
   @Bean(name = "csvQueueReportingService")
   @ConditionalOnMissingBean(name = "csvQueueReportingService")
   TestEventReportingService noOpDebugCSVReportingService() {
-    return new NoOpDebugReportingService();
+    return NoOpCovidReportingService.builder().printSerializedTestEvent(true).build();
   }
 
   @Profile("!" + PROD)
   @Bean(name = "fhirQueueReportingService")
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
-  TestEventReportingService noOpDebugFhirReportingService() {
-    return new NoOpDebugReportingService();
+  TestEventReportingService noOpDebugFhirReportingService(
+      FhirContext context, GitProperties gitProperties, FhirConverter fhirConverter) {
+    return NoOpFHIRReportingService.builder()
+        .fhirContext(context)
+        .gitProperties(gitProperties)
+        .fhirConverter(fhirConverter)
+        .printSerializedTestEvent(true)
+        .build();
   }
 
   @Bean("csvQueue")
@@ -107,13 +123,20 @@ class AzureTestEventReportingQueueConfiguration {
         .buildAsyncClient();
   }
 
-  private static class NoOpDebugReportingService implements TestEventReportingService {
+  @Builder
+  static class NoOpCovidReportingService implements TestEventReportingService {
+
+    @Builder.Default private boolean printSerializedTestEvent = false;
+
     @Override
     public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
       log.warn(
-          "No TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
+          "No Covid TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
           testEvent.getInternalId());
-      log.info("TestEvent serializes as: {}", toBuffer(testEvent));
+
+      if (printSerializedTestEvent) {
+        log.info("TestEvent serializes as: {}", toBuffer(testEvent));
+      }
       return CompletableFuture.completedFuture(null);
     }
 
@@ -127,13 +150,32 @@ class AzureTestEventReportingQueueConfiguration {
     }
   }
 
-  private static class NoOpReportingService implements TestEventReportingService {
+  @Builder
+  static class NoOpFHIRReportingService implements TestEventReportingService {
+
+    @Builder.Default private boolean printSerializedTestEvent = false;
+
+    private FhirContext fhirContext;
+    private GitProperties gitProperties;
+    private FhirConverter fhirConverter;
+
     @Override
     public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
       log.warn(
-          "No TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
+          "No FHIR TestEventReportingService configured; defaulting to no-op reporting for TestEvent [{}]",
           testEvent.getInternalId());
+
+      if (printSerializedTestEvent) {
+        log.info("TestEvent bundled as: {}", toBuffer(testEvent));
+      }
       return CompletableFuture.completedFuture(null);
+    }
+
+    private String toBuffer(TestEvent testEvent) {
+      return fhirContext
+          .newJsonParser()
+          .encodeResourceToString(
+              fhirConverter.createFhirBundle(testEvent, gitProperties, new Date(), "P"));
     }
   }
 }

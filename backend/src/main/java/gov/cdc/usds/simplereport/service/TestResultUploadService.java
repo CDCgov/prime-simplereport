@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +13,7 @@ import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
@@ -18,6 +22,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
+import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -30,9 +35,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -46,8 +55,10 @@ public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
+  private final ResultsUploaderCachingService resultsUploaderCachingService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
+  private final BulkUploadResultsToFhir fhirConverter;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -64,8 +75,21 @@ public class TestResultUploadService {
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCodeValue;
 
+  @Value("${data-hub.fhir-enabled:false}")
+  private boolean fhirEnabled;
+
   private static final int FIVE_MINUTES_MS = 300 * 1000;
   public static final String PROCESSING_MODE_CODE_COLUMN_NAME = "processing_mode_code";
+  private static final String ORDER_TEST_DATE_COLUMN_NAME = "order_test_date";
+  private static final String SPECIMEN_COLLECTION_DATE_COLUMN_NAME = "specimen_collection_date";
+  private static final String TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME =
+      "testing_lab_specimen_received_date";
+  private static final String TEST_RESULT_DATE_COLUMN_NAME = "test_result_date";
+  private static final String DATE_RESULT_RELEASED_COLUMN_NAME = "date_result_released";
+
+  public static final String SPECIMEN_TYPE_COLUMN_NAME = "specimen_type";
+
+  private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
 
   public String createDataHubSenderToken(String privateKey) throws InvalidRSAPrivateKeyException {
     Date inFiveMinutes = new Date(System.currentTimeMillis() + FIVE_MINUTES_MS);
@@ -80,7 +104,7 @@ public class TestResultUploadService {
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream) {
 
-    TestResultUpload result = new TestResultUpload(UploadStatus.FAILURE);
+    TestResultUpload validationErrorResult = new TestResultUpload(UploadStatus.FAILURE);
 
     Organization org = _orgService.getCurrentOrganization();
 
@@ -95,41 +119,144 @@ public class TestResultUploadService {
     List<FeedbackMessage> errors =
         testResultFileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
-      result.setErrors(errors.toArray(FeedbackMessage[]::new));
-      return result;
+      validationErrorResult.setErrors(errors.toArray(FeedbackMessage[]::new));
+      return validationErrorResult;
     }
 
     if (!"P".equals(processingModeCodeValue)) {
       content = attachProcessingModeCode(content);
     }
 
-    UploadResponse response = null;
+    TestResultUpload csvResult = null;
+    Future<UploadResponse> csvResponse;
+    Future<UploadResponse> fhirResponse = null;
+
     if (content.length > 0) {
+      csvResponse = submitResultsAsCsv(content);
+
+      if (fhirEnabled) {
+        fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
+      }
+
       try {
-        response = _client.uploadCSV(content);
-      } catch (FeignException e) {
-        log.warn("Bulk test result upload unsuccessful", e);
-        response = parseFeignException(e);
+        if (csvResponse.get() == null) {
+          throw new DependencyFailureException("Unable to parse Report Stream response.");
+        }
+        csvResult = saveSubmissionToDb(csvResponse.get(), org);
+        if (fhirResponse != null) {
+          saveSubmissionToDb(fhirResponse.get(), org);
+        }
+      } catch (ExecutionException | InterruptedException e) {
+        log.error("Error Processing Bulk Result Upload.", e);
+        Thread.currentThread().interrupt();
       }
     }
+    return csvResult;
+  }
 
-    if (response != null) {
-      var status = UploadResponse.parseStatus(response.getOverallStatus());
+  private byte[] transformCsvContent(byte[] content) {
+    String[] rows = new String(content, StandardCharsets.UTF_8).split("\n");
+    List<String> headers = Arrays.stream(rows[0].split(",")).toList();
 
-      result =
-          new TestResultUpload(
-              response.getId(),
-              status,
-              response.getReportItemCount(),
-              org,
-              response.getWarnings(),
-              response.getErrors());
+    for (int i = 1; i < rows.length; i++) {
+      var row = rows[i].split(",", -1);
 
-      if (response.getOverallStatus() != ReportStreamStatus.ERROR) {
-        _repo.save(result);
-      }
+      // row is passed by object reference here
+      modifyRowSpecimenNameToSNOMED(row, headers);
+      modifyRowDatetimeStrings(row, headers);
+
+      rows[i] = String.join(",", row);
     }
-    return result;
+    return String.join("\n", rows).getBytes();
+  }
+
+  private void modifyRowSpecimenNameToSNOMED(String[] row, List<String> headers) {
+    var snomedMap = resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap();
+    int specimenTypeIndex = headers.indexOf(SPECIMEN_TYPE_COLUMN_NAME);
+    var specimenTypeName = Arrays.stream(row).toList().get(specimenTypeIndex).toLowerCase();
+    if (specimenTypeName.matches(ALPHABET_REGEX)) {
+      row[specimenTypeIndex] = snomedMap.get(specimenTypeName);
+    }
+  }
+
+  private String valueAtRowIndex(int index, String[] row) {
+    return Arrays.stream(row).toList().get(index).toLowerCase();
+  }
+
+  private void modifyRowDatetimeStrings(String[] row, List<String> headers) {
+    var testResultDateIndex = headers.indexOf(TEST_RESULT_DATE_COLUMN_NAME);
+    var orderTestDateIndex = headers.indexOf(ORDER_TEST_DATE_COLUMN_NAME);
+    var specimenCollectionDateIndex = headers.indexOf(SPECIMEN_COLLECTION_DATE_COLUMN_NAME);
+    var specimenReceivedDateIndex = headers.indexOf(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME);
+    var dateResultReleasedIndex = headers.indexOf(DATE_RESULT_RELEASED_COLUMN_NAME);
+
+    var testResultDate = valueAtRowIndex(testResultDateIndex, row);
+    var orderTestDate = valueAtRowIndex(orderTestDateIndex, row);
+    var specimenCollectionDate = valueAtRowIndex(specimenCollectionDateIndex, row);
+    var specimenReceivedDate = valueAtRowIndex(specimenReceivedDateIndex, row);
+    var dateResultReleased = valueAtRowIndex(dateResultReleasedIndex, row);
+
+    var testingLabAddr = getTestingLabAddress(row, headers);
+    var providerAddr = getOrderingFacilityAddress(row, headers);
+
+    testResultDate =
+        convertToZonedDateTime(testResultDate, resultsUploaderCachingService, testingLabAddr)
+            .toOffsetDateTime()
+            .toString();
+    orderTestDate =
+        convertToZonedDateTime(orderTestDate, resultsUploaderCachingService, providerAddr)
+            .toOffsetDateTime()
+            .toString();
+
+    specimenCollectionDate =
+        StringUtils.isNotBlank(specimenCollectionDate)
+            ? convertToZonedDateTime(
+                    specimenCollectionDate, resultsUploaderCachingService, providerAddr)
+                .toOffsetDateTime()
+                .toString()
+            : orderTestDate;
+
+    specimenReceivedDate =
+        StringUtils.isNotBlank(specimenReceivedDate)
+            ? convertToZonedDateTime(
+                    specimenReceivedDate, resultsUploaderCachingService, providerAddr)
+                .toOffsetDateTime()
+                .toString()
+            : orderTestDate;
+
+    dateResultReleased =
+        StringUtils.isNotBlank(dateResultReleased)
+            ? convertToZonedDateTime(
+                    dateResultReleased, resultsUploaderCachingService, providerAddr)
+                .toOffsetDateTime()
+                .toString()
+            : testResultDate;
+
+    row[testResultDateIndex] = testResultDate;
+    row[orderTestDateIndex] = orderTestDate;
+    row[specimenCollectionDateIndex] = specimenCollectionDate;
+    row[specimenReceivedDateIndex] = specimenReceivedDate;
+    row[dateResultReleasedIndex] = dateResultReleased;
+  }
+
+  private StreetAddress getTestingLabAddress(String[] row, List<String> headers) {
+    return new StreetAddress(
+        valueAtRowIndex(headers.indexOf("testing_lab_street"), row),
+        valueAtRowIndex(headers.indexOf("testing_lab_street2"), row),
+        valueAtRowIndex(headers.indexOf("testing_lab_city"), row),
+        valueAtRowIndex(headers.indexOf("testing_lab_state"), row),
+        valueAtRowIndex(headers.indexOf("testing_lab_zip_code"), row),
+        null);
+  }
+
+  private StreetAddress getOrderingFacilityAddress(String[] row, List<String> headers) {
+    return new StreetAddress(
+        valueAtRowIndex(headers.indexOf("ordering_facility_street"), row),
+        valueAtRowIndex(headers.indexOf("ordering_facility_street2"), row),
+        valueAtRowIndex(headers.indexOf("ordering_facility_city"), row),
+        valueAtRowIndex(headers.indexOf("ordering_facility_state"), row),
+        valueAtRowIndex(headers.indexOf("ordering_facility_zip_code"), row),
+        null);
   }
 
   private byte[] attachProcessingModeCode(byte[] content) {
@@ -143,15 +270,6 @@ public class TestResultUploadService {
       content = Arrays.stream(row).collect(Collectors.joining("\n")).getBytes();
     }
     return content;
-  }
-
-  private UploadResponse parseFeignException(FeignException e) {
-    try {
-      return mapper.readValue(e.contentUTF8(), UploadResponse.class);
-    } catch (JsonProcessingException ex) {
-      log.error("Unable to parse Report Stream response.", ex);
-      throw new DependencyFailureException("Unable to parse Report Stream response.");
-    }
   }
 
   public Page<TestResultUpload> getUploadSubmissions(
@@ -172,6 +290,10 @@ public class TestResultUploadService {
             .findByInternalIdAndOrganization(id, org)
             .orElseThrow(InvalidBulkTestResultUploadException::new);
 
+    return _client.getSubmission(result.getReportId(), getRSAuthToken().getAccessToken());
+  }
+
+  public TokenResponse getRSAuthToken() {
     Map<String, String> queryParams = new LinkedHashMap<>();
     queryParams.put("scope", scope);
     queryParams.put("grant_type", "client_credentials");
@@ -179,8 +301,93 @@ public class TestResultUploadService {
         "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
     queryParams.put("client_assertion", createDataHubSenderToken(signingKey));
 
-    TokenResponse r = _client.fetchAccessToken(queryParams);
+    return _client.fetchAccessToken(queryParams);
+  }
 
-    return _client.getSubmission(result.getReportId(), r.getAccessToken());
+  private Future<UploadResponse> submitResultsAsFhir(
+      ByteArrayInputStream content, Organization org) {
+    // send to report stream
+    return CompletableFuture.supplyAsync(
+        withMDC(
+            () -> {
+              long start = System.currentTimeMillis();
+              // convert csv to fhir and serialize to json
+              var serializedFhirBundles =
+                  fhirConverter.convertToFhirBundles(content, org.getInternalId());
+
+              // build the ndjson request body
+              var ndJson = new StringBuilder();
+              for (String bundle : serializedFhirBundles) {
+                ndJson.append(bundle).append(System.lineSeparator());
+              }
+
+              UploadResponse response;
+              try {
+                response =
+                    _client.uploadFhir(ndJson.toString().trim(), getRSAuthToken().getAccessToken());
+              } catch (FeignException e) {
+                log.info("RS Fhir API Error " + e.status() + " Response: " + e.contentUTF8());
+                response = parseFeignException(e);
+              }
+              log.info(
+                  "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+              return response;
+            }));
+  }
+
+  private Future<UploadResponse> submitResultsAsCsv(byte[] content) {
+    return CompletableFuture.supplyAsync(
+        withMDC(
+            () -> {
+              long start = System.currentTimeMillis();
+              UploadResponse response;
+              try {
+                var csvContent = transformCsvContent(content);
+
+                response = _client.uploadCSV(csvContent);
+              } catch (FeignException e) {
+                log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
+                response = parseFeignException(e);
+              }
+              log.info(
+                  "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+              return response;
+            }));
+  }
+
+  private UploadResponse parseFeignException(FeignException e) {
+    try {
+      return mapper.readValue(e.contentUTF8(), UploadResponse.class);
+    } catch (JsonProcessingException ex) {
+      log.error("Unable to parse Report Stream response.", ex);
+      return null;
+    }
+  }
+
+  private TestResultUpload saveSubmissionToDb(UploadResponse response, Organization org) {
+    TestResultUpload result = null;
+    if (response != null) {
+      var status = UploadResponse.parseStatus(response.getOverallStatus());
+
+      result =
+          new TestResultUpload(
+              response.getId(),
+              status,
+              response.getReportItemCount(),
+              org,
+              response.getWarnings(),
+              response.getErrors());
+
+      if (response.getOverallStatus() != ReportStreamStatus.ERROR) {
+        result = _repo.save(result);
+      }
+    }
+    return result;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public TestResultUpload processHIVResultCSV(InputStream csvStream) {
+    FeedbackMessage[] empty = {};
+    return new TestResultUpload(UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
   }
 }

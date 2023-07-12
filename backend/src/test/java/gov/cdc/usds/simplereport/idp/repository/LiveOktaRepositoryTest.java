@@ -816,7 +816,13 @@ class LiveOktaRepositoryTest {
     var mockFullGroupList = List.of(mockAdminGroup);
     var mockAdminGroupProfile = mock(GroupProfile.class);
     when(userApi.listUsers(
-            eq(userName), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + userName + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
     when(mockUser.getId()).thenReturn("1234");
     when(mockAdminGroup.getId()).thenReturn("adminGID");
@@ -986,6 +992,17 @@ class LiveOktaRepositoryTest {
             isNull(),
             eq("profile.name sw \"" + groupOrgPrefix + "\"")))
         .thenReturn(mockGroupList);
+
+    Set<Facility> userFacilities = Set.of();
+    Set<OrganizationRole> userOrgRoles = Set.of(OrganizationRole.USER);
+
+    Throwable caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _repo.updateUserPrivileges(userName, org, userFacilities, userOrgRoles));
+    assertEquals(
+        "Cannot add Okta user to nonexistent group=" + groupOrgPrefix + ":USER",
+        caught.getMessage());
   }
 
   @Test
@@ -1156,7 +1173,7 @@ class LiveOktaRepositoryTest {
 
     Throwable caught =
         assertThrows(
-            IllegalGraphqlArgumentException.class, () -> _repo.setUserIsActive(username, null));
+            IllegalGraphqlArgumentException.class, () -> _repo.setUserIsActive(username, false));
     assertEquals(
         "Cannot update active status of Okta user with unrecognized username", caught.getMessage());
   }
@@ -1188,10 +1205,34 @@ class LiveOktaRepositoryTest {
             eq("profile.login eq \"fraud@example.com\""),
             isNull(),
             isNull());
-    verify(userApi)
-        .listUsers(
-            eq("fraud@example.com"), isNull(), isNull(), isNull(), isNull(), isNull(), isNull());
     assertEquals(UserStatus.ACTIVE, actual);
+  }
+
+  @Test
+  void getUserStatus_fallsBackToUsingQueryResults() {
+    var username = "reallyNewUser@example.com";
+    var mockUser = mock(User.class);
+    var mockUserProfile = mock(UserProfile.class);
+    var mockEmptyUserList = new ArrayList<User>();
+    var mockUserList = List.of(mockUser);
+
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
+        .thenReturn(mockEmptyUserList);
+    when(userApi.listUsers(
+            eq(username), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUser.getProfile()).thenReturn(mockUserProfile);
+    when(mockUserProfile.getLogin()).thenReturn(username);
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+
+    assertEquals(UserStatus.ACTIVE, _repo.getUserStatus(username));
   }
 
   @Test
@@ -1208,6 +1249,41 @@ class LiveOktaRepositoryTest {
             isNull(),
             isNull()))
         .thenReturn(mockUserList);
+
+    Throwable caught =
+        assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.getUserStatus(username));
+    assertEquals(
+        "Cannot retrieve Okta user's status with unrecognized username", caught.getMessage());
+  }
+
+  @Test
+  void getUserStatus_illegalGraphqlArgumentException_whenLoginDoesNotMatch() {
+    var username = "reallyNewUser@example.com";
+    var mockUser = mock(User.class);
+    var mockUserProfile = mock(UserProfile.class);
+    var mockEmptyUserList = new ArrayList<User>();
+    var mockUserList = List.of(mockUser);
+
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
+        .thenReturn(mockEmptyUserList);
+    when(userApi.listUsers(
+            eq(username),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
+        .thenReturn(mockUserList);
+    when(mockUser.getProfile()).thenReturn(mockUserProfile);
+    when(mockUserProfile.getLogin()).thenReturn("myUsername");
 
     Throwable caught =
         assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.getUserStatus(username));

@@ -2,6 +2,23 @@
   "resourceType": "ServiceRequest",
   "id": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29",
   "status": "completed",
+  "extension": [
+    {
+      "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://terminology.hl7.org/CodeSystem/v2-0119",
+            "code": "RE"
+          }
+        ]
+      }
+    },
+    {
+      "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+      "valueDateTime":"2023-06-22T06:35:00-04:00"
+    }
+  ],
   "intent": "order",
   "code": {
     "coding": [

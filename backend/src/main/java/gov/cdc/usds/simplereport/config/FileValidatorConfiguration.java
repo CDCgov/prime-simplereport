@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.config;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,8 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FileValidatorConfiguration {
   @Bean
-  public FileValidator<TestResultRow> testResultRowFileValidator() {
-    return new FileValidator<>(TestResultRow::new);
+  public FileValidator<TestResultRow> testResultRowFileValidator(
+      ResultsUploaderCachingService resultsUploaderCachingService) {
+    return new FileValidator<>(row -> new TestResultRow(row, resultsUploaderCachingService));
   }
 
   @Bean

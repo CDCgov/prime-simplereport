@@ -2056,6 +2056,8 @@ databaseChangeLog:
                   remarks: Tracks the individual's preference for receiving test results
   - changeSet:
       id: add-no-phi-role
+      validCheckSum:
+        - "8:72023246fb745cc71d61b962ebc095f0"
       author: josh@skylight.digital
       comment: Add a role for a user with reduced DB permissions (e.g., for Metabase)
       changes:
@@ -4603,3 +4605,122 @@ databaseChangeLog:
         - dropNotNullConstraint:
             columnName: loinc_code
             tableName: device_type
+  - changeSet:
+      id: drop-device_test_performed_loinc_code-table
+      author: uem4@cdc.gov
+      comment: Drop duplicate table device test performed loinc code table
+      changes:
+        - dropTable:
+            tableName: device_test_performed_loinc_code
+      rollback:
+        - createTable:
+            tableName: device_test_performed_loinc_code
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: device_type_id
+                  remarks: The reference to the device type.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__device_type
+                    references: device_type
+              - column:
+                  name: supported_disease_id
+                  remarks: The reference to the supported disease.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__supported_disease_type
+                    references: supported_disease
+              - column:
+                  name: test_performed_loinc_code
+                  remarks: The code that identifies which disease was tested.
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: equipment_uid
+                  remarks: represents the data from "Equipment UID" column in the LIVD
+                  type: text
+              - column:
+                  name: testkit_name_id
+                  remarks: represents the data from "Testkit Name ID" column in the LIVD
+                  type: text
+  - changeSet:
+      id: drop-columns-loinc_code-swab_type
+      author: tsv7@cdc.gov
+      comment: Drop the columns loincCode and swabType in device_type table
+      changes:
+        - tagDatabase:
+            tag: drop-columns-loinc_code-swab_type
+        - dropColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: loinc_code
+              - column:
+                  name: swab_type
+      rollback:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: loinc_code
+                  type: text
+                  remarks: The LOINC code for this device, for reporting purposes (sadly, not unique)
+              - column:
+                  name: swab_type
+                  type: text
+                  remarks: The swab type used for this device
+  - changeSet:
+      id: drop-device_supported_disease-join-table
+      author: ttu8@cdc.gov
+      comment: Drop the device_supported_disease join table
+      changes:
+        - tagDatabase:
+            tag: drop-device_supported_disease-join-table
+        - dropTable:
+            tableName: device_supported_disease
+      rollback:
+        - createTable:
+            tableName: device_supported_disease
+            remarks: A usable combination of device type and supported diseases for that device.
+            columns:
+              - column:
+                  name: device_type_id
+                  remarks: The device type for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__device_type
+                    references: device_type
+              - column:
+                  name: supported_disease_id
+                  remarks: The supported disease for this combination.
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_supported_disease__supported_disease_type
+                    references: supported_disease
+              - addUniqueConstraint:
+                  tableName: device_supported_disease
+                  constraintName: uk__device_supported_disease
+                  columnNames: device_type_id, supported_disease_id
+        - sql: |
+            GRANT SELECT ON ${database.defaultSchemaName}.device_supported_disease TO ${noPhiUsername};
+  - changeSet:
+      id: drop-test_order_id-not_null_constraint-from-result
+      author: zedd@skylight.digital
+      changes:
+        - tagDatabase:
+            tag: drop-test_order_id-not_null_constraint-from-result
+        - dropNotNullConstraint:
+            tableName: result
+            columnName: test_order_id

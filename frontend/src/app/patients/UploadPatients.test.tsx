@@ -1,12 +1,13 @@
-import { render, screen } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import userEvent from "@testing-library/user-event";
 
-import { file } from "../testResults/uploads/Uploads.test";
+import { file } from "../utils/file";
 import { FileUploadService } from "../../fileUploadService/FileUploadService";
+import * as AppInsightsMock from "../TelemetryService";
 
 import UploadPatients from "./UploadPatients";
 
@@ -54,9 +55,11 @@ const successResponseBody = {
 
 async function userEventUpload(uploadFile: File, facility: string) {
   const input = screen.getByTestId("upload-patients-file-input");
-  await userEvent.upload(input, uploadFile);
-  await userEvent.click(screen.getByText(facility));
-  await userEvent.click(screen.getByText("Upload CSV file"));
+  await act(async () => await userEvent.upload(input, uploadFile));
+  await act(async () => await userEvent.click(screen.getByText(facility)));
+  await act(
+    async () => await userEvent.click(screen.getByText("Upload CSV file"))
+  );
 }
 
 const submitCSVFile = async (
@@ -70,10 +73,10 @@ const submitCSVFile = async (
 };
 
 describe("Upload Patient", () => {
-  beforeEach(() => {});
-  afterEach(() => {
+  afterAll(() => {
     jest.clearAllMocks();
   });
+
   it("displays the upload patients page correctly", () => {
     const { container } = renderUploadPatients();
     expect(container).toMatchSnapshot();
@@ -81,31 +84,38 @@ describe("Upload Patient", () => {
   describe("facility selector", () => {
     it("should add facility name to label when one facility is selected", async () => {
       renderUploadPatients();
-      expect(
-        await screen.findByText("3. Upload your spreadsheet.")
-      ).toBeInTheDocument();
+      expect(await screen.findByText("3. Upload your spreadsheet."));
 
-      await userEvent.click(screen.getByText("One facility"));
+      await act(
+        async () => await userEvent.click(screen.getByText("One facility"))
+      );
 
       expect(await screen.findByText("Which facility?")).toBeInTheDocument();
-      await userEvent.selectOptions(
-        screen.getByRole("combobox", { name: /select facility/i }),
-        "2"
+      await act(
+        async () =>
+          await userEvent.selectOptions(
+            screen.getByRole("combobox", { name: /select facility/i }),
+            "2"
+          )
       );
       expect(
         await screen.findByText(
           "3. Upload your spreadsheet for Rosa Parks High School."
         )
-      );
+      ).toBeInTheDocument();
     });
     it("should remove facility name when all facilities is selected", async () => {
       renderUploadPatients();
       expect(
         await screen.findByText("3. Upload your spreadsheet.")
       ).toBeInTheDocument();
-      await userEvent.click(screen.getByText("One facility"));
+      await act(
+        async () => await userEvent.click(screen.getByText("One facility"))
+      );
 
-      await userEvent.click(screen.getByText("All facilities"));
+      await act(
+        async () => await userEvent.click(screen.getByText("All facilities"))
+      );
       expect(
         await screen.findByText("3. Upload your spreadsheet.")
       ).toBeInTheDocument();
@@ -116,11 +126,13 @@ describe("Upload Patient", () => {
       renderUploadPatients();
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
 
-      await userEvent.click(screen.getByText("One facility"));
+      await act(
+        async () => await userEvent.click(screen.getByText("One facility"))
+      );
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
       const uploadFile = file("someText");
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, uploadFile);
+      await act(async () => await userEvent.upload(input, uploadFile));
 
       expect(await screen.findByText("Upload CSV file")).toBeEnabled();
     });
@@ -130,9 +142,11 @@ describe("Upload Patient", () => {
 
       const uploadFile = file("someText");
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, uploadFile);
+      await act(async () => await userEvent.upload(input, uploadFile));
       expect(await screen.findByText("Upload CSV file")).toBeDisabled();
-      await userEvent.click(screen.getByText("One facility"));
+      await act(
+        async () => await userEvent.click(screen.getByText("One facility"))
+      );
 
       expect(await screen.findByText("Upload CSV file")).toBeEnabled();
     });
@@ -151,6 +165,7 @@ describe("Upload Patient", () => {
     );
 
     expect(uploadSpy).toHaveBeenCalledWith(uploadFile, "1");
+
     expect(
       await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
@@ -213,7 +228,7 @@ describe("Upload Patient", () => {
       status: 200,
     });
 
-    submitCSVFile(mockResponse);
+    await submitCSVFile(mockResponse);
 
     expect(
       await screen.findByText("Error: File not accepted")
@@ -288,6 +303,18 @@ describe("Upload Patient", () => {
       "true"
     );
   });
+  it("should show error for empty file", async () => {
+    renderUploadPatients();
+    const emptyFile = file("");
+
+    await userEventUpload(emptyFile, "One facility");
+    expect(await screen.findByText("Error: Invalid file"));
+    expect(screen.getByText("File is missing or empty.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
+      "aria-invalid",
+      "true"
+    );
+  });
   it("should show size error for large files", async () => {
     renderUploadPatients();
     const tooBig = file("0".repeat(50 * 1000 * 1000 + 1));
@@ -295,6 +322,11 @@ describe("Upload Patient", () => {
     await userEventUpload(tooBig, "One facility");
     expect(
       await screen.findByText("Error: File too large")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "values.csv is too large for SimpleReport to process. Please limit each upload to less than 50 MB."
+      )
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",
@@ -308,6 +340,11 @@ describe("Upload Patient", () => {
     await userEventUpload(tooManyRows, "One facility");
     expect(
       await screen.findByText("Error: File too large")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "values.csv has too many rows for SimpleReport to process. Please limit each upload to less than 10,000 rows."
+      )
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
       "aria-invalid",
@@ -325,7 +362,9 @@ describe("Upload Patient", () => {
       await screen.findByText("Success: Data confirmed")
     ).toBeInTheDocument();
 
-    await userEvent.click(screen.getByLabelText("close"));
+    await act(
+      async () => await userEvent.click(screen.getByLabelText("close"))
+    );
 
     expect(
       screen.queryByText("Success: Data confirmed")
@@ -343,7 +382,9 @@ describe("Upload Patient", () => {
     ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByLabelText("close"));
+    await act(
+      async () => await userEvent.click(screen.getByLabelText("close"))
+    );
     expect(
       screen.queryByText("Error: File not accepted")
     ).not.toBeInTheDocument();
@@ -408,7 +449,7 @@ describe("Upload Patient", () => {
       renderUploadPatients();
 
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, []);
+      await act(async () => await userEvent.upload(input, []));
       expect(
         screen.getByRole("button", { name: /upload csv file/i })
       ).toBeDisabled();
@@ -425,13 +466,62 @@ describe("Upload Patient", () => {
       renderUploadPatients();
 
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, file("someText"));
+      await act(async () => await userEvent.upload(input, file("someText")));
       expect(
         screen.getByText("Drag file here or choose from folder to change file")
       ).toBeInTheDocument();
       expect(screen.getByLabelText("Choose CSV file")).toHaveAttribute(
         "aria-invalid",
         "false"
+      );
+    });
+  });
+  describe("telemetry", () => {
+    const trackEventMock = jest.fn();
+    const trackMetricMock = jest.fn();
+    const trackExceptionMock = jest.fn();
+    const getAppInsightsSpy = jest.spyOn(AppInsightsMock, "getAppInsights");
+    beforeEach(() => {
+      getAppInsightsSpy.mockImplementation(
+        () =>
+          ({
+            trackEvent: trackEventMock,
+            trackMetric: trackMetricMock,
+            trackException: trackExceptionMock,
+          } as jest.MockedObject<any>)
+      );
+    });
+
+    afterEach(() => {
+      getAppInsightsSpy.mockClear();
+    });
+    it("checks user click on guidelines gets tracked", async () => {
+      renderUploadPatients();
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByText(/View patient bulk upload guide/i)
+          )
+      );
+      await waitFor(() =>
+        expect(trackEventMock).toHaveBeenCalledWith({
+          name: "viewPatientBulkUploadGuide",
+        })
+      );
+    });
+
+    it("checks user download of csv sample gets tracked", async () => {
+      renderUploadPatients();
+      await act(
+        async () =>
+          await userEvent.click(
+            screen.getByText(/Download spreadsheet template/i)
+          )
+      );
+      await waitFor(() =>
+        expect(trackEventMock).toHaveBeenCalledWith({
+          name: "downloadPatientBulkUploadSample",
+        })
       );
     });
   });

@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
@@ -18,8 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,11 +28,15 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 @Transactional(readOnly = true)
 public class DeviceTypeService {
 
-  public static final String SWAB_TYPE_DELETED_MESSAGE =
+  private static final String SWAB_TYPE_DELETED_MESSAGE =
       "swab type has been deleted and cannot be used";
+  private static final String DUPLICATE_DEVICE_MESSAGE =
+      "an active device type already exists with the same manufacturer and model";
+
   private final DeviceTypeRepository deviceTypeRepository;
   private final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
@@ -82,7 +85,7 @@ public class DeviceTypeService {
               .map(specimenTypeRepository::findById)
               .filter(Optional::isPresent)
               .map(Optional::get)
-              .collect(Collectors.toList());
+              .toList();
 
       updatedSpecimenTypes.forEach(
           specimenType -> {
@@ -97,7 +100,7 @@ public class DeviceTypeService {
                   specimenType ->
                       new DeviceTypeSpecimenTypeMapping(
                           device.getInternalId(), specimenType.getInternalId()))
-              .collect(Collectors.toList());
+              .toList();
 
       List<DeviceTypeSpecimenTypeMapping> exitingDeviceSpecimenTypes =
           deviceSpecimenTypeNewRepository.findAllByDeviceTypeId(device.getInternalId());
@@ -114,23 +117,12 @@ public class DeviceTypeService {
       toBeAddedDeviceSpecimenTypes.removeAll(exitingDeviceSpecimenTypes);
       deviceSpecimenTypeNewRepository.saveAll(toBeAddedDeviceSpecimenTypes);
     }
+
     if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
       var deviceTypeDiseaseList =
           createDeviceTypeDiseaseList(updateDevice.getSupportedDiseaseTestPerformed(), device);
-      device.setSupportedDiseases(
-          deviceTypeDiseaseList.stream()
-              .map(DeviceTypeDisease::getSupportedDisease)
-              .collect(Collectors.toList()));
       device.getSupportedDiseaseTestPerformed().clear();
       device.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
-    } else if (updateDevice.getSupportedDiseases() != null) {
-      List<SupportedDisease> supportedDiseases =
-          updateDevice.getSupportedDiseases().stream()
-              .map(supportedDiseaseRepository::findById)
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .collect(Collectors.toList());
-      device.setSupportedDiseases(supportedDiseases);
     }
     return deviceTypeRepository.save(device);
   }
@@ -138,11 +130,12 @@ public class DeviceTypeService {
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType createDeviceType(CreateDeviceType createDevice) {
-
     List<SpecimenType> specimenTypes =
         createDevice.getSwabTypes().stream()
-            .map(uuid -> specimenTypeRepository.findById(uuid).get())
-            .collect(Collectors.toList());
+            .map(specimenTypeRepository::findById)
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .toList();
 
     specimenTypes.forEach(
         specimenType -> {
@@ -151,14 +144,20 @@ public class DeviceTypeService {
           }
         });
 
+    deviceTypeRepository
+        .findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
+            createDevice.getManufacturer(), createDevice.getModel())
+        .ifPresent(
+            deviceType -> {
+              throw new IllegalGraphqlArgumentException(DUPLICATE_DEVICE_MESSAGE);
+            });
+
     DeviceType dt =
         deviceTypeRepository.save(
             new DeviceType(
                 createDevice.getName(),
                 createDevice.getManufacturer(),
                 createDevice.getModel(),
-                null,
-                null,
                 createDevice.getTestLength()));
 
     specimenTypes.stream()
@@ -167,29 +166,15 @@ public class DeviceTypeService {
                 new DeviceTypeSpecimenTypeMapping(dt.getInternalId(), specimenType.getInternalId()))
         .forEach(deviceSpecimenTypeNewRepository::save);
 
-    if (createDevice.getSupportedDiseaseTestPerformed() != null) {
-      var deviceTypeDiseaseList =
-          createDeviceTypeDiseaseList(createDevice.getSupportedDiseaseTestPerformed(), dt);
-      dt.setSupportedDiseases(
-          deviceTypeDiseaseList.stream()
-              .map(DeviceTypeDisease::getSupportedDisease)
-              .collect(Collectors.toList()));
-      dt.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
-    } else {
-      List<SupportedDisease> supportedDiseases =
-          createDevice.getSupportedDiseases().stream()
-              .map(supportedDiseaseRepository::findById)
-              .filter(Optional::isPresent)
-              .map(Optional::get)
-              .collect(Collectors.toList());
-      dt.setSupportedDiseases(supportedDiseases);
-    }
+    var deviceTypeDiseaseList =
+        createDeviceTypeDiseaseList(createDevice.getSupportedDiseaseTestPerformed(), dt);
+    dt.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
     deviceTypeRepository.save(dt);
 
     return dt;
   }
 
-  private ArrayList<DeviceTypeDisease> createDeviceTypeDiseaseList(
+  public List<DeviceTypeDisease> createDeviceTypeDiseaseList(
       List<SupportedDiseaseTestPerformedInput> supportedDiseaseTestPerformedInput,
       DeviceType device) {
     var deviceTypeDiseaseList = new ArrayList<DeviceTypeDisease>();
@@ -203,6 +188,7 @@ public class DeviceTypeService {
                           .deviceTypeId(device.getInternalId())
                           .supportedDisease(disease)
                           .testPerformedLoincCode(input.getTestPerformedLoincCode())
+                          .testOrderedLoincCode(input.getTestOrderedLoincCode())
                           .equipmentUid(input.getEquipmentUid())
                           .testkitNameId(input.getTestkitNameId())
                           .testOrderedLoincCode(input.getTestOrderedLoincCode())

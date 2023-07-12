@@ -1,10 +1,11 @@
-FROM gradle:7.6.0-jdk17
+FROM gradle:7.6.1-jdk17
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 WORKDIR /app/backend
 
 # Only copy dependency-related files
 COPY build.gradle gradle.properties settings.gradle /app/backend/
+
 RUN chown -R gradle:gradle /app
 USER gradle
 

@@ -404,7 +404,7 @@ class IdentityVerificationControllerTest extends BaseNonSpringBootTestConfigurat
   private String submitAnswersRequestBody(
       String orgExternalId, String sessionId, boolean correctAnswers) {
     // these answers are recognized by DemoExperianService
-    String answerString = correctAnswers ? "1, 4, 2, 1" : "4, 3, 2, 1";
+    String answerString = correctAnswers ? "1, 4, 2, 1, 3" : "4, 3, 2, 1, 1";
     return String.format(SUBMIT_ANSWERS_REQUEST_TEMPLATE, orgExternalId, sessionId, answerString);
   }
 

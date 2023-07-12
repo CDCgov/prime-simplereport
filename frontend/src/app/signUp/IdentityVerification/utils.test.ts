@@ -4,6 +4,7 @@ import {
   initAnswers,
   answersToArray,
   isValidBirthdate,
+  personalDetailsSchema,
 } from "./utils";
 
 describe("utils", () => {
@@ -83,6 +84,40 @@ describe("utils", () => {
     });
     it("finds 10/31/1957 valid", () => {
       expect(isValidBirthdate("1957-10-31")).toBe(true);
+    });
+  });
+  describe("schema validation", () => {
+    let person: IdentityVerificationRequest;
+    beforeEach(() => {
+      person = {
+        firstName: "Emmi",
+        lastName: "Felipinho",
+        dateOfBirth: "01/02/2003",
+        email: "emmi@example.com",
+        phoneNumber: "313-555-1234",
+        streetAddress1: "123 D'onte rd",
+        streetAddress2: "Bldg #4 Apt. # 5",
+        city: "Akiachak",
+        state: "AK",
+        zip: "99551",
+        orgExternalId: "9999",
+      };
+    });
+    it("should be a valid person", async () => {
+      const validatedPerson = await personalDetailsSchema.validate(person);
+      expect(validatedPerson).toEqual(person);
+    });
+    it("should be invalid street address", async () => {
+      person.streetAddress1 = "000 + main st";
+      await expect(personalDetailsSchema.validate(person)).rejects.toThrow(
+        "A valid street address is required"
+      );
+    });
+    it("should be invalid street address", async () => {
+      person.streetAddress2 = "Bldg#4, APT. #5";
+      await expect(personalDetailsSchema.validate(person)).rejects.toThrow(
+        "Street 2 contains invalid symbols"
+      );
     });
   });
 });

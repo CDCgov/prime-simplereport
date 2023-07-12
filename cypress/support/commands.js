@@ -36,6 +36,7 @@ const secret = Cypress.env("OKTA_SECRET");
 const scope = Cypress.env("OKTA_SCOPE") || "simple_report_dev";
 const clientId = Cypress.env("OKTA_CLIENT_ID") || "0oa1k0163nAwfVxNW1d7";
 const redirectUri = Cypress.env("OKTA_REDIRECT_URI") || "https%3A%2F%2Flocalhost.simplereport.gov%2F";
+const isLocalRun = Cypress.env("IS_LOCAL_RUN") || false;
 
 Cypress.Commands.add("login", () => {
   cy.task("getAuth").then(({ id_token, access_token }) => {
@@ -112,6 +113,31 @@ Cypress.Commands.add("selectFacility", () => {
   });
 });
 
+Cypress.Commands.add("addDevice", (device) => {
+  cy.get('input[name="name"]').type(device.name);
+  cy.get('input[name="model"]').type(device.model);
+  cy.get('input[name="manufacturer"]').type(device.manufacturer);
+  cy.get('input[name="testLength"]').type("15");
+  cy.get('input[role="combobox"]').first().type("Swab");
+  cy.get('li[id="multi-select-swabTypes-list--option-1"]').click();
+  cy.get('select[name="supportedDiseases.0.supportedDisease"').select("COVID-19");
+  cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').type("123-456");
+  cy.get('input[name="supportedDiseases.0.testOrderedLoincCode"]').type("9500-6");
+  if (device.isMultiplex) {
+    cy.contains('.usa-button', "Add another disease").click();
+    cy.get('select[name="supportedDiseases.1.supportedDisease"').select("Flu A");
+    cy.get('input[name="supportedDiseases.1.testPerformedLoincCode"]').type("456-789");
+    cy.get('input[name="supportedDiseases.1.testOrderedLoincCode"]').type("9500-6");
+    cy.contains('.usa-button', "Add another disease").click();
+    cy.get('select[name="supportedDiseases.2.supportedDisease"').select("Flu B");
+    cy.get('input[name="supportedDiseases.2.testPerformedLoincCode"]').type("789-123");
+    cy.get('input[name="supportedDiseases.2.testOrderedLoincCode"]').type("9500-6");
+  }
+  cy.contains("Save changes").should("be.enabled").click();
+  cy.wait("@createDeviceType");
+  cy.get(".Toastify").contains("Created Device");
+});
+
 Cypress.Commands.add("removeOrganizationAccess", () => {
   cy.visit("/admin/tenant-data-access");
   cy.contains("Cancel access").click();
@@ -131,4 +157,8 @@ Cypress.Commands.add("makePOSTRequest", (requestBody) => {
       }
     ))
   )
+});
+
+Cypress.Commands.add("injectSRAxe", () => {
+  return isLocalRun ? cy.injectAxe({ axeCorePath: './cypress/node_modules/axe-core/axe.min.js'}) : cy.injectAxe();
 });

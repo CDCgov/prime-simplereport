@@ -16,6 +16,7 @@ interface SearchResultsProps {
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;
   selectedPatient?: Patient;
+  canAddPatient: boolean;
 }
 
 export interface QueueProps extends SearchResultsProps {
@@ -114,20 +115,30 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       >
         <div className="margin-bottom-105">No results found.</div>
         <div>
-          Check for spelling errors or
-          <Button
-            className="margin-left-1"
-            label={`Add new ${PATIENT_TERM}`}
-            onClick={() => {
-              setRedirect(`/add-patient?facility=${activeFacilityId}`);
-            }}
-          />
+          Check for spelling errors
+          {props.canAddPatient ? (
+            <>
+              {" or"}
+              <Button
+                className="margin-left-1"
+                label={`Add new ${PATIENT_TERM}`}
+                onClick={() => {
+                  setRedirect(`/add-patient?facility=${activeFacilityId}`);
+                }}
+              />
+            </>
+          ) : (
+            "."
+          )}
         </div>
       </div>
     );
   } else {
     resultsContent = (
-      <table className="usa-table usa-table--borderless">
+      <table
+        className="usa-table usa-table--borderless"
+        aria-describedby={"patient-result-table-desc"}
+      >
         <thead>
           <tr>
             <th scope="col">Full name</th>
@@ -153,7 +164,16 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   }
 
   const results = (
-    <div className="card-container shadow-3 results-dropdown" ref={dropDownRef}>
+    <div
+      className="card-container shadow-3 results-dropdown"
+      ref={dropDownRef}
+      aria-live="polite"
+      role="region"
+      aria-atomic="true"
+    >
+      <div className="usa-sr-only" id={"patient-result-table-desc"}>
+        patient search results
+      </div>
       <div className="usa-card__body results-dropdown__body">
         {resultsContent}
       </div>

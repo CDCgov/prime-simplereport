@@ -348,12 +348,9 @@ public class LiveOktaRepository implements OktaRepository {
   @Override
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
-    var searchUsers =
-        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    var qUsers = userApi.listUsers(username, null, null, null, null, null, null);
-    var users = Stream.concat(searchUsers.stream(), qUsers.stream()).toList();
-    throwErrorIfEmpty(users.stream(), "Cannot update role of Okta user with unrecognized username");
-    User user = users.get(0);
+
+    User user =
+        getUserOrThrowError(username, "Cannot update role of Okta user with unrecognized username");
 
     String orgId = org.getExternalId();
 
@@ -453,7 +450,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   @Override
-  public void setUserIsActive(String username, Boolean active) {
+  public void setUserIsActive(String username, boolean active) {
     var users =
         userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
     throwErrorIfEmpty(
@@ -469,14 +466,9 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public UserStatus getUserStatus(String username) {
-    var searchUsers =
-        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    var qUsers = userApi.listUsers(username, null, null, null, null, null, null);
-    var users = Stream.concat(searchUsers.stream(), qUsers.stream()).toList();
-    throwErrorIfEmpty(
-        users.stream(), "Cannot retrieve Okta user's status with unrecognized username");
-    User user = users.get(0);
-    return user.getStatus();
+    return getUserOrThrowError(
+            username, "Cannot retrieve Okta user's status with unrecognized username")
+        .getStatus();
   }
 
   @Override
@@ -627,13 +619,8 @@ public class LiveOktaRepository implements OktaRepository {
       return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
     }
 
-    var searchUser =
-        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    var qUsers = userApi.listUsers(username, null, null, null, null, null, null);
-    var users = Stream.concat(searchUser.stream(), qUsers.stream()).toList();
-    throwErrorIfEmpty(users.stream(), "Cannot get org external ID for nonexistent user");
-    User user = users.get(0);
-    return getOrganizationRoleClaimsForUser(user);
+    return getOrganizationRoleClaimsForUser(
+        getUserOrThrowError(username, "Cannot get org external ID for nonexistent user"));
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
@@ -699,5 +686,18 @@ public class LiveOktaRepository implements OktaRepository {
     if (stream.findAny().isEmpty()) {
       throw new IllegalGraphqlArgumentException(errorMessage);
     }
+  }
+
+  private User getUserOrThrowError(String username, String errorMessage) {
+    var searchUsersStream =
+        userApi
+            .listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null)
+            .stream();
+    var user = searchUsersStream.findFirst();
+    if (user.isEmpty()) {
+      var qUsersStream = userApi.listUsers(username, null, null, null, null, null, null).stream();
+      user = qUsersStream.filter(u -> u.getProfile().getLogin().equals(username)).findFirst();
+    }
+    return user.orElseThrow(() -> new IllegalGraphqlArgumentException(errorMessage));
   }
 }

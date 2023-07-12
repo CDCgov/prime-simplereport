@@ -19,11 +19,13 @@
         }
       ],
       "text": "nose"
-    }
+    },
+    "collectedDateTime":"2023-06-22T11:35:00-04:00"
   },
+  "receivedTime":"2023-06-23T12:00:00-04:00",
   "identifier": [
     {
-      "value": "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29"
+      "value": "$SPECIMEN_IDENTIFIER"
     }
   ]
 }

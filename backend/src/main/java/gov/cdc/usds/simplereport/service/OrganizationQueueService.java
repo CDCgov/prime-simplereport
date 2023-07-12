@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.repository.OrganizationQueueRepository;
 import gov.cdc.usds.simplereport.utils.OrganizationUtils;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -87,7 +88,8 @@ public class OrganizationQueueService {
     PersonName adminName =
         Translators.consolidateNameArguments(
             null, request.getFirstName(), null, request.getLastName(), null);
-    _apiUserService.createUser(request.getEmail(), adminName, org.getExternalId(), Role.ADMIN);
+    _apiUserService.createUser(
+        request.getEmail(), adminName, org.getExternalId(), Role.ADMIN, false, Set.of());
 
     // mark id verified and activate
     String activationToken = _orgService.verifyOrganizationNoPermissions(org.getExternalId());

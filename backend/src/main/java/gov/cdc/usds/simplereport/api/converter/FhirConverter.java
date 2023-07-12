@@ -1,5 +1,9 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.Translators.DETECTED_SNOMED_CONCEPT;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAGS_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_ABNORMAL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EQUIPMENT_UID_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
@@ -11,7 +15,13 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ID
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NPI_PREFIX;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_EFFECTIVE_DATE_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTICIONER_IDENTIFIER_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.RACE_CODING_SYSTEM;
@@ -24,10 +34,12 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFIL
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
 
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import gov.cdc.usds.simplereport.api.MappingConstants;
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -44,9 +56,13 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
+import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -54,16 +70,20 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.function.Function;
 import javax.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.validator.routines.checkdigit.LuhnCheckDigit;
 import org.hl7.fhir.r4.model.Address;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.Bundle.BundleEntryComponent;
 import org.hl7.fhir.r4.model.Bundle.BundleType;
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.ContactPoint;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointSystem;
 import org.hl7.fhir.r4.model.ContactPoint.ContactPointUse;
@@ -98,17 +118,19 @@ import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.Type;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.data.util.Pair;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+@Component
 @Slf4j
+@RequiredArgsConstructor
 public class FhirConverter {
-  private FhirConverter() {
-    throw new IllegalStateException("Utility class");
-  }
+
+  private final UUIDGenerator uuidGenerator;
 
   private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
-  public static HumanName convertToHumanName(@NotNull PersonName personName) {
+  public HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(
         personName.getFirstName(),
         personName.getMiddleName(),
@@ -116,8 +138,7 @@ public class FhirConverter {
         personName.getSuffix());
   }
 
-  public static HumanName convertToHumanName(
-      String first, String middle, String last, String suffix) {
+  public HumanName convertToHumanName(String first, String middle, String last, String suffix) {
     var humanName = new HumanName();
     if (StringUtils.isNotBlank(first)) {
       humanName.addGiven(first);
@@ -134,14 +155,12 @@ public class FhirConverter {
     return humanName;
   }
 
-  public static List<ContactPoint> convertPhoneNumbersToContactPoint(
+  public List<ContactPoint> convertPhoneNumbersToContactPoint(
       @NotNull List<PhoneNumber> phoneNumber) {
-    return phoneNumber.stream()
-        .map(FhirConverter::convertToContactPoint)
-        .collect(Collectors.toList());
+    return phoneNumber.stream().map(this::convertToContactPoint).toList();
   }
 
-  public static ContactPoint convertToContactPoint(@NotNull PhoneNumber phoneNumber) {
+  public ContactPoint convertToContactPoint(@NotNull PhoneNumber phoneNumber) {
     var contactPointUse = ContactPointUse.HOME;
     if (PhoneType.MOBILE.equals(phoneNumber.getType())) {
       contactPointUse = ContactPointUse.MOBILE;
@@ -150,7 +169,7 @@ public class FhirConverter {
     return convertToContactPoint(contactPointUse, phoneNumber.getNumber());
   }
 
-  public static ContactPoint convertToContactPoint(ContactPointUse contactPointUse, String number) {
+  public ContactPoint convertToContactPoint(ContactPointUse contactPointUse, String number) {
     // converting string to phone format as recommended by the fhir format.
     // https://www.hl7.org/fhir/datatypes.html#ContactPoint
     try {
@@ -166,41 +185,81 @@ public class FhirConverter {
     return convertToContactPoint(contactPointUse, ContactPointSystem.PHONE, number);
   }
 
-  public static List<ContactPoint> convertEmailsToContactPoint(
-      ContactPointUse use, List<String> emails) {
-    return emails.stream()
-        .map(email -> convertEmailToContactPoint(use, email))
-        .collect(Collectors.toList());
+  public List<ContactPoint> convertEmailsToContactPoint(ContactPointUse use, List<String> emails) {
+    return emails.stream().map(email -> convertEmailToContactPoint(use, email)).toList();
   }
 
-  public static ContactPoint convertEmailToContactPoint(
-      ContactPointUse use, @NotNull String email) {
+  public ContactPoint convertEmailToContactPoint(ContactPointUse use, @NotNull String email) {
     return convertToContactPoint(use, ContactPointSystem.EMAIL, email);
   }
 
-  public static ContactPoint convertToContactPoint(
+  public ContactPoint convertToContactPoint(
       ContactPointUse use, ContactPointSystem system, String value) {
     return new ContactPoint().setUse(use).setSystem(system).setValue(value);
   }
 
-  public static AdministrativeGender convertToAdministrativeGender(@NotNull String gender) {
+  public AdministrativeGender convertToAdministrativeGender(@NotNull String gender) {
     switch (gender.toLowerCase()) {
-      case "male":
-      case "m":
+      case "male", "m":
         return AdministrativeGender.MALE;
-      case "female":
-      case "f":
+      case "female", "f":
         return AdministrativeGender.FEMALE;
       default:
         return AdministrativeGender.UNKNOWN;
     }
   }
 
-  public static Date convertToDate(@NotNull LocalDate date) {
+  public Date convertToDate(@NotNull LocalDate date) {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
   }
 
-  public static Address convertToAddress(@NotNull StreetAddress address, String country) {
+  /**
+   * @param zonedDateTime the date time with a time zone
+   * @return the DateTimeType object created from the ZonedDateTime, it's timezone, and second
+   *     temporal precision
+   */
+  public DateTimeType convertToDateTimeType(ZonedDateTime zonedDateTime) {
+    return convertToDateTimeType(zonedDateTime, TemporalPrecisionEnum.SECOND);
+  }
+
+  /**
+   * @param zonedDateTime the date time with a time zone
+   * @param temporalPrecisionEnum precision of the date time, defaults to {@code
+   *     TemporalPrecisionEnum.SECOND}
+   * @return the DateTimeType object created from the ZonedDateTime and it's timezone
+   */
+  public DateTimeType convertToDateTimeType(
+      ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
+    if (zonedDateTime == null) {
+      return null;
+    }
+    if (temporalPrecisionEnum == null) {
+      temporalPrecisionEnum = TemporalPrecisionEnum.SECOND;
+    }
+    return new DateTimeType(
+        Date.from(zonedDateTime.toInstant()),
+        temporalPrecisionEnum,
+        TimeZone.getTimeZone(zonedDateTime.getZone()));
+  }
+
+  /**
+   * @param zonedDateTime the date time with a time zone
+   * @param temporalPrecisionEnum precision of the date time, defaults to {@code
+   *     TemporalPrecisionEnum.MILLI}
+   * @return the InstantType object created from the Instant of the ZonedDateTime and its time zone
+   *     offset
+   */
+  public InstantType convertToInstantType(
+      ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
+    if (zonedDateTime == null) return null;
+    if (temporalPrecisionEnum == null) temporalPrecisionEnum = TemporalPrecisionEnum.MILLI;
+    return new InstantType(
+        Date.from(zonedDateTime.toInstant()),
+        temporalPrecisionEnum,
+        TimeZone.getTimeZone(zonedDateTime.getZone()));
+  }
+
+  public Address convertToAddress(@NotNull StreetAddress address, String country) {
     return convertToAddress(
         address.getStreet(),
         address.getCity(),
@@ -210,7 +269,7 @@ public class FhirConverter {
         country);
   }
 
-  public static Address convertToAddress(
+  public Address convertToAddress(
       List<String> street,
       String city,
       String county,
@@ -230,7 +289,7 @@ public class FhirConverter {
     return address;
   }
 
-  public static Extension convertToRaceExtension(@NotNull String race) {
+  public Extension convertToRaceExtension(@NotNull String race) {
     var ext = new Extension();
     ext.setUrl(RACE_EXTENSION_URL);
     var codeable = new CodeableConcept();
@@ -253,27 +312,19 @@ public class FhirConverter {
     return ext;
   }
 
-  public static Extension convertToEthnicityExtension(String ethnicity) {
+  public Extension convertToEthnicityExtension(String ethnicity) {
     if (StringUtils.isNotBlank(ethnicity)) {
       var ext = new Extension();
       ext.setUrl(ETHNICITY_EXTENSION_URL);
       var codeableConcept = new CodeableConcept();
-      var coding = codeableConcept.addCoding();
+      var coding = codeableConcept.addCoding().setSystem(ETHNICITY_CODE_SYSTEM);
       if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
-        if ("refused".equalsIgnoreCase(ethnicity)) {
-          coding.setSystem(NULL_CODE_SYSTEM);
-        } else {
-          coding.setSystem(ETHNICITY_CODE_SYSTEM);
-        }
-        coding.setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0));
-        coding.setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-
+        coding
+            .setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0))
+            .setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
         codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
       } else {
-        coding.setSystem(NULL_CODE_SYSTEM);
-        coding.setCode(MappingConstants.U_CODE);
-        coding.setDisplay(MappingConstants.UNKNOWN_STRING);
-
+        coding.setCode(MappingConstants.U_CODE).setDisplay(MappingConstants.UNKNOWN_STRING);
         codeableConcept.setText(MappingConstants.UNKNOWN_STRING);
       }
       ext.setValue(codeableConcept);
@@ -282,14 +333,13 @@ public class FhirConverter {
     return null;
   }
 
-  public static Optional<Extension> convertToTribalAffiliationExtension(
-      List<String> tribalAffiliations) {
+  public Optional<Extension> convertToTribalAffiliationExtension(List<String> tribalAffiliations) {
     return CollectionUtils.isEmpty(tribalAffiliations)
         ? Optional.empty()
         : convertToTribalAffiliationExtension(tribalAffiliations.get(0));
   }
 
-  public static Optional<Extension> convertToTribalAffiliationExtension(String tribalAffiliation) {
+  public Optional<Extension> convertToTribalAffiliationExtension(String tribalAffiliation) {
     if (StringUtils.isNotBlank(tribalAffiliation)) {
       var ext = new Extension();
       ext.setUrl(TRIBAL_AFFILIATION_EXTENSION_URL);
@@ -307,197 +357,314 @@ public class FhirConverter {
     return Optional.empty();
   }
 
-  public static Practitioner convertToPractitioner(Provider provider) {
-    var practitioner = new Practitioner();
-    practitioner.setId(provider.getInternalId().toString());
-    practitioner.addName(convertToHumanName(provider.getNameInfo()));
-    practitioner.addAddress(convertToAddress(provider.getAddress(), DEFAULT_COUNTRY));
-    practitioner.addTelecom(convertToContactPoint(ContactPointUse.WORK, provider.getTelephone()));
+  public Practitioner convertToPractitioner(Provider provider) {
+    return convertToPractitioner(
+        provider.getInternalId().toString(),
+        provider.getNameInfo(),
+        provider.getTelephone(),
+        provider.getAddress(),
+        DEFAULT_COUNTRY,
+        provider.getProviderId());
+  }
+
+  public Practitioner convertToPractitioner(
+      String id,
+      PersonName name,
+      String telephone,
+      StreetAddress addr,
+      String country,
+      String npi) {
+    var practitioner =
+        new Practitioner()
+            .addName(convertToHumanName(name))
+            .addAddress(convertToAddress(addr, country))
+            .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
+    practitioner.setId(id);
+
+    LuhnCheckDigit npiValidator = new LuhnCheckDigit();
+    if (StringUtils.isNotEmpty(npi) && npiValidator.isValid(NPI_PREFIX.concat(npi))) {
+      practitioner.addIdentifier().setSystem(PRACTICIONER_IDENTIFIER_SYSTEM).setValue(npi);
+    }
+
     return practitioner;
   }
 
-  public static Organization convertToOrganization(Facility facility) {
-    var org = new Organization();
-    org.setId(facility.getInternalId().toString());
+  public Organization convertToOrganization(Facility facility) {
+    return convertToOrganization(
+        facility.getInternalId().toString(),
+        facility.getFacilityName(),
+        facility.getCliaNumber(),
+        facility.getTelephone(),
+        facility.getEmail(),
+        facility.getAddress(),
+        DEFAULT_COUNTRY);
+  }
+
+  public Organization convertToOrganization(
+      String id,
+      String name,
+      String clia,
+      String telephone,
+      String email,
+      StreetAddress addr,
+      String country) {
+    var org =
+        new Organization()
+            .setName(name)
+            .addAddress(convertToAddress(addr, country))
+            .addTelecom(convertToContactPoint(ContactPointUse.WORK, telephone));
+
     org.addIdentifier()
         .setUse(IdentifierUse.OFFICIAL)
-        .setValue(facility.getCliaNumber())
+        .setValue(clia)
         .getType()
         .addCoding()
         .setSystem(UNIVERSAL_ID_SYSTEM)
         .setCode("CLIA");
-    org.setName(facility.getFacilityName());
-    org.addTelecom(convertToContactPoint(ContactPointUse.WORK, facility.getTelephone()));
-    org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, facility.getEmail()));
-    org.addAddress(convertToAddress(facility.getAddress(), DEFAULT_COUNTRY));
+
+    if (email != null && !email.isBlank()) {
+      org.addTelecom(convertEmailToContactPoint(ContactPointUse.WORK, email));
+    }
+    org.setId(id);
     return org;
   }
 
-  public static Patient convertToPatient(Person person) {
-    var patient = new Patient();
-    patient.setId(person.getInternalId().toString());
-    patient.addIdentifier().setValue(person.getInternalId().toString());
-    patient.addName(convertToHumanName(person.getNameInfo()));
-    convertPhoneNumbersToContactPoint(person.getPhoneNumbers()).forEach(patient::addTelecom);
-    convertEmailsToContactPoint(ContactPointUse.HOME, person.getEmails())
-        .forEach(patient::addTelecom);
-    patient.setGender(convertToAdministrativeGender(person.getGender()));
-    patient.setBirthDate(convertToDate(person.getBirthDate()));
-    patient.addAddress(convertToAddress(person.getAddress(), person.getCountry()));
-    patient.addExtension(convertToRaceExtension(person.getRace()));
-    patient.addExtension(convertToEthnicityExtension(person.getEthnicity()));
+  public Patient convertToPatient(Person person) {
+    return convertToPatient(
+        ConvertToPatientProps.builder()
+            .id(person.getInternalId().toString())
+            .name(person.getNameInfo())
+            .phoneNumbers(person.getPhoneNumbers())
+            .emails(person.getEmails())
+            .gender(person.getGender())
+            .dob(person.getBirthDate())
+            .address(person.getAddress())
+            .country(person.getCountry())
+            .race(person.getRace())
+            .ethnicity(person.getEthnicity())
+            .tribalAffiliations(person.getTribalAffiliation())
+            .build());
+  }
+
+  public Patient convertToPatient(ConvertToPatientProps props) {
+    var patient =
+        new Patient()
+            .addName(convertToHumanName(props.getName()))
+            .setGender(convertToAdministrativeGender(props.getGender()))
+            .setBirthDate(convertToDate(props.getDob()))
+            .addAddress(convertToAddress(props.getAddress(), props.getCountry()));
+
+    patient.addExtension(convertToRaceExtension(props.getRace()));
+    patient.addExtension(convertToEthnicityExtension(props.getEthnicity()));
     patient.addExtension(
-        convertToTribalAffiliationExtension(person.getTribalAffiliation()).orElse(null));
+        convertToTribalAffiliationExtension(props.getTribalAffiliations()).orElse(null));
+
+    patient.setId(props.getId());
+    patient.addIdentifier().setValue(props.getId());
+
+    if (!CollectionUtils.isEmpty(props.getPhoneNumbers())) {
+      convertPhoneNumbersToContactPoint(props.getPhoneNumbers()).forEach(patient::addTelecom);
+    }
+
+    if (!CollectionUtils.isEmpty(props.getEmails())) {
+      convertEmailsToContactPoint(ContactPointUse.HOME, props.getEmails())
+          .forEach(patient::addTelecom);
+    }
     return patient;
   }
 
-  public static Device convertToDevice(@NotNull DeviceType deviceType) {
+  public Device convertToDevice(@NotNull DeviceType deviceType) {
     return convertToDevice(
         deviceType.getManufacturer(), deviceType.getModel(), deviceType.getInternalId().toString());
   }
 
-  public static Device convertToDevice(
-      @NotNull String manufacturer, @NotNull String model, String id) {
+  public Device convertToDevice(String manufacturer, @NotNull String model, String id) {
     var device =
         new Device()
-            .setManufacturer(manufacturer)
             .addDeviceName(
                 new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
+    if (manufacturer != null) {
+      device.setManufacturer(manufacturer);
+    }
+
     device.setId(id);
     return device;
   }
 
-  public static Specimen convertToSpecimen(
-      String specimenCode,
-      String specimenName,
-      String collectionCode,
-      String collectionName,
-      String id) {
+  public Specimen convertToSpecimen(ConvertToSpecimenProps props) {
     var specimen = new Specimen();
-    specimen.setId(id);
-    specimen.addIdentifier().setValue(id);
-    if (StringUtils.isNotBlank(specimenCode)) {
+    specimen.setId(props.getId());
+    specimen.addIdentifier().setValue(props.getIdentifier());
+    if (StringUtils.isNotBlank(props.getSpecimenCode())) {
       var codeableConcept = specimen.getType();
       var coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(specimenCode);
-      codeableConcept.setText(specimenName);
+      coding.setCode(props.getSpecimenCode());
+      codeableConcept.setText(props.getSpecimenName());
     }
-    if (StringUtils.isNotBlank(collectionCode)) {
+    if (StringUtils.isNotBlank(props.getCollectionCode())) {
       var collection = specimen.getCollection();
       var codeableConcept = collection.getBodySite();
       var coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(collectionCode);
-      codeableConcept.setText(collectionName);
+      coding.setCode(props.getCollectionCode());
+      codeableConcept.setText(props.getCollectionName());
+    }
+
+    if (props.getCollectionDate() != null) {
+      var collection = specimen.getCollection();
+      collection.setCollected(convertToDateTimeType(props.getCollectionDate()));
+    }
+
+    if (props.getReceivedTime() != null) {
+      specimen.setReceivedTimeElement(convertToDateTimeType(props.getReceivedTime()));
     }
 
     return specimen;
   }
 
-  public static Specimen convertToSpecimen(@NotNull SpecimenType specimenType) {
+  public Specimen convertToSpecimen(
+      @NotNull SpecimenType specimenType,
+      UUID specimenIdentifier,
+      ZonedDateTime collectionDate,
+      ZonedDateTime receivedTime) {
     return convertToSpecimen(
-        specimenType.getTypeCode(),
-        specimenType.getName(),
-        specimenType.getCollectionLocationCode(),
-        specimenType.getCollectionLocationName(),
-        specimenType.getInternalId().toString());
+        ConvertToSpecimenProps.builder()
+            .specimenCode(specimenType.getTypeCode())
+            .specimenName(specimenType.getName())
+            .collectionCode(specimenType.getCollectionLocationCode())
+            .collectionName(specimenType.getCollectionLocationName())
+            .id(specimenType.getInternalId().toString())
+            .identifier(specimenIdentifier.toString())
+            .collectionDate(collectionDate)
+            .receivedTime(receivedTime)
+            .build());
   }
 
-  public static List<Observation> convertToObservation(
+  public List<Observation> convertToObservation(
       Set<Result> results,
-      List<DeviceTypeDisease> deviceTypeDiseases,
+      DeviceType deviceType,
       TestCorrectionStatus correctionStatus,
-      String correctionReason) {
+      String correctionReason,
+      Date resultDate) {
     return results.stream()
         .map(
             result -> {
-              Optional<DeviceTypeDisease> deviceTypeDisease =
-                  deviceTypeDiseases.stream()
-                      .filter(code -> code.getSupportedDisease() == result.getDisease())
-                      .findFirst();
-              String testPerformedLoincCode = getTestPerformedLoincCode(deviceTypeDisease, result);
-              String equipmentUid = getEquipmentUid(deviceTypeDisease);
-              String testkitNameId = getTestkitNameId(deviceTypeDisease);
+              List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+                  deviceType.getSupportedDiseaseTestPerformed().stream()
+                      .filter(code -> code.getSupportedDisease().equals(result.getDisease()))
+                      .toList();
+              String testPerformedLoincCode =
+                  deviceTypeDiseaseEntries.stream()
+                      .findFirst()
+                      .map(DeviceTypeDisease::getTestPerformedLoincCode)
+                      .orElse(null);
+              String equipmentUid =
+                  getCommonDiseaseValue(
+                      deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+              String testkitNameId =
+                  getCommonDiseaseValue(
+                      deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
               return convertToObservation(
                   result,
                   testPerformedLoincCode,
                   correctionStatus,
                   correctionReason,
                   testkitNameId,
-                  equipmentUid);
+                  equipmentUid,
+                  deviceType.getModel(),
+                  resultDate);
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 
-  private static String getTestkitNameId(Optional<DeviceTypeDisease> deviceTypeDisease) {
-    return deviceTypeDisease.map(DeviceTypeDisease::getTestkitNameId).orElse(null);
+  public String getCommonDiseaseValue(
+      List<DeviceTypeDisease> deviceTypeDiseases,
+      Function<DeviceTypeDisease, String> diseaseValue) {
+    List<String> distinctValues = deviceTypeDiseases.stream().map(diseaseValue).distinct().toList();
+    return distinctValues.size() == 1 ? distinctValues.get(0) : null;
   }
 
-  private static String getEquipmentUid(Optional<DeviceTypeDisease> deviceTypeDisease) {
-    return deviceTypeDisease.map(DeviceTypeDisease::getEquipmentUid).orElse(null);
-  }
-
-  private static String getTestPerformedLoincCode(
-      Optional<DeviceTypeDisease> deviceTypeDisease, Result result) {
-    return deviceTypeDisease
-        .map(DeviceTypeDisease::getTestPerformedLoincCode)
-        .orElse(result.getTestOrder().getDeviceType().getLoincCode());
-  }
-
-  public static Observation convertToObservation(
+  public Observation convertToObservation(
       Result result,
       String testPerformedCode,
       TestCorrectionStatus correctionStatus,
       String correctionReason,
       String testkitNameId,
-      String equipmentUid) {
+      String equipmentUid,
+      String deviceModel,
+      Date resultDate) {
     if (result != null && result.getDisease() != null) {
+
       return convertToObservation(
-          testPerformedCode,
-          result.getDisease().getName(),
-          result.getResultLOINC(),
-          correctionStatus,
-          correctionReason,
-          result.getInternalId().toString(),
-          result.getTestResult().toString(),
-          testkitNameId,
-          equipmentUid);
+          ConvertToObservationProps.builder()
+              .diseaseCode(testPerformedCode)
+              .diseaseName(result.getDisease().getName())
+              .resultCode(result.getResultSNOMED())
+              .correctionStatus(correctionStatus)
+              .correctionReason(correctionReason)
+              .id(result.getInternalId().toString())
+              .resultDescription(
+                  Translators.convertConceptCodeToConceptName(result.getResultSNOMED()))
+              .testkitNameId(testkitNameId)
+              .equipmentUid(equipmentUid)
+              .deviceModel(deviceModel)
+              .issued(resultDate)
+              .build());
     }
     return null;
   }
 
-  public static Observation convertToObservation(
-      String diseaseCode,
-      String diseaseName,
-      String resultCode,
-      TestCorrectionStatus correctionStatus,
-      String correctionReason,
-      String id,
-      String resultDescription,
-      String testkitNameId,
-      String equipmentUid) {
+  public Observation convertToObservation(ConvertToObservationProps props) {
     var observation = new Observation();
-    observation.setId(id);
-    setStatus(observation, correctionStatus);
-    observation.setCode(createLoincConcept(diseaseCode, "", diseaseName));
-    addSNOMEDValue(resultCode, observation, resultDescription);
+    observation.setId(props.getId());
+    setStatus(observation, props.getCorrectionStatus());
+    observation.setCode(createLoincConcept(props.getDiseaseCode(), "", props.getDiseaseName()));
+    addSNOMEDValue(props.getResultCode(), observation, props.getResultDescription());
+    observation.getMethod().getCodingFirstRep().setDisplay(props.getDeviceModel());
     observation
         .getMethod()
         .addExtension(
             new Extension()
                 .setUrl(TESTKIT_NAME_ID_EXTENSION_URL)
-                .setValue(new CodeableConcept().addCoding().setCode(testkitNameId)))
+                .setValue(new CodeableConcept().addCoding().setCode(props.getTestkitNameId())))
         .addExtension(
             new Extension()
                 .setUrl(EQUIPMENT_UID_EXTENSION_URL)
-                .setValue(new CodeableConcept().addCoding().setCode(equipmentUid)));
+                .setValue(new CodeableConcept().addCoding().setCode(props.getEquipmentUid())));
+
     addCorrectionNote(
-        correctionStatus != TestCorrectionStatus.ORIGINAL, correctionReason, observation);
+        props.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL,
+        props.getCorrectionReason(),
+        observation);
+
+    observation
+        .addInterpretation()
+        .addCoding(convertToAbnormalFlagInterpretation(props.getResultCode()));
+
+    observation.setIssued(props.getIssued());
+    observation.getIssuedElement().setTimeZoneZulu(true);
+
     return observation;
   }
 
-  private static void setStatus(Observation observation, TestCorrectionStatus correctionStatus) {
+  private Coding convertToAbnormalFlagInterpretation(String resultCode) {
+    Coding abnormalFlag = new Coding();
+
+    abnormalFlag.setSystem(ABNORMAL_FLAGS_CODE_SYSTEM);
+
+    if (resultCode.equals(DETECTED_SNOMED_CONCEPT.code())) {
+      abnormalFlag.setCode(ABNORMAL_FLAG_ABNORMAL.code());
+      abnormalFlag.setDisplay(ABNORMAL_FLAG_ABNORMAL.displayName());
+    } else {
+      abnormalFlag.setCode(ABNORMAL_FLAG_NORMAL.code());
+      abnormalFlag.setDisplay(ABNORMAL_FLAG_NORMAL.displayName());
+    }
+
+    return abnormalFlag;
+  }
+
+  private void setStatus(Observation observation, TestCorrectionStatus correctionStatus) {
     switch (correctionStatus) {
       case ORIGINAL:
         observation.setStatus(ObservationStatus.FINAL);
@@ -511,7 +678,7 @@ public class FhirConverter {
     }
   }
 
-  private static void addCorrectionNote(
+  private void addCorrectionNote(
       boolean corrected, String correctionReason, Observation observation) {
     if (corrected) {
       var annotation = observation.addNote();
@@ -523,45 +690,45 @@ public class FhirConverter {
     }
   }
 
-  public static Set<Observation> convertToAOEObservations(
-      String eventId, AskOnEntrySurvey surveyData) {
+  public Set<Observation> convertToAOEObservation(
+      String eventId, Boolean symptomatic, LocalDate symptomOnsetDate) {
     var observations = new HashSet<Observation>();
     var symptomaticCode =
         createLoincConcept(
             LOINC_AOE_SYMPTOMATIC,
             "Has symptoms related to condition of interest",
             "Has symptoms related to condition of interest");
-    if (surveyData.getNoSymptoms()) {
-      // user reported as not symptomatic
+    observations.add(
+        createAOEObservation(
+            eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(symptomatic)));
+
+    if (Boolean.TRUE.equals(symptomatic) && symptomOnsetDate != null) {
       observations.add(
           createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(false)));
-    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
-      // user reported as symptomatic
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(true)));
-      if (surveyData.getSymptomOnsetDate() != null) {
-        observations.add(
-            createAOEObservation(
-                eventId + LOINC_AOE_SYMPTOM_ONSET,
-                createLoincConcept(
-                    LOINC_AOE_SYMPTOM_ONSET,
-                    "Illness or injury onset date and time",
-                    "Illness or injury onset date and time"),
-                new DateTimeType(surveyData.getSymptomOnsetDate().toString())));
-      }
-    } else {
-      // if neither no symptoms nor any symptoms checked, AoE form was not completed
-      observations.add(
-          createAOEObservation(
-              eventId + LOINC_AOE_SYMPTOMATIC, symptomaticCode, createYesNoUnkConcept(null)));
+              eventId + LOINC_AOE_SYMPTOM_ONSET,
+              createLoincConcept(
+                  LOINC_AOE_SYMPTOM_ONSET,
+                  "Illness or injury onset date and time",
+                  "Illness or injury onset date and time"),
+              new DateTimeType(symptomOnsetDate.toString())));
     }
     return observations;
   }
 
-  public static Observation createAOEObservation(
-      String uniqueName, CodeableConcept code, Type value) {
+  public Set<Observation> convertToAOEObservations(String eventId, AskOnEntrySurvey surveyData) {
+    Boolean symptomatic = null;
+    if (Boolean.TRUE.equals(surveyData.getNoSymptoms())) {
+      symptomatic = false;
+    } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
+      symptomatic = true;
+    } // implied else: AoE form was not completed. Symptomatic set to null
+
+    var symptomOnsetDate = surveyData.getSymptomOnsetDate();
+
+    return convertToAOEObservation(eventId, symptomatic, symptomOnsetDate);
+  }
+
+  public Observation createAOEObservation(String uniqueName, CodeableConcept code, Type value) {
     var observation =
         new Observation().setStatus(ObservationStatus.FINAL).setCode(code).setValue(value);
     observation.setId(UUID.nameUUIDFromBytes(uniqueName.getBytes()).toString());
@@ -576,8 +743,7 @@ public class FhirConverter {
     return observation;
   }
 
-  private static CodeableConcept createLoincConcept(
-      String codingCode, String codingDisplay, String text) {
+  private CodeableConcept createLoincConcept(String codingCode, String codingDisplay, String text) {
     var concept = new CodeableConcept().setText(text);
 
     concept.addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(codingCode).setDisplay(codingDisplay);
@@ -585,7 +751,7 @@ public class FhirConverter {
     return concept;
   }
 
-  private static CodeableConcept createYesNoUnkConcept(Boolean val) {
+  private CodeableConcept createYesNoUnkConcept(Boolean val) {
     var concept = new CodeableConcept();
     var coding = concept.addCoding();
     if (val == null) {
@@ -599,8 +765,7 @@ public class FhirConverter {
     return concept;
   }
 
-  private static void addSNOMEDValue(
-      String resultCode, Observation observation, String resultDisplay) {
+  private void addSNOMEDValue(String resultCode, Observation observation, String resultDisplay) {
     var valueCodeableConcept = new CodeableConcept();
     var valueCoding = valueCodeableConcept.addCoding();
     valueCoding.setSystem(SNOMED_CODE_SYSTEM);
@@ -609,7 +774,8 @@ public class FhirConverter {
     observation.setValue(valueCodeableConcept);
   }
 
-  public static ServiceRequest convertToServiceRequest(@NotNull TestOrder order) {
+  public ServiceRequest convertToServiceRequest(
+      @NotNull TestOrder order, ZonedDateTime orderTestDate) {
     ServiceRequestStatus serviceRequestStatus = null;
     switch (order.getOrderStatus()) {
       case PENDING:
@@ -631,22 +797,53 @@ public class FhirConverter {
               order.getDeviceType().getSupportedDiseaseTestPerformed());
     }
     return convertToServiceRequest(
-        serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
+        serviceRequestStatus,
+        deviceLoincCode,
+        Objects.toString(order.getInternalId(), ""),
+        orderTestDate);
   }
 
-  public static ServiceRequest convertToServiceRequest(
-      ServiceRequestStatus status, String requestedCode, String id) {
+  public ServiceRequest convertToServiceRequest(
+      ServiceRequestStatus status,
+      String requestedCode,
+      String id,
+      ZonedDateTime orderEffectiveDate) {
     var serviceRequest = new ServiceRequest();
     serviceRequest.setId(id);
     serviceRequest.setIntent(ServiceRequestIntent.ORDER);
     serviceRequest.setStatus(status);
+
     if (StringUtils.isNotBlank(requestedCode)) {
       serviceRequest.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(requestedCode);
     }
+
+    serviceRequest
+        .addExtension()
+        .setUrl(ORDER_CONTROL_EXTENSION_URL)
+        .setValue(
+            new CodeableConcept()
+                .addCoding(
+                    new Coding()
+                        .setSystem(ORDER_CONTROL_CODE_SYSTEM)
+                        .setCode(ORDER_CONTROL_CODE_OBSERVATIONS)));
+
+    serviceRequest
+        .addExtension()
+        .setUrl(ORDER_EFFECTIVE_DATE_EXTENSION_URL)
+        .setValue(convertToDateTimeType(orderEffectiveDate, TemporalPrecisionEnum.SECOND));
+
     return serviceRequest;
   }
 
-  public static DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
+  /**
+   * Used during single entry FHIR conversion
+   *
+   * @param testEvent Single entry test event.
+   * @param currentDate Used to set {@code DiagnosticReport.issued}, the instant this version was *
+   *     made.
+   * @return DiagnosticReport
+   */
+  public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent, Date currentDate) {
     DiagnosticReportStatus status = null;
     switch (testEvent.getCorrectionStatus()) {
       case ORIGINAL:
@@ -662,24 +859,48 @@ public class FhirConverter {
 
     String code = null;
     if (testEvent.getDeviceType() != null) {
-      code = testEvent.getDeviceType().getLoincCode();
+      code =
+          MultiplexUtils.inferMultiplexTestOrderLoinc(
+              testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
     }
 
+    ZonedDateTime dateTested = null;
+    if (testEvent.getDateTested() != null) {
+      // getDateTested returns a Date representing an exact moment of time so
+      // finding a specific timezone for the TestEvent is not required to ensure it is accurate
+      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC);
+    }
+    ZonedDateTime dateIssued = null;
+    if (currentDate != null)
+      dateIssued = ZonedDateTime.ofInstant(currentDate.toInstant(), ZoneOffset.UTC);
+
     return convertToDiagnosticReport(
-        status,
-        code,
-        Objects.toString(testEvent.getInternalId(), ""),
-        testEvent.getDateTested(),
-        testEvent.getUpdatedAt());
+        status, code, Objects.toString(testEvent.getInternalId(), ""), dateTested, dateIssued);
   }
 
-  public static DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code, String id, Date dateTested, Date dateUpdated) {
+  /**
+   * @param status Diagnostic report status
+   * @param code LOINC code
+   * @param id Diagnostic report id
+   * @param dateTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
+   *     time/time-period for report.
+   * @param dateIssued Used to set {@code DiagnosticReport.issued}, the date and time that this
+   *     version of the report was made available to providers, typically after the report was
+   *     reviewed and verified.
+   * @return DiagnosticReport
+   */
+  public DiagnosticReport convertToDiagnosticReport(
+      DiagnosticReportStatus status,
+      String code,
+      String id,
+      ZonedDateTime dateTested,
+      ZonedDateTime dateIssued) {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(new DateTimeType(dateTested))
-            .setIssued(dateUpdated);
+            .setEffective(convertToDateTimeType(dateTested))
+            .setIssuedElement(convertToInstantType(dateIssued, TemporalPrecisionEnum.SECOND));
+
     diagnosticReport.setId(id);
     if (StringUtils.isNotBlank(code)) {
       diagnosticReport.getCode().addCoding().setSystem(LOINC_CODE_SYSTEM).setCode(code);
@@ -688,118 +909,157 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
-  public static Bundle createFhirBundle(
+  /**
+   * @param testEvent The single entry test event created in {@code TestOrderService}
+   * @param gitProperties Git properties
+   * @param currentDate Current date
+   * @param processingId Processing id
+   * @return FHIR bundle
+   * @see TestOrderService
+   */
+  public Bundle createFhirBundle(
       @NotNull TestEvent testEvent,
       GitProperties gitProperties,
       Date currentDate,
       String processingId) {
+
+    ZonedDateTime dateTested =
+        testEvent.getDateTested() != null
+            ? ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC)
+            : null;
+
     return createFhirBundle(
-        convertToPatient(testEvent.getPatient()),
-        convertToOrganization(testEvent.getFacility()),
-        convertToPractitioner(testEvent.getProviderData()),
-        convertToDevice(testEvent.getDeviceType()),
-        convertToSpecimen(testEvent.getSpecimenType()),
-        convertToObservation(
-            testEvent.getResults(),
-            testEvent.getDeviceType().getSupportedDiseaseTestPerformed(),
-            testEvent.getCorrectionStatus(),
-            testEvent.getReasonForCorrection()),
-        convertToAOEObservations(testEvent.getInternalId().toString(), testEvent.getSurveyData()),
-        convertToServiceRequest(testEvent.getOrder()),
-        convertToDiagnosticReport(testEvent),
-        currentDate,
-        gitProperties,
-        processingId);
+        CreateFhirBundleProps.builder()
+            .patient(convertToPatient(testEvent.getPatient()))
+            .testingLab(convertToOrganization(testEvent.getFacility()))
+            .orderingFacility(null)
+            .practitioner(convertToPractitioner(testEvent.getProviderData()))
+            .device(convertToDevice(testEvent.getDeviceType()))
+            .specimen(
+                convertToSpecimen(
+                    testEvent.getSpecimenType(), uuidGenerator.randomUUID(), null, null))
+            .resultObservations(
+                convertToObservation(
+                    testEvent.getResults(),
+                    testEvent.getDeviceType(),
+                    testEvent.getCorrectionStatus(),
+                    testEvent.getReasonForCorrection(),
+                    testEvent.getDateTested()))
+            .aoeObservations(
+                convertToAOEObservations(
+                    testEvent.getInternalId().toString(), testEvent.getSurveyData()))
+            .serviceRequest(convertToServiceRequest(testEvent.getOrder(), dateTested))
+            .diagnosticReport(convertToDiagnosticReport(testEvent, currentDate))
+            .currentDate(currentDate)
+            .gitProperties(gitProperties)
+            .processingId(processingId)
+            .build());
   }
 
-  public static Bundle createFhirBundle(
-      Patient patient,
-      Organization organization,
-      Practitioner practitioner,
-      Device device,
-      Specimen specimen,
-      List<Observation> resultObservations,
-      Set<Observation> aoeObservations,
-      ServiceRequest serviceRequest,
-      DiagnosticReport diagnosticReport,
-      Date currentDate,
-      GitProperties gitProperties,
-      String processingId) {
-    var patientFullUrl = ResourceType.Patient + "/" + patient.getId();
-    var organizationFullUrl = ResourceType.Organization + "/" + organization.getId();
-    var practitionerFullUrl = ResourceType.Practitioner + "/" + practitioner.getId();
-    var specimenFullUrl = ResourceType.Specimen + "/" + specimen.getId();
-    var serviceRequestFullUrl = ResourceType.ServiceRequest + "/" + serviceRequest.getId();
-    var diagnosticReportFullUrl = ResourceType.DiagnosticReport + "/" + diagnosticReport.getId();
-    var deviceFullUrl = ResourceType.Device + "/" + device.getId();
+  public Bundle createFhirBundle(CreateFhirBundleProps props) {
+    var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
+    var orderingFacilityFullUrl =
+        props.getOrderingFacility() == null
+            ? null
+            : ResourceType.Organization + "/" + props.getOrderingFacility().getId();
+    var testingLabOrganizationFullUrl =
+        ResourceType.Organization + "/" + props.getTestingLab().getId();
+    var practitionerFullUrl = ResourceType.Practitioner + "/" + props.getPractitioner().getId();
+    var specimenFullUrl = ResourceType.Specimen + "/" + props.getSpecimen().getId();
+    var serviceRequestFullUrl =
+        ResourceType.ServiceRequest + "/" + props.getServiceRequest().getId();
+    var diagnosticReportFullUrl =
+        ResourceType.DiagnosticReport + "/" + props.getDiagnosticReport().getId();
+    var deviceFullUrl = ResourceType.Device + "/" + props.getDevice().getId();
 
-    var practitionerRole = createPractitionerRole(organizationFullUrl, practitionerFullUrl);
-    var provenance = createProvenance(organizationFullUrl, currentDate);
+    var practitionerRole =
+        createPractitionerRole(
+            orderingFacilityFullUrl == null
+                ? testingLabOrganizationFullUrl
+                : orderingFacilityFullUrl,
+            practitionerFullUrl,
+            uuidGenerator.randomUUID());
+    var provenance =
+        createProvenance(
+            testingLabOrganizationFullUrl, props.getCurrentDate(), uuidGenerator.randomUUID());
     var provenanceFullUrl = ResourceType.Provenance + "/" + provenance.getId();
     var messageHeader =
         createMessageHeader(
-            organizationFullUrl,
+            testingLabOrganizationFullUrl,
             diagnosticReportFullUrl,
             provenanceFullUrl,
-            gitProperties,
-            processingId);
+            props.getGitProperties(),
+            props.getProcessingId(),
+            uuidGenerator.randomUUID());
     var practitionerRoleFullUrl = ResourceType.PractitionerRole + "/" + practitionerRole.getId();
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
-    patient.setManagingOrganization(new Reference(organizationFullUrl));
-    specimen.setSubject(new Reference(patientFullUrl));
+    props.getPatient().setManagingOrganization(new Reference(testingLabOrganizationFullUrl));
+    props.getSpecimen().setSubject(new Reference(patientFullUrl));
 
-    serviceRequest.setSubject(new Reference(patientFullUrl));
-    serviceRequest.addPerformer(new Reference(organizationFullUrl));
-    serviceRequest.setRequester(new Reference(practitionerRoleFullUrl));
-    diagnosticReport.addBasedOn(new Reference(serviceRequestFullUrl));
-    diagnosticReport.setSubject(new Reference(patientFullUrl));
-    diagnosticReport.addSpecimen(new Reference(specimenFullUrl));
+    props.getServiceRequest().setSubject(new Reference(patientFullUrl));
+    props.getServiceRequest().addPerformer(new Reference(testingLabOrganizationFullUrl));
+    props.getServiceRequest().setRequester(new Reference(practitionerRoleFullUrl));
+    props.getDiagnosticReport().addBasedOn(new Reference(serviceRequestFullUrl));
+    props.getDiagnosticReport().setSubject(new Reference(patientFullUrl));
+    props.getDiagnosticReport().addSpecimen(new Reference(specimenFullUrl));
 
     var entryList = new ArrayList<Pair<String, Resource>>();
     entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
     entryList.add(Pair.of(provenanceFullUrl, provenance));
-    entryList.add(Pair.of(diagnosticReportFullUrl, diagnosticReport));
-    entryList.add(Pair.of(patientFullUrl, patient));
-    entryList.add(Pair.of(organizationFullUrl, organization));
-    entryList.add(Pair.of(practitionerFullUrl, practitioner));
-    entryList.add(Pair.of(specimenFullUrl, specimen));
-    entryList.add(Pair.of(serviceRequestFullUrl, serviceRequest));
-    entryList.add(Pair.of(deviceFullUrl, device));
+    entryList.add(Pair.of(diagnosticReportFullUrl, props.getDiagnosticReport()));
+    entryList.add(Pair.of(patientFullUrl, props.getPatient()));
+    entryList.add(Pair.of(testingLabOrganizationFullUrl, props.getTestingLab()));
+    if (orderingFacilityFullUrl != null) {
+      entryList.add(Pair.of(orderingFacilityFullUrl, props.getOrderingFacility()));
+    }
+    entryList.add(Pair.of(practitionerFullUrl, props.getPractitioner()));
+    entryList.add(Pair.of(specimenFullUrl, props.getSpecimen()));
+    entryList.add(Pair.of(serviceRequestFullUrl, props.getServiceRequest()));
+    entryList.add(Pair.of(deviceFullUrl, props.getDevice()));
     entryList.add(Pair.of(practitionerRoleFullUrl, practitionerRole));
     entryList.add(
         Pair.of(
             ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
             new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
 
-    resultObservations.forEach(
-        observation -> {
-          var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+    props
+        .getResultObservations()
+        .forEach(
+            observation -> {
+              var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
 
-          observation.setSubject(new Reference(patientFullUrl));
-          observation.addPerformer(new Reference(organizationFullUrl));
-          observation.setSpecimen(new Reference(specimenFullUrl));
-          observation.setDevice(new Reference(deviceFullUrl));
+              observation.setSubject(new Reference(patientFullUrl));
+              observation.addPerformer(new Reference(testingLabOrganizationFullUrl));
+              observation.setSpecimen(new Reference(specimenFullUrl));
+              observation.setDevice(new Reference(deviceFullUrl));
 
-          diagnosticReport.addResult(new Reference(observationFullUrl));
-          entryList.add(Pair.of(observationFullUrl, observation));
-        });
+              props.getDiagnosticReport().addResult(new Reference(observationFullUrl));
+              entryList.add(Pair.of(observationFullUrl, observation));
+            });
 
-    aoeObservations.forEach(
-        observation -> {
-          var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+    if (props.getAoeObservations() != null) {
+      props
+          .getAoeObservations()
+          .forEach(
+              observation -> {
+                var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
 
-          observation.setSubject(new Reference(patientFullUrl));
+                observation.setSubject(new Reference(patientFullUrl));
 
-          serviceRequest.addSupportingInfo(new Reference(observationFullUrl));
-          entryList.add(Pair.of(observationFullUrl, observation));
-        });
+                props.getServiceRequest().addSupportingInfo(new Reference(observationFullUrl));
+                entryList.add(Pair.of(observationFullUrl, observation));
+              });
+    }
 
     var bundle =
         new Bundle()
             .setType(BundleType.MESSAGE)
-            .setTimestamp(currentDate)
-            .setIdentifier(new Identifier().setValue(diagnosticReport.getId()));
+            .setTimestamp(props.getCurrentDate())
+            .setIdentifier(new Identifier().setValue(props.getDiagnosticReport().getId()));
+
+    bundle.getTimestampElement().setTimeZoneZulu(true);
+
     entryList.forEach(
         pair ->
             bundle.addEntry(
@@ -810,9 +1070,11 @@ public class FhirConverter {
     return bundle;
   }
 
-  public static Provenance createProvenance(String organizationFullUrl, Date dateTested) {
+  public Provenance createProvenance(
+      String organizationFullUrl, Date dateTested, UUID provenanceId) {
     var provenance = new Provenance();
-    provenance.setId(UUID.randomUUID().toString());
+
+    provenance.setId(provenanceId.toString());
     provenance
         .getActivity()
         .addCoding()
@@ -821,27 +1083,29 @@ public class FhirConverter {
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
     provenance.setRecorded(dateTested);
+    provenance.getRecordedElement().setTimeZoneZulu(true);
     return provenance;
   }
 
-  public static PractitionerRole createPractitionerRole(
-      String organizationUrl, String practitionerUrl) {
+  public PractitionerRole createPractitionerRole(
+      String organizationUrl, String practitionerUrl, UUID practitionerRoleId) {
     var practitionerRole = new PractitionerRole();
-    practitionerRole.setId(UUID.randomUUID().toString());
+    practitionerRole.setId(practitionerRoleId.toString());
     practitionerRole
         .setPractitioner(new Reference().setReference(practitionerUrl))
         .setOrganization(new Reference().setReference(organizationUrl));
     return practitionerRole;
   }
 
-  public static MessageHeader createMessageHeader(
+  public MessageHeader createMessageHeader(
       String organizationUrl,
       String mainResourceUrl,
       String provenanceFullUrl,
       GitProperties gitProperties,
-      String processingId) {
+      String processingId,
+      UUID messageHeaderId) {
     var messageHeader = new MessageHeader();
-    messageHeader.setId(UUID.randomUUID().toString());
+    messageHeader.setId(messageHeaderId.toString());
     messageHeader
         .getEventCoding()
         .setSystem(EVENT_TYPE_CODE_SYSTEM)

@@ -134,6 +134,7 @@ interface Props {
   patientsInQueue: string[];
   startTestPatientId: string | null;
   setStartTestPatientId: any;
+  canAddPatient: boolean;
 }
 
 const AddToQueueSearchBox = ({
@@ -142,6 +143,7 @@ const AddToQueueSearchBox = ({
   patientsInQueue,
   startTestPatientId,
   setStartTestPatientId,
+  canAddPatient,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -205,10 +207,6 @@ const AddToQueueSearchBox = ({
     setDebounced(event.target.value);
   };
 
-  const onSearchClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
-
   const onAddToQueue = (
     patient: Patient,
     {
@@ -262,11 +260,11 @@ const AddToQueueSearchBox = ({
   return (
     <React.Fragment>
       <SearchInput
-        onSearchClick={onSearchClick}
         onInputChange={onInputChange}
         queryString={debounced}
         disabled={!allowQuery}
         placeholder={`Search for a ${PATIENT_TERM} to start their test`}
+        showSubmitButton={false}
       />
       <SearchResults
         page="queue"
@@ -277,6 +275,7 @@ const AddToQueueSearchBox = ({
         shouldShowSuggestions={showDropdown}
         loading={debounced !== queryString || loading}
         dropDownRef={dropDownRef}
+        canAddPatient={canAddPatient}
       />
     </React.Fragment>
   );

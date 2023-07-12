@@ -3,7 +3,7 @@ spring:
 simple-report:
   azure-reporting-queue:
     enabled: true
-    fhir-queue-enabled: false
+    fhir-queue-enabled: true
     exception-webhook-enabled: true
   patient-link-url: https://www.simplereport.gov/app/pxp?plid=
   twilio-callback-url: https://www.simplereport.gov/api/pxp/callback
@@ -19,6 +19,11 @@ simple-report:
       - https://simplereport.gov
   experian:
     enabled: true
+  fhir-reporting-enabled: false
 twilio:
   enabled: true
   from-number: "+14045312484"
+features:
+  hivEnabled: false
+datahub:
+  fhir-enabled: false

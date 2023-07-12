@@ -11,7 +11,10 @@ function ToS() {
         i18nKey="testResult.tos.document.intro.p0"
         parent="p"
         components={[
-          <a href="https://www.cdc.gov/other/information.html">
+          <a
+            href="https://www.cdc.gov/other/information.html"
+            key="cdc-privacy-policies-link"
+          >
             CDC’s Privacy Policies
           </a>,
         ]}
@@ -48,7 +51,7 @@ function ToS() {
         i18nKey="testResult.tos.document.dataRights.p02"
         parent="p"
         components={[
-          <a href="mailto:support@simplereport.gov">
+          <a href="mailto:support@simplereport.gov" key="support-email">
             support@simplereport.gov
           </a>,
         ]}
@@ -63,7 +66,10 @@ function ToS() {
         i18nKey="testResult.tos.document.privacy.p0"
         parent="p"
         components={[
-          <a href="https://www.hhs.gov/foia/privacy/index.html">
+          <a
+            href="https://www.hhs.gov/foia/privacy/index.html"
+            key="replaced-content"
+          >
             this content is replaced
           </a>,
         ]}
@@ -79,7 +85,10 @@ function ToS() {
         i18nKey="testResult.tos.document.sharingOfData.p0"
         parent="p"
         components={[
-          <a href="https://www.hhs.gov/sites/default/files/covid-19-laboratory-data-reporting-guidance.pdf">
+          <a
+            href="https://www.hhs.gov/sites/default/files/covid-19-laboratory-data-reporting-guidance.pdf"
+            key="laboratory-requirements"
+          >
             HHS COVID-19 Laboratory Reporting Requirements
           </a>,
         ]}

@@ -1,4 +1,5 @@
 import {
+  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -10,23 +11,24 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
 import { getAppInsights } from "../../TelemetryService";
+import {
+  GetFacilitiesDocument as GET_FACILITY_QUERY,
+  UpdateFacilityDocument as UPDATE_FACILITY_MUTATION,
+  AddFacilityDocument as ADD_FACILITY_MUTATION,
+} from "../../../generated/graphql";
+import SRToastContainer from "../../commonComponents/SRToastContainer";
 
-import { Props as FacilityFormProps } from "./FacilityForm";
-import FacilityFormContainer, {
-  GET_FACILITY_QUERY,
-  UPDATE_FACILITY_MUTATION,
-} from "./FacilityFormContainer";
+import { FacilityFormData, Props as FacilityFormProps } from "./FacilityForm";
+import FacilityFormContainer from "./FacilityFormContainer";
 
-export const deviceTypes: DeviceType[] = [
+export const deviceTypes: FacilityFormDeviceType[] = [
   {
     internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
     name: "Fake Device 1",
-    supportedDiseases: [],
   },
   {
     internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
     name: "Fake Device 2",
-    supportedDiseases: [],
   },
 ];
 
@@ -42,6 +44,34 @@ const mockFacility: Facility = {
   phone: "(516) 432-1390",
   email: "testingsite@disorg.com",
   deviceTypes,
+  orderingProvider: {
+    firstName: "Fred",
+    middleName: null,
+    lastName: "Flintstone",
+    suffix: null,
+    NPI: "PEBBLES",
+    street: "123 Main Street",
+    streetTwo: "",
+    city: "Oz",
+    state: "KS",
+    zipCode: "12345",
+    phone: "(202) 555-1212",
+  },
+};
+
+const mockFacilityFormData: FacilityFormData = {
+  facility: {
+    cliaNumber: "99D1234567",
+    name: "Testing Site",
+    street: "1001 Rodeo Dr",
+    streetTwo: "qwqweqwe123123",
+    city: "Los Angeles",
+    state: "CA",
+    zipCode: "90000",
+    phone: "(516) 432-1390",
+    email: "testingsite@disorg.com",
+  },
+  devices: ["Fake Device 1"],
   orderingProvider: {
     firstName: "Fred",
     middleName: null,
@@ -100,7 +130,6 @@ const getFacilityRequest: any = {
 };
 
 const facilityVariables: any = {
-  facilityId: mockFacility.id,
   testingFacilityName: mockFacility.name,
   cliaNumber: mockFacility.cliaNumber,
   street: mockFacility.street,
@@ -121,7 +150,7 @@ const facilityVariables: any = {
   orderingProviderState: mockFacility.orderingProvider.state,
   orderingProviderZipCode: mockFacility.orderingProvider.zipCode,
   orderingProviderPhone: mockFacility.orderingProvider.phone || null,
-  devices: mockFacility.deviceTypes.map((d) => d.internalId),
+  devices: ["Fake Device 1"],
 };
 
 const store = configureStore([])({
@@ -141,14 +170,41 @@ const store = configureStore([])({
 
 const mocks = [
   getFacilityRequest,
+  getFacilityRequest,
   {
     request: {
       query: UPDATE_FACILITY_MUTATION,
-      variables: facilityVariables,
+      variables: { ...facilityVariables, facilityId: mockFacility.id },
     },
     result: {
       data: {
         updateFacility: {
+          id: mockFacility.id,
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: UPDATE_FACILITY_MUTATION,
+      variables: { ...facilityVariables, facilityId: mockFacility.id },
+    },
+    result: {
+      data: {
+        updateFacility: {
+          id: mockFacility.id,
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: ADD_FACILITY_MUTATION,
+      variables: { ...facilityVariables },
+    },
+    result: {
+      data: {
+        addFacility: {
           id: mockFacility.id,
         },
       },
@@ -159,8 +215,11 @@ const mocks = [
 jest.mock("./FacilityForm", () => {
   return (f: FacilityFormProps) => {
     return (
-      <button type="submit" onClick={() => f.saveFacility(mockFacility)}>
-        I'm a magic fake button click me please
+      <button
+        type="submit"
+        onClick={() => f.saveFacility(mockFacilityFormData)}
+      >
+        Submit
       </button>
     );
   };
@@ -178,40 +237,72 @@ jest.mock("../../TelemetryService", () => ({
 
 describe("FacilityFormContainer", () => {
   const trackEventMock = jest.fn();
-
-  beforeEach(() => {
-    (getAppInsights as jest.Mock).mockImplementation(() => ({
-      trackEvent: trackEventMock,
-    }));
+  const renderWithMocks = (url: string) =>
     render(
-      <Provider store={store}>
-        <MockedProvider mocks={mocks}>
-          <MemoryRouter initialEntries={[`/facility/${mockFacility.id}`]}>
-            <Routes>
-              <Route
-                path="facility/:facilityId"
-                element={<FacilityFormContainer />}
-              />
-            </Routes>
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
+      <>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <MemoryRouter initialEntries={[url]}>
+              <Routes>
+                <Route
+                  path="facility/:facilityId"
+                  element={<FacilityFormContainer />}
+                />
+                <Route
+                  path="add-facility"
+                  element={<FacilityFormContainer />}
+                />
+              </Routes>
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
+        <SRToastContainer />
+      </>
     );
+
+  describe("Update facility", () => {
+    beforeEach(() => {
+      renderWithMocks(`/facility/${mockFacility.id}`);
+    });
+
+    afterEach(() => {
+      (getAppInsights as jest.Mock).mockReset();
+    });
+
+    it("redirects on successful facility update", async () => {
+      await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
+      );
+      expect(await screen.findByText("Redirected")).toBeInTheDocument();
+    });
+
+    it("tracks custom telemetry event on successful facility update", async () => {
+      (getAppInsights as jest.Mock).mockImplementation(() => ({
+        trackEvent: trackEventMock,
+      }));
+      await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
+      );
+      expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
+    });
   });
 
-  afterEach(() => {
-    (getAppInsights as jest.Mock).mockReset();
-  });
+  describe("Add facility", function () {
+    beforeEach(() => {
+      renderWithMocks("/add-facility/");
+    });
 
-  it("redirects on successful facility update", async () => {
-    await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-    await userEvent.click(screen.getByRole("button"));
-    expect(await screen.findByText("Redirected")).toBeInTheDocument();
-  });
-
-  it("tracks custom telemetry event on successful facility update", async () => {
-    await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-    await userEvent.click(screen.getByRole("button"));
-    expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
+    it("creates a new facility", async () => {
+      expect(await screen.findByRole("button", { name: /submit/i }));
+      await act(
+        async () =>
+          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
+      );
+      expect(await screen.findByText("Redirected")).toBeInTheDocument();
+    });
   });
 });

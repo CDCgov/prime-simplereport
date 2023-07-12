@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { SpecimenType } from "../../../generated/graphql";
@@ -9,7 +9,10 @@ import DeviceTypeFormContainer from "./DeviceTypeFormContainer";
 const mockCreateDeviceType = jest.fn();
 
 const addValue = async (name: string, value: string) => {
-  await userEvent.type(screen.getByLabelText(name, { exact: false }), value);
+  await act(
+    async () =>
+      await userEvent.type(screen.getByLabelText(name, { exact: false }), value)
+  );
 };
 
 jest.mock("../../../generated/graphql", () => {
@@ -90,25 +93,46 @@ describe("DeviceTypeFormContainer", () => {
     await addValue("Model", "Accula SARS-Cov-2 Test*");
     await addValue("Test length (minutes) ", "15");
 
-    await userEvent.click(screen.getAllByTestId("multi-select-input")[0]);
-    await userEvent.click(screen.getByText("Cotton (5309)"));
+    await act(
+      async () =>
+        await userEvent.click(screen.getAllByTestId("multi-select-input")[0])
+    );
+    await act(
+      async () => await userEvent.click(screen.getByText("Cotton (5309)"))
+    );
 
-    await userEvent.click(screen.getAllByTestId("multi-select-input")[1]);
-    await userEvent.click(screen.getAllByText("COVID-19")[0]);
+    await act(
+      async () =>
+        await userEvent.click(screen.getAllByTestId("multi-select-input")[1])
+    );
+    await act(
+      async () => await userEvent.click(screen.getAllByText("COVID-19")[0])
+    );
 
-    await userEvent.selectOptions(
-      screen.getByLabelText("Supported disease *"),
-      "COVID-19"
+    await act(
+      async () =>
+        await userEvent.selectOptions(
+          screen.getByLabelText("Supported disease *"),
+          "COVID-19"
+        )
     );
-    await userEvent.type(
-      screen.getByLabelText("Test performed code *"),
-      "1920-12"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Test performed code *"),
+          "1920-12"
+        )
     );
-    await userEvent.type(
-      screen.getByLabelText("Test ordered code *"),
-      "2102-91"
+    await act(
+      async () =>
+        await userEvent.type(
+          screen.getByLabelText("Test ordered code *"),
+          "2102-91"
+        )
     );
-    await userEvent.click(screen.getByText("Save changes"));
+    await act(
+      async () => await userEvent.click(screen.getByText("Save changes"))
+    );
 
     await waitFor(() =>
       expect(mockCreateDeviceType).toHaveBeenCalledWith({
@@ -119,7 +143,6 @@ describe("DeviceTypeFormContainer", () => {
           model: "Accula SARS-Cov-2 Test*",
           name: "Accula",
           swabTypes: ["887799"],
-          supportedDiseases: ["294729"],
           testLength: 15,
           supportedDiseaseTestPerformed: [
             {

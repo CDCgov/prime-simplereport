@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountReq
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.OrganizationQueueItem;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -24,7 +25,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 public class TestDataBuilder {
@@ -69,11 +69,14 @@ public class TestDataBuilder {
   public static Facility createEmptyFacility(boolean includeValidDevice) {
     DeviceType device = includeValidDevice ? createEmptyDeviceWithLoinc() : null;
     return new Facility(
-        null, null, null, null, null, null, null, device, null, Collections.emptyList());
+        FacilityBuilder.builder()
+            .defaultDeviceType(device)
+            .configuredDevices(Collections.emptyList())
+            .build());
   }
 
   public static DeviceType createEmptyDeviceWithLoinc() {
-    return new DeviceType(null, null, null, "95422-2", null, 0);
+    return new DeviceType(null, null, null, 0);
   }
 
   public static TestOrder createEmptyTestOrder() {
@@ -81,14 +84,11 @@ public class TestDataBuilder {
   }
 
   public static TestEvent createEmptyTestEvent() {
-    return new TestEvent(createEmptyTestOrder(), false, Collections.emptySet());
+    return new TestEvent(createEmptyTestOrder(), false);
   }
 
   public static TestEvent createEmptyTestEventWithValidDevice() {
-    return new TestEvent(
-        new TestOrder(createEmptyPerson(false), createEmptyFacility(true)),
-        false,
-        Collections.emptySet());
+    return new TestEvent(new TestOrder(createEmptyPerson(false), createEmptyFacility(true)), false);
   }
 
   public static Person createPerson() {
@@ -136,7 +136,7 @@ public class TestDataBuilder {
   }
 
   public static DeviceType createDeviceType() {
-    return new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E", 15);
+    return new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15);
   }
 
   public static DeviceType createDeviceTypeForCovid() {
@@ -144,13 +144,15 @@ public class TestDataBuilder {
     List<DeviceTypeDisease> supportedDiseaseTestPerformed = new ArrayList<>();
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease());
     return new DeviceType(
-        DEFAULT_DEVICE_TYPE,
-        "Acme",
-        "SFN",
-        "54321-BOOM",
-        15,
-        swabTypes,
-        supportedDiseaseTestPerformed);
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
+  }
+
+  public static DeviceType createDeviceTypeForBulkUpload() {
+    List<SpecimenType> swabTypes = new ArrayList<>();
+    List<DeviceTypeDisease> supportedDiseaseTestPerformed =
+        List.of(createDeviceTypeDisease(createCovidSupportedDiseaseForBulkUpload()));
+    return new DeviceType(
+        DEFAULT_DEVICE_TYPE, "Acme", "ID NOW", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
   public static DeviceType createDeviceTypeForMultiplex() {
@@ -161,13 +163,7 @@ public class TestDataBuilder {
     supportedDiseaseTestPerformed.add(createDeviceTypeDisease(createFluBSupportedDisease()));
 
     return new DeviceType(
-        DEFAULT_DEVICE_TYPE,
-        "Acme",
-        "SFN",
-        "54321-BOOM",
-        15,
-        swabTypes,
-        supportedDiseaseTestPerformed);
+        DEFAULT_DEVICE_TYPE, "Acme", "SFN", 15, swabTypes, supportedDiseaseTestPerformed);
   }
 
   public static SpecimenType createSpecimenType() {
@@ -180,16 +176,18 @@ public class TestDataBuilder {
     Provider doc = new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212");
 
     return new Facility(
-        createValidOrganization(),
-        "Testing Paradise",
-        "123456",
-        getAddress(),
-        "555-867-5309",
-        "facility@test.com",
-        doc,
-        deviceType,
-        specimenType,
-        List.of(deviceType));
+        FacilityBuilder.builder()
+            .org(createValidOrganization())
+            .facilityName("Testing Paradise")
+            .cliaNumber("123456")
+            .facilityAddress(getAddress())
+            .phone("555-867-5309")
+            .email("facility@test.com")
+            .orderingProvider(doc)
+            .defaultDeviceType(deviceType)
+            .defaultSpecimenType(specimenType)
+            .configuredDevices(List.of(deviceType))
+            .build());
   }
 
   private static AskOnEntrySurvey createEmptyAskOnEntrySurvey() {
@@ -223,6 +221,10 @@ public class TestDataBuilder {
     return testOrder;
   }
 
+  public static SupportedDisease createCovidSupportedDiseaseForBulkUpload() {
+    return new SupportedDisease("COVID-19", "94534-5");
+  }
+
   public static SupportedDisease createCovidSupportedDisease() {
     return new SupportedDisease("COVID-19", "96741-4");
   }
@@ -237,22 +239,40 @@ public class TestDataBuilder {
 
   public static Result createTestResult(
       TestOrder testOrder, SupportedDisease supportedDisease, TestResult testResult) {
-    return new Result(testOrder, supportedDisease, testResult);
+    Result result = new Result(supportedDisease, testResult);
+    result.setTestOrder(testOrder);
+    testOrder.getResults().add(result);
+    return result;
+  }
+
+  public static Result createTestResult(
+      TestEvent testEvent, SupportedDisease supportedDisease, TestResult testResult) {
+    Result result = new Result(supportedDisease, testResult);
+    result.setTestEvent(testEvent);
+    testEvent.getResults().add(result);
+    return result;
   }
 
   public static TestEvent createMultiplexTestEvent() {
     var testOrder = createTestOrder();
-    var covidTestResult =
-        createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
-    var fluAResult = createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
-    var fluBResult = createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
-    return new TestEvent(createTestOrder(), false, Set.of(covidTestResult, fluAResult, fluBResult));
+    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testOrder, createFluBSupportedDisease(), TestResult.POSITIVE);
+
+    TestEvent testEvent = new TestEvent(testOrder, false);
+    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluASupportedDisease(), TestResult.POSITIVE);
+    createTestResult(testEvent, createFluBSupportedDisease(), TestResult.POSITIVE);
+
+    return testEvent;
   }
 
   public static TestEvent createCovidTestEvent() {
     var testOrder = createTestOrder();
-    var covidTestResult =
-        createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
-    return new TestEvent(createTestOrder(), false, Set.of(covidTestResult));
+    createTestResult(testOrder, createCovidSupportedDisease(), TestResult.POSITIVE);
+
+    TestEvent testEvent = new TestEvent(testOrder, false);
+    createTestResult(testEvent, createCovidSupportedDisease(), TestResult.POSITIVE);
+    return testEvent;
   }
 }

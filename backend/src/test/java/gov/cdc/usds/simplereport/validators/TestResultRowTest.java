@@ -2,9 +2,13 @@ package gov.cdc.usds.simplereport.validators;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
+import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import gov.cdc.usds.simplereport.test_util.TestErrorMessageUtil;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.HashMap;
@@ -13,7 +17,10 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+@ExtendWith(SpringExtension.class)
 class TestResultRowTest {
   Map<String, String> validRowMap;
   final List<String> requiredFields =
@@ -395,9 +402,10 @@ class TestResultRowTest {
     invalidIndividualFields.put("residence_type", "not");
     invalidIndividualFields.put("test_result", "pos");
     invalidIndividualFields.put("test_result_status", "complete");
-    invalidIndividualFields.put("specimen_type", "swab");
+    invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
-    var testResultRow = new TestResultRow(invalidIndividualFields);
+    var testResultRow =
+        new TestResultRow(invalidIndividualFields, mockResultsUploaderCachingService());
 
     var actual = testResultRow.validateIndividualValues();
 
@@ -409,5 +417,12 @@ class TestResultRowTest {
             .collect(Collectors.toSet());
     assertThat(actual).hasSize(individualFields.size());
     individualFields.forEach(fieldName -> assertThat(messages).contains(fieldName));
+  }
+
+  private ResultsUploaderCachingService mockResultsUploaderCachingService() {
+    var resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceType()));
+    return resultsUploaderCachingService;
   }
 }
