@@ -349,16 +349,15 @@ const QueueItem = ({
     return false;
   };
 
-  const isNotACovidDevice = (deviceId: string) => {
+  const isFluOnly = (deviceId: string) => {
     if (devicesMap.has(deviceId)) {
-      return (
-        devicesMap
-          .get(deviceId)!
-          .supportedDiseaseTestPerformed.filter(
-            (disease) =>
-              disease.supportedDisease.name === MULTIPLEX_DISEASES.COVID_19
-          ).length === 0
-      );
+      return devicesMap
+        .get(deviceId)!
+        .supportedDiseaseTestPerformed.every(
+          (disease) =>
+            disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_A ||
+            disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_B
+        );
     }
     return false;
   };
@@ -1047,7 +1046,7 @@ const QueueItem = ({
                   deviceSupportsCovidOnlyResult={doesDeviceSupportMultiplexAndCovidOnlyResult(
                     deviceId
                   )}
-                  isNotACovidDevice={isNotACovidDevice(deviceId)}
+                  isFluOnly={isFluOnly(deviceId)}
                   onSubmit={onTestResultSubmit}
                   onChange={onTestResultChange}
                 />
