@@ -16,7 +16,8 @@ export const MaintenanceBanner: React.FC = () => {
   });
   useEffect(() => {
     const getMaintenanceMode = async () => {
-      const maintenance = await fetch("/maintenance.json");
+      const maintenanceUrl = `/maintenance.json?v=${Date.now()}`;
+      const maintenance = await fetch(maintenanceUrl);
       if (maintenance) {
         try {
           const maintenanceJSON = await maintenance.json();
