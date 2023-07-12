@@ -319,7 +319,7 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(false)
               .build());
     }
