@@ -12,14 +12,16 @@ import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.ResultUploadError;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
+import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import gov.cdc.usds.simplereport.service.model.reportstream.ReportStreamStatus;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
@@ -53,6 +55,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
+  private final ResultUploadErrorRepository errorRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final ResultsUploaderCachingService resultsUploaderCachingService;
@@ -103,10 +106,11 @@ public class TestResultUploadService {
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
   public TestResultUpload processResultCSV(InputStream csvStream) {
-
     TestResultUpload validationErrorResult = new TestResultUpload(UploadStatus.FAILURE);
 
     Organization org = _orgService.getCurrentOrganization();
+
+    var submissionId = UUID.randomUUID();
 
     byte[] content;
     try {
@@ -120,6 +124,10 @@ public class TestResultUploadService {
         testResultFileValidator.validate(new ByteArrayInputStream(content));
     if (!errors.isEmpty()) {
       validationErrorResult.setErrors(errors.toArray(FeedbackMessage[]::new));
+
+      errorRepository.saveAll(
+          errors.stream().map(error -> new ResultUploadError(org, error, submissionId)).toList());
+
       return validationErrorResult;
     }
 
@@ -142,9 +150,9 @@ public class TestResultUploadService {
         if (csvResponse.get() == null) {
           throw new DependencyFailureException("Unable to parse Report Stream response.");
         }
-        csvResult = saveSubmissionToDb(csvResponse.get(), org);
+        csvResult = saveSubmissionToDb(csvResponse.get(), org, submissionId);
         if (fhirResponse != null) {
-          saveSubmissionToDb(fhirResponse.get(), org);
+          saveSubmissionToDb(fhirResponse.get(), org, submissionId);
         }
       } catch (ExecutionException | InterruptedException e) {
         log.error("Error Processing Bulk Result Upload.", e);
@@ -364,7 +372,8 @@ public class TestResultUploadService {
     }
   }
 
-  private TestResultUpload saveSubmissionToDb(UploadResponse response, Organization org) {
+  private TestResultUpload saveSubmissionToDb(
+      UploadResponse response, Organization org, UUID submissionId) {
     TestResultUpload result = null;
     if (response != null) {
       var status = UploadResponse.parseStatus(response.getOverallStatus());
@@ -372,22 +381,38 @@ public class TestResultUploadService {
       result =
           new TestResultUpload(
               response.getId(),
+              submissionId,
               status,
               response.getReportItemCount(),
               org,
               response.getWarnings(),
               response.getErrors());
 
-      if (response.getOverallStatus() != ReportStreamStatus.ERROR) {
-        result = _repo.save(result);
+      result = _repo.save(result);
+
+      TestResultUpload finalResult = result;
+
+      if (response.getErrors() != null && response.getErrors().length > 0) {
+        for (var error : response.getErrors()) {
+          error.setSource(ResultUploadErrorSource.REPORT_STREAM);
+        }
+
+        errorRepository.saveAll(
+            Arrays.stream(response.getErrors())
+                .map(
+                    feedbackMessage ->
+                        new ResultUploadError(finalResult, org, feedbackMessage, submissionId))
+                .toList());
       }
     }
+
     return result;
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public TestResultUpload processHIVResultCSV(InputStream csvStream) {
     FeedbackMessage[] empty = {};
-    return new TestResultUpload(UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
+    return new TestResultUpload(
+        UUID.randomUUID(), UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
   }
 }
