@@ -1,11 +1,9 @@
 // 1. Override USWDS setting variables to create custom theme
 // https://designsystem.digital.gov/documentation/settings/
-@use "~@uswds/uswds/packages/uswds-core" with (
-
-);
+@use "@uswds/uswds/packages/uswds-core";
 
 // 2. Load USWDS styles with any setting overrides defined above
-@forward "@uswds";
+@forward "@uswds/uswds/packages/uswds";
 
 // 3. Load project's custom Sass
 @forward "PrimeStyles";
