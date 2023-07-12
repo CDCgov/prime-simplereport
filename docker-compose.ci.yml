@@ -5,7 +5,13 @@ services:
       SPRING_LIQUIBASE_ENABLED: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
   frontend:
-    image: ghcr.io/cdcgov/prime-simplereport/frontend-lighthouse:${DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION:-latest}
+    image: ghcr.io/cdcgov/prime-simplereport/frontend-lighthouse:${DOCKER_FRONTEND_IMAGE_VERSION:-latest}
+    environment:
+      REACT_APP_BASE_URL: https://localhost.simplereport.gov
+      REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
+      PUBLIC_URL: /app/
+      REACT_APP_OKTA_ENABLED: "false"
+      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
   mailhog:
     profiles:
       - donotstart

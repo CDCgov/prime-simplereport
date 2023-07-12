@@ -41,6 +41,15 @@ services:
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
     depends_on:
       - wiremock
+  frontend:
+    environment:
+      REACT_APP_OKTA_URL: $WIREMOCK_URL
+      REACT_APP_BASE_URL: https://localhost.simplereport.gov
+      REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
+      PUBLIC_URL: /app/
+      REACT_APP_OKTA_ENABLED: "true"
+      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
   mailhog:
     profiles:
       - donotstart

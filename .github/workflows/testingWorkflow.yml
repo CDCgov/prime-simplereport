@@ -23,9 +23,6 @@ jobs:
   build_frontend_image:
     uses: ./.github/workflows/buildFrontendImage.yml
 
-  build_frontend_lighthouse_image:
-    uses: ./.github/workflows/buildFrontendLighthouseImage.yml
-
   build_nginx_image:
     uses: ./.github/workflows/buildNginxImage.yml
 
@@ -50,18 +47,20 @@ jobs:
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_frontend_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
+
   lighthouse:
     needs:
       - build_backend_image
       - build_database_image
+      - build_frontend_image
       - build_nginx_image
-      - build_frontend_lighthouse_image
     uses: ./.github/workflows/lighthouse.yml
     with:
       DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
       DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
+
   tests:
     needs:
       - build_database_image
