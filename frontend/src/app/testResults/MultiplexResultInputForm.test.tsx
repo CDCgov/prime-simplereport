@@ -257,7 +257,7 @@ describe("TestResultInputForm", () => {
             testResult: TEST_RESULTS.POSITIVE,
           },
         ]}
-        isFluOnly={true}
+        isNotACovidDevice={true}
         onChange={onChangeFn}
         onSubmit={onSubmitFn}
       />

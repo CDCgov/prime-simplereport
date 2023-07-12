@@ -84,7 +84,7 @@ interface Props {
   testResults: MultiplexResultInput[];
   isSubmitDisabled?: boolean;
   deviceSupportsCovidOnlyResult?: boolean;
-  isFluOnly?: boolean;
+  isNotACovidDevice?: boolean;
   onChange: (value: MultiplexResult[]) => void;
   onSubmit: () => void;
 }
@@ -94,7 +94,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   testResults,
   isSubmitDisabled,
   deviceSupportsCovidOnlyResult,
-  isFluOnly,
+  isNotACovidDevice,
   onSubmit,
   onChange,
 }) => {
@@ -193,7 +193,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
         covidIsFilled &&
         !fluAIsFilled &&
         !fluBIsFilled) ||
-      (isFluOnly && fluAIsFilled && fluBIsFilled) ||
+      (isNotACovidDevice && fluAIsFilled && fluBIsFilled) ||
       (covidIsFilled && fluAIsFilled && fluBIsFilled)
     );
   };
@@ -206,7 +206,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   return (
     <form className="usa-form maxw-none multiplex-result-form">
       <div className="grid-row grid-gap-2">
-        {!isFluOnly && (
+        {!isNotACovidDevice && (
           <div
             className="grid-col-4"
             data-testid={`covid-test-result-${queueItemId}`}

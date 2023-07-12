@@ -349,7 +349,7 @@ const QueueItem = ({
     return false;
   };
 
-  const isFluOnlyDevice = (deviceId: string) => {
+  const isNotACovidDevice = (deviceId: string) => {
     if (devicesMap.has(deviceId)) {
       return (
         devicesMap
@@ -1047,7 +1047,7 @@ const QueueItem = ({
                   deviceSupportsCovidOnlyResult={doesDeviceSupportMultiplexAndCovidOnlyResult(
                     deviceId
                   )}
-                  isFluOnly={isFluOnlyDevice(deviceId)}
+                  isNotACovidDevice={isNotACovidDevice(deviceId)}
                   onSubmit={onTestResultSubmit}
                   onChange={onTestResultChange}
                 />
