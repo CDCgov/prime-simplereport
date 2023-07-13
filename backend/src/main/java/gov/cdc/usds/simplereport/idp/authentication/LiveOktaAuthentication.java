@@ -172,7 +172,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       passwordCred.setValue(new String(password));
       creds.setPassword(passwordCred);
       user.setCredentials(creds);
-      var updateUserRequest = new UpdateUserRequest().credentials(creds);
+      var updateUserRequest = new UpdateUserRequest();
+      updateUserRequest.setCredentials(creds);
       userApi.updateUser(userId, updateUserRequest, null);
     } catch (ApiException e) {
       if (e.getCode() == HttpStatus.BAD_REQUEST.value()
@@ -190,13 +191,13 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     try {
       User user = userApi.getUser(userId);
       UserCredentials creds = user.getCredentials();
-      RecoveryQuestionCredential recoveryCred =
-          new RecoveryQuestionCredential().question(question).answer(answer);
+      RecoveryQuestionCredential recoveryCred = new RecoveryQuestionCredential();
       recoveryCred.setQuestion(question);
       recoveryCred.setAnswer(answer);
       creds.setRecoveryQuestion(recoveryCred);
       user.setCredentials(creds);
-      var updateUserRequest = new UpdateUserRequest().credentials(creds);
+      var updateUserRequest = new UpdateUserRequest();
+      updateUserRequest.setCredentials(creds);
       userApi.updateUser(userId, updateUserRequest, null);
     } catch (ApiException e) {
       if (e.getCode() == HttpStatus.BAD_REQUEST.value() && !e.getMessage().isEmpty()) {
@@ -276,11 +277,17 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   @Override
   public FactorAndQrCode enrollAuthenticatorAppMfa(String userId, String appType)
       throws OktaAuthenticationFailureException {
-    UserFactor factor = new UserFactor().factorType(FactorType.TOKEN_SOFTWARE_TOTP);
+    UserFactor factor = new UserFactor();
+    factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);
     switch (appType.toLowerCase()) {
-      case "google" -> factor.setProvider(FactorProvider.GOOGLE);
-      case "okta" -> factor.setProvider(FactorProvider.OKTA);
-      default -> throw new OktaAuthenticationFailureException("App type not recognized.");
+      case "google":
+        factor.setProvider(FactorProvider.GOOGLE);
+        break;
+      case "okta":
+        factor.setProvider(FactorProvider.OKTA);
+        break;
+      default:
+        throw new OktaAuthenticationFailureException("App type not recognized.");
     }
     try {
       var enrolledFactor = userFactorApi.enrollFactor(userId, factor, null, null, null, null);
@@ -329,8 +336,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       String userId, String factorId, String attestation, String clientData)
       throws OktaAuthenticationFailureException {
     try {
-      ActivateFactorRequest activationRequest =
-          new ActivateFactorRequest().attestation(attestation).clientData(clientData);
+      ActivateFactorRequest activationRequest = new ActivateFactorRequest();
+      activationRequest.setAttestation(attestation);
+      activationRequest.setClientData(clientData);
       userFactorApi.activateFactor(userId, factorId, activationRequest);
     } catch (NullPointerException | ApiException e) {
       throw new OktaAuthenticationFailureException("Security key could not be activated", e);
@@ -347,7 +355,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void verifyActivationPasscode(String userId, String factorId, String passcode)
       throws OktaAuthenticationFailureException {
     try {
-      ActivateFactorRequest activateFactor = new ActivateFactorRequest().passCode(passcode.strip());
+      ActivateFactorRequest activateFactor = new ActivateFactorRequest();
+      activateFactor.setPassCode(passcode.strip());
       userFactorApi.activateFactor(userId, factorId, activateFactor);
     } catch (ApiException e) {
       throw new BadRequestException("Invalid security code.", e);

@@ -281,12 +281,14 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private void updateUser(User user, IdentityAttributes userIdentity) {
-    user.getProfile()
-        .firstName(userIdentity.getFirstName())
-        .middleName(userIdentity.getMiddleName())
-        .lastName(userIdentity.getLastName())
-        .honorificSuffix(userIdentity.getSuffix());
-    var updateRequest = new UpdateUserRequest().profile(user.getProfile());
+    user.getProfile().setFirstName(userIdentity.getFirstName());
+    user.getProfile().setMiddleName(userIdentity.getMiddleName());
+    user.getProfile().setLastName(userIdentity.getLastName());
+    // Is it our fault we don't accommodate honorific suffix? Or Okta's fault they
+    // don't have regular suffix? You decide.
+    user.getProfile().setHonorificSuffix(userIdentity.getSuffix());
+    var updateRequest = new UpdateUserRequest();
+    updateRequest.setProfile(user.getProfile());
     userApi.updateUser(user.getId(), updateRequest, false);
   }
 
@@ -305,9 +307,13 @@ public class LiveOktaRepository implements OktaRepository {
     throwErrorIfEmpty(
         users.stream(), "Cannot update email of Okta user with unrecognized username");
     User user = users.get(0);
-    UserProfile profile = user.getProfile().login(email).email(email);
+    // todo: chain these to be user.getProfile().login(email)...
+    UserProfile profile = user.getProfile();
+    profile.setLogin(email);
+    profile.setEmail(email);
     user.setProfile(profile);
-    var updateRequest = new UpdateUserRequest().profile(profile);
+    var updateRequest = new UpdateUserRequest();
+    updateRequest.setProfile(profile);
     try {
       userApi.updateUser(user.getId(), updateRequest, false);
     } catch (ApiException e) {
