@@ -19,11 +19,8 @@ simple-report:
       - https://simplereport.gov
   experian:
     enabled: true
-  fhir-reporting-enabled: false
 twilio:
   enabled: true
   from-number: "+14045312484"
 features:
   hivEnabled: false
-datahub:
-  fhir-enabled: false
