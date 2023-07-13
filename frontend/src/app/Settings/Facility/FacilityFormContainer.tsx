@@ -37,6 +37,7 @@ const FacilityFormContainer: any = (props: Props) => {
     FacilityFormData | undefined
   >(undefined);
   const dispatch = useDispatch();
+
   if (loading) {
     return <p> Loading... </p>;
   }
@@ -46,8 +47,15 @@ const FacilityFormContainer: any = (props: Props) => {
   if (!data) {
     return <p>Error: facility not found</p>;
   }
+
   if (saveSuccess) {
-    dispatch(updateFacility(facilityData));
+    dispatch(updateFacility(facilityData?.facility));
+
+    showSuccess(
+      "The settings for the facility have been updated",
+      "Updated Facility"
+    );
+
     if (props.newOrg) {
       window.location.pathname = process.env.PUBLIC_URL || "";
     }
@@ -98,20 +106,14 @@ const FacilityFormContainer: any = (props: Props) => {
           (response) => response?.data?.addFacility?.id
         );
 
-    setFacilityData(() => ({
-      ...facilityData,
-      id: savedFacilityId as string,
-    }));
+    facilityData.facility.id = savedFacilityId;
 
-    showSuccess(
-      "The settings for the facility have been updated",
-      "Updated Facility"
-    );
+    setFacilityData(facilityData);
     updateSaveSuccess(true);
   };
 
   const getFacilityData = (): Facility => {
-    const facility = data?.organization?.testingFacility.find(
+    const facility = data?.whoami?.organization?.testingFacility.find(
       (f) => f.id === facilityId
     );
     if (facility) {

@@ -74,6 +74,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
         <div
           class="position-relative bg-base-lightest"
           id="test-results-search-by-patient-input"
+          role="search"
         >
           <div
             class="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2"
@@ -131,7 +132,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 Date range (start)
               </label>
               <input
-                aria-label="Start Date"
                 class="usa-input"
                 id="start-date"
                 max="2022-09-26"
@@ -151,7 +151,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 Date range (end)
               </label>
               <input
-                aria-label="End Date"
                 class="usa-input"
                 id="end-date"
                 max="2022-09-26"

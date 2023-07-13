@@ -10,6 +10,7 @@ import static gov.cdc.usds.simplereport.api.Translators.toOptional;
 import gov.cdc.usds.simplereport.api.model.AddFacilityInput;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.UpdateFacilityInput;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -150,6 +151,7 @@ public class OrganizationMutationResolver {
   }
 
   @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public String editPendingOrganization(
       @Argument String orgExternalId,
       @Argument String name,
@@ -172,6 +174,7 @@ public class OrganizationMutationResolver {
    * Support-only mutation to mark a PendingOrganization as deleted. This is a soft deletion only.
    */
   @MutationMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public OrganizationQueueItem markPendingOrganizationAsDeleted(
       @Argument String orgExternalId, @Argument boolean deleted) {
     return organizationQueueService.markPendingOrganizationAsDeleted(orgExternalId, deleted);

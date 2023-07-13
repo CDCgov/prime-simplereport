@@ -4,7 +4,7 @@
   "identifier": {
     "value": "45e9539f-c9a4-4c86-b79d-4ba2c43f9ee0"
   },
-  "timestamp": "$BUNDLE_TIMESTAMP",
+  "timestamp": "$CURRENT_DATE_ZULU",
   "entry":[
     {
       "fullUrl":"MessageHeader/$MESSAGE_HEADER_ID",
@@ -82,7 +82,7 @@
             }
           }
         ],
-        "recorded": "$PROVENANCE_RECORDED_DATE"
+        "recorded": "$CURRENT_DATE_ZULU"
       }
     },
     {
@@ -96,7 +96,7 @@
           }
         ],
         "status":"final",
-        "effectiveDateTime": "$EFFECTIVE_DATE_TIME_TESTED",
+        "effectiveDateTime": "$CURRENT_DATE_TIMEZONE",
         "code":{
           "coding":[
             {
@@ -105,6 +105,7 @@
             }
           ]
         },
+        "issued" : "$CURRENT_DATE_TIMEZONE",
         "subject":{
           "reference":"Patient/55c53ed2-add5-47fb-884e-b4542ee64589"
         },
@@ -324,6 +325,10 @@
                 }
               ]
             }
+          },
+          {
+            "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime":"$CURRENT_DATE_TIMEZONE"
           }
         ],
         "status":"active",
@@ -451,7 +456,7 @@
             }
           ]
         },
-        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
+        "issued": "$CURRENT_DATE_ZULU"
       }
     },
     {
@@ -524,7 +529,7 @@
             }
           ]
         },
-        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
+        "issued": "$CURRENT_DATE_ZULU"
       }
     },
     {
@@ -597,7 +602,7 @@
             }
           ]
         },
-        "issued": "$EFFECTIVE_DATE_TIME_TESTED"
+        "issued": "$CURRENT_DATE_ZULU"
       }
     },
     {

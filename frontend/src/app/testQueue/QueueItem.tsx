@@ -285,6 +285,11 @@ const QueueItem = ({
   useEffect(() => {
     // Update test card changes from server
 
+    if (dirtyState) {
+      // dont update if not done saving changes
+      return;
+    }
+
     if (deviceId !== queueItem.deviceType.internalId) {
       updateDeviceId(queueItem.deviceType.internalId);
     }
@@ -340,6 +345,19 @@ const QueueItem = ({
               disease.supportedDisease.name !== MULTIPLEX_DISEASES.COVID_19
           ).length > 0
       );
+    }
+    return false;
+  };
+
+  const isFluOnly = (deviceId: string) => {
+    if (devicesMap.has(deviceId)) {
+      return devicesMap
+        .get(deviceId)!
+        .supportedDiseaseTestPerformed.every(
+          (disease) =>
+            disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_A ||
+            disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_B
+        );
     }
     return false;
   };
@@ -1028,6 +1046,7 @@ const QueueItem = ({
                   deviceSupportsCovidOnlyResult={doesDeviceSupportMultiplexAndCovidOnlyResult(
                     deviceId
                   )}
+                  isFluOnly={isFluOnly(deviceId)}
                   onSubmit={onTestResultSubmit}
                   onChange={onTestResultChange}
                 />

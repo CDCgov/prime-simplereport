@@ -1,0 +1,16 @@
+query GetCurrentOrganization {
+    whoami {
+        organization {
+            name
+            type
+        }
+    }
+}
+
+mutation AdminSetOrganization($name: String!, $type: String!) {
+    adminUpdateOrganization(name: $name, type: $type)
+}
+
+mutation SetOrganization($type: String!) {
+    updateOrganization(type: $type)
+}

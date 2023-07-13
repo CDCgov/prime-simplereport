@@ -34,6 +34,21 @@ export const mocks = [
     request: {
       query: GetFacilityResultsMultiplexWithCountDocument,
       variables: {
+        facilityId: "",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResultsPage: testResults,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetFacilityResultsMultiplexWithCountDocument,
+      variables: {
         facilityId: "1",
         pageNumber: 0,
         pageSize: 20,
