@@ -63,11 +63,8 @@ dependencies {
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.1.7'
-    implementation ('com.okta.sdk:okta-sdk-api:10.2.2') {
-        exclude group: 'org.slf4j', module: 'slf4j-simple'
-    }
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:10.2.0'
-    implementation 'org.mozilla:rhino:1.7.12'
+    implementation 'com.okta.sdk:okta-sdk-api:12.0.1'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:12.0.1'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'

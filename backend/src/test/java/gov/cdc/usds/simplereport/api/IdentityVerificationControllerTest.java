@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.okta.sdk.error.ResourceException;
 import gov.cdc.usds.simplereport.api.accountrequest.IdentityVerificationController;
 import gov.cdc.usds.simplereport.api.accountrequest.errors.AccountRequestFailureException;
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequestOrganizationCreateTemplate;
@@ -36,6 +35,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.ApiException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -337,7 +337,7 @@ class IdentityVerificationControllerTest extends BaseNonSpringBootTestConfigurat
     when(_orgQueueService.getUnverifiedQueuedOrganizationByExternalId(FAKE_ORG_EXTERNAL_ID))
         .thenReturn(Optional.of(queueItem));
     when(_orgQueueService.createAndActivateQueuedOrganization(queueItem))
-        .thenThrow(ResourceException.class);
+        .thenThrow(ApiException.class);
 
     MockHttpServletRequestBuilder builder =
         post(ResourceLinks.ID_VERIFICATION_SUBMIT_ANSWERS)

@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.idp.repository;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Clients;
-import com.okta.sdk.error.ResourceException;
+import com.okta.sdk.helper.ApiExceptionHelper;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.user.UserBuilder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
@@ -32,10 +32,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.openapitools.client.ApiException;
 import org.openapitools.client.api.ApplicationApi;
+import org.openapitools.client.api.ApplicationGroupsApi;
 import org.openapitools.client.api.GroupApi;
 import org.openapitools.client.api.UserApi;
 import org.openapitools.client.model.Application;
+import org.openapitools.client.model.Error;
+import org.openapitools.client.model.ErrorErrorCausesInner;
 import org.openapitools.client.model.Group;
 import org.openapitools.client.model.GroupType;
 import org.openapitools.client.model.UpdateUserRequest;
@@ -66,6 +70,7 @@ public class LiveOktaRepository implements OktaRepository {
   private final GroupApi groupApi;
   private final UserApi userApi;
   private final ApplicationApi applicationApi;
+  private final ApplicationGroupsApi applicationGroupsApi;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
@@ -74,14 +79,16 @@ public class LiveOktaRepository implements OktaRepository {
       CurrentTenantDataAccessContextHolder tenantDataContextHolder,
       GroupApi groupApi,
       ApplicationApi applicationApi,
-      UserApi userApi) {
+      UserApi userApi,
+      ApplicationGroupsApi applicationGroupsApi) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     this.groupApi = groupApi;
     this.userApi = userApi;
     this.applicationApi = applicationApi;
+    this.applicationGroupsApi = applicationGroupsApi;
     try {
       _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
@@ -106,9 +113,10 @@ public class LiveOktaRepository implements OktaRepository {
     this.groupApi = new GroupApi(client);
     this.userApi = new UserApi(client);
     this.applicationApi = new ApplicationApi(client);
+    this.applicationGroupsApi = new ApplicationGroupsApi(client);
     try {
       _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
@@ -152,12 +160,21 @@ public class LiveOktaRepository implements OktaRepository {
                 null,
                 null,
                 null,
-                "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"")
+                "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
+                null,
+                null)
             .stream();
     var qResults =
         groupApi
             .listGroups(
-                generateGroupOrgPrefix(organizationExternalId), null, null, null, null, null)
+                generateGroupOrgPrefix(organizationExternalId),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null)
             .stream();
     var orgGroups = Stream.concat(searchResults, qResults).distinct().toList();
     throwErrorIfEmpty(
@@ -190,13 +207,12 @@ public class LiveOktaRepository implements OktaRepository {
           .setGroups(new ArrayList<>(groupIdsToAdd))
           .setActive(active)
           .buildAndCreate(userApi);
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       if (e.getMessage()
-          .contains(
-              "HTTP 400, Okta E0000001 (Api validation failed: login - login: An object with this field already exists in the current organization")) {
+          .contains("An object with this field already exists in the current organization")) {
         throw new ConflictingUserException();
       } else {
-        throw new IllegalGraphqlArgumentException(e.getMessage());
+        throw new IllegalGraphqlArgumentException(prettifyOktaError(e));
       }
     }
 
@@ -238,7 +254,7 @@ public class LiveOktaRepository implements OktaRepository {
     final String orgDefaultGroupName =
         generateRoleGroupName(org.getExternalId(), OrganizationRole.getDefault());
     final var oktaGroupList =
-        groupApi.listGroups(orgDefaultGroupName, null, null, null, null, null);
+        groupApi.listGroups(orgDefaultGroupName, null, null, null, null, null, null, null);
 
     return oktaGroupList.stream()
         .filter(g -> orgDefaultGroupName.equals(g.getProfile().getName()))
@@ -291,6 +307,7 @@ public class LiveOktaRepository implements OktaRepository {
     throwErrorIfEmpty(
         users.stream(), "Cannot update email of Okta user with unrecognized username");
     User user = users.get(0);
+    // todo: chain these to be user.getProfile().login(email)...
     UserProfile profile = user.getProfile();
     profile.setLogin(email);
     profile.setEmail(email);
@@ -299,13 +316,12 @@ public class LiveOktaRepository implements OktaRepository {
     updateRequest.setProfile(profile);
     try {
       userApi.updateUser(user.getId(), updateRequest, false);
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       if (e.getMessage()
-          .contains(
-              "HTTP 400, Okta E0000001 (Api validation failed: login - login: An object with this field already exists in the current organization")) {
+          .contains("An object with this field already exists in the current organization")) {
         throw new ConflictingUserException();
       } else {
-        throw new IllegalGraphqlArgumentException(e.getMessage());
+        throw new IllegalGraphqlArgumentException(prettifyOktaError(e));
       }
     }
 
@@ -401,7 +417,14 @@ public class LiveOktaRepository implements OktaRepository {
       Map<String, Group> fullOrgGroupMap =
           groupApi
               .listGroups(
-                  null, null, null, null, null, "profile.name sw \"" + groupOrgPrefix + "\"")
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  "profile.name sw \"" + groupOrgPrefix + "\"",
+                  null,
+                  null)
               .stream()
               .filter(g -> GroupType.OKTA_GROUP == g.getType())
               .collect(Collectors.toMap(g -> g.getProfile().getName(), Function.identity()));
@@ -437,7 +460,7 @@ public class LiveOktaRepository implements OktaRepository {
     throwErrorIfEmpty(
         users.stream(), "Cannot reset password for Okta user with unrecognized username");
     User user = users.get(0);
-    userApi.resetPassword(user.getId(), true);
+    userApi.generateResetPasswordToken(user.getId(), true, false);
   }
 
   @Override
@@ -518,7 +541,7 @@ public class LiveOktaRepository implements OktaRepository {
               .setName(roleGroupName)
               .setDescription(roleGroupDescription)
               .buildAndCreate(groupApi);
-      applicationApi.assignGroupToApplication(_app.getId(), g.getId(), null);
+      applicationGroupsApi.assignGroupToApplication(_app.getId(), g.getId(), null);
 
       log.info("Created Okta group={}", roleGroupName);
     }
@@ -527,7 +550,7 @@ public class LiveOktaRepository implements OktaRepository {
   private List<User> getOrgAdminUsers(Organization org) {
     String externalId = org.getExternalId();
     String roleGroupName = generateRoleGroupName(externalId, OrganizationRole.ADMIN);
-    var groups = groupApi.listGroups(roleGroupName, null, null, null, null, null);
+    var groups = groupApi.listGroups(roleGroupName, null, null, null, null, null, null, null);
     throwErrorIfEmpty(groups.stream(), "Cannot activate nonexistent Okta organization");
     Group group = groups.get(0);
     return groupApi.listGroupUsers(group.getId(), null, null);
@@ -570,7 +593,8 @@ public class LiveOktaRepository implements OktaRepository {
     // Only create the facility group if the facility's organization has already been created
     String orgExternalId = facility.getOrganization().getExternalId();
     var orgGroups =
-        groupApi.listGroups(generateGroupOrgPrefix(orgExternalId), null, null, null, null, null);
+        groupApi.listGroups(
+            generateGroupOrgPrefix(orgExternalId), null, null, null, null, null, null, null);
     throwErrorIfEmpty(
         orgGroups.stream(),
         String.format(
@@ -584,7 +608,7 @@ public class LiveOktaRepository implements OktaRepository {
             .setName(facilityGroupName)
             .setDescription(generateFacilityGroupDescription(orgName, facility.getFacilityName()))
             .buildAndCreate(groupApi);
-    applicationApi.assignGroupToApplication(_app.getId(), g.getId(), null);
+    applicationGroupsApi.assignGroupToApplication(_app.getId(), g.getId(), null);
 
     log.info("Created Okta group={}", facilityGroupName);
   }
@@ -592,7 +616,7 @@ public class LiveOktaRepository implements OktaRepository {
   public void deleteFacility(Facility facility) {
     String orgExternalId = facility.getOrganization().getExternalId();
     String groupName = generateFacilityGroupName(orgExternalId, facility.getInternalId());
-    var groups = groupApi.listGroups(groupName, null, null, null, null, null);
+    var groups = groupApi.listGroups(groupName, null, null, null, null, null, null, null);
     for (Group group : groups) {
       groupApi.deleteGroup(group.getId());
     }
@@ -602,7 +626,8 @@ public class LiveOktaRepository implements OktaRepository {
   public void deleteOrganization(Organization org) {
     String externalId = org.getExternalId();
     var orgGroups =
-        groupApi.listGroups(generateGroupOrgPrefix(externalId), null, null, null, null, null);
+        groupApi.listGroups(
+            generateGroupOrgPrefix(externalId), null, null, null, null, null, null, null);
     for (Group group : orgGroups) {
       groupApi.deleteGroup(group.getId());
     }
@@ -699,5 +724,24 @@ public class LiveOktaRepository implements OktaRepository {
       user = qUsersStream.filter(u -> u.getProfile().getLogin().equals(username)).findFirst();
     }
     return user.orElseThrow(() -> new IllegalGraphqlArgumentException(errorMessage));
+  }
+
+  private String prettifyOktaError(ApiException e) {
+    var errorMessage = "Code: " + e.getCode() + "; Message: " + e.getMessage();
+    if (e.getResponseBody() != null) {
+      Error error = ApiExceptionHelper.getError(e);
+      if (error != null) {
+        errorMessage =
+            "Okta Error: " + error.getErrorCode() + "; Error summary: " + error.getErrorSummary();
+        if (error.getErrorCauses() != null) {
+          errorMessage +=
+              "; Error Cause(s): "
+                  + error.getErrorCauses().stream()
+                      .map(ErrorErrorCausesInner::getErrorSummary)
+                      .collect(Collectors.joining(", "));
+        }
+      }
+    }
+    return errorMessage;
   }
 }

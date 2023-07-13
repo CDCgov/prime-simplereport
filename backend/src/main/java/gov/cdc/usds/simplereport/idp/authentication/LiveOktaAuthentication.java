@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Clients;
-import com.okta.sdk.error.ResourceException;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
@@ -12,6 +11,7 @@ import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import org.json.JSONObject;
 import org.openapitools.client.ApiClient;
+import org.openapitools.client.ApiException;
 import org.openapitools.client.api.UserApi;
 import org.openapitools.client.api.UserFactorApi;
 import org.openapitools.client.model.ActivateFactorRequest;
@@ -126,7 +126,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
         default:
           return UserAccountStatus.ACTIVE;
       }
-    } catch (NullPointerException | ResourceException e) {
+    } catch (NullPointerException | ApiException e) {
       return UserAccountStatus.UNKNOWN;
     }
   }
@@ -175,10 +175,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       var updateUserRequest = new UpdateUserRequest();
       updateUserRequest.setCredentials(creds);
       userApi.updateUser(userId, updateUserRequest, null);
-    } catch (ResourceException e) {
-      if (e.getStatus() == HttpStatus.BAD_REQUEST.value()
+    } catch (ApiException e) {
+      if (e.getCode() == HttpStatus.BAD_REQUEST.value()
           && e.getMessage().toLowerCase().contains("password requirements")) {
-        throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
+        throw new BadRequestException(e.getResponseBody(), e);
       }
       throw new OktaAuthenticationFailureException("Error setting user's password", e);
     }
@@ -199,9 +199,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       var updateUserRequest = new UpdateUserRequest();
       updateUserRequest.setCredentials(creds);
       userApi.updateUser(userId, updateUserRequest, null);
-    } catch (ResourceException e) {
-      if (e.getStatus() == HttpStatus.BAD_REQUEST.value() && !e.getCauses().isEmpty()) {
-        throw new BadRequestException(e.getCauses().get(0).getSummary(), e);
+    } catch (ApiException e) {
+      if (e.getCode() == HttpStatus.BAD_REQUEST.value() && !e.getMessage().isEmpty()) {
+        throw new BadRequestException(e.getResponseBody(), e);
       }
       throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
     }
@@ -219,8 +219,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       SmsUserFactor smsFactor = new SmsUserFactor().profile(profile);
       smsFactor.setFactorType(FactorType.SMS);
       return userFactorApi.enrollFactor(userId, smsFactor, null, null, null, null).getId();
-    } catch (ResourceException e) {
-      if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
+    } catch (ApiException e) {
+      if (e.getCode() == HttpStatus.BAD_REQUEST.value()) {
         throw new BadRequestException(
             "Invalid phone number. Please enter a mobile phone number that can receive text messages.",
             e);
@@ -241,8 +241,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       CallUserFactor callFactor = new CallUserFactor().profile(profile);
       callFactor.setFactorType(FactorType.CALL);
       return userFactorApi.enrollFactor(userId, callFactor, null, null, null, null).getId();
-    } catch (ResourceException e) {
-      if (e.getStatus() == HttpStatus.BAD_REQUEST.value()) {
+    } catch (ApiException e) {
+      if (e.getCode() == HttpStatus.BAD_REQUEST.value()) {
         throw new BadRequestException("Invalid phone number.", e);
       }
       throw new OktaAuthenticationFailureException("Error setting voice call MFA", e);
@@ -262,7 +262,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       EmailUserFactor emailFactor = new EmailUserFactor().profile(profile);
       emailFactor.setFactorType(FactorType.EMAIL);
       return userFactorApi.enrollFactor(userId, emailFactor, null, null, null, null).getId();
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       throw new OktaAuthenticationFailureException("Error setting email MFA", e);
     }
   }
@@ -299,7 +299,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
               .getJSONObject("qrcode")
               .getString("href");
       return new FactorAndQrCode(enrolledFactor.getId(), qrCode);
-    } catch (NullPointerException | ResourceException | IllegalArgumentException e) {
+    } catch (NullPointerException | ApiException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException("Authentication app could not be enrolled", e);
     }
   }
@@ -325,7 +325,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
           ACTIVATION_KEY, responseJson.getJSONObject("_embedded").getJSONObject(ACTIVATION_KEY));
       response.put("factorId", responseJson.getString("id"));
       return response;
-    } catch (RestClientException | NullPointerException | ResourceException e) {
+    } catch (RestClientException | NullPointerException | ApiException e) {
       throw new OktaAuthenticationFailureException("Security key could not be enrolled", e);
     }
   }
@@ -340,7 +340,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activationRequest.setAttestation(attestation);
       activationRequest.setClientData(clientData);
       userFactorApi.activateFactor(userId, factorId, activationRequest);
-    } catch (NullPointerException | ResourceException e) {
+    } catch (NullPointerException | ApiException e) {
       throw new OktaAuthenticationFailureException("Security key could not be activated", e);
     }
   }
@@ -358,7 +358,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       ActivateFactorRequest activateFactor = new ActivateFactorRequest();
       activateFactor.setPassCode(passcode.strip());
       userFactorApi.activateFactor(userId, factorId, activateFactor);
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       throw new BadRequestException("Invalid security code.", e);
     } catch (NullPointerException | IllegalArgumentException e) {
       throw new OktaAuthenticationFailureException(
@@ -387,7 +387,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       ResponseEntity<String> response =
           _restTemplate.exchange(getFactorUrl, HttpMethod.GET, headers, String.class);
       getFactorResponse = new JSONObject(response.getBody());
-    } catch (RestClientException | ResourceException e) {
+    } catch (RestClientException | ApiException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while fetching the user's factor.", e);
     }
@@ -411,7 +411,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
         throw new BadRequestException(
             "We're sending over a security code. Please wait 30 seconds before trying again.", e);
       }
-    } catch (RestClientException | ResourceException | NullPointerException e) {
+    } catch (RestClientException | ApiException | NullPointerException e) {
       throw new OktaAuthenticationFailureException(
           "The requested activation factor could not be resent.", e);
     }
