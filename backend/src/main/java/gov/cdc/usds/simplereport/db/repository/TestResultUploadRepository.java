@@ -17,7 +17,8 @@ public interface TestResultUploadRepository extends AuditedEntityRepository<Test
   @Query(
       "SELECT record FROM TestResultUpload record WHERE (record.organization = :org) and"
           + " (cast(:startDate as date) is null or record.createdAt >= :startDate) and"
-          + " (cast(:endDate as date) is null or record.createdAt <= :endDate)")
+          + " (cast(:endDate as date) is null or record.createdAt <= :endDate) and"
+          + " record.status <> 'FAILURE'")
   Page<TestResultUpload> findAll(
       @Param("org") Organization org,
       @Param("startDate") Date startDate,
