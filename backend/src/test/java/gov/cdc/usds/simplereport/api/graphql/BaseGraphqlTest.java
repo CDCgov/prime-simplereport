@@ -248,7 +248,11 @@ public abstract class BaseGraphqlTest extends BaseAuthenticatedFullStackTest {
     String originalUsername = getUsername();
     useOrgAdmin();
     Iterator<JsonNode> facilitiesIter =
-        runQuery("org-settings-query").get("organization").get("testingFacility").elements();
+        runQuery("org-settings-query")
+            .get("whoami")
+            .get("organization")
+            .get("testingFacility")
+            .elements();
     Map<String, UUID> facilities = new HashMap<>();
     while (facilitiesIter.hasNext()) {
       JsonNode facility = facilitiesIter.next();

@@ -642,7 +642,6 @@ export type Query = {
   deviceTypes: Array<DeviceType>;
   facilities?: Maybe<Array<Maybe<Facility>>>;
   facility?: Maybe<Facility>;
-  /** @deprecated this information is already loaded from the 'whoami' endpoint */
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
@@ -674,6 +673,10 @@ export type QueryFacilitiesArgs = {
 };
 
 export type QueryFacilityArgs = {
+  id: Scalars["ID"];
+};
+
+export type QueryOrganizationArgs = {
   id: Scalars["ID"];
 };
 
