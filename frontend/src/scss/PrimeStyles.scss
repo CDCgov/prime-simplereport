@@ -1,3 +1,5 @@
+@use "utilities";
+
 .prime-home {
   background-color: color("base-lightest");
   padding-top: units(2);
@@ -1178,6 +1180,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .usa-site-alert {
   .usa-alert--emergency {
-    max-width: 1200px;
+    max-width: utilities.$site-max-width;
   }
 }
