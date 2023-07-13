@@ -158,7 +158,8 @@ class FileUploadControllerTest extends BaseFullStackTest {
 
     Organization organization = new Organization("best org", "lab", "best-org-123", true);
     TestResultUpload testResultUpload =
-        new TestResultUpload(reportId, UploadStatus.SUCCESS, 5, organization, null, null);
+        new TestResultUpload(
+            reportId, UUID.randomUUID(), UploadStatus.SUCCESS, 5, organization, null, null);
     when(testResultUploadService.processResultCSV(any(InputStream.class)))
         .thenReturn(testResultUpload);
 

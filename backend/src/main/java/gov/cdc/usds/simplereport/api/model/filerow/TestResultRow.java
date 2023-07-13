@@ -19,6 +19,8 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYes
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static java.util.Collections.emptyList;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
@@ -367,7 +369,8 @@ public class TestResultRow implements FileRow {
             .message(errorMessage)
             .fieldRequired(true)
             .fieldHeader(EQUIPMENT_MODEL_NAME)
-            .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+            .errorType(ResultUploadErrorType.INVALID_DATA)
+            .source(ResultUploadErrorSource.SIMPLE_REPORT)
             .build());
   }
 
