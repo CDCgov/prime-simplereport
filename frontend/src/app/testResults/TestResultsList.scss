@@ -1,4 +1,5 @@
-@import "../../scss/settings/app-settings.scss";
+@use "../../scss/utilities";
+@use "../../scss/settings/app-settings.scss";
 
 .sr-test-results-list {
   .sticky-heading {
@@ -144,5 +145,5 @@
 }
 
 .grid-container.results-wide-container {
-  max-width: 1200px;
+  max-width: utilities.$site-max-width;
 }

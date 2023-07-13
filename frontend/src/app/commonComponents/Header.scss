@@ -1,5 +1,7 @@
+@use "../../scss/utilities";
+
 .usa-nav-container.prime-header {
-  max-width: 1200px;
+  max-width: utilities.$site-max-width;
 
   .prime-nav-link {
     font-size: 1.2rem;
