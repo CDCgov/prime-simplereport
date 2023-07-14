@@ -1,4 +1,4 @@
-name: Build backend docker image
+name: Build frontend docker image with okta disabled
 
 on:
   workflow_dispatch:
@@ -12,23 +12,23 @@ on:
     outputs:
       version:
         description: docker image version
-        value: ${{ jobs.build_and_push_backend_image.outputs.version }}
+        value: ${{ jobs.build_and_push_frontend_image.outputs.version }}
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/backend
+  IMAGE_NAME: ${{ github.repository }}/frontend-lighthouse
 
 jobs:
 
-  backend_changes:
+  frontend_changes:
     with:
-      what_to_check: backend
+      what_to_check: frontend
     uses: ./.github/workflows/checkForChanges.yml
 
-  build_and_push_backend_image:
-    # We want to build the image if there are changes in the backend folder, or if we are forcing a build, or if we are on the main branch
-    if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
-    needs: [backend_changes]
+  build_and_push_frontend_image:
+    # We want to build the image if there are changes in the frontend folder, or if we are forcing a build, or if we are on the main branch
+    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    needs: [frontend_changes]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -61,10 +61,16 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./
-          file: ./backend/Dockerfile
+          file: ./frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            "REACT_APP_BASE_URL=https://localhost.simplereport.gov"
+            "REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api"
+            "PUBLIC_URL=/app/"
+            "REACT_APP_OKTA_ENABLED=false"
+            "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
 
       - name: Set version output
         shell: bash

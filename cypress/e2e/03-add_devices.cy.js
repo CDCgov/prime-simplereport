@@ -28,7 +28,7 @@ describe("Adding covid only and multiplex devices", () => {
       cy.contains("Device type");
       cy.contains("Save changes").should("be.not.enabled");
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
       cy.addDevice(covidOnlyDevice);
     });
 
@@ -51,7 +51,7 @@ describe("Adding covid only and multiplex devices", () => {
         .click();
       cy.get('input[name="name"]').should("have.value", multiplexDevice.name);
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
       cy.get('input[name="model"]').should("have.value", multiplexDevice.model);
       cy.get('input[name="manufacturer"]').should("have.value", multiplexDevice.manufacturer);
       cy.get(".pill").should("have.length", 1);
@@ -84,7 +84,7 @@ describe("Adding covid only and multiplex devices", () => {
       cy.wait("@GetFacilities");
       cy.contains("Manage devices");
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
       cy.get('input[role="combobox"]').first().type(covidOnlyDevice.name);
       cy.get('li[id="multi-select-deviceTypes-list--option-0"]').click();
       cy.get('input[role="combobox"]').first().type(multiplexDevice.name);

@@ -33,7 +33,7 @@ describe("Conducting a COVID test", () => {
     cy.wait("@GetPatientsByFacilityForQueue")
 
     cy.injectSRAxe();
-    cy.checkA11y(); // Conduct Tests page
+    cy.checkAccessibility(); // Conduct Tests page
   });
   it("begins a test", () => {
     cy.get(".results-dropdown").within(() => {
@@ -47,7 +47,7 @@ describe("Conducting a COVID test", () => {
     );
 
     // Test a11y on the AoE modal
-    cy.checkA11y();
+    cy.checkAccessibility();
   });
   it("fills out the aoe questions and submits", () => {
     cy.get(".ReactModal__Content").within(() => {
@@ -63,7 +63,7 @@ describe("Conducting a COVID test", () => {
 
     cy.get(queueCard).contains("COVID-19 results");
 
-    cy.checkA11y(); // Test Card page
+    cy.checkAccessibility(); // Test Card page
   });
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
@@ -83,7 +83,7 @@ describe("Conducting a COVID test", () => {
     cy.wait("@EditQueueItem");
 
     cy.get(queueCard).within(() => {
-      cy.get(".prime-test-result-submit button").last().click();
+      cy.get(".prime-test-result-submit button").last().should("be.enabled").click();
     });
 
     cy.wait("@SubmitQueueItem");
@@ -96,7 +96,7 @@ describe("Conducting a COVID test", () => {
     cy.get(".usa-table").contains(patientName);
 
     // Test a11y on the Results page
-    cy.checkA11y();
+    cy.checkAccessibility();
   });
   it("stores the patient link", () => {
     cy.get(".sr-test-result-row").then(($row) => {
