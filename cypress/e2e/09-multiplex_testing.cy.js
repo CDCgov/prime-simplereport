@@ -62,7 +62,7 @@ describe("Testing with multiplex devices", () => {
 
     cy.contains(`${patient.lastName}, ${patient.firstName}`);
     cy.injectSRAxe();
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     const queueCard = `div[data-testid="test-card-${patient.internalId}"]`;
     cy.get(queueCard).within(() => {
@@ -95,7 +95,6 @@ describe("Testing with multiplex devices", () => {
     cy.get(queueCard).within(() => {
       cy.get("@submitBtn").should("be.enabled").click();
     });
-
     cy.contains("Submit anyway").click();
     cy.wait("@SubmitQueueItem");
     cy.wait("@GetFacilityQueue", {timeout: 20000});
