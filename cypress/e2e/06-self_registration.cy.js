@@ -12,7 +12,7 @@ describe("Patient self registration", () => {
 
     // Test a11y on the Patient self registration page
     cy.injectSRAxe();
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     cy.get("#org-link").then(($link) => cy.visit($link.val()));
   });
@@ -20,13 +20,13 @@ describe("Patient self registration", () => {
     cy.contains("Terms of service");
 
     cy.injectSRAxe();
-    cy.checkA11y(); // Terms of Service
+    cy.checkAccessibility(); // Terms of Service
   });
   it("accepts the terms of service", () => {
     cy.contains("I agree").click();
     cy.get("#registration-container").contains("General information");
 
-    cy.checkA11y(); // Info form
+    cy.checkAccessibility(); // Info form
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -59,13 +59,13 @@ describe("Patient self registration", () => {
         '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
     ).scrollIntoView().click();
 
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get("#self-reg-confirmation").contains(
       "thanks for completing your patient profile"
     );
 
-    cy.checkA11y(); // Confirmation page
+    cy.checkAccessibility(); // Confirmation page
   });
 });

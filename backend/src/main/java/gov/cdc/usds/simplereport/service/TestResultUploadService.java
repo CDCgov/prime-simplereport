@@ -171,7 +171,8 @@ public class TestResultUploadService {
 
       // row is passed by object reference here
       modifyRowSpecimenNameToSNOMED(row, headers);
-      modifyRowDatetimeStrings(row, headers);
+      // Disabling timezone conversion for now
+      // modifyRowDatetimeStrings(row, headers);
 
       rows[i] = String.join(",", row);
     }

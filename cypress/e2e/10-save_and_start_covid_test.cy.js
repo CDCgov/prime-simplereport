@@ -42,7 +42,7 @@ describe('Save and start covid test',()=>{
       cy.contains("General information").should('exist');
       // a11y scan of edit patient page
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
       cy.get('input[name="middleName"]').clear().type(testNumber().toString(10));
       cy.get(".prime-save-patient-changes-start-test").click();
     });
@@ -67,7 +67,7 @@ describe('Save and start covid test',()=>{
       cy.contains("New loss of taste").should('exist').click();
 
       // Test a11y on the AoE form
-      cy.checkA11y();
+      cy.checkAccessibility();
 
       cy.contains("button", "Continue").click();
       cy.get(".prime-home").contains(patientName);
@@ -76,7 +76,7 @@ describe('Save and start covid test',()=>{
       cy.wait("@GetFacilityQueue", {timeout: 20000});
 
       // Test a11y on the Test Queue page
-      cy.checkA11y();
+      cy.checkAccessibility();
     });
   });
 
@@ -93,7 +93,7 @@ describe('Save and start covid test',()=>{
       cy.get(".prime-edit-patient").contains("Add new patient");
 
       cy.injectSRAxe();
-      cy.checkA11y(); // New Patient page
+      cy.checkAccessibility(); // New Patient page
     });
 
     it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
@@ -116,7 +116,7 @@ describe('Save and start covid test',()=>{
         '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
       ).click();
 
-      cy.checkA11y();
+      cy.checkAccessibility();
 
       cy.get(".modal__container #save-confirmed-address").click();
       cy.url().should("include", "queue");

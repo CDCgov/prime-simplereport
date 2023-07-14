@@ -22,7 +22,7 @@ public class DateTimeUtils {
   private static final int DEFAULT_HOUR = 12;
 
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
+      DateTimeFormatter.ofPattern("M/d/yyyy[ H:mm]");
 
   public static final String TIMEZONE_SUFFIX_REGEX =
       "^(0?[1-9]|1[0-2])/(0?[1-9]|1\\d|2\\d|3[01])/\\d{4}( ([0-1]?\\d|2[0-3]):[0-5]\\d)( \\S+)$";
