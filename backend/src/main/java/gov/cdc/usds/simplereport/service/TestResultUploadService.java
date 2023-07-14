@@ -2,10 +2,14 @@ package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
@@ -31,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -154,6 +159,9 @@ public class TestResultUploadService {
         if (fhirResponse != null) {
           saveSubmissionToDb(fhirResponse.get(), org, submissionId);
         }
+      } catch (CsvProcessingException e) {
+        log.error("Error processing CSV in Bulk Result Upload", e);
+        Thread.currentThread().interrupt();
       } catch (ExecutionException | InterruptedException e) {
         log.error("Error Processing Bulk Result Upload.", e);
         Thread.currentThread().interrupt();
@@ -163,109 +171,115 @@ public class TestResultUploadService {
   }
 
   private byte[] transformCsvContent(byte[] content) {
-    String[] rows = new String(content, StandardCharsets.UTF_8).split("\n");
-    List<String> headers = Arrays.stream(rows[0].split(",")).toList();
-
-    for (int i = 1; i < rows.length; i++) {
-      var row = rows[i].split(",", -1);
-
-      // row is passed by object reference here
-      modifyRowSpecimenNameToSNOMED(row, headers);
-      // Disabling timezone conversion for now
-      // modifyRowDatetimeStrings(row, headers);
-
-      rows[i] = String.join(",", row);
+    List<Map<String, String>> updatedRows = new ArrayList<>();
+    final MappingIterator<Map<String, String>> valueIterator =
+        getIteratorForCsv(new ByteArrayInputStream(content));
+    while (valueIterator.hasNext()) {
+      final Map<String, String> row;
+      try {
+        row = getNextRow(valueIterator);
+      } catch (CsvProcessingException ex) {
+        // anything that would land here should have been caught and handled by the file validator
+        log.error("Unable to parse csv.", ex);
+        continue;
+      }
+      updatedRows.add(transformCsvRow(row));
     }
-    return String.join("\n", rows).getBytes();
-  }
 
-  private void modifyRowSpecimenNameToSNOMED(String[] row, List<String> headers) {
-    var snomedMap = resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap();
-    int specimenTypeIndex = headers.indexOf(SPECIMEN_TYPE_COLUMN_NAME);
-    var specimenTypeName = Arrays.stream(row).toList().get(specimenTypeIndex).toLowerCase();
-    if (specimenTypeName.matches(ALPHABET_REGEX)) {
-      row[specimenTypeIndex] = snomedMap.get(specimenTypeName);
+    var csvMapper = new CsvMapper();
+
+    StringBuilder csvContent = new StringBuilder();
+
+    var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
+    csvContent.append(String.join(",", headers));
+
+    for (var row : updatedRows) {
+      var rowData =
+          headers.stream().map(header -> row.get(header) == null ? "" : row.get(header)).toList();
+      csvContent.append("\n");
+      try {
+        var rowString = csvMapper.writeValueAsString(rowData);
+        csvContent.append(rowString);
+      } catch (JsonProcessingException e) {
+        throw new CsvProcessingException("Error writing transformed csv rows", e);
+      }
     }
+
+    return csvContent.toString().getBytes(StandardCharsets.UTF_8);
   }
 
-  private String valueAtRowIndex(int index, String[] row) {
-    return Arrays.stream(row).toList().get(index).toLowerCase();
-  }
+  private Map<String, String> transformCsvRow(Map<String, String> row) {
+    var updatedSpecimenType =
+        modifyRowSpecimenNameToSNOMED(row.get(SPECIMEN_TYPE_COLUMN_NAME).toLowerCase());
 
-  private void modifyRowDatetimeStrings(String[] row, List<String> headers) {
-    var testResultDateIndex = headers.indexOf(TEST_RESULT_DATE_COLUMN_NAME);
-    var orderTestDateIndex = headers.indexOf(ORDER_TEST_DATE_COLUMN_NAME);
-    var specimenCollectionDateIndex = headers.indexOf(SPECIMEN_COLLECTION_DATE_COLUMN_NAME);
-    var specimenReceivedDateIndex = headers.indexOf(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME);
-    var dateResultReleasedIndex = headers.indexOf(DATE_RESULT_RELEASED_COLUMN_NAME);
+    var testingLabAddr =
+        new StreetAddress(
+            row.get("testing_lab_street"),
+            row.get("testing_lab_street2"),
+            row.get("testing_lab_city"),
+            row.get("testing_lab_state"),
+            row.get("testing_lab_zip_code"),
+            null);
+    var providerAddr =
+        new StreetAddress(
+            row.get("ordering_provider_street"),
+            row.get("ordering_provider_street2"),
+            row.get("ordering_provider_city"),
+            row.get("ordering_provider_state"),
+            row.get("ordering_provider_zip_code"),
+            null);
 
-    var testResultDate = valueAtRowIndex(testResultDateIndex, row);
-    var orderTestDate = valueAtRowIndex(orderTestDateIndex, row);
-    var specimenCollectionDate = valueAtRowIndex(specimenCollectionDateIndex, row);
-    var specimenReceivedDate = valueAtRowIndex(specimenReceivedDateIndex, row);
-    var dateResultReleased = valueAtRowIndex(dateResultReleasedIndex, row);
+    var testResultDate =
+        convertToZonedDateTime(
+            row.get(TEST_RESULT_DATE_COLUMN_NAME), resultsUploaderCachingService, testingLabAddr);
 
-    var testingLabAddr = getTestingLabAddress(row, headers);
-    var providerAddr = getOrderingFacilityAddress(row, headers);
+    var orderTestDate =
+        convertToZonedDateTime(
+            row.get(ORDER_TEST_DATE_COLUMN_NAME), resultsUploaderCachingService, providerAddr);
 
-    testResultDate =
-        convertToZonedDateTime(testResultDate, resultsUploaderCachingService, testingLabAddr)
-            .toOffsetDateTime()
-            .toString();
-    orderTestDate =
-        convertToZonedDateTime(orderTestDate, resultsUploaderCachingService, providerAddr)
-            .toOffsetDateTime()
-            .toString();
-
-    specimenCollectionDate =
-        StringUtils.isNotBlank(specimenCollectionDate)
+    var specimenCollectionDate =
+        StringUtils.isNotBlank(row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME))
             ? convertToZonedDateTime(
-                    specimenCollectionDate, resultsUploaderCachingService, providerAddr)
-                .toOffsetDateTime()
-                .toString()
+                row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME),
+                resultsUploaderCachingService,
+                providerAddr)
             : orderTestDate;
 
-    specimenReceivedDate =
-        StringUtils.isNotBlank(specimenReceivedDate)
+    var testingLabSpecimenReceivedDate =
+        StringUtils.isNotBlank(row.get(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME))
             ? convertToZonedDateTime(
-                    specimenReceivedDate, resultsUploaderCachingService, providerAddr)
-                .toOffsetDateTime()
-                .toString()
+                row.get(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME),
+                resultsUploaderCachingService,
+                testingLabAddr)
             : orderTestDate;
 
-    dateResultReleased =
-        StringUtils.isNotBlank(dateResultReleased)
+    var dateResultReleased =
+        StringUtils.isNotBlank(row.get(DATE_RESULT_RELEASED_COLUMN_NAME))
             ? convertToZonedDateTime(
-                    dateResultReleased, resultsUploaderCachingService, providerAddr)
-                .toOffsetDateTime()
-                .toString()
+                row.get(DATE_RESULT_RELEASED_COLUMN_NAME),
+                resultsUploaderCachingService,
+                testingLabAddr)
             : testResultDate;
 
-    row[testResultDateIndex] = testResultDate;
-    row[orderTestDateIndex] = orderTestDate;
-    row[specimenCollectionDateIndex] = specimenCollectionDate;
-    row[specimenReceivedDateIndex] = specimenReceivedDate;
-    row[dateResultReleasedIndex] = dateResultReleased;
+    row.put(SPECIMEN_TYPE_COLUMN_NAME, updatedSpecimenType);
+    row.put(TEST_RESULT_DATE_COLUMN_NAME, testResultDate.toOffsetDateTime().toString());
+    row.put(ORDER_TEST_DATE_COLUMN_NAME, orderTestDate.toOffsetDateTime().toString());
+    row.put(
+        SPECIMEN_COLLECTION_DATE_COLUMN_NAME, specimenCollectionDate.toOffsetDateTime().toString());
+    row.put(
+        TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME,
+        testingLabSpecimenReceivedDate.toOffsetDateTime().toString());
+    row.put(DATE_RESULT_RELEASED_COLUMN_NAME, dateResultReleased.toOffsetDateTime().toString());
+
+    return row;
   }
 
-  private StreetAddress getTestingLabAddress(String[] row, List<String> headers) {
-    return new StreetAddress(
-        valueAtRowIndex(headers.indexOf("testing_lab_street"), row),
-        valueAtRowIndex(headers.indexOf("testing_lab_street2"), row),
-        valueAtRowIndex(headers.indexOf("testing_lab_city"), row),
-        valueAtRowIndex(headers.indexOf("testing_lab_state"), row),
-        valueAtRowIndex(headers.indexOf("testing_lab_zip_code"), row),
-        null);
-  }
-
-  private StreetAddress getOrderingFacilityAddress(String[] row, List<String> headers) {
-    return new StreetAddress(
-        valueAtRowIndex(headers.indexOf("ordering_facility_street"), row),
-        valueAtRowIndex(headers.indexOf("ordering_facility_street2"), row),
-        valueAtRowIndex(headers.indexOf("ordering_facility_city"), row),
-        valueAtRowIndex(headers.indexOf("ordering_facility_state"), row),
-        valueAtRowIndex(headers.indexOf("ordering_facility_zip_code"), row),
-        null);
+  private String modifyRowSpecimenNameToSNOMED(String specimenTypeName) {
+    var snomedMap = resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap();
+    if (specimenTypeName.matches(ALPHABET_REGEX)) {
+      return snomedMap.get(specimenTypeName);
+    }
+    return specimenTypeName;
   }
 
   private byte[] attachProcessingModeCode(byte[] content) {
