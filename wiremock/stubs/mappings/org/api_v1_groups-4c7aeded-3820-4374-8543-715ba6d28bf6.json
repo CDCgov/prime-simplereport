@@ -3,7 +3,7 @@
   "name": "api_v1_groups",
   "priority": 2,
   "request": {
-    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT:CA-.*:ADMIN",
+    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT.*:ADMIN",
     "method": "GET"
   },
   "response": {
