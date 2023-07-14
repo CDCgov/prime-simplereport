@@ -31,6 +31,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
+import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -77,18 +79,20 @@ import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FhirConverterTest {
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
@@ -101,14 +105,23 @@ class FhirConverterTest {
   final IParser parser = ctx.newJsonParser();
 
   private static final Instant instant = (new Date(1675891986000L)).toInstant();
+
+  private static final Date currentDate = (Date.from(Instant.parse("2023-07-14T15:52:34.540Z")));
   private static GitProperties gitProperties;
-  @Autowired private FhirConverter fhirConverter;
+  @Mock private static DateGenerator dateGenerator;
+  @Mock private static UUIDGenerator uuidGenerator;
+
+  private static FhirConverter fhirConverter;
 
   @BeforeAll
-  public static void init() {
+  public void init() {
     gitProperties = mock(GitProperties.class);
     when(gitProperties.getCommitTime()).thenReturn(instant);
     when(gitProperties.getShortCommitId()).thenReturn("FRIDAY");
+    when(dateGenerator.newDate()).thenReturn(currentDate);
+    when(uuidGenerator.randomUUID()).thenReturn(UUID.randomUUID());
+
+    fhirConverter = new FhirConverter(uuidGenerator, dateGenerator);
   }
 
   @Test
@@ -1513,7 +1526,7 @@ class FhirConverterTest {
                 "equipmentUID3",
                 "testkitNameId3",
                 "95422-2"));
-    var date = new Date();
+
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
@@ -1526,11 +1539,11 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
-    ReflectionTestUtils.setField(testEvent, "createdAt", date);
+    ReflectionTestUtils.setField(testEvent, "createdAt", currentDate);
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
-    var actual = fhirConverter.createFhirBundle(testEvent, gitProperties, date, "P");
+    var actual = fhirConverter.createFhirBundle(testEvent, gitProperties, "P");
 
     String actualSerialized = parser.encodeResourceToString(actual);
 
@@ -1549,9 +1562,10 @@ class FhirConverterTest {
             StandardCharsets.UTF_8);
 
     var expectedCurrentDateTimezone =
-        new DateTimeType(date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("UTC"))
+        new DateTimeType(currentDate, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("UTC"))
             .getValueAsString();
-    var expectedCurrentDateZulu = new InstantType(date).setTimeZoneZulu(true).getValueAsString();
+    var expectedCurrentDateZulu =
+        new InstantType(currentDate).setTimeZoneZulu(true).getValueAsString();
 
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);

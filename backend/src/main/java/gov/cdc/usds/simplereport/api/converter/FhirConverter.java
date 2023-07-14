@@ -57,6 +57,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.TestOrderService;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
@@ -127,6 +128,7 @@ import org.springframework.util.CollectionUtils;
 public class FhirConverter {
 
   private final UUIDGenerator uuidGenerator;
+  private final DateGenerator dateGenerator;
 
   private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
@@ -912,17 +914,14 @@ public class FhirConverter {
   /**
    * @param testEvent The single entry test event created in {@code TestOrderService}
    * @param gitProperties Git properties
-   * @param currentDate Current date
    * @param processingId Processing id
    * @return FHIR bundle
    * @see TestOrderService
    */
   public Bundle createFhirBundle(
-      @NotNull TestEvent testEvent,
-      GitProperties gitProperties,
-      Date currentDate,
-      String processingId) {
+      @NotNull TestEvent testEvent, GitProperties gitProperties, String processingId) {
 
+    Date currentDate = dateGenerator.newDate();
     ZonedDateTime dateTested =
         testEvent.getDateTested() != null
             ? ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC)
