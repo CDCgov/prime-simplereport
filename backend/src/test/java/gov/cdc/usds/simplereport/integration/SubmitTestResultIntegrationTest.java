@@ -29,7 +29,7 @@ import reactor.core.publisher.Mono;
 
 @SliceTestConfiguration.WithSimpleReportStandardUser
 @Import(SubmitTestResultTestConfig.class)
-public class SubmitTestResultIntegrationTest extends BaseGraphqlTest {
+class SubmitTestResultIntegrationTest extends BaseGraphqlTest {
 
   @MockBean(name = "mockClient")
   QueueAsyncClient queueAsyncClient;
