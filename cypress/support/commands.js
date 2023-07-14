@@ -93,12 +93,6 @@ Cypress.Commands.add("login", () => {
   });
 });
 
-Cypress.Commands.add("restartWiremock", (stubDir) => {
-  cy.clearCookies();
-  cy.task("stopWiremock");
-  cy.task("startWiremock", { stubDir });
-});
-
 Cypress.Commands.add("selectFacility", () => {
   cy.get("body").then(($body) => {
     if (
@@ -145,6 +139,10 @@ Cypress.Commands.add("removeOrganizationAccess", () => {
 });
 
 
+Cypress.Commands.add("resetWiremock", () => {
+  return !isLocalRun && cy.request("POST", "http://wiremock:8088/__admin/reset");
+});
+
 Cypress.Commands.add("makePOSTRequest", (requestBody) => {
   return cy.getLocalStorage('access_token').then(token => (cy.request(
       {
@@ -161,4 +159,29 @@ Cypress.Commands.add("makePOSTRequest", (requestBody) => {
 
 Cypress.Commands.add("injectSRAxe", () => {
   return isLocalRun ? cy.injectAxe({ axeCorePath: './cypress/node_modules/axe-core/axe.min.js'}) : cy.injectAxe();
+});
+
+// Print cypress-axe violations to the terminal
+function printAccessibilityViolations(violations) {
+  cy.task(
+    'table',
+    violations.map(({id, impact, description, nodes}) => ({
+      id,
+      impact,
+      description,
+      "node count": nodes.length,
+    })),
+  );
+
+  cy.task('print', "Nodes:")
+  violations.forEach(({nodes})=> {
+    nodes.forEach(node => {
+      cy.task('print', node.html)
+      cy.task('print', "=============\n")
+    })
+  })
+}
+
+Cypress.Commands.add('checkAccessibility', () => {
+    cy.checkA11y(null, null, printAccessibilityViolations);
 });

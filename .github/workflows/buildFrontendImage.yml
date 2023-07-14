@@ -60,10 +60,19 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: frontend
+          context: ./
+          file: ./frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            "REACT_APP_OKTA_URL=http://wiremock:8088"
+            "REACT_APP_OKTA_CLIENT_ID=0oa1k0163nAwfVxNW1d7"
+            "REACT_APP_BASE_URL=https://localhost.simplereport.gov"
+            "REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api"
+            "PUBLIC_URL=/app/"
+            "REACT_APP_OKTA_ENABLED=true"
+            "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
 
       - name: Set version output
         shell: bash
