@@ -366,4 +366,10 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
             () -> _auth.resendActivationPasscode(_userId, "unenrolledFactorId"));
     assertThat(exception).hasMessage("An exception was thrown while fetching the user's factor.");
   }
+
+  @Test
+  void getUserStatus_userIdNull_returnsUnknown() {
+    var actual = _auth.getUserStatus(null, null, null);
+    assertThat(actual).isEqualTo(UserAccountStatus.UNKNOWN);
+  }
 }
