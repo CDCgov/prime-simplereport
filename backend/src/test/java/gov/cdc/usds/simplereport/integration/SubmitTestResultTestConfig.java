@@ -40,6 +40,6 @@ public class SubmitTestResultTestConfig {
     FhirConverter fhirConverter = new FhirConverter(uuidGenerator, dateGenerator);
 
     return new AzureStorageQueueFhirReportingService(
-        new FhirContext(), queueAsyncClient, new GitProperties(properties), fhirConverter);
+        FhirContext.forR4(), queueAsyncClient, new GitProperties(properties), fhirConverter);
   }
 }
