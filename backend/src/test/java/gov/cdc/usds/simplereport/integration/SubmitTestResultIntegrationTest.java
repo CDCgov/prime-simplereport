@@ -37,7 +37,7 @@ class SubmitTestResultIntegrationTest extends BaseGraphqlTest {
   @Captor ArgumentCaptor<String> fhirMessageCaptor;
 
   @Test
-  void complete_e2e() throws IOException {
+  void complete_submit_test_result_flow() throws IOException {
     var organization = _orgService.getCurrentOrganizationNoCache();
     var facility = _orgService.getFacilities(organization).get(0);
     var patient = _dataFactory.createFullPerson(organization);
