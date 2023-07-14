@@ -2,9 +2,14 @@
   "id": "4c7aeded-3820-4374-8543-715ba6d28bf6",
   "name": "api_v1_groups",
   "priority": 2,
-  "request": {
-    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT.*:ADMIN",
-    "method": "GET"
+  "request" : {
+    "urlPathPattern" : "/api/v1/groups",
+    "method" : "GET",
+    "queryParameters" : {
+      "q" : {
+        "contains" : "SR-DEV-TENANT.*:ADMIN"
+      }
+    }
   },
   "response": {
     "status": 200,

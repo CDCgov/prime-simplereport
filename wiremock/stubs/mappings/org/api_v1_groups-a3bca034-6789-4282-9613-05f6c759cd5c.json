@@ -1,9 +1,14 @@
 {
   "id": "a3bca034-6789-4282-9613-05f6c759cd5c",
   "name": "api_v1_groups",
-  "request": {
-    "urlPattern": "/api/v1/groups\\?q=SR-DEV-TENANT:CA-.*",
-    "method": "GET"
+  "request" : {
+    "urlPathPattern" : "/api/v1/groups",
+    "method" : "GET",
+    "queryParameters" : {
+      "q" : {
+        "contains" : "SR-DEV-TENANT:CA-"
+      }
+    }
   },
   "response": {
     "status": 200,
@@ -37,8 +42,5 @@
   },
   "uuid": "a3bca034-6789-4282-9613-05f6c759cd5c",
   "persistent": true,
-  "scenarioName": "scenario-1-api-v1-groups",
-  "requiredScenarioState": "scenario-1-api-v1-groups-2",
-  "newScenarioState": "scenario-1-api-v1-groups-3",
   "insertionIndex": 69
 }
