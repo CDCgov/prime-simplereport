@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jdk-alpine as build
+FROM eclipse-temurin:20-jdk-alpine as build
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 WORKDIR /app/
@@ -10,7 +10,7 @@ ADD ./.git /app/.git
 RUN cd backend && ./gradlew clean build -x test -x checkstyleMain -x spotlessCheck
 
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:20-jre-alpine
 LABEL org.opencontainers.image.source https://github.com/CDCgov/prime-simplereport
 
 RUN adduser -D appUser
