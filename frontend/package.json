@@ -187,7 +187,7 @@
     "@storybook/node-logger": "^6.5.13",
     "@storybook/preset-create-react-app": "^7.0.6",
     "@storybook/react": "^6.5.16",
-    "@storybook/testing-library": "^0.1.0",
+    "@storybook/testing-library": "^0.2.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@types/apollo-upload-client": "^17.0.0",
     "@types/classnames": "^2.2.11",
