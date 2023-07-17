@@ -4825,3 +4825,14 @@ databaseChangeLog:
           - sql:
               sql: |
                 DROP TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR;
+  - changeSet:
+      id: result_upload_error-add-no-phi-user
+      author: nathan@skylight.digital
+      comment: Adds permission for the no-PHI user to select from the bulk test result upload errors
+      changes:
+        - tagDatabase:
+            tag:results_upload_error-add-no-phi-user
+        - sql:
+            sql: GRANT SELECT ON ${database.defaultSchemaName}.result_upload_error TO ${noPhiUsername};
+      rollback:
+            sql: REVOKE SELECT ON ${database.defaultSchemaName}.result_upload_error TO ${noPhiUsername};
