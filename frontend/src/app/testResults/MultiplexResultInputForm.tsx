@@ -311,7 +311,11 @@ const MultiplexResultInputForm: React.FC<Props> = ({
           <TextWithTooltip
             text="Results info"
             hideText={true}
-            tooltip="COVID-19 results are reported to your public health department. Flu results are not reported at this time."
+            tooltip={
+              isFluOnly
+                ? "Flu results are only reported to California at this time."
+                : "COVID-19 results are reported to your public health department. Flu results are only reported to California at this time."
+            }
             position={isMobile ? "top" : "left"}
           />
         </div>
