@@ -26,6 +26,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.api.UserApi;
 import org.openapitools.client.api.UserFactorApi;
+import org.openapitools.client.model.CallUserFactorProfile;
+import org.openapitools.client.model.EmailUserFactorProfile;
 import org.openapitools.client.model.FactorProvider;
 import org.openapitools.client.model.FactorStatus;
 import org.openapitools.client.model.FactorType;
@@ -46,6 +48,8 @@ import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   private static final String PHONE_NUMBER = "332-699-1229";
+  private static final String FORMATTED_PHONE_NUMBER = "+13326991229";
+  private static final String EMAIL = "test@example.com";
 
   @Value("${okta.client.org-url}")
   private String _orgUrl;
@@ -168,6 +172,9 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     var factor = userFactorApi.getFactor(_userId, factorId);
     assertThat(factor.getFactorType()).isEqualTo(FactorType.CALL);
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
+    assertThat(((CallUserFactorProfile) factor.getProfile()).getPhoneNumber())
+        .isEqualTo(FORMATTED_PHONE_NUMBER);
+    ;
 
     UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
     assertThat(status).isEqualTo(UserAccountStatus.CALL_PENDING_ACTIVATION);
@@ -181,6 +188,8 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     var emailFactor = userFactorApi.getFactor(_userId, factorId);
     assertThat(emailFactor.getFactorType()).isEqualTo(FactorType.EMAIL);
     assertThat(emailFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
+    assertThat(((EmailUserFactorProfile) emailFactor.getProfile()).getEmail()).isEqualTo(EMAIL);
+    ;
 
     UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
     assertThat(status).isEqualTo(UserAccountStatus.EMAIL_PENDING_ACTIVATION);
