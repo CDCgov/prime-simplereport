@@ -4,10 +4,10 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.SupportedDiseaseTestResult;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Builder;
@@ -17,7 +17,6 @@ import lombok.Getter;
 public class PxpVerifyResponseV2 {
 
   private final UUID testEventId;
-  private final TestResult result;
   private final Set<SupportedDiseaseTestResult> results;
   private final Date dateTested;
   private final String correctionStatus;
@@ -29,8 +28,10 @@ public class PxpVerifyResponseV2 {
   public PxpVerifyResponseV2(Person person, TestEvent testEvent) {
 
     this.testEventId = testEvent.getInternalId();
-    this.result = testEvent.getCovidTestResult().orElseThrow();
     Set<Result> allResults = testEvent.getResults();
+    if (allResults.isEmpty()) {
+      throw new NoSuchElementException("No test results found.");
+    }
     results = new HashSet<>();
     allResults.forEach(
         r -> {
