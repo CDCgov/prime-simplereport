@@ -123,7 +123,11 @@ const RadioGroup = <T extends string>({
                     onBlur={onBlur}
                     {...registrationProps}
                   />
-                  <label className={labelClasses} htmlFor={uid(c.value)}>
+                  <label
+                    className={labelClasses}
+                    htmlFor={uid(c.value)}
+                    data-cy={`radio-group-option-${c.value}`}
+                  >
                     {c.label}
                     {c.labelDescription && (
                       <span className="usa-checkbox__label-description text-base-dark">
