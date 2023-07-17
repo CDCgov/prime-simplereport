@@ -35,12 +35,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -371,50 +368,27 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * Triggers Okta to resend an activation passcode. Should only be used for SMS, call, and email
    * MFA options.
    *
-   * <p>Note: this is not the same method that is used to send a challenge to the user; this is only
-   * for when the user is in a kind of activation limbo (they've enrolled but the factor has not
-   * been activated yet). There isn't a method in the SDK to re-request an activation passcode, so
-   * this is done directly via the API.
-   *
    * <p>https://developer.okta.com/docs/reference/api/factors/#resend-sms-as-part-of-enrollment
    */
   @Override
   public void resendActivationPasscode(String userId, String factorId)
       throws OktaAuthenticationFailureException {
-    HttpEntity<String> headers = new HttpEntity<>(createHeaders());
-    String getFactorUrl = orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId;
-    JSONObject getFactorResponse;
+    UserFactor factor;
     try {
-      ResponseEntity<String> response =
-          restTemplate.exchange(getFactorUrl, HttpMethod.GET, headers, String.class);
-      getFactorResponse = new JSONObject(response.getBody());
+      factor = userFactorApi.getFactor(userId, factorId);
     } catch (RestClientException | ApiException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while fetching the user's factor.", e);
     }
-
-    JSONObject factorInformation =
-        new JSONObject(getFactorResponse, "provider", "factorType", "profile");
-
-    HttpEntity<String> requestBody =
-        new HttpEntity<>(factorInformation.toString(), createHeaders());
-    String resendUrl = orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId + "/resend";
     try {
-      ResponseEntity<String> response =
-          restTemplate.exchange(resendUrl, HttpMethod.POST, requestBody, String.class);
-      if (response.getStatusCode() != HttpStatus.OK) {
-        throw new OktaAuthenticationFailureException(
-            "The requested activation factor could not be resent; Okta returned an error."
-                + response);
-      }
-    } catch (HttpClientErrorException e) {
-      if (e.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+      userFactorApi.resendEnrollFactor(userId, factorId, factor, null);
+    } catch (ApiException e) {
+      if (e.getCode() == HttpStatus.TOO_MANY_REQUESTS.value()) {
         throw new BadRequestException(
             "We're sending over a security code. Please wait 30 seconds before trying again.", e);
       }
-    } catch (RestClientException | ApiException | NullPointerException e) {
       throw new OktaAuthenticationFailureException(
-          "The requested activation factor could not be resent.", e);
+          "The requested activation factor could not be resent; Okta returned an error." + e);
     }
   }
 

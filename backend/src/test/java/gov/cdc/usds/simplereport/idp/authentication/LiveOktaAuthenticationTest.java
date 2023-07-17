@@ -267,11 +267,7 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     String factorId = _auth.enrollSmsMfa(_userId, "4045312484");
     UserFactor factorBeforeResend = userFactorApi.getFactor(_userId, factorId);
 
-    try {
-      _auth.resendActivationPasscode(_userId, factorId);
-    } catch (OktaAuthenticationFailureException | IllegalStateException e) {
-      throw new IllegalStateException("An exception should not be thrown.", e);
-    }
+    _auth.resendActivationPasscode(_userId, factorId);
 
     assertThat(factorBeforeResend.getLastUpdated())
         .isNotEqualTo(userFactorApi.getFactor(_userId, factorId).getLastUpdated());
