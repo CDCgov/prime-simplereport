@@ -174,7 +174,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(((CallUserFactorProfile) factor.getProfile()).getPhoneNumber())
         .isEqualTo(FORMATTED_PHONE_NUMBER);
-    ;
 
     UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
     assertThat(status).isEqualTo(UserAccountStatus.CALL_PENDING_ACTIVATION);
@@ -189,7 +188,6 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     assertThat(emailFactor.getFactorType()).isEqualTo(FactorType.EMAIL);
     assertThat(emailFactor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
     assertThat(((EmailUserFactorProfile) emailFactor.getProfile()).getEmail()).isEqualTo(EMAIL);
-    ;
 
     UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
     assertThat(status).isEqualTo(UserAccountStatus.EMAIL_PENDING_ACTIVATION);
