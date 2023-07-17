@@ -3,9 +3,9 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndActivation;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
-import org.json.JSONObject;
 
 /**
  * Created by emmastephenson on 4/28/21
@@ -126,7 +126,7 @@ public interface OktaAuthentication {
    * @throws OktaAuthenticationFailureException if the user id is not recognized or the factor
    *     cannot be enrolled.
    */
-  JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException;
+  FactorAndActivation enrollSecurityKey(String userId) throws OktaAuthenticationFailureException;
 
   /**
    * Activates a security key using the provided frontend-generated credentials.

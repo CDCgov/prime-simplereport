@@ -14,8 +14,8 @@ import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
@@ -226,17 +226,15 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
   @Test
   @Order(10)
   void enrollSecurityKeySuccessful() {
-    JSONObject activationObject = _auth.enrollSecurityKey(_userId);
+    var activationObject = _auth.enrollSecurityKey(_userId);
 
-    UserFactor factor = userFactorApi.getFactor(_userId, activationObject.getString("factorId"));
+    UserFactor factor = userFactorApi.getFactor(_userId, activationObject.getFactorId());
     assertThat(factor.getFactorType()).isEqualTo(FactorType.WEBAUTHN);
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
-    assertThat(activationObject.getJSONObject("activation").getJSONObject("user").getString("id"))
-        .isNotNull();
-    assertThat(activationObject.getJSONObject("activation").getString("challenge")).isNotNull();
+    assertThat(((Map) activationObject.getActivation().get("user")).get("id")).isNotNull();
+    assertThat(activationObject.getActivation().get("challenge")).isNotNull();
 
-    UserAccountStatus status =
-        _auth.getUserStatus(null, _userId, activationObject.getString("factorId"));
+    UserAccountStatus status = _auth.getUserStatus(null, _userId, activationObject.getFactorId());
     assertThat(status).isEqualTo(UserAccountStatus.FIDO_PENDING_ACTIVATION);
   }
 
@@ -338,11 +336,11 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
 
   @Test
   void activateSecurityKeyFails_withInvalidData() {
-    JSONObject activationObject = _auth.enrollSecurityKey(_userId);
-    String factorId = activationObject.getString("factorId");
-    String challenge = activationObject.getJSONObject("activation").getString("challenge");
+    var activationObject = _auth.enrollSecurityKey(_userId);
+    String factorId = activationObject.getFactorId();
+    String challenge = activationObject.getActivation().get("challenge").toString();
     String returnedUserId =
-        activationObject.getJSONObject("activation").getJSONObject("user").getString("id");
+        ((Map) activationObject.getActivation().get("user")).get("id").toString();
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,

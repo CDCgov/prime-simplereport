@@ -5,10 +5,12 @@ import com.okta.sdk.client.Clients;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndActivation;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
+import java.util.Map;
 import org.json.JSONObject;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
@@ -52,7 +54,6 @@ import org.springframework.web.client.RestTemplate;
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
 public class LiveOktaAuthentication implements OktaAuthentication {
-  private static final String USER_API_ENDPOINT = "/api/v1/users/";
   private static final String ACTIVATION_KEY = "activation";
   private final String apiToken;
   private final String orgUrl;
@@ -309,21 +310,16 @@ public class LiveOktaAuthentication implements OktaAuthentication {
    * <p>https://developer.okta.com/docs/reference/api/factors/#enroll-webauthn-request-example
    */
   @Override
-  public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
-    JSONObject requestBody = new JSONObject();
-    requestBody.put("factorType", "webauthn");
-    requestBody.put("provider", "FIDO");
-    HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), createHeaders());
-    String enrollWebAuthnUrl = orgUrl + USER_API_ENDPOINT + userId + "/factors";
+  public FactorAndActivation enrollSecurityKey(String userId)
+      throws OktaAuthenticationFailureException {
     try {
-      String postResponse = restTemplate.postForObject(enrollWebAuthnUrl, entity, String.class);
-      JSONObject responseJson = new JSONObject(postResponse);
-      JSONObject response = new JSONObject();
-      response.put(
-          ACTIVATION_KEY, responseJson.getJSONObject("_embedded").getJSONObject(ACTIVATION_KEY));
-      response.put("factorId", responseJson.getString("id"));
-      return response;
-    } catch (RestClientException | NullPointerException | ApiException e) {
+      var factor = new UserFactor();
+      factor.setFactorType(FactorType.WEBAUTHN);
+      factor.setProvider(FactorProvider.FIDO);
+      var enrolledFactor = userFactorApi.enrollFactor(userId, factor, null, null, null, null);
+      return new FactorAndActivation(
+          enrolledFactor.getId(), (Map) enrolledFactor.getEmbedded().get(ACTIVATION_KEY));
+    } catch (NullPointerException | ApiException e) {
       throw new OktaAuthenticationFailureException("Security key could not be enrolled", e);
     }
   }
@@ -390,17 +386,5 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException(
           "The requested activation factor could not be resent; Okta returned an error." + e);
     }
-  }
-
-  /**
-   * Helper method to create the required HTTP headers for sending direct requests to the Okta API.
-   * (This _apiToken is where our authorization comes from.)
-   */
-  private HttpHeaders createHeaders() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-    headers.add("Authorization", "SSWS " + apiToken);
-    return headers;
   }
 }
