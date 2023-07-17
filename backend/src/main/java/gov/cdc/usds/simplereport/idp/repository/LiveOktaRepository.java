@@ -63,10 +63,10 @@ public class LiveOktaRepository implements OktaRepository {
 
   private static final String OKTA_GROUP_NOT_FOUND = "Okta group not found for this organization";
 
-  private final String _rolePrefix;
-  private final Application _app;
-  private final OrganizationExtractor _extractor;
-  private final CurrentTenantDataAccessContextHolder _tenantDataContextHolder;
+  private final String rolePrefix;
+  private final Application app;
+  private final OrganizationExtractor extractor;
+  private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
   private final GroupApi groupApi;
   private final UserApi userApi;
   private final ApplicationApi applicationApi;
@@ -81,19 +81,19 @@ public class LiveOktaRepository implements OktaRepository {
       ApplicationApi applicationApi,
       UserApi userApi,
       ApplicationGroupsApi applicationGroupsApi) {
-    _rolePrefix = authorizationProperties.getRolePrefix();
+    this.rolePrefix = authorizationProperties.getRolePrefix();
     this.groupApi = groupApi;
     this.userApi = userApi;
     this.applicationApi = applicationApi;
     this.applicationGroupsApi = applicationGroupsApi;
     try {
-      _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
+      this.app = applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ApiException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
-    _extractor = organizationExtractor;
-    _tenantDataContextHolder = tenantDataContextHolder;
+    this.extractor = organizationExtractor;
+    this.tenantDataContextHolder = tenantDataContextHolder;
   }
 
   @Autowired
@@ -104,7 +104,7 @@ public class LiveOktaRepository implements OktaRepository {
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
       OrganizationExtractor organizationExtractor,
       CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
-    _rolePrefix = authorizationProperties.getRolePrefix();
+    this.rolePrefix = authorizationProperties.getRolePrefix();
     var client =
         Clients.builder()
             .setOrgUrl(orgUrl)
@@ -115,13 +115,13 @@ public class LiveOktaRepository implements OktaRepository {
     this.applicationApi = new ApplicationApi(client);
     this.applicationGroupsApi = new ApplicationGroupsApi(client);
     try {
-      _app = applicationApi.getApplication(oktaOAuth2ClientId, null);
+      this.app = this.applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ApiException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
-    _extractor = organizationExtractor;
-    _tenantDataContextHolder = tenantDataContextHolder;
+    this.extractor = organizationExtractor;
+    this.tenantDataContextHolder = tenantDataContextHolder;
   }
 
   @Override
@@ -216,7 +216,7 @@ public class LiveOktaRepository implements OktaRepository {
       }
     }
 
-    List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNamesToAdd);
+    List<OrganizationRoleClaims> claims = extractor.convertClaims(groupNamesToAdd);
     if (claims.size() != 1) {
       log.warn("User is in {} Okta organizations, not 1", claims.size());
       return Optional.empty();
@@ -363,7 +363,6 @@ public class LiveOktaRepository implements OktaRepository {
   @Override
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
-
     User user =
         getUserOrThrowError(username, "Cannot update role of Okta user with unrecognized username");
 
@@ -540,7 +539,7 @@ public class LiveOktaRepository implements OktaRepository {
               .setName(roleGroupName)
               .setDescription(roleGroupDescription)
               .buildAndCreate(groupApi);
-      applicationGroupsApi.assignGroupToApplication(_app.getId(), g.getId(), null);
+      applicationGroupsApi.assignGroupToApplication(app.getId(), g.getId(), null);
 
       log.info("Created Okta group={}", roleGroupName);
     }
@@ -607,7 +606,7 @@ public class LiveOktaRepository implements OktaRepository {
             .setName(facilityGroupName)
             .setDescription(generateFacilityGroupDescription(orgName, facility.getFacilityName()))
             .buildAndCreate(groupApi);
-    applicationGroupsApi.assignGroupToApplication(_app.getId(), g.getId(), null);
+    applicationGroupsApi.assignGroupToApplication(app.getId(), g.getId(), null);
 
     log.info("Created Okta group={}", facilityGroupName);
   }
@@ -638,9 +637,9 @@ public class LiveOktaRepository implements OktaRepository {
     // When a site admin is using tenant data access, bypass okta and get org from the altered
     // authorities.  If the site admin is getting the claims for another site admin who also has
     // active tenant data access, then reflect what is in Okta, not the temporary claims.
-    if (_tenantDataContextHolder.hasBeenPopulated()
-        && username.equals(_tenantDataContextHolder.getUsername())) {
-      return getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
+    if (tenantDataContextHolder.hasBeenPopulated()
+        && username.equals(tenantDataContextHolder.getUsername())) {
+      return getOrganizationRoleClaimsFromAuthorities(tenantDataContextHolder.getAuthorities());
     }
 
     return getOrganizationRoleClaimsForUser(
@@ -649,7 +648,7 @@ public class LiveOktaRepository implements OktaRepository {
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
       Collection<String> authorities) {
-    List<OrganizationRoleClaims> claims = _extractor.convertClaims(authorities);
+    List<OrganizationRoleClaims> claims = extractor.convertClaims(authorities);
 
     if (claims.size() != 1) {
       log.warn("User's Tenant Data Access has claims in {} organizations, not 1", claims.size());
@@ -664,7 +663,7 @@ public class LiveOktaRepository implements OktaRepository {
             .filter(g -> g.getType() == GroupType.OKTA_GROUP)
             .map(g -> g.getProfile().getName())
             .toList();
-    List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
+    List<OrganizationRoleClaims> claims = extractor.convertClaims(groupNames);
 
     if (claims.size() != 1) {
       log.warn("User is in {} Okta organizations, not 1", claims.size());
@@ -674,16 +673,16 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private String generateGroupOrgPrefix(String orgExternalId) {
-    return String.format("%s%s", _rolePrefix, orgExternalId);
+    return String.format("%s%s", rolePrefix, orgExternalId);
   }
 
   private String generateRoleGroupName(String orgExternalId, OrganizationRole role) {
-    return String.format("%s%s%s", _rolePrefix, orgExternalId, generateRoleSuffix(role));
+    return String.format("%s%s%s", rolePrefix, orgExternalId, generateRoleSuffix(role));
   }
 
   private String generateFacilityGroupName(String orgExternalId, UUID facilityId) {
     return String.format(
-        "%s%s%s", _rolePrefix, orgExternalId, generateFacilitySuffix(facilityId.toString()));
+        "%s%s%s", rolePrefix, orgExternalId, generateFacilitySuffix(facilityId.toString()));
   }
 
   private String generateRoleGroupDescription(String orgName, OrganizationRole role) {
