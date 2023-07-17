@@ -77,7 +77,7 @@ describe("Conducting a COVID test", () => {
     cy.wait("@GetFacilityQueue", {timeout: 20000});
 
     cy.get(queueCard).within(() => {
-      cy.get('.prime-radios input[value="NEGATIVE"]+label').click();
+      cy.get('[data-cy="radio-group-option-NEGATIVE"]').click()
     });
 
     cy.wait("@EditQueueItem");
