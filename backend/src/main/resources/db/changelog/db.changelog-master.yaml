@@ -4835,4 +4835,4 @@ databaseChangeLog:
         - sql:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.result_upload_error TO ${noPhiUsername};
       rollback:
-            sql: REVOKE SELECT ON ${database.defaultSchemaName}.result_upload_error TO ${noPhiUsername};
+            sql: REVOKE SELECT ON ${database.defaultSchemaName}.result_upload_error FROM ${noPhiUsername};
