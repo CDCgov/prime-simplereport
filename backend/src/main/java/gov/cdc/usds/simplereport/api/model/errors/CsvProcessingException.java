@@ -23,10 +23,4 @@ public class CsvProcessingException extends RuntimeException {
     lineNumber = null;
     columnNumber = null;
   }
-
-  public CsvProcessingException(String message, Throwable throwable) {
-    super(message, throwable);
-    lineNumber = null;
-    columnNumber = null;
-  }
 }

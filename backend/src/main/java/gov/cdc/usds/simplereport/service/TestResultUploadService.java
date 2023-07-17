@@ -201,7 +201,7 @@ public class TestResultUploadService {
         var rowString = csvMapper.writeValueAsString(rowData);
         csvContent.append(rowString);
       } catch (JsonProcessingException e) {
-        throw new CsvProcessingException("Error writing transformed csv rows", e);
+        throw new CsvProcessingException("Error writing transformed csv rows");
       }
     }
 
