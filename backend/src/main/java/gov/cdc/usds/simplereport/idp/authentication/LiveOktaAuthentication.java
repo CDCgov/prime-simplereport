@@ -47,7 +47,7 @@ import org.springframework.web.client.RestTemplate;
 /**
  * Created by emmastephenson on 4/28/21
  *
- * <p>Handles all Okta-related user authenticaton.
+ * <p>Handles all Okta-related user authentication.
  *
  * <p>NOTE: If you alter this file, you may need to re-record the WireMock stubs. See
  * https://github.com/CDCgov/prime-simplereport/issues/1848.
@@ -57,9 +57,9 @@ import org.springframework.web.client.RestTemplate;
 public class LiveOktaAuthentication implements OktaAuthentication {
   private static final String USER_API_ENDPOINT = "/api/v1/users/";
   private static final String ACTIVATION_KEY = "activation";
-  private final String _apiToken;
-  private final String _orgUrl;
-  private final RestTemplate _restTemplate;
+  private final String apiToken;
+  private final String orgUrl;
+  private final RestTemplate restTemplate;
   private final UserApi userApi;
   private final UserFactorApi userFactorApi;
 
@@ -70,11 +70,11 @@ public class LiveOktaAuthentication implements OktaAuthentication {
             .setOrgUrl(orgUrl)
             .setClientCredentials(new TokenClientCredentials(token))
             .build();
-    _apiToken = token;
-    _orgUrl = orgUrl;
-    _restTemplate = new RestTemplate();
-    userApi = new UserApi(client);
-    userFactorApi = new UserFactorApi(client);
+    this.apiToken = token;
+    this.orgUrl = orgUrl;
+    this.restTemplate = new RestTemplate();
+    this.userApi = new UserApi(client);
+    this.userFactorApi = new UserFactorApi(client);
   }
 
   /**
@@ -102,29 +102,34 @@ public class LiveOktaAuthentication implements OktaAuthentication {
         return UserAccountStatus.MFA_SELECT;
       }
       UserFactor factor = userFactorApi.getFactor(userId, factorId);
-
       if (factor.getStatus() == FactorStatus.ACTIVE) {
         return UserAccountStatus.ACTIVE;
       }
       FactorType factorType = factor.getFactorType();
       switch (factorType) {
-        case SMS:
+        case SMS -> {
           return UserAccountStatus.SMS_PENDING_ACTIVATION;
-        case CALL:
+        }
+        case CALL -> {
           return UserAccountStatus.CALL_PENDING_ACTIVATION;
-        case EMAIL:
+        }
+        case EMAIL -> {
           return UserAccountStatus.EMAIL_PENDING_ACTIVATION;
-        case WEBAUTHN:
+        }
+        case WEBAUTHN -> {
           return UserAccountStatus.FIDO_PENDING_ACTIVATION;
-        case TOKEN_SOFTWARE_TOTP:
+        }
+        case TOKEN_SOFTWARE_TOTP -> {
           FactorProvider provider = factor.getProvider();
           if (provider == FactorProvider.GOOGLE) {
             return UserAccountStatus.GOOGLE_PENDING_ACTIVATION;
           } else {
             return UserAccountStatus.OKTA_PENDING_ACTIVATION;
           }
-        default:
+        }
+        default -> {
           return UserAccountStatus.ACTIVE;
+        }
       }
     } catch (NullPointerException | ApiException e) {
       return UserAccountStatus.UNKNOWN;
@@ -143,7 +148,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       throws InvalidActivationLinkException {
     JSONObject requestBody = new JSONObject();
     requestBody.put("token", activationToken);
-    String authorizationToken = "SSWS " + _apiToken;
+    String authorizationToken = "SSWS " + apiToken;
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setAccept(List.of(MediaType.APPLICATION_JSON));
@@ -151,9 +156,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     headers.add("X-Forwarded-For", crossForwardedHeader);
     headers.add("Authorization", authorizationToken);
     HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), headers);
-    String postUrl = _orgUrl + "/api/v1/authn";
+    String postUrl = orgUrl + "/api/v1/authn";
     try {
-      String response = _restTemplate.postForObject(postUrl, entity, String.class);
+      String response = restTemplate.postForObject(postUrl, entity, String.class);
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("user").getString("id");
     } catch (RestClientException | NullPointerException e) {
@@ -269,7 +274,8 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
   /**
    * Using the Okta management SDK, enroll a user in an authentication app for MFA. If successful,
-   * this method returns the factor id and a qr code. The qr code will be passed to the user for
+   *
+   * <p>this method returns the factor id and a qr code. The qr code will be passed to the user for
    * them to finish enrolling in-app.
    *
    * <p>https://developer.okta.com/docs/reference/api/factors/#response-example-12
@@ -280,14 +286,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     UserFactor factor = new UserFactor();
     factor.setFactorType(FactorType.TOKEN_SOFTWARE_TOTP);
     switch (appType.toLowerCase()) {
-      case "google":
-        factor.setProvider(FactorProvider.GOOGLE);
-        break;
-      case "okta":
-        factor.setProvider(FactorProvider.OKTA);
-        break;
-      default:
-        throw new OktaAuthenticationFailureException("App type not recognized.");
+      case "google" -> factor.setProvider(FactorProvider.GOOGLE);
+      case "okta" -> factor.setProvider(FactorProvider.OKTA);
+      default -> throw new OktaAuthenticationFailureException("App type not recognized.");
     }
     try {
       var enrolledFactor = userFactorApi.enrollFactor(userId, factor, null, null, null, null);
@@ -316,9 +317,9 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     requestBody.put("factorType", "webauthn");
     requestBody.put("provider", "FIDO");
     HttpEntity<String> entity = new HttpEntity<>(requestBody.toString(), createHeaders());
-    String enrollWebAuthnUrl = _orgUrl + USER_API_ENDPOINT + userId + "/factors";
+    String enrollWebAuthnUrl = orgUrl + USER_API_ENDPOINT + userId + "/factors";
     try {
-      String postResponse = _restTemplate.postForObject(enrollWebAuthnUrl, entity, String.class);
+      String postResponse = restTemplate.postForObject(enrollWebAuthnUrl, entity, String.class);
       JSONObject responseJson = new JSONObject(postResponse);
       JSONObject response = new JSONObject();
       response.put(
@@ -381,11 +382,11 @@ public class LiveOktaAuthentication implements OktaAuthentication {
   public void resendActivationPasscode(String userId, String factorId)
       throws OktaAuthenticationFailureException {
     HttpEntity<String> headers = new HttpEntity<>(createHeaders());
-    String getFactorUrl = _orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId;
+    String getFactorUrl = orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId;
     JSONObject getFactorResponse;
     try {
       ResponseEntity<String> response =
-          _restTemplate.exchange(getFactorUrl, HttpMethod.GET, headers, String.class);
+          restTemplate.exchange(getFactorUrl, HttpMethod.GET, headers, String.class);
       getFactorResponse = new JSONObject(response.getBody());
     } catch (RestClientException | ApiException e) {
       throw new OktaAuthenticationFailureException(
@@ -397,10 +398,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
 
     HttpEntity<String> requestBody =
         new HttpEntity<>(factorInformation.toString(), createHeaders());
-    String resendUrl = _orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId + "/resend";
+    String resendUrl = orgUrl + USER_API_ENDPOINT + userId + "/factors/" + factorId + "/resend";
     try {
       ResponseEntity<String> response =
-          _restTemplate.exchange(resendUrl, HttpMethod.POST, requestBody, String.class);
+          restTemplate.exchange(resendUrl, HttpMethod.POST, requestBody, String.class);
       if (response.getStatusCode() != HttpStatus.OK) {
         throw new OktaAuthenticationFailureException(
             "The requested activation factor could not be resent; Okta returned an error."
@@ -425,7 +426,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-    headers.add("Authorization", "SSWS " + _apiToken);
+    headers.add("Authorization", "SSWS " + apiToken);
     return headers;
   }
 }
