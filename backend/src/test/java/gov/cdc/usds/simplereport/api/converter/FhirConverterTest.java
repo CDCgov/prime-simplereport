@@ -77,7 +77,6 @@ import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -92,7 +91,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FhirConverterTest {
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
@@ -103,15 +101,12 @@ class FhirConverterTest {
   public static final ZoneId DEFAULT_TIME_ZONE_ID = ZoneId.of("US/Eastern");
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
-
   private static final Instant instant = (new Date(1675891986000L)).toInstant();
-
   private static final Date currentDate = Date.from(Instant.parse("2023-07-14T15:52:34.540Z"));
 
   @Mock private GitProperties gitProperties;
   @MockBean private DateGenerator dateGenerator;
   @MockBean private UUIDGenerator uuidGenerator;
-
   @Autowired private FhirConverter fhirConverter;
 
   @BeforeEach
@@ -1559,19 +1554,9 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/bundle.json")),
             StandardCharsets.UTF_8);
 
-    /* var expectedCurrentDateTimezone =
-            new DateTimeType(currentDate, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("UTC"))
-                .getValueAsString();
-        var expectedCurrentDateZulu =
-            new InstantType(currentDate).setTimeZoneZulu(true).getValueAsString();
-    */
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
-    // expectedSerialized =
-    //    expectedSerialized.replace("$CURRENT_DATE_TIMEZONE", expectedCurrentDateTimezone);
-    // expectedSerialized = expectedSerialized.replace("$CURRENT_DATE_ZULU",
-    // expectedCurrentDateZulu);
     expectedSerialized =
         expectedSerialized.replace(
             "$SPECIMEN_IDENTIFIER",
