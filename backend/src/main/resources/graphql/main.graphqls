@@ -383,7 +383,6 @@ type Query {
     pageSize: Int = 5000
     includeArchived: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
-      @deprecated(reason: "use archivedStatus")
     archivedStatus: ArchivedStatus = UNARCHIVED
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
@@ -395,7 +394,6 @@ type Query {
     facilityId: ID
     includeArchived: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
-      @deprecated(reason: "use archivedStatus")
     archivedStatus: ArchivedStatus = UNARCHIVED
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String

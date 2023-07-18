@@ -27,30 +27,40 @@ public class PatientResolver {
   }
 
   // authorization happens in calls to PersonService
+  // will update as part of #6062
   @QueryMapping
   public List<Person> patients(
       @Argument UUID facilityId,
       @Argument int pageNumber,
       @Argument int pageSize,
+      @Argument Boolean includeArchived,
       @Argument ArchivedStatus archivedStatus,
       @Argument String namePrefixMatch,
       @Argument boolean includeArchivedFacilities) {
+    ArchivedStatus status;
+    if (includeArchived) {
+      status = ArchivedStatus.ALL;
+    } else {
+      status = archivedStatus != null ? archivedStatus : ArchivedStatus.UNARCHIVED;
+    }
     return _ps.getPatients(
-        facilityId,
-        pageNumber,
-        pageSize,
-        archivedStatus,
-        namePrefixMatch,
-        includeArchivedFacilities);
+        facilityId, pageNumber, pageSize, status, namePrefixMatch, includeArchivedFacilities);
   }
 
   // authorization happens in calls to PersonService
   @QueryMapping
   public long patientsCount(
       @Argument UUID facilityId,
+      @Argument Boolean includeArchived,
       @Argument ArchivedStatus archivedStatus,
       @Argument String namePrefixMatch) {
-    return _ps.getPatientsCount(facilityId, archivedStatus, namePrefixMatch, false);
+    ArchivedStatus status;
+    if (includeArchived) {
+      status = ArchivedStatus.ALL;
+    } else {
+      status = archivedStatus != null ? archivedStatus : ArchivedStatus.UNARCHIVED;
+    }
+    return _ps.getPatientsCount(facilityId, status, namePrefixMatch, false);
   }
 
   @QueryMapping
