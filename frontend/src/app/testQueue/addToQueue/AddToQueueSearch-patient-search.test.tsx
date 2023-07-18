@@ -8,6 +8,8 @@ import {
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 
+import { ArchivedStatus } from "../../../generated/graphql";
+
 import AddToQueueSearch, { QUERY_PATIENT } from "./AddToQueueSearch";
 
 let refetchQueueMock;
@@ -42,7 +44,7 @@ const mocks = [
     request: {
       query: QUERY_PATIENT,
       variables: {
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         facilityId,
         namePrefixMatch: "bar",
       },
@@ -56,9 +58,8 @@ const mocks = [
   {
     request: {
       query: QUERY_PATIENT,
-      includeArchived: false,
       variables: {
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         facilityId,
         namePrefixMatch: "joh",
       },
