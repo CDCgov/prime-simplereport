@@ -2,27 +2,6 @@
 
 version: 2
 updates:
-  - package-ecosystem: "docker"
-    directory: "/nginx"
-    open-pull-requests-limit: 2
-    schedule:
-      interval: "weekly"
-      day: "sunday"
-    reviewers:
-      - "alismx"
-      - "DanielSass"
-      - "rin-skylight"
-      
-  - package-ecosystem: "docker"
-    directory: "/frontend"
-    open-pull-requests-limit: 2
-    schedule:
-      interval: "weekly"
-      day: "sunday"
-    reviewers:
-      - "alismx"
-      - "DanielSass"
-      - "rin-skylight"
 
   - package-ecosystem: "docker"
     directory: "/backend"
@@ -32,8 +11,8 @@ updates:
       day: "sunday"
     reviewers:
       - "alismx"
-      - "DanielSass"
       - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
 
   - package-ecosystem: "docker"
     directory: "/backend/db-setup"
@@ -43,8 +22,52 @@ updates:
       day: "sunday"
     reviewers:
       - "alismx"
-      - "DanielSass"
       - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
+
+  - package-ecosystem: "docker"
+    directory: "/cypress"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
+
+  - package-ecosystem: "docker"
+    directory: "/frontend"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
+
+  - package-ecosystem: "docker"
+    directory: "/nginx"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
+
+  - package-ecosystem: "docker"
+    directory: "/ops/services/container_instances/db_client/image"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-backendreviews"
 
   - package-ecosystem: "github-actions"
     # this checks the .github/workflows directory by default
@@ -91,217 +114,47 @@ updates:
       - "rin-skylight"
       - "cdcgov/simplereport-frontendreviews"
       
-  # - package-ecosystem: "npm"
-  #   directory: "/cypress"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "BobanL"
-      # - "emyl3"
-      # - "fzhao99"
-      # - "georgehager"
-      # - "rin-skylight"
+  - package-ecosystem: "npm"
+    directory: "/cypress"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
 
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/demo"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/demo/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/dev"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/dev/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/dev2"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/dev2/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/dev3"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/dev3/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/dev4"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/dev4/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
+  - package-ecosystem: "npm"
+    directory: "/ops/services/app_functions/report_stream_batched_publisher/functions"
+    open-pull-requests-limit: 2
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    reviewers:
+      - "alismx"
+      - "rin-skylight"
+      - "cdcgov/simplereport-frontendreviews"
 
   - package-ecosystem: "terraform"
     directory: "/ops/global"
+    open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
       day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/pentest"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/pentest/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/prod"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/prod/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/services/app_functions/report_stream_batched_publisher/infra"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
 
   - package-ecosystem: "terraform"
     directory: "/ops/services/okta-global"
+    open-pull-requests-limit: 2
     schedule:
       interval: "weekly"
       day: "sunday"
     reviewers:
       - "alismx"
       - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/services/pagerduty"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/stg"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/stg/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
 
   - package-ecosystem: "terraform"
     directory: "/ops/test"
@@ -322,23 +175,3 @@ updates:
     reviewers:
       - "alismx"
       - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/training"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
-
-  # - package-ecosystem: "terraform"
-  #   directory: "/ops/training/persistent"
-  #   open-pull-requests-limit: 2
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "sunday"
-  #   reviewers:
-      # - "alismx"
-      # - "rin-skylight"
