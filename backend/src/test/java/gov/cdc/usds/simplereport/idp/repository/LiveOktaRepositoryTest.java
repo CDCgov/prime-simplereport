@@ -794,12 +794,11 @@ class LiveOktaRepositoryTest {
     var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
     var orgRole = OrganizationRole.ADMIN;
     var mockUser = mock(User.class);
-    var mockUserList = List.of(mockUser);
     var mockGroup = mock(Group.class);
-    var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
+    var mockGroupProfileToRemove = mock(GroupProfile.class);
     var mockAdminGroup = mock(Group.class);
-    var mockFullGroupList = List.of(mockAdminGroup);
+    var mockGroupToRemove = mock(Group.class);
     var mockAdminGroupProfile = mock(GroupProfile.class);
     when(userApi.listUsers(
             isNull(),
@@ -809,15 +808,19 @@ class LiveOktaRepositoryTest {
             eq("profile.login eq \"" + userName + "\""),
             isNull(),
             isNull()))
-        .thenReturn(mockUserList);
+        .thenReturn(List.of(mockUser));
     when(mockUser.getId()).thenReturn("1234");
     when(mockAdminGroup.getId()).thenReturn("adminGID");
 
     when(userApi.listUserGroups("1234"))
-        .thenReturn(mockGroupList, List.of(mockGroup, mockAdminGroup));
+        .thenReturn(List.of(mockGroup, mockGroupToRemove), List.of(mockGroup, mockAdminGroup));
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
+    when(mockGroupToRemove.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockGroupToRemove.getId()).thenReturn("removeGID");
+    when(mockGroupToRemove.getProfile()).thenReturn(mockGroupProfileToRemove);
+    when(mockGroupProfileToRemove.getName()).thenReturn(groupOrgPrefix + "-TO-REMOVE");
     when(groupApi.listGroups(
             isNull(),
             isNull(),
@@ -827,7 +830,7 @@ class LiveOktaRepositoryTest {
             eq("profile.name sw \"" + groupOrgPrefix + "\""),
             isNull(),
             isNull()))
-        .thenReturn(mockFullGroupList);
+        .thenReturn(List.of(mockAdminGroup, mockGroupToRemove));
     when(mockAdminGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockAdminGroup.getProfile()).thenReturn(mockAdminGroupProfile);
     when(mockAdminGroupProfile.getName()).thenReturn(groupOrgPrefix + ":" + orgRole);
@@ -836,6 +839,7 @@ class LiveOktaRepositoryTest {
     assertThat(actual.getGrantedRoles())
         .contains(OrganizationRole.ADMIN, OrganizationRole.NO_ACCESS);
     verify(groupApi).assignUserToGroup("adminGID", "1234");
+    verify(groupApi).unassignUserFromGroup("removeGID", "1234");
   }
 
   @Test
