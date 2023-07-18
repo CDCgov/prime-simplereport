@@ -212,7 +212,7 @@ public class TestResultUploadService {
     var updatedSpecimenType =
         modifyRowSpecimenNameToSNOMED(row.get(SPECIMEN_TYPE_COLUMN_NAME).toLowerCase());
 
-    var testingLabAddr =
+    var testingLabAddress =
         new StreetAddress(
             row.get("testing_lab_street"),
             row.get("testing_lab_street2"),
@@ -220,7 +220,7 @@ public class TestResultUploadService {
             row.get("testing_lab_state"),
             row.get("testing_lab_zip_code"),
             null);
-    var providerAddr =
+    var providerAddress =
         new StreetAddress(
             row.get("ordering_provider_street"),
             row.get("ordering_provider_street2"),
@@ -231,18 +231,20 @@ public class TestResultUploadService {
 
     var testResultDate =
         convertToZonedDateTime(
-            row.get(TEST_RESULT_DATE_COLUMN_NAME), resultsUploaderCachingService, testingLabAddr);
+            row.get(TEST_RESULT_DATE_COLUMN_NAME),
+            resultsUploaderCachingService,
+            testingLabAddress);
 
     var orderTestDate =
         convertToZonedDateTime(
-            row.get(ORDER_TEST_DATE_COLUMN_NAME), resultsUploaderCachingService, providerAddr);
+            row.get(ORDER_TEST_DATE_COLUMN_NAME), resultsUploaderCachingService, providerAddress);
 
     var specimenCollectionDate =
         StringUtils.isNotBlank(row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME))
             ? convertToZonedDateTime(
                 row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME),
                 resultsUploaderCachingService,
-                providerAddr)
+                testingLabAddress)
             : orderTestDate;
 
     var testingLabSpecimenReceivedDate =
@@ -250,7 +252,7 @@ public class TestResultUploadService {
             ? convertToZonedDateTime(
                 row.get(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME),
                 resultsUploaderCachingService,
-                testingLabAddr)
+                testingLabAddress)
             : orderTestDate;
 
     var dateResultReleased =
@@ -258,7 +260,7 @@ public class TestResultUploadService {
             ? convertToZonedDateTime(
                 row.get(DATE_RESULT_RELEASED_COLUMN_NAME),
                 resultsUploaderCachingService,
-                testingLabAddr)
+                testingLabAddress)
             : testResultDate;
 
     row.put(SPECIMEN_TYPE_COLUMN_NAME, updatedSpecimenType);
