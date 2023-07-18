@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.idp.authentication;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Clients;
+import com.okta.sdk.helper.ApiExceptionHelper;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
@@ -181,7 +182,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     } catch (ApiException e) {
       if (e.getCode() == HttpStatus.BAD_REQUEST.value()
           && e.getMessage().toLowerCase().contains("password requirements")) {
-        throw new BadRequestException(e.getResponseBody(), e);
+        throw new BadRequestException(getOktaErrorSummary(e), e);
       }
       throw new OktaAuthenticationFailureException("Error setting user's password", e);
     }
@@ -204,7 +205,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       userApi.updateUser(userId, updateUserRequest, null);
     } catch (ApiException e) {
       if (e.getCode() == HttpStatus.BAD_REQUEST.value() && !e.getMessage().isEmpty()) {
-        throw new BadRequestException(e.getResponseBody(), e);
+        throw new BadRequestException(getOktaErrorSummary(e), e);
       }
       throw new OktaAuthenticationFailureException("Error setting recovery questions", e);
     }
@@ -386,5 +387,10 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       throw new OktaAuthenticationFailureException(
           "The requested activation factor could not be resent; Okta returned an error." + e);
     }
+  }
+
+  private String getOktaErrorSummary(ApiException e) {
+    var oktaError = ApiExceptionHelper.getError(e);
+    return oktaError.getErrorCauses().get(0).getErrorSummary();
   }
 }
