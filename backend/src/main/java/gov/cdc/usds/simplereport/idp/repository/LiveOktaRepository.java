@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.Clients;
 import com.okta.sdk.helper.ApiExceptionHelper;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.user.UserBuilder;
@@ -46,7 +44,6 @@ import org.openapitools.client.model.UpdateUserRequest;
 import org.openapitools.client.model.User;
 import org.openapitools.client.model.UserProfile;
 import org.openapitools.client.model.UserStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -69,7 +66,6 @@ public class LiveOktaRepository implements OktaRepository {
   private final CurrentTenantDataAccessContextHolder tenantDataContextHolder;
   private final GroupApi groupApi;
   private final UserApi userApi;
-  private final ApplicationApi applicationApi;
   private final ApplicationGroupsApi applicationGroupsApi;
 
   public LiveOktaRepository(
@@ -84,38 +80,9 @@ public class LiveOktaRepository implements OktaRepository {
     this.rolePrefix = authorizationProperties.getRolePrefix();
     this.groupApi = groupApi;
     this.userApi = userApi;
-    this.applicationApi = applicationApi;
     this.applicationGroupsApi = applicationGroupsApi;
     try {
       this.app = applicationApi.getApplication(oktaOAuth2ClientId, null);
-    } catch (ApiException e) {
-      throw new MisconfiguredApplicationException(
-          "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
-    }
-    this.extractor = organizationExtractor;
-    this.tenantDataContextHolder = tenantDataContextHolder;
-  }
-
-  @Autowired
-  public LiveOktaRepository(
-      AuthorizationProperties authorizationProperties,
-      @Value("${okta.client.org-url}") String orgUrl,
-      @Value("${okta.client.token}") String token,
-      @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
-      OrganizationExtractor organizationExtractor,
-      CurrentTenantDataAccessContextHolder tenantDataContextHolder) {
-    this.rolePrefix = authorizationProperties.getRolePrefix();
-    var client =
-        Clients.builder()
-            .setOrgUrl(orgUrl)
-            .setClientCredentials(new TokenClientCredentials(token))
-            .build();
-    this.groupApi = new GroupApi(client);
-    this.userApi = new UserApi(client);
-    this.applicationApi = new ApplicationApi(client);
-    this.applicationGroupsApi = new ApplicationGroupsApi(client);
-    try {
-      this.app = this.applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ApiException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
