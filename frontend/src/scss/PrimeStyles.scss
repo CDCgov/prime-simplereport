@@ -1,3 +1,5 @@
+@use "utilities";
+
 .prime-home {
   background-color: color("base-lightest");
   padding-top: units(2);
@@ -1174,4 +1176,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .no-hover-state-when-disabled:hover {
   box-shadow: inset 0 0 0 2px #c9c9c9 !important;
+}
+
+.usa-site-alert {
+  .usa-alert--emergency {
+    max-width: utilities.$site-max-width;
+  }
 }

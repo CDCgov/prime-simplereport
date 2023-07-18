@@ -1,5 +1,7 @@
+@use "../../scss/utilities";
+
 .grid-container.queue-container-wide {
-  max-width: 1200px;
+  max-width: utilities.$site-max-width;
 }
 
 .prime-test-result {

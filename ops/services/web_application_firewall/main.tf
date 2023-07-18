@@ -166,6 +166,12 @@ resource "azurerm_web_application_firewall_policy" "sr_waf_policy" {
       selector_match_operator = "Contains"
     }
 
+    exclusion {
+      match_variable          = "RequestArgNames"
+      selector                = "result_metadata.effective_type"
+      selector_match_operator = "Contains"
+    }
+
     managed_rule_set {
       type    = "OWASP"
       version = "3.2"

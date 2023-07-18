@@ -1,0 +1,15 @@
+#Ignore the following directories
+backend/build/
+backend/.gradle/
+frontend/build/
+frontend/node_modules/
+nginx/
+ops/**/.terraform/
+ops/services/app_functions/report_stream_batched_publisher/functions/node_modules/
+docs/
+.github/
+.run/
+node_modules/
+cypress/node_modules/
+cypress/screenshots/
+cypress/videos/

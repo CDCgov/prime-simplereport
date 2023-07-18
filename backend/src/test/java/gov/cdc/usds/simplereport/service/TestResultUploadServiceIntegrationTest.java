@@ -28,6 +28,7 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
   public static final UUID REPORT_ID_1 = UUID.randomUUID();
   public static final UUID REPORT_ID_2 = UUID.randomUUID();
   public static final UUID REPORT_ID_3 = UUID.randomUUID();
+  public static final UUID REPORT_ID_4 = UUID.randomUUID();
   @MockBean DateTimeProvider dateTimeProvider;
 
   @SpyBean private AuditingHandler handler;
@@ -47,17 +48,35 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
     mockCreationTime("2020-02-17 00:00");
     uploadRepository.save(
         new TestResultUpload(
-            REPORT_ID_1, UploadStatus.SUCCESS, 30, currentOrganization, null, null));
+            REPORT_ID_1,
+            UUID.randomUUID(),
+            UploadStatus.SUCCESS,
+            30,
+            currentOrganization,
+            null,
+            null));
 
     mockCreationTime("2021-02-17 00:00");
     uploadRepository.save(
         new TestResultUpload(
-            REPORT_ID_2, UploadStatus.PENDING, 20, currentOrganization, null, null));
+            REPORT_ID_2,
+            UUID.randomUUID(),
+            UploadStatus.PENDING,
+            20,
+            currentOrganization,
+            null,
+            null));
 
     mockCreationTime("2022-02-17 00:00");
     uploadRepository.save(
         new TestResultUpload(
-            REPORT_ID_3, UploadStatus.FAILURE, 10, currentOrganization, null, null));
+            REPORT_ID_3,
+            UUID.randomUUID(),
+            UploadStatus.PENDING,
+            10,
+            currentOrganization,
+            null,
+            null));
   }
 
   @Test
@@ -117,6 +136,32 @@ class TestResultUploadServiceIntegrationTest extends BaseServiceTest<TestResultU
         .isIn(List.of(REPORT_ID_2, REPORT_ID_3));
     assertThat(uploadSubmissions.getContent().get(1).getReportId())
         .isIn(List.of(REPORT_ID_2, REPORT_ID_3));
+  }
+
+  @Test
+  void getUploadSubmissions_doesNotReturnFailed() {
+    // GIVEN
+    Organization currentOrganization = organizationService.getCurrentOrganization();
+
+    uploadRepository.save(
+        new TestResultUpload(
+            REPORT_ID_2,
+            UUID.randomUUID(),
+            UploadStatus.FAILURE,
+            20,
+            currentOrganization,
+            null,
+            null));
+
+    // WHEN
+    Page<TestResultUpload> uploadSubmissions =
+        testResultUploadService.getUploadSubmissions(null, null, 0, 5);
+
+    // THEN
+    assertThat(uploadSubmissions.getTotalElements()).isEqualTo(3);
+    assertThat(uploadSubmissions.getContent().get(0).getReportId()).isNotEqualTo(REPORT_ID_4);
+    assertThat(uploadSubmissions.getContent().get(1).getReportId()).isNotEqualTo(REPORT_ID_4);
+    assertThat(uploadSubmissions.getContent().get(2).getReportId()).isNotEqualTo(REPORT_ID_4);
   }
 
   private void mockCreationTime(String date) {

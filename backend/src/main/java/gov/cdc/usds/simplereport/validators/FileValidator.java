@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class FileValidator<T extends FileRow> {
           FeedbackMessage.builder()
               .scope(CsvValidatorUtils.ITEM_SCOPE)
               .message("File is missing headers and other required data")
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .build();
       mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
     }
@@ -55,6 +57,7 @@ public class FileValidator<T extends FileRow> {
                 .message(
                     "File has the incorrect number of columns or empty rows. Please make sure all columns match the data template, and delete any empty rows.")
                 .indices(new ArrayList<>(List.of(rowNumber)))
+                .source(ResultUploadErrorSource.SIMPLE_REPORT)
                 .build();
         mergeErrors(mapOfErrors, new ArrayList<>(List.of(feedback)));
         continue;

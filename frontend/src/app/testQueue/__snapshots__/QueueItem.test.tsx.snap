@@ -362,6 +362,7 @@ exports[`QueueItem matches snapshot 1`] = `
                     />
                     <label
                       class="usa-radio__label"
+                      data-cy="radio-group-option-POSITIVE"
                       for="3-val-POSITIVE"
                     >
                       Positive (+)
@@ -380,6 +381,7 @@ exports[`QueueItem matches snapshot 1`] = `
                     />
                     <label
                       class="usa-radio__label"
+                      data-cy="radio-group-option-NEGATIVE"
                       for="3-val-NEGATIVE"
                     >
                       Negative (-)
@@ -398,6 +400,7 @@ exports[`QueueItem matches snapshot 1`] = `
                     />
                     <label
                       class="usa-radio__label"
+                      data-cy="radio-group-option-UNDETERMINED"
                       for="3-val-UNDETERMINED"
                     >
                       Inconclusive

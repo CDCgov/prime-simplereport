@@ -411,6 +411,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-POSITIVE"
                           for="3-val-POSITIVE"
                         >
                           Positive (+)
@@ -429,6 +430,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-NEGATIVE"
                           for="3-val-NEGATIVE"
                         >
                           Negative (-)
@@ -447,6 +449,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-UNDETERMINED"
                           for="3-val-UNDETERMINED"
                         >
                           Inconclusive
@@ -826,6 +829,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-POSITIVE"
                           for="6-val-POSITIVE"
                         >
                           Positive (+)
@@ -844,6 +848,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-NEGATIVE"
                           for="6-val-NEGATIVE"
                         >
                           Negative (-)
@@ -862,6 +867,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-UNDETERMINED"
                           for="6-val-UNDETERMINED"
                         >
                           Inconclusive
