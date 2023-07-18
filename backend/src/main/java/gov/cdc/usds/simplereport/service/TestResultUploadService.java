@@ -182,22 +182,18 @@ public class TestResultUploadService {
       }
       updatedRows.add(transformCsvRow(row));
     }
-    String csvContent = null;
+    var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
+    var csvMapper =
+        new CsvMapper()
+            .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+            .writerFor(List.class)
+            .with(
+                CsvSchema.builder()
+                    .setUseHeader(true)
+                    .addColumns(headers, CsvSchema.ColumnType.STRING)
+                    .build());
+    String csvContent;
     try {
-
-      Class<List<Map<String, String>>> schemaListClazz = (Class) List.class;
-
-      var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
-      var csvMapper =
-          new CsvMapper()
-              .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
-              .writerFor(schemaListClazz)
-              .with(
-                  CsvSchema.builder()
-                      .setUseHeader(true)
-                      .addColumns(headers, CsvSchema.ColumnType.STRING)
-                      .build());
-
       csvContent = csvMapper.writeValueAsString(updatedRows);
     } catch (JsonProcessingException e) {
       throw new CsvProcessingException("Error writing transformed csv rows");
@@ -357,9 +353,8 @@ public class TestResultUploadService {
             () -> {
               long start = System.currentTimeMillis();
               UploadResponse response;
+              var csvContent = transformCsvContent(content);
               try {
-                var csvContent = transformCsvContent(content);
-
                 response = _client.uploadCSV(csvContent);
               } catch (FeignException e) {
                 log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
