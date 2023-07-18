@@ -26,42 +26,31 @@ public class PatientResolver {
     _os = os;
   }
 
-  private ArchivedStatus getArchivedStatus(Boolean includeArchived, ArchivedStatus archivedStatus) {
-    ArchivedStatus status;
-    if (includeArchived != null) {
-      status =
-          Boolean.TRUE.equals(includeArchived) ? ArchivedStatus.ALL : ArchivedStatus.UNARCHIVED;
-    } else {
-      status = archivedStatus != null ? archivedStatus : ArchivedStatus.UNARCHIVED;
-    }
-    return status;
-  }
-
   // authorization happens in calls to PersonService
-  // will update as part of #6062
   @QueryMapping
   public List<Person> patients(
       @Argument UUID facilityId,
       @Argument int pageNumber,
       @Argument int pageSize,
-      @Argument Boolean includeArchived,
       @Argument ArchivedStatus archivedStatus,
       @Argument String namePrefixMatch,
       @Argument boolean includeArchivedFacilities) {
-    ArchivedStatus status = getArchivedStatus(includeArchived, archivedStatus);
     return _ps.getPatients(
-        facilityId, pageNumber, pageSize, status, namePrefixMatch, includeArchivedFacilities);
+        facilityId,
+        pageNumber,
+        pageSize,
+        archivedStatus,
+        namePrefixMatch,
+        includeArchivedFacilities);
   }
 
   // authorization happens in calls to PersonService
   @QueryMapping
   public long patientsCount(
       @Argument UUID facilityId,
-      @Argument Boolean includeArchived,
       @Argument ArchivedStatus archivedStatus,
       @Argument String namePrefixMatch) {
-    ArchivedStatus status = getArchivedStatus(includeArchived, archivedStatus);
-    return _ps.getPatientsCount(facilityId, status, namePrefixMatch, false);
+    return _ps.getPatientsCount(facilityId, archivedStatus, namePrefixMatch, false);
   }
 
   @QueryMapping
