@@ -188,7 +188,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void mockResponse_returnsPending() throws IOException {
+  void mockResponse_returnsPending() {
     var response = new UploadResponse();
     response.setId(UUID.randomUUID());
     response.setOverallStatus(ReportStreamStatus.RECEIVED);
@@ -207,8 +207,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             response.getWarnings(),
             response.getErrors());
 
-    InputStream input = mock(InputStream.class);
-    when(input.readAllBytes()).thenReturn(new byte[] {45});
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
@@ -220,9 +219,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   }
 
   @Test
-  void mockResponse_returnsGatewayTimeout() throws IOException {
-    InputStream input = mock(InputStream.class);
-    when(input.readAllBytes()).thenReturn(new byte[] {45});
+  void mockResponse_returnsGatewayTimeout() {
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
     String responseBody =
         "<HTML><HEAD>\n"
@@ -361,8 +359,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // THEN
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
     String[] rows = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8).split("\n");
-    assertThat(rows[0]).endsWith(",processing_mode_code");
-    assertThat(rows[1]).endsWith(",T");
+    assertThat(rows[0]).endsWith(",\"processing_mode_code\"");
+    assertThat(rows[1]).endsWith(",\"T\"");
   }
 
   @Test
@@ -388,8 +386,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // THEN
     verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
     String[] rows = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8).split("\n");
-    assertThat(rows[0]).endsWith(",processing_mode_code");
-    assertThat(rows[1]).endsWith(",D");
+    assertThat(rows[0]).endsWith(",\"processing_mode_code\"");
+    assertThat(rows[1]).endsWith(",\"D\"");
   }
 
   @Test

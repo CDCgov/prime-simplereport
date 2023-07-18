@@ -9,7 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
@@ -45,7 +47,6 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -136,10 +137,6 @@ public class TestResultUploadService {
       return validationErrorResult;
     }
 
-    if (!"P".equals(processingModeCodeValue)) {
-      content = attachProcessingModeCode(content);
-    }
-
     TestResultUpload csvResult = null;
     Future<UploadResponse> csvResponse;
     Future<UploadResponse> fhirResponse = null;
@@ -185,30 +182,37 @@ public class TestResultUploadService {
       }
       updatedRows.add(transformCsvRow(row));
     }
+    String csvContent = null;
+    try {
 
-    var csvMapper = new CsvMapper();
+      Class<List<Map<String, String>>> schemaListClazz = (Class) List.class;
 
-    StringBuilder csvContent = new StringBuilder();
+      var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
+      var csvMapper =
+          new CsvMapper()
+              .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+              .writerFor(schemaListClazz)
+              .with(
+                  CsvSchema.builder()
+                      .setUseHeader(true)
+                      .addColumns(headers, CsvSchema.ColumnType.STRING)
+                      .build());
 
-    var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
-    csvContent.append(String.join(",", headers));
-
-    for (var row : updatedRows) {
-      var rowData =
-          headers.stream().map(header -> row.get(header) == null ? "" : row.get(header)).toList();
-      csvContent.append("\n");
-      try {
-        var rowString = csvMapper.writeValueAsString(rowData);
-        csvContent.append(rowString);
-      } catch (JsonProcessingException e) {
-        throw new CsvProcessingException("Error writing transformed csv rows");
-      }
+      csvContent = csvMapper.writeValueAsString(updatedRows);
+    } catch (JsonProcessingException e) {
+      throw new CsvProcessingException("Error writing transformed csv rows");
     }
 
-    return csvContent.toString().getBytes(StandardCharsets.UTF_8);
+    return csvContent.getBytes(StandardCharsets.UTF_8);
   }
 
   private Map<String, String> transformCsvRow(Map<String, String> row) {
+
+    if (!"P".equals(processingModeCodeValue)
+        && !row.containsKey(PROCESSING_MODE_CODE_COLUMN_NAME)) {
+      row.put(PROCESSING_MODE_CODE_COLUMN_NAME, processingModeCodeValue);
+    }
+
     var updatedSpecimenType =
         modifyRowSpecimenNameToSNOMED(row.get(SPECIMEN_TYPE_COLUMN_NAME).toLowerCase());
 
@@ -282,19 +286,6 @@ public class TestResultUploadService {
       return snomedMap.get(specimenTypeName);
     }
     return specimenTypeName;
-  }
-
-  private byte[] attachProcessingModeCode(byte[] content) {
-    String[] row = new String(content, StandardCharsets.UTF_8).split("\n");
-    String headers = row[0];
-    if (!headers.contains(PROCESSING_MODE_CODE_COLUMN_NAME)) {
-      row[0] = headers + "," + PROCESSING_MODE_CODE_COLUMN_NAME;
-      for (int i = 1; i < row.length; i++) {
-        row[i] = row[i] + "," + processingModeCodeValue;
-      }
-      content = Arrays.stream(row).collect(Collectors.joining("\n")).getBytes();
-    }
-    return content;
   }
 
   public Page<TestResultUpload> getUploadSubmissions(
