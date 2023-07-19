@@ -7,23 +7,23 @@ describe("Testing with multiplex devices", () => {
   let patient, facility, multiplexDeviceName;
 
   before(() => {
-    cy.makePOSTRequest({
-      operationName: "GetManagedFacilities",
-      variables: {},
-      query:
-        "query GetManagedFacilities {\n  organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}",
-    }).then((res) => {
-      facility = res.body.data.organization.facilities[0];
+      cy.makePOSTRequest({
+        operationName: "WhoAmI",
+        variables: {},
+        query:
+            "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
+      }).then((res) => {
+      facility = res.body.data.whoami.organization.facilities[0];
       cy.makePOSTRequest({
         operationName: "GetPatientsByFacility",
         variables: {
           facilityId: facility.id,
           pageNumber: 0,
           pageSize: 1,
-          includeArchived: false,
+          archivedStatus: "UNARCHIVED",
         },
         query:
-          "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $includeArchived: Boolean, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    includeArchived: $includeArchived\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}",
+          "query GetPatientsByFacility($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $archivedStatus: ArchivedStatus, $namePrefixMatch: String) {\n  patients(\n    facilityId: $facilityId\n    pageNumber: $pageNumber\n    pageSize: $pageSize\n    archivedStatus: $archivedStatus\n    namePrefixMatch: $namePrefixMatch\n  ) {\n    internalId\n    firstName\n    lastName\n    middleName\n    birthDate\n    isDeleted\n    role\n    lastTest {\n      dateAdded\n      __typename\n    }\n    __typename\n  }\n}",
       }).then((res) => {
         patient = res.body.data.patients[0];
       });
@@ -62,7 +62,7 @@ describe("Testing with multiplex devices", () => {
 
     cy.contains(`${patient.lastName}, ${patient.firstName}`);
     cy.injectSRAxe();
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     const queueCard = `div[data-testid="test-card-${patient.internalId}"]`;
     cy.get(queueCard).within(() => {
@@ -95,7 +95,6 @@ describe("Testing with multiplex devices", () => {
     cy.get(queueCard).within(() => {
       cy.get("@submitBtn").should("be.enabled").click();
     });
-
     cy.contains("Submit anyway").click();
     cy.wait("@SubmitQueueItem");
     cy.wait("@GetFacilityQueue", {timeout: 20000});

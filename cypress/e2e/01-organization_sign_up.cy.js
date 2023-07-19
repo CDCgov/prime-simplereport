@@ -11,19 +11,10 @@ const user = generateUser();
 
 describe("Organization sign up",() => {
   loginHooks();
-  before(() => {
-    // Since these tests interact with Okta, we need to use
-    // Wiremock to stub out the Okta API calls.
-    cy.task("downloadWiremock");
-    cy.restartWiremock("orgSignUp");
-  });
-  after(() => {
-    cy.task("stopWiremock");
-  });
   it("navigates to the sign up form", () => {
     cy.visit("/sign-up");
     cy.injectSRAxe();
-    cy.checkA11y(); // Sign up page
+    cy.checkAccessibility(); // Sign up page
 
     cy.contains("Sign up for SimpleReport");
     cy.contains("My organization is new to SimpleReport").click();
@@ -31,7 +22,7 @@ describe("Organization sign up",() => {
   });
   it("fills out the org info form", () => {
     cy.contains("Sign up for SimpleReport in three steps");
-    cy.checkA11y(); // Sign up form
+    cy.checkAccessibility(); // Sign up form
 
     cy.get('input[name="name"]').type(organization.name);
     cy.get('select[name="state"]').select("CA");
@@ -44,7 +35,7 @@ describe("Organization sign up",() => {
   it("submits successfully", () => {
     cy.get("button.submit-button").click();
     cy.contains("Identity verification consent");
-    cy.checkA11y(); // Identity verification page
+    cy.checkAccessibility(); // Identity verification page
   });
   it("navigates to the support pending org table and verifies the org", () => {
     cy.removeOrganizationAccess();
@@ -53,13 +44,13 @@ describe("Organization sign up",() => {
     cy.contains("Support admin");
 
     cy.injectSRAxe();
-    cy.checkA11y();
+    cy.checkAccessibility();
 
-    cy.contains("Organizations pending identify verification").click();
+    cy.contains("Identity verification").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
 
     cy.contains("td", `${organization.name}`);
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     cy.contains("td", `${organization.name}`)
       .siblings()
@@ -82,7 +73,7 @@ describe("Organization sign up",() => {
     cy.get('input[name="justification"]').type("I am a test user").blur();
 
     cy.injectSRAxe();
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     cy.contains("Access data").click();
     cy.contains("Support admin");
@@ -96,13 +87,13 @@ describe("Organization sign up",() => {
 
     // Test a11y on Manage Facilities tab
     cy.injectSRAxe();
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     cy.contains("+ New facility").click();
     cy.contains("Testing facility information");
 
     // Test a11y on New Facility page
-    cy.checkA11y();
+    cy.checkAccessibility();
   });
   it("fills out the form for a new facility", () => {
     cy.get('input[name="facility.name"]').type(facility.name);
@@ -120,7 +111,7 @@ describe("Organization sign up",() => {
       '.modal__container input[name="addressSelect-facility"][value="userAddress"]+label'
     ).click();
 
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.contains("+ New facility");
@@ -132,6 +123,6 @@ describe("Organization sign up",() => {
 
     // Test a11y on the People page
     cy.injectSRAxe();
-    cy.checkA11y();
+    cy.checkAccessibility();
   });
 });

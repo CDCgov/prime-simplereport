@@ -396,6 +396,7 @@ Object {
                               />
                               <label
                                 class="usa-radio__label"
+                                data-cy="radio-group-option-MOBILE"
                                 for="127-val-MOBILE"
                               >
                                 Mobile
@@ -414,6 +415,7 @@ Object {
                               />
                               <label
                                 class="usa-radio__label"
+                                data-cy="radio-group-option-LANDLINE"
                                 for="127-val-LANDLINE"
                               >
                                 Landline
@@ -473,6 +475,7 @@ Object {
                             />
                             <label
                               class="usa-radio__label"
+                              data-cy="radio-group-option-SMS"
                               for="128-val-SMS"
                             >
                               Yes, text all mobile numbers on file.
@@ -492,6 +495,7 @@ Object {
                             />
                             <label
                               class="usa-radio__label"
+                              data-cy="radio-group-option-NONE"
                               for="128-val-NONE"
                             >
                               No
@@ -584,6 +588,7 @@ Object {
                             />
                             <label
                               class="usa-radio__label"
+                              data-cy="radio-group-option-EMAIL"
                               for="130-val-EMAIL"
                             >
                               Yes
@@ -603,6 +608,7 @@ Object {
                             />
                             <label
                               class="usa-radio__label"
+                              data-cy="radio-group-option-NONE"
                               for="130-val-NONE"
                             >
                               No
@@ -2363,6 +2369,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-native"
                             for="136-val-native"
                           >
                             American Indian/Alaskan Native
@@ -2381,6 +2388,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-asian"
                             for="136-val-asian"
                           >
                             Asian
@@ -2399,6 +2407,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-black"
                             for="136-val-black"
                           >
                             Black/African American
@@ -2417,6 +2426,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-pacific"
                             for="136-val-pacific"
                           >
                             Native Hawaiian/other Pacific Islander
@@ -2435,6 +2445,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-white"
                             for="136-val-white"
                           >
                             White
@@ -2453,6 +2464,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-other"
                             for="136-val-other"
                           >
                             Other
@@ -2471,6 +2483,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-refused"
                             for="136-val-refused"
                           >
                             Prefer not to answer
@@ -2524,6 +2537,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-hispanic"
                             for="137-val-hispanic"
                           >
                             Yes
@@ -2542,6 +2556,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-not_hispanic"
                             for="137-val-not_hispanic"
                           >
                             No
@@ -2560,6 +2575,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-refused"
                             for="137-val-refused"
                           >
                             Prefer not to answer
@@ -2608,6 +2624,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-female"
                             for="138-val-female"
                           >
                             Female
@@ -2626,6 +2643,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-male"
                             for="138-val-male"
                           >
                             Male
@@ -2644,6 +2662,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-other"
                             for="138-val-other"
                           >
                             Other
@@ -2662,6 +2681,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-refused"
                             for="138-val-refused"
                           >
                             Prefer not to answer
@@ -2717,6 +2737,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-YES"
                             for="139-val-YES"
                           >
                             Yes
@@ -2735,6 +2756,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-NO"
                             for="139-val-NO"
                           >
                             No
@@ -2753,6 +2775,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-NOT_SURE"
                             for="139-val-NOT_SURE"
                           >
                             Not sure
@@ -2790,6 +2813,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-YES"
                             for="140-val-YES"
                           >
                             Yes
@@ -2808,6 +2832,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-NO"
                             for="140-val-NO"
                           >
                             No
@@ -2826,6 +2851,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-NOT_SURE"
                             for="140-val-NOT_SURE"
                           >
                             Not sure
@@ -3250,6 +3276,7 @@ Object {
                             />
                             <label
                               class="usa-radio__label"
+                              data-cy="radio-group-option-MOBILE"
                               for="127-val-MOBILE"
                             >
                               Mobile
@@ -3268,6 +3295,7 @@ Object {
                             />
                             <label
                               class="usa-radio__label"
+                              data-cy="radio-group-option-LANDLINE"
                               for="127-val-LANDLINE"
                             >
                               Landline
@@ -3327,6 +3355,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-SMS"
                             for="128-val-SMS"
                           >
                             Yes, text all mobile numbers on file.
@@ -3346,6 +3375,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-NONE"
                             for="128-val-NONE"
                           >
                             No
@@ -3438,6 +3468,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-EMAIL"
                             for="130-val-EMAIL"
                           >
                             Yes
@@ -3457,6 +3488,7 @@ Object {
                           />
                           <label
                             class="usa-radio__label"
+                            data-cy="radio-group-option-NONE"
                             for="130-val-NONE"
                           >
                             No
@@ -5217,6 +5249,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-native"
                           for="136-val-native"
                         >
                           American Indian/Alaskan Native
@@ -5235,6 +5268,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-asian"
                           for="136-val-asian"
                         >
                           Asian
@@ -5253,6 +5287,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-black"
                           for="136-val-black"
                         >
                           Black/African American
@@ -5271,6 +5306,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-pacific"
                           for="136-val-pacific"
                         >
                           Native Hawaiian/other Pacific Islander
@@ -5289,6 +5325,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-white"
                           for="136-val-white"
                         >
                           White
@@ -5307,6 +5344,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-other"
                           for="136-val-other"
                         >
                           Other
@@ -5325,6 +5363,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-refused"
                           for="136-val-refused"
                         >
                           Prefer not to answer
@@ -5378,6 +5417,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-hispanic"
                           for="137-val-hispanic"
                         >
                           Yes
@@ -5396,6 +5436,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-not_hispanic"
                           for="137-val-not_hispanic"
                         >
                           No
@@ -5414,6 +5455,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-refused"
                           for="137-val-refused"
                         >
                           Prefer not to answer
@@ -5462,6 +5504,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-female"
                           for="138-val-female"
                         >
                           Female
@@ -5480,6 +5523,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-male"
                           for="138-val-male"
                         >
                           Male
@@ -5498,6 +5542,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-other"
                           for="138-val-other"
                         >
                           Other
@@ -5516,6 +5561,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-refused"
                           for="138-val-refused"
                         >
                           Prefer not to answer
@@ -5571,6 +5617,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-YES"
                           for="139-val-YES"
                         >
                           Yes
@@ -5589,6 +5636,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-NO"
                           for="139-val-NO"
                         >
                           No
@@ -5607,6 +5655,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-NOT_SURE"
                           for="139-val-NOT_SURE"
                         >
                           Not sure
@@ -5644,6 +5693,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-YES"
                           for="140-val-YES"
                         >
                           Yes
@@ -5662,6 +5712,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-NO"
                           for="140-val-NO"
                         >
                           No
@@ -5680,6 +5731,7 @@ Object {
                         />
                         <label
                           class="usa-radio__label"
+                          data-cy="radio-group-option-NOT_SURE"
                           for="140-val-NOT_SURE"
                         >
                           Not sure

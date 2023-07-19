@@ -7,6 +7,7 @@ import {
   GetTestResultForResendingEmailsDocument,
   GetTestResultForTextDocument,
   GetFacilityResultsForCsvWithCountDocument,
+  ArchivedStatus,
 } from "../../../generated/graphql";
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
@@ -30,6 +31,21 @@ import resultForViewing from "./resultForViewing";
 import resultForCorrection from "./resultForCorrection";
 
 export const mocks = [
+  {
+    request: {
+      query: GetFacilityResultsMultiplexWithCountDocument,
+      variables: {
+        facilityId: "",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResultsPage: testResults,
+      },
+    },
+  },
   {
     request: {
       query: GetFacilityResultsMultiplexWithCountDocument,
@@ -217,7 +233,7 @@ export const mocks = [
       variables: {
         facilityId: "1",
         namePrefixMatch: "Cragell",
-        includeArchived: true,
+        archivedStatus: ArchivedStatus.All,
         includeArchivedFacilities: true,
       },
     },

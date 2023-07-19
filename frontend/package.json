@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.7.13",
-    "@fortawesome/fontawesome-svg-core": "^6.3.0",
+    "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@microsoft/applicationinsights-react-js": "^3.4.3",
@@ -48,7 +48,7 @@
     "react-transition-group": "^4.4.5",
     "react-uid": "^2.3.2",
     "redux": "^4.2.1",
-    "sass": "^1.47.0",
+    "sass": "^1.63.6",
     "smartystreets-javascript-sdk": "^2.1.2",
     "uswds": "2.14.0",
     "uuid": "^9.0.0",
@@ -99,15 +99,6 @@
       "jest-dom"
     ],
     "rules": {
-      "graphql/template-strings": [
-        "error",
-        {
-          "env": "apollo"
-        }
-      ],
-      "graphql/named-operations": [
-        "error"
-      ],
       "import/no-unresolved": 0,
       "import/first": 1,
       "import/order": [
@@ -190,9 +181,9 @@
     "@storybook/addon-actions": "^7.0.22",
     "@storybook/addon-essentials": "^6.5.13",
     "@storybook/addon-interactions": "^6.5.13",
-    "@storybook/addon-links": "^7.0.20",
+    "@storybook/addon-links": "^7.0.27",
     "@storybook/builder-webpack5": "^6.5.13",
-    "@storybook/manager-webpack5": "^6.5.13",
+    "@storybook/manager-webpack5": "^6.5.16",
     "@storybook/node-logger": "^6.5.13",
     "@storybook/preset-create-react-app": "^7.0.6",
     "@storybook/react": "^6.5.16",
