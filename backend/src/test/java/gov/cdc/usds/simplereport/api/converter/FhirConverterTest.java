@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api.converter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -64,7 +63,6 @@ import org.hl7.fhir.r4.model.Device.DeviceNameType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.DiagnosticReport.DiagnosticReportStatus;
 import org.hl7.fhir.r4.model.Enumerations.AdministrativeGender;
-import org.hl7.fhir.r4.model.InstantType;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.Practitioner;
@@ -77,9 +75,8 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -87,12 +84,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FhirConverterTest {
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
@@ -103,25 +101,20 @@ class FhirConverterTest {
   public static final ZoneId DEFAULT_TIME_ZONE_ID = ZoneId.of("US/Eastern");
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
-
   private static final Instant instant = (new Date(1675891986000L)).toInstant();
+  private static final Date currentDate = Date.from(Instant.parse("2023-07-14T15:52:34.540Z"));
 
-  private static final Date currentDate = (Date.from(Instant.parse("2023-07-14T15:52:34.540Z")));
-  private static GitProperties gitProperties;
-  @Mock private static DateGenerator dateGenerator;
-  @Mock private static UUIDGenerator uuidGenerator;
+  @Mock private GitProperties gitProperties;
+  @MockBean private DateGenerator dateGenerator;
+  @MockBean private UUIDGenerator uuidGenerator;
+  @Autowired private FhirConverter fhirConverter;
 
-  private static FhirConverter fhirConverter;
-
-  @BeforeAll
+  @BeforeEach
   public void init() {
-    gitProperties = mock(GitProperties.class);
     when(gitProperties.getCommitTime()).thenReturn(instant);
     when(gitProperties.getShortCommitId()).thenReturn("FRIDAY");
     when(dateGenerator.newDate()).thenReturn(currentDate);
     when(uuidGenerator.randomUUID()).thenReturn(UUID.randomUUID());
-
-    fhirConverter = new FhirConverter(uuidGenerator, dateGenerator);
   }
 
   @Test
@@ -1561,18 +1554,9 @@ class FhirConverterTest {
                 getClass().getClassLoader().getResourceAsStream("fhir/bundle.json")),
             StandardCharsets.UTF_8);
 
-    var expectedCurrentDateTimezone =
-        new DateTimeType(currentDate, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone("UTC"))
-            .getValueAsString();
-    var expectedCurrentDateZulu =
-        new InstantType(currentDate).setTimeZoneZulu(true).getValueAsString();
-
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
-    expectedSerialized =
-        expectedSerialized.replace("$CURRENT_DATE_TIMEZONE", expectedCurrentDateTimezone);
-    expectedSerialized = expectedSerialized.replace("$CURRENT_DATE_ZULU", expectedCurrentDateZulu);
     expectedSerialized =
         expectedSerialized.replace(
             "$SPECIMEN_IDENTIFIER",
