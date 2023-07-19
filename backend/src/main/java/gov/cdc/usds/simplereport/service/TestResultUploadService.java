@@ -244,7 +244,7 @@ public class TestResultUploadService {
             ? convertToZonedDateTime(
                 row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME),
                 resultsUploaderCachingService,
-                testingLabAddress)
+                providerAddress)
             : orderTestDate;
 
     var testingLabSpecimenReceivedDate =
