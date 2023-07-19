@@ -389,9 +389,7 @@ public class TestResultUploadService {
               response.getWarnings(),
               response.getErrors());
 
-      result = _repo.save(result);
-
-      TestResultUpload finalResult = result;
+      TestResultUpload finalResult = (result.getReportId() != null) ? _repo.save(result) : null;
 
       if (response.getErrors() != null && response.getErrors().length > 0) {
         for (var error : response.getErrors()) {
@@ -406,7 +404,6 @@ public class TestResultUploadService {
                 .toList());
       }
     }
-
     return result;
   }
 
