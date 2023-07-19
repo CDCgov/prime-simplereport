@@ -94,6 +94,7 @@ public class TestResultRow implements FileRow {
   final ValueOrError orderingFacilityPhoneNumber;
   final ValueOrError comment;
   final ValueOrError testResultStatus;
+  final ValueOrError testOrderedCode;
 
   static final String PATIENT_LAST_NAME = "patient_last_name";
   static final String PATIENT_FIRST_NAME = "patient_first_name";
@@ -351,6 +352,7 @@ public class TestResultRow implements FileRow {
             rawRow, "ordering_facility_phone_number", isRequired("ordering_facility_phone_number"));
     comment = getValue(rawRow, "comment", isRequired("comment"));
     testResultStatus = getValue(rawRow, "test_result_status", isRequired("test_result_status"));
+    testOrderedCode = getValue(rawRow, "test_ordered_code", isRequired("test_ordered_code"));
   }
 
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
