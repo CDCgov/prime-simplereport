@@ -56,7 +56,7 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
   }
 
   @Test
-  void patients_withIncludeArchived_callsServiceWithArchivedStatus() {
+  void patients_callsService() {
     var personService = mock(PersonService.class);
     var orgService = mock(OrganizationService.class);
     var org = TestDataBuilder.createValidOrganization();
@@ -66,29 +66,13 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
     var sut = new PatientResolver(personService, orgService);
     var facilityId = UUID.randomUUID();
 
-    sut.patients(facilityId, 0, 100, true, null, null, false);
-
-    verify(personService).getPatients(facilityId, 0, 100, ArchivedStatus.ALL, null, false);
-  }
-
-  @Test
-  void patients_withArchivedStatus_callsServiceWithArchivedStatus() {
-    var personService = mock(PersonService.class);
-    var orgService = mock(OrganizationService.class);
-    var org = TestDataBuilder.createValidOrganization();
-
-    when(orgService.getCurrentOrganization()).thenReturn(org);
-
-    var sut = new PatientResolver(personService, orgService);
-    var facilityId = UUID.randomUUID();
-
-    sut.patients(facilityId, 0, 100, null, ArchivedStatus.ARCHIVED, null, false);
+    sut.patients(facilityId, 0, 100, ArchivedStatus.ARCHIVED, null, false);
 
     verify(personService).getPatients(facilityId, 0, 100, ArchivedStatus.ARCHIVED, null, false);
   }
 
   @Test
-  void patientsCount_withIncludeArchived_callsServiceWithArchivedStatus() {
+  void patientsCount_callsService() {
     var personService = mock(PersonService.class);
     var orgService = mock(OrganizationService.class);
     var org = TestDataBuilder.createValidOrganization();
@@ -98,24 +82,8 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
     var sut = new PatientResolver(personService, orgService);
     var facilityId = UUID.randomUUID();
 
-    sut.patientsCount(facilityId, false, null, null);
+    sut.patientsCount(facilityId, ArchivedStatus.UNARCHIVED, null);
 
     verify(personService).getPatientsCount(facilityId, ArchivedStatus.UNARCHIVED, null, false);
-  }
-
-  @Test
-  void patientsCount_withArchivedStatus_callsServiceWithArchivedStatus() {
-    var personService = mock(PersonService.class);
-    var orgService = mock(OrganizationService.class);
-    var org = TestDataBuilder.createValidOrganization();
-
-    when(orgService.getCurrentOrganization()).thenReturn(org);
-
-    var sut = new PatientResolver(personService, orgService);
-    var facilityId = UUID.randomUUID();
-
-    sut.patients(facilityId, 0, 100, null, ArchivedStatus.UNARCHIVED, null, false);
-
-    verify(personService).getPatients(facilityId, 0, 100, ArchivedStatus.UNARCHIVED, null, false);
   }
 }
