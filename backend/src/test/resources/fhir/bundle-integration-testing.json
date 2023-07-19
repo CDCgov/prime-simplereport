@@ -1,0 +1,679 @@
+{
+  "resourceType": "Bundle",
+  "identifier": {
+    "value": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+  },
+  "type": "message",
+  "timestamp": "2023-05-24T19:33:06.472Z",
+  "entry": [
+    {
+      "fullUrl": "MessageHeader/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "MessageHeader",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0103",
+              "code": "P",
+              "display": "Production"
+            }
+          ]
+        },
+        "eventCoding": {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+          "code": "R01",
+          "display": "ORU/ACK - Unsolicited transmission of an observation message"
+        },
+        "destination": [
+          {
+            "name": "PRIME ReportStream",
+            "endpoint": "https://prime.cdc.gov/api/reports?option=SkipInvalidItems"
+          }
+        ],
+        "sender": {
+          "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "source": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id",
+              "valueString": "CommitID"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date",
+              "valueInstant": "2023-07-05T14:02:46Z"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
+              "valueReference": {
+                "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+              }
+            }
+          ],
+          "software": "PRIME SimpleReport",
+          "version": "CommitID",
+          "endpoint": "https://simplereport.gov"
+        },
+        "focus": [
+          {
+            "reference": "Provenance/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          },
+          {
+            "reference": "DiagnosticReport/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Provenance/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Provenance",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "recorded": "2023-05-24T19:33:06.472Z",
+        "activity": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+              "code": "R01",
+              "display": "ORU/ACK - Unsolicited transmission of an observation message"
+            }
+          ]
+        },
+        "agent": [
+          {
+            "who": {
+              "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "identifier": [
+          {
+            "value": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95209-3"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "effectiveDateTime": "2021-09-01T10:31:30+00:00",
+        "issued": "2023-05-24T19:33:06+00:00",
+        "specimen": [
+          {
+            "reference": "Specimen/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          },
+          {
+            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          },
+          {
+            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "extension": [
+          {
+            "url": "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-Race",
+                  "code": "2106-3"
+                }
+              ],
+              "text": "white"
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0189",
+                  "code": "N",
+                  "display": "Not Hispanic or Latino"
+                }
+              ],
+              "text": "Not Hispanic or Latino"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "value": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "name": [
+          {
+            "family": "Astaire",
+            "given": [
+              "Fred",
+              "M"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(202) 123 4567",
+            "use": "mobile"
+          },
+          {
+            "system": "email",
+            "value": "fred@astaire.com",
+            "use": "home"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1899-05-10",
+        "address": [
+          {
+            "line": [
+              "736 Jackson PI NW",
+              "APT. 123"
+            ],
+            "city": "Washington",
+            "district": "Washington",
+            "state": "DC",
+            "postalCode": "20503",
+            "country": "USA"
+          }
+        ],
+        "managingOrganization": {
+          "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        }
+      }
+    },
+    {
+      "fullUrl": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "000111222-3"
+          }
+        ],
+        "name": "Injection Site",
+        "telecom": [
+          {
+            "system": "phone",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "2797 N Cerrada de Beto"
+            ],
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "name": [
+          {
+            "family": "Flintstone",
+            "given": [
+              "Fred"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(202) 555 1212",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "123 Main Street"
+            ],
+            "city": "Oz",
+            "state": "KS",
+            "postalCode": "12345",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Specimen/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Specimen",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "identifier": [
+          {
+            "value": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "445297001"
+            }
+          ],
+          "text": "Swab of the Nose"
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "collection": {
+          "bodySite": {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "71836000"
+              }
+            ],
+            "text": "NOSE"
+          }
+        }
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "extension": [
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0119",
+                  "code": "RE"
+                }
+              ]
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime": "2021-09-01T10:31:30+00:00"
+          }
+        ],
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95209-3"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "requester": {
+          "reference": "PractitionerRole/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "performer": [
+          {
+            "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "supportingInfo": [
+          {
+            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          },
+          {
+            "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Device/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Device",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "manufacturer": "LumiraDx UK Ltd.",
+        "deviceName": [
+          {
+            "name": "LumiraDx SARS-CoV-2 Ag Test*",
+            "type": "model-name"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "practitioner": {
+          "reference": "Practitioner/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "organization": {
+          "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        }
+      }
+    },
+    {
+      "fullUrl": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "name": "SimpleReport"
+      }
+    },
+    {
+      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95209-3"
+            }
+          ],
+          "text": "COVID-19"
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "issued": "2021-09-01T10:31:30.001Z",
+        "performer": [
+          {
+            "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260415000",
+              "display": "Not detected"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "method": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding": {
+                "code": "LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd."
+              }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "LumiraDx Platform_LumiraDx"
+              }
+            }
+          ],
+          "coding": [
+            {
+              "display": "LumiraDx SARS-CoV-2 Ag Test*"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "device": {
+          "reference": "Device/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org"
+            }
+          ],
+          "text": "Flu B"
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "issued": "2021-09-01T10:31:30.001Z",
+        "performer": [
+          {
+            "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260415000",
+              "display": "Not detected"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "method": {
+          "coding": [
+            {
+              "display": "LumiraDx SARS-CoV-2 Ag Test*"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "device": {
+          "reference": "Device/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org"
+            }
+          ],
+          "text": "Flu A"
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "issued": "2021-09-01T10:31:30.001Z",
+        "performer": [
+          {
+            "reference": "Organization/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260415000",
+              "display": "Not detected"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "method": {
+          "coding": [
+            {
+              "display": "LumiraDx SARS-CoV-2 Ag Test*"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "device": {
+          "reference": "Device/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95419-8",
+              "display": "Has symptoms related to condition of interest"
+            }
+          ],
+          "text": "Has symptoms related to condition of interest"
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
+              "code": "Y",
+              "display": "Yes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11368-8",
+              "display": "Illness or injury onset date and time"
+            }
+          ],
+          "text": "Illness or injury onset date and time"
+        },
+        "subject": {
+          "reference": "Patient/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+        },
+        "valueDateTime": "2023-07-05"
+      }
+    }
+  ]
+}

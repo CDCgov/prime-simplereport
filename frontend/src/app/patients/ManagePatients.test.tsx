@@ -19,6 +19,7 @@ import {
 import createMockStore from "redux-mock-store";
 
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
+import { ArchivedStatus } from "../../generated/graphql";
 
 import ManagePatients, {
   patientQuery,
@@ -439,7 +440,7 @@ const mocks: MockedProviderProps["mocks"] = [
       query: patientsCountQuery,
       variables: {
         facilityId: "a1",
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         namePrefixMatch: null,
       },
     },
@@ -456,7 +457,7 @@ const mocks: MockedProviderProps["mocks"] = [
         facilityId: "a1",
         pageNumber: 0,
         pageSize: 20,
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         namePrefixMatch: null,
       },
     },
@@ -471,7 +472,7 @@ const mocks: MockedProviderProps["mocks"] = [
         facilityId: "a1",
         pageNumber: 1,
         pageSize: 20,
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         namePrefixMatch: null,
       },
     },
@@ -485,7 +486,7 @@ const mocks: MockedProviderProps["mocks"] = [
       query: patientsCountQuery,
       variables: {
         facilityId: "a1",
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         namePrefixMatch: "Al",
       },
     },
@@ -502,7 +503,7 @@ const mocks: MockedProviderProps["mocks"] = [
         facilityId: "a1",
         pageNumber: 0,
         pageSize: 20,
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         namePrefixMatch: "Al",
       },
     },
@@ -516,7 +517,7 @@ const mocks: MockedProviderProps["mocks"] = [
       query: patientsCountQuery,
       variables: {
         facilityId: "a1",
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         namePrefixMatch: null,
       },
     },
@@ -533,7 +534,7 @@ const mocks: MockedProviderProps["mocks"] = [
         facilityId: "a1",
         pageNumber: 0,
         pageSize: 20,
-        includeArchived: false,
+        archivedStatus: ArchivedStatus.Unarchived,
         namePrefixMatch: null,
       },
     },
