@@ -15,8 +15,8 @@ import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 import { useDocumentTitle } from "../../utils/hooks";
 
 import DeviceForm from "./DeviceForm";
+import { editDevicePageTitle } from "../pageTitles";
 
-const editDevicePageTitle = "Edit existing device";
 const ManageDeviceTypeFormContainer = () => {
   useDocumentTitle(editDevicePageTitle);
 

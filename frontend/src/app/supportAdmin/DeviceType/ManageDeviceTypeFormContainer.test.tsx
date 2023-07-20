@@ -4,6 +4,7 @@ import selectEvent from "react-select-event";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
+import { editDevicePageTitle } from "../pageTitles";
 
 import ManageDeviceTypeFormContainer from "./ManageDeviceTypeFormContainer";
 import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDiseaseTestPerformedCovid";
@@ -150,7 +151,7 @@ describe("ManageDeviceTypeFormContainer", () => {
   });
 
   it("should show the device type form", async () => {
-    expect(await screen.findByText("Edit existing device")).toBeInTheDocument();
+    expect(await screen.findByText(editDevicePageTitle)).toBeInTheDocument();
   });
 
   it("should update the selected device", async () => {

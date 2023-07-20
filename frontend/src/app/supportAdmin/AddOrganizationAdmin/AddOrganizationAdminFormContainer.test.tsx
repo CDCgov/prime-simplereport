@@ -15,6 +15,7 @@ import {
   Role,
 } from "../../../generated/graphql";
 import * as srToast from "../../utils/srToast";
+import { addOrgAdminPageTitle } from "../pageTitles";
 
 import AddOrganizationAdminFormContainer from "./AddOrganizationAdminFormContainer";
 
@@ -96,7 +97,7 @@ function renderView() {
 
 const waitForOrgLoadReturnTitle = async () => {
   return await waitFor(() => {
-    return screen.getByText("Add organization admin", { exact: false });
+    return screen.getByText(addOrgAdminPageTitle, { exact: false });
   });
 };
 

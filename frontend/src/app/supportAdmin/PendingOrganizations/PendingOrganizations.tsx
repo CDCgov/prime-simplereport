@@ -9,6 +9,7 @@ import {
 } from "../../../generated/graphql";
 import { showSuccess } from "../../utils/srToast";
 import { useDocumentTitle } from "../../utils/hooks";
+import { identityVerificationPageTitle } from "../pageTitles";
 
 import {
   PendingOrganizationFormValues,
@@ -31,7 +32,6 @@ interface Props {
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
-const pageTitle = "Verify/edit organization identity";
 const PendingOrganizations = ({
   organizations,
   submitIdentityVerified,
@@ -39,7 +39,7 @@ const PendingOrganizations = ({
   loading,
   refetch,
 }: Props) => {
-  useDocumentTitle(pageTitle);
+  useDocumentTitle(identityVerificationPageTitle);
 
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
@@ -243,7 +243,7 @@ const PendingOrganizations = ({
                 data-cy="pending-orgs-title"
                 className="font-heading-lg margin-top-0 margin-bottom-0"
               >
-                {pageTitle}
+                {identityVerificationPageTitle}
               </h1>
             </div>
             <div className="usa-card__body">

@@ -6,6 +6,7 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import OrganizationComboDropDown, {
   OrganizationOption,
 } from "../Components/OrganizationComboDropdown";
+import { addOrgAdminPageTitle } from "../pageTitles";
 
 import FacilityAdmin from "./FacilityAdmin";
 
@@ -64,7 +65,7 @@ const AddOrganizationAdminForm = ({
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h2 className="font-heading-lg">Add organization admin</h2>
+                <h2 className="font-heading-lg">{addOrgAdminPageTitle}</h2>
                 <RequiredMessage />
               </div>
               <div

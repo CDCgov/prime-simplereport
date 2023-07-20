@@ -9,10 +9,10 @@ import {
 } from "../../../generated/graphql";
 import { getAppInsights } from "../../TelemetryService";
 import { useDocumentTitle } from "../../utils/hooks";
+import { orgAccessPageTitle } from "../pageTitles";
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
-export const orgAccessPageTitle = "Access organization account";
 const TenantDataAccessFormContainer = () => {
   useDocumentTitle(orgAccessPageTitle);
 
