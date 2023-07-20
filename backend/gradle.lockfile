@@ -219,5 +219,5 @@ org.thymeleaf.extras:thymeleaf-extras-java8time:3.0.4.RELEASE=compileClasspath,r
 org.thymeleaf:thymeleaf-spring5:3.0.15.RELEASE=compileClasspath,runtimeClasspath
 org.thymeleaf:thymeleaf:3.0.15.RELEASE=compileClasspath,runtimeClasspath
 org.unbescape:unbescape:1.1.6.RELEASE=compileClasspath,runtimeClasspath
-org.yaml:snakeyaml:1.30=compileClasspath,runtimeClasspath
+org.yaml:snakeyaml:1.33=compileClasspath,runtimeClasspath
 empty=
