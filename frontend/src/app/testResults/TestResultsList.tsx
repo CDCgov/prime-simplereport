@@ -43,11 +43,12 @@ import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
 import {
-  TestResult,
+  ArchivedStatus,
   GetFacilityResultsMultiplexWithCountQuery,
+  Maybe,
+  TestResult,
   useGetAllFacilitiesQuery,
   useGetFacilityResultsMultiplexWithCountQuery,
-  Maybe,
 } from "../../generated/graphql";
 import { waitForElement } from "../utils/elements";
 
@@ -148,6 +149,17 @@ const ErrorMessage: React.FC<{ message: string | undefined }> = ({
   return null;
 };
 
+const isClearFilterBtnDisabled = (
+  filterParams: FilterParams,
+  activeFacilityId: string
+) => {
+  return (
+    Object.keys(filterParams).length === 0 ||
+    (Object.keys(filterParams).length === 1 &&
+      filterParams.filterFacilityId === activeFacilityId)
+  );
+};
+
 export const DetachedTestResultsList = ({
   data,
   pageNumber,
@@ -200,7 +212,9 @@ export const DetachedTestResultsList = ({
     useLazyQuery(QUERY_PATIENT, {
       fetchPolicy: "no-cache",
       variables: {
-        includeArchived: isOrgAdmin,
+        archivedStatus: isOrgAdmin
+          ? ArchivedStatus.All
+          : ArchivedStatus.Unarchived,
         facilityId:
           filterParams.filterFacilityId === ALL_FACILITIES_ID
             ? null
@@ -452,11 +466,10 @@ export const DetachedTestResultsList = ({
                   setStartDateError("");
                   setEndDateError("");
                 }}
-                disabled={
-                  Object.keys(filterParams).length === 0 ||
-                  (Object.keys(filterParams).length === 1 &&
-                    filterParams.filterFacilityId === activeFacilityId)
-                }
+                disabled={isClearFilterBtnDisabled(
+                  filterParams,
+                  activeFacilityId
+                )}
               >
                 Clear filters
               </Button>
@@ -465,6 +478,7 @@ export const DetachedTestResultsList = ({
           <div
             id="test-results-search-by-patient-input"
             className="position-relative bg-base-lightest"
+            role="search"
           >
             <div className="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2">
               <div className="person-search">
@@ -496,7 +510,6 @@ export const DetachedTestResultsList = ({
                   className="usa-input"
                   min="2000-01-01"
                   max={maxDate}
-                  aria-label="Start Date"
                   onChange={(e) => processStartDate(e.target.value)}
                   defaultValue={getDateOrEmptyString(filterParams.startDate)}
                 />
@@ -510,7 +523,6 @@ export const DetachedTestResultsList = ({
                   className="usa-input"
                   min="2000-01-01"
                   max={maxDate}
-                  aria-label="End Date"
                   onChange={(e) => processEndDate(e.target.value)}
                   defaultValue={getDateOrEmptyString(filterParams.endDate)}
                 />

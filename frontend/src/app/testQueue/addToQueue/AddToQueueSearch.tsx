@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { gql, useMutation, useLazyQuery, useQuery } from "@apollo/client";
+import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 
 import {
   QUEUE_NOTIFICATION_TYPES,
@@ -19,6 +19,12 @@ import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getAppInsights } from "../../TelemetryService";
 import { PATIENT_TERM } from "../../../config/constants";
+import {
+  AddPatientToQueueDocument,
+  GetPatientDocument,
+  GetPatientsByFacilityForQueueDocument,
+  UpdateAoeDocument,
+} from "../../../generated/graphql";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
@@ -29,100 +35,13 @@ interface AoEAnswersForPatient extends AoEAnswersDelivery {
   facilityId?: string;
 }
 
-export const QUERY_SINGLE_PATIENT = gql`
-  query GetPatient($internalId: ID!) {
-    patient(id: $internalId) {
-      internalId
-      firstName
-      lastName
-      middleName
-      birthDate
-      gender
-      telephone
-      phoneNumbers {
-        type
-        number
-      }
-      emails
-      testResultDelivery
-    }
-  }
-`;
+export const QUERY_SINGLE_PATIENT = GetPatientDocument;
 
-export const QUERY_PATIENT = gql`
-  query GetPatientsByFacilityForQueue(
-    $facilityId: ID
-    $namePrefixMatch: String
-    $includeArchived: Boolean = false
-    $includeArchivedFacilities: Boolean
-  ) {
-    patients(
-      facilityId: $facilityId
-      pageNumber: 0
-      pageSize: 100
-      includeArchived: $includeArchived
-      namePrefixMatch: $namePrefixMatch
-      includeArchivedFacilities: $includeArchivedFacilities
-    ) {
-      internalId
-      firstName
-      lastName
-      middleName
-      birthDate
-      gender
-      telephone
-      email
-      emails
-      phoneNumbers {
-        type
-        number
-      }
-      testResultDelivery
-    }
-  }
-`;
+export const QUERY_PATIENT = GetPatientsByFacilityForQueueDocument;
 
-export const ADD_PATIENT_TO_QUEUE = gql`
-  mutation AddPatientToQueue(
-    $facilityId: ID!
-    $patientId: ID!
-    $symptoms: String
-    $symptomOnset: LocalDate
-    $pregnancy: String
-    $noSymptoms: Boolean
-    $testResultDelivery: TestResultDeliveryPreference
-  ) {
-    addPatientToQueue(
-      facilityId: $facilityId
-      patientId: $patientId
-      pregnancy: $pregnancy
-      noSymptoms: $noSymptoms
-      symptoms: $symptoms
-      symptomOnset: $symptomOnset
-      testResultDelivery: $testResultDelivery
-    )
-  }
-`;
+export const ADD_PATIENT_TO_QUEUE = AddPatientToQueueDocument;
 
-export const UPDATE_AOE = gql`
-  mutation UpdateAOE(
-    $patientId: ID!
-    $symptoms: String
-    $symptomOnset: LocalDate
-    $pregnancy: String
-    $noSymptoms: Boolean
-    $testResultDelivery: TestResultDeliveryPreference
-  ) {
-    updateTimeOfTestQuestions(
-      patientId: $patientId
-      pregnancy: $pregnancy
-      symptoms: $symptoms
-      noSymptoms: $noSymptoms
-      symptomOnset: $symptomOnset
-      testResultDelivery: $testResultDelivery
-    )
-  }
-`;
+export const UPDATE_AOE = UpdateAoeDocument;
 
 export type StartTestProps = {
   patientId: string;

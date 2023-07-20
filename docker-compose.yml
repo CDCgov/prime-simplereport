@@ -33,7 +33,8 @@ services:
   # Spring Boot backend
   backend:
     build:
-      context: backend
+      context: ./
+      dockerfile: backend/Dockerfile
     image: ghcr.io/cdcgov/prime-simplereport/backend:${DOCKER_BACKEND_IMAGE_VERSION:-latest}
     container_name: backend
     env_file:
@@ -42,9 +43,6 @@ services:
       SPRING_PROFILES_ACTIVE: okta-local,db-dockerized,create-sample-data
       SPRING_LIQUIBASE_ENABLED: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
-    volumes:
-      - ./.git:/app/.git
-      - ./backend:/app/backend/
     depends_on:
       - db
     expose:
@@ -52,21 +50,19 @@ services:
   # React frontend
   frontend:
     build:
-      context: frontend
-    image: ghcr.io/cdcgov/prime-simplereport/frontend:latest
+      context: ./
+      dockerfile: frontend/Dockerfile
+      args:
+        REACT_APP_OKTA_URL: $REACT_APP_OKTA_URL
+        REACT_APP_BASE_URL: $REACT_APP_BASE_URL
+        REACT_APP_BACKEND_URL: $REACT_APP_BACKEND_URL
+        REACT_APP_OKTA_CLIENT_ID: $REACT_APP_OKTA_CLIENT_ID
+        PUBLIC_URL: $PUBLIC_URL
+        REACT_APP_OKTA_ENABLED: $REACT_APP_OKTA_ENABLED
+        REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
+        GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
+    image: ghcr.io/cdcgov/prime-simplereport/frontend:${DOCKER_FRONTEND_IMAGE_VERSION:-latest}
     container_name: frontend
-    environment:
-      REACT_APP_BASE_URL: https://localhost.simplereport.gov
-      REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
-      PUBLIC_URL: /app/
-      REACT_APP_OKTA_ENABLED: "true"
-      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
-      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
-    volumes:
-      - ./.git:/app/.git
-      - ./frontend:/app/frontend/
-      - node_modules:/app/frontend/node_modules
-      - ./backend/src/main/resources/graphql:/app/backend/src/main/resources/graphql
     expose:
       - "3000"
   # This is an nginx server that serves both the frontend and the backend
@@ -74,14 +70,15 @@ services:
   nginx:
     build:
       context: nginx
-    image: ghcr.io/cdcgov/prime-simplereport/nginx:latest
+    image: ghcr.io/cdcgov/prime-simplereport/nginx:${DOCKER_NGINX_IMAGE_VERSION:-latest}
     container_name: nginx
+    hostname: localhost.simplereport.gov
+    restart: "unless-stopped"
+    environment:
+      NGINX_ENTRYPOINT_QUIET_LOGS: 1
     depends_on:
       - backend
       - frontend
-    volumes:
-      - ./certs:/etc/nginx/certs
-      - ./frontend/public/index.html:/etc/nginx/html/index.html
     ports:
       - "80:80"
       - "443:443"
@@ -90,7 +87,6 @@ services:
       - '1025:1025'
       - '8025:8025'
     image: mailhog/mailhog
-    
 volumes:
   db-data:
   node_modules:

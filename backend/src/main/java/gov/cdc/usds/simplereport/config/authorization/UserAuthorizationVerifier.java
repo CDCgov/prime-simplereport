@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ArchivedStatus;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
@@ -222,7 +223,7 @@ public class UserAuthorizationVerifier {
 
   public boolean userHasSpecificPatientSearchPermission(
       UUID facilityId,
-      boolean includeArchived,
+      ArchivedStatus archivedStatus,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
     Set<UserPermission> perms = new HashSet<>();
@@ -230,7 +231,7 @@ public class UserAuthorizationVerifier {
     if (facilityId != null && !userCanAccessFacility(facilityId)) {
       return false;
     }
-    if (includeArchived) {
+    if (archivedStatus != ArchivedStatus.UNARCHIVED) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
     }
     if (includeArchivedFacilities) {

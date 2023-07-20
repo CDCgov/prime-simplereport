@@ -4,6 +4,8 @@ import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
@@ -12,12 +14,15 @@ import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.FileRow;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,9 +47,16 @@ public class CsvValidatorUtils {
   private static final String DATE_REGEX =
       "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}$";
 
-  // MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
+  /**
+   * Validates MM/DD/YYYY HH:mm, MM/DD/YYYY H:mm, M/D/YYYY HH:mm OR M/D/YYYY H:mm
+   *
+   * <p>Optional timezone code suffix which is checked as a valid timezone separately
+   *
+   * @see gov.cdc.usds.simplereport.utils.DateTimeUtils
+   */
   private static final String DATE_TIME_REGEX =
-      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9])?$";
+      "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$";
+
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
@@ -183,7 +195,8 @@ public class CsvValidatorUtils {
             FeedbackMessage.builder()
                 .scope(ITEM_SCOPE)
                 .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
-                .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+                .errorType(ResultUploadErrorType.INVALID_DATA)
+                .source(ResultUploadErrorSource.SIMPLE_REPORT)
                 .fieldRequired(true)
                 .fieldHeader(input.getHeader())
                 .build());
@@ -197,7 +210,8 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .errorType(ResultUploadErrorType.INVALID_DATA)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .fieldRequired(true)
               .fieldHeader(input.getHeader())
               .build());
@@ -272,7 +286,8 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .errorType(ResultUploadErrorType.INVALID_DATA)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .fieldRequired(input.isRequired())
               .build());
     }
@@ -284,7 +299,31 @@ public class CsvValidatorUtils {
   }
 
   public static List<FeedbackMessage> validateDateTime(ValueOrError input) {
-    return validateRegex(input, DATE_TIME_REGEX);
+    List<FeedbackMessage> errors = new ArrayList<>(validateRegex(input, DATE_TIME_REGEX));
+    if (input.getValue() != null
+        && errors.isEmpty()
+        && input.getValue().matches(TIMEZONE_SUFFIX_REGEX)) {
+      errors.addAll(validateDateTimeZoneCode(input));
+    }
+    return errors;
+  }
+
+  public static List<FeedbackMessage> validateDateTimeZoneCode(ValueOrError input) {
+    List<FeedbackMessage> errors = new ArrayList<>();
+    String value = input.getValue();
+    String timezoneCode = value.substring(value.lastIndexOf(' ')).trim();
+    if (!ZoneId.getAvailableZoneIds().contains(timezoneCode)
+        && !validTimeZoneIdMap.containsKey(timezoneCode.toUpperCase())) {
+      errors.add(
+          FeedbackMessage.builder()
+              .scope(ITEM_SCOPE)
+              .fieldHeader(input.getHeader())
+              .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
+              .errorType(ResultUploadErrorType.INVALID_DATA)
+              .fieldRequired(false)
+              .build());
+    }
+    return errors;
   }
 
   public static List<FeedbackMessage> validateEmail(ValueOrError input) {
@@ -313,7 +352,8 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .fieldHeader(name)
               .message(getRequiredValueErrorMessage(name))
-              .errorType(FeedbackMessage.ErrorType.MISSING_DATA)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
+              .errorType(ResultUploadErrorType.MISSING_DATA)
               .fieldRequired(true)
               .build());
     }
@@ -334,8 +374,9 @@ public class CsvValidatorUtils {
                         .scope(CsvValidatorUtils.ITEM_SCOPE)
                         .message(
                             "The header for column " + requiredField + " is missing or invalid.")
+                        .source(ResultUploadErrorSource.SIMPLE_REPORT)
                         .fieldHeader(requiredField)
-                        .errorType(FeedbackMessage.ErrorType.MISSING_HEADER)
+                        .errorType(ResultUploadErrorType.MISSING_HEADER)
                         .fieldRequired(true)
                         .build();
                 errors.add(feedback);
@@ -442,8 +483,9 @@ public class CsvValidatorUtils {
           FeedbackMessage.builder()
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
               .build());
     }
@@ -463,7 +505,8 @@ public class CsvValidatorUtils {
               .scope(ITEM_SCOPE)
               .fieldHeader(input.getHeader())
               .message(getInValidValueErrorMessage(input.getValue(), input.getHeader()))
-              .errorType(FeedbackMessage.ErrorType.INVALID_DATA)
+              .source(ResultUploadErrorSource.SIMPLE_REPORT)
+              .errorType(ResultUploadErrorType.INVALID_DATA)
               .fieldRequired(input.isRequired())
               .build());
     }

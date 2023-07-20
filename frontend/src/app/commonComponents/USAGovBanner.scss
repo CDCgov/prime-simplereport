@@ -1,5 +1,13 @@
+@use "../../scss/utilities";
+
 @media print {
   .usa-banner {
     display: none;
+  }
+}
+
+.usa-banner {
+  .usa-banner__inner {
+    max-width: utilities.$site-max-width;
   }
 }

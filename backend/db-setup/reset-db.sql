@@ -17,3 +17,5 @@ ALTER DEFAULT PRIVILEGES FOR USER simple_report_migrations IN SCHEMA simple_repo
 GRANT USAGE ON LANGUAGE plpgsql to simple_report_app;
 DROP EXTENSION IF EXISTS pgcrypto;
 CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA simple_report;
+DROP EXTENSION IF EXISTS pg_stat_statements;
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements SCHEMA simple_report;

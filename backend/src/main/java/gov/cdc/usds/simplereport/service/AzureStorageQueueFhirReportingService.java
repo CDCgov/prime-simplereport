@@ -4,7 +4,6 @@ import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +32,7 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
       return queueClient
           .sendMessage(
               parser.encodeResourceToString(
-                  fhirConverter.createFhirBundle(
-                      testEvent, gitProperties, new Date(), processingModeCode)))
+                  fhirConverter.createFhirBundle(testEvent, gitProperties, processingModeCode)))
           .toFuture()
           .thenApply(result -> null);
     }

@@ -18,7 +18,7 @@ describe("Adding a single patient", () => {
     cy.get("#individual_add-patient").click();
     cy.get(".prime-edit-patient").contains("Add new patient");
     cy.injectSRAxe();
-    cy.checkA11y(); // Patient form
+    cy.checkAccessibility(); // Patient form
   });
   it("fills out some of the form fields", () => {
     cy.get('input[name="firstName"]').type(patient.firstName);
@@ -53,7 +53,7 @@ it("fills out the remaining fields, submits and checks for the patient", () => {
     '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
   ).click();
 
-    cy.checkA11y();
+    cy.checkAccessibility();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get(".usa-card__header").contains("Patients");
@@ -61,6 +61,6 @@ it("fills out the remaining fields, submits and checks for the patient", () => {
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".prime-container").contains(patient.fullName);
 
-    cy.checkA11y();
+    cy.checkAccessibility();
   });
 });

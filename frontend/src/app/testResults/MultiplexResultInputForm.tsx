@@ -84,6 +84,7 @@ interface Props {
   testResults: MultiplexResultInput[];
   isSubmitDisabled?: boolean;
   deviceSupportsCovidOnlyResult?: boolean;
+  isFluOnly?: boolean;
   onChange: (value: MultiplexResult[]) => void;
   onSubmit: () => void;
 }
@@ -93,6 +94,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   testResults,
   isSubmitDisabled,
   deviceSupportsCovidOnlyResult,
+  isFluOnly,
   onSubmit,
   onChange,
 }) => {
@@ -191,6 +193,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
         covidIsFilled &&
         !fluAIsFilled &&
         !fluBIsFilled) ||
+      (isFluOnly && fluAIsFilled && fluBIsFilled) ||
       (covidIsFilled && fluAIsFilled && fluBIsFilled)
     );
   };
@@ -203,33 +206,35 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   return (
     <form className="usa-form maxw-none multiplex-result-form">
       <div className="grid-row grid-gap-2">
-        <div
-          className="grid-col-4"
-          data-testid={`covid-test-result-${queueItemId}`}
-        >
-          <h2 className="prime-radio__title">COVID-19</h2>
-          <RadioGroup
-            legend="COVID-19 result"
-            legendSrOnly
-            onChange={(value) => {
-              setMultiplexResultInput("covid", value);
-            }}
-            buttons={[
-              {
-                value: COVID_RESULTS.POSITIVE,
-                label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
-              },
-              {
-                value: COVID_RESULTS.NEGATIVE,
-                label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
-              },
-            ]}
-            name={`covid-test-result-${queueItemId}`}
-            selectedRadio={resultsMultiplexFormat.covid}
-            wrapperClassName="prime-radio__group"
-            disabled={isSubmitDisabled}
-          />
-        </div>
+        {!isFluOnly && (
+          <div
+            className="grid-col-4"
+            data-testid={`covid-test-result-${queueItemId}`}
+          >
+            <h2 className="prime-radio__title">COVID-19</h2>
+            <RadioGroup
+              legend="COVID-19 result"
+              legendSrOnly
+              onChange={(value) => {
+                setMultiplexResultInput("covid", value);
+              }}
+              buttons={[
+                {
+                  value: COVID_RESULTS.POSITIVE,
+                  label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
+                },
+                {
+                  value: COVID_RESULTS.NEGATIVE,
+                  label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
+                },
+              ]}
+              name={`covid-test-result-${queueItemId}`}
+              selectedRadio={resultsMultiplexFormat.covid}
+              wrapperClassName="prime-radio__group"
+              disabled={isSubmitDisabled}
+            />
+          </div>
+        )}
         <div
           className="grid-col-4"
           data-testid={`flu-a-test-result-${queueItemId}`}
@@ -306,7 +311,11 @@ const MultiplexResultInputForm: React.FC<Props> = ({
           <TextWithTooltip
             text="Results info"
             hideText={true}
-            tooltip="COVID-19 results are reported to your public health department. Flu results are not reported at this time."
+            tooltip={
+              isFluOnly
+                ? "Flu results are only reported to California at this time."
+                : "COVID-19 results are reported to your public health department. Flu results are only reported to California at this time."
+            }
             position={isMobile ? "top" : "left"}
           />
         </div>

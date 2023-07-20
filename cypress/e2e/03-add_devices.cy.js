@@ -1,6 +1,6 @@
 import { generateCovidOnlyDevice, generateMultiplexDevice, loginHooks } from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
-import {aliasMutation, aliasQuery} from "../utils/graphql-test-utils";
+import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
 
 const covidOnlyDevice = generateCovidOnlyDevice();
 const multiplexDevice = generateMultiplexDevice();
@@ -17,36 +17,33 @@ describe("Adding covid only and multiplex devices", () => {
   context("Add devices", () => {
     beforeEach(() => {
       cy.intercept("POST", graphqlURL, (req) => {
-        aliasQuery(req, "getSpecimenTypes");
-        aliasQuery(req, "getSupportedDiseases");
-        aliasQuery(req, "getDeviceTypeList");
-        aliasMutation(req, "createDeviceType");
+        aliasGraphqlOperations(req)
       });
     });
 
     it("Adds a covid only device", () => {
       cy.visit("/admin/create-device-type");
-      cy.wait("@gqlgetSpecimenTypesQuery");
-      cy.wait("@gqlgetSupportedDiseasesQuery");
+      cy.wait("@getSpecimenTypes");
+      cy.wait("@getSupportedDiseases");
       cy.contains("Device type");
       cy.contains("Save changes").should("be.not.enabled");
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
       cy.addDevice(covidOnlyDevice);
     });
 
     it("Adds a multiplex device", () => {
       cy.visit("/admin/create-device-type");
-      cy.wait("@gqlgetSpecimenTypesQuery");
-      cy.wait("@gqlgetSupportedDiseasesQuery");
+      cy.wait("@getSpecimenTypes");
+      cy.wait("@getSupportedDiseases");
       cy.addDevice(multiplexDevice);
     });
 
     it("Reviews multiplex device in edit page", () => {
       cy.visit("/admin/manage-devices");
-      cy.wait("@gqlgetSpecimenTypesQuery");
-      cy.wait("@gqlgetSupportedDiseasesQuery");
-      cy.wait("@gqlgetDeviceTypeListQuery");
+      cy.wait("@getSpecimenTypes");
+      cy.wait("@getSupportedDiseases");
+      cy.wait("@getDeviceTypeList");
 
       cy.get('input[role="combobox"]').first().type(multiplexDevice.name);
       cy.get('li[id="selectDevice--list--option-0"]')
@@ -54,7 +51,7 @@ describe("Adding covid only and multiplex devices", () => {
         .click();
       cy.get('input[name="name"]').should("have.value", multiplexDevice.name);
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
       cy.get('input[name="model"]').should("have.value", multiplexDevice.model);
       cy.get('input[name="manufacturer"]').should("have.value", multiplexDevice.manufacturer);
       cy.get(".pill").should("have.length", 1);
@@ -70,27 +67,24 @@ describe("Adding covid only and multiplex devices", () => {
   context("Manage facilities - add devices", () => {
     beforeEach(() => {
       cy.makePOSTRequest({
-        operationName: "GetManagedFacilities",
+        operationName: "WhoAmI",
         variables: {},
         query:
-          "query GetManagedFacilities {\n  organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n}",
+            "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
       }).then((res) => {
-        facility = res.body.data.organization.facilities[0];
-        })
+        facility = res.body.data.whoami.organization.facilities[0];
+      })
       cy.intercept("POST", graphqlURL, (req) => {
-        aliasQuery(req, "getDeviceTypeList");
-        aliasQuery(req, "GetManagedFacilities");
-        aliasQuery(req, "GetFacilities");
-        aliasMutation(req, "UpdateFacility");
+        aliasGraphqlOperations(req);
       });
     });
 
     it("Adds covid only and multiplex devices to the facility", () => {
       cy.visit(`/settings/facility/${facility.id}`);
-      cy.wait("@gqlGetFacilitiesQuery");
+      cy.wait("@GetFacilities");
       cy.contains("Manage devices");
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
       cy.get('input[role="combobox"]').first().type(covidOnlyDevice.name);
       cy.get('li[id="multi-select-deviceTypes-list--option-0"]').click();
       cy.get('input[role="combobox"]').first().type(multiplexDevice.name);
@@ -102,9 +96,9 @@ describe("Adding covid only and multiplex devices", () => {
           fieldset.find("label").first().trigger("click");
         });
       cy.get('button[id="save-confirmed-address"]').click();
-      cy.wait("@gqlUpdateFacilityMutation");
+      cy.wait("@UpdateFacility");
       cy.get(".Toastify").contains("Updated Facility");
-      cy.wait("@gqlGetManagedFacilitiesQuery"); // waits until it goes back to manage facilities page
+      cy.wait("@GetManagedFacilities"); // waits until it goes back to manage facilities page
     })
   })
 });

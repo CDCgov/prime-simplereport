@@ -3,10 +3,10 @@ package gov.cdc.usds.simplereport.api.converter;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.parser.IParser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
@@ -30,13 +30,15 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
+import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -72,17 +75,19 @@ import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestIntent;
 import org.hl7.fhir.r4.model.ServiceRequest.ServiceRequestStatus;
 import org.hl7.fhir.r4.model.Specimen;
 import org.hl7.fhir.r4.model.codesystems.ObservationStatus;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
@@ -93,18 +98,23 @@ class FhirConverterTest {
   private static final String tribalSystemUrl =
       "http://terminology.hl7.org/CodeSystem/v3-TribalEntityUS";
   public static final String snomedCode = "http://snomed.info/sct";
+  public static final ZoneId DEFAULT_TIME_ZONE_ID = ZoneId.of("US/Eastern");
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
-
   private static final Instant instant = (new Date(1675891986000L)).toInstant();
-  private static GitProperties gitProperties;
+  private static final Date currentDate = Date.from(Instant.parse("2023-07-14T15:52:34.540Z"));
+
+  @Mock private GitProperties gitProperties;
+  @MockBean private DateGenerator dateGenerator;
+  @MockBean private UUIDGenerator uuidGenerator;
   @Autowired private FhirConverter fhirConverter;
 
-  @BeforeAll
-  public static void init() {
-    gitProperties = mock(GitProperties.class);
+  @BeforeEach
+  public void init() {
     when(gitProperties.getCommitTime()).thenReturn(instant);
     when(gitProperties.getShortCommitId()).thenReturn("FRIDAY");
+    when(dateGenerator.newDate()).thenReturn(currentDate);
+    when(uuidGenerator.randomUUID()).thenReturn(UUID.randomUUID());
   }
 
   @Test
@@ -509,14 +519,22 @@ class FhirConverterTest {
 
   @Test
   void convertToSpecimen_Strings_valid() {
+    var collectionDate =
+        ZonedDateTime.ofInstant(Instant.parse("2023-06-22T16:38:00.000Z"), DEFAULT_TIME_ZONE_ID);
+    var receivedTime = ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"));
+
     var actual =
         fhirConverter.convertToSpecimen(
-            "258500001",
-            "Nasopharyngeal swab",
-            "53342003",
-            "Internal nose structure (body structure)",
-            "id-123",
-            "uuid-123");
+            ConvertToSpecimenProps.builder()
+                .specimenCode("258500001")
+                .specimenName("Nasopharyngeal swab")
+                .collectionCode("53342003")
+                .collectionName("Internal nose structure (body structure)")
+                .id("id-123")
+                .identifier("uuid-123")
+                .collectionDate(collectionDate)
+                .receivedTime(receivedTime)
+                .build());
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getIdentifierFirstRep().getValue()).isEqualTo("uuid-123");
@@ -532,17 +550,21 @@ class FhirConverterTest {
         .isEqualTo("53342003");
     assertThat(actual.getCollection().getBodySite().getText())
         .isEqualTo("Internal nose structure (body structure)");
+    assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
+        .isEqualTo("2023-06-22T16:38:00Z");
   }
 
   @Test
   void convertToSpecimen_Strings_null() {
-    var actual = fhirConverter.convertToSpecimen(null, null, null, null, null, null);
+    var actual = fhirConverter.convertToSpecimen(ConvertToSpecimenProps.builder().build());
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
     assertThat(actual.getType().getCoding()).isEmpty();
     assertThat(actual.getCollection().getBodySite().getText()).isNull();
     assertThat(actual.getCollection().getBodySite().getCoding()).isEmpty();
+    assertThat(actual.getCollection().getCollected()).isNull();
+    assertThat(actual.getReceivedTime()).isNull();
   }
 
   @Test
@@ -556,7 +578,13 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     ReflectionTestUtils.setField(specimenType, "internalId", internalId);
 
-    var actual = fhirConverter.convertToSpecimen(specimenType, UUID.randomUUID());
+    var collectionDate =
+        ZonedDateTime.ofInstant(Instant.parse("2023-06-22T13:16:00.000Z"), DEFAULT_TIME_ZONE_ID);
+    var receivedTime = ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"));
+
+    var actual =
+        fhirConverter.convertToSpecimen(
+            specimenType, UUID.randomUUID(), collectionDate, receivedTime);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getType().getCoding()).hasSize(1);
@@ -571,6 +599,10 @@ class FhirConverterTest {
         .isEqualTo("53342003");
     assertThat(actual.getCollection().getBodySite().getText())
         .isEqualTo("Internal nose structure (body structure)");
+    assertThat(((DateTimeType) actual.getCollection().getCollected()).getValue())
+        .isEqualTo("2023-06-22T13:16:00.00Z");
+    assertThat(actual.getReceivedTimeElement().getValueAsString())
+        .isEqualTo("2023-06-23T12:00:00-04:00");
   }
 
   @Test
@@ -579,7 +611,13 @@ class FhirConverterTest {
     SpecimenType specimenType = new SpecimenType("nasal", "40001", "nose", "10101");
     ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToSpecimen(specimenType, UUID.randomUUID());
+    var actual =
+        fhirConverter.convertToSpecimen(
+            specimenType,
+            UUID.randomUUID(),
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T15:35:00.000Z"), DEFAULT_TIME_ZONE_ID),
+            ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern")));
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -806,8 +844,8 @@ class FhirConverterTest {
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/observationFlu.json")),
             StandardCharsets.UTF_8);
-    JSONAssert.assertEquals(covidSerialized, expectedSerialized1, true);
-    JSONAssert.assertEquals(fluSerialized, expectedSerialized2, true);
+    JSONAssert.assertEquals(expectedSerialized1, covidSerialized, true);
+    JSONAssert.assertEquals(expectedSerialized2, fluSerialized, true);
   }
 
   @Test
@@ -902,7 +940,7 @@ class FhirConverterTest {
     var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
     ReflectionTestUtils.setField(
         testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
-    var actual = fhirConverter.convertToDiagnosticReport(testEvent);
+    var actual = fhirConverter.convertToDiagnosticReport(testEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
     assertThat(actual.getCode().getCoding()).hasSize(1);
@@ -916,7 +954,7 @@ class FhirConverterTest {
     var correctedTestEvent =
         new TestEvent(invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo");
 
-    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent);
+    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.CORRECTED);
   }
@@ -927,7 +965,7 @@ class FhirConverterTest {
     var correctedTestEvent =
         new TestEvent(invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person");
 
-    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent);
+    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.ENTEREDINERROR);
   }
@@ -942,7 +980,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(
         testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
 
-    var actual = fhirConverter.convertToDiagnosticReport(testEvent);
+    var actual = fhirConverter.convertToDiagnosticReport(testEvent, date);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -952,8 +990,10 @@ class FhirConverterTest {
             StandardCharsets.UTF_8);
     expectedSerialized =
         expectedSerialized.replace(
-            "$EFFECTIVE_DATE_TIME_TESTED",
-            new DateTimeType(date).setTimeZoneZulu(true).getValueAsString());
+            "$CURRENT_DATE_TIMEZONE",
+            new DateTimeType(
+                    date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone(ZoneOffset.UTC))
+                .getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
@@ -961,18 +1001,25 @@ class FhirConverterTest {
   @Test
   void convertToDiagnosticReport_Strings_valid() {
     var date = new Date();
+    var zonedDateTime = ZonedDateTime.ofInstant(date.toInstant(), DEFAULT_TIME_ZONE_ID);
+    var expectedDateTimeType =
+        (DateTimeType)
+            new DateTimeType(
+                Date.from(zonedDateTime.toInstant()),
+                TemporalPrecisionEnum.SECOND,
+                TimeZone.getTimeZone(DEFAULT_TIME_ZONE_ID));
     var actual =
         fhirConverter.convertToDiagnosticReport(
-            DiagnosticReportStatus.FINAL, "95422-2", "id-123", date, date);
+            DiagnosticReportStatus.FINAL, "95422-2", "id-123", zonedDateTime, zonedDateTime);
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
-    assertThat(((DateTimeType) actual.getEffective()).getValueAsString())
-        .isEqualTo(new DateTimeType(date).setTimeZoneZulu(true).getValueAsString());
-    assertThat((actual.getIssued())).isEqualTo(date);
+    assertThat(((DateTimeType) actual.getEffective()).getAsV3())
+        .isEqualTo(expectedDateTimeType.getAsV3());
+    assertThat(actual.getIssued()).isEqualTo(date);
   }
 
   @Test
@@ -987,14 +1034,18 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_TestOrder_valid() {
     var testOrder = TestDataBuilder.createTestOrderWithMultiplexDevice();
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual =
+        fhirConverter.convertToServiceRequest(
+            testOrder,
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T10:30:00.000Z"), DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.ACTIVE);
     assertThat(actual.getIntent()).isEqualTo(ServiceRequestIntent.ORDER);
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("95422-2");
-    assertThat(actual.getExtension()).hasSize(1);
+    assertThat(actual.getExtension()).hasSize(2);
     assertThat(
             actual
                 .castToCodeableConcept(
@@ -1017,6 +1068,15 @@ class FhirConverterTest {
                 .get(0)
                 .getSystem())
         .isEqualTo("http://terminology.hl7.org/CodeSystem/v2-0119");
+    assertThat(
+            actual
+                .castToDateTime(
+                    actual
+                        .getExtensionByUrl(
+                            "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date")
+                        .getValue())
+                .getValue())
+        .isEqualTo("2023-06-22T10:30:00.00Z");
   }
 
   @Test
@@ -1025,7 +1085,8 @@ class FhirConverterTest {
         new TestOrder(
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.markComplete();
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual =
+        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
   }
@@ -1036,7 +1097,8 @@ class FhirConverterTest {
         new TestOrder(
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.cancelOrder();
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual =
+        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.REVOKED);
   }
@@ -1047,7 +1109,8 @@ class FhirConverterTest {
         new TestOrder(
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(false));
     testOrder.cancelOrder();
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual =
+        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getCode().getCoding()).isEmpty();
   }
@@ -1055,17 +1118,33 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_Strings_valid() {
     var actual =
-        fhirConverter.convertToServiceRequest(ServiceRequestStatus.COMPLETED, "94533-7", "id-123");
+        fhirConverter.convertToServiceRequest(
+            ServiceRequestStatus.COMPLETED,
+            "94533-7",
+            "id-123",
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID));
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("94533-7");
+    assertThat(
+            actual
+                .castToDateTime(
+                    actual
+                        .getExtensionByUrl(
+                            "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date")
+                        .getValue())
+                .getValue())
+        .isEqualTo("2023-06-22T10:35:00.00Z");
   }
 
   @Test
   void convertToServiceRequest_Strings_null() {
-    var actual = fhirConverter.convertToServiceRequest(null, null, null);
+    var actual =
+        fhirConverter.convertToServiceRequest(
+            null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
@@ -1078,7 +1157,11 @@ class FhirConverterTest {
     testOrder.markComplete();
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToServiceRequest(testOrder);
+    var actual =
+        fhirConverter.convertToServiceRequest(
+            testOrder,
+            ZonedDateTime.ofInstant(
+                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID));
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -1316,8 +1399,7 @@ class FhirConverterTest {
                 .getSupportingInfo().stream()
                     .allMatch(r -> r.getReference().contains("Observation/")))
         .isTrue();
-    assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getSupportingInfo().size())
-        .isEqualTo(2);
+    assertThat(((ServiceRequest) serviceRequestEntry.getResource()).getSupportingInfo()).hasSize(2);
 
     var diagnosticReportEntry =
         actual.getEntry().stream()
@@ -1437,8 +1519,7 @@ class FhirConverterTest {
                 "equipmentUID3",
                 "testkitNameId3",
                 "95422-2"));
-    var date = new Date();
-    var dateTested = new Date();
+
     ReflectionTestUtils.setField(provider, "internalId", providerId);
     ReflectionTestUtils.setField(facility, "internalId", facilityId);
     ReflectionTestUtils.setField(person, "internalId", personId);
@@ -1451,11 +1532,11 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(fluBResult, "internalId", fluBResultId);
     ReflectionTestUtils.setField(testOrder, "internalId", testOrderId);
     ReflectionTestUtils.setField(testEvent, "internalId", testEventId);
-    ReflectionTestUtils.setField(testEvent, "createdAt", dateTested);
+    ReflectionTestUtils.setField(testEvent, "createdAt", currentDate);
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
-    var actual = fhirConverter.createFhirBundle(testEvent, gitProperties, date, "P");
+    var actual = fhirConverter.createFhirBundle(testEvent, gitProperties, "P");
 
     String actualSerialized = parser.encodeResourceToString(actual);
 
@@ -1476,20 +1557,6 @@ class FhirConverterTest {
     expectedSerialized = expectedSerialized.replace("$MESSAGE_HEADER_ID", messageHeaderId);
     expectedSerialized = expectedSerialized.replace("$PRACTITIONER_ROLE_ID", practitionerRoleId);
     expectedSerialized = expectedSerialized.replace("$PROVENANCE_ID", provenanceId);
-    expectedSerialized =
-        expectedSerialized.replace(
-            "$EFFECTIVE_DATE_TIME_TESTED",
-            new DateTimeType(dateTested).setTimeZoneZulu(true).getValueAsString());
-    expectedSerialized =
-        expectedSerialized.replace(
-            "$PROVENANCE_RECORDED_DATE",
-            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
-    expectedSerialized =
-        expectedSerialized.replace(
-            "$BUNDLE_TIMESTAMP",
-            OffsetDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.SSSxxx")));
     expectedSerialized =
         expectedSerialized.replace(
             "$SPECIMEN_IDENTIFIER",

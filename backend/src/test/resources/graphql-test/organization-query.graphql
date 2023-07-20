@@ -1,0 +1,15 @@
+query organization ($id: ID!){
+    organization(id: $id) {
+        internalId
+        name
+        type
+        externalId
+        identityVerified
+        patientSelfRegistrationLink
+        facilities{
+            id
+            name
+        }
+        id
+    }
+}

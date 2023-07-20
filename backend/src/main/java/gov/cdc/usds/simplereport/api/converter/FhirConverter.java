@@ -20,6 +20,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SY
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_EFFECTIVE_DATE_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PRACTICIONER_IDENTIFIER_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.PROCESSING_ID_SYSTEM;
@@ -55,11 +56,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.utils.FhirDateTimeUtil;
+import gov.cdc.usds.simplereport.service.TestOrderService;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -67,9 +71,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.UUID;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -124,7 +128,7 @@ import org.springframework.util.CollectionUtils;
 public class FhirConverter {
 
   private final UUIDGenerator uuidGenerator;
-  private final FhirDateTimeUtil fhirDateTimeUtil;
+  private final DateGenerator dateGenerator;
 
   private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
@@ -155,7 +159,7 @@ public class FhirConverter {
 
   public List<ContactPoint> convertPhoneNumbersToContactPoint(
       @NotNull List<PhoneNumber> phoneNumber) {
-    return phoneNumber.stream().map(this::convertToContactPoint).collect(Collectors.toList());
+    return phoneNumber.stream().map(this::convertToContactPoint).toList();
   }
 
   public ContactPoint convertToContactPoint(@NotNull PhoneNumber phoneNumber) {
@@ -184,9 +188,7 @@ public class FhirConverter {
   }
 
   public List<ContactPoint> convertEmailsToContactPoint(ContactPointUse use, List<String> emails) {
-    return emails.stream()
-        .map(email -> convertEmailToContactPoint(use, email))
-        .collect(Collectors.toList());
+    return emails.stream().map(email -> convertEmailToContactPoint(use, email)).toList();
   }
 
   public ContactPoint convertEmailToContactPoint(ContactPointUse use, @NotNull String email) {
@@ -200,11 +202,9 @@ public class FhirConverter {
 
   public AdministrativeGender convertToAdministrativeGender(@NotNull String gender) {
     switch (gender.toLowerCase()) {
-      case "male":
-      case "m":
+      case "male", "m":
         return AdministrativeGender.MALE;
-      case "female":
-      case "f":
+      case "female", "f":
         return AdministrativeGender.FEMALE;
       default:
         return AdministrativeGender.UNKNOWN;
@@ -213,6 +213,52 @@ public class FhirConverter {
 
   public Date convertToDate(@NotNull LocalDate date) {
     return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
+  }
+
+  /**
+   * @param zonedDateTime the date time with a time zone
+   * @return the DateTimeType object created from the ZonedDateTime, it's timezone, and second
+   *     temporal precision
+   */
+  public DateTimeType convertToDateTimeType(ZonedDateTime zonedDateTime) {
+    return convertToDateTimeType(zonedDateTime, TemporalPrecisionEnum.SECOND);
+  }
+
+  /**
+   * @param zonedDateTime the date time with a time zone
+   * @param temporalPrecisionEnum precision of the date time, defaults to {@code
+   *     TemporalPrecisionEnum.SECOND}
+   * @return the DateTimeType object created from the ZonedDateTime and it's timezone
+   */
+  public DateTimeType convertToDateTimeType(
+      ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
+    if (zonedDateTime == null) {
+      return null;
+    }
+    if (temporalPrecisionEnum == null) {
+      temporalPrecisionEnum = TemporalPrecisionEnum.SECOND;
+    }
+    return new DateTimeType(
+        Date.from(zonedDateTime.toInstant()),
+        temporalPrecisionEnum,
+        TimeZone.getTimeZone(zonedDateTime.getZone()));
+  }
+
+  /**
+   * @param zonedDateTime the date time with a time zone
+   * @param temporalPrecisionEnum precision of the date time, defaults to {@code
+   *     TemporalPrecisionEnum.MILLI}
+   * @return the InstantType object created from the Instant of the ZonedDateTime and its time zone
+   *     offset
+   */
+  public InstantType convertToInstantType(
+      ZonedDateTime zonedDateTime, TemporalPrecisionEnum temporalPrecisionEnum) {
+    if (zonedDateTime == null) return null;
+    if (temporalPrecisionEnum == null) temporalPrecisionEnum = TemporalPrecisionEnum.MILLI;
+    return new InstantType(
+        Date.from(zonedDateTime.toInstant()),
+        temporalPrecisionEnum,
+        TimeZone.getTimeZone(zonedDateTime.getZone()));
   }
 
   public Address convertToAddress(@NotNull StreetAddress address, String country) {
@@ -447,43 +493,54 @@ public class FhirConverter {
     return device;
   }
 
-  public Specimen convertToSpecimen(
-      String specimenCode,
-      String specimenName,
-      String collectionCode,
-      String collectionName,
-      String id,
-      String identifier) {
+  public Specimen convertToSpecimen(ConvertToSpecimenProps props) {
     var specimen = new Specimen();
-    specimen.setId(id);
-    specimen.addIdentifier().setValue(identifier);
-    if (StringUtils.isNotBlank(specimenCode)) {
+    specimen.setId(props.getId());
+    specimen.addIdentifier().setValue(props.getIdentifier());
+    if (StringUtils.isNotBlank(props.getSpecimenCode())) {
       var codeableConcept = specimen.getType();
       var coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(specimenCode);
-      codeableConcept.setText(specimenName);
+      coding.setCode(props.getSpecimenCode());
+      codeableConcept.setText(props.getSpecimenName());
     }
-    if (StringUtils.isNotBlank(collectionCode)) {
+    if (StringUtils.isNotBlank(props.getCollectionCode())) {
       var collection = specimen.getCollection();
       var codeableConcept = collection.getBodySite();
       var coding = codeableConcept.addCoding();
       coding.setSystem(SNOMED_CODE_SYSTEM);
-      coding.setCode(collectionCode);
-      codeableConcept.setText(collectionName);
+      coding.setCode(props.getCollectionCode());
+      codeableConcept.setText(props.getCollectionName());
+    }
+
+    if (props.getCollectionDate() != null) {
+      var collection = specimen.getCollection();
+      collection.setCollected(convertToDateTimeType(props.getCollectionDate()));
+    }
+
+    if (props.getReceivedTime() != null) {
+      specimen.setReceivedTimeElement(convertToDateTimeType(props.getReceivedTime()));
     }
 
     return specimen;
   }
 
-  public Specimen convertToSpecimen(@NotNull SpecimenType specimenType, UUID specimenIdentifier) {
+  public Specimen convertToSpecimen(
+      @NotNull SpecimenType specimenType,
+      UUID specimenIdentifier,
+      ZonedDateTime collectionDate,
+      ZonedDateTime receivedTime) {
     return convertToSpecimen(
-        specimenType.getTypeCode(),
-        specimenType.getName(),
-        specimenType.getCollectionLocationCode(),
-        specimenType.getCollectionLocationName(),
-        specimenType.getInternalId().toString(),
-        specimenIdentifier.toString());
+        ConvertToSpecimenProps.builder()
+            .specimenCode(specimenType.getTypeCode())
+            .specimenName(specimenType.getName())
+            .collectionCode(specimenType.getCollectionLocationCode())
+            .collectionName(specimenType.getCollectionLocationName())
+            .id(specimenType.getInternalId().toString())
+            .identifier(specimenIdentifier.toString())
+            .collectionDate(collectionDate)
+            .receivedTime(receivedTime)
+            .build());
   }
 
   public List<Observation> convertToObservation(
@@ -520,7 +577,7 @@ public class FhirConverter {
                   deviceType.getModel(),
                   resultDate);
             })
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public String getCommonDiseaseValue(
@@ -588,7 +645,7 @@ public class FhirConverter {
         .addCoding(convertToAbnormalFlagInterpretation(props.getResultCode()));
 
     observation.setIssued(props.getIssued());
-    observation.getIssuedElement().setTimeZoneZulu(true).setPrecision(TemporalPrecisionEnum.SECOND);
+    observation.getIssuedElement().setTimeZoneZulu(true);
 
     return observation;
   }
@@ -662,7 +719,7 @@ public class FhirConverter {
 
   public Set<Observation> convertToAOEObservations(String eventId, AskOnEntrySurvey surveyData) {
     Boolean symptomatic = null;
-    if (surveyData.getNoSymptoms()) {
+    if (Boolean.TRUE.equals(surveyData.getNoSymptoms())) {
       symptomatic = false;
     } else if (surveyData.getSymptoms().containsValue(Boolean.TRUE)) {
       symptomatic = true;
@@ -719,7 +776,8 @@ public class FhirConverter {
     observation.setValue(valueCodeableConcept);
   }
 
-  public ServiceRequest convertToServiceRequest(@NotNull TestOrder order) {
+  public ServiceRequest convertToServiceRequest(
+      @NotNull TestOrder order, ZonedDateTime orderTestDate) {
     ServiceRequestStatus serviceRequestStatus = null;
     switch (order.getOrderStatus()) {
       case PENDING:
@@ -741,11 +799,17 @@ public class FhirConverter {
               order.getDeviceType().getSupportedDiseaseTestPerformed());
     }
     return convertToServiceRequest(
-        serviceRequestStatus, deviceLoincCode, Objects.toString(order.getInternalId(), ""));
+        serviceRequestStatus,
+        deviceLoincCode,
+        Objects.toString(order.getInternalId(), ""),
+        orderTestDate);
   }
 
   public ServiceRequest convertToServiceRequest(
-      ServiceRequestStatus status, String requestedCode, String id) {
+      ServiceRequestStatus status,
+      String requestedCode,
+      String id,
+      ZonedDateTime orderEffectiveDate) {
     var serviceRequest = new ServiceRequest();
     serviceRequest.setId(id);
     serviceRequest.setIntent(ServiceRequestIntent.ORDER);
@@ -764,10 +828,24 @@ public class FhirConverter {
                     new Coding()
                         .setSystem(ORDER_CONTROL_CODE_SYSTEM)
                         .setCode(ORDER_CONTROL_CODE_OBSERVATIONS)));
+
+    serviceRequest
+        .addExtension()
+        .setUrl(ORDER_EFFECTIVE_DATE_EXTENSION_URL)
+        .setValue(convertToDateTimeType(orderEffectiveDate, TemporalPrecisionEnum.SECOND));
+
     return serviceRequest;
   }
 
-  public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent) {
+  /**
+   * Used during single entry FHIR conversion
+   *
+   * @param testEvent Single entry test event.
+   * @param currentDate Used to set {@code DiagnosticReport.issued}, the instant this version was *
+   *     made.
+   * @return DiagnosticReport
+   */
+  public DiagnosticReport convertToDiagnosticReport(TestEvent testEvent, Date currentDate) {
     DiagnosticReportStatus status = null;
     switch (testEvent.getCorrectionStatus()) {
       case ORIGINAL:
@@ -788,32 +866,42 @@ public class FhirConverter {
               testEvent.getDeviceType().getSupportedDiseaseTestPerformed());
     }
 
+    ZonedDateTime dateTested = null;
+    if (testEvent.getDateTested() != null) {
+      // getDateTested returns a Date representing an exact moment of time so
+      // finding a specific timezone for the TestEvent is not required to ensure it is accurate
+      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC);
+    }
+    ZonedDateTime dateIssued = null;
+    if (currentDate != null)
+      dateIssued = ZonedDateTime.ofInstant(currentDate.toInstant(), ZoneOffset.UTC);
+
     return convertToDiagnosticReport(
-        status,
-        code,
-        Objects.toString(testEvent.getInternalId(), ""),
-        testEvent.getDateTested(),
-        testEvent.getUpdatedAt());
+        status, code, Objects.toString(testEvent.getInternalId(), ""), dateTested, dateIssued);
   }
 
+  /**
+   * @param status Diagnostic report status
+   * @param code LOINC code
+   * @param id Diagnostic report id
+   * @param dateTested Used to set {@code DiagnosticReport.effective}, the clinically relevant
+   *     time/time-period for report.
+   * @param dateIssued Used to set {@code DiagnosticReport.issued}, the date and time that this
+   *     version of the report was made available to providers, typically after the report was
+   *     reviewed and verified.
+   * @return DiagnosticReport
+   */
   public DiagnosticReport convertToDiagnosticReport(
-      DiagnosticReportStatus status, String code, String id, Date dateTested, Date dateUpdated) {
+      DiagnosticReportStatus status,
+      String code,
+      String id,
+      ZonedDateTime dateTested,
+      ZonedDateTime dateIssued) {
     var diagnosticReport =
         new DiagnosticReport()
             .setStatus(status)
-            .setEffective(new DateTimeType(dateTested).setTimeZoneZulu(true))
-            .setIssued(dateUpdated);
-
-    // Allows EffectiveDateTimeType to be mocked during tests
-    var localEffectiveDateTimeType = diagnosticReport.getEffectiveDateTimeType();
-    var unchangedEffectiveDateTimeType =
-        fhirDateTimeUtil.getBaseDateTimeType(localEffectiveDateTimeType);
-    diagnosticReport.setEffective(unchangedEffectiveDateTimeType);
-
-    // Allows issued element to be mocked during tests
-    var localIssued = diagnosticReport.getIssuedElement();
-    var unchangedIssued = (InstantType) fhirDateTimeUtil.getBaseDateTimeType(localIssued);
-    diagnosticReport.setIssuedElement(unchangedIssued);
+            .setEffective(convertToDateTimeType(dateTested))
+            .setIssuedElement(convertToInstantType(dateIssued, TemporalPrecisionEnum.SECOND));
 
     diagnosticReport.setId(id);
     if (StringUtils.isNotBlank(code)) {
@@ -823,11 +911,21 @@ public class FhirConverter {
     return diagnosticReport;
   }
 
+  /**
+   * @param testEvent The single entry test event created in {@code TestOrderService}
+   * @param gitProperties Git properties
+   * @param processingId Processing id
+   * @return FHIR bundle
+   * @see TestOrderService
+   */
   public Bundle createFhirBundle(
-      @NotNull TestEvent testEvent,
-      GitProperties gitProperties,
-      Date currentDate,
-      String processingId) {
+      @NotNull TestEvent testEvent, GitProperties gitProperties, String processingId) {
+
+    Date currentDate = dateGenerator.newDate();
+    ZonedDateTime dateTested =
+        testEvent.getDateTested() != null
+            ? ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC)
+            : null;
 
     return createFhirBundle(
         CreateFhirBundleProps.builder()
@@ -836,7 +934,9 @@ public class FhirConverter {
             .orderingFacility(null)
             .practitioner(convertToPractitioner(testEvent.getProviderData()))
             .device(convertToDevice(testEvent.getDeviceType()))
-            .specimen(convertToSpecimen(testEvent.getSpecimenType(), uuidGenerator.randomUUID()))
+            .specimen(
+                convertToSpecimen(
+                    testEvent.getSpecimenType(), uuidGenerator.randomUUID(), null, null))
             .resultObservations(
                 convertToObservation(
                     testEvent.getResults(),
@@ -847,8 +947,8 @@ public class FhirConverter {
             .aoeObservations(
                 convertToAOEObservations(
                     testEvent.getInternalId().toString(), testEvent.getSurveyData()))
-            .serviceRequest(convertToServiceRequest(testEvent.getOrder()))
-            .diagnosticReport(convertToDiagnosticReport(testEvent))
+            .serviceRequest(convertToServiceRequest(testEvent.getOrder(), dateTested))
+            .diagnosticReport(convertToDiagnosticReport(testEvent, currentDate))
             .currentDate(currentDate)
             .gitProperties(gitProperties)
             .processingId(processingId)
@@ -957,10 +1057,7 @@ public class FhirConverter {
             .setTimestamp(props.getCurrentDate())
             .setIdentifier(new Identifier().setValue(props.getDiagnosticReport().getId()));
 
-    // Allows timestamp element to be mocked during tests
-    var localTimestamp = bundle.getTimestampElement();
-    var unchangedTimestamp = (InstantType) fhirDateTimeUtil.getBaseDateTimeType(localTimestamp);
-    bundle.setTimestampElement(unchangedTimestamp);
+    bundle.getTimestampElement().setTimeZoneZulu(true);
 
     entryList.forEach(
         pair ->
@@ -976,11 +1073,6 @@ public class FhirConverter {
       String organizationFullUrl, Date dateTested, UUID provenanceId) {
     var provenance = new Provenance();
 
-    // Allows recorded element to be mocked during tests
-    var localRecorded = provenance.getRecordedElement();
-    var unchangedRecorded = fhirDateTimeUtil.getBaseDateTimeType(localRecorded);
-    provenance.setRecordedElement((InstantType) unchangedRecorded);
-
     provenance.setId(provenanceId.toString());
     provenance
         .getActivity()
@@ -990,6 +1082,7 @@ public class FhirConverter {
         .setDisplay(EVENT_TYPE_DISPLAY);
     provenance.addAgent().setWho(new Reference().setReference(organizationFullUrl));
     provenance.setRecorded(dateTested);
+    provenance.getRecordedElement().setTimeZoneZulu(true);
     return provenance;
   }
 

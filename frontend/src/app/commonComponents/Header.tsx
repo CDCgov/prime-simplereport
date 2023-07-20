@@ -11,6 +11,7 @@ import { RootState } from "../store";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { getAppInsights } from "../TelemetryService";
 import { formatFullName, formatRole } from "../utils/user";
+import TouchpointsButton from "../analytics/TouchpointsButton";
 
 import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
@@ -354,8 +355,8 @@ const Header: React.FC<{}> = () => {
                 }))}
               />
             </div>
-            {/*Disabled due to https://github.com/CDCgov/prime-simplereport/issues/5863*/}
-            {/*<TouchpointsButton />*/}
+
+            <TouchpointsButton />
           </div>
         </nav>
       </div>
