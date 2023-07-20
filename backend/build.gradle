@@ -113,9 +113,6 @@ dependencies {
     testImplementation 'org.springframework.cloud:spring-cloud-contract-wiremock'
     testImplementation 'org.springframework.cloud:spring-cloud-starter-contract-stub-runner'
 
-    // assert JSONs but is forgiving about property order
-    testImplementation 'org.skyscreamer:jsonassert:1.5.1'
-
     // dev tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
