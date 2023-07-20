@@ -70,7 +70,7 @@ const DeviceTypeFormContainer = () => {
     );
     return (
       <DeviceForm
-        formTitle="Device type"
+        formTitle="Add a new device"
         saveDeviceType={saveDeviceType}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}

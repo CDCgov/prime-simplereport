@@ -36,10 +36,10 @@ const SupportAdmin = () => {
             </div>
             <div className="usa-card__body">
               <div className="grid-row grid-gap">
-                <CategoryMenu heading="Organization & Facilities">
+                <CategoryMenu heading="Organization & facilities">
                   <li>
                     <LinkWithQuery to={`/admin/pending-organizations`}>
-                      Verify organization identity
+                      Verify/edit organization identity
                     </LinkWithQuery>
                   </li>
                   <li>
@@ -49,12 +49,9 @@ const SupportAdmin = () => {
                   </li>
                   <li>
                     <LinkWithQuery to="/admin/tenant-data-access">
-                      Ghost into an organization
+                      Access organization account
                     </LinkWithQuery>
                   </li>
-                </CategoryMenu>
-                <CategoryMenu heading={"Users & Patients"}>
-                  <div></div>
                 </CategoryMenu>
                 <CategoryMenu heading="Devices">
                   <li>
@@ -67,6 +64,9 @@ const SupportAdmin = () => {
                       Edit existing device
                     </LinkWithQuery>
                   </li>
+                </CategoryMenu>
+                <CategoryMenu heading={"Users & patients"}>
+                  <div></div>
                 </CategoryMenu>
                 {hivEnabled && (
                   <CategoryMenu heading="Beta">
