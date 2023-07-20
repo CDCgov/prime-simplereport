@@ -7,6 +7,7 @@ import {
   GetTestResultForResendingEmailsDocument,
   GetTestResultForTextDocument,
   GetFacilityResultsForCsvWithCountDocument,
+  ArchivedStatus,
 } from "../../../generated/graphql";
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
 import { QUERY_PATIENT } from "../../testQueue/addToQueue/AddToQueueSearch";
@@ -232,7 +233,7 @@ export const mocks = [
       variables: {
         facilityId: "1",
         namePrefixMatch: "Cragell",
-        includeArchived: true,
+        archivedStatus: ArchivedStatus.All,
         includeArchivedFacilities: true,
       },
     },

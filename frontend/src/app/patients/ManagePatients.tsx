@@ -33,6 +33,7 @@ import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { StartTestProps } from "../testQueue/addToQueue/AddToQueueSearch";
 import { MenuButton } from "../commonComponents/MenuButton";
 import { IconLabel } from "../commonComponents/IconLabel";
+import { ArchivedStatus } from "../../generated/graphql";
 
 import ArchivePersonModal from "./ArchivePersonModal";
 
@@ -41,12 +42,12 @@ import "./ManagePatients.scss";
 export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
     $facilityId: ID!
-    $includeArchived: Boolean!
+    $archivedStatus: ArchivedStatus = UNARCHIVED
     $namePrefixMatch: String
   ) {
     patientsCount(
       facilityId: $facilityId
-      includeArchived: $includeArchived
+      archivedStatus: $archivedStatus
       namePrefixMatch: $namePrefixMatch
     )
   }
@@ -57,14 +58,14 @@ export const patientQuery = gql`
     $facilityId: ID!
     $pageNumber: Int!
     $pageSize: Int!
-    $includeArchived: Boolean
+    $archivedStatus: ArchivedStatus = UNARCHIVED
     $namePrefixMatch: String
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: $pageNumber
       pageSize: $pageSize
-      includeArchived: $includeArchived
+      archivedStatus: $archivedStatus
       namePrefixMatch: $namePrefixMatch
     ) {
       internalId
@@ -106,7 +107,7 @@ interface Props {
   currentPage: number;
   entriesPerPage: number;
   totalEntries?: number;
-  includeArchived?: boolean;
+  archivedStatus?: ArchivedStatus;
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
@@ -416,7 +417,7 @@ const ManagePatients = (
   } = useQuery(patientsCountQuery, {
     variables: {
       facilityId: props.activeFacilityId,
-      includeArchived: false,
+      archivedStatus: ArchivedStatus.Unarchived,
       namePrefixMatch,
     },
     fetchPolicy: "no-cache",
@@ -441,7 +442,7 @@ const ManagePatients = (
           facilityId: props.activeFacilityId,
           pageNumber: pageNumber - 1,
           pageSize: entriesPerPage,
-          includeArchived: props.includeArchived || false,
+          archivedStatus: props.archivedStatus ?? ArchivedStatus.Unarchived,
           namePrefixMatch,
         },
       }}

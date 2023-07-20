@@ -1,0 +1,11 @@
+mutation enqueueById($id: ID!, $facilityId: ID!, $symptomOnsetDate: LocalDate, $testResultDelivery: TestResultDeliveryPreference, $pregnancy: String, $symptoms: String, $noSymptoms: Boolean) {
+    addPatientToQueue(
+      patientId: $id,
+      facilityId: $facilityId,
+        pregnancy: $pregnancy,
+        symptoms: $symptoms,
+      symptomOnset: $symptomOnsetDate,
+        testResultDelivery: $testResultDelivery,
+        noSymptoms: $noSymptoms
+    )
+  }
