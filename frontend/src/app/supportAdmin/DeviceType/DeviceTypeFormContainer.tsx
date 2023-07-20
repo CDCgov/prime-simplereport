@@ -15,8 +15,9 @@ import { useDocumentTitle } from "../../utils/hooks";
 
 import DeviceForm from "./DeviceForm";
 
+const pageTitle = "Add a new device";
 const DeviceTypeFormContainer = () => {
-  useDocumentTitle("Device type");
+  useDocumentTitle(pageTitle);
 
   const [submitted, setSubmitted] = useState(false);
   const [activeFacility] = useSelectedFacility();
@@ -70,7 +71,7 @@ const DeviceTypeFormContainer = () => {
     );
     return (
       <DeviceForm
-        formTitle="Add a new device"
+        formTitle={pageTitle}
         saveDeviceType={saveDeviceType}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}

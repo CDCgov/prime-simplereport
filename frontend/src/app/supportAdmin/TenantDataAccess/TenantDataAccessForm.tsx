@@ -9,6 +9,8 @@ import OrganizationComboDropDown, {
   OrganizationOption,
 } from "../Components/OrganizationComboDropdown";
 
+import { orgAccessPageTitle } from "./TenantDataAccessFormContainer";
+
 const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
   Object.values(organizationOptions).sort((a, b) => {
     return a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1;
@@ -92,7 +94,7 @@ const TenantDataAccessForm: React.FC<Props> = (props) => {
           <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
-                <h1 className="font-heading-lg">Access organization account</h1>
+                <h1 className="font-heading-lg">{orgAccessPageTitle}</h1>
                 <p className="text-base">
                   This page allows you to reproduce a specific user's issues by
                   accessing their account. Access automatically expires after an

@@ -12,8 +12,9 @@ import { useDocumentTitle } from "../../utils/hooks";
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
+export const orgAccessPageTitle = "Access organization account";
 const TenantDataAccessFormContainer = () => {
-  useDocumentTitle("Organization data access");
+  useDocumentTitle(orgAccessPageTitle);
 
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
