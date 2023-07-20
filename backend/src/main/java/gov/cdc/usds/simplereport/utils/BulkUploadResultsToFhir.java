@@ -317,8 +317,6 @@ public class BulkUploadResultsToFhir {
               .map(SupportedDisease::getName)
               .orElse(null);
 
-      // inference method seems to just pick a pseudo-random code associated with the device - is
-      // this better than just defaulting to the test performed code?
       testOrderedCode =
           StringUtils.isEmpty(testOrderedCode)
               ? MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries)
