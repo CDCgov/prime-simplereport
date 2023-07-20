@@ -1,5 +1,5 @@
 name: Maintenance banner deploy
-description: Sends an email to the support team when the state of the maintenance banner changes in PROD
+description: Reusable action to deploy the maintenance banner to the SimpleReport frontend
 inputs:
   active:
     description: boolean that represents if the banner is active (on) or inactive (off)
