@@ -182,6 +182,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       updateUserRequest.setCredentials(creds);
       userApi.updateUser(userId, updateUserRequest, null);
     } catch (ApiException e) {
+      log.info("Error occurred setting password ", e);
       if (e.getCode() == HttpStatus.BAD_REQUEST.value()
           && e.getMessage().toLowerCase().contains("password requirements")) {
         throw new BadRequestException(getOktaErrorSummary(e), e);
