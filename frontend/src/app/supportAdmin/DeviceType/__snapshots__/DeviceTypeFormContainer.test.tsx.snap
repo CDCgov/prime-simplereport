@@ -23,7 +23,7 @@ Object {
                 <h1
                   class="font-heading-lg margin-top-0 margin-bottom-0"
                 >
-                  Device type
+                  Add a new device
                 </h1>
                 <div
                   style="display: flex; justify-content: center; align-items: center;"
@@ -540,7 +540,7 @@ Object {
               <h1
                 class="font-heading-lg margin-top-0 margin-bottom-0"
               >
-                Device type
+                Add a new device
               </h1>
               <div
                 style="display: flex; justify-content: center; align-items: center;"
