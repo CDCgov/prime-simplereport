@@ -150,7 +150,9 @@ describe("ManageDeviceTypeFormContainer", () => {
   });
 
   it("should show the device type form", async () => {
-    expect(await screen.findByText("Manage devices")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Edit existing devices")
+    ).toBeInTheDocument();
   });
 
   it("should update the selected device", async () => {

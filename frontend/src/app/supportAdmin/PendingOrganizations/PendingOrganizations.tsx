@@ -31,7 +31,7 @@ interface Props {
 }
 
 const phoneUtil = PhoneNumberUtil.getInstance();
-
+const pageTitle = "Verify/edit organization identity";
 const PendingOrganizations = ({
   organizations,
   submitIdentityVerified,
@@ -39,7 +39,7 @@ const PendingOrganizations = ({
   loading,
   refetch,
 }: Props) => {
-  useDocumentTitle("Edit or verify organization identity");
+  useDocumentTitle(pageTitle);
 
   const [orgToVerify, setOrgToVerify] = useState<PendingOrganization | null>(
     null
@@ -243,7 +243,7 @@ const PendingOrganizations = ({
                 data-cy="pending-orgs-title"
                 className="font-heading-lg margin-top-0 margin-bottom-0"
               >
-                Edit or verify organization identity
+                {pageTitle}
               </h1>
             </div>
             <div className="usa-card__body">
