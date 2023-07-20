@@ -1,5 +1,7 @@
 @use "@uswds/uswds/packages/uswds-core" as *; // for color function
 
+$site-max-width: 1200px;
+
 $theme-color-prime-blue-lightest: "cyan-5";
 $theme-color-prime-blue-light: "blue-10";
 $theme-color-prime-blue: "blue-50";
