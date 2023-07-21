@@ -113,7 +113,7 @@ data "azurerm_key_vault_secret" "twilio_messaging_sid" {
 }
 
 data "azurerm_key_vault_secret" "sendgrid_api_key" {
-  name         = "sendgrid-api-key"
+  name         = "sendgrid-dev-api-key"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
