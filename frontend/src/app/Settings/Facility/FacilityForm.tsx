@@ -7,7 +7,7 @@ import {
   isValidZipCodeForState,
   suggestionIsCloseEnough,
 } from "../../utils/smartyStreets";
-import iconSprite from "../../../../node_modules/@uswds/uswds/img/sprite.svg";
+import iconSprite from "../../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";

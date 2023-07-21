@@ -16,7 +16,7 @@ import {
 } from "../../testQueue/constants";
 import { DeviceType } from "../../../generated/graphql";
 import { useOutsideClick } from "../../utils/hooks";
-import iconSprite from "../../../../node_modules/@uswds/uswds/img/sprite.svg";
+import iconSprite from "../../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 

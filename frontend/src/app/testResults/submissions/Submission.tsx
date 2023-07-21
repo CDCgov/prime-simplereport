@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 
-import iconSprite from "../../../../node_modules/@uswds/uswds/img/sprite.svg";
+import iconSprite from "../../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 import { useGetUploadSubmissionQuery } from "../../../generated/graphql";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import { formatDateWithTimeOption } from "../../utils/date";
