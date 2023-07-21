@@ -322,6 +322,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       return new FactorAndActivation(
           enrolledFactor.getId(), (Map) enrolledFactor.getEmbedded().get(ACTIVATION_KEY));
     } catch (NullPointerException | ApiException e) {
+      log.info("Error occurred enrolling security key ", e);
       throw new OktaAuthenticationFailureException("Security key could not be enrolled", e);
     }
   }
@@ -337,7 +338,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activationRequest.setClientData(clientData);
       userFactorApi.activateFactor(userId, factorId, activationRequest);
     } catch (NullPointerException | ApiException e) {
-      log.info("Error occurred activating security key ", e);
       throw new OktaAuthenticationFailureException("Security key could not be activated", e);
     }
   }
