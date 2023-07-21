@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.EQUIPMENT_MODEL_NAME;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TEST_PERFORMED_CODE;
 import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
@@ -180,7 +182,10 @@ public class TestResultUploadService {
         log.error("Unable to parse csv.", ex);
         continue;
       }
-      updatedRows.add(transformCsvRow(row));
+
+      if (isCovidResult(row)) {
+        updatedRows.add(transformCsvRow(row));
+      }
     }
     var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
     var csvMapper =
@@ -200,6 +205,14 @@ public class TestResultUploadService {
     }
 
     return csvContent.getBytes(StandardCharsets.UTF_8);
+  }
+
+  private boolean isCovidResult(Map<String, String> row) {
+    String equipmentModelName = row.get(EQUIPMENT_MODEL_NAME);
+    String testPerformedCode = row.get(TEST_PERFORMED_CODE);
+    return resultsUploaderCachingService
+        .getCovidEquipmentModelAndTestPerformedCodeSet()
+        .contains(ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
   }
 
   private Map<String, String> transformCsvRow(Map<String, String> row) {

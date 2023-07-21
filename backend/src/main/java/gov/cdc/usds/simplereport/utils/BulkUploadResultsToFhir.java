@@ -290,7 +290,7 @@ public class BulkUploadResultsToFhir {
     var matchingDevice =
         resultsUploaderCachingService
             .getModelAndTestPerformedCodeToDeviceMap()
-            .get(ResultsUploaderCachingService.getMapKey(modelName, testPerformedCode));
+            .get(ResultsUploaderCachingService.getKey(modelName, testPerformedCode));
 
     if (matchingDevice != null) {
       List<DeviceTypeDisease> deviceTypeDiseaseEntries =
