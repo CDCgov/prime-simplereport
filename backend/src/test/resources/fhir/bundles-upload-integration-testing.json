@@ -32,10 +32,10 @@
       "source" : {
         "extension" : [ {
           "url" : "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id",
-          "valueString" : "a82501f"
+          "valueString" : "CommitID"
         }, {
           "url" : "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date",
-          "valueInstant" : "2023-07-19T15:14:04Z"
+          "valueInstant" : "2023-07-05T14:02:46Z"
         }, {
           "url" : "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
           "valueReference" : {
@@ -43,7 +43,7 @@
           }
         } ],
         "software" : "PRIME SimpleReport",
-        "version" : "a82501f",
+        "version" : "CommitID",
         "endpoint" : "https://simplereport.gov"
       },
       "focus" : [ {

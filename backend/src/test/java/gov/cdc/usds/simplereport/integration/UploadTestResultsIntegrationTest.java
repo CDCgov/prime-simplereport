@@ -16,6 +16,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
 import gov.cdc.usds.simplereport.api.BaseAuthenticatedFullStackTest;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
 import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhirTest;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
@@ -26,17 +27,21 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
+import java.util.Properties;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SliceTestConfiguration.WithSimpleReportStandardUser
@@ -46,11 +51,13 @@ import org.springframework.test.web.servlet.MockMvc;
 class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   @Autowired private MockMvc mockMvc;
 
-  @MockBean TokenAuthentication _tokenAuth;
+  @MockBean private TokenAuthentication _tokenAuth;
 
-  @MockBean DateGenerator dateGenerator;
+  @MockBean private DateGenerator dateGenerator;
 
-  @MockBean UUIDGenerator uuidGenerator;
+  @MockBean private UUIDGenerator uuidGenerator;
+
+  @SpyBean private BulkUploadResultsToFhir bulkUploadResultsToFhir;
 
   @BeforeAll
   void setup() throws IOException {
@@ -58,6 +65,13 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
     when(dateGenerator.newDate()).thenReturn(date);
     when(uuidGenerator.randomUUID())
         .thenReturn(UUID.fromString("5c5cc8fd-7001-4ac2-9340-541d065eca87"));
+
+    var properties = new Properties();
+    // short commit id
+    properties.setProperty("commit.id.abbrev", "CommitID");
+    properties.setProperty("commit.time", "1688565766");
+    ReflectionTestUtils.setField(
+        bulkUploadResultsToFhir, "gitProperties", new GitProperties(properties));
 
     var responseFile =
         getClass().getClassLoader().getResourceAsStream("responses/datahub-response.json");
