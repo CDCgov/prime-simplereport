@@ -108,7 +108,7 @@ exports[`SupportAdming loads menu categories 1`] = `
                 <ul
                   class="usa-list padding-left-2"
                 >
-                  <div />
+                  <li />
                 </ul>
               </div>
             </div>
@@ -228,7 +228,7 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                 <ul
                   class="usa-list padding-left-2"
                 >
-                  <div />
+                  <li />
                 </ul>
               </div>
               <div
