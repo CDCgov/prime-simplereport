@@ -1,3 +1,4 @@
+import {orgAccessPageTitle} from "../../frontend/src/app/supportAdmin/pageTitles"
 const {
   loginHooks,
   generateFacility,
@@ -65,7 +66,7 @@ describe("Organization sign up",() => {
   it("spoofs into the org", () => {
     cy.visit("/admin");
 
-    cy.contains("Organization data").click();
+    cy.contains(orgAccessPageTitle).click();
     cy.get("[data-testid='combo-box-input']").clear();
     cy.get("[data-testid='combo-box-input']").type(
       `${organization.name}{enter}`
