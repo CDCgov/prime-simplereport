@@ -77,7 +77,7 @@ const SupportAdmin = () => {
                   </li>
                 </CategoryMenu>
                 <CategoryMenu heading={usersAndPatientsColumnTitle}>
-                  <div></div>
+                  <li></li>
                 </CategoryMenu>
                 {hivEnabled && (
                   <CategoryMenu heading="Beta">
