@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.openapitools.client.ApiClient;
 import org.openapitools.client.ApiException;
@@ -55,7 +54,6 @@ import org.springframework.web.client.RestTemplate;
  */
 @Profile("!" + BeanProfiles.NO_OKTA_AUTH)
 @Service
-@Slf4j
 public class LiveOktaAuthentication implements OktaAuthentication {
   private static final String ACTIVATION_KEY = "activation";
   private final String apiToken;
