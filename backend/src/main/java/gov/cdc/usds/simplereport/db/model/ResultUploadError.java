@@ -57,13 +57,7 @@ public class ResultUploadError extends AuditedEntity {
       Organization organization,
       FeedbackMessage feedbackMessage,
       UUID submissionId) {
-    this.uploadId = upload.getInternalId();
-    this.orgId = organization.getInternalId();
-    this.submissionId = submissionId;
-    this.type = feedbackMessage.getErrorType();
-    this.source = feedbackMessage.getSource();
-    this.field = feedbackMessage.getFieldHeader();
-    this.required = feedbackMessage.isFieldRequired();
-    this.message = feedbackMessage.getMessage();
+    this(organization, feedbackMessage, submissionId);
+    this.uploadId = (upload != null) ? upload.getInternalId() : null;
   }
 }
