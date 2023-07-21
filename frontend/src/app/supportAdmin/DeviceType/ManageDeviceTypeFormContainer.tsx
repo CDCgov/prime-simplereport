@@ -13,9 +13,9 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { showError, showSuccess } from "../../utils/srToast";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 import { useDocumentTitle } from "../../utils/hooks";
+import { editDevicePageTitle } from "../pageTitles";
 
 import DeviceForm from "./DeviceForm";
-import { editDevicePageTitle } from "../pageTitles";
 
 const ManageDeviceTypeFormContainer = () => {
   useDocumentTitle(editDevicePageTitle);
