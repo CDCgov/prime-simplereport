@@ -336,7 +336,6 @@ public class LiveOktaAuthentication implements OktaAuthentication {
       activationRequest.setClientData(clientData);
       userFactorApi.activateFactor(userId, factorId, activationRequest);
     } catch (NullPointerException | ApiException e) {
-      log.info("Error occurred activating security key ", e);
       throw new OktaAuthenticationFailureException("Security key could not be activated", e);
     }
   }
