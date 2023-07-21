@@ -697,10 +697,10 @@ public class LiveOktaRepository implements OktaRepository {
       Error error = ApiExceptionHelper.getError(e);
       if (error != null) {
         errorMessage =
-            "Okta Error: " + error.getErrorCode() + "; Error summary: " + error.getErrorSummary();
+            "Okta Error: " + error.getErrorCode() + ", Error summary: " + error.getErrorSummary();
         if (error.getErrorCauses() != null) {
           errorMessage +=
-              "; Error Cause(s): "
+              ", Error Cause(s): "
                   + error.getErrorCauses().stream()
                       .map(ErrorErrorCausesInner::getErrorSummary)
                       .collect(Collectors.joining(", "));
