@@ -8,8 +8,7 @@ import OrganizationComboDropDown, {
   useOrganizationDropDownValidation,
   OrganizationOption,
 } from "../Components/OrganizationComboDropdown";
-
-import { orgAccessPageTitle } from "./TenantDataAccessFormContainer";
+import { orgAccessPageTitle } from "../pageTitles";
 
 const sortOrganizationOptions = (organizationOptions: OrganizationOption[]) =>
   Object.values(organizationOptions).sort((a, b) => {
