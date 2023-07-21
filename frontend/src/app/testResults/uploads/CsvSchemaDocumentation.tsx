@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Icon } from "@trussworks/react-uswds";
 
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import iconSprite from "../../../../node_modules/@uswds/uswds/img/sprite.svg";
 import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
@@ -171,7 +171,14 @@ const CsvSchemaDocumentation = () => {
       <div className="usa-card__header">
         <div>
           <div className="display-flex flex-align-center">
-            <Icon.ArrowBack className={"margin-left-neg-2px"}></Icon.ArrowBack>
+            <svg
+              className="usa-icon text-base margin-left-neg-2px"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
+            >
+              <use xlinkHref={iconSprite + "#arrow_back"}></use>
+            </svg>
             <LinkWithQuery
               to={`/results/upload/submit`}
               className="margin-left-05"

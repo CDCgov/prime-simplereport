@@ -1,5 +1,4 @@
 import React from "react";
-import { Icon } from "@trussworks/react-uswds";
 
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import {
@@ -7,6 +6,7 @@ import {
   PATIENT_TERM_PLURAL_CAP,
 } from "../../../config/constants";
 import PatientsNav from "../PatientsNav";
+import iconSprite from "../../../../node_modules/@uswds/uswds/img/sprite.svg";
 
 interface Props {
   additional?: React.ReactNode;
@@ -17,9 +17,14 @@ export const AddPatientHeader = (props: Props) => {
       <div className="display-flex flex-justify">
         <div>
           <div className="display-flex flex-align-center">
-            <Icon.ArrowBack
-              className={"text-base margin-left-neg-2px"}
-            ></Icon.ArrowBack>
+            <svg
+              className="usa-icon text-base margin-left-neg-2px"
+              aria-hidden="true"
+              focusable="false"
+              role="img"
+            >
+              <use xlinkHref={iconSprite + "#arrow_back"}></use>
+            </svg>
             <LinkWithQuery to={`/patients`} className="margin-left-05">
               {PATIENT_TERM_PLURAL_CAP}
             </LinkWithQuery>

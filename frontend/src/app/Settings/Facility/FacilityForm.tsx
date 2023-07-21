@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Icon } from "@trussworks/react-uswds";
 
 import {
   getBestSuggestion,
@@ -8,6 +7,7 @@ import {
   isValidZipCodeForState,
   suggestionIsCloseEnough,
 } from "../../utils/smartyStreets";
+import iconSprite from "../../../../node_modules/@uswds/uswds/img/sprite.svg";
 import Button from "../../commonComponents/Button/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
@@ -331,9 +331,14 @@ const FacilityForm: React.FC<Props> = (props) => {
                   <h2 className="margin-top-05">Welcome to SimpleReport!</h2>
                 ) : (
                   <>
-                    <Icon.ArrowBack
-                      className={"text-base margin-left-neg-2px"}
-                    ></Icon.ArrowBack>
+                    <svg
+                      className="usa-icon text-base margin-left-neg-2px"
+                      aria-hidden="true"
+                      focusable="false"
+                      role="img"
+                    >
+                      <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                    </svg>
                     <LinkWithQuery
                       to={`/settings/facilities`}
                       className="margin-left-05"

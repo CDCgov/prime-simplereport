@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import "./DeviceLookup.scss";
 import { uniq } from "lodash";
-import { Icon } from "@trussworks/react-uswds";
 
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import { useDebounce } from "../../testQueue/addToQueue/useDebounce";
@@ -17,6 +16,7 @@ import {
 } from "../../testQueue/constants";
 import { DeviceType } from "../../../generated/graphql";
 import { useOutsideClick } from "../../utils/hooks";
+import iconSprite from "../../../../node_modules/@uswds/uswds/img/sprite.svg";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 
@@ -96,10 +96,14 @@ const DeviceLookup = (props: Props) => {
       <div className="usa-card__header">
         <div>
           <div className="display-flex flex-align-center">
-            <Icon.ArrowBack
-              className="margin-left-neg-2px"
+            <svg
+              className="usa-icon text-base margin-left-neg-2px"
               aria-hidden="true"
-            />
+              focusable="false"
+              role="img"
+            >
+              <use xlinkHref={iconSprite + "#arrow_back"}></use>
+            </svg>
             <LinkWithQuery
               to={`/results/upload/submit/guide`}
               className="margin-left-05"
