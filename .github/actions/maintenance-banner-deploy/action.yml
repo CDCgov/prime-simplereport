@@ -1,0 +1,30 @@
+name: Maintenance banner deploy
+description: Reusable action to deploy the maintenance banner to the SimpleReport frontend
+inputs:
+  active:
+    description: boolean that represents if the banner is active (on) or inactive (off)
+    required: true
+  header:
+    description: banner subject being displayed
+    required: true
+  message:
+    description: banner content being displayed
+    required: true
+  env:
+    description: environment where the banner has been updated
+    required: true
+    default: "prod"
+
+runs:
+  using: composite
+  steps:
+    - name: Push maintenance.json
+      working-directory: ./frontend
+      shell: bash
+      run: |
+        export MAINTENANCE_BOOLEAN=$( if [ "${{ inputs.active }}" = "true" ]; then echo true; else echo false; fi )
+        export MAINTENANCE_HEADER="${{ inputs.header }}"
+        export MAINTENANCE_MESSAGE="${{ inputs.message }}"
+        export MAINTENANCE_ENV=${{ inputs.env }}
+        echo "{\"active\": $MAINTENANCE_BOOLEAN, \"header\": \"$MAINTENANCE_HEADER\", \"message\": \"$MAINTENANCE_MESSAGE\"}" > maintenance.json
+        yarn run maintenance:deploy
