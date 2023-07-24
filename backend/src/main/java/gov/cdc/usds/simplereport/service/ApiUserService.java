@@ -638,7 +638,6 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public UserInfo getUserByLoginEmail(String loginEmail) {
-    // ToDo make sure that this include deleted users
     Optional<ApiUser> foundUser = _apiUserRepo.findByLoginEmailIncludeArchived(loginEmail);
 
     if (foundUser.isEmpty()) {
