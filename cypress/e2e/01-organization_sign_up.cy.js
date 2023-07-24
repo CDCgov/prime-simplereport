@@ -46,7 +46,7 @@ describe("Organization sign up",() => {
     cy.injectSRAxe();
     cy.checkAccessibility();
 
-    cy.contains("Identity verification").click();
+    cy.contains("Verify/edit organization identity").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
 
     cy.contains("td", `${organization.name}`);
