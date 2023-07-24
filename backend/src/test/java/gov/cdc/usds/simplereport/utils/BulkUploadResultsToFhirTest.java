@@ -156,7 +156,7 @@ public class BulkUploadResultsToFhirTest {
 
       var mappedCode = serviceRequest.getCode().getCoding().stream().findFirst().get().getCode();
 
-      // supplied orderedCode is empty
+      // when supplied orderedCode is empty
       assertThat(inputOrderedCode).isEmpty();
       // value is defaulted to performed code
       assertThat(mappedCode).isEqualTo(inputPerformedCode);
