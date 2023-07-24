@@ -15,7 +15,6 @@ import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties
 import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -174,8 +173,7 @@ class AzureTestEventReportingQueueConfiguration {
     private String toBuffer(TestEvent testEvent) {
       return fhirContext
           .newJsonParser()
-          .encodeResourceToString(
-              fhirConverter.createFhirBundle(testEvent, gitProperties, new Date(), "P"));
+          .encodeResourceToString(fhirConverter.createFhirBundle(testEvent, gitProperties, "P"));
     }
   }
 }
