@@ -1,4 +1,11 @@
 package gov.cdc.usds.simplereport.api.model.errors;
 
-/** An error thrown when CSV uploads fail for reasons other than validation */
-public class EmptyCsvException extends Exception {}
+import java.io.Serial;
+
+public class EmptyCsvException extends Exception {
+  @Serial private static final long serialVersionUID = 1L;
+
+  public EmptyCsvException() {
+    super("CSV file has not rows");
+  }
+}
