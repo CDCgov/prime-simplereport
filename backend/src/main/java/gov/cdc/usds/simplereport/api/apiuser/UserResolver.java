@@ -50,13 +50,4 @@ public class UserResolver {
 
     return new User(_userService.getUser(id));
   }
-
-  @QueryMapping
-  public User userByLoginEmail(@Argument String loginEmail) {
-    try {
-      return new User(_userService.getUserByLoginEmail(loginEmail));
-    } catch (NonexistentUserException e) {
-      return null;
-    }
-  }
 }
