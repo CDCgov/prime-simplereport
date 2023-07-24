@@ -27,9 +27,9 @@ interface Props {
   deviceOptions: DeviceType[];
 }
 
-const searchFields = ["manufacturer", "name", "model"] as const;
-type DeviceSearchFields = (typeof searchFields)[number];
-type SearchableDevice = Pick<DeviceType, DeviceSearchFields>;
+export const searchFields = ["manufacturer", "name", "model"] as const;
+export type DeviceSearchFields = (typeof searchFields)[number];
+export type SearchableDevice = Pick<DeviceType, DeviceSearchFields>;
 
 const searchDevices = (devices: DeviceType[], query: string): DeviceType[] => {
   if (!query) {
@@ -136,6 +136,7 @@ const DeviceLookup = (props: Props) => {
             loading={debounced !== queryString}
             queryString={queryString}
             dropDownRef={dropDownRef}
+            multiSelect={false}
           />
           {selectedDevice && <DeviceDetails device={selectedDevice} />}
         </div>

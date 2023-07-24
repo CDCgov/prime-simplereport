@@ -4,8 +4,11 @@ import React, {
   useEffect,
   useRef,
   Ref,
+  useCallback,
 } from "react";
 import classnames from "classnames";
+
+import { useOutsideClick } from "../../../utils/hooks";
 
 import {
   ActionTypes,
@@ -53,6 +56,8 @@ interface MultiSelectDropDownProps {
   placeholder?: string;
   ariaInvalid?: boolean;
   registrationProps?: RegistrationProps;
+  DropdownComponent?: (props: any) => JSX.Element;
+  deviceOptions?: DeviceType[];
 }
 
 interface InputProps {
@@ -204,6 +209,8 @@ export const MultiSelectDropdown = ({
   placeholder,
   ariaInvalid,
   registrationProps,
+  DropdownComponent, // don't kid ourselves, be explicit that this must be DeviceSearchResults?
+  deviceOptions,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -272,11 +279,26 @@ export const MultiSelectDropdown = ({
     }
   };
 
+  const getFilteredDevices = (deviceIds: String[]): DeviceType[] => {
+    return (deviceOptions || []).filter((d) =>
+      deviceIds.includes(d.internalId)
+    );
+  };
+
   const containerClasses = classnames(
     "usa-combo-box usa-combo-box--pristine",
     className
   );
   const listID = `multi-select-${name}-list`;
+  const dropDownRef = useRef(null);
+  const hideOnOutsideClick = useCallback(() => {
+    // setShowSuggestion(false);
+    dispatch({
+      type: state.isOpen ? ActionTypes.CLOSE_LIST : ActionTypes.OPEN_LIST,
+    });
+  }, []);
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   return (
     <div
@@ -333,38 +355,53 @@ export const MultiSelectDropdown = ({
         role="listbox"
         hidden={!state.isOpen}
       >
-        {state.filteredOptions.map((option, index) => {
-          const focused = option === state.focusedOption;
-          const itemClasses = classnames("usa-combo-box__list-option", {
-            "usa-combo-box__list-option--focused": focused,
-          });
+        {DropdownComponent ? (
+          <DropdownComponent
+            devices={getFilteredDevices(
+              state.filteredOptions.map((o) => o.value)
+            )}
+            setSelectedDevice={selectOption}
+            shouldShowSuggestions={state.isOpen}
+            // loading={debounced !== queryString}
+            loading={false}
+            queryString={state.inputValue}
+            multiSelect={true}
+            dropDownRef={dropDownRef}
+          />
+        ) : (
+          state.filteredOptions.map((option, index) => {
+            const focused = option === state.focusedOption;
+            const itemClasses = classnames("usa-combo-box__list-option", {
+              "usa-combo-box__list-option--focused": focused,
+            });
 
-          return (
-            <li
-              ref={focused ? itemRef : null}
-              value={option.value}
-              key={option.value}
-              className={itemClasses}
-              tabIndex={focused ? 0 : -1}
-              role="option"
-              aria-selected={focused}
-              aria-setsize={64}
-              aria-posinset={index + 1}
-              id={listID + `--option-${index}`}
-              onKeyDown={handleListItemKeyDown(dispatch, state, selectOption)}
-              onBlur={handleListItemBlur}
-              data-testid={`multi-select-option-${option.value}`}
-              onMouseMove={(): void =>
-                dispatch({ type: ActionTypes.FOCUS_OPTION, option: option })
-              }
-              onClick={(): void => {
-                selectOption(option);
-              }}
-            >
-              {option.label}
-            </li>
-          );
-        })}
+            return (
+              <li
+                ref={focused ? itemRef : null}
+                value={option.value}
+                key={option.value}
+                className={itemClasses}
+                tabIndex={focused ? 0 : -1}
+                role="option"
+                aria-selected={focused}
+                aria-setsize={64}
+                aria-posinset={index + 1}
+                id={listID + `--option-${index}`}
+                onKeyDown={handleListItemKeyDown(dispatch, state, selectOption)}
+                onBlur={handleListItemBlur}
+                data-testid={`multi-select-option-${option.value}`}
+                onMouseMove={(): void =>
+                  dispatch({ type: ActionTypes.FOCUS_OPTION, option: option })
+                }
+                onClick={(): void => {
+                  selectOption(option);
+                }}
+              >
+                {option.label}
+              </li>
+            );
+          })
+        )}
         {state.filteredOptions.length === 0 ? (
           <li className="usa-combo-box__list-option--no-results">
             {noResults || "No results found"}

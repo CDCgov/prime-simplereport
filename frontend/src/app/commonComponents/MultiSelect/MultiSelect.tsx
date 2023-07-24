@@ -33,6 +33,8 @@ export type MultiSelectProps = {
   inputProps?: JSX.IntrinsicElements["input"];
   placeholder?: string;
   registrationProps?: RegistrationProps;
+  DropdownComponent?: (props: any) => JSX.Element;
+  deviceOptions?: DeviceType[];
 };
 
 type PillProps = {
@@ -74,6 +76,8 @@ export const MultiSelect = ({
   initialSelectedValues,
   placeholder,
   registrationProps,
+  DropdownComponent,
+  deviceOptions,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -98,10 +102,10 @@ export const MultiSelect = ({
     initialSelectedValues
   );
 
-  const onItemSelected = (option: MultiSelectDropdownOption) => {
+  const onItemSelected = (option: /* MultiSelectDropdownOption */ any) => {
     const newSelectedItems = selectedItems
-      ? [...selectedItems, option.value]
-      : [option.value];
+      ? [...selectedItems, option.value || option.internalId]
+      : [option.value || option.internalId];
     setSelectedItems(Array.from(new Set(newSelectedItems)));
     setAvailableOptions(
       availableOptions.filter((_option) => _option.value !== option.value)
@@ -169,7 +173,6 @@ export const MultiSelect = ({
           {getLabel(id)}
           {getErrorMessage(id)}
           {getHintText()}
-
           <MultiSelectDropdown
             id={id}
             name={name}
@@ -180,6 +183,8 @@ export const MultiSelect = ({
             placeholder={placeholder}
             ariaInvalid={validationStatus === "error"}
             registrationProps={registrationProps}
+            DropdownComponent={DropdownComponent}
+            deviceOptions={deviceOptions}
           />
           <fieldset
             className={`fieldset--unstyled pill-container${

@@ -13,6 +13,7 @@ interface SearchResultsProps {
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;
   queryString?: string;
+  multiSelect?: boolean;
 }
 
 const DeviceSearchResults = (props: SearchResultsProps) => {
@@ -23,6 +24,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
     loading,
     dropDownRef,
     queryString,
+    multiSelect,
   } = props;
 
   let resultsContent;
@@ -62,46 +64,51 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
           </tr>
         </thead>
         <tbody>
-          {devices.map((d, idx) => (
-            <tr key={d.internalId}>
-              <td id={`device-${idx}`}>{d.manufacturer}</td>
-              <td id={`model-name-${idx}`}>{d.model}</td>
-              <td id={`test-type-${idx}`}>
-                {d.supportedDiseaseTestPerformed
-                  ?.reduce(
-                    (
-                      diseaseNames: Array<String>,
-                      disease: SupportedDiseaseTestPerformed
-                    ) => {
-                      const diseaseName = disease.supportedDisease.name;
+          {devices.map((d, idx) => {
+            console.log(JSON.stringify(d, null, 4));
 
-                      if (!diseaseNames.includes(diseaseName)) {
-                        diseaseNames.push(diseaseName);
-                      }
+            return (
+              <tr key={d.internalId}>
+                <td id={`device-${idx}`}>{d.manufacturer}</td>
+                <td id={`model-name-${idx}`}>{d.model}</td>
+                <td id={`test-type-${idx}`}>
+                  {d.supportedDiseaseTestPerformed
+                    ?.reduce(
+                      (
+                        diseaseNames: Array<String>,
+                        disease: SupportedDiseaseTestPerformed
+                      ) => {
+                        const diseaseName = disease.supportedDisease.name;
 
-                      return diseaseNames;
-                    },
-                    []
-                  )
-                  .join(", ")}
-              </td>
-              <td id={`view-${idx}`}>
-                {
-                  <Button
-                    label={"Select"}
-                    ariaLabel={`Select ${d.manufacturer} ${d.model}`}
-                    onClick={() => {
-                      setSelectedDevice(d);
-                    }}
-                  />
-                }
-              </td>
-            </tr>
-          ))}
+                        if (!diseaseNames.includes(diseaseName)) {
+                          diseaseNames.push(diseaseName);
+                        }
+
+                        return diseaseNames;
+                      },
+                      []
+                    )
+                    .join(", ")}
+                </td>
+                <td id={`view-${idx}`}>
+                  {
+                    <Button
+                      label={multiSelect ? "Add" : "Select"}
+                      ariaLabel={`Select ${d.manufacturer} ${d.model}`}
+                      onClick={() => {
+                        setSelectedDevice(d);
+                      }}
+                    />
+                  }
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     );
   }
+
   const results = (
     <div
       className="card-container shadow-3 results-dropdown"
@@ -118,6 +125,8 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
       </div>
     </div>
   );
+
   return <>{shouldShowSuggestions && results}</>;
 };
+
 export default DeviceSearchResults;

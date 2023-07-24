@@ -2,11 +2,16 @@ import React from "react";
 
 import { FacilityErrors } from "../facilitySchema";
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
+import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
+import "./ManageDevices.scss";
 
 interface Props {
-  deviceTypes: FacilityFormDeviceType[];
-  selectedDevices: FacilityFormDeviceType[];
-  updateSelectedDevices: (deviceTypes: FacilityFormDeviceType[]) => void;
+  deviceTypes: DeviceType[];
+  selectedDevices: DeviceType[];
+  updateSelectedDevices: (deviceTypes: DeviceType[]) => void;
+  // deviceTypes: FacilityFormDeviceType[];
+  // selectedDevices: FacilityFormDeviceType[];
+  // updateSelectedDevices: (deviceTypes: FacilityFormDeviceType[]) => void;
   errors: FacilityErrors;
   clearError: (field: keyof FacilityErrors) => void;
   newOrg?: boolean;
@@ -42,12 +47,13 @@ const ManageDevices: React.FC<Props> = ({
     updateSelectedDevices(getDeviceTypesFromIds(newDeviceIds));
   };
 
+  console.log(JSON.stringify(selectedDevices, null, 4));
   const getInitialValues = selectedDevices.length
     ? selectedDevices.map((device) => device.internalId) || []
     : undefined;
 
   return (
-    <div className="prime-container card-container">
+    <div className="prime-container card-container device-settings">
       <div className="usa-card__header">
         <h2 className="font-heading-lg">Manage devices</h2>
       </div>
@@ -63,6 +69,7 @@ const ManageDevices: React.FC<Props> = ({
           label="Device types"
           name="deviceTypes"
           onChange={(newDeviceIds) => {
+            console.log("newDeviceIds", newDeviceIds);
             updateDevices(newDeviceIds);
           }}
           options={getDeviceTypeOptions}
@@ -71,6 +78,9 @@ const ManageDevices: React.FC<Props> = ({
           validationStatus={errors.deviceTypes ? "error" : "success"}
           required
           placeholder="Add device"
+          /* TODO: wish I didn't have to do this */
+          DropdownComponent={DeviceSearchResults}
+          deviceOptions={deviceTypes}
         />
         {!selectedDevices.length && <p> There are currently no devices </p>}
         <p className="usa-hint padding-top-1">
