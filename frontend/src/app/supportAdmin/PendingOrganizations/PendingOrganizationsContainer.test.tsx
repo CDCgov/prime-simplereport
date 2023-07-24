@@ -1,5 +1,6 @@
 import {
   act,
+  fireEvent,
   render,
   screen,
   waitFor,
@@ -173,7 +174,7 @@ describe("PendingOrganizationsContainer", () => {
   describe("loading organizations", () => {
     beforeEach(() => {
       render(
-        <MockedProvider mocks={[]}>
+        <MockedProvider mocks={[EmptyOrganizationsQuery]}>
           <PendingOrganizationsContainer />
         </MockedProvider>
       );
@@ -357,8 +358,10 @@ describe("PendingOrganizationsContainer", () => {
           await act(
             async () => await userEvent.click(screen.getByText(/Edit only/i))
           );
-          expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
-            "DC Space Camp"
+          await waitFor(() =>
+            expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
+              "DC Space Camp"
+            )
           );
           await waitForElementToBeRemoved(
             screen.queryByText(/Organization details/i)
@@ -398,18 +401,25 @@ describe("PendingOrganizationsContainer", () => {
               Array.from(await screen.findAllByText("Edit/Verify"))[1]
             )
         );
+
         await act(
           async () => await userEvent.click(screen.getByText("Verify"))
         );
+
+        expect(
+          await screen.findByLabelText(/verify organization/i)
+        ).toBeInTheDocument();
+
         await act(
           async () => await userEvent.click(screen.getByText("Yes, I'm sure"))
         );
 
-        await waitForElementToBeRemoved(
-          screen.queryByLabelText("Verify organization", {
-            exact: false,
-          })
+        await waitFor(() =>
+          expect(
+            screen.queryByLabelText(/verify organization/i)
+          ).not.toBeInTheDocument()
         );
+
         expect(await screen.findByText("A Real Hospital")).toBeInTheDocument();
         await waitFor(() =>
           expect(
@@ -537,18 +547,19 @@ describe("PendingOrganizationsContainer", () => {
         })
       ).toBeInTheDocument();
       expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
-      await act(
-        async () =>
-          await userEvent.click(
-            await screen.findByText("Delete", { exact: true })
-          )
-      );
+      fireEvent.click(await screen.findByText("Delete", { exact: true }));
+
       await waitForElementToBeRemoved(() =>
         screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
       );
-      expect(
-        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
-      ).not.toBeInTheDocument();
+
+      await waitFor(() =>
+        expect(
+          screen.queryByText(
+            "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+          )
+        ).not.toBeInTheDocument()
+      );
     });
   });
 });

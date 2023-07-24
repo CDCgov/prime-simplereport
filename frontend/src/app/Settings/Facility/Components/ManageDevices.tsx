@@ -1,29 +1,27 @@
 import React from "react";
 
-import { FacilityErrors } from "../facilitySchema";
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
 import "./ManageDevices.scss";
+import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
+import { FacilityFormData } from "../FacilityForm";
 
 interface Props {
   deviceTypes: DeviceType[];
-  selectedDevices: DeviceType[];
-  updateSelectedDevices: (deviceTypes: DeviceType[]) => void;
-  // deviceTypes: FacilityFormDeviceType[];
-  // selectedDevices: FacilityFormDeviceType[];
-  // updateSelectedDevices: (deviceTypes: FacilityFormDeviceType[]) => void;
-  errors: FacilityErrors;
-  clearError: (field: keyof FacilityErrors) => void;
+  errors: any;
   newOrg?: boolean;
+  formCurrentValues: FacilityFormData;
+  registrationProps: RegistrationProps;
+  onChange: (selectedItems: string[]) => void;
 }
 
 const ManageDevices: React.FC<Props> = ({
   deviceTypes,
-  selectedDevices,
-  updateSelectedDevices,
   errors,
-  clearError,
   newOrg = false,
+  formCurrentValues,
+  onChange,
+  registrationProps,
 }) => {
   const getDeviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
@@ -31,26 +29,6 @@ const ManageDevices: React.FC<Props> = ({
       value: device.internalId,
     }))
   );
-
-  const getDeviceTypesFromIds = (newDeviceIds: String[]) => {
-    return newDeviceIds.length
-      ? newDeviceIds.map((deviceId) => {
-          return deviceTypes.find(
-            (deviceType) => deviceType.internalId === deviceId
-          ) as DeviceType;
-        })
-      : [];
-  };
-
-  const updateDevices = (newDeviceIds: String[]) => {
-    clearError("deviceTypes");
-    updateSelectedDevices(getDeviceTypesFromIds(newDeviceIds));
-  };
-
-  console.log(JSON.stringify(selectedDevices, null, 4));
-  const getInitialValues = selectedDevices.length
-    ? selectedDevices.map((device) => device.internalId) || []
-    : undefined;
 
   return (
     <div className="prime-container card-container device-settings">
@@ -68,21 +46,20 @@ const ManageDevices: React.FC<Props> = ({
         <MultiSelect
           label="Device types"
           name="deviceTypes"
-          onChange={(newDeviceIds) => {
-            console.log("newDeviceIds", newDeviceIds);
-            updateDevices(newDeviceIds);
-          }}
+          onChange={onChange}
           options={getDeviceTypeOptions}
-          initialSelectedValues={getInitialValues}
-          errorMessage={errors.deviceTypes}
-          validationStatus={errors.deviceTypes ? "error" : "success"}
+          initialSelectedValues={formCurrentValues.devices}
+          validationStatus={errors?.devices?.type ? "error" : "success"}
           required
           placeholder="Add device"
-          /* TODO: wish I didn't have to do this */
           DropdownComponent={DeviceSearchResults}
           deviceOptions={deviceTypes}
+          errorMessage={errors?.devices?.message}
+          registrationProps={registrationProps}
         />
-        {!selectedDevices.length && <p> There are currently no devices </p>}
+        {formCurrentValues.devices.length === 0 && (
+          <p> There are currently no devices </p>
+        )}
         <p className="usa-hint padding-top-1">
           If you don&rsquo;t see a device you&rsquo;re using, please contact{" "}
           <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>{" "}

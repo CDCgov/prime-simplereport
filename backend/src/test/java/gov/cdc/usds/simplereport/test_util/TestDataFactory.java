@@ -150,7 +150,8 @@ public class TestDataFactory {
 
   public UserInfo createValidApiUser(String username, Organization org) {
     PersonName name = new PersonName("John", null, "June", null);
-    return apiUserService.createUser(username, name, org.getExternalId(), Role.USER);
+    return apiUserService.createUser(
+        username, name, org.getExternalId(), Role.USER, false, Collections.emptySet());
   }
 
   public OrganizationQueueItem saveOrganizationQueueItem(
@@ -374,7 +375,9 @@ public class TestDataFactory {
       UUID reportId, UploadStatus status, Organization organization) {
     var warnings = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
     var errors = (FeedbackMessage[]) Array.newInstance(FeedbackMessage.class, 0);
-    var upload = new TestResultUpload(reportId, status, 0, organization, warnings, errors);
+    var upload =
+        new TestResultUpload(
+            reportId, UUID.randomUUID(), status, 0, organization, warnings, errors);
     var saved = testResultUploadRepository.save(upload);
     return saved;
   }

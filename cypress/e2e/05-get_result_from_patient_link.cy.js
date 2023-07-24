@@ -19,7 +19,7 @@ describe("Getting a test result from a patient link", () => {
   });
   it("contains no accessibility issues", () => {
     cy.injectSRAxe();
-    cy.checkA11y(); // PXP page
+    cy.checkAccessibility(); // PXP page
   });
   it("accepts the terms of service", () => {
     cy.contains("Terms of service");
@@ -39,11 +39,11 @@ describe("Getting a test result from a patient link", () => {
     const birthDay = dob.date();
     const birthYear = dob.year();
 
-    cy.checkA11y(); // DoB entry page
+    cy.checkAccessibility(); // DoB entry page
 
-    cy.get('input[name="birthMonth"]').type(birthMonth);
-    cy.get('input[name="birthDay"]').type(birthDay);
-    cy.get('input[name="birthYear"]').type(birthYear);
+    cy.get('input[name="month"]').type(birthMonth);
+    cy.get('input[name="day"]').type(birthDay);
+    cy.get('input[name="year"]').type(birthYear);
     cy.get("#dob-submit-button").click();
   });
   it("shows the test result", () => {
@@ -52,6 +52,6 @@ describe("Getting a test result from a patient link", () => {
     cy.contains("Test date");
     cy.contains("Test device");
 
-    cy.checkA11y(); // Result page
+    cy.checkAccessibility(); // Result page
   });
 });

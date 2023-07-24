@@ -386,7 +386,7 @@ class PatientManagementTest extends BaseGraphqlTest {
         "deleted-person-query",
         "getDeletedPatients",
         null,
-        "Current user does not have permission to supply a non-default value for [includeArchived]");
+        "Current user does not have permission to supply a non-default value for [archivedStatus]");
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
         "getDeletedPatients",

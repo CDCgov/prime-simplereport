@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ArchivedStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
@@ -135,7 +136,7 @@ public class PersonService {
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId,
-      boolean includeArchived,
+      ArchivedStatus archivedStatus,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
 
@@ -146,9 +147,12 @@ public class PersonService {
 
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter();
-    if (!includeArchived) {
+    if (archivedStatus == ArchivedStatus.UNARCHIVED) {
       filter = filter.and(isDeletedFilter(false));
+    } else if (archivedStatus == ArchivedStatus.ARCHIVED) {
+      filter = filter.and(isDeletedFilter(true));
     }
+
     if (facilityId == null) {
       filter = filter.and(inAccessibleFacilitiesFilter(includeArchivedFacilities));
     } else {
@@ -179,7 +183,8 @@ public class PersonService {
    * @param facilityId If null, then it means across accessible facilities in the whole organization
    * @param pageOffset Pagination offset is zero based
    * @param pageSize How many results to return, zero will result in the default page size (large)
-   * @param includeArchived Default is false. true will return both archived _and_ active users
+   * @param archivedStatus Default is UNARCHIVED. ARCHIVED will return only archived users. ALL will
+   *     return both archived _and_ active users.
    * @param namePrefixMatch Null returns all users, any string will filter by first,middle,last
    *     names that start with these characters. Case-insensitive. If fewer than
    * @param includeArchivedFacilities setting to true will include patients in archived facilities,
@@ -191,7 +196,7 @@ public class PersonService {
       UUID facilityId,
       int pageOffset,
       int pageSize,
-      boolean includeArchived,
+      ArchivedStatus archivedStatus,
       String namePrefixMatch,
       Boolean includeArchivedFacilities) {
     if (pageOffset < 0) {
@@ -207,7 +212,7 @@ public class PersonService {
 
     return _repo.findAll(
         buildPersonSearchFilter(
-            facilityId, includeArchived, namePrefixMatch, includeArchivedFacilities),
+            facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
@@ -228,7 +233,7 @@ public class PersonService {
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public long getPatientsCount(
       UUID facilityId,
-      boolean includeArchived,
+      ArchivedStatus archivedStatus,
       String namePrefixMatch,
       boolean includeArchivedFacilities) {
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
@@ -236,8 +241,9 @@ public class PersonService {
     }
     return _repo.count(
         buildPersonSearchFilter(
-            facilityId, includeArchived, namePrefixMatch, includeArchivedFacilities));
+            facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities));
   }
+
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(UUID id) {
     return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization(), false);

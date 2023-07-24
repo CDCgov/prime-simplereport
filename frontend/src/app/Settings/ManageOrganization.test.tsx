@@ -12,12 +12,13 @@ import configureStore from "redux-mock-store";
 
 import { RootState } from "../store";
 import * as SRToast from "../utils/srToast";
+import {
+  AdminSetOrganizationDocument,
+  GetCurrentOrganizationDocument,
+  SetOrganizationDocument,
+} from "../../generated/graphql";
 
-import ManageOrganizationContainer, {
-  GET_ORGANIZATION,
-  SET_ORGANIZATION,
-  ADMIN_SET_ORGANIZATION,
-} from "./ManageOrganizationContainer";
+import ManageOrganizationContainer from "./ManageOrganizationContainer";
 
 const mockStore = configureStore<DeepPartial<RootState>>([]);
 
@@ -128,9 +129,14 @@ describe("ManageOrganization", () => {
       fireEvent.click(saveButton);
 
       await waitFor(() =>
-        expect(screen.queryByText(/The organization's name cannot be blank/i))
+        expect(screen.getByLabelText("Organization name *")).toHaveFocus()
       );
-      expect(screen.queryByText(/An organization type must be selected/i));
+      expect(
+        screen.getByText("The organization's name cannot be blank")
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("An organization type must be selected")
+      ).toBeInTheDocument();
     });
 
     it("detects dirty state after first org data update", async () => {
@@ -141,7 +147,7 @@ describe("ManageOrganization", () => {
               mocks[0],
               {
                 request: {
-                  query: ADMIN_SET_ORGANIZATION,
+                  query: AdminSetOrganizationDocument,
                   variables: {
                     name: "Strawberry Fields 2",
                     type: "camp",
@@ -195,19 +201,21 @@ describe("ManageOrganization", () => {
 const mocks = [
   {
     request: {
-      query: GET_ORGANIZATION,
+      query: GetCurrentOrganizationDocument,
     },
     result: {
       data: {
-        organization: {
-          name: "Strawberry Fields",
+        whoami: {
+          organization: {
+            name: "Strawberry Fields",
+          },
         },
       },
     },
   },
   {
     request: {
-      query: ADMIN_SET_ORGANIZATION,
+      query: AdminSetOrganizationDocument,
       variables: {
         name: "Penny Lane",
         type: "other",
@@ -221,7 +229,7 @@ const mocks = [
   },
   {
     request: {
-      query: SET_ORGANIZATION,
+      query: SetOrganizationDocument,
       variables: {
         type: "hospice",
       },

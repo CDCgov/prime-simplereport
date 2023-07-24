@@ -5,6 +5,7 @@ services:
       dockerfile: cypress/Dockerfile
     image: ghcr.io/cdcgov/prime-simplereport/cypress:${DOCKER_CYPRESS_IMAGE_VERSION:-latest}
     container_name: cypress
+    shm_size: "512M"
     restart: "no"
     environment:
       CYPRESS_OKTA_USERNAME: $CYPRESS_OKTA_USERNAME
@@ -16,22 +17,15 @@ services:
       CYPRESS_BACKEND_URL: $CYPRESS_BACKEND_URL
       SPEC_PATH: $SPEC_PATH
       TEST_ENV: $TEST_ENV
+    depends_on:
+      - backend
+      - frontend
+      - wiremock
+      - nginx
     volumes:
-      - ./cypress/fixtures/:/app/cypress/fixtures/
-      - ./cypress/e2e/:/app/cypress/e2e/
-      - ./cypress/node_modules/:/app/cypress/node_modules/
-      - ./cypress/plugins/:/app/cypress/plugins/
       - ./cypress/screenshots/:/app/cypress/screenshots/
-      - ./cypress/stubs/:/app/cypress/stubs/
-      - ./cypress/support/:/app/cypress/support/
       - ./cypress/videos/:/app/cypress/videos/
-      - ./cypress/cypress.config.js:/app/cypress/cypress.config.js
-      - ./cypress/package.json:/app/package.json
-      - ./cypress/yarn.lock:/app/yarn.lock
-      - ./cypress/e2e.sh:/app/e2e.sh
       - ./.git/:/app/.git/
-    expose:
-      - "8088"
     command:
       ["-s", "$SPEC_PATH", "-r", "$TEST_ENV"]
   backend:
@@ -45,22 +39,20 @@ services:
       WIREMOCK_URL: $WIREMOCK_URL
       SPRING_LIQUIBASE_ENABLED: "true"
       GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
-  frontend:
-    environment:
-      REACT_APP_OKTA_URL: $WIREMOCK_URL
-      REACT_APP_BASE_URL: https://localhost.simplereport.gov
-      REACT_APP_BACKEND_URL: https://localhost.simplereport.gov/api
-      PUBLIC_URL: /app/
-      REACT_APP_OKTA_ENABLED: "true"
-      REACT_APP_DISABLE_MAINTENANCE_BANNER: "true"
-      GIT_DISCOVERY_ACROSS_FILESYSTEM: 1
-    command: ["./ci-git-fix.sh"]
-  nginx:
-    hostname: localhost.simplereport.gov
-    environment:
-      NGINX_ENTRYPOINT_QUIET_LOGS: 1
+    depends_on:
+      - db
+      - wiremock
   mailhog:
     profiles:
       - donotstart
   db:
     command: -p ${SR_DB_PORT:-5432} -c shared_buffers=512MB -c max_connections=500
+  wiremock:
+    image: wiremock/wiremock:2.32.0-alpine
+    volumes:
+      - ./wiremock/stubs/:/home/wiremock
+    container_name: wiremock
+    restart: "unless-stopped"
+    command: --local-response-templating --port=8088
+    expose:
+      - "8088"

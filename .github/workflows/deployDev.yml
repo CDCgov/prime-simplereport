@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3.6.0
+      - uses: actions/setup-node@v3.7.0
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Use cache for node_modules
@@ -122,4 +122,11 @@ jobs:
         uses: ./.github/actions/deploy-application
         with:
           client-tarball: client.tgz
-          deploy-env: ${{env.DEPLOY_ENV}}
+          deploy-env: ${{ env.DEPLOY_ENV }}
+      - name: Sendgrid maintenance banner deploy
+        uses: ./.github/actions/maintenance-banner-deploy
+        with:
+          active: "true"
+          header: "Dev Notice:"
+          message: "This environment has email delivery enabled. Do not use real email addresses."
+          env: ${{ env.DEPLOY_ENV }}

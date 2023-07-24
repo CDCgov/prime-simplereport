@@ -11,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
+import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.util.List;
@@ -26,13 +27,14 @@ import reactor.core.publisher.MonoSink;
 @SpringBootTest
 class AzureStorageQueueFhirReportingServiceTest {
   @Autowired GitProperties gitProperties;
+  @Autowired FhirConverter fhirConverter;
 
   @Test
   void reportAsync_NonCovidOnly() {
     var context = spy(FhirContext.class);
     var client = mock(QueueAsyncClient.class);
     AzureStorageQueueFhirReportingService service =
-        new AzureStorageQueueFhirReportingService(context, client, gitProperties);
+        new AzureStorageQueueFhirReportingService(context, client, gitProperties, fhirConverter);
 
     var multiplexTestEvent = createMultiplexTestEvent();
     ReflectionTestUtils.setField(multiplexTestEvent, "internalId", UUID.randomUUID());
@@ -65,7 +67,7 @@ class AzureStorageQueueFhirReportingServiceTest {
     var context = spy(FhirContext.class);
     var client = mock(QueueAsyncClient.class);
     AzureStorageQueueFhirReportingService service =
-        new AzureStorageQueueFhirReportingService(context, client, null);
+        new AzureStorageQueueFhirReportingService(context, client, null, fhirConverter);
 
     var multiplexTestEvent = createCovidTestEvent();
     ReflectionTestUtils.setField(multiplexTestEvent.getPatient(), "internalId", UUID.randomUUID());

@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.config;
 
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.createFhirBundle;
 import static gov.cdc.usds.simplereport.config.BeanProfiles.PROD;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -8,6 +7,7 @@ import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -15,7 +15,6 @@ import gov.cdc.usds.simplereport.properties.AzureStorageQueueReportingProperties
 import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueTestEventReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
-import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +47,11 @@ class AzureTestEventReportingQueueConfiguration {
   TestEventReportingService fhirQueueReportingService(
       FhirContext context,
       @Qualifier("fhirQueueClient") QueueAsyncClient queueClient,
-      GitProperties gitProperties) {
+      GitProperties gitProperties,
+      FhirConverter fhirConverter) {
     log.info("Configured for queue={}", queueClient.getQueueName());
-    return new AzureStorageQueueFhirReportingService(context, queueClient, gitProperties);
+    return new AzureStorageQueueFhirReportingService(
+        context, queueClient, gitProperties, fhirConverter);
   }
 
   @Bean
@@ -70,10 +71,11 @@ class AzureTestEventReportingQueueConfiguration {
   @Bean(name = "fhirQueueReportingService")
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
   TestEventReportingService noOpFhirReportingService(
-      FhirContext context, GitProperties gitProperties) {
+      FhirContext context, GitProperties gitProperties, FhirConverter fhirConverter) {
     return NoOpFHIRReportingService.builder()
         .fhirContext(context)
         .gitProperties(gitProperties)
+        .fhirConverter(fhirConverter)
         .build();
   }
 
@@ -89,10 +91,11 @@ class AzureTestEventReportingQueueConfiguration {
   @Bean(name = "fhirQueueReportingService")
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
   TestEventReportingService noOpDebugFhirReportingService(
-      FhirContext context, GitProperties gitProperties) {
+      FhirContext context, GitProperties gitProperties, FhirConverter fhirConverter) {
     return NoOpFHIRReportingService.builder()
         .fhirContext(context)
         .gitProperties(gitProperties)
+        .fhirConverter(fhirConverter)
         .printSerializedTestEvent(true)
         .build();
   }
@@ -153,6 +156,7 @@ class AzureTestEventReportingQueueConfiguration {
 
     private FhirContext fhirContext;
     private GitProperties gitProperties;
+    private FhirConverter fhirConverter;
 
     @Override
     public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
@@ -169,7 +173,7 @@ class AzureTestEventReportingQueueConfiguration {
     private String toBuffer(TestEvent testEvent) {
       return fhirContext
           .newJsonParser()
-          .encodeResourceToString(createFhirBundle(testEvent, gitProperties, new Date(), "P"));
+          .encodeResourceToString(fhirConverter.createFhirBundle(testEvent, gitProperties, "P"));
     }
   }
 }

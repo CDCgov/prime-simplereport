@@ -1,21 +1,12 @@
-const {execSync, spawn} = require("child_process");
-const path = require("path");
-
-const isLocalRun = process.env["CYPRESS_IS_LOCAL_RUN"] || false;
-
-function getWiremockPath(filename) {
-  let wiremockPath = isLocalRun ?
-    "support/wiremock" : "cypress/support/wiremock";
-  return `${wiremockPath}/${filename}`;
-}
 module.exports = {
   viewportWidth: 1200,
   viewportHeight: 800,
   defaultCommandTimeout: 10000,
   video: true,
   videoUploadOnPasses: false,
+  videoCompression: false,
   retries: {
-    runMode: 2,
+    runMode: 1,
     openMode: 1,
   },
   e2e: {
@@ -29,6 +20,14 @@ module.exports = {
         },
         getAuth() {
           return global.auth || {};
+        },
+        table(message) {
+          console.table(message);
+          return null;
+        },
+        print(message) {
+          console.log(message);
+          return null;
         },
         setPatientName: (name) => {
           global.patientName = name;
@@ -71,43 +70,6 @@ module.exports = {
         },
         getMultiplexDeviceName() {
           return global.multiplexDeviceName;
-        },
-        // These tasks are used to set up and run Wiremock
-        downloadWiremock() {
-          execSync(
-            path.resolve(__dirname, getWiremockPath('download-wiremock.sh'))
-          )
-          return null;
-        },
-        startWiremock({ stubDir }) {
-          const wm = spawn(
-            path.resolve(__dirname, getWiremockPath('start-wiremock.sh')),
-            [stubDir]
-          );
-          execSync(
-            path.resolve(__dirname, getWiremockPath('ping-wiremock.sh')),
-          );
-          global.wm = wm;
-          return null;
-        },
-        startOktaProxy() {
-          const wm = spawn(
-            path.resolve(__dirname, getWiremockPath('start-wiremock.sh')),
-          );
-          execSync(
-            path.resolve(__dirname, getWiremockPath('ping-wiremock.sh')),
-          );
-          global.wm = wm;
-          return null;
-        },
-        stopWiremock() {
-          execSync(
-            path.resolve(__dirname, getWiremockPath('stop-wiremock.sh')),
-          );
-          if (global.wm) {
-            global.wm.kill();
-          }
-          return null;
         }
       })
       on("before:browser:launch", (browser = {}, launchOptions = {}) => {

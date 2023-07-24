@@ -2,41 +2,40 @@ import React from "react";
 
 import { stateCodes } from "../../../../config/constants";
 import { requiresOrderProvider } from "../../../utils/state";
-import { ValidateField } from "../FacilityForm";
-import { FacilityErrors } from "../facilitySchema";
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
-import { getSubStrAfterChar } from "../../../utils/text";
+import { phoneNumberIsValid } from "../../../patients/personSchema";
+import { FacilityFormData } from "../FacilityForm";
+import { zipCodeRegex } from "../../../utils/address";
+import { orderingProviderErrMsgs } from "../constants";
 
 interface Props {
-  facility: Facility;
-  updateProvider: (provider: Provider) => void;
-  errors: FacilityErrors;
-  validateField: ValidateField;
   newOrg?: boolean;
+  errors: any;
+  register: any;
+  formCurrentValues: FacilityFormData;
 }
 
 const OrderingProvider: React.FC<Props> = ({
-  facility,
-  updateProvider,
-  errors,
-  validateField,
   newOrg = false,
+  errors,
+  register,
+  formCurrentValues,
 }) => {
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    let fieldName = getSubStrAfterChar(e.target.name, "-");
-    updateProvider({ ...provider, [fieldName]: e.target.value });
+  const isRequired = requiresOrderProvider(
+    formCurrentValues.facility.state || ""
+  );
+
+  const isValidNPI = (npi: string) => {
+    return /^\d{10}$/.test(npi);
   };
 
-  const { orderingProvider: provider } = facility;
-  const isRequired = requiresOrderProvider(facility.state || "");
-
   return (
-    <div className="prime-container card-container">
+    <fieldset className="prime-container card-container usa-fieldset">
       <div className="usa-card__header">
-        <h2 className="font-heading-lg">Ordering provider</h2>
+        <legend>
+          <h2 className="font-heading-lg">Ordering provider</h2>
+        </legend>
       </div>
       <div className="usa-form usa-form--large usa-card__body">
         {newOrg && (
@@ -56,41 +55,39 @@ const OrderingProvider: React.FC<Props> = ({
           label="First name"
           name="firstName"
           required={isRequired}
-          value={provider.firstName || ""}
-          onChange={onChange}
-          onBlur={() => {
-            validateField("orderingProvider.firstName");
-          }}
+          value={formCurrentValues.orderingProvider.firstName ?? undefined}
           validationStatus={
-            errors["orderingProvider.firstName"] ? "error" : undefined
+            errors?.orderingProvider?.firstName?.type ? "error" : undefined
           }
-          errorMessage={errors["orderingProvider.firstName"]}
+          errorMessage={errors?.orderingProvider?.firstName?.message}
+          registrationProps={register("orderingProvider.firstName", {
+            required: isRequired ? orderingProviderErrMsgs.first.required : "",
+          })}
         />
         <TextInput
           label="Middle name"
           name="middleName"
-          value={provider.middleName || ""}
-          onChange={onChange}
+          value={formCurrentValues.orderingProvider.middleName ?? undefined}
+          registrationProps={register("orderingProvider.middleName")}
         />
         <TextInput
           label="Last name"
           name="lastName"
           required={isRequired}
-          value={provider.lastName || ""}
-          onChange={onChange}
-          onBlur={() => {
-            validateField("orderingProvider.lastName");
-          }}
+          value={formCurrentValues.orderingProvider.lastName ?? undefined}
           validationStatus={
-            errors["orderingProvider.lastName"] ? "error" : undefined
+            errors?.orderingProvider?.lastName?.type ? "error" : undefined
           }
-          errorMessage={errors["orderingProvider.lastName"]}
+          errorMessage={errors?.orderingProvider?.lastName?.message}
+          registrationProps={register("orderingProvider.lastName", {
+            required: isRequired ? orderingProviderErrMsgs.last.required : "",
+          })}
         />
         <TextInput
           label="Suffix"
           name="suffix"
-          value={provider.suffix || ""}
-          onChange={onChange}
+          value={formCurrentValues.orderingProvider.suffix ?? undefined}
+          registrationProps={register("orderingProvider.suffix")}
         />
         <TextInput
           label="National Provider Identifier (NPI)"
@@ -105,66 +102,92 @@ const OrderingProvider: React.FC<Props> = ({
           }
           name="NPI"
           required={isRequired}
-          value={provider.NPI || ""}
-          onChange={onChange}
-          onBlur={() => {
-            validateField("orderingProvider.NPI");
-          }}
+          value={formCurrentValues.orderingProvider.NPI ?? undefined}
+          registrationProps={register("orderingProvider.NPI", {
+            required: isRequired ? orderingProviderErrMsgs.npi.required : "",
+            validate: {
+              validNPI: (npi: string) =>
+                npi?.length
+                  ? isValidNPI(npi) || orderingProviderErrMsgs.npi.required
+                  : true,
+            },
+          })}
           validationStatus={
-            errors["orderingProvider.NPI"] ? "error" : undefined
+            errors?.orderingProvider?.NPI?.type ? "error" : undefined
           }
-          errorMessage={errors["orderingProvider.NPI"]}
+          errorMessage={errors?.orderingProvider?.NPI?.message}
         />
         <TextInput
           label="Phone number"
           name="op-phone"
           required={isRequired}
-          value={provider.phone || ""}
-          onChange={onChange}
-          onBlur={() => {
-            validateField("orderingProvider.phone");
-          }}
+          value={formCurrentValues.orderingProvider.phone ?? undefined}
           validationStatus={
-            errors["orderingProvider.phone"] ? "error" : undefined
+            errors?.orderingProvider?.phone?.type ? "error" : undefined
           }
-          errorMessage={errors["orderingProvider.phone"]}
+          errorMessage={errors?.orderingProvider?.phone?.message}
+          registrationProps={register("orderingProvider.phone", {
+            required: isRequired ? orderingProviderErrMsgs.phone.required : "",
+            validate: {
+              validPhone: (opPhone: string) =>
+                opPhone?.length
+                  ? phoneNumberIsValid(opPhone) ||
+                    orderingProviderErrMsgs.phone.invalid
+                  : true,
+            },
+          })}
         />
         <TextInput
           label="Street address 1"
           name="op-street"
-          value={provider.street || ""}
-          onChange={onChange}
+          value={formCurrentValues.orderingProvider.street ?? undefined}
+          registrationProps={register("orderingProvider.street")}
         />
         <TextInput
           label="Street address 2"
           name="op-streetTwo"
-          value={provider.streetTwo || ""}
-          onChange={onChange}
+          value={formCurrentValues.orderingProvider.streetTwo ?? undefined}
+          registrationProps={register("orderingProvider.streetTwo")}
         />
         <TextInput
           label="City"
           name="op-city"
-          value={provider.city || ""}
-          onChange={onChange}
+          value={formCurrentValues.orderingProvider.city ?? undefined}
+          registrationProps={register("orderingProvider.city")}
         />
         <TextInput
           label="ZIP code"
           name="op-zipCode"
-          value={provider.zipCode || ""}
-          onChange={onChange}
+          value={formCurrentValues.orderingProvider.zipCode ?? undefined}
+          validationStatus={
+            errors?.orderingProvider?.zipCode?.type ? "error" : undefined
+          }
+          errorMessage={errors?.orderingProvider?.zipCode?.message}
+          registrationProps={register("orderingProvider.zipCode", {
+            validate: {
+              validZip: (zipCode: string) =>
+                zipCode?.length
+                  ? zipCodeRegex.test(zipCode) ||
+                    orderingProviderErrMsgs.zip.invalid
+                  : true,
+            },
+          })}
           className="usa-input--medium"
         />
         <Dropdown
           label="State"
           name="op-state"
-          selectedValue={provider.state || ""}
+          selectedValue={formCurrentValues.orderingProvider.state}
+          value={formCurrentValues.orderingProvider.state}
+          registrationProps={register("orderingProvider.state")}
+          onChange={() => {}}
           options={stateCodes.map((c) => ({ label: c, value: c }))}
           defaultSelect
           className="usa-input--medium"
-          onChange={onChange}
+          data-testid="op-state-dropdown"
         />
       </div>
-    </div>
+    </fieldset>
   );
 };
 

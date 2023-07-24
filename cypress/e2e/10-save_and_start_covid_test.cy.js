@@ -1,6 +1,6 @@
 import {generatePatient, loginHooks, testNumber} from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
-import {aliasQuery} from "../utils/graphql-test-utils";
+import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
 
 loginHooks();
 
@@ -21,7 +21,7 @@ describe('Save and start covid test',()=>{
 
   beforeEach(()=>{
     cy.intercept("POST", graphqlURL, (req) => {
-      aliasQuery(req, "GetFacilityQueue");
+      aliasGraphqlOperations(req);
     });
   });
 
@@ -33,6 +33,7 @@ describe('Save and start covid test',()=>{
       cy.get(".sr-patient-list").should('exist');
       cy.get(".sr-patient-list").contains('Loading...').should('not.exist');
       cy.get("#search-field-small").type(lastName);
+      cy.wait("@GetPatientsByFacility")
       cy.get(".sr-patient-list").contains(patientName).should('exist');
     });
 
@@ -41,7 +42,7 @@ describe('Save and start covid test',()=>{
       cy.contains("General information").should('exist');
       // a11y scan of edit patient page
       cy.injectSRAxe();
-      cy.checkA11y();
+      cy.checkAccessibility();
       cy.get('input[name="middleName"]').clear().type(testNumber().toString(10));
       cy.get(".prime-save-patient-changes-start-test").click();
     });
@@ -66,13 +67,16 @@ describe('Save and start covid test',()=>{
       cy.contains("New loss of taste").should('exist').click();
 
       // Test a11y on the AoE form
-      cy.checkA11y();
+      cy.checkAccessibility();
 
       cy.contains("button", "Continue").click();
       cy.get(".prime-home").contains(patientName);
       cy.url().should("include", "queue");
+
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
+
       // Test a11y on the Test Queue page
-      cy.checkA11y();
+      cy.checkAccessibility();
     });
   });
 
@@ -89,7 +93,7 @@ describe('Save and start covid test',()=>{
       cy.get(".prime-edit-patient").contains("Add new patient");
 
       cy.injectSRAxe();
-      cy.checkA11y(); // New Patient page
+      cy.checkAccessibility(); // New Patient page
     });
 
     it("fills out form fields and clicks save and start test and verifies AoE form is correctly filled in", () => {
@@ -112,10 +116,13 @@ describe('Save and start covid test',()=>{
         '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
       ).click();
 
-      cy.checkA11y();
+      cy.checkAccessibility();
 
       cy.get(".modal__container #save-confirmed-address").click();
       cy.url().should("include", "queue");
+
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
+
       cy.get('input[name="testResultDeliverySms"][value="SMS"]').should(
         "be.disabled"
       );
@@ -139,6 +146,7 @@ describe('Save and start covid test',()=>{
       cy.contains("button", "Continue").click();
       cy.get(".prime-home").contains(patient.firstName);
       cy.url().should("include", "queue");
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
     });
   });
 
@@ -147,14 +155,18 @@ describe('Save and start covid test',()=>{
       cy.visit("/");
       cy.get(".usa-nav-container");
       cy.get("#desktop-conduct-test-nav-link").click();
+
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
+
       cy.get(".card-name").contains(patientName).click();
       cy.get('input[name="middleName"]').clear().type(testNumber().toString(10));
     });
     it("clicks save changes and verifies test queue redirect", () => {
       cy.get(".prime-save-patient-changes").first().click();
+      cy.wait("@UpdatePatient");
     });
     it("verifies test card highlighted", () => {
-      cy.wait("@gqlGetFacilityQueueQuery");
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
       cy.get(".ReactModal__Content").should("not.exist");
       cy.url().should("include", "queue");
       cy.get(".prime-queue-item__info").contains(patientName);
@@ -166,14 +178,17 @@ describe('Save and start covid test',()=>{
       cy.visit("/");
       cy.get(".usa-nav-container");
       cy.get("#desktop-patient-nav-link").click();
+
+      cy.wait("@GetPatientsByFacility");
+
       cy.get(".sr-patient-list").contains('Loading...').should('not.exist');
       cy.get("#search-field-small").type(lastName);
       cy.contains("tr", patientName).find(".sr-actions-menu").click();
       cy.contains("Start test").click();
+      cy.wait("@GetFacilityQueue", {timeout: 20000});
     });
 
     it("verifies test card highlighted", () => {
-      cy.wait("@gqlGetFacilityQueueQuery");
       cy.get(".ReactModal__Content").should("not.exist");
       cy.url().should("include", "queue");
       cy.get(".prime-queue-item__info").contains(patientName);

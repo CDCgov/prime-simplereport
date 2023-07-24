@@ -8,14 +8,29 @@ logging:
 spring:
   profiles:
     include: server-debug, create-sample-devices
+  datasource:
+    simplereport:
+      hikari:
+        jdbc-url: jdbc:postgresql://db:${SR_DB_PORT:5432}/simple_report
+    metabase:
+      hikari:
+        jdbc-url: jdbc:postgresql://db:${SR_DB_PORT:5432}/metabase
   liquibase:
     simplereport:
       user: simple_report_migrations
       password: migrations456
+      hikari:
+        jdbc-url: jdbc:postgresql://db:5432/simple_report
+        maximum-pool-size: 50 # Maximum size that the pool is allowed to reach, including both idle and active connections. Effectively reflects number of concurrent database request threads. (Ex: A size of 50 represents a maximum capacity of 50 concurrent DB requests.)
+        max-lifetime: 600000 # Maximum lifetime for a connection to be retained in the pool, in milliseconds, once it is closed.
+        minimum-idle: 30
     metabase:
       user: simple_report_migrations
       password: migrations456
       default-schema: public
+      hikari:
+        maximum-pool-size: 2
+        jdbc-url: jdbc:postgresql://db:5432/metabase
   jpa:
     properties:
       hibernate:

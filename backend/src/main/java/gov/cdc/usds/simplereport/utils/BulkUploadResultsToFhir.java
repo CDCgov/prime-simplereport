@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.convertToAOEObservation;
-import static gov.cdc.usds.simplereport.api.converter.FhirConverter.getCommonDiseaseValue;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
+import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.converter.ConvertToObservationProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToPatientProps;
+import gov.cdc.usds.simplereport.api.converter.ConvertToSpecimenProps;
 import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
@@ -24,11 +25,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService;
+import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +38,6 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -57,9 +55,12 @@ import org.springframework.stereotype.Component;
 public class BulkUploadResultsToFhir {
 
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
-  private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
-  private final ResultsUploaderDeviceValidationService resultsUploaderDeviceValidationService;
+  private static final String SNOMED_REGEX = "(^\\d{9}$)|(^\\d{15}$)";
+  private final ResultsUploaderCachingService resultsUploaderCachingService;
   private final GitProperties gitProperties;
+  private final UUIDGenerator uuidGenerator;
+  private final DateGenerator dateGenerator;
+  private final FhirConverter fhirConverter;
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
@@ -108,24 +109,29 @@ public class BulkUploadResultsToFhir {
       futureTestEvents.add(future);
     }
 
-    return futureTestEvents.stream()
-        .map(
-            future -> {
-              try {
-                return future.get();
-              } catch (InterruptedException | ExecutionException e) {
-                log.error("Bulk upload failure to convert to fhir.", e);
-                Thread.currentThread().interrupt();
-                throw new CsvProcessingException("Unable to process file.");
-              }
-            })
-        .collect(Collectors.toList());
+    List<String> bundles =
+        futureTestEvents.stream()
+            .map(
+                future -> {
+                  try {
+                    return future.get();
+                  } catch (InterruptedException | ExecutionException e) {
+                    log.error("Bulk upload failure to convert to fhir.", e);
+                    Thread.currentThread().interrupt();
+                    throw new CsvProcessingException("Unable to process file.");
+                  }
+                })
+            .toList();
+
+    // Clear cache to free memory
+    resultsUploaderCachingService.clearAddressTimezoneLookupCache();
+
+    return bundles;
   }
 
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
-    DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("M/d/yyyy[ HH:mm]");
-
     var testEventId = row.getAccessionNumber().getValue();
+
     var patientAddr =
         new StreetAddress(
             row.getPatientStreet().getValue(),
@@ -151,6 +157,43 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderZipCode().getValue(),
             null);
 
+    // Must be zoned because DateTimeType fields on FHIR bundle objects require
+    // a Date as a specific moment of time. Otherwise, parsing the string to a
+    // LocalDateTime cannot accurately place it on a timeline because there is
+    // no way to know if 00:00 refers to 12am ET or 12am PT or 12am UTC, each of
+    // which is a different moment of time and potentially even a different day
+    var testResultDate =
+        convertToZonedDateTime(
+            row.getTestResultDate().getValue(), resultsUploaderCachingService, testingLabAddr);
+
+    var orderTestDate =
+        convertToZonedDateTime(
+            row.getOrderTestDate().getValue(), resultsUploaderCachingService, providerAddr);
+
+    var specimenCollectionDate =
+        StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
+            ? convertToZonedDateTime(
+                row.getSpecimenCollectionDate().getValue(),
+                resultsUploaderCachingService,
+                providerAddr)
+            : orderTestDate;
+
+    var testingLabSpecimenReceivedDate =
+        StringUtils.isNotBlank(row.getSpecimenCollectionDate().getValue())
+            ? convertToZonedDateTime(
+                row.getTestingLabSpecimenReceivedDate().getValue(),
+                resultsUploaderCachingService,
+                testingLabAddr)
+            : orderTestDate;
+
+    var dateResultReleased =
+        StringUtils.isNotBlank(row.getDateResultReleased().getValue())
+            ? convertToZonedDateTime(
+                row.getDateResultReleased().getValue(),
+                resultsUploaderCachingService,
+                testingLabAddr)
+            : testResultDate;
+
     List<PhoneNumber> patientPhoneNumbers =
         StringUtils.isNotBlank(row.getPatientPhoneNumber().getValue())
             ? List.of(new PhoneNumber(PhoneType.MOBILE, row.getPatientPhoneNumber().getValue()))
@@ -161,7 +204,7 @@ public class BulkUploadResultsToFhir {
             : emptyList();
 
     var patient =
-        FhirConverter.convertToPatient(
+        fhirConverter.convertToPatient(
             ConvertToPatientProps.builder()
                 .id(row.getPatientId().getValue())
                 .name(
@@ -173,7 +216,7 @@ public class BulkUploadResultsToFhir {
                 .phoneNumbers(patientPhoneNumbers)
                 .emails(patientEmails)
                 .gender(row.getPatientGender().getValue())
-                .dob(LocalDate.parse(row.getPatientDob().getValue(), dateTimeFormatter))
+                .dob(LocalDate.parse(row.getPatientDob().getValue(), DATE_TIME_FORMATTER))
                 .address(patientAddr)
                 .country(DEFAULT_COUNTRY)
                 .race(row.getPatientRace().getValue())
@@ -182,7 +225,7 @@ public class BulkUploadResultsToFhir {
                 .build());
 
     var testingLabOrg =
-        FhirConverter.convertToOrganization(
+        fhirConverter.convertToOrganization(
             orgId.toString(),
             row.getTestingLabName().getValue(),
             row.getTestingLabClia().getValue(),
@@ -192,13 +235,13 @@ public class BulkUploadResultsToFhir {
             DEFAULT_COUNTRY);
 
     Organization orderingFacility = null;
-    if (row.getOrderingFacilityStreet().getValue() != null
-        || row.getOrderingFacilityStreet2().getValue() != null
-        || row.getOrderingFacilityCity().getValue() != null
-        || row.getOrderingFacilityState().getValue() != null
-        || row.getOrderingFacilityZipCode().getValue() != null
-        || row.getOrderingFacilityName().getValue() != null
-        || row.getOrderingFacilityPhoneNumber().getValue() != null) {
+    if (StringUtils.isNotEmpty(row.getOrderingFacilityStreet().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityStreet2().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityCity().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityState().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityZipCode().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityName().getValue())
+        || StringUtils.isNotEmpty(row.getOrderingFacilityPhoneNumber().getValue())) {
       var orderingFacilityAddr =
           new StreetAddress(
               row.getOrderingFacilityStreet().getValue(),
@@ -208,8 +251,8 @@ public class BulkUploadResultsToFhir {
               row.getOrderingFacilityZipCode().getValue(),
               null);
       orderingFacility =
-          FhirConverter.convertToOrganization(
-              UUID.randomUUID().toString(),
+          fhirConverter.convertToOrganization(
+              uuidGenerator.randomUUID().toString(),
               row.getOrderingFacilityName().getValue(),
               row.getTestingLabClia().getValue(),
               row.getOrderingFacilityPhoneNumber().getValue(),
@@ -218,8 +261,12 @@ public class BulkUploadResultsToFhir {
               DEFAULT_COUNTRY);
     }
 
+    if (orderingFacility == null) {
+      orderingFacility = testingLabOrg;
+    }
+
     var practitioner =
-        FhirConverter.convertToPractitioner(
+        fhirConverter.convertToPractitioner(
             row.getOrderingProviderId().getValue(),
             new PersonName(
                 row.getOrderingProviderFirstName().getValue(),
@@ -237,13 +284,13 @@ public class BulkUploadResultsToFhir {
     String diseaseName = null;
     String testOrderLoinc = null;
 
-    UUID deviceId = UUID.randomUUID();
+    UUID deviceId = uuidGenerator.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
     var modelName = row.getEquipmentModelName().getValue();
     var matchingDevice =
-        resultsUploaderDeviceValidationService
+        resultsUploaderCachingService
             .getModelAndTestPerformedCodeToDeviceMap()
-            .get(ResultsUploaderDeviceValidationService.getMapKey(modelName, testPerformedCode));
+            .get(ResultsUploaderCachingService.getMapKey(modelName, testPerformedCode));
 
     if (matchingDevice != null) {
       List<DeviceTypeDisease> deviceTypeDiseaseEntries =
@@ -253,9 +300,11 @@ public class BulkUploadResultsToFhir {
               .toList();
       manufacturer = matchingDevice.getManufacturer();
       equipmentUid =
-          getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+          fhirConverter.getCommonDiseaseValue(
+              deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
       testKitNameId =
-          getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
+          fhirConverter.getCommonDiseaseValue(
+              deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
       deviceId =
           deviceTypeDiseaseEntries.stream()
               .findFirst()
@@ -278,20 +327,24 @@ public class BulkUploadResultsToFhir {
               + ")");
     }
 
-    var device = FhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
+    var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
     var specimen =
-        FhirConverter.convertToSpecimen(
-            getSpecimenTypeSnomed(row.getSpecimenType().getValue()),
-            getDescriptionValue(row.getSpecimenType().getValue()),
-            null,
-            null,
-            UUID.randomUUID().toString(),
-            UUID.randomUUID().toString());
+        fhirConverter.convertToSpecimen(
+            ConvertToSpecimenProps.builder()
+                .specimenCode(getSpecimenTypeSnomed(row.getSpecimenType().getValue()))
+                .specimenName(getDescriptionValue(row.getSpecimenType().getValue()))
+                .collectionCode(null)
+                .collectionName(null)
+                .id(uuidGenerator.randomUUID().toString())
+                .identifier(uuidGenerator.randomUUID().toString())
+                .collectionDate(specimenCollectionDate)
+                .receivedTime(testingLabSpecimenReceivedDate)
+                .build());
 
     var observation =
         List.of(
-            FhirConverter.convertToObservation(
+            fhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
                     .diseaseCode(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
@@ -299,20 +352,22 @@ public class BulkUploadResultsToFhir {
                     .correctionStatus(
                         mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
                     .correctionReason(null)
-                    .id(UUID.randomUUID().toString())
+                    .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
                         Translators.convertConceptCodeToConceptName(
                             getDescriptionValue(row.getTestResult().getValue())))
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
+                    .issued(Date.from(testResultDate.toInstant()))
                     .build()));
 
     LocalDate symptomOnsetDate = null;
     if (row.getIllnessOnsetDate().getValue() != null
         && !row.getIllnessOnsetDate().getValue().trim().isBlank()) {
       try {
-        symptomOnsetDate = LocalDate.parse(row.getIllnessOnsetDate().getValue(), dateTimeFormatter);
+        symptomOnsetDate =
+            LocalDate.parse(row.getIllnessOnsetDate().getValue(), DATE_TIME_FORMATTER);
       } catch (DateTimeParseException e) {
         // empty values for optional fields come through as empty strings, not null
         log.error("Unable to parse date from CSV.");
@@ -324,24 +379,25 @@ public class BulkUploadResultsToFhir {
       symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().getValue().toLowerCase());
     }
 
-    var aoeObservations = convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
+    var aoeObservations =
+        fhirConverter.convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
 
     var serviceRequest =
-        FhirConverter.convertToServiceRequest(
+        fhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderLoinc,
-            UUID.randomUUID().toString());
+            uuidGenerator.randomUUID().toString(),
+            orderTestDate);
 
-    var testDate = LocalDate.parse(row.getTestResultDate().getValue(), dateTimeFormatter);
     var diagnosticReport =
-        FhirConverter.convertToDiagnosticReport(
+        fhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
-            Date.from(testDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
-            new Date());
+            testResultDate,
+            dateResultReleased);
 
-    return FhirConverter.createFhirBundle(
+    return fhirConverter.createFhirBundle(
         CreateFhirBundleProps.builder()
             .patient(patient)
             .testingLab(testingLabOrg)
@@ -353,7 +409,7 @@ public class BulkUploadResultsToFhir {
             .aoeObservations(aoeObservations)
             .serviceRequest(serviceRequest)
             .diagnosticReport(diagnosticReport)
-            .currentDate(new Date())
+            .currentDate(dateGenerator.newDate())
             .gitProperties(gitProperties)
             .processingId(processingModeCode)
             .build());
@@ -368,7 +424,7 @@ public class BulkUploadResultsToFhir {
 
   private String getSpecimenTypeSnomed(String input) {
     if (input.matches(ALPHABET_REGEX)) {
-      return resultsUploaderDeviceValidationService
+      return resultsUploaderCachingService
           .getSpecimenTypeNameToSNOMEDMap()
           .get(input.toLowerCase());
     } else if (input.matches(SNOMED_REGEX)) {

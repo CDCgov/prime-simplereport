@@ -1,5 +1,6 @@
 import React, { Dispatch, SetStateAction } from "react";
 import classnames from "classnames";
+import moment from "moment";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import { TEST_RESULT_DESCRIPTIONS } from "../../constants";
@@ -13,6 +14,21 @@ import { MULTIPLEX_DISEASES } from "../constants";
 import { toLowerCaseHyphenate } from "../../utils/text";
 import { TestResult, PhoneNumber, Maybe } from "../../../generated/graphql";
 import { getResultObjByDiseaseName } from "../../utils/testResults";
+
+export const TEST_RESULT_ARIA_TIME_FORMAT = "MMMM Do YYYY, h:mm:ss a";
+export function formatTestResultAriaLabel(result: TestResult) {
+  const patientFullName = displayFullName(
+    result.patient?.firstName,
+    result.patient?.middleName,
+    result.patient?.lastName
+  );
+
+  const displayPatientDate =
+    result.correctionStatus === "ORIGINAL"
+      ? moment(result.dateTested).format(TEST_RESULT_ARIA_TIME_FORMAT)
+      : moment(result.dateUpdated).format(TEST_RESULT_ARIA_TIME_FORMAT);
+  return `Click for more detailed results information for ${patientFullName} conducted on ${displayPatientDate}`;
+}
 
 export const generateTableHeaders = (
   hasMultiplexResults: boolean,
@@ -179,6 +195,7 @@ const generateResultRows = (
         <td className="patient-name-cell">
           <Button
             variant="unstyled"
+            ariaLabel={formatTestResultAriaLabel(r)}
             label={displayFullName(
               r.patient?.firstName,
               r.patient?.middleName,

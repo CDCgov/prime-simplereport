@@ -218,6 +218,7 @@ describe("reportingHandlers", () => {
     const clientId = "FHIR.client";
     const reportStreamUrl = "reportStream.gov";
 
+    jest.setTimeout(30000);
     it("generates token according to ReportStream guidelines", async () => {
       const generateKeyPairAsync = promisify(generateKeyPair);
 

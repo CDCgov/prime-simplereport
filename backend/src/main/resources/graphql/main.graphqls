@@ -156,8 +156,10 @@ input UserInput {
   lastName: String
   suffix: String
   email: String!
-  organizationExternalId: String!
+  organizationExternalId: String
   role: Role!
+  accessAllFacilities: Boolean = false
+  facilities: [ID!]
 }
 
 type ApiUser {
@@ -365,10 +367,6 @@ type UploadSubmissionPage {
 # Queries and mutations for everyday use
 
 type Query {
-  organization: Organization
-    @deprecated(
-      reason: "this information is already loaded from the 'whoami' endpoint"
-    )
   deviceType: [DeviceType!]!
     @deprecated(reason: "use the pluralized form to reduce confusion")
   deviceTypes: [DeviceType!]!
@@ -385,6 +383,9 @@ type Query {
     pageSize: Int = 5000
     includeArchived: Boolean = false
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+      @deprecated(reason: "use archivedStatus")
+    archivedStatus: ArchivedStatus = UNARCHIVED
+      @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
     includeArchivedFacilities: Boolean = false
       @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
@@ -393,6 +394,9 @@ type Query {
   patientsCount(
     facilityId: ID
     includeArchived: Boolean = false
+      @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+      @deprecated(reason: "use archivedStatus")
+    archivedStatus: ArchivedStatus = UNARCHIVED
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
   ): Int @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
@@ -480,13 +484,7 @@ type Mutation {
     facilityInfo: AddFacilityInput!
   ): Facility @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addUserToCurrentOrg(
-    name: NameInput
-    firstName: String
-    middleName: String
-    lastName: String
-    suffix: String
-    email: String!
-    role: Role!
+    userInput: UserInput!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
