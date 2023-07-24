@@ -57,7 +57,7 @@ dependencies {
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.15'
 
     // UI layer dependencies
-    implementation 'org.json:json:20230227'
+    implementation 'org.json:json:20230618'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
