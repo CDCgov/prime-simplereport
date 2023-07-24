@@ -147,6 +147,7 @@ type User {
   role: Role
   roles: [Role!]! @deprecated(reason: "Users have only one role now")
   status: String
+  isDeleted: Boolean
 }
 
 input UserInput {

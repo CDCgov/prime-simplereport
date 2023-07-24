@@ -589,30 +589,7 @@ public class ApiUserService {
 
     UserStatus status = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
 
-    Optional<OrganizationRoleClaims> optClaims =
-        _oktaRepo.getOrganizationRoleClaimsForUser(apiUser.getLoginEmail());
-    if (optClaims.isEmpty()) {
-      throw new UnidentifiedUserException();
-    }
-    final OrganizationRoleClaims claims = optClaims.get();
-
-    // use the target user's org so response is built correctly even if site admin is the requester
-    Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());
-
-    List<Facility> facilities = _orgService.getFacilities(org);
-    Set<Facility> facilitiesSet = new HashSet<>(facilities);
-
-    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
-    Set<Facility> accessibleFacilities =
-        allFacilityAccess
-            ? facilitiesSet
-            : facilities.stream()
-                .filter(f -> claims.getFacilities().contains(f.getInternalId()))
-                .collect(Collectors.toSet());
-
-    OrganizationRoles orgRoles =
-        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser), status);
+    return consolidateUser(apiUser, status);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -657,5 +634,52 @@ public class ApiUserService {
   public Set<String> getTenantDataAccessAuthoritiesForCurrentUser() {
     ApiUser apiUser = getCurrentApiUser();
     return _tenantService.getTenantDataAccessAuthorities(apiUser);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public UserInfo getUserByLoginEmail(String loginEmail) {
+    // ToDo make sure that this include deleted users
+    Optional<ApiUser> foundUser = _apiUserRepo.findByLoginEmailIncludeArchived(loginEmail);
+
+    if (foundUser.isEmpty()) {
+      throw new NonexistentUserException();
+    }
+
+    ApiUser apiUser = foundUser.get();
+    UserStatus userStatus = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
+
+    if (userStatus == null) {
+      throw new UnidentifiedUserException();
+    }
+
+    return consolidateUser(apiUser, userStatus);
+  }
+
+  private UserInfo consolidateUser(ApiUser apiUser, UserStatus userStatus) {
+    Optional<OrganizationRoleClaims> optClaims =
+        _oktaRepo.getOrganizationRoleClaimsForUser(apiUser.getLoginEmail());
+    if (optClaims.isEmpty()) {
+      throw new UnidentifiedUserException();
+    }
+    final OrganizationRoleClaims claims = optClaims.get();
+
+    // use the target user's org so response is built correctly even if site admin is the requester
+    Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());
+
+    List<Facility> facilities = _orgService.getFacilities(org);
+    Set<Facility> facilitiesSet = new HashSet<>(facilities);
+
+    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
+    Set<Facility> accessibleFacilities =
+        allFacilityAccess
+            ? facilitiesSet
+            : facilities.stream()
+                .filter(f -> claims.getFacilities().contains(f.getInternalId()))
+                .collect(Collectors.toSet());
+
+    OrganizationRoles orgRoles =
+        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
+
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser), userStatus);
   }
 }

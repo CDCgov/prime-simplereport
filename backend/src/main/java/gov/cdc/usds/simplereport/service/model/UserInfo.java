@@ -93,4 +93,8 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
   public UserStatus getUserStatus() {
     return status;
   }
+
+  public boolean getIsDeleted() {
+    return wrapped.isDeleted();
+  }
 }

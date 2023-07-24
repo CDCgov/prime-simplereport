@@ -63,4 +63,8 @@ public class User extends WrappedEntity<UserInfo> implements PersonWrapper<UserI
   public String getSuffix() {
     return wrapped.getNameInfo().getSuffix();
   }
+
+  public boolean getIsDeleted() {
+    return wrapped.getIsDeleted();
+  }
 }
