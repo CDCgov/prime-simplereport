@@ -669,7 +669,6 @@ export type Query = {
   uploadSubmission: UploadResponse;
   uploadSubmissions: UploadSubmissionPage;
   user?: Maybe<User>;
-  userByLoginEmail?: Maybe<User>;
   users?: Maybe<Array<Maybe<ApiUser>>>;
   usersWithStatus?: Maybe<Array<ApiUserWithStatus>>;
   whoami: User;
@@ -789,11 +788,8 @@ export type QueryUploadSubmissionsArgs = {
 };
 
 export type QueryUserArgs = {
-  id: Scalars["ID"];
-};
-
-export type QueryUserByLoginEmailArgs = {
-  loginEmail: Scalars["String"];
+  email?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
 };
 
 export enum ResultValue {

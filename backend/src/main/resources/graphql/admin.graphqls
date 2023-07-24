@@ -5,7 +5,6 @@ extend type Query {
   organizations(identityVerified: Boolean): [Organization!]!
   pendingOrganizations: [PendingOrganization!]!
   organization(id: ID!): Organization
-  userByLoginEmail(loginEmail: String!): User
 }
 extend type Mutation {
   resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean!): Boolean
