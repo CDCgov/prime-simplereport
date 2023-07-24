@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static gov.cdc.usds.simplereport.test_util.JsonTestUtils.assertJsonNodesEqual;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -17,6 +18,7 @@ import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,6 +33,7 @@ import org.hl7.fhir.r4.model.DateTimeType;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.ServiceRequest;
 import org.hl7.fhir.r4.model.Specimen;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,8 +96,76 @@ public class BulkUploadResultsToFhirTest {
   }
 
   @Test
+  void allFieldsCsv_TestOrderedCodeMapped() throws IOException {
+    byte[] input = loadCsv("testResultUpload/test-results-upload-all-fields.csv").readAllBytes();
+
+    var serializedBundles =
+        sut.convertToFhirBundles(new ByteArrayInputStream(input), UUID.randomUUID());
+    var mappingIterator = getIteratorForCsv(new ByteArrayInputStream(input));
+
+    int index = 0;
+    while (mappingIterator.hasNext()) {
+      var csvRow = mappingIterator.next();
+      var inputOrderedCode = csvRow.get("test_ordered_code");
+      var inputPerformedCode = csvRow.get("test_performed_code");
+
+      var bundle = serializedBundles.get(index++);
+      var deserializedBundle = (Bundle) parser.parseResource(bundle);
+
+      var serviceRequestEntry =
+          deserializedBundle.getEntry().stream()
+              .filter(entry -> entry.getFullUrl().contains("ServiceRequest/"))
+              .findFirst()
+              .orElseThrow(
+                  () -> new AssertionError("Expected to find ServiceRequest, but not found"));
+      var serviceRequest = (ServiceRequest) serviceRequestEntry.getResource();
+
+      var mappedCode = serviceRequest.getCode().getCoding().stream().findFirst().get().getCode();
+
+      // value is mapped
+      assertThat(mappedCode).isEqualTo(inputOrderedCode);
+      // value is not defaulted to performed code
+      assertThat(inputOrderedCode).isNotEqualTo(inputPerformedCode);
+    }
+  }
+
+  @Test
+  void validCsv_TestOrderedCodeDefaultedToPerformedCode() throws IOException {
+    byte[] input = loadCsv("testResultUpload/test-results-upload-valid.csv").readAllBytes();
+
+    var serializedBundles =
+        sut.convertToFhirBundles(new ByteArrayInputStream(input), UUID.randomUUID());
+    var mappingIterator = getIteratorForCsv(new ByteArrayInputStream(input));
+
+    int index = 0;
+    while (mappingIterator.hasNext()) {
+      var csvRow = mappingIterator.next();
+      var inputOrderedCode = csvRow.get("test_ordered_code");
+      var inputPerformedCode = csvRow.get("test_performed_code");
+
+      var bundle = serializedBundles.get(index++);
+      var deserializedBundle = (Bundle) parser.parseResource(bundle);
+
+      var serviceRequestEntry =
+          deserializedBundle.getEntry().stream()
+              .filter(entry -> entry.getFullUrl().contains("ServiceRequest/"))
+              .findFirst()
+              .orElseThrow(
+                  () -> new AssertionError("Expected to find ServiceRequest, but not found"));
+      var serviceRequest = (ServiceRequest) serviceRequestEntry.getResource();
+
+      var mappedCode = serviceRequest.getCode().getCoding().stream().findFirst().get().getCode();
+
+      // supplied orderedCode is empty
+      assertThat(inputOrderedCode).isEmpty();
+      // value is defaulted to performed code
+      assertThat(mappedCode).isEqualTo(inputPerformedCode);
+    }
+  }
+
+  @Test
   void convertExistingCsv_aoeQuestionsMapped() {
-    InputStream input = loadCsv("testResultUpload/test-results-upload-aoe.csv");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-all-fields.csv");
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
 
     var asymptomaticEntry = serializedBundles.get(0);
