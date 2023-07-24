@@ -64,7 +64,7 @@ public class BulkUploadResultsToFhirTest {
   @BeforeEach
   public void beforeEach() {
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
-    FhirConverter fhirConverter = new FhirConverter(uuidGenerator);
+    FhirConverter fhirConverter = new FhirConverter(uuidGenerator, dateGenerator);
     sut =
         new BulkUploadResultsToFhir(
             resultsUploaderCachingService,
@@ -216,7 +216,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator));
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
@@ -256,8 +256,8 @@ public class BulkUploadResultsToFhirTest {
 
   @Test
   void convertExistingCsv_populatesBlankFields() {
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-with-blank-fields.csv");
-    var orderTestDate = Instant.parse("2021-12-20T14:00:00-06:00");
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-blank-dates.csv");
+    var orderTestDate = Instant.parse("2021-12-20T04:00:00-07:00");
     var testResultDate = Instant.parse("2021-12-23T14:00:00-06:00");
 
     when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())

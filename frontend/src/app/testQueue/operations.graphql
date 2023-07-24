@@ -1,4 +1,3 @@
-
 mutation RemovePatientFromQueue($patientId: ID!) {
     removePatientFromQueue(patientId: $patientId)
   }

@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.12'
+    id 'org.springframework.boot' version '2.7.13'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
@@ -41,8 +41,9 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
-    // Security Pins (Sept 2022)
+    // Security Pins (July 2023)
     implementation 'org.yaml:snakeyaml:1.33'
+    implementation 'org.springframework.security:spring-security-config:5.7.10'
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -56,7 +57,7 @@ dependencies {
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.15'
 
     // UI layer dependencies
-    implementation 'org.json:json:20230227'
+    implementation 'org.json:json:20230618'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'

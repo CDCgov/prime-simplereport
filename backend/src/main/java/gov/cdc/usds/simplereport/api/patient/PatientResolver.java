@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.ArchivedStatus;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import java.time.LocalDate;
@@ -31,14 +32,14 @@ public class PatientResolver {
       @Argument UUID facilityId,
       @Argument int pageNumber,
       @Argument int pageSize,
-      @Argument boolean includeArchived,
+      @Argument ArchivedStatus archivedStatus,
       @Argument String namePrefixMatch,
       @Argument boolean includeArchivedFacilities) {
     return _ps.getPatients(
         facilityId,
         pageNumber,
         pageSize,
-        includeArchived,
+        archivedStatus,
         namePrefixMatch,
         includeArchivedFacilities);
   }
@@ -47,9 +48,9 @@ public class PatientResolver {
   @QueryMapping
   public long patientsCount(
       @Argument UUID facilityId,
-      @Argument boolean includeArchived,
+      @Argument ArchivedStatus archivedStatus,
       @Argument String namePrefixMatch) {
-    return _ps.getPatientsCount(facilityId, includeArchived, namePrefixMatch, false);
+    return _ps.getPatientsCount(facilityId, archivedStatus, namePrefixMatch, false);
   }
 
   @QueryMapping

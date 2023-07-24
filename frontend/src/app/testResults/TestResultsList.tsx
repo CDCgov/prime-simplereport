@@ -43,11 +43,12 @@ import Select from "../commonComponents/Select";
 import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
 import {
-  TestResult,
+  ArchivedStatus,
   GetFacilityResultsMultiplexWithCountQuery,
+  Maybe,
+  TestResult,
   useGetAllFacilitiesQuery,
   useGetFacilityResultsMultiplexWithCountQuery,
-  Maybe,
 } from "../../generated/graphql";
 import { waitForElement } from "../utils/elements";
 
@@ -148,6 +149,17 @@ const ErrorMessage: React.FC<{ message: string | undefined }> = ({
   return null;
 };
 
+const isClearFilterBtnDisabled = (
+  filterParams: FilterParams,
+  activeFacilityId: string
+) => {
+  return (
+    Object.keys(filterParams).length === 0 ||
+    (Object.keys(filterParams).length === 1 &&
+      filterParams.filterFacilityId === activeFacilityId)
+  );
+};
+
 export const DetachedTestResultsList = ({
   data,
   pageNumber,
@@ -200,7 +212,9 @@ export const DetachedTestResultsList = ({
     useLazyQuery(QUERY_PATIENT, {
       fetchPolicy: "no-cache",
       variables: {
-        includeArchived: isOrgAdmin,
+        archivedStatus: isOrgAdmin
+          ? ArchivedStatus.All
+          : ArchivedStatus.Unarchived,
         facilityId:
           filterParams.filterFacilityId === ALL_FACILITIES_ID
             ? null
@@ -452,11 +466,10 @@ export const DetachedTestResultsList = ({
                   setStartDateError("");
                   setEndDateError("");
                 }}
-                disabled={
-                  Object.keys(filterParams).length === 0 ||
-                  (Object.keys(filterParams).length === 1 &&
-                    filterParams.filterFacilityId === activeFacilityId)
-                }
+                disabled={isClearFilterBtnDisabled(
+                  filterParams,
+                  activeFacilityId
+                )}
               >
                 Clear filters
               </Button>
