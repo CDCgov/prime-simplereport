@@ -4718,3 +4718,104 @@ databaseChangeLog:
         - dropNotNullConstraint:
             tableName: result
             columnName: test_order_id
+  - changeSet:
+      id: create-result-upload-error-table
+      author: nathan@skylight.digital
+      comment: Add a table that holds validation errors for bulk test result uploads
+      changes:
+        - tagDatabase:
+            tag: create-result-upload-error-table
+        - sql:
+            remarks: Create the enumerations for upload error types
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR as ENUM('HEADER_ERROR', 'INVALID_DATA', 'MISSING_DATA', 'INCORRECT_STRUCTURE');
+        - sql:
+            remarks: Create the enumerations for upload error sources
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.RESULT_UPLOAD_ERROR_SOURCE as ENUM('SIMPLE_REPORT', 'REPORT_STREAM');
+        - createTable:
+            tableName: result_upload_error
+            remarks: A collection of errors for bulk upload submission attempts.
+            columns:
+              - column:
+                  name: upload_id
+                  type: uuid
+                  remarks: The internal ID for the upload associated with this error
+              - column:
+                  name: org_id
+                  type: uuid
+                  remarks: The internal ID for the organization which submitted the upload
+              - column:
+                  name: submission_id
+                  type: uuid
+                  remarks: Identifier shared by an individual error and its overall submission
+              - column:
+                  name: type
+                  type: ${database.defaultSchemaName}.test_result_upload_error
+                  remarks: Enumerated value representing the general category of error
+              - column:
+                  name: field
+                  type: text
+                  remarks: CSV header for the field where error occurred
+              - column:
+                  name: required
+                  type: boolean
+                  remarks: Boolean value indicating whether the field is required
+              - column:
+                  name: source
+                  type: ${database.defaultSchemaName}.result_upload_error_source
+                  remarks: The system (SimpleReport or ReportStream) that returned the error
+              - column:
+                  name: message
+                  type: text
+                  remarks: Full text of error message
+              - column:
+                  name: internal_id
+                  type: uuid
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: uuid
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result_upload_error__created_by
+                    references: api_user
+              - column:
+                  name: updated_by
+                  type: uuid
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__result_upload_error__updated_by
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: submission_id
+                  type: uuid
+      rollback:
+          - dropTable:
+              tableName: result_upload_error
+          - dropColumn:
+              tableName: upload
+              columnName: submission_id
+          - sql:
+              sql: |
+                DROP TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR;

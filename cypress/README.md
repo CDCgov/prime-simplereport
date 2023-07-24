@@ -18,7 +18,7 @@ COMPOSE_HTTP_TIMEOUT=180
 
 # Backend settings
 SPRING_PROFILES_ACTIVE=e2e,db-dockerized
-WIREMOCK_URL=http://cypress:8088
+WIREMOCK_URL=http://wiremock:8088
 SPRING_LIQUIBASE_ENABLED="true"
 OKTA_TESTING_DISABLEHTTPSCHECK="true"
 
@@ -41,7 +41,7 @@ REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api
 PUBLIC_URL=/app/
 REACT_APP_OKTA_ENABLED=true
 REACT_APP_DISABLE_MAINTENANCE_BANNER=true
-REACT_APP_OKTA_URL=http://cypress:8088
+REACT_APP_OKTA_URL=http://wiremock:8088
 REACT_APP_BASE_URL=https://localhost.simplereport.gov
 REACT_APP_OKTA_CLIENT_ID=
 

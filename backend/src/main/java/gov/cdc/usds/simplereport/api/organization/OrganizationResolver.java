@@ -3,11 +3,12 @@ package gov.cdc.usds.simplereport.api.organization;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,8 +22,8 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class OrganizationResolver {
 
-  private OrganizationService _organizationService;
-  private OrganizationQueueService _organizationQueueService;
+  private final OrganizationService _organizationService;
+  private final OrganizationQueueService _organizationQueueService;
 
   public OrganizationResolver(OrganizationService os, OrganizationQueueService oqs) {
     _organizationService = os;
@@ -30,14 +31,16 @@ public class OrganizationResolver {
   }
 
   @QueryMapping
-  public Optional<ApiOrganization> organization() {
-    Optional<OrganizationRoles> roles = _organizationService.getCurrentOrganizationRoles();
-    return roles.map(
-        r -> {
-          Organization o = r.getOrganization();
-          Set<Facility> fs = r.getFacilities();
-          return new ApiOrganization(o, fs);
-        });
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public ApiOrganization organization(@Argument UUID id) {
+    Organization org;
+    try {
+      org = _organizationService.getOrganizationById(id);
+    } catch (IllegalGraphqlArgumentException e) {
+      return null;
+    }
+    var facilities = _organizationService.getFacilities(org);
+    return new ApiOrganization(org, facilities);
   }
 
   /**
@@ -69,6 +72,7 @@ public class OrganizationResolver {
    * @return a list of pending organizations
    */
   @QueryMapping
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<ApiPendingOrganization> pendingOrganizations() {
     return _organizationQueueService.getUnverifiedQueuedOrganizations().stream()
         .map(ApiPendingOrganization::new)

@@ -76,18 +76,13 @@ echo
 [[ -n $RUN_OPEN ]] && echo "Run as interactive-------$RUN_OPEN"
 echo 
 
-echo "Starting Wiremock for app bootup..."
-./cypress/support/wiremock/download-wiremock.sh >/dev/null 2>&1
-./cypress/support/wiremock/start-wiremock.sh orgSignUp >/dev/null 2>&1 &
-echo "Wiremock started!"
-echo
 
-echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
 http_response=0
 polls=0
-while [[ $http_response != "200" && $polls -lt 360 ]]; do
+while [[ $http_response != "200" && $polls -lt 72 ]]; do
   ((polls++))
-  sleep 1
+  sleep 5
+  echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
   http_response=$(curl -skL -w "%{http_code}" "${TEST_ENV}${BACKEND_URL_PATH}")
 done
 if [[ $http_response -ne 200 ]]; then
@@ -97,12 +92,12 @@ fi
 echo 'Backend started!'
 echo
 
-echo "Waiting for frontend to start at ${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}"
 result=0
 polls=0
-while [[ $result -ne 1 && $polls -lt 240 ]]; do
+while [[ $result -ne 1 && $polls -lt 48 ]]; do
   ((polls++))
-  sleep 1
+  sleep 5
+  echo "Waiting for frontend to start at ${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}"
   result=$(curl -skL "${TEST_ENV}${PUBLIC_URL}${FRONTEND_URL_PATH}" | grep -c '<title>SimpleReport</title>')
 done
 if [[ $result -ne 1 ]]; then

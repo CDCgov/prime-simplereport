@@ -27,6 +27,7 @@ import org.hibernate.annotations.Type;
 public class TestResultUpload extends AuditedEntity {
 
   @Column private UUID reportId;
+  @Column private UUID submissionId;
 
   @Column(columnDefinition = "UPLOAD_STATUS")
   @Type(PostgreSQLEnumType.class)
@@ -52,12 +53,14 @@ public class TestResultUpload extends AuditedEntity {
 
   public TestResultUpload(
       UUID reportId,
+      UUID submissionId,
       UploadStatus status,
       int recordsCount,
       Organization organization,
       FeedbackMessage[] warnings,
       FeedbackMessage[] errors) {
     this.reportId = reportId;
+    this.submissionId = submissionId;
     this.status = status;
     this.recordsCount = recordsCount;
     this.organization = organization;

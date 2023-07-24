@@ -66,3 +66,16 @@ resource "azurerm_postgresql_flexible_server_configuration" "pgms_wait_sampling_
   server_id = azurerm_postgresql_flexible_server.db.id
   value     = "ALL"
 }
+
+resource "azurerm_postgresql_flexible_server_configuration" "postgresql_shared_preload_libraries" {
+  name      = "shared_preload_libraries"
+  server_id = azurerm_postgresql_flexible_server.db.id
+  value     = "auto_explain,pg_cron,pg_stat_statements"
+}
+
+# This allows us to install these extensions on the server
+resource "azurerm_postgresql_flexible_server_configuration" "postgresql_extensions" {
+  name      = "azure.extensions"
+  server_id = azurerm_postgresql_flexible_server.db.id
+  value     = "PG_STAT_STATEMENTS,PGCRYPTO,PLPGSQL"
+}

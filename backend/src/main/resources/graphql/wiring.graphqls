@@ -94,6 +94,12 @@ enum PhoneType {
   LANDLINE
 }
 
+enum ArchivedStatus {
+  ALL
+  ARCHIVED
+  UNARCHIVED
+}
+
 type NameInfo {
   firstName: String
   middleName: String

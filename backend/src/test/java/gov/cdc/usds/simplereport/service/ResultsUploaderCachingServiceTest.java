@@ -1,13 +1,17 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.service.ResultsUploaderDeviceValidationService.getMapKey;
+import static gov.cdc.usds.simplereport.service.ResultsUploaderCachingService.getMapKey;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.util.Arrays;
 import java.util.List;
@@ -17,14 +21,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SliceTestConfiguration.WithSimpleReportSiteAdminUser
-class ResultsUploaderDeviceValidationServiceTest
-    extends BaseServiceTest<ResultsUploaderDeviceValidationService> {
+class ResultsUploaderCachingServiceTest extends BaseServiceTest<ResultsUploaderCachingService> {
+  @MockBean private AddressValidationService addressValidationService;
   @Autowired private SpecimenTypeService specimenTypeService;
   @Autowired private DeviceTypeService deviceTypeService;
   @Autowired private DiseaseService diseaseService;
-  @Autowired private ResultsUploaderDeviceValidationService sut;
+  @Autowired private ResultsUploaderCachingService sut;
   private final Random random = new Random();
 
   @Test
@@ -45,6 +50,15 @@ class ResultsUploaderDeviceValidationServiceTest
         .contains("alinity m|97022-0")
         .contains(getMapKey("Alinity M", "97088-0"))
         .contains(getMapKey("GenBody COVID-19 Ag", "97097-0"));
+  }
+
+  @Test
+  void addressValidation_cachesIdenticalAddresses() {
+    var address = new StreetAddress("123 Main St", null, "Buffalo", "New York", "14202", "Erie");
+    sut.getZoneIdByAddress(address);
+    sut.getZoneIdByAddress(address);
+    sut.getZoneIdByAddress(address);
+    verify(addressValidationService, times(1)).getZoneIdByAddress(any());
   }
 
   protected void createDeviceType(String model, String... testPerformedCodes) {

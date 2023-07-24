@@ -17,7 +17,7 @@ describe("Bulk upload patients", () => {
     cy.get("#upload_add-patient").click();
     cy.get(".prime-edit-patient").contains("Set up your spreadsheet");
     cy.injectSRAxe();
-    cy.checkA11y(); // Bulk upload patient form
+    cy.checkAccessibility(); // Bulk upload patient form
   });
   it("uploads csv file of patients", () => {
     const csvFileContent = "last_name,first_name,middle_name,suffix,race,date_of_birth,biological_sex,ethnicity,street,street2,city,county,state,zip_code,country,phone_number,phone_number_type,employed_in_healthcare,resident_congregate_setting,role,email\n"
