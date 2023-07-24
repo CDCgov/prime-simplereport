@@ -33,7 +33,5 @@
   "uuid" : "29afcf9c-f656-4388-a87c-9162f5c2f1df",
   "persistent" : true,
   "scenarioName" : "scenario-1-api-v1-users-00u74fem79YtyTszR1d7",
-  "requiredScenarioState" : "Started",
-  "newScenarioState" : "scenario-1-api-v1-users-00u74fem79YtyTszR1d7-2",
   "insertionIndex" : 2
 }
