@@ -4825,3 +4825,15 @@ databaseChangeLog:
           - sql:
               sql: |
                 DROP TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR;
+  - changeSet:
+      id: remove-upload-report-id-not-null-constraint
+      author: dsass@skylight.digital
+      comment: set report Id to be nullable
+      changes:
+        - dropNotNullConstraint:
+            tableName: upload
+            columnName: report_id
+      rollback:
+        - addNotNullConstraint:
+            tableName: upload
+            columnName: report_id
