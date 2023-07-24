@@ -292,11 +292,12 @@ export const MultiSelectDropdown = ({
   const listID = `multi-select-${name}-list`;
   const dropDownRef = useRef(null);
   const hideOnOutsideClick = useCallback(() => {
+    // TODO
     // setShowSuggestion(false);
     dispatch({
       type: state.isOpen ? ActionTypes.CLOSE_LIST : ActionTypes.OPEN_LIST,
     });
-  }, []);
+  }, [dispatch, state.isOpen]);
 
   useOutsideClick(dropDownRef, hideOnOutsideClick);
 
