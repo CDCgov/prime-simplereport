@@ -122,4 +122,11 @@ jobs:
         uses: ./.github/actions/deploy-application
         with:
           client-tarball: client.tgz
-          deploy-env: ${{env.DEPLOY_ENV}}
+          deploy-env: ${{ env.DEPLOY_ENV }}
+      - name: Sendgrid maintenance banner deploy
+        uses: ./.github/actions/maintenance-banner-deploy
+        with:
+          active: "true"
+          header: "Dev Notice:"
+          message: "This environment has email delivery enabled. Do not use real email addresses."
+          env: ${{ env.DEPLOY_ENV }}
