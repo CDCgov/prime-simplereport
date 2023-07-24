@@ -1,7 +1,7 @@
 import { generateCovidOnlyDevice, generateMultiplexDevice, loginHooks } from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
 import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
-import {editDevicePageTitle, addNewDevicePageTitle} from "../../frontend/src/app/supportAdmin/pageTitles"
+import {editDevicePageTitle, addNewDevicePageTitle} from "../../frontend/src/app/supportAdmin/pageTitles.ts"
 const covidOnlyDevice = generateCovidOnlyDevice();
 const multiplexDevice = generateMultiplexDevice();
 

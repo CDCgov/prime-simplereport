@@ -1,4 +1,4 @@
-import {orgAccessPageTitle} from "../../frontend/src/app/supportAdmin/pageTitles"
+import {orgAccessPageTitle} from "../../frontend/src/app/supportAdmin/pageTitles.ts"
 const {
   loginHooks,
   generateFacility,

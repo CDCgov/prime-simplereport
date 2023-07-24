@@ -1,3 +1,4 @@
+// js file so imports to cypress work
 export const addNewDevicePageTitle = "Add a new device";
 export const editDevicePageTitle = "Edit existing device";
 export const identityVerificationPageTitle =
