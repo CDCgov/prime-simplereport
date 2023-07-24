@@ -17,6 +17,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
+import gov.cdc.usds.simplereport.api.model.errors.EmptyCsvException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -45,10 +46,13 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -140,23 +144,38 @@ public class TestResultUploadService {
     }
 
     TestResultUpload csvResult = null;
-    Future<UploadResponse> csvResponse;
+    TestResultUpload fhirResult = null;
+    Future<FutureResult<UploadResponse, Exception>> csvResponse;
     Future<UploadResponse> fhirResponse = null;
 
     if (content.length > 0) {
-      csvResponse = submitResultsAsCsv(content);
 
+      csvResponse = submitResultsAsCsv(content);
       if (fhirEnabled) {
         fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
       }
 
       try {
-        if (csvResponse.get() == null) {
-          throw new DependencyFailureException("Unable to parse Report Stream response.");
+        if (csvResponse.get().getError() != null) {
+          if (csvResponse.get().getError() instanceof DependencyFailureException) {
+            throw (DependencyFailureException) csvResponse.get().getError();
+          }
         }
-        csvResult = saveSubmissionToDb(csvResponse.get(), org, submissionId);
-        if (fhirResponse != null) {
-          saveSubmissionToDb(fhirResponse.get(), org, submissionId);
+
+        if (csvResponse.get().getValue() != null) {
+          csvResult = saveSubmissionToDb(csvResponse.get().getValue(), org, submissionId);
+        }
+
+      } catch (CsvProcessingException e) {
+        log.error("Error processing CSV in Bulk Result Upload", e);
+        Thread.currentThread().interrupt();
+      } catch (ExecutionException | InterruptedException e) {
+        log.error("Error Processing Bulk Result Upload.", e);
+        Thread.currentThread().interrupt();
+      }
+      try {
+        if (fhirResponse != null && fhirResponse.get() != null) {
+          fhirResult = saveSubmissionToDb(fhirResponse.get(), org, submissionId);
         }
       } catch (CsvProcessingException e) {
         log.error("Error processing CSV in Bulk Result Upload", e);
@@ -166,7 +185,7 @@ public class TestResultUploadService {
         Thread.currentThread().interrupt();
       }
     }
-    return csvResult;
+    return Optional.ofNullable(csvResult).orElse(fhirResult);
   }
 
   private byte[] transformCsvContent(byte[] content) {
@@ -187,6 +206,11 @@ public class TestResultUploadService {
         updatedRows.add(transformCsvRow(row));
       }
     }
+
+    if (updatedRows.isEmpty()) {
+      return null;
+    }
+
     var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
     var csvMapper =
         new CsvMapper()
@@ -360,22 +384,42 @@ public class TestResultUploadService {
             }));
   }
 
-  private Future<UploadResponse> submitResultsAsCsv(byte[] content) {
+  private Future<FutureResult<UploadResponse, Exception>> submitResultsAsCsv(byte[] content) {
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
               long start = System.currentTimeMillis();
-              UploadResponse response;
+              FutureResult<UploadResponse, Exception> result;
               var csvContent = transformCsvContent(content);
+              if (csvContent == null) {
+                return FutureResult.<UploadResponse, Exception>builder()
+                    .error(new EmptyCsvException())
+                    .build();
+              }
               try {
-                response = _client.uploadCSV(csvContent);
+                result =
+                    FutureResult.<UploadResponse, Exception>builder()
+                        .value(_client.uploadCSV(csvContent))
+                        .build();
               } catch (FeignException e) {
                 log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
-                response = parseFeignException(e);
+                try {
+                  UploadResponse value = mapper.readValue(e.contentUTF8(), UploadResponse.class);
+                  result = FutureResult.<UploadResponse, Exception>builder().value(value).build();
+
+                } catch (JsonProcessingException ex) {
+                  log.error("Unable to parse Report Stream response.", ex);
+                  result =
+                      FutureResult.<UploadResponse, Exception>builder()
+                          .error(
+                              new DependencyFailureException(
+                                  "Unable to parse Report Stream response."))
+                          .build();
+                }
               }
               log.info(
                   "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
-              return response;
+              return result;
             }));
   }
 
@@ -427,5 +471,12 @@ public class TestResultUploadService {
     FeedbackMessage[] empty = {};
     return new TestResultUpload(
         UUID.randomUUID(), UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
+  }
+
+  @Getter
+  @Builder
+  public static class FutureResult<V, E> {
+    private V value;
+    private E error;
   }
 }
