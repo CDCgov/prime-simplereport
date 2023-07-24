@@ -1,7 +1,6 @@
 import { generateCovidOnlyDevice, generateMultiplexDevice, loginHooks } from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
 import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
-import {editDevicePageTitle, addNewDevicePageTitle} from "../../frontend/src/app/supportAdmin/pageTitles.ts"
 const covidOnlyDevice = generateCovidOnlyDevice();
 const multiplexDevice = generateMultiplexDevice();
 
@@ -25,7 +24,7 @@ describe("Adding covid only and multiplex devices", () => {
       cy.visit("/admin/create-device-type");
       cy.wait("@getSpecimenTypes");
       cy.wait("@getSupportedDiseases");
-      cy.contains(addNewDevicePageTitle);
+      cy.contains("Add a new device");
       cy.contains("Save changes").should("be.not.enabled");
       cy.injectSRAxe();
       cy.checkAccessibility();
@@ -82,7 +81,7 @@ describe("Adding covid only and multiplex devices", () => {
     it("Adds covid only and multiplex devices to the facility", () => {
       cy.visit(`/settings/facility/${facility.id}`);
       cy.wait("@GetFacilities");
-      cy.contains(editDevicePageTitle);
+      cy.contains("Edit existing device");
       cy.injectSRAxe();
       cy.checkAccessibility();
       cy.get('input[role="combobox"]').first().type(covidOnlyDevice.name);
