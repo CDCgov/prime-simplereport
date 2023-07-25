@@ -360,7 +360,20 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getUserByLoginEmail_success() {}
+  void getUserByLoginEmail_success() {
+    initSampleData();
+
+    String email = "allfacilities@example.com";
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+    UserInfo userInfo = _service.getUserByLoginEmail(email);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+    assertEquals(email, userInfo.getEmail());
+    assertEquals(UserStatus.ACTIVE, userInfo.getUserStatus());
+    assertEquals(false, userInfo.getIsAdmin());
+    assertThat(userInfo.getFacilities()).hasSize(2);
+    assertThat(userInfo.getPermissions()).hasSize(10);
+  }
 
   @Test
   @WithSimpleReportSiteAdminUser
