@@ -24,7 +24,7 @@ describe("Adding covid only and multiplex devices", () => {
       cy.visit("/admin/create-device-type");
       cy.wait("@getSpecimenTypes");
       cy.wait("@getSupportedDiseases");
-      cy.contains("Add a new device");
+      cy.contains("Add new device");
       cy.contains("Save changes").should("be.not.enabled");
       cy.injectSRAxe();
       cy.checkAccessibility();
