@@ -363,6 +363,7 @@ export const MultiSelectDropdown = ({
             )}
             setSelectedDevice={selectOption}
             shouldShowSuggestions={state.isOpen}
+            // TODO
             // loading={debounced !== queryString}
             loading={false}
             queryString={state.inputValue}

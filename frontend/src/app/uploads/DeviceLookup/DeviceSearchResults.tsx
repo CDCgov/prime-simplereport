@@ -1,4 +1,5 @@
 import React from "react";
+import classnames from "classnames";
 
 import {
   DeviceType,
@@ -111,7 +112,11 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
 
   const results = (
     <div
-      className="card-container shadow-3 results-dropdown"
+      className={classnames(
+        !multiSelect && "card-container",
+        "shadow-3",
+        "results-dropdown"
+      )}
       ref={dropDownRef}
       aria-live="polite"
       role="region"
