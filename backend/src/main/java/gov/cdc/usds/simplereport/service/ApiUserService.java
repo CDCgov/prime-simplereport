@@ -649,9 +649,11 @@ public class ApiUserService {
     }
 
     ApiUser apiUser = foundUser.get();
-    UserStatus userStatus = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
 
-    if (userStatus == null) {
+    UserStatus userStatus;
+    try {
+      userStatus = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
+    } catch (IllegalGraphqlArgumentException e) {
       throw new UnidentifiedUserException();
     }
 
@@ -664,7 +666,8 @@ public class ApiUserService {
     if (optClaims.isEmpty()) {
       throw new UnidentifiedUserException();
     }
-    final OrganizationRoleClaims claims = optClaims.get();
+
+    OrganizationRoleClaims claims = optClaims.get();
 
     // use the target user's org so response is built correctly even if site admin is the requester
     Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());

@@ -3,11 +3,18 @@ package gov.cdc.usds.simplereport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
@@ -23,18 +30,22 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
-  @Autowired ApiUserRepository _apiUserRepo;
-  @Autowired OktaRepository _oktaRepo;
+  @Autowired @SpyBean ApiUserRepository _apiUserRepo;
+
+  @Autowired @SpyBean OktaRepository _oktaRepo;
 
   @Autowired OrganizationService _organizationService;
   @Autowired FacilityRepository facilityRepository;
@@ -345,6 +356,47 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     UserInfo userInfo = _service.resendActivationEmail(apiUser.getInternalId());
 
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_success() {}
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_user_not_found() {
+    doReturn(Optional.empty()).when(this._apiUserRepo).findByLoginEmailIncludeArchived(anyString());
+    NonexistentUserException caught =
+        assertThrows(
+            NonexistentUserException.class,
+            () -> _service.getUserByLoginEmail("nonexistent@email.com"));
+    assertEquals("Cannot find user.", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_account_with_okta_issue() {
+    doReturn(Optional.of(mock(ApiUser.class)))
+        .when(this._apiUserRepo)
+        .findByLoginEmailIncludeArchived(anyString());
+    doThrow(new IllegalGraphqlArgumentException("error"))
+        .when(this._oktaRepo)
+        .getUserStatus(anyString());
+
+    UnidentifiedUserException caught =
+        assertThrows(
+            UnidentifiedUserException.class,
+            () -> _service.getUserByLoginEmail("notsetupuser@email.com"));
+    assertEquals("Cannot determine user's identity.", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getUserByLoginEmail_not_authorized() {
+    AccessDeniedException caught =
+        assertThrows(
+            AccessDeniedException.class, () -> _service.getUserByLoginEmail("example@email.com"));
+    assertEquals("Access is denied", caught.getMessage());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {
