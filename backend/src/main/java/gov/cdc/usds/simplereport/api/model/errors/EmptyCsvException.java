@@ -6,6 +6,6 @@ public class EmptyCsvException extends Exception {
   @Serial private static final long serialVersionUID = 1L;
 
   public EmptyCsvException() {
-    super("CSV file has not rows");
+    super("CSV file has no rows");
   }
 }

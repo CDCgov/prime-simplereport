@@ -156,10 +156,9 @@ public class TestResultUploadService {
       }
 
       try {
-        if (csvResponse.get().getError() != null) {
-          if (csvResponse.get().getError() instanceof DependencyFailureException) {
-            throw (DependencyFailureException) csvResponse.get().getError();
-          }
+        if (csvResponse.get().getError() != null
+            && csvResponse.get().getError() instanceof DependencyFailureException) {
+          throw (DependencyFailureException) csvResponse.get().getError();
         }
 
         if (csvResponse.get().getValue() != null) {
@@ -208,7 +207,7 @@ public class TestResultUploadService {
     }
 
     if (updatedRows.isEmpty()) {
-      return null;
+      return new byte[0];
     }
 
     var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
@@ -391,7 +390,7 @@ public class TestResultUploadService {
               long start = System.currentTimeMillis();
               FutureResult<UploadResponse, Exception> result;
               var csvContent = transformCsvContent(content);
-              if (csvContent == null) {
+              if (csvContent.length == 0) {
                 return FutureResult.<UploadResponse, Exception>builder()
                     .error(new EmptyCsvException())
                     .build();
