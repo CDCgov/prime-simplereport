@@ -1219,6 +1219,26 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         });
   }
 
+  @Test
+  void getUserByEmail_supportAdminUser_notFound() {
+    useSuperUser();
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("email", "sample@email.com");
+    ObjectNode user =
+        (ObjectNode)
+            runQuery("user-by-email-query", "GetUserByLoginEmail", variables, null)
+                .get("GetUserByLoginEmail");
+    assertEquals(null, user);
+  }
+
+  @Test
+  void getUserByEmail_orgAdminUser_unauthorized() {
+    useOrgAdmin();
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("email", "sample@email.com");
+    runQuery("user-by-email-query", "GetUserByLoginEmail", variables, "Unauthorized");
+  }
+
   private List<ObjectNode> toList(ArrayNode arr) {
     List<ObjectNode> list = new ArrayList<>();
     for (int i = 0; i < arr.size(); i++) {
