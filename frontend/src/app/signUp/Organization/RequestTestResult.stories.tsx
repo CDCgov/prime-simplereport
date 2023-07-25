@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import RequestTestResult from "./RequestTestResult";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <RequestTestResult {...args} />;
+const Template: StoryFn = (args) => <RequestTestResult {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

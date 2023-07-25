@@ -14,8 +14,7 @@ module.exports = {
     );
     return config;
   },
-  framework: "@storybook/react",
-  core: {
-    builder: "@storybook/builder-webpack5",
+  framework: {
+    name: "@storybook/react-webpack5",
   },
 };

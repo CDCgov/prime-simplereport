@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import PersonalDetailsForm, {
   PersonalDetailsFormProps,
@@ -18,7 +18,7 @@ export default {
 
 type Props = React.ComponentProps<typeof PersonalDetailsForm>;
 
-const Template: Story<Props> = (args) => <PersonalDetailsForm {...args} />;
+const Template: StoryFn<Props> = (args) => <PersonalDetailsForm {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

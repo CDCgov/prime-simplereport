@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { LoadingCard } from "./LoadingCard";
 
@@ -13,7 +13,7 @@ export default {
 
 type Props = React.ComponentProps<typeof LoadingCard>;
 
-const Template: Story<Props> = (args) => <LoadingCard {...args} />;
+const Template: StoryFn<Props> = (args) => <LoadingCard {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

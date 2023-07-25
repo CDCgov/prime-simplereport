@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import SignUpGoals from "./SignUpGoals";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <SignUpGoals {...args} />;
+const Template: StoryFn = (args) => <SignUpGoals {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
