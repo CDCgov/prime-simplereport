@@ -12,6 +12,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -49,8 +51,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -189,12 +193,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
   @Test
   void mockResponse_returnsPending() {
-    var response = new UploadResponse();
-    response.setId(UUID.randomUUID());
-    response.setOverallStatus(ReportStreamStatus.RECEIVED);
-    response.setReportItemCount(5);
-    response.setErrors(new FeedbackMessage[] {});
-    response.setWarnings(new FeedbackMessage[] {});
+    UploadResponse response = buildUploadResponse();
 
     // todo rewrite this test to be valid - we're just testing our mocks now
     var result =
@@ -208,6 +207,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             response.getErrors());
 
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
@@ -237,6 +238,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         new FeignException.GatewayTimeout(responseBody, req, null, new HashMap<>());
     when(csvFileValidatorMock.validate(any())).thenReturn(Collections.emptyList());
     when(dataHubMock.uploadCSV(any())).thenThrow(reportStreamResponse);
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     assertThrows(DependencyFailureException.class, () -> sut.processResultCSV(input));
   }
@@ -321,13 +324,10 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    var response = new UploadResponse();
-    response.setId(UUID.randomUUID());
-    response.setOverallStatus(ReportStreamStatus.RECEIVED);
-    response.setReportItemCount(5);
-    response.setErrors(new FeedbackMessage[] {});
-    response.setWarnings(new FeedbackMessage[] {});
+    UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     // WHEN
     sut.processResultCSV(input);
@@ -345,13 +345,10 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    var response = new UploadResponse();
-    response.setId(UUID.randomUUID());
-    response.setOverallStatus(ReportStreamStatus.RECEIVED);
-    response.setReportItemCount(5);
-    response.setErrors(new FeedbackMessage[] {});
-    response.setWarnings(new FeedbackMessage[] {});
+    UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     // WHEN
     sut.processResultCSV(input);
@@ -369,13 +366,10 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     ReflectionTestUtils.setField(sut, "processingModeCodeValue", "T");
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
-    var response = new UploadResponse();
-    response.setId(UUID.randomUUID());
-    response.setOverallStatus(ReportStreamStatus.RECEIVED);
-    response.setReportItemCount(5);
-    response.setErrors(new FeedbackMessage[] {});
-    response.setWarnings(new FeedbackMessage[] {});
+    UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-processingModeCode-D.csv");
@@ -396,15 +390,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // GIVEN
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    var response = new UploadResponse();
-    response.setId(UUID.randomUUID());
-    response.setOverallStatus(ReportStreamStatus.RECEIVED);
-    response.setReportItemCount(5);
-    response.setErrors(new FeedbackMessage[] {});
-    response.setWarnings(new FeedbackMessage[] {});
+    UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     // WHEN
     sut.processResultCSV(input);
@@ -426,12 +417,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     // given
     ReflectionTestUtils.setField(sut, "fhirEnabled", true);
 
-    var response = new UploadResponse();
-    response.setId(UUID.randomUUID());
-    response.setOverallStatus(ReportStreamStatus.RECEIVED);
-    response.setReportItemCount(5);
-    response.setErrors(new FeedbackMessage[] {});
-    response.setWarnings(new FeedbackMessage[] {});
+    UploadResponse response = buildUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
 
@@ -444,6 +430,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
         .thenReturn("fake-rs-sender-token");
     when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
@@ -494,6 +482,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
         .thenReturn("fake-rs-sender-token");
     when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
@@ -559,6 +549,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(dataHubMock.uploadFhir(any(), any())).thenThrow(reportStreamException);
     when(repoMock.save(any())).thenReturn(csvResult);
     when(orgServiceMock.getCurrentOrganization()).thenReturn(org);
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     ArgumentCaptor<String> stringCaptor = ArgumentCaptor.forClass(String.class);
@@ -583,15 +575,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
-    var response = new UploadResponse();
-    response.setId(UUID.randomUUID());
-    response.setOverallStatus(ReportStreamStatus.RECEIVED);
-    response.setReportItemCount(5);
-    response.setErrors(new FeedbackMessage[] {});
-    response.setWarnings(new FeedbackMessage[] {});
+    UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     // WHEN
     sut.processResultCSV(input);
@@ -681,15 +670,12 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
     InputStream input =
         loadCsv("testResultUpload/test-results-upload-valid-with-escaped-commas.csv");
-    var response = new UploadResponse();
-    response.setId(UUID.randomUUID());
-    response.setOverallStatus(ReportStreamStatus.RECEIVED);
-    response.setReportItemCount(5);
-    response.setErrors(new FeedbackMessage[] {});
-    response.setWarnings(new FeedbackMessage[] {});
+    UploadResponse response = buildUploadResponse();
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
 
     // WHEN
     sut.processResultCSV(input);
@@ -703,5 +689,73 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
             "testResultUpload/test-results-upload-valid-with-escaped-commas-expected-transform.csv");
     var expectedString = new String(expectedStream.readAllBytes());
     assertThat(actualString).isEqualTo(expectedString);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_filter_out_non_covid_csv() throws IOException {
+    // GIVEN
+    ArgumentCaptor<byte[]> fileContentCaptor = ArgumentCaptor.forClass(byte[].class);
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-with-flu-results.csv");
+    UploadResponse response = buildUploadResponse();
+    when(dataHubMock.uploadCSV(any())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    verify(dataHubMock).uploadCSV(fileContentCaptor.capture());
+    var actualString = new String(fileContentCaptor.getValue(), StandardCharsets.UTF_8);
+
+    var expectedStream =
+        loadCsv(
+            "testResultUpload/test-results-upload-valid-with-escaped-commas-expected-transform.csv");
+    var expectedString = new String(expectedStream.readAllBytes());
+    assertThat(actualString).isEqualTo(expectedString);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportStandardUser
+  void uploadService_processCsv_only_submit_fhir_when_flu_only_csv() {
+    ReflectionTestUtils.setField(sut, "fhirEnabled", true);
+
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
+    UploadResponse response = buildUploadResponse();
+    var tokenResponse = new TokenResponse();
+    tokenResponse.setAccessToken("fake-rs-access-token");
+    when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
+    when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
+        .thenReturn(List.of("a", "b", "c"));
+    when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
+        .thenReturn("fake-rs-sender-token");
+    when(orgServiceMock.getCurrentOrganization()).thenReturn(factory.saveValidOrganization());
+    when(dataHubMock.uploadFhir(anyString(), anyString())).thenReturn(response);
+    when(resultsUploaderCachingServiceMock.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(Map.of("nasal swab", "000111222"));
+    when(resultsUploaderCachingServiceMock.getCovidEquipmentModelAndTestPerformedCodeSet())
+        .thenReturn(Set.of(ResultsUploaderCachingService.getKey("ID NOW", "94534-5")));
+
+    // WHEN
+    sut.processResultCSV(input);
+
+    // THEN
+    verify(dataHubMock, never()).uploadCSV(any());
+    verify(dataHubMock, times(1)).uploadFhir(anyString(), anyString());
+  }
+
+  @NotNull
+  private static UploadResponse buildUploadResponse() {
+    var response = new UploadResponse();
+    response.setId(UUID.randomUUID());
+    response.setOverallStatus(ReportStreamStatus.RECEIVED);
+    response.setReportItemCount(5);
+    response.setErrors(new FeedbackMessage[] {});
+    response.setWarnings(new FeedbackMessage[] {});
+    return response;
   }
 }
