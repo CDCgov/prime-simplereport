@@ -225,8 +225,13 @@ public class UserAuthorizationVerifier {
       UUID facilityId,
       ArchivedStatus archivedStatus,
       String namePrefixMatch,
-      boolean includeArchivedFacilities) {
+      boolean includeArchivedFacilities,
+      String orgExternalId) {
     Set<UserPermission> perms = new HashSet<>();
+
+    if (orgExternalId != null && userHasSiteAdminRole()) {
+      return true;
+    }
 
     if (facilityId != null && !userCanAccessFacility(facilityId)) {
       return false;

@@ -71,18 +71,32 @@ public class PersonService {
   }
 
   // Specifications filters for queries
+  private Specification<Person> setOrgFilter(Organization org) {
+    return (root, query, cb) -> cb.equal(root.get(SpecField.ORGANIZATION), org);
+  }
+
   private Specification<Person> inCurrentOrganizationFilter() {
     return (root, query, cb) ->
         cb.equal(root.get(SpecField.ORGANIZATION), _os.getCurrentOrganization());
   }
 
-  private Specification<Person> inAccessibleFacilitiesFilter(boolean includeArchived) {
-    Set<Facility> facilities = _os.getAccessibleFacilities();
-    if (includeArchived) {
-      facilities.addAll(_os.getArchivedFacilities());
+  private Specification<Person> inAccessibleFacilitiesFilter(
+      boolean includeArchived, Organization org) {
+    Set<Facility> facilities;
+    if (org != null) {
+      facilities = _os.getFacilities(org).stream().collect(Collectors.toSet());
+      if (includeArchived) {
+        facilities.addAll(_os.getFacilitiesIncludeArchived(org, true));
+      }
+    } else {
+      facilities = _os.getAccessibleFacilities();
+      if (includeArchived) {
+        facilities.addAll(_os.getArchivedFacilities());
+      }
     }
     Set<UUID> facilityUUIDs =
         facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet());
+
     return (root, query, cb) ->
         cb.or(
             cb.isNull(root.get(SpecField.FACILITY)),
@@ -134,19 +148,27 @@ public class PersonService {
   }
 
   // called by List function and Count function
+  // assumes whatever method calling this checks permissions to search outside of current org
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId,
       ArchivedStatus archivedStatus,
       String namePrefixMatch,
-      boolean includeArchivedFacilities) {
+      boolean includeArchivedFacilities,
+      Organization organization) {
 
     List<String> namePrefixMatchList =
         StringUtils.isEmpty(namePrefixMatch)
             ? Collections.emptyList()
             : Arrays.stream(namePrefixMatch.split("[ ,]")).collect(Collectors.toList());
 
+    Specification<Person> filter;
     // build up filter based on params
-    Specification<Person> filter = inCurrentOrganizationFilter();
+    if (organization != null) {
+      filter = setOrgFilter(organization);
+    } else {
+      filter = inCurrentOrganizationFilter();
+    }
+
     if (archivedStatus == ArchivedStatus.UNARCHIVED) {
       filter = filter.and(isDeletedFilter(false));
     } else if (archivedStatus == ArchivedStatus.ARCHIVED) {
@@ -154,7 +176,7 @@ public class PersonService {
     }
 
     if (facilityId == null) {
-      filter = filter.and(inAccessibleFacilitiesFilter(includeArchivedFacilities));
+      filter = filter.and(inAccessibleFacilitiesFilter(includeArchivedFacilities, organization));
     } else {
       filter = filter.and(inFacilityFilter(facilityId));
     }
@@ -189,6 +211,8 @@ public class PersonService {
    *     names that start with these characters. Case-insensitive. If fewer than
    * @param includeArchivedFacilities setting to true will include patients in archived facilities,
    *     ignored if facilityId is not null
+   * @param orgExternalId allows search for patients outside of current org context, can only be
+   *     performed by site admins
    * @return A list of matching patients.
    */
   @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
@@ -198,12 +222,21 @@ public class PersonService {
       int pageSize,
       ArchivedStatus archivedStatus,
       String namePrefixMatch,
-      Boolean includeArchivedFacilities) {
+      Boolean includeArchivedFacilities,
+      String orgExternalId) {
+
     if (pageOffset < 0) {
       pageOffset = DEFAULT_PAGINATION_PAGEOFFSET;
     }
     if (pageSize < 1) {
       pageSize = DEFAULT_PAGINATION_PAGESIZE;
+    }
+
+    Organization orgToSearch;
+    if (orgExternalId != null && StringUtils.isNotEmpty(orgExternalId)) {
+      orgToSearch = _os.getOrganizationWithExternalIdAsSiteAdmin(orgExternalId);
+    } else {
+      orgToSearch = null;
     }
 
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
@@ -212,7 +245,7 @@ public class PersonService {
 
     return _repo.findAll(
         buildPersonSearchFilter(
-            facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities),
+            facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities, orgToSearch),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
@@ -235,13 +268,22 @@ public class PersonService {
       UUID facilityId,
       ArchivedStatus archivedStatus,
       String namePrefixMatch,
-      boolean includeArchivedFacilities) {
+      boolean includeArchivedFacilities,
+      String orgExternalId) {
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
       return 0;
     }
+
+    Organization orgToSearch;
+    if (orgExternalId != null && StringUtils.isNotEmpty(orgExternalId)) {
+      orgToSearch = _os.getOrganizationWithExternalIdAsSiteAdmin(orgExternalId);
+    } else {
+      orgToSearch = null;
+    }
+
     return _repo.count(
         buildPersonSearchFilter(
-            facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities));
+            facilityId, archivedStatus, namePrefixMatch, includeArchivedFacilities, orgToSearch));
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
@@ -499,8 +541,13 @@ public class PersonService {
   }
 
   @AuthorizationConfiguration.RequirePermissionArchiveTargetPatient
-  public Person setIsDeleted(UUID patientId, boolean deleted) {
-    Organization patientOrg = _os.getCurrentOrganization();
+  public Person setIsDeleted(UUID patientId, boolean deleted, String orgExternalId) {
+    Organization patientOrg;
+    if (orgExternalId != null && StringUtils.isNotEmpty(orgExternalId)) {
+      patientOrg = _os.getOrganizationWithExternalIdAsSiteAdmin(orgExternalId);
+    } else {
+      patientOrg = _os.getCurrentOrganization();
+    }
     // showIsDeleted in getPatientNoPermissionsCheck should be opposite the
     // passed in "deleted" param since all patients eligible for deletion when
     // deleted = true are deleted = false currently, and vice versa
