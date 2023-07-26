@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.service.ResultsUploaderCachingService.getMapKey;
+import static gov.cdc.usds.simplereport.service.ResultsUploaderCachingService.getKey;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -13,12 +13,12 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -33,10 +33,12 @@ class ResultsUploaderCachingServiceTest extends BaseServiceTest<ResultsUploaderC
   private final Random random = new Random();
 
   @Test
-  void builds_deviceModel_testPerformedCode_set_test() {
+  void builds_deviceModel_testPerformedCode_map_test() {
     // GIVEN
-    createDeviceType("GenBody COVID-19 Ag", "97097-0");
-    createDeviceType("Alinity M", "97088-0", "97022-0");
+    createDeviceType(
+        "GenBody COVID-19 Ag", List.of("97097-0"), List.of("97000-0"), List.of("97000-1"));
+    createDeviceType(
+        "Alinity M", List.of("97088-0", "97022-0"), List.of("97011-0"), List.of("97022-1"));
 
     // WHEN
     Map<String, DeviceType> modelAndTestPerformedCodeToDeviceMap =
@@ -44,12 +46,38 @@ class ResultsUploaderCachingServiceTest extends BaseServiceTest<ResultsUploaderC
 
     // THEN
     assertThat(modelAndTestPerformedCodeToDeviceMap.keySet())
+        .hasSize(7)
+        .contains("genbody covid-19 ag|97097-0")
+        .contains("genbody covid-19 ag|97000-0")
+        .contains("genbody covid-19 ag|97000-1")
+        .contains("alinity m|97088-0")
+        .contains("alinity m|97022-0")
+        .contains("alinity m|97011-0")
+        .contains("alinity m|97022-1")
+        .contains(getKey("Alinity M", "97088-0"))
+        .contains(getKey("GenBody COVID-19 Ag", "97097-0"));
+  }
+
+  @Test
+  void builds_covid_only_deviceModel_testPerformedCode_set_test() {
+    // GIVEN
+    createDeviceType(
+        "GenBody COVID-19 Ag", List.of("97097-0"), List.of("97000-0"), List.of("97000-1"));
+    createDeviceType(
+        "Alinity M", List.of("97088-0", "97022-0"), List.of("97011-0"), List.of("97022-1"));
+
+    // WHEN
+    Set<String> covidEquipmentModelAndTestPerformedCodeSet =
+        sut.getCovidEquipmentModelAndTestPerformedCodeSet();
+
+    // THEN
+    assertThat(covidEquipmentModelAndTestPerformedCodeSet)
         .hasSize(3)
         .contains("genbody covid-19 ag|97097-0")
         .contains("alinity m|97088-0")
         .contains("alinity m|97022-0")
-        .contains(getMapKey("Alinity M", "97088-0"))
-        .contains(getMapKey("GenBody COVID-19 Ag", "97097-0"));
+        .contains(getKey("Alinity M", "97088-0"))
+        .contains(getKey("GenBody COVID-19 Ag", "97097-0"));
   }
 
   @Test
@@ -61,7 +89,11 @@ class ResultsUploaderCachingServiceTest extends BaseServiceTest<ResultsUploaderC
     verify(addressValidationService, times(1)).getZoneIdByAddress(any());
   }
 
-  protected void createDeviceType(String model, String... testPerformedCodes) {
+  protected void createDeviceType(
+      String model,
+      List<String> covidTestPerformedCodes,
+      List<String> fluATestOPerformedCodes,
+      List<String> fluBTestOPerformedCodes) {
     SpecimenType specimenType =
         specimenTypeService.createSpecimenType(
             CreateSpecimenType.builder()
@@ -71,8 +103,10 @@ class ResultsUploaderCachingServiceTest extends BaseServiceTest<ResultsUploaderC
                 .collectionLocationCode("123456789")
                 .build());
 
-    List<SupportedDiseaseTestPerformedInput> deviceTypeDiseases =
-        Arrays.stream(testPerformedCodes)
+    List<SupportedDiseaseTestPerformedInput> deviceTypeDiseases = new ArrayList<>();
+
+    deviceTypeDiseases.addAll(
+        covidTestPerformedCodes.stream()
             .map(
                 testPerformedCode ->
                     SupportedDiseaseTestPerformedInput.builder()
@@ -83,7 +117,35 @@ class ResultsUploaderCachingServiceTest extends BaseServiceTest<ResultsUploaderC
                         .testOrderedLoincCode(
                             new StringBuilder(testPerformedCode).reverse().toString())
                         .build())
-            .collect(Collectors.toList());
+            .toList());
+
+    deviceTypeDiseases.addAll(
+        fluATestOPerformedCodes.stream()
+            .map(
+                testPerformedCode ->
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(diseaseService.fluA().getInternalId())
+                        .testPerformedLoincCode(testPerformedCode)
+                        .equipmentUid(UUID.randomUUID().toString())
+                        .testkitNameId(UUID.randomUUID().toString())
+                        .testOrderedLoincCode(
+                            new StringBuilder(testPerformedCode).reverse().toString())
+                        .build())
+            .toList());
+
+    deviceTypeDiseases.addAll(
+        fluBTestOPerformedCodes.stream()
+            .map(
+                testPerformedCode ->
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(diseaseService.fluB().getInternalId())
+                        .testPerformedLoincCode(testPerformedCode)
+                        .equipmentUid(UUID.randomUUID().toString())
+                        .testkitNameId(UUID.randomUUID().toString())
+                        .testOrderedLoincCode(
+                            new StringBuilder(testPerformedCode).reverse().toString())
+                        .build())
+            .toList());
 
     deviceTypeService.createDeviceType(
         CreateDeviceType.builder()

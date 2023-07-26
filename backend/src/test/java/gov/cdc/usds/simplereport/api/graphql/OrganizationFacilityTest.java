@@ -78,7 +78,12 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
           List<String> showArchivedResultIds = showArchivedResult.findValuesAsText("id");
           assertTrue(showArchivedResultIds.contains(validFacility.getInternalId().toString()));
           assertTrue(showArchivedResultIds.contains(archivedFacility.getInternalId().toString()));
-
+          showArchivedResult.forEach(
+              node -> {
+                if (node.findValue("name").asText().equals("archived facility")) {
+                  assertTrue(node.findValue("isDeleted").asBoolean());
+                }
+              });
           variables.put("showArchived", false);
           JsonNode noArchivedResult = runQuery("facilities-query", variables).get("facilities");
           List<String> noArchivedResultIds = noArchivedResult.findValuesAsText("id");
