@@ -8,6 +8,8 @@ import React, {
 } from "react";
 import classnames from "classnames";
 
+import { useOutsideClick } from "../../../utils/hooks";
+
 import {
   ActionTypes,
   Action,
