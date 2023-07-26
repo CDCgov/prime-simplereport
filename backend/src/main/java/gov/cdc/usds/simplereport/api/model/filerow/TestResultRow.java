@@ -94,6 +94,7 @@ public class TestResultRow implements FileRow {
   final ValueOrError orderingFacilityPhoneNumber;
   final ValueOrError comment;
   final ValueOrError testResultStatus;
+  final ValueOrError testOrderedCode;
 
   static final String PATIENT_LAST_NAME = "patient_last_name";
   static final String PATIENT_FIRST_NAME = "patient_first_name";
@@ -108,8 +109,8 @@ public class TestResultRow implements FileRow {
   static final String PATIENT_RACE = "patient_race";
   static final String PATIENT_ETHNICITY = "patient_ethnicity";
   static final String ACCESSION_NUMBER = "accession_number";
-  static final String EQUIPMENT_MODEL_NAME = "equipment_model_name";
-  static final String TEST_PERFORMED_CODE = "test_performed_code";
+  public static final String EQUIPMENT_MODEL_NAME = "equipment_model_name";
+  public static final String TEST_PERFORMED_CODE = "test_performed_code";
   static final String TEST_RESULT = "test_result";
   static final String ORDER_TEST_DATE = "order_test_date";
   static final String TEST_RESULT_DATE = "test_result_date";
@@ -351,6 +352,7 @@ public class TestResultRow implements FileRow {
             rawRow, "ordering_facility_phone_number", isRequired("ordering_facility_phone_number"));
     comment = getValue(rawRow, "comment", isRequired("comment"));
     testResultStatus = getValue(rawRow, "test_result_status", isRequired("test_result_status"));
+    testOrderedCode = getValue(rawRow, "test_ordered_code", isRequired("test_ordered_code"));
   }
 
   private List<FeedbackMessage> validateDeviceModelAndTestPerformedCode(
@@ -385,7 +387,7 @@ public class TestResultRow implements FileRow {
         && resultsUploaderCachingService
             .getModelAndTestPerformedCodeToDeviceMap()
             .containsKey(
-                ResultsUploaderCachingService.getMapKey(
+                ResultsUploaderCachingService.getKey(
                     removeTrailingAsterisk(equipmentModelName), testPerformedCode));
   }
 

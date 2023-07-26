@@ -245,6 +245,21 @@ export const schemaBuilder = (facilityId: string | null) => {
                 ],
               },
               {
+                name: "Test ordered LOINC code",
+                colHeader: "test_ordered_code",
+                required: false,
+                requested: false,
+                format: "00000-0",
+                examples: [
+                  "94534-5",
+                  "94558-4",
+                  "97097-0",
+                  "94507-1",
+                  "94508-9",
+                ],
+                description: [],
+              },
+              {
                 name: "Test result",
                 colHeader: "test_result",
                 required: true,
