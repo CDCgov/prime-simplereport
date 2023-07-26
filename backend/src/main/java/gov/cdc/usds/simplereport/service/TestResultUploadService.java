@@ -156,8 +156,7 @@ public class TestResultUploadService {
       }
 
       try {
-        if (csvResponse.get().getError() != null
-            && csvResponse.get().getError() instanceof DependencyFailureException) {
+        if (csvResponse.get().getError() instanceof DependencyFailureException) {
           throw (DependencyFailureException) csvResponse.get().getError();
         }
 
@@ -165,22 +164,17 @@ public class TestResultUploadService {
           csvResult = saveSubmissionToDb(csvResponse.get().getValue(), org, submissionId);
         }
 
-      } catch (CsvProcessingException e) {
-        log.error("Error processing CSV in Bulk Result Upload", e);
-        Thread.currentThread().interrupt();
-      } catch (ExecutionException | InterruptedException e) {
-        log.error("Error Processing Bulk Result Upload.", e);
+      } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
+        log.error("Error processing csv in bulk result upload", e);
         Thread.currentThread().interrupt();
       }
+
       try {
         if (fhirResponse != null && fhirResponse.get() != null) {
           fhirResult = saveSubmissionToDb(fhirResponse.get(), org, submissionId);
         }
-      } catch (CsvProcessingException e) {
-        log.error("Error processing CSV in Bulk Result Upload", e);
-        Thread.currentThread().interrupt();
-      } catch (ExecutionException | InterruptedException e) {
-        log.error("Error Processing Bulk Result Upload.", e);
+      } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
+        log.error("Error processing FHIR in bulk result upload", e);
         Thread.currentThread().interrupt();
       }
     }
