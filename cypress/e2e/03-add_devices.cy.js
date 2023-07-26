@@ -81,7 +81,7 @@ describe("Adding covid only and multiplex devices", () => {
     it("Adds covid only and multiplex devices to the facility", () => {
       cy.visit(`/settings/facility/${facility.id}`);
       cy.wait("@GetFacilities");
-      cy.contains("Edit existing device");
+      cy.contains("Manage devices");
       cy.injectSRAxe();
       cy.checkAccessibility();
       cy.get('input[role="combobox"]').first().type(covidOnlyDevice.name);
