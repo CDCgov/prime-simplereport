@@ -1235,6 +1235,21 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
+  void getUserById_supportAdminUser_success() {
+    useSuperUser();
+    ObjectNode addedUser = runBoilerplateAddUser(Role.ADMIN);
+    Map<String, Object> variables = new HashMap<>();
+    variables.put("id", addedUser.get("id"));
+    ObjectNode retrievedUser =
+        (ObjectNode) runQuery("user-query", "GetUserDetails", variables, null).get("user");
+    assertEquals(addedUser.get("email"), retrievedUser.get("email"));
+    assertEquals(addedUser.get("id"), retrievedUser.get("id"));
+    assertEquals("ACTIVE", retrievedUser.get("status").asText());
+    assertEquals(addedUser.get("role"), retrievedUser.get("role"));
+    assertEquals(false, retrievedUser.get("isDeleted").asBoolean());
+  }
+
+  @Test
   void getUserByEmail_supportAdminUser_notFound() {
     useSuperUser();
     Map<String, Object> variables = new HashMap<>();

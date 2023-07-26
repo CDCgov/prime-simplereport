@@ -17,6 +17,8 @@ query GetUserDetails($id: ID!) {
         id
       }
     }
+    isDeleted
+    status
   }
 }
 
