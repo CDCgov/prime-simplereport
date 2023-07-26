@@ -416,6 +416,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     var headerCount = Arrays.stream(rows[0].split(",")).toList().size();
     var row = rows[1];
 
+    // if the last column is optional and empty/null this fails when it shouldn't
     assertThat(row.split(",")).hasSize(headerCount);
     assertThat(rows[1]).contains("000111222");
   }
