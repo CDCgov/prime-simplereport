@@ -66,8 +66,6 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
         </thead>
         <tbody>
           {devices.map((d, idx) => {
-            console.log(JSON.stringify(d, null, 4));
-
             return (
               <tr key={d.internalId}>
                 <td id={`device-${idx}`}>{d.manufacturer}</td>
