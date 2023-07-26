@@ -103,7 +103,7 @@ exports[`SupportAdming loads menu categories 1`] = `
                 <h2
                   class="font-heading-md margin-bottom-0 margin-top-2"
                 >
-                  Users and patients
+                  Users & patients
                 </h2>
                 <ul
                   class="usa-list padding-left-2"
@@ -223,7 +223,7 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                 <h2
                   class="font-heading-md margin-bottom-0 margin-top-2"
                 >
-                  Users and patients
+                  Users & patients
                 </h2>
                 <ul
                   class="usa-list padding-left-2"
