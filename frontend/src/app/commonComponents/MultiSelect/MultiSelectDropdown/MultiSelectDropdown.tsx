@@ -295,7 +295,7 @@ export const MultiSelectDropdown = ({
     });
   }, [dispatch, state.isOpen]);
 
-  // useOutsideClick(dropDownRef, hideOnOutsideClick);
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   return (
     <div
