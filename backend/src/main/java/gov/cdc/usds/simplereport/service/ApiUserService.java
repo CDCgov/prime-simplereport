@@ -581,10 +581,6 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo getUser(final UUID userId) {
-    if (userId == null) {
-      throw new IllegalGraphqlArgumentException("User id is missing.");
-    }
-
     final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
     if (optApiUser.isEmpty()) {
       throw new UnidentifiedUserException();

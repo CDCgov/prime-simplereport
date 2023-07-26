@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
@@ -34,6 +35,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
@@ -51,6 +53,12 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @Autowired FacilityRepository facilityRepository;
   @Autowired private TestDataFactory _dataFactory;
   Set<UUID> emptySet = Collections.emptySet();
+
+  @BeforeEach
+  void cleanup() {
+    reset(_apiUserRepo);
+    reset(_oktaRepo);
+  }
 
   // The next several retrieval tests expect the demo users as they are defined in the
   // no-security and no-okta-mgmt profiles
