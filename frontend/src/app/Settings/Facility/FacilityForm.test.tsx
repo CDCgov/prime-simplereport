@@ -17,17 +17,24 @@ import SRToastContainer from "../../commonComponents/SRToastContainer";
 import FacilityForm from "./FacilityForm";
 
 import "../../../i18n";
+import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 
 let saveFacility: jest.Mock;
 
-const devices: DeviceType[] = [
+const devices = [
   {
     internalId: "device-1",
     name: "Device 1",
+    model: "Device 1",
+    manufacturer: "Manufacturer 1",
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
   },
   {
     internalId: "device-2",
     name: "Device 2",
+    model: "Device 2",
+    manufacturer: "Manufacturer 2",
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
   },
 ];
 
@@ -762,7 +769,9 @@ describe("FacilityForm", () => {
       await act(async () => await userEvent.click(deviceInput));
       await act(
         async () =>
-          await userEvent.click(within(deviceList).getByText("Device 1"))
+          await userEvent.click(
+            within(deviceList).getByLabelText("Select Manufacturer 1 Device 1")
+          )
       );
 
       // Expect no errors

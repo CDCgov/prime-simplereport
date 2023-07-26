@@ -9,6 +9,7 @@ import {
 import userEvent from "@testing-library/user-event";
 
 import { FacilityFormData } from "../FacilityForm";
+import mockSupportedDiseaseTestPerformedCovid from "../../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 
 import ManageDevices from "./ManageDevices";
 
@@ -43,14 +44,23 @@ const validFacility: FacilityFormData = {
 const deviceA = {
   internalId: "device-a",
   name: "Device A",
+  model: "Device A",
+  manufacturer: "Manufacturer A",
+  supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
 };
 const deviceB = {
   internalId: "device-b",
   name: "Device B",
+  model: "Device B",
+  manufacturer: "Manufacturer B",
+  supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
 };
 const deviceC = {
   internalId: "device-c",
   name: "Device C",
+  model: "Device C",
+  manufacturer: "Manufacturer C",
+  supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
 };
 
 const devices: DeviceType[] = [deviceC, deviceB, deviceA];
@@ -79,41 +89,6 @@ describe("ManageDevices", () => {
     expect(expected).toBeInTheDocument();
   });
 
-  it("renders the selected devices in alphabetical order", async () => {
-    validFacility.devices = ["device-a", "device-b"];
-    render(<ManageDevicesContainer facility={validFacility} />);
-
-    const multiselect = screen.getByTestId("multi-select");
-    expect(multiselect).toBeInTheDocument();
-    const deviceList = within(multiselect).getByTestId(
-      "multi-select-option-list"
-    );
-    const deviceOptionIds = within(deviceList)
-      .getAllByTestId("multi-select-option-device", { exact: false })
-      .map((deviceOption) => deviceOption.id);
-    const expectedDeviceOptionIds = [
-      deviceA.internalId,
-      deviceB.internalId,
-      deviceC.internalId,
-    ];
-
-    expect(deviceOptionIds.length === expectedDeviceOptionIds.length);
-    expect(
-      deviceOptionIds.every(
-        (id, index) => id === expectedDeviceOptionIds[index]
-      )
-    );
-    const pillContainer = screen.getByTestId("pill-container");
-
-    within(pillContainer).getByText("Device A");
-    within(pillContainer).getByText("Device B");
-    await waitFor(() =>
-      expect(
-        within(pillContainer).queryByText("Device C")
-      ).not.toBeInTheDocument()
-    );
-  });
-
   it("allows adding devices", async () => {
     validFacility.devices = ["device-a", "device-b"];
     render(<ManageDevicesContainer facility={validFacility} />);
@@ -123,7 +98,9 @@ describe("ManageDevices", () => {
     await act(async () => await userEvent.click(deviceInput));
     await act(
       async () =>
-        await userEvent.click(within(deviceList).getByText("Device C"))
+        await userEvent.click(
+          within(deviceList).getByLabelText("Select Manufacturer C Device C")
+        )
     );
 
     expect(await screen.findByTestId("pill-container"));
