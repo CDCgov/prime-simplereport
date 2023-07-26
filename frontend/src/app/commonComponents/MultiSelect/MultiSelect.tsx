@@ -102,13 +102,23 @@ export const MultiSelect = ({
     initialSelectedValues
   );
 
-  const onItemSelected = (option: /* MultiSelectDropdownOption */ any) => {
+  const onItemSelected = (option: MultiSelectDropdownOption) => {
     const newSelectedItems = selectedItems
-      ? [...selectedItems, option.value || option.internalId]
-      : [option.value || option.internalId];
+      ? [...selectedItems, option.value]
+      : [option.value];
     setSelectedItems(Array.from(new Set(newSelectedItems)));
     setAvailableOptions(
       availableOptions.filter((_option) => _option.value !== option.value)
+    );
+  };
+
+  const onItemAdded = (option: any) => {
+    const newSelectedItems = selectedItems
+      ? [...selectedItems, option.internalId]
+      : [option.internalId];
+    setSelectedItems(Array.from(new Set(newSelectedItems)));
+    setAvailableOptions(
+      availableOptions.filter((_option) => _option.value !== option.internalId)
     );
   };
 
@@ -177,7 +187,7 @@ export const MultiSelect = ({
             id={id}
             name={name}
             options={availableOptions}
-            onChange={onItemSelected}
+            onChange={DropdownComponent ? onItemAdded : onItemSelected}
             className="multi-select-dropdown"
             disabled={isDisabled}
             placeholder={placeholder}
