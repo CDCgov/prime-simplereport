@@ -332,7 +332,6 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
     final String email = "allfacilities@example.com"; // member of DIS_ORG
     ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
-    ;
 
     UserInfo userInfo = _service.resetUserPassword(apiUser.getInternalId());
     verify(_oktaRepo, times(1)).resetUserPassword(email);
