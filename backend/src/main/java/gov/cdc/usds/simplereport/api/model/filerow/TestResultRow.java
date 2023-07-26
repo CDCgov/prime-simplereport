@@ -109,8 +109,8 @@ public class TestResultRow implements FileRow {
   static final String PATIENT_RACE = "patient_race";
   static final String PATIENT_ETHNICITY = "patient_ethnicity";
   static final String ACCESSION_NUMBER = "accession_number";
-  static final String EQUIPMENT_MODEL_NAME = "equipment_model_name";
-  static final String TEST_PERFORMED_CODE = "test_performed_code";
+  public static final String EQUIPMENT_MODEL_NAME = "equipment_model_name";
+  public static final String TEST_PERFORMED_CODE = "test_performed_code";
   static final String TEST_RESULT = "test_result";
   static final String ORDER_TEST_DATE = "order_test_date";
   static final String TEST_RESULT_DATE = "test_result_date";
@@ -387,7 +387,7 @@ public class TestResultRow implements FileRow {
         && resultsUploaderCachingService
             .getModelAndTestPerformedCodeToDeviceMap()
             .containsKey(
-                ResultsUploaderCachingService.getMapKey(
+                ResultsUploaderCachingService.getKey(
                     removeTrailingAsterisk(equipmentModelName), testPerformedCode));
   }
 
