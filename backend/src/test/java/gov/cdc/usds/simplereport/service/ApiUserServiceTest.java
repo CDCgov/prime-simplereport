@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
-import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
@@ -400,15 +400,15 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     doReturn(Optional.of(mock(ApiUser.class)))
         .when(this._apiUserRepo)
         .findByLoginEmailIncludeArchived(anyString());
-    doThrow(new IllegalGraphqlArgumentException("error"))
-        .when(this._oktaRepo)
-        .getUserStatus(anyString());
+    doThrow(IllegalGraphqlArgumentException.class).when(this._oktaRepo).getUserStatus(anyString());
 
-    UnidentifiedUserException caught =
+    OktaAccountUserException caught =
         assertThrows(
-            UnidentifiedUserException.class,
+            OktaAccountUserException.class,
             () -> _service.getUserByLoginEmail("notsetupuser@email.com"));
-    assertEquals("Cannot determine user's identity.", caught.getMessage());
+    assertEquals(
+        "User is not configured correctly: the okta account is not properly setup.",
+        caught.getMessage());
   }
 
   @Test

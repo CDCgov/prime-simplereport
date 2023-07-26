@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -646,14 +647,16 @@ public class ApiUserService {
 
     ApiUser apiUser = foundUser.get();
 
-    UserStatus userStatus;
-    try {
-      userStatus = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
-    } catch (IllegalGraphqlArgumentException e) {
-      throw new UnidentifiedUserException();
-    }
+    // ToDo if(apiUser is site admin)
 
-    return consolidateUser(apiUser, userStatus);
+    try {
+      UserStatus userStatus = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
+      return consolidateUser(apiUser, userStatus);
+    } catch (IllegalGraphqlArgumentException e) {
+      throw new OktaAccountUserException();
+    } catch (UnidentifiedUserException e) {
+      throw new OktaAccountUserException();
+    }
   }
 
   private UserInfo consolidateUser(ApiUser apiUser, UserStatus userStatus) {

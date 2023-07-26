@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
@@ -59,6 +60,13 @@ public class GraphQlConfig {
 
       if (exception instanceof NonexistentUserException) {
         String errorMessage = String.format("header: Cannot find user.; %s", defaultErrorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
+      }
+
+      if (exception instanceof OktaAccountUserException) {
+        String errorBody = "The user's account needs to be properly setup.";
+        String errorMessage =
+            String.format("header: User is not configured correctly.; %s", errorBody);
         return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 
