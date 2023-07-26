@@ -441,7 +441,7 @@ public class TestResultUploadService {
               response.getWarnings(),
               response.getErrors());
 
-      TestResultUpload finalResult = (result.getReportId() != null) ? _repo.save(result) : null;
+      TestResultUpload finalResult = _repo.save(result);
 
       if (response.getErrors() != null && response.getErrors().length > 0) {
         for (var error : response.getErrors()) {

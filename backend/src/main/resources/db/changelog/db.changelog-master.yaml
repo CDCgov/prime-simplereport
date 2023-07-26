@@ -4841,6 +4841,8 @@ databaseChangeLog:
       author: dsass@skylight.digital
       comment: set report Id to be nullable
       changes:
+        - tagDatabase:
+            tag: Removes not null constraint on upload.report_id
         - dropNotNullConstraint:
             tableName: upload
             columnName: report_id
