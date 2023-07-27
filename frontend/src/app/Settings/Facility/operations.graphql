@@ -55,7 +55,6 @@ query GetFacilities {
         name
       }
     }
-
   }
 }
 
