@@ -232,6 +232,15 @@ export const DetachedTestResultCorrectionModal = ({
         </>
       )}
       <br />
+      {isFacilityDeleted && (
+        <>
+          <i>
+            Test results and date cannot be changed for results from a deleted
+            facility.
+          </i>
+          <br />
+        </>
+      )}
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="No, go back" onClick={closeModal} />
         <Button
