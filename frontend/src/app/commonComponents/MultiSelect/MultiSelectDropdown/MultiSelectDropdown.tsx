@@ -408,7 +408,8 @@ export const MultiSelectDropdown = ({
         )}
         {state.filteredOptions.length === 0 ? (
           <li className="usa-combo-box__list-option--no-results">
-            {noResults || "No results found"}
+            {/* Dropdown component may have separate empty-result behavior */}
+            {!DropdownComponent && (noResults || "No results found")}
           </li>
         ) : null}
       </ul>
