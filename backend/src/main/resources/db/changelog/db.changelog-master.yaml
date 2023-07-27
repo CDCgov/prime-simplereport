@@ -4836,7 +4836,6 @@ databaseChangeLog:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.result_upload_error TO ${noPhiUsername};
       rollback:
             sql: REVOKE SELECT ON ${database.defaultSchemaName}.result_upload_error FROM ${noPhiUsername};
-
   - changeSet:
       id: remove-upload-report-id-not-null-constraint
       author: dsass@skylight.digital
