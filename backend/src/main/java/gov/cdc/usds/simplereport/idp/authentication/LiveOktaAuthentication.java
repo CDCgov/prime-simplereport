@@ -373,7 +373,7 @@ public class LiveOktaAuthentication implements OktaAuthentication {
     UserFactor factor;
     try {
       factor = userFactorApi.getFactor(userId, factorId);
-    } catch (RestClientException | ApiException e) {
+    } catch (ApiException e) {
       throw new OktaAuthenticationFailureException(
           "An exception was thrown while fetching the user's factor.", e);
     }
