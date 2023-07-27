@@ -157,6 +157,7 @@ query GetFacilityResultsMultiplexWithCount(
       }
       facility {
         name
+        isDeleted
       }
     }
     totalElements
