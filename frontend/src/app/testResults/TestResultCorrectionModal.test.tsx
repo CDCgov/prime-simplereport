@@ -7,6 +7,7 @@ import { act, render, screen, waitFor, within } from "@testing-library/react";
 import "./TestResultCorrectionModal.scss";
 import userEvent from "@testing-library/user-event";
 import configureStore from "redux-mock-store";
+import { MockedResponse } from "@apollo/client/testing/core";
 
 import {
   TestCorrectionReasons,
@@ -54,12 +55,34 @@ const store = mockStore({
 });
 
 const mockedNavigate = jest.fn();
+const expectedErrorMessageForDeletedFacility =
+  "Facility has been deleted. Please contact SimpleReport support for help.";
 jest.mock("react-router-dom", () => {
   return {
     ...jest.requireActual("react-router-dom"),
     useNavigate: () => mockedNavigate,
   };
 });
+const renderModal = (
+  isFacilityDeleted: Boolean,
+  mocks: ReadonlyArray<MockedResponse>,
+  initialEntries?: any[] | undefined
+) => {
+  render(
+    <Provider store={store}>
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <DetachedTestResultCorrectionModal
+            data={testResult}
+            testResultId={internalId}
+            closeModal={() => {}}
+            isFacilityDeleted={isFacilityDeleted}
+          />
+        </MemoryRouter>
+      </MockedProvider>
+    </Provider>
+  );
+};
 
 describe("TestResultCorrectionModal", () => {
   let component: any;
@@ -71,19 +94,7 @@ describe("TestResultCorrectionModal", () => {
   });
 
   it("renders the correction reason dropdown menu", async () => {
-    render(
-      <Provider store={store}>
-        <MockedProvider mocks={[]} addTypename={false}>
-          <MemoryRouter>
-            <DetachedTestResultCorrectionModal
-              data={testResult}
-              testResultId={internalId}
-              closeModal={() => {}}
-            />
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
-    );
+    renderModal(false, []);
 
     const expectedCorrectionReasons = Object.values(TestCorrectionReasons);
 
@@ -107,6 +118,7 @@ describe("TestResultCorrectionModal", () => {
               data={testResult}
               testResultId={internalId}
               closeModal={() => {}}
+              isFacilityDeleted={false}
             />
           </MemoryRouter>
         </MockedProvider>
@@ -138,33 +150,23 @@ describe("TestResultCorrectionModal", () => {
         },
       },
     ];
-
     beforeEach(() => {
-      render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <MemoryRouter>
-              <DetachedTestResultCorrectionModal
-                data={testResult}
-                testResultId={internalId}
-                closeModal={() => {}}
-              />
-            </MemoryRouter>
-          </MockedProvider>
-        </Provider>
-      );
+      markAsErrorMockDidComplete = false;
     });
+    it.each([true, false])(
+      "sends a GraphQL request to perform the removal",
+      async (isFacilityDeleted) => {
+        renderModal(isFacilityDeleted, mocks);
+        await act(
+          async () =>
+            await userEvent.click(await screen.findByText("Yes, I'm sure"))
+        );
 
-    it("sends a GraphQL request to perform the removal", async () => {
-      await act(
-        async () =>
-          await userEvent.click(await screen.findByText("Yes, I'm sure"))
-      );
-
-      await waitFor(() => {
-        expect(markAsErrorMockDidComplete).toBe(true);
-      });
-    });
+        await waitFor(() => {
+          expect(markAsErrorMockDidComplete).toBe(true);
+        });
+      }
+    );
   });
 
   describe("when correcting for incorrect result", () => {
@@ -191,24 +193,11 @@ describe("TestResultCorrectionModal", () => {
     ];
 
     beforeEach(() => {
-      render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <MemoryRouter
-              initialEntries={[`/results/1?facility=${mockFacilityID}`]}
-            >
-              <DetachedTestResultCorrectionModal
-                data={testResult}
-                testResultId={internalId}
-                closeModal={() => {}}
-              />
-            </MemoryRouter>
-          </MockedProvider>
-        </Provider>
-      );
+      markAsCorrectMockDidComplete = false;
     });
 
     it("sends a GraphQL request on submit to initiate correction", async () => {
+      renderModal(false, mocks, [`/results/1?facility=${mockFacilityID}`]);
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
@@ -230,6 +219,24 @@ describe("TestResultCorrectionModal", () => {
           `/queue?facility=${mockFacilityID}`
         );
       });
+    });
+    it("prevents submission when facility is deleted", async () => {
+      renderModal(true, mocks, [`/results/1?facility=${mockFacilityID}`]);
+      const dropdown = await screen.findByLabelText(
+        "Please select a reason for correcting this test result."
+      );
+      await act(
+        async () =>
+          await userEvent.selectOptions(
+            dropdown,
+            TestCorrectionReasons.INCORRECT_RESULT
+          )
+      );
+
+      expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
+      expect(
+        screen.getByText(expectedErrorMessageForDeletedFacility)
+      ).toBeInTheDocument();
     });
   });
 
@@ -274,21 +281,7 @@ describe("TestResultCorrectionModal", () => {
         },
       },
     ];
-    beforeEach(async () => {
-      render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <MemoryRouter>
-              <DetachedTestResultCorrectionModal
-                data={testResult}
-                testResultId={internalId}
-                closeModal={() => {}}
-              />
-            </MemoryRouter>
-          </MockedProvider>
-        </Provider>
-      );
-
+    const selectOther = async () => {
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
@@ -300,9 +293,15 @@ describe("TestResultCorrectionModal", () => {
       expect(
         await screen.findByText("Additional information", { exact: false })
       ).toBeInTheDocument();
+    };
+    beforeEach(async () => {
+      markAsErrorMockDidComplete = false;
+      markAsCorrectionMockDidComplete = false;
     });
 
     it("renders sub-form", async () => {
+      renderModal(false, mocks);
+      await selectOther();
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
@@ -324,6 +323,8 @@ describe("TestResultCorrectionModal", () => {
     });
 
     it("prevents submission if additional details not populated", async () => {
+      renderModal(false, mocks);
+      await selectOther();
       const correctionActionOption = screen.getByLabelText(
         TestCorrectionActions.CORRECT_RESULT
       );
@@ -334,6 +335,8 @@ describe("TestResultCorrectionModal", () => {
     });
 
     it("prevents submission if additional details does not meet minimum character requirement", async () => {
+      renderModal(false, mocks);
+      await selectOther();
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
@@ -349,6 +352,8 @@ describe("TestResultCorrectionModal", () => {
     });
 
     it("prevents submission if correction action not selected", async () => {
+      renderModal(false, mocks);
+      await selectOther();
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
@@ -361,28 +366,35 @@ describe("TestResultCorrectionModal", () => {
     });
 
     describe("correction actions", () => {
-      it("mark as error sends GraphQL request to remove test", async () => {
-        const additionalDetails = await screen.findByTestId(
-          "additionalInformation"
-        );
-        await act(
-          async () =>
-            await userEvent.type(additionalDetails, "Some good reason")
-        );
-        const correctionActionOption = screen.getByLabelText(
-          TestCorrectionActions.MARK_AS_ERROR,
-          { exact: false }
-        );
-        await act(async () => await userEvent.click(correctionActionOption));
+      it.each([true, false])(
+        "mark as error sends GraphQL request to remove test",
+        async (isFacilityDeleted) => {
+          renderModal(isFacilityDeleted, mocks);
+          await selectOther();
+          const additionalDetails = await screen.findByTestId(
+            "additionalInformation"
+          );
+          await act(
+            async () =>
+              await userEvent.type(additionalDetails, "Some good reason")
+          );
+          const correctionActionOption = screen.getByLabelText(
+            TestCorrectionActions.MARK_AS_ERROR,
+            { exact: false }
+          );
+          await act(async () => await userEvent.click(correctionActionOption));
 
-        const submitButton = await screen.findByText("Yes, I'm sure");
-        await act(async () => await userEvent.click(submitButton));
-        await waitFor(() => {
-          expect(markAsErrorMockDidComplete).toBe(true);
-        });
-      });
+          const submitButton = await screen.findByText("Yes, I'm sure");
+          await act(async () => await userEvent.click(submitButton));
+          await waitFor(() => {
+            expect(markAsErrorMockDidComplete).toBe(true);
+          });
+        }
+      );
 
       it("mark as incorrect results sends GraphQL request to correct test", async () => {
+        renderModal(false, mocks);
+        await selectOther();
         const additionalDetails = await screen.findByTestId(
           "additionalInformation"
         );
@@ -401,6 +413,92 @@ describe("TestResultCorrectionModal", () => {
         await act(async () => await userEvent.click(submitButton));
         await waitFor(() => expect(markAsCorrectionMockDidComplete).toBe(true));
       });
+
+      it("mark as incorrect results is blocked when facility is deleted", async () => {
+        renderModal(true, mocks);
+        await selectOther();
+        const additionalDetails = await screen.findByTestId(
+          "additionalInformation"
+        );
+        await act(
+          async () =>
+            await userEvent.type(additionalDetails, "Some good reason")
+        );
+
+        const correctionActionOption = screen.getAllByLabelText(
+          TestCorrectionActions.CORRECT_RESULT,
+          { exact: false }
+        )[0];
+
+        await act(async () => await userEvent.click(correctionActionOption));
+        expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
+        expect(
+          screen.getByText(expectedErrorMessageForDeletedFacility)
+        ).toBeInTheDocument();
+      });
+    });
+  });
+
+  describe("when correcting for incorrect test date", () => {
+    let markAsCorrectMockDidComplete = false;
+    const mocks = [
+      {
+        request: {
+          query: MARK_TEST_AS_CORRECTION,
+          variables: {
+            id: internalId,
+            reason: TestCorrectionReason.INCORRECT_TEST_DATE,
+          },
+        },
+        result: () => {
+          markAsCorrectMockDidComplete = true;
+
+          return {
+            data: {
+              correctTestMarkAsCorrection: { internalId },
+            },
+          };
+        },
+      },
+    ];
+    beforeEach(() => {
+      markAsCorrectMockDidComplete = false;
+    });
+    it("sends a GraphQL request to edit results", async () => {
+      renderModal(false, mocks);
+      const dropdown = await screen.findByLabelText(
+        "Please select a reason for correcting this test result."
+      );
+      await act(
+        async () =>
+          await userEvent.selectOptions(
+            dropdown,
+            TestCorrectionReasons.INCORRECT_TEST_DATE
+          )
+      );
+      const submitButton = await screen.findByText("Yes, I'm sure");
+      await act(async () => await userEvent.click(submitButton));
+      await waitFor(() => {
+        expect(markAsCorrectMockDidComplete).toBe(true);
+      });
+    });
+    it("should block submission for incorrect test date when facility is deleted", async () => {
+      renderModal(true, mocks);
+      const dropdown = await screen.findByLabelText(
+        "Please select a reason for correcting this test result."
+      );
+      await act(
+        async () =>
+          await userEvent.selectOptions(
+            dropdown,
+            TestCorrectionReasons.INCORRECT_TEST_DATE
+          )
+      );
+
+      expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
+      expect(
+        screen.getByText(expectedErrorMessageForDeletedFacility)
+      ).toBeInTheDocument();
     });
   });
 });

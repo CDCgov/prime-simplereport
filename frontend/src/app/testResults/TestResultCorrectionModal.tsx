@@ -110,6 +110,7 @@ export const MARK_TEST_AS_CORRECTION = gql`
 
 interface Props {
   data: any; // testQuery result
+  isFacilityDeleted: Boolean;
   testResultId: string | undefined;
   closeModal: () => void;
 }
@@ -118,6 +119,7 @@ export const DetachedTestResultCorrectionModal = ({
   testResultId,
   data,
   closeModal,
+  isFacilityDeleted = false,
 }: Props) => {
   const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
   const [markTestAsCorrection] = useMutation(MARK_TEST_AS_CORRECTION);
@@ -166,7 +168,12 @@ export const DetachedTestResultCorrectionModal = ({
         }, 1000);
       });
   };
-
+  const facilityDeletedAndInvalidSelection =
+    isFacilityDeleted.valueOf() &&
+    (reason === TestCorrectionReason.INCORRECT_RESULT ||
+      reason === TestCorrectionReason.INCORRECT_TEST_DATE ||
+      (reason === TestCorrectionReason.OTHER &&
+        action === TestCorrectionAction.CORRECT_RESULT));
   return (
     <Modal
       isOpen={true}
@@ -179,10 +186,15 @@ export const DetachedTestResultCorrectionModal = ({
         Correct result for{" "}
         {displayFullName(patient.firstName, null, patient.lastName, true)}
       </h3>
-
       <Dropdown
         options={testCorrectionReasonValues}
         label="Please select a reason for correcting this test result."
+        errorMessage={
+          "Facility has been deleted. Please contact SimpleReport support for help."
+        }
+        validationStatus={
+          facilityDeletedAndInvalidSelection ? "error" : "success"
+        }
         name="correctionReason"
         onChange={(e) => setReason(e.target.value as TestCorrectionReason)}
         selectedValue={reason}
@@ -225,8 +237,9 @@ export const DetachedTestResultCorrectionModal = ({
         <Button
           label="Yes, I'm sure"
           disabled={
-            reason === TestCorrectionReason.OTHER &&
-            (!action || correctionDetails.trim().length < 4)
+            facilityDeletedAndInvalidSelection ||
+            (reason === TestCorrectionReason.OTHER &&
+              (!action || correctionDetails.trim().length < 4))
           }
           onClick={() => {
             return reason === TestCorrectionReason.DUPLICATE_TEST ||
