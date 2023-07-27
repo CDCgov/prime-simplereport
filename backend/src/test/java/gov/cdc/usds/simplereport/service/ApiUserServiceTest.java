@@ -3,11 +3,11 @@ package gov.cdc.usds.simplereport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.when;
 
 import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
@@ -396,16 +397,29 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getUserByLoginEmail_account_with_okta_issue() {
-    doReturn(Optional.of(mock(ApiUser.class)))
-        .when(this._apiUserRepo)
-        .findByLoginEmailIncludeArchived(anyString());
-    doThrow(IllegalGraphqlArgumentException.class).when(this._oktaRepo).getUserStatus(anyString());
+  void getUserByLoginEmail_accountWithNoOktaGroups_Error() {
+    initSampleData();
+    String email = "allfacilities@example.com";
 
+    when(this._oktaRepo.findUser(anyString(), anyBoolean()))
+        .thenThrow(UnidentifiedUserException.class);
     OktaAccountUserException caught =
-        assertThrows(
-            OktaAccountUserException.class,
-            () -> _service.getUserByLoginEmail("notsetupuser@email.com"));
+        assertThrows(OktaAccountUserException.class, () -> _service.getUserByLoginEmail(email));
+    assertEquals(
+        "User is not configured correctly: the okta account is not properly setup.",
+        caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_accountNotFoundInOkta_Error() {
+    initSampleData();
+    String email = "allfacilities@example.com";
+
+    when(this._oktaRepo.findUser(anyString(), anyBoolean()))
+        .thenThrow(IllegalGraphqlArgumentException.class);
+    OktaAccountUserException caught =
+        assertThrows(OktaAccountUserException.class, () -> _service.getUserByLoginEmail(email));
     assertEquals(
         "User is not configured correctly: the okta account is not properly setup.",
         caught.getMessage());
