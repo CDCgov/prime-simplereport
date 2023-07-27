@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
@@ -66,7 +67,14 @@ public class GraphQlConfig {
       if (exception instanceof OktaAccountUserException) {
         String errorBody = "The user's account needs to be properly setup.";
         String errorMessage =
-            String.format("header: User is not configured correctly.; %s", errorBody);
+            String.format("header: User is not configured correctly; body: %s", errorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
+      }
+
+      if (exception instanceof RestrictedAccessUserException) {
+        String errorBody = "Contact development team if you need to access this information.";
+        String errorMessage =
+            String.format("header: Unauthorized to access site admin account; body: %s", errorBody);
         return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 

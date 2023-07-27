@@ -65,4 +65,6 @@ public interface OktaRepository {
   void deleteFacility(Facility facility);
 
   Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
+
+  PartialOktaUser findUser(String username, boolean supportTenantAccess);
 }

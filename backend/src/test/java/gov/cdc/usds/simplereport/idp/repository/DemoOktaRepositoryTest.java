@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -48,7 +49,8 @@ class DemoOktaRepositoryTest {
       new CurrentTenantDataAccessContextHolder();
 
   private DemoOktaRepository _repo =
-      new DemoOktaRepository(MOCK_EXTRACTOR, tenantDataAccessContextHolder);
+      new DemoOktaRepository(
+          MOCK_EXTRACTOR, tenantDataAccessContextHolder, mock(DemoUserConfiguration.class));
 
   @BeforeEach
   public void setup() {
