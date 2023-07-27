@@ -16,7 +16,7 @@ import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
-import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
+import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.PartialOktaUser;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -400,9 +401,14 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   void getUserByLoginEmail_accountWithNoOktaGroups_Error() {
     initSampleData();
     String email = "allfacilities@example.com";
+    PartialOktaUser oktaUser =
+        PartialOktaUser.builder()
+            .isAdmin(false)
+            .status(UserStatus.ACTIVE)
+            .organizationRoleClaims(Optional.empty())
+            .build();
 
-    when(this._oktaRepo.findUser(anyString(), anyBoolean()))
-        .thenThrow(UnidentifiedUserException.class);
+    when(this._oktaRepo.findUser(anyString(), anyBoolean())).thenReturn(oktaUser);
     OktaAccountUserException caught =
         assertThrows(OktaAccountUserException.class, () -> _service.getUserByLoginEmail(email));
     assertEquals(
@@ -423,6 +429,25 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     assertEquals(
         "User is not configured correctly: the okta account is not properly setup.",
         caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_UnauthorizedSiteAdminAccount_Error() {
+    initSampleData();
+    String email = "allfacilities@example.com";
+    PartialOktaUser oktaUser =
+        PartialOktaUser.builder()
+            .isAdmin(true)
+            .status(UserStatus.ACTIVE)
+            .organizationRoleClaims(Optional.empty())
+            .build();
+
+    when(this._oktaRepo.findUser(anyString(), anyBoolean())).thenReturn(oktaUser);
+    RestrictedAccessUserException caught =
+        assertThrows(
+            RestrictedAccessUserException.class, () -> _service.getUserByLoginEmail(email));
+    assertEquals("Site admin account cannot be accessed.", caught.getMessage());
   }
 
   @Test
