@@ -4836,3 +4836,18 @@ databaseChangeLog:
             sql: GRANT SELECT ON ${database.defaultSchemaName}.result_upload_error TO ${noPhiUsername};
       rollback:
             sql: REVOKE SELECT ON ${database.defaultSchemaName}.result_upload_error FROM ${noPhiUsername};
+
+  - changeSet:
+      id: remove-upload-report-id-not-null-constraint
+      author: dsass@skylight.digital
+      comment: set report Id to be nullable
+      changes:
+        - tagDatabase:
+            tag: Removes not null constraint on upload.report_id
+        - dropNotNullConstraint:
+            tableName: upload
+            columnName: report_id
+      rollback:
+        - addNotNullConstraint:
+            tableName: upload
+            columnName: report_id
