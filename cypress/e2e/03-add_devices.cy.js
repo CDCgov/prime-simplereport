@@ -1,7 +1,6 @@
 import { generateCovidOnlyDevice, generateMultiplexDevice, loginHooks } from "../support/e2e";
 import {graphqlURL} from "../utils/request-utils";
 import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
-
 const covidOnlyDevice = generateCovidOnlyDevice();
 const multiplexDevice = generateMultiplexDevice();
 
@@ -25,7 +24,7 @@ describe("Adding covid only and multiplex devices", () => {
       cy.visit("/admin/create-device-type");
       cy.wait("@getSpecimenTypes");
       cy.wait("@getSupportedDiseases");
-      cy.contains("Device type");
+      cy.contains("Add new device");
       cy.contains("Save changes").should("be.not.enabled");
       cy.injectSRAxe();
       cy.checkAccessibility();

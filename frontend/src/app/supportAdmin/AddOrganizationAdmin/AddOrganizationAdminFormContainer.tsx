@@ -10,11 +10,12 @@ import {
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
+import { addOrgAdminPageTitle } from "../pageTitles";
 
 import AddOrganizationAdminForm from "./AddOrganizationAdminForm";
 
 const AddOrganizationAdminFormContainer = () => {
-  useDocumentTitle("Add organization admin");
+  useDocumentTitle(addOrgAdminPageTitle);
   const [activeFacility] = useSelectedFacility();
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
