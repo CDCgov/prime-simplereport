@@ -200,15 +200,17 @@ public class FhirConverter {
     return new ContactPoint().setUse(use).setSystem(system).setValue(value);
   }
 
-  public AdministrativeGender convertToAdministrativeGender(@NotNull String gender) {
-    switch (gender.toLowerCase()) {
-      case "male", "m":
-        return AdministrativeGender.MALE;
-      case "female", "f":
-        return AdministrativeGender.FEMALE;
-      default:
-        return AdministrativeGender.UNKNOWN;
+  public AdministrativeGender convertToAdministrativeGender(String gender) {
+
+    if (gender == null) {
+      return AdministrativeGender.UNKNOWN;
     }
+
+    return switch (gender.toLowerCase()) {
+      case "male", "m" -> AdministrativeGender.MALE;
+      case "female", "f" -> AdministrativeGender.FEMALE;
+      default -> AdministrativeGender.UNKNOWN;
+    };
   }
 
   public Date convertToDate(@NotNull LocalDate date) {
