@@ -310,11 +310,14 @@ export const MultiSelectDropdown = ({
         onChange={(e): void =>
           dispatch({ type: ActionTypes.UPDATE_FILTER, value: e.target.value })
         }
+        onClick={(): void => dispatch({ type: ActionTypes.OPEN_LIST })}
+        /*
         onClick={
           DropdownComponent
             ? (): void => {}
             : (): void => dispatch({ type: ActionTypes.OPEN_LIST })
         }
+        */
         onBlur={handleInputBlur}
         onKeyDown={handleInputKeyDown(dispatch, state, selectOption)}
         value={state.inputValue}
