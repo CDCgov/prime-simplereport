@@ -13,29 +13,6 @@ module.exports = {
     config.resolve.alias["./TestTimer"] = require.resolve(
       "../src/stories/__mocks__/TestTimer.ts"
     );
-    config.module.rules.push({
-      test: /\.scss$/,
-      use: [
-        "style-loader",
-        "css-loader",
-        {
-          loader: "sass-loader",
-          options: {
-            implementation: require("sass"),
-            sassOptions: {
-              includePaths: [
-                resolve(__dirname, "../node_modules"),
-                resolve(__dirname, "../node_modules/@uswds"),
-                resolve(
-                  __dirname,
-                  "../node_modules/@uswds/uswds/packages/uswds"
-                ),
-              ],
-            },
-          },
-        },
-      ],
-    });
     return config;
   },
   framework: "@storybook/react",

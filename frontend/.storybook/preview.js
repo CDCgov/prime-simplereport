@@ -1,6 +1,6 @@
 import { addDecorator } from "@storybook/react";
 import { initializeWorker, mswDecorator } from "msw-storybook-addon";
-import "../src/styles/App.css";
+import "../src/scss/App.scss";
 
 initializeWorker();
 addDecorator(mswDecorator);
