@@ -174,6 +174,21 @@ export const DetachedTestResultCorrectionModal = ({
       reason === TestCorrectionReason.INCORRECT_TEST_DATE ||
       (reason === TestCorrectionReason.OTHER &&
         action === TestCorrectionAction.CORRECT_RESULT));
+
+  const validationMessageForDeletedFacility = () => {
+    if (isFacilityDeleted.valueOf()) {
+      if (
+        reason === TestCorrectionReason.INCORRECT_RESULT ||
+        (reason === TestCorrectionReason.OTHER &&
+          action === TestCorrectionAction.CORRECT_RESULT)
+      ) {
+        return "Can't update test result for deleted facility";
+      } else if (reason === TestCorrectionReason.INCORRECT_TEST_DATE) {
+        return "Can't update test date for deleted facility";
+      }
+    }
+    return "";
+  };
   return (
     <Modal
       isOpen={true}
@@ -189,11 +204,9 @@ export const DetachedTestResultCorrectionModal = ({
       <Dropdown
         options={testCorrectionReasonValues}
         label="Please select a reason for correcting this test result."
-        errorMessage={
-          "Facility has been deleted. Please contact SimpleReport support for help."
-        }
+        errorMessage={validationMessageForDeletedFacility()}
         validationStatus={
-          facilityDeletedAndInvalidSelection ? "error" : "success"
+          validationMessageForDeletedFacility() ? "error" : "success"
         }
         name="correctionReason"
         onChange={(e) => setReason(e.target.value as TestCorrectionReason)}
@@ -235,8 +248,8 @@ export const DetachedTestResultCorrectionModal = ({
       {isFacilityDeleted && (
         <>
           <i>
-            Test results and date cannot be changed for results from a deleted
-            facility.
+            You can only update duplicate tests and errors from a deleted
+            facility. Contact support@simplereport.gov for help.
           </i>
           <br />
         </>
@@ -246,7 +259,7 @@ export const DetachedTestResultCorrectionModal = ({
         <Button
           label="Yes, I'm sure"
           disabled={
-            facilityDeletedAndInvalidSelection ||
+            validationMessageForDeletedFacility().length > 0 ||
             (reason === TestCorrectionReason.OTHER &&
               (!action || correctionDetails.trim().length < 4))
           }

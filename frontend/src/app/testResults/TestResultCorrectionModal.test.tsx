@@ -55,8 +55,6 @@ const store = mockStore({
 });
 
 const mockedNavigate = jest.fn();
-const expectedErrorMessageForDeletedFacility =
-  "Facility has been deleted. Please contact SimpleReport support for help.";
 jest.mock("react-router-dom", () => {
   return {
     ...jest.requireActual("react-router-dom"),
@@ -235,7 +233,7 @@ describe("TestResultCorrectionModal", () => {
 
       expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
       expect(
-        screen.getByText(expectedErrorMessageForDeletedFacility)
+        screen.getByText("Can't update test result for deleted facility")
       ).toBeInTheDocument();
     });
   });
@@ -433,7 +431,7 @@ describe("TestResultCorrectionModal", () => {
         await act(async () => await userEvent.click(correctionActionOption));
         expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
         expect(
-          screen.getByText(expectedErrorMessageForDeletedFacility)
+          screen.getByText("Can't update test result for deleted facility")
         ).toBeInTheDocument();
       });
     });
@@ -497,7 +495,7 @@ describe("TestResultCorrectionModal", () => {
 
       expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
       expect(
-        screen.getByText(expectedErrorMessageForDeletedFacility)
+        screen.getByText("Can't update test date for deleted facility")
       ).toBeInTheDocument();
     });
   });
