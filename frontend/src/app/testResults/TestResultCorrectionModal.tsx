@@ -110,7 +110,7 @@ export const MARK_TEST_AS_CORRECTION = gql`
 
 interface Props {
   data: any; // testQuery result
-  isFacilityDeleted: Boolean;
+  isFacilityDeleted: boolean;
   testResultId: string | undefined;
   closeModal: () => void;
 }
@@ -170,7 +170,7 @@ export const DetachedTestResultCorrectionModal = ({
   };
 
   const validationMessageForDeletedFacility = () => {
-    if (isFacilityDeleted.valueOf()) {
+    if (isFacilityDeleted) {
       if (
         reason === TestCorrectionReason.INCORRECT_RESULT ||
         (reason === TestCorrectionReason.OTHER &&
