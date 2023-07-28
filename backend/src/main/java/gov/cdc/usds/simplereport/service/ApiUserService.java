@@ -590,7 +590,7 @@ public class ApiUserService {
     }
     final ApiUser apiUser = optApiUser.get();
 
-    PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail(), true);
+    PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail());
     return consolidateUser(
         apiUser, oktaUser.getOrganizationRoleClaims(), oktaUser.getStatus(), oktaUser.isAdmin());
   }
@@ -654,7 +654,7 @@ public class ApiUserService {
       // roles with the same user object. It was not possible to move the entire
       // consolidateUserInformation logic in the okta repo because the reference to the orgService
       // (necessary to create the org roles) creates a cycle dependency
-      PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail(), false);
+      PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail());
       boolean isAdmin = oktaUser.isAdmin();
 
       if (isAdmin) {
