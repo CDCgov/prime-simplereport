@@ -168,12 +168,6 @@ export const DetachedTestResultCorrectionModal = ({
         }, 1000);
       });
   };
-  const facilityDeletedAndInvalidSelection =
-    isFacilityDeleted.valueOf() &&
-    (reason === TestCorrectionReason.INCORRECT_RESULT ||
-      reason === TestCorrectionReason.INCORRECT_TEST_DATE ||
-      (reason === TestCorrectionReason.OTHER &&
-        action === TestCorrectionAction.CORRECT_RESULT));
 
   const validationMessageForDeletedFacility = () => {
     if (isFacilityDeleted.valueOf()) {
