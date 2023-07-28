@@ -3,6 +3,17 @@ import { useFeature } from "flagged";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 
+import {
+  addNewDevicePageTitle,
+  addOrgAdminPageTitle,
+  devicesColumnTitle,
+  editDevicePageTitle,
+  identityVerificationPageTitle,
+  orgAccessPageTitle,
+  orgFacilityColumnTitle,
+  usersAndPatientsColumnTitle,
+} from "./pageTitles";
+
 type CategoryMenuProps = {
   heading: string;
   children: React.ReactNode;
@@ -36,34 +47,37 @@ const SupportAdmin = () => {
             </div>
             <div className="usa-card__body">
               <div className="grid-row grid-gap">
-                <CategoryMenu heading="Organization">
+                <CategoryMenu heading={orgFacilityColumnTitle}>
                   <li>
                     <LinkWithQuery to={`/admin/pending-organizations`}>
-                      Identity verification
+                      {identityVerificationPageTitle}
                     </LinkWithQuery>
                   </li>
                   <li>
                     <LinkWithQuery to="/admin/add-organization-admin">
-                      Add organization admin
+                      {addOrgAdminPageTitle}
                     </LinkWithQuery>
                   </li>
                   <li>
                     <LinkWithQuery to="/admin/tenant-data-access">
-                      Organization data
+                      {orgAccessPageTitle}
                     </LinkWithQuery>
                   </li>
                 </CategoryMenu>
-                <CategoryMenu heading="Test Devices">
+                <CategoryMenu heading={devicesColumnTitle}>
                   <li>
                     <LinkWithQuery to="/admin/create-device-type">
-                      Add a new testing device
+                      {addNewDevicePageTitle}
                     </LinkWithQuery>
                   </li>
                   <li>
                     <LinkWithQuery to="/admin/manage-devices">
-                      Edit existing testing device
+                      {editDevicePageTitle}
                     </LinkWithQuery>
                   </li>
+                </CategoryMenu>
+                <CategoryMenu heading={usersAndPatientsColumnTitle}>
+                  <li></li>
                 </CategoryMenu>
                 {hivEnabled && (
                   <CategoryMenu heading="Beta">
