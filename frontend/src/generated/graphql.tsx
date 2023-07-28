@@ -201,7 +201,6 @@ export type Mutation = {
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
   setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]>;
-  /** @deprecated Use reactivateAndResetPassword version */
   setUserIsDeleted?: Maybe<User>;
   submitQueueItem?: Maybe<AddTestResultResponse>;
   updateDeviceType?: Maybe<DeviceType>;

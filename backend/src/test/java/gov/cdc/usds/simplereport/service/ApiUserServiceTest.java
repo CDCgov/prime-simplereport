@@ -341,6 +341,20 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void reactivateUser_orgAdmin_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.reactivateUser(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).reactivateUser(email);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void reactivateAndResetUserPassword_orgAdmin_success() {
     initSampleData();
     final String email = "allfacilities@example.com"; // member of DIS_ORG
