@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CachingConfig {
 
+  public static final String COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
+      "covidEquipmentModelAndTestPerformedCodeSet";
   public static final String DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP =
       "deviceModelAndTestPerformedCodeMap";
   public static final String SPECIMEN_NAME_AND_SNOMED_MAP = "specimenTypeNameSNOMEDMap";
@@ -18,6 +20,7 @@ public class CachingConfig {
   @Bean
   public CacheManager cacheManager() {
     return new ConcurrentMapCacheManager(
+        COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP,
         SPECIMEN_NAME_AND_SNOMED_MAP,
         ADDRESS_TIMEZONE_LOOKUP_MAP);
