@@ -570,21 +570,12 @@ public class LiveOktaRepository implements OktaRepository {
         getUserOrThrowError(username, "Cannot get org external ID for nonexistent user"));
   }
 
-  public PartialOktaUser findUser(String username, boolean supportTenantAccess) {
+  public PartialOktaUser findUser(String username) {
     User user =
         getUserOrThrowError(
             username, "Cannot retrieve Okta user's status with unrecognized username");
 
-    Optional<OrganizationRoleClaims> orgClaims;
-
-    if (supportTenantAccess
-        && _tenantDataContextHolder.hasBeenPopulated()
-        && username.equals(_tenantDataContextHolder.getUsername())) {
-      orgClaims =
-          getOrganizationRoleClaimsFromAuthorities(_tenantDataContextHolder.getAuthorities());
-    } else {
-      orgClaims = getOrganizationRoleClaimsForUser(user);
-    }
+    Optional<OrganizationRoleClaims> orgClaims = getOrganizationRoleClaimsForUser(user);
 
     return PartialOktaUser.builder()
         .username(username)

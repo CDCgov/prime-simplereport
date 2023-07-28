@@ -1218,8 +1218,8 @@ class LiveOktaRepositoryTest {
 
   @Test
   void findUser_notFound_error() {
-    var username = "nonexistent@example.com";
-    var mockUserList = mock(UserList.class);
+    String username = "nonexistent@example.com";
+    UserList mockUserList = mock(UserList.class);
 
     when(mockUserList.stream()).then(i -> Stream.empty());
     when(_client.listUsers(isNull(), isNull(), anyString(), isNull(), isNull()))
@@ -1229,55 +1229,17 @@ class LiveOktaRepositoryTest {
 
     Stream.empty().findFirst().isEmpty();
     IllegalGraphqlArgumentException caught =
-        assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.findUser(username, false));
+        assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.findUser(username));
     assertEquals(
         "Cannot retrieve Okta user's status with unrecognized username", caught.getMessage());
   }
 
   @Test
-  void findUser_asTenant_success() {
-    var username = "fraud@example.com";
-    var mockListGroups = mock(GroupList.class);
-    var mockUserList = mock(UserList.class);
-    var mockUser = mock(User.class);
-    Set<String> authorities = new HashSet<>();
-    authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:NO_ACCESS");
-    authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:ADMIN");
-
-    tenantDataAccessContextHolder.setTenantDataAccessAuthorities(username, authorities);
-
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
-        .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
-    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
-    when(mockUser.listGroups()).thenReturn(mockListGroups);
-    when(mockListGroups.stream()).then(i -> List.of().stream());
-
-    var oktaUser = _repo.findUser(username, true);
-    assertThat(oktaUser).isNotNull();
-
-    assertEquals(UserStatus.ACTIVE, oktaUser.getStatus());
-    assertEquals(username, oktaUser.getUsername());
-    assertEquals(false, oktaUser.isAdmin());
-    assertEquals(
-        "FAKE-ORG", oktaUser.getOrganizationRoleClaims().get().getOrganizationExternalId());
-    assertThat(oktaUser.getOrganizationRoleClaims().get().getFacilities()).hasSize(0);
-    assertThat(oktaUser.getOrganizationRoleClaims().get().getGrantedRoles()).hasSize(2);
-  }
-
-  @Test
   void findUser_success() {
-    var username = "siteadmin@example.com";
-    var mockListGroups = mock(GroupList.class);
-    var mockUserList = mock(UserList.class);
-    var mockUser = mock(User.class);
-    var siteAdminGroup = mock(Group.class);
-    var siteAdminProfile = mock(GroupProfile.class);
-    when(siteAdminProfile.getName()).thenReturn("SR-UNITTEST-ADMINS");
-    when(siteAdminGroup.getProfile()).thenReturn(siteAdminProfile);
-    when(siteAdminGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+    String username = "siteadmin@example.com";
+    GroupList mockListGroups = mock(GroupList.class);
+    UserList mockUserList = mock(UserList.class);
+    User mockUser = mock(User.class);
 
     when(_client.listUsers(
             isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
@@ -1286,9 +1248,11 @@ class LiveOktaRepositoryTest {
     when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
     when(mockUser.listGroups()).thenReturn(mockListGroups);
-    when(mockListGroups.stream()).then(i -> List.of(siteAdminGroup).stream());
+    when(mockListGroups.stream())
+        .then(
+            i -> List.of(createMockOktaGroup("SR-UNITTEST-ADMINS", GroupType.OKTA_GROUP)).stream());
 
-    var oktaUser = _repo.findUser(username, false);
+    PartialOktaUser oktaUser = _repo.findUser(username);
     assertThat(oktaUser).isNotNull();
 
     assertEquals(UserStatus.ACTIVE, oktaUser.getStatus());
@@ -1362,5 +1326,14 @@ class LiveOktaRepositoryTest {
     public Map<String, List<String>> getHeaders() {
       return Map.of();
     }
+  }
+
+  public Group createMockOktaGroup(String name, GroupType type) {
+    Group mockGroup = mock(Group.class);
+    GroupProfile mockProfile = mock(GroupProfile.class);
+    when(mockProfile.getName()).thenReturn(name);
+    when(mockGroup.getProfile()).thenReturn(mockProfile);
+    when(mockGroup.getType()).thenReturn(type);
+    return mockGroup;
   }
 }

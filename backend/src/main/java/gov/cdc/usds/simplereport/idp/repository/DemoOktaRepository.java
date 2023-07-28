@@ -350,7 +350,7 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
-  public PartialOktaUser findUser(String username, boolean supportTenantAccess) {
+  public PartialOktaUser findUser(String username) {
     UserStatus status =
         inactiveUsernames.contains(username) ? UserStatus.DEPROVISIONED : UserStatus.ACTIVE;
     boolean isAdmin = adminGroupMemberSet.contains(username);
@@ -358,14 +358,7 @@ public class DemoOktaRepository implements OktaRepository {
     Optional<OrganizationRoleClaims> orgClaims;
 
     try {
-      if (supportTenantAccess
-          && tenantDataContextHolder.hasBeenPopulated()
-          && username.equals(tenantDataContextHolder.getUsername())) {
-        orgClaims =
-            getOrganizationRoleClaimsFromTenantDataAccess(tenantDataContextHolder.getAuthorities());
-      } else {
-        orgClaims = Optional.ofNullable(usernameOrgRolesMap.get(username));
-      }
+      orgClaims = Optional.ofNullable(usernameOrgRolesMap.get(username));
     } catch (ScopeNotActiveException e) {
       // Tests are set up with a full SecurityContextHolder and should not rely on
       // usernameOrgRolesMap as the source of truth.

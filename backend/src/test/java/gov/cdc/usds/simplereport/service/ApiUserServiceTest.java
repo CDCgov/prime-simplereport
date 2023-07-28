@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
@@ -408,7 +407,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             .organizationRoleClaims(Optional.empty())
             .build();
 
-    when(this._oktaRepo.findUser(anyString(), anyBoolean())).thenReturn(oktaUser);
+    when(this._oktaRepo.findUser(anyString())).thenReturn(oktaUser);
     OktaAccountUserException caught =
         assertThrows(OktaAccountUserException.class, () -> _service.getUserByLoginEmail(email));
     assertEquals(
@@ -422,8 +421,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     initSampleData();
     String email = "allfacilities@example.com";
 
-    when(this._oktaRepo.findUser(anyString(), anyBoolean()))
-        .thenThrow(IllegalGraphqlArgumentException.class);
+    when(this._oktaRepo.findUser(anyString())).thenThrow(IllegalGraphqlArgumentException.class);
     OktaAccountUserException caught =
         assertThrows(OktaAccountUserException.class, () -> _service.getUserByLoginEmail(email));
     assertEquals(
@@ -443,7 +441,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             .organizationRoleClaims(Optional.empty())
             .build();
 
-    when(this._oktaRepo.findUser(anyString(), anyBoolean())).thenReturn(oktaUser);
+    when(this._oktaRepo.findUser(anyString())).thenReturn(oktaUser);
     RestrictedAccessUserException caught =
         assertThrows(
             RestrictedAccessUserException.class, () -> _service.getUserByLoginEmail(email));
