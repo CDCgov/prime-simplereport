@@ -13,11 +13,12 @@ import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
 import { showError, showSuccess } from "../../utils/srToast";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 import { useDocumentTitle } from "../../utils/hooks";
+import { editDevicePageTitle } from "../pageTitles";
 
 import DeviceForm from "./DeviceForm";
 
 const ManageDeviceTypeFormContainer = () => {
-  useDocumentTitle("Manage devices");
+  useDocumentTitle(editDevicePageTitle);
 
   const [submitted, setSubmitted] = useState(false);
   const [activeFacility] = useSelectedFacility();
@@ -86,7 +87,7 @@ const ManageDeviceTypeFormContainer = () => {
 
     return (
       <DeviceForm
-        formTitle="Manage devices"
+        formTitle={editDevicePageTitle}
         saveDeviceType={updateDevice}
         swabOptions={swabOptions}
         supportedDiseaseOptions={supportedDiseaseOptions}
