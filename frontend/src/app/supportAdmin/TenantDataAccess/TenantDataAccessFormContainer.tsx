@@ -9,11 +9,12 @@ import {
 } from "../../../generated/graphql";
 import { getAppInsights } from "../../TelemetryService";
 import { useDocumentTitle } from "../../utils/hooks";
+import { orgAccessPageTitle } from "../pageTitles";
 
 import TenantDataAccessForm from "./TenantDataAccessForm";
 
 const TenantDataAccessFormContainer = () => {
-  useDocumentTitle("Organization data access");
+  useDocumentTitle(orgAccessPageTitle);
 
   const [submitted, setSubmitted] = useState(false);
   const { data, loading, error } = useGetOrganizationsQuery({
