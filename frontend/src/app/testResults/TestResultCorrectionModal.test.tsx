@@ -62,7 +62,7 @@ jest.mock("react-router-dom", () => {
   };
 });
 const renderModal = (
-  isFacilityDeleted: Boolean,
+  isFacilityDeleted: boolean,
   mocks: ReadonlyArray<MockedResponse>,
   initialEntries?: any[] | undefined
 ) => {
