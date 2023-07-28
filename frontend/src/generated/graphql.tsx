@@ -2267,7 +2267,11 @@ export type GetFacilityResultsMultiplexWithCountQuery = {
         __typename?: "PatientLink";
         internalId?: string | null;
       } | null;
-      facility?: { __typename?: "Facility"; name: string } | null;
+      facility?: {
+        __typename?: "Facility";
+        name: string;
+        isDeleted?: boolean | null;
+      } | null;
     } | null> | null;
   } | null;
 };
@@ -6505,6 +6509,7 @@ export const GetFacilityResultsMultiplexWithCountDocument = gql`
         }
         facility {
           name
+          isDeleted
         }
       }
       totalElements
