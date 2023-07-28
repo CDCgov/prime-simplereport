@@ -341,7 +341,7 @@ export const DetachedTestResultsList = ({
         isFacilityDeleted={
           data?.testResultsPage?.content?.find(
             (content) => content?.internalId === markCorrectionId
-          )?.facility?.isDeleted || false
+          )?.facility?.isDeleted ?? false
         }
         closeModal={() => {
           setFocusOnActionMenu(markCorrectionId, "correct");
