@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -59,7 +60,8 @@ class LiveOktaRepositoryTest {
   private static final AuthorizationProperties MOCK_PROPS =
       new AuthorizationProperties(null, "UNITTEST");
   private static final OrganizationExtractor MOCK_EXTRACTOR = new OrganizationExtractor(MOCK_PROPS);
-  private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
+
+  private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
       new CurrentTenantDataAccessContextHolder();
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
   private final Client _client = mock(Client.class);
@@ -68,6 +70,7 @@ class LiveOktaRepositoryTest {
 
   @BeforeEach
   public void setup() {
+
     when(_client.getApplication(MOCK_CLIENT_ID)).thenReturn(_app);
     _repo =
         new LiveOktaRepository(
@@ -1211,6 +1214,87 @@ class LiveOktaRepositoryTest {
 
     _repo.deleteOrganization(org);
     verify(mockGroup).delete();
+  }
+
+  @Test
+  void findUser_notFound_error() {
+    var username = "nonexistent@example.com";
+    var mockUserList = mock(UserList.class);
+
+    when(mockUserList.stream()).then(i -> Stream.empty());
+    when(_client.listUsers(isNull(), isNull(), anyString(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(_client.listUsers(anyString(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+
+    Stream.empty().findFirst().isEmpty();
+    IllegalGraphqlArgumentException caught =
+        assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.findUser(username, false));
+    assertEquals(
+        "Cannot retrieve Okta user's status with unrecognized username", caught.getMessage());
+  }
+
+  @Test
+  void findUser_asTenant_success() {
+    var username = "fraud@example.com";
+    var mockListGroups = mock(GroupList.class);
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+    Set<String> authorities = new HashSet<>();
+    authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:NO_ACCESS");
+    authorities.add("SR-UNITTEST-TENANT:FAKE-ORG:ADMIN");
+
+    tenantDataAccessContextHolder.setTenantDataAccessAuthorities(username, authorities);
+
+    when(_client.listUsers(
+            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+    when(mockUser.listGroups()).thenReturn(mockListGroups);
+    when(mockListGroups.stream()).then(i -> List.of().stream());
+
+    var oktaUser = _repo.findUser(username, true);
+    assertThat(oktaUser).isNotNull();
+
+    assertEquals(UserStatus.ACTIVE, oktaUser.getStatus());
+    assertEquals(username, oktaUser.getUsername());
+    assertEquals(false, oktaUser.isAdmin());
+    assertEquals(
+        "FAKE-ORG", oktaUser.getOrganizationRoleClaims().get().getOrganizationExternalId());
+    assertThat(oktaUser.getOrganizationRoleClaims().get().getFacilities()).hasSize(0);
+    assertThat(oktaUser.getOrganizationRoleClaims().get().getGrantedRoles()).hasSize(2);
+  }
+
+  @Test
+  void findUser_success() {
+    var username = "siteadmin@example.com";
+    var mockListGroups = mock(GroupList.class);
+    var mockUserList = mock(UserList.class);
+    var mockUser = mock(User.class);
+    var siteAdminGroup = mock(Group.class);
+    var siteAdminProfile = mock(GroupProfile.class);
+    when(siteAdminProfile.getName()).thenReturn("SR-UNITTEST-ADMINS");
+    when(siteAdminGroup.getProfile()).thenReturn(siteAdminProfile);
+    when(siteAdminGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+
+    when(_client.listUsers(
+            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+    when(mockUser.listGroups()).thenReturn(mockListGroups);
+    when(mockListGroups.stream()).then(i -> List.of(siteAdminGroup).stream());
+
+    var oktaUser = _repo.findUser(username, false);
+    assertThat(oktaUser).isNotNull();
+
+    assertEquals(UserStatus.ACTIVE, oktaUser.getStatus());
+    assertEquals(username, oktaUser.getUsername());
+    assertEquals(true, oktaUser.isAdmin());
+    assertEquals(true, oktaUser.getOrganizationRoleClaims().isEmpty());
   }
 
   // Dummy error for duplicate users.
