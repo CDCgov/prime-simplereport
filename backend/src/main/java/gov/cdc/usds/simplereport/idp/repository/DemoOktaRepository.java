@@ -363,20 +363,21 @@ public class DemoOktaRepository implements OktaRepository {
           && username.equals(tenantDataContextHolder.getUsername())) {
         orgClaims =
             getOrganizationRoleClaimsFromTenantDataAccess(tenantDataContextHolder.getAuthorities());
+      } else {
+        orgClaims = Optional.ofNullable(usernameOrgRolesMap.get(username));
       }
-      orgClaims = Optional.ofNullable(usernameOrgRolesMap.get(username));
-
     } catch (ScopeNotActiveException e) {
       // Tests are set up with a full SecurityContextHolder and should not rely on
       // usernameOrgRolesMap as the source of truth.
       if (!("UNITTEST".equals(environment)) && usernameOrgRolesMap.containsKey(username)) {
         orgClaims = Optional.of(usernameOrgRolesMap.get(username));
+      } else {
+        Set<String> authorities =
+            SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+        orgClaims = getOrganizationRoleClaimsFromTenantDataAccess(authorities);
       }
-      Set<String> authorities =
-          SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
-              .map(GrantedAuthority::getAuthority)
-              .collect(Collectors.toSet());
-      orgClaims = getOrganizationRoleClaimsFromTenantDataAccess(authorities);
     }
 
     return PartialOktaUser.builder()
