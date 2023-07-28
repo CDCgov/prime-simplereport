@@ -338,6 +338,11 @@ export const DetachedTestResultsList = ({
     return (
       <TestResultCorrectionModal
         testResultId={markCorrectionId}
+        isFacilityDeleted={
+          data?.testResultsPage?.content?.find(
+            (content) => content?.internalId === markCorrectionId
+          )?.facility?.isDeleted ?? false
+        }
         closeModal={() => {
           setFocusOnActionMenu(markCorrectionId, "correct");
           setMarkCorrectionId(undefined);
