@@ -317,10 +317,9 @@ public class LiveOktaRepository implements OktaRepository {
     updateUser(user, userIdentity);
     userApi.resetFactors(user.getId());
 
-    // transitioning from SUSPENDED -> DEPROVISIONED -> ACTIVE will reset the user's password
-    // and password reset question.  `.activate(true)` will send an activation email (just like
-    // creating a new account).  This cannot be done with `.reactivate()` because `.reactivate()`
-    // requires the user to be in PROVISIONED state
+    // transitioning from SUSPENDED -> DEPROVISIONED -> ACTIVE will reset the user's password and
+    // password reset question. This cannot be done with `.reactivateUser()` because it requires the
+    // user to be in PROVISIONED state
     userApi.deactivateUser(user.getId(), false);
     userApi.activateUser(user.getId(), true);
   }
@@ -376,7 +375,6 @@ public class LiveOktaRepository implements OktaRepository {
     groupNamesToAdd.removeIf(currentOrgGroupMapForUser::containsKey);
 
     if (!groupNamesToRemove.isEmpty() || !groupNamesToAdd.isEmpty()) {
-
       Map<String, Group> fullOrgGroupMap =
           groupApi
               .listGroups(
