@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.okta.sdk.resource.user.UserStatus;
@@ -47,12 +49,11 @@ import org.springframework.test.context.TestPropertySource;
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Autowired @SpyBean ApiUserRepository _apiUserRepo;
-
   @Autowired @SpyBean OktaRepository _oktaRepo;
-
   @Autowired OrganizationService _organizationService;
   @Autowired FacilityRepository facilityRepository;
   @Autowired private TestDataFactory _dataFactory;
+
   Set<UUID> emptySet = Collections.emptySet();
 
   @BeforeEach
@@ -350,6 +351,35 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
 
     UserInfo userInfo = _service.resetUserPassword(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).resetUserPassword(email);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void reactivateUser_orgAdmin_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.reactivateUser(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).reactivateUser(email);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void reactivateAndResetUserPassword_orgAdmin_success() {
+    initSampleData();
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.reactivateUserAndResetPassword(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).reactivateUser(email);
+    verify(_oktaRepo, times(1)).resetUserPassword(email);
 
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
   }

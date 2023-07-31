@@ -318,6 +318,12 @@ public class ApiUserService {
     return new UserInfo(apiUser, Optional.empty(), isAdmin(apiUser));
   }
 
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
+  public UserInfo reactivateUserAndResetPassword(UUID userId) {
+    UserInfo reactivatedUser = reactivateUser((userId));
+    return resetUserPassword(reactivatedUser.getId());
+  }
+
   // This method is used to reactivate users that have been suspended due to inactivity
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo reactivateUser(UUID userId) {

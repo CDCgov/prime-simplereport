@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
@@ -39,7 +39,7 @@ const store = mockStore({
 
 type Props = React.ComponentProps<typeof Analytics>;
 
-const Template: Story<Props> = (args) => (
+const Template: StoryFn<Props> = (args) => (
   <Provider store={store}>
     <Analytics {...args} />
   </Provider>

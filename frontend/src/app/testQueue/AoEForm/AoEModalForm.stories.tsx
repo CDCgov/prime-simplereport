@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { ComponentProps } from "react";
 
 import { getMocks, StoryGraphQLProvider } from "../../../stories/storyMocks";
@@ -16,7 +16,7 @@ export default {
   },
 } as Meta;
 
-const Template: Story<ComponentProps<typeof AoEModalForm>> = (args) => (
+const Template: StoryFn<ComponentProps<typeof AoEModalForm>> = (args) => (
   <StoryGraphQLProvider>
     <AoEModalForm {...args} />
   </StoryGraphQLProvider>

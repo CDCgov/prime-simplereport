@@ -121,6 +121,12 @@ public class UserMutationResolver {
   }
 
   @MutationMapping
+  public User reactivateUserAndResetPassword(@Argument UUID id) {
+    UserInfo user = _us.reactivateUserAndResetPassword(id);
+    return new User(user);
+  }
+
+  @MutationMapping
   public User resetUserMfa(@Argument UUID id) {
     UserInfo user = _us.resetUserMfa(id);
     return new User(user);

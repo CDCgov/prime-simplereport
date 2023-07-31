@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import { Tag } from "@trussworks/react-uswds";
 
 export default {
@@ -13,7 +13,7 @@ export default {
 
 type Props = React.ComponentProps<typeof Tag>;
 
-const Template: Story<Props> = (args) => <Tag {...args} />;
+const Template: StoryFn<Props> = (args) => <Tag {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
