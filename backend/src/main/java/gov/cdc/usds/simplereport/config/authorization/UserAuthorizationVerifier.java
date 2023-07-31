@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -229,7 +230,7 @@ public class UserAuthorizationVerifier {
       String orgExternalId) {
     Set<UserPermission> perms = new HashSet<>();
 
-    if (orgExternalId != null && userHasSiteAdminRole()) {
+    if (orgExternalId != null && StringUtils.isNotEmpty(orgExternalId) && userHasSiteAdminRole()) {
       return true;
     }
 
