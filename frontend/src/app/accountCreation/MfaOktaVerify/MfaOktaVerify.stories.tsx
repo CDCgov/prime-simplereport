@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { MfaOktaVerify } from "./MfaOktaVerify";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <MfaOktaVerify {...args} />;
+const Template: StoryFn = (args) => <MfaOktaVerify {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

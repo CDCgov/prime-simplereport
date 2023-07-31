@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import React, { useState } from "react";
 
 import Checkboxes from "../app/commonComponents/Checkboxes";
@@ -37,7 +37,7 @@ export default {
 
 type Props = React.ComponentProps<typeof Checkboxes>;
 
-const Template: Story<Props> = (args) => {
+const Template: StoryFn<Props> = (args) => {
   const [fruits, setFruits] = useState({});
 
   return (
