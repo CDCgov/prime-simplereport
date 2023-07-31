@@ -5,7 +5,7 @@
     "devDependencies": {
         "@types/faker": "^5.5.9",
         "cypress": "^11.0.0",
-        "cypress-localstorage-commands": "^1.6.1",
+        "cypress-localstorage-commands": "^2.2.3",
         "eslint-plugin-cypress": "^2.12.1",
         "faker": "^5.5.3",
         "otplib": "^12.0.1"
