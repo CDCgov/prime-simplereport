@@ -376,6 +376,7 @@ public class DemoOktaRepository implements OktaRepository {
     return PartialOktaUser.builder()
         .isAdmin(isAdmin)
         .status(status)
+        .username(username)
         .organizationRoleClaims(orgClaims)
         .build();
   }

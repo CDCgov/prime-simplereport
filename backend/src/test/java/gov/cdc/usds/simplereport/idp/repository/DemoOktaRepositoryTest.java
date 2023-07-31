@@ -471,6 +471,38 @@ class DemoOktaRepositoryTest {
     assertThat(_repo.fetchAdminUserEmail(ABC)).contains("dianek@gmail.com");
   }
 
+  @Test
+  void findUser_success() {
+    createOrgAndFacilities();
+    _repo.createUser(
+        AMOS,
+        ABC,
+        Set.of(ABC_1, ABC_2),
+        Set.of(OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
+        true);
+    _repo.createUser(BRAD, ABC, Set.of(ABC_1), Set.of(OrganizationRole.ENTRY_ONLY), true);
+
+    PartialOktaUser amos = _repo.findUser(AMOS.getUsername());
+
+    Optional<OrganizationRoleClaims> amos_expected =
+        Optional.of(
+            new OrganizationRoleClaims(
+                ABC.getExternalId(),
+                Set.of(),
+                Set.of(
+                    OrganizationRole.NO_ACCESS,
+                    OrganizationRole.ALL_FACILITIES,
+                    OrganizationRole.ADMIN)));
+
+    assertEquals(false, amos.isAdmin);
+    assertEquals(UserStatus.ACTIVE, amos.getStatus());
+    assertEquals(AMOS.getUsername(), amos.getUsername());
+    assertTrue(amos.getOrganizationRoleClaims().isPresent());
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(amos_expected.get())
+            .matches(amos.getOrganizationRoleClaims().get()));
+  }
+
   private static Facility getFacility(UUID uuid, Organization org) {
     Facility facility = mock(Facility.class);
     when(facility.getInternalId()).thenReturn(uuid);
