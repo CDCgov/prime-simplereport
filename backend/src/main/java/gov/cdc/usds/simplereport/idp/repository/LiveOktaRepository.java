@@ -315,8 +315,6 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     updateUser(user, userIdentity);
-
-    // reset all MFA factors (this triggers an email to the user, which can be configured in Okta)
     userApi.resetFactors(user.getId());
 
     // transitioning from SUSPENDED -> DEPROVISIONED -> ACTIVE will reset the user's password
