@@ -254,8 +254,7 @@ public class UserAuthorizationVerifier {
     return userHasPermissions(perms);
   }
 
-  public boolean siteAdminCanArchivePatient(
-      UUID patientLinkId, boolean deleted, String orgExternalId) {
+  public boolean siteAdminCanArchivePatient(String orgExternalId) {
     return StringUtils.isNotEmpty(orgExternalId) && _authService.isSiteAdmin();
   }
 

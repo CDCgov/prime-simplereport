@@ -655,7 +655,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             .getPatients(
                 site1Id, 0, 5, ArchivedStatus.UNARCHIVED, null, false, _org.getExternalId())
             .get(0);
-    _service.setIsDeleted(charles.getInternalId(), true, _org.getExternalId());
+    UUID charlesId = charles.getInternalId();
+    _service.setIsDeleted(charlesId, true, _org.getExternalId());
 
     List<Person> archivedResult =
         _service.getPatients(
@@ -673,10 +674,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _service.setIsDeleted(charles.getInternalId(), true, _org.getExternalId()));
+            () -> _service.setIsDeleted(charlesId, true, _org.getExternalId()));
     assertEquals("No patient with that ID was found", caught.getMessage());
 
-    _service.setIsDeleted(charles.getInternalId(), false, _org.getExternalId());
+    _service.setIsDeleted(charlesId, false, _org.getExternalId());
     List<Person> unarchivedResult =
         _service.getPatients(
             site1Id,
