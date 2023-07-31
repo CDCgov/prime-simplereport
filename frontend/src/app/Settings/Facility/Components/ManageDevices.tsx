@@ -51,7 +51,7 @@ const ManageDevices: React.FC<Props> = ({
           initialSelectedValues={formCurrentValues.devices}
           validationStatus={errors?.devices?.type ? "error" : "success"}
           required
-          placeholder="Add device"
+          placeholder="Search for a device to add it"
           DropdownComponent={DeviceSearchResults}
           deviceOptions={deviceTypes}
           errorMessage={errors?.devices?.message}

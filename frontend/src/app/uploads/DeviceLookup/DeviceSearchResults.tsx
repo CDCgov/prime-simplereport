@@ -123,7 +123,12 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
       <div className="usa-sr-only" id={"device-result-table-desc"}>
         device search results
       </div>
-      <div className="usa-card__body results-dropdown__body">
+      <div
+        className={classnames(
+          !multiSelect && "usa-card__body",
+          "results-dropdown__body"
+        )}
+      >
         {resultsContent}
       </div>
     </div>

@@ -8,6 +8,8 @@ import React, {
 } from "react";
 import classnames from "classnames";
 
+import { useOutsideClick } from "../../../utils/hooks";
+
 import {
   ActionTypes,
   Action,
@@ -295,7 +297,7 @@ export const MultiSelectDropdown = ({
     });
   }, [dispatch, state.isOpen]);
 
-  // useOutsideClick(dropDownRef, hideOnOutsideClick);
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   return (
     <div

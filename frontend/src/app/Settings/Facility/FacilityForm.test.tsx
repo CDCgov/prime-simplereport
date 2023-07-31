@@ -13,11 +13,10 @@ import * as clia from "../../utils/clia";
 import * as state from "../../utils/state";
 import * as smartyStreets from "../../utils/smartyStreets";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
+import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
+import "../../../i18n";
 
 import FacilityForm from "./FacilityForm";
-
-import "../../../i18n";
-import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 
 let saveFacility: jest.Mock;
 
