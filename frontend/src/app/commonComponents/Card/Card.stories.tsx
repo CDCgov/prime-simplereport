@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { Card } from "./Card";
 
@@ -10,7 +10,7 @@ export default {
   },
 } as Meta;
 
-const Template: Story = (args) => <Card {...args} />;
+const Template: StoryFn = (args) => <Card {...args} />;
 
 export const WithChildren = Template.bind({});
 WithChildren.args = {

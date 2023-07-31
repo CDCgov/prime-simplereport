@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import NextSteps from "./NextSteps";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <NextSteps {...args} />;
+const Template: StoryFn = (args) => <NextSteps {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { MfaPhoneVerify } from "./MfaPhoneVerify";
@@ -9,7 +9,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => (
+const Template: StoryFn = (args) => (
   <MemoryRouter initialEntries={[{ state: { contact: "(530) 867-5309" } }]}>
     <MfaPhoneVerify {...args} />
   </MemoryRouter>

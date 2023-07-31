@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
@@ -32,7 +32,7 @@ export default {
   ],
 } as Meta;
 
-const Template: Story<Props> = (args) => (
+const Template: StoryFn<Props> = (args) => (
   <Provider store={store}>
     <MemoryRouter>
       <Submissions {...args} />

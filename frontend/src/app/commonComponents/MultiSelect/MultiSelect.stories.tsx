@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import React from "react";
 
 import { MultiSelectDropdownOption } from "./MultiSelectDropdown/MultiSelectDropdown";
@@ -25,7 +25,7 @@ export default {
 
 type Props = React.ComponentProps<typeof MultiSelect>;
 
-const Template: Story<Props> = (args) => (
+const Template: StoryFn<Props> = (args) => (
   <>
     <MultiSelect {...args} />
   </>

@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
@@ -15,7 +15,7 @@ const store = mockStore({
   activationToken: "foo",
 });
 
-const Template: Story = (args) => (
+const Template: StoryFn = (args) => (
   <Provider store={store}>
     <PasswordCreate {...args} />
   </Provider>

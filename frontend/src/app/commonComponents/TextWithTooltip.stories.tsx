@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { TextWithTooltip } from "./TextWithTooltip";
 
@@ -15,7 +15,7 @@ export default {
 
 type Props = React.ComponentProps<typeof TextWithTooltip>;
 
-const Template: Story<Props> = (args) => (
+const Template: StoryFn<Props> = (args) => (
   <div className="margin-9">
     <p>
       This is a sentence which contains a <TextWithTooltip {...args} />.
