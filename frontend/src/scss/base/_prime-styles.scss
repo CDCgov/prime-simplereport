@@ -1185,3 +1185,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     max-width: $site-max-width;
   }
 }
+
+.usa-form-group abbr[title=required] {
+  text-decoration: none;
+}
