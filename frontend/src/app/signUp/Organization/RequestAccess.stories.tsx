@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import RequestAccess from "./RequestAccess";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <RequestAccess {...args} />;
+const Template: StoryFn = (args) => <RequestAccess {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

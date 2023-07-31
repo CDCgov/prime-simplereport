@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import YesNoNotSureRadioGroup from "./YesNoNotSureRadioGroup";
 
@@ -20,7 +20,7 @@ export default {
 
 type Props = React.ComponentProps<typeof YesNoNotSureRadioGroup>;
 
-const RadioGroupTemplate: Story<Props> = (args) => (
+const RadioGroupTemplate: StoryFn<Props> = (args) => (
   <div className="margin-9">
     <YesNoNotSureRadioGroup {...args} />
   </div>

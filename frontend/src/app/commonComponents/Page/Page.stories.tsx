@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import Page from "./Page";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = () => <Page />;
+const Template: StoryFn = () => <Page />;
 
 export const WithChildren = Template.bind({});
 WithChildren.args = {

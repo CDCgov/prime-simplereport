@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import {
   featureList,
@@ -25,7 +25,7 @@ export default {
 
 type Props = React.ComponentProps<typeof NewFeatureTag>;
 
-const Template: Story<Props> = (args) => <NewFeatureTag {...args} />;
+const Template: StoryFn<Props> = (args: Props) => <NewFeatureTag {...args} />;
 
 const date = new Date();
 date.setMonth(date.getMonth() + 1);

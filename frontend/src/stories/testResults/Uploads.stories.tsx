@@ -1,6 +1,6 @@
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 
 import { store } from "../../app/store";
 import { StoryGraphQLProvider } from "../../stories/storyMocks";
@@ -22,7 +22,7 @@ export default {
   ],
 } as Meta;
 
-const Template: Story<Props> = (args) => (
+const Template: StoryFn<Props> = (args) => (
   <Provider store={store}>
     <MemoryRouter>
       <Uploads {...args} />
