@@ -1,7 +1,9 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.Organization;
