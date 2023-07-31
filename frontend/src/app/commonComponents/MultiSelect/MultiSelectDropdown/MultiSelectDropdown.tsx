@@ -8,8 +8,6 @@ import React, {
 } from "react";
 import classnames from "classnames";
 
-import { useOutsideClick } from "../../../utils/hooks";
-
 import {
   ActionTypes,
   Action,
@@ -209,7 +207,7 @@ export const MultiSelectDropdown = ({
   placeholder,
   ariaInvalid,
   registrationProps,
-  DropdownComponent, // don't kid ourselves, be explicit that this must be DeviceSearchResults?
+  DropdownComponent, // TODO: don't kid ourselves, be explicit that this must be DeviceSearchResults?
   deviceOptions,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
@@ -297,7 +295,7 @@ export const MultiSelectDropdown = ({
     });
   }, [dispatch, state.isOpen]);
 
-  useOutsideClick(dropDownRef, hideOnOutsideClick);
+  // useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   return (
     <div
