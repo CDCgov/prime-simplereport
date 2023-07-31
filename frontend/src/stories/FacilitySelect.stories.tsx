@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { Provider } from "react-redux";
 import createMockStore from "redux-mock-store";
 
@@ -28,7 +28,7 @@ const store = mockStore({
   ],
 });
 
-const Template = (): Story<FacilitySelectProps> => (args) =>
+const Template = (): StoryFn<FacilitySelectProps> => (args) =>
   (
     <Provider store={store}>
       <FacilitySelect {...args} />

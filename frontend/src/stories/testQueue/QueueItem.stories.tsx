@@ -1,4 +1,4 @@
-import { Meta, Story } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import createMockStore from "redux-mock-store";
@@ -41,7 +41,7 @@ const store = mockStore({
   organization: { name: "An Organization " },
 });
 
-const Template: Story<QueueItemProps> = (args) => {
+const Template: StoryFn<QueueItemProps> = (args) => {
   return (
     <MemoryRouter>
       <Provider store={store}>
