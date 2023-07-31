@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientSelfRegistrationLink;
@@ -605,7 +604,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void deletePatient_siteAdminUser_noExternalOrgId_throwsException() {
+  void deletePatient_siteAdminUser_noExternalOrgId_failure() {
     makedata(false, false);
     UUID site1Id = _site1.getInternalId();
     Person charles =
@@ -614,15 +613,81 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 site1Id, 0, 5, ArchivedStatus.UNARCHIVED, null, false, _org.getExternalId())
             .get(0);
     UUID charlesId = charles.getInternalId();
-    MisconfiguredUserException caught =
+    AccessDeniedException caught =
         assertThrows(
-            MisconfiguredUserException.class,
+            AccessDeniedException.class,
             // no orgExternalId provided
             () -> _service.setIsDeleted(charlesId, true, null));
     // site admin needs to ghost into organization to delete this patient
+    assertEquals("Access is denied", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void deletePatient_siteAdminUser_withNonExistentExternalOrgId_throwsException() {
+    makedata(false, false);
+    UUID site1Id = _site1.getInternalId();
+    Person charles =
+        _service
+            .getPatients(
+                site1Id, 0, 5, ArchivedStatus.UNARCHIVED, null, false, _org.getExternalId())
+            .get(0);
+    UUID charlesId = charles.getInternalId();
+    String nonExistentExternalOrgId = String.format("%s-%s-%s", "NJ", "Org", UUID.randomUUID());
+
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _service.setIsDeleted(charlesId, true, nonExistentExternalOrgId));
     assertEquals(
-        "User is not configured correctly: user should be a member of exactly one valid organization.",
+        String.format(
+            "An organization with external_id=%s does not exist", nonExistentExternalOrgId),
         caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void unDeletePatient_siteAdminUser_success() {
+    makedata(false, false);
+    UUID site1Id = _site1.getInternalId();
+    Person charles =
+        _service
+            .getPatients(
+                site1Id, 0, 5, ArchivedStatus.UNARCHIVED, null, false, _org.getExternalId())
+            .get(0);
+    _service.setIsDeleted(charles.getInternalId(), true, _org.getExternalId());
+
+    List<Person> archivedResult =
+        _service.getPatients(
+            site1Id,
+            PATIENT_PAGEOFFSET,
+            PATIENT_PAGESIZE,
+            ArchivedStatus.ARCHIVED,
+            null,
+            false,
+            _org.getExternalId());
+    assertEquals(1, archivedResult.size());
+    assertPatientList(archivedResult, CHARLES);
+
+    // trying to delete the same user throws an exception
+    IllegalGraphqlArgumentException caught =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> _service.setIsDeleted(charles.getInternalId(), true, _org.getExternalId()));
+    assertEquals("No patient with that ID was found", caught.getMessage());
+
+    _service.setIsDeleted(charles.getInternalId(), false, _org.getExternalId());
+    List<Person> unarchivedResult =
+        _service.getPatients(
+            site1Id,
+            PATIENT_PAGEOFFSET,
+            PATIENT_PAGESIZE,
+            ArchivedStatus.UNARCHIVED,
+            null,
+            false,
+            _org.getExternalId());
+    assertEquals(4, unarchivedResult.size());
+    assertPatientList(unarchivedResult, CHARLES, BRAD, ELIZABETH, AMOS);
   }
 
   @Test
