@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { uniqueId, cloneDeep } from "lodash";
 
 import {
@@ -103,7 +103,7 @@ undeterminedAllMultiplexProps.data.testResult.results = [
   { disease: { name: "Flu B" }, testResult: "UNDETERMINED" },
 ];
 
-const Template: Story<TestResultPrintModalProps> = (args) => {
+const Template: StoryFn<TestResultPrintModalProps> = (args) => {
   return <DetachedTestResultPrintModal {...args} />;
 };
 

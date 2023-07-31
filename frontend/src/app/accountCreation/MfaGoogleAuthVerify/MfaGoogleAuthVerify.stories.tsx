@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { MfaGoogleAuthVerify } from "./MfaGoogleAuthVerify";
 
@@ -9,7 +9,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <MfaGoogleAuthVerify {...args} />;
+const Template: StoryFn = (args) => <MfaGoogleAuthVerify {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import Success from "./Success";
 
@@ -14,7 +14,7 @@ export default {
 
 type Props = React.ComponentProps<typeof Success>;
 
-const Template: Story<Props> = (args) => <Success {...args} />;
+const Template: StoryFn<Props> = (args) => <Success {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
