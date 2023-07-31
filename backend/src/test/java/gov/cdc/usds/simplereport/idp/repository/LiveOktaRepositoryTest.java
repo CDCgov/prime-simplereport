@@ -843,14 +843,15 @@ class LiveOktaRepositoryTest {
   }
 
   @Test
-  void updateUserPrivileges_qResultsOnly() {
+  void updateUserPrivileges_userFromQResultsOnly() {
     var userName = "fraud@example.com";
     var org = new Organization("orgName", "orgType", "1", true);
     var groupOrgPrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
     var orgRole = OrganizationRole.ADMIN;
     var mockUser = mock(User.class);
-    var mockUserList = List.of(mockUser);
+    var mockUserProfile = mock(UserProfile.class);
+    var mockUserListFromQ = List.of(mockUser);
     var mockGroup = mock(Group.class);
     var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
@@ -858,15 +859,11 @@ class LiveOktaRepositoryTest {
     var mockFullGroupList = List.of(mockAdminGroup);
     var mockAdminGroupProfile = mock(GroupProfile.class);
     when(userApi.listUsers(
-            isNull(),
-            isNull(),
-            isNull(),
-            isNull(),
-            eq("profile.login eq \"" + userName + "\""),
-            isNull(),
-            isNull()))
-        .thenReturn(mockUserList);
+            eq(userName), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserListFromQ);
+    when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUser.getId()).thenReturn("1234");
+    when(mockUserProfile.getLogin()).thenReturn(userName);
     when(mockAdminGroup.getId()).thenReturn("adminGID");
 
     when(userApi.listUserGroups("1234"))
