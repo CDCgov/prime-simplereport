@@ -1,6 +1,18 @@
 .device-settings {
   .results-dropdown {
-    overflow-y: unset;
-    position: relative;
+    top: 2.5em;
+    max-height: 12.1em;
+  }
+
+  .results-dropdown__body {
+    padding: 0 0.5rem;
+
+    .usa-table--borderless {
+      th {
+        position: sticky;
+        top: 0;
+        background: white;
+      }
+    }
   }
 }

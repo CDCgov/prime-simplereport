@@ -119,11 +119,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
 
   const results = (
     <div
-      className={classnames(
-        !multiSelect && "card-container",
-        "shadow-3",
-        "results-dropdown"
-      )}
+      className="card-container shadow-3 results-dropdown"
       ref={dropDownRef}
       aria-live="polite"
       role="region"
