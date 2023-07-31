@@ -57,7 +57,7 @@ dependencies {
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.13.15'
 
     // UI layer dependencies
-    implementation 'org.json:json:20230227'
+    implementation 'org.json:json:20230618'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate5'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
@@ -77,7 +77,7 @@ dependencies {
     implementation 'com.microsoft.azure:applicationinsights-core:3.4.13'
 
     // Twilio for SMS
-    implementation group: "com.twilio.sdk", name: "twilio", version: "9.2.4"
+    implementation group: "com.twilio.sdk", name: "twilio", version: "9.9.0"
 
     // SendGrid for Email
     implementation 'com.sendgrid:sendgrid-java:4.9.3'

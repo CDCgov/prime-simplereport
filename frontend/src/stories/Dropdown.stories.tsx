@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import { useState } from "react";
 
 import Dropdown from "../app/commonComponents/Dropdown";
@@ -26,7 +26,7 @@ export default {
 
 type Props = React.ComponentProps<typeof Dropdown>;
 
-const Template: Story<Props> = (args) => {
+const Template: StoryFn<Props> = (args) => {
   const [fruit, setFruit] = useState("");
 
   return (

@@ -20,5 +20,8 @@
     "jsx": "react-jsx",
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "./src/jestSetup.js"]
+  "include": [
+    "src",
+    "./src/jestSetup.js"
+  ]
 }

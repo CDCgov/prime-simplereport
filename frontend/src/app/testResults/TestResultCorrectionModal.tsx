@@ -110,6 +110,7 @@ export const MARK_TEST_AS_CORRECTION = gql`
 
 interface Props {
   data: any; // testQuery result
+  isFacilityDeleted: boolean;
   testResultId: string | undefined;
   closeModal: () => void;
 }
@@ -118,6 +119,7 @@ export const DetachedTestResultCorrectionModal = ({
   testResultId,
   data,
   closeModal,
+  isFacilityDeleted = false,
 }: Props) => {
   const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
   const [markTestAsCorrection] = useMutation(MARK_TEST_AS_CORRECTION);
@@ -167,6 +169,20 @@ export const DetachedTestResultCorrectionModal = ({
       });
   };
 
+  const validationMessageForDeletedFacility = () => {
+    if (isFacilityDeleted) {
+      if (
+        reason === TestCorrectionReason.INCORRECT_RESULT ||
+        (reason === TestCorrectionReason.OTHER &&
+          action === TestCorrectionAction.CORRECT_RESULT)
+      ) {
+        return "Can't update test result for deleted facility";
+      } else if (reason === TestCorrectionReason.INCORRECT_TEST_DATE) {
+        return "Can't update test date for deleted facility";
+      }
+    }
+    return "";
+  };
   return (
     <Modal
       isOpen={true}
@@ -179,10 +195,13 @@ export const DetachedTestResultCorrectionModal = ({
         Correct result for{" "}
         {displayFullName(patient.firstName, null, patient.lastName, true)}
       </h3>
-
       <Dropdown
         options={testCorrectionReasonValues}
         label="Please select a reason for correcting this test result."
+        errorMessage={validationMessageForDeletedFacility()}
+        validationStatus={
+          validationMessageForDeletedFacility() ? "error" : "success"
+        }
         name="correctionReason"
         onChange={(e) => setReason(e.target.value as TestCorrectionReason)}
         selectedValue={reason}
@@ -220,13 +239,23 @@ export const DetachedTestResultCorrectionModal = ({
         </>
       )}
       <br />
+      {isFacilityDeleted && (
+        <>
+          <i>
+            You can only update duplicate tests and errors from a deleted
+            facility. Contact support@simplereport.gov for help.
+          </i>
+          <br />
+        </>
+      )}
       <div className="sr-test-correction-buttons">
         <Button variant="unstyled" label="No, go back" onClick={closeModal} />
         <Button
           label="Yes, I'm sure"
           disabled={
-            reason === TestCorrectionReason.OTHER &&
-            (!action || correctionDetails.trim().length < 4)
+            validationMessageForDeletedFacility().length > 0 ||
+            (reason === TestCorrectionReason.OTHER &&
+              (!action || correctionDetails.trim().length < 4))
           }
           onClick={() => {
             return reason === TestCorrectionReason.DUPLICATE_TEST ||
