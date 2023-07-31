@@ -31,6 +31,7 @@ import org.openapitools.client.model.EmailUserFactorProfile;
 import org.openapitools.client.model.FactorProvider;
 import org.openapitools.client.model.FactorStatus;
 import org.openapitools.client.model.FactorType;
+import org.openapitools.client.model.SmsUserFactorProfile;
 import org.openapitools.client.model.User;
 import org.openapitools.client.model.UserFactor;
 import org.openapitools.client.model.UserStatus;
@@ -159,6 +160,8 @@ class LiveOktaAuthenticationTest extends BaseFullStackTest {
     var factor = userFactorApi.getFactor(_userId, factorId);
     assertThat(factor.getFactorType()).isEqualTo(FactorType.SMS);
     assertThat(factor.getStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
+    assertThat(((SmsUserFactorProfile) factor.getProfile()).getPhoneNumber())
+        .isEqualTo(FORMATTED_PHONE_NUMBER);
 
     UserAccountStatus status = _auth.getUserStatus(null, _userId, factorId);
     assertThat(status).isEqualTo(UserAccountStatus.SMS_PENDING_ACTIVATION);
