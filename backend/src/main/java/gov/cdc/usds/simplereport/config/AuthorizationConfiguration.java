@@ -114,6 +114,8 @@ public class AuthorizationConfiguration {
       "@"
           + AUTHORIZER_BEAN
           + ".userHasSpecificPatientSearchPermission(#facilityId, #archivedStatus, #namePrefixMatch, #includeArchivedFacilities, #orgExternalId)";
+  private static final String SPEL_SITE_ADMIN_CAN_ARCHIVE_PATIENT =
+      "@" + AUTHORIZER_BEAN + ".siteAdminCanArchivePatient(#patientId, #deleted, #orgExternalId)";
 
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
@@ -259,7 +261,7 @@ public class AuthorizationConfiguration {
       SPEL_IS_VALID
           + " && "
           + "("
-          + SPEL_IS_SITE_ADMIN
+          + SPEL_SITE_ADMIN_CAN_ARCHIVE_PATIENT
           + " || "
           + SPEL_HAS_PERMISSION_ARCHIVE_PATIENT
           + " && "

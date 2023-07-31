@@ -233,7 +233,7 @@ public class PersonService {
     }
 
     Organization orgToSearch;
-    if (orgExternalId != null && StringUtils.isNotEmpty(orgExternalId)) {
+    if (StringUtils.isNotEmpty(orgExternalId)) {
       orgToSearch = _os.getOrganizationWithExternalIdAsSiteAdmin(orgExternalId);
     } else {
       orgToSearch = null;
@@ -275,7 +275,7 @@ public class PersonService {
     }
 
     Organization orgToSearch;
-    if (orgExternalId != null && StringUtils.isNotEmpty(orgExternalId)) {
+    if (StringUtils.isNotEmpty(orgExternalId)) {
       orgToSearch = _os.getOrganizationWithExternalIdAsSiteAdmin(orgExternalId);
     } else {
       orgToSearch = null;
@@ -543,7 +543,7 @@ public class PersonService {
   @AuthorizationConfiguration.RequirePermissionArchiveTargetPatient
   public Person setIsDeleted(UUID patientId, boolean deleted, String orgExternalId) {
     Organization patientOrg;
-    if (orgExternalId != null && StringUtils.isNotEmpty(orgExternalId)) {
+    if (StringUtils.isNotEmpty(orgExternalId)) {
       patientOrg = _os.getOrganizationWithExternalIdAsSiteAdmin(orgExternalId);
     } else {
       patientOrg = _os.getCurrentOrganization();

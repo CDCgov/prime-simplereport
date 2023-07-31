@@ -230,7 +230,7 @@ public class UserAuthorizationVerifier {
       String orgExternalId) {
     Set<UserPermission> perms = new HashSet<>();
 
-    if (orgExternalId != null && StringUtils.isNotEmpty(orgExternalId) && userHasSiteAdminRole()) {
+    if (StringUtils.isNotEmpty(orgExternalId) && userHasSiteAdminRole()) {
       return true;
     }
 
@@ -252,6 +252,11 @@ public class UserAuthorizationVerifier {
 
     // check all the permissions in one call.
     return userHasPermissions(perms);
+  }
+
+  public boolean siteAdminCanArchivePatient(
+      UUID patientLinkId, boolean deleted, String orgExternalId) {
+    return StringUtils.isNotEmpty(orgExternalId) && _authService.isSiteAdmin();
   }
 
   public boolean userIsValid() {
