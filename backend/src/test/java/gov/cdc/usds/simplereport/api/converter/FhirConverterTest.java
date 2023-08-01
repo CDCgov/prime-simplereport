@@ -237,7 +237,8 @@ class FhirConverterTest {
         arguments("Female", AdministrativeGender.FEMALE),
         arguments("MALE", AdministrativeGender.MALE),
         arguments("M", AdministrativeGender.MALE),
-        arguments("fishperson", AdministrativeGender.UNKNOWN));
+        arguments("fishperson", AdministrativeGender.UNKNOWN),
+        arguments(null, AdministrativeGender.UNKNOWN));
   }
 
   @Test

@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import Required from "../app/commonComponents/Required";
 
@@ -9,7 +9,7 @@ export default {
 
 type Props = React.ComponentProps<typeof Required>;
 
-const Template: Story<Props> = (args) => <Required {...args} />;
+const Template: StoryFn<Props> = (args) => <Required {...args} />;
 
 export const Default = Template.bind({});
 

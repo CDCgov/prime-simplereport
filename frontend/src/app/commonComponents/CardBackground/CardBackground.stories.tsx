@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { CardBackground } from "./CardBackground";
 
@@ -10,7 +10,7 @@ export default {
   },
 } as Meta;
 
-const Template: Story = (args) => <CardBackground {...args} />;
+const Template: StoryFn = (args) => <CardBackground {...args} />;
 
 export const WithChildren = Template.bind({});
 WithChildren.args = {

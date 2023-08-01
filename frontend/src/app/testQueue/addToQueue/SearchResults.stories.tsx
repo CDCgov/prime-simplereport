@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { Story, Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 
 import SearchResults, { QueueProps, TestResultsProps } from "./SearchResults";
 
@@ -32,13 +32,13 @@ export default {
   argTypes: {},
 } as Meta;
 
-const TestResultsTemplate = (): Story<TestResultsProps> => (args) =>
+const TestResultsTemplate = (): StoryFn<TestResultsProps> => (args) =>
   (
     <RouterWithFacility>
       <SearchResults {...args} />
     </RouterWithFacility>
   );
-const QueueTemplate = (): Story<QueueProps> => (args) =>
+const QueueTemplate = (): StoryFn<QueueProps> => (args) =>
   (
     <RouterWithFacility>
       <SearchResults {...args} />

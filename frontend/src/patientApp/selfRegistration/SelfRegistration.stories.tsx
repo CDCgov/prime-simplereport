@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import { MemoryRouter as Router } from "react-router-dom";
 import createMockStore from "redux-mock-store";
@@ -25,7 +25,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <SelfRegistration {...args} />;
+const Template: StoryFn = (args) => <SelfRegistration {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
