@@ -447,6 +447,7 @@ type Query {
     role: String
     startDate: DateTime
     endDate: DateTime
+    orgId: ID
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
