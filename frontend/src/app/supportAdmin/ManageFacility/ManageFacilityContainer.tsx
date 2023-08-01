@@ -33,7 +33,7 @@ const ManageFacilityContainer = () => {
     if (orgId !== "") {
       queryGetFacilitiesByOrgId({ variables: { orgId } });
     }
-  }, [orgId]);
+  }, [orgId, queryGetFacilitiesByOrgId]);
 
   const facilitiesOptions: Option[] =
     facilitiesResponse?.organization?.facilities.map((facility) => ({
