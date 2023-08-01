@@ -20,7 +20,7 @@ function createNewBatch(): FHIRTestEventsBatch {
 
 export function processTestEvents(
   messages: DequeuedMessageItem[],
-  fhirBatchSizeLimit: number
+  fhirBatchSizeLimit: number,
 ): FHIRTestEventsBatch[] {
   const fhirTestEventsBatches: FHIRTestEventsBatch[] = [];
   const delimiterSize = Buffer.byteLength("\n");

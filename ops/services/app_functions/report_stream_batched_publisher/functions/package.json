@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/jest": "^28.1.6",
     "@typescript-eslint/eslint-plugin": "^5.43.0",
-    "@typescript-eslint/parser": "^5.43.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "azure-functions-core-tools": "^3.0.3734",
     "eslint": "^8.27.0",
     "eslint-config-prettier": "^8.5.0",
