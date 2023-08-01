@@ -404,6 +404,7 @@ export type MutationSetOrganizationIdentityVerifiedArgs = {
 export type MutationSetPatientIsDeletedArgs = {
   deleted: Scalars["Boolean"];
   id: Scalars["ID"];
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetRegistrationLinkIsDeletedArgs = {
@@ -725,6 +726,7 @@ export type QueryPatientsArgs = {
   includeArchived?: InputMaybe<Scalars["Boolean"]>;
   includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
 };
@@ -734,6 +736,7 @@ export type QueryPatientsCountArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   includeArchived?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type QueryQueueArgs = {
