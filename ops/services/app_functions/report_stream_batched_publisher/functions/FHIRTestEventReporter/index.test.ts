@@ -29,7 +29,7 @@ jest.mock(
       trackEvent: jest.fn(),
       trackDependency: jest.fn(),
     },
-  }))
+  })),
 );
 
 describe("FHIRTestEventReporter", () => {
@@ -79,7 +79,7 @@ describe("FHIRTestEventReporter", () => {
             getProperties: jest.fn().mockResolvedValue({
               approximateMessagesCount: 10,
             }),
-          } as jest.MockedObject<QueueClient>)
+          }) as jest.MockedObject<QueueClient>,
       );
     minimumMessagesAvailableSpy = jest
       .spyOn(queueHandlers, "minimumMessagesAvailable")
@@ -87,7 +87,7 @@ describe("FHIRTestEventReporter", () => {
     processTestEventsSpy = jest.spyOn(dataHandlers, "processTestEvents");
     reportToUniversalPipelineSpy = jest.spyOn(
       reportingHandlers,
-      "reportToUniversalPipelineTokenBased"
+      "reportToUniversalPipelineTokenBased",
     );
     handleReportStreamResponseSpy = jest
       .spyOn(reportingHandlers, "handleReportStreamResponse")
@@ -122,7 +122,7 @@ describe("FHIRTestEventReporter", () => {
     expect(getReportStreamAuthTokenSpy).not.toHaveBeenCalled();
     expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
     expect(context.log).toHaveBeenCalledWith(
-      "Queue: ciao. Messages Dequeued: 0; aborting."
+      "Queue: ciao. Messages Dequeued: 0; aborting.",
     );
   });
 
@@ -156,7 +156,7 @@ describe("FHIRTestEventReporter", () => {
     expect(getReportStreamAuthTokenSpy).toHaveBeenCalledWith(context);
     expect(reportToUniversalPipelineSpy).toHaveBeenCalledWith(
       "123abc",
-      '{"patient":"dexter"}'
+      '{"patient":"dexter"}',
     );
     expect(reportToUniversalPipelineSpy).toHaveBeenCalledTimes(1);
     expect(handleReportStreamResponseSpy).toHaveBeenCalledTimes(1);
@@ -185,11 +185,11 @@ describe("FHIRTestEventReporter", () => {
     await FHIRTestEventReporter(context);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledTimes(2);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Queue:ciao. Test Event Parse Failure" })
+      expect.objectContaining({ name: "Queue:ciao. Test Event Parse Failure" }),
     );
     expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
     expect(context.log).toHaveBeenCalledWith(
-      "Queue: ciao. Successfully parsed message count of 0 in batch 1 is less than 1; aborting"
+      "Queue: ciao. Successfully parsed message count of 0 in batch 1 is less than 1; aborting",
     );
   });
 
@@ -227,7 +227,7 @@ describe("FHIRTestEventReporter", () => {
     reportToUniversalPipelineSpy.mockRejectedValueOnce(errorResponseMock);
 
     await expect(() => FHIRTestEventReporter(context)).rejects.toThrow(
-      JSON.stringify([{ ok: false, status: 400 }])
+      JSON.stringify([{ ok: false, status: 400 }]),
     );
   });
 });

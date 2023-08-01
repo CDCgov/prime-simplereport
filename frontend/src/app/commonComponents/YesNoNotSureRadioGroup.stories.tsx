@@ -39,8 +39,8 @@ PreSelectedAnswer.args = {
   value: "YES",
 };
 
-export const onError = RadioGroupTemplate.bind({});
-onError.args = {
+export const OnError = RadioGroupTemplate.bind({});
+OnError.args = {
   validationStatus: "error",
   errorMessage: "Oops something went wrong!",
 };
