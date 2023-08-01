@@ -224,7 +224,8 @@ export const schemaBuilder = (facilityId: string | null) => {
                   "RightSign COVID-19 IgG/IgM Rapid Test Cassette*",
                 ],
                 description: [
-                  `The name of the device or test kit used for testing.<br/>Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
+                  "The name of the device or test kit used for testing.",
+                  `Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
                 ],
               },
               {
@@ -583,7 +584,7 @@ export const schemaBuilder = (facilityId: string | null) => {
                   "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
                 ],
                 format:
-                  "If the patient lives in a setting with shared group spaces, such as assisted living or a prison.<br/>Use one of the accepted values listed below",
+                  "If the patient lives in a setting with shared group spaces, such as assisted living or a prison.<br/>Use one of the accepted values listed below.",
               },
               {
                 name: "Residence type",
