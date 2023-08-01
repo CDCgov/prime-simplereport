@@ -763,13 +763,14 @@ describe("FacilityForm", () => {
       });
 
       // Select Device
-      const deviceInput = screen.getByTestId("multi-select-toggle");
-      const deviceList = screen.getByTestId("multi-select-option-list");
+      const deviceInput = screen.getByLabelText(
+        "Search for a device to add it"
+      );
       await act(async () => await userEvent.click(deviceInput));
       await act(
         async () =>
           await userEvent.click(
-            within(deviceList).getByLabelText("Select Manufacturer 1 Device 1")
+            screen.getByLabelText("Select Manufacturer 1 Device 1")
           )
       );
 

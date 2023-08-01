@@ -209,7 +209,7 @@ export const MultiSelectDropdown = ({
   placeholder,
   ariaInvalid,
   registrationProps,
-  DropdownComponent, // TODO: don't kid ourselves, be explicit that this must be DeviceSearchResults?
+  DropdownComponent,
   deviceOptions,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
@@ -348,19 +348,20 @@ export const MultiSelectDropdown = ({
       </span>
 
       {DropdownComponent ? (
-        <DropdownComponent
-          devices={getFilteredDevices(
-            state.filteredOptions.map((o) => o.value)
-          )}
-          setSelectedDevice={selectOption}
-          shouldShowSuggestions={state.isOpen}
-          // TODO
-          // loading={debounced !== queryString}
-          loading={false}
-          queryString={state.inputValue}
-          multiSelect={true}
-          dropDownRef={dropDownRef}
-        />
+        <>
+          <DropdownComponent
+            devices={getFilteredDevices(
+              state.filteredOptions.map((o) => o.value)
+            )}
+            setSelectedDevice={selectOption}
+            shouldShowSuggestions={state.isOpen}
+            loading={false}
+            queryString={state.inputValue}
+            multiSelect={true}
+            dropDownRef={dropDownRef}
+          />
+          {state.filteredOptions.length === 0 && "No results found"}
+        </>
       ) : (
         <ul
           data-testid="multi-select-option-list"
@@ -402,14 +403,20 @@ export const MultiSelectDropdown = ({
               </li>
             );
           })}
+          {state.filteredOptions.length === 0 && (
+            <li className="usa-combo-box__list-option--no-results">
+              {noResults}
+            </li>
+          )}
         </ul>
       )}
+      {/*
       {state.filteredOptions.length === 0 ? (
         <li className="usa-combo-box__list-option--no-results">
-          {/* Dropdown component may have separate empty-result behavior */}
           {!DropdownComponent && (noResults || "No results found")}
         </li>
       ) : null}
+      */}
       <div className="usa-combo-box__status usa-sr-only" role="status"></div>
     </div>
   );

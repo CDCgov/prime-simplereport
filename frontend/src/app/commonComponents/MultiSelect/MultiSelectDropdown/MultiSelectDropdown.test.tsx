@@ -295,6 +295,7 @@ describe("MultiSelectDropdown component", () => {
           name="favorite-fruit"
           options={fruitOptions}
           onChange={jest.fn()}
+          noResults={"No results found"}
         />
       );
 

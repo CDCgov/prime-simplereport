@@ -92,14 +92,14 @@ describe("ManageDevices", () => {
   it("allows adding devices", async () => {
     validFacility.devices = ["device-a", "device-b"];
     render(<ManageDevicesContainer facility={validFacility} />);
-    const deviceInput = screen.getByTestId("multi-select-toggle");
-    const deviceList = screen.getByTestId("multi-select-option-list");
+
+    const deviceInput = screen.getByLabelText("Search for a device to add it");
 
     await act(async () => await userEvent.click(deviceInput));
     await act(
       async () =>
         await userEvent.click(
-          within(deviceList).getByLabelText("Select Manufacturer C Device C")
+          screen.getByLabelText("Select Manufacturer C Device C")
         )
     );
 
