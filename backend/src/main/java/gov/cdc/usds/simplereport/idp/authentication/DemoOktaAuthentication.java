@@ -1,10 +1,9 @@
 package gov.cdc.usds.simplereport.idp.authentication;
 
-import com.okta.sdk.resource.user.factor.FactorStatus;
-import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndActivation;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
@@ -15,7 +14,8 @@ import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.json.JSONObject;
+import org.openapitools.client.model.FactorStatus;
+import org.openapitools.client.model.FactorType;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -176,22 +176,21 @@ public class DemoOktaAuthentication implements OktaAuthentication {
     return new FactorAndQrCode(factorId, qrCode);
   }
 
-  public JSONObject enrollSecurityKey(String userId) throws OktaAuthenticationFailureException {
+  public FactorAndActivation enrollSecurityKey(String userId)
+      throws OktaAuthenticationFailureException {
     validateUser(userId);
     String factorId = "webAuthnFactorId";
-    JSONObject idJson = new JSONObject();
-    idJson.put("id", userId);
-    JSONObject activationContents = new JSONObject();
+    var userMap = new HashMap<String, String>();
+    userMap.put("id", userId);
+    var activationContents = new HashMap<String, Object>();
     activationContents.put("challenge", "challengeString");
-    activationContents.put("user", idJson);
-    JSONObject resultJson = new JSONObject();
-    resultJson.put("activation", activationContents);
-    resultJson.put("factorId", factorId);
+    activationContents.put("user", userMap);
+    var enrollment = new FactorAndActivation(factorId, activationContents);
 
     DemoMfa securityKeyMfa =
         new DemoMfa(FactorType.WEBAUTHN, "FIDO", factorId, FactorStatus.PENDING_ACTIVATION);
     this.idToUserMap.get(userId).setMfa(securityKeyMfa);
-    return resultJson;
+    return enrollment;
   }
 
   public void activateSecurityKey(
