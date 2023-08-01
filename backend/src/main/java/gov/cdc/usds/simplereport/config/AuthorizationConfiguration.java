@@ -115,6 +115,9 @@ public class AuthorizationConfiguration {
           + AUTHORIZER_BEAN
           + ".userHasSpecificPatientSearchPermission(#facilityId, #archivedStatus, #namePrefixMatch, #includeArchivedFacilities)";
 
+  private static final String SPEL_CAN_ACCESS_ORG =
+      "@" + AUTHORIZER_BEAN + ".userHasPermissionToAccessOrg(#orgId)";
+
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
    * ("superusers").
@@ -155,6 +158,11 @@ public class AuthorizationConfiguration {
           + SPEL_CAN_MANAGE_USER
           + ")")
   public @interface RequirePermissionManageTargetUserNotSelf {}
+
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_CAN_ACCESS_ORG)
+  public @interface RequirePermissionToAccessOrg {}
 
   /**
    * Require the current user to have the {@link UserPermission#READ_ARCHIVED_PATIENT_LIST}

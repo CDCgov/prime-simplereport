@@ -26,6 +26,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -275,5 +276,12 @@ public class UserAuthorizationVerifier {
   public boolean permitAllAccountRequests() {
     _contextHolder.setIsAccountRequest(true);
     return true;
+  }
+
+  public boolean userHasPermissionToAccessOrg(UUID orgId) {
+    if (_authService.isSiteAdmin() || orgId == null) {
+      return true;
+    }
+    return Objects.equals(_orgService.getCurrentOrganization().getInternalId(), orgId);
   }
 }
