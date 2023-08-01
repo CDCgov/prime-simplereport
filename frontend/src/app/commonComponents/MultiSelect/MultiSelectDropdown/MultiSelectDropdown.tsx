@@ -348,17 +348,22 @@ export const MultiSelectDropdown = ({
       </span>
 
       {DropdownComponent ? (
-        <DropdownComponent
-          devices={getFilteredDevices(
-            state.filteredOptions.map((o) => o.value)
-          )}
-          setSelectedDevice={selectOption}
-          shouldShowSuggestions={state.isOpen}
-          loading={false}
-          queryString={state.inputValue}
-          multiSelect={true}
-          dropDownRef={dropDownRef}
-        />
+        <>
+          <DropdownComponent
+            devices={getFilteredDevices(
+              state.filteredOptions.map((o) => o.value)
+            )}
+            setSelectedDevice={selectOption}
+            shouldShowSuggestions={state.isOpen}
+            loading={false}
+            queryString={state.inputValue}
+            multiSelect={true}
+            dropDownRef={dropDownRef}
+          />
+
+          {state.filteredOptions.length === 0 &&
+            (noResults || "No results found")}
+        </>
       ) : (
         <ul
           data-testid="multi-select-option-list"
@@ -402,7 +407,7 @@ export const MultiSelectDropdown = ({
           })}
           {state.filteredOptions.length === 0 && (
             <li className="usa-combo-box__list-option--no-results">
-              {noResults}
+              {noResults || "No results found"}
             </li>
           )}
         </ul>
