@@ -3,15 +3,15 @@ simple-report-initialization:
   organizations:
     - org-name: Dis Organization
       org-type: university
-      external-id: DIS_ORG
+      external-id: 43698186-d253-4099-a52f-5c5d996a3db7
       identity-verified: true
     - org-name: Dat Organization
       org-type: urgent_care
-      external-id: DAT_ORG
+      external-id: 02f3fe53-a579-4cc2-abe3-7579c63b290e
       identity-verified: true
     - org-name: Unverified Org
       org-type: urgent_care
-      external-id: UNV_ORG
+      external-id: 7d1f0d47-e8f9-49f3-b1d9-74668e38b6ca
       identity-verified: false
   facilities:
     # TODO: uncomment once e2e tests can accommodate 2+ facilities

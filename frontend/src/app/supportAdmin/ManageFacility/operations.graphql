@@ -1,0 +1,16 @@
+query GetAllOrganizations {
+    organizations{
+        externalId
+        name
+    }
+}
+
+query GetFacilitiesByOrgId($orgId: ID!) {
+    organization(id: $orgId){
+        facilities {
+            name
+            id
+            isDeleted
+        }
+    }
+}
