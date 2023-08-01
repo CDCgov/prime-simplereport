@@ -337,7 +337,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Enter unique patient identifier. This is typically the Medical Record Number. 
                   <strong>
                     <em>
@@ -346,7 +348,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   </strong>
                   .
                 </div>
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   <em>
                     Some jurisdictions may require this field, ReportStream will notify you if this is the case.
                   </em>
@@ -431,7 +435,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Last name, separated from first name
                 </div>
               </div>
@@ -485,7 +491,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   First name, separated from last name
                 </div>
               </div>
@@ -539,7 +547,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Middle name, if known
                 </div>
               </div>
@@ -593,7 +603,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Patient’s street address or one of the accepted values below
                 </div>
               </div>
@@ -747,7 +759,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   If a patient’s city is unknown or they’re experiencing homelessness, use 
                   <a
                     class="usa-link"
@@ -917,7 +931,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   County or parish name
                 </div>
               </div>
@@ -1000,7 +1016,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   If no address is given or a patient is experiencing homelessness, use 
                   <a
                     class="usa-link"
@@ -1104,7 +1122,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   If no address is given or a patient is experiencing homelessness, use 
                   <a
                     class="usa-link"
@@ -1281,7 +1301,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Use one of the LOINC codes listed below, which come from the 
                   <a
                     class="usa-link"
@@ -1447,7 +1469,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Use one of the LOINC codes listed below, which come from the 
                   <a
                     class="usa-link"
@@ -1643,7 +1667,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Use one of the LOINC codes list below, which come from the 
                   <a
                     class="usa-link"
@@ -1764,7 +1790,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Look up a Language Concept Code or Name from the  
                   <a
                     class="usa-link"
@@ -1949,8 +1977,10 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
-                  A unique ID that identifies a single result, which allows public health departments to refer back to a test event
+                <div
+                  class="margin-bottom-1"
+                >
+                  A unique ID that identifies a single result, which allows public health departments to refer back to a test event.
                 </div>
               </div>
             </div>
@@ -2024,7 +2054,14 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  The name of the device or test kit used for testing.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Find your device on the 
                   <a
                     class="usa-link"
@@ -2130,7 +2167,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Find your device on the 
                   <a
                     class="usa-link"
@@ -2360,7 +2399,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Use one of the common values below, or find your device on the 
                   <a
                     class="usa-link"
@@ -2481,6 +2522,30 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
             </div>
             <div
               class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="description"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Description
+              </div>
+              <div
+                class="grid-col-8"
+              >
+                <div
+                  class="margin-bottom-1"
+                >
+                  Include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
               data-testid="format"
             >
               <div
@@ -2492,13 +2557,17 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYYY HH:mm
+                  M/D/YYYY HH:mm TZ
                 </code>
                  is preferred, but 
                 <code>
+                  M/D/YYYY HH:mm
+                </code>
+                 and 
+                <code>
                   M/D/YYYY
                 </code>
-                 is acceptable
+                 are acceptable
               </div>
             </div>
             <div
@@ -2514,6 +2583,13 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <ul
                 class="grid-col-8 prime-ul margin-top-0"
               >
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    5/23/2023 4:30 CT
+                  </em>
+                </li>
                 <li
                   class="bullet-list"
                 >
@@ -2579,15 +2655,34 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
-                  If the collection date is unknown, use the 
+                <div
+                  class="margin-bottom-1"
+                >
+                  Leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
                     href="#order_test_date"
                   >
                     order_test_date
                   </a>
-                   value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date.
+                  . SimpleReport will default to the 
+                  <a
+                    class="usa-link"
+                    href="#order_test_date"
+                  >
+                    order_test_date
+                  </a>
+                   value.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
                 </div>
               </div>
             </div>
@@ -2604,13 +2699,17 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYYY HH:mm
+                  M/D/YYYY HH:mm TZ
                 </code>
                  is preferred, but 
                 <code>
+                  M/D/YYYY HH:mm
+                </code>
+                 and 
+                <code>
                   M/D/YYYY
                 </code>
-                 is acceptable
+                 are also acceptable
               </div>
             </div>
             <div
@@ -2626,6 +2725,13 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <ul
                 class="grid-col-8 prime-ul margin-top-0"
               >
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    5/23/2023 4:30 CT
+                  </em>
+                </li>
                 <li
                   class="bullet-list"
                 >
@@ -2691,15 +2797,34 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
-                  If unknown, use the 
+                <div
+                  class="margin-bottom-1"
+                >
+                  Leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
                     href="#order_test_date"
                   >
                     order_test_date
                   </a>
-                   value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date.
+                  . SimpleReport will default to the 
+                  <a
+                    class="usa-link"
+                    href="#order_test_date"
+                  >
+                    order_test_date
+                  </a>
+                   value.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
                 </div>
               </div>
             </div>
@@ -2716,13 +2841,17 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYYY HH:mm
+                  M/D/YYYY HH:mm TZ
                 </code>
                  is preferred, but 
                 <code>
+                  M/D/YYYY HH:mm
+                </code>
+                 and 
+                <code>
                   M/D/YYYY
                 </code>
-                 is acceptable
+                 are also acceptable
               </div>
             </div>
             <div
@@ -2738,6 +2867,13 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <ul
                 class="grid-col-8 prime-ul margin-top-0"
               >
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    5/23/2023 4:30 CT
+                  </em>
+                </li>
                 <li
                   class="bullet-list"
                 >
@@ -2793,6 +2929,30 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
             </div>
             <div
               class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="description"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Description
+              </div>
+              <div
+                class="grid-col-8"
+              >
+                <div
+                  class="margin-bottom-1"
+                >
+                  Include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
               data-testid="format"
             >
               <div
@@ -2804,13 +2964,17 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYYY HH:mm
+                  M/D/YYYY HH:mm TZ
                 </code>
                  is preferred, but 
                 <code>
+                  M/D/YYYY HH:mm
+                </code>
+                 and 
+                <code>
                   M/D/YYYY
                 </code>
-                 is acceptable
+                 are also acceptable
               </div>
             </div>
             <div
@@ -2826,6 +2990,13 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <ul
                 class="grid-col-8 prime-ul margin-top-0"
               >
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    5/23/2023 4:30 CT
+                  </em>
+                </li>
                 <li
                   class="bullet-list"
                 >
@@ -2891,15 +3062,34 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
-                  If unknown, use the 
+                <div
+                  class="margin-bottom-1"
+                >
+                  Leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
                     href="#test_result_date"
                   >
                     test_result_date
                   </a>
-                   value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date.
+                  . SimpleReport will default to the 
+                  <a
+                    class="usa-link"
+                    href="#test_result_date"
+                  >
+                    test_result_date
+                  </a>
+                   value.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.
+                </div>
+                <div
+                  class="margin-bottom-1"
+                >
+                  If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).
                 </div>
               </div>
             </div>
@@ -2916,13 +3106,17 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 class="grid-col-8 prime-ul margin-top-0"
               >
                 <code>
-                  M/D/YYYY HH:mm
+                  M/D/YYYY HH:mm TZ
                 </code>
                  is preferred, but 
                 <code>
+                  M/D/YYYY HH:mm
+                </code>
+                 and 
+                <code>
                   M/D/YYYY
                 </code>
-                 is acceptable
+                 are also acceptable
               </div>
             </div>
             <div
@@ -2938,6 +3132,13 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <ul
                 class="grid-col-8 prime-ul margin-top-0"
               >
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    5/23/2023 4:30 CT
+                  </em>
+                </li>
                 <li
                   class="bullet-list"
                 >
@@ -3012,13 +3213,19 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   The SNOMED code representing the type of biological sample used for testing.
                 </div>
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   <br />
                 </div>
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Find the specimen type for your device on the 
                   <a
                     class="usa-link"
@@ -3132,7 +3339,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Enter the National Provider Identifier (NPI), the unique 10-digit number that identifies a healthcare provider. You can find NPIs at the 
                   <a
                     class="usa-link"
@@ -3142,7 +3351,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                   >
                     NPI Registry
                   </a>
-                  . If you don’t know the NPI, you can enter local coding. Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case.
+                  . If you don’t know the NPI, you can enter local coding. Some jurisdictions may not accept a local code, and ReportStream will work with you if this is the case.
                 </div>
               </div>
             </div>
@@ -3263,7 +3472,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Last name, separated from first name
                 </div>
               </div>
@@ -3317,7 +3528,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   First name, separated from last name
                 </div>
               </div>
@@ -3371,7 +3584,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Middle name, if known
                 </div>
               </div>
@@ -3851,7 +4066,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   CLIA number from the 
                   <a
                     class="usa-link"
@@ -3936,7 +4153,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Name of facility that processed test results
                 </div>
               </div>
@@ -4638,7 +4857,7 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8 prime-ul margin-top-0"
               >
-                Use one of the accepted values listed below
+                Use one of the accepted values listed below.
               </div>
             </div>
             <div
@@ -4749,7 +4968,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Date
                 </div>
               </div>
@@ -4847,7 +5068,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8 prime-ul margin-top-0"
               >
-                Use one of the accepted values listed below
+                If the patient lives in a setting with shared group spaces, such as assisted living or a prison.
+                <br />
+                Use one of the accepted values listed below.
               </div>
             </div>
             <div
@@ -4958,7 +5181,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   If the resident congregate setting is “Y” or “Yes,” then provide residence type
                 </div>
               </div>
@@ -4995,268 +5220,268 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 >
                   <mark>
                     <code>
-                      22232009
+                      Hospital
                     </code>
                   </mark>
                    or 
                   <mark>
                     <code>
-                      Hospital
+                      22232009
                     </code>
                   </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      2081004
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Hospital Ship
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      2081004
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      32074000
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Long Term Care Hospital
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      32074000
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      224929004
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Secure Hospital
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      224929004
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      42665001
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Nursing Home
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      42665001
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      30629002
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Retirement Home
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      30629002
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      74056004
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Orphanage
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      74056004
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      722173008
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Prison-based Care Site
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      722173008
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      20078004
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Substance Abuse Treatment Center
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      20078004
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      257573002
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Boarding House
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      257573002
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      224683003
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Military Accommodation
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      224683003
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      284546000
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Hospice
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      284546000
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      257628001
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Hostel
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      257628001
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      310207003
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Sheltered Housing
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      310207003
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      57656006
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Penal Institution
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      57656006
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      285113009
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Religious Institutional Residence
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      285113009
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      285141008
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Work (environment)
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      285141008
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
                   <mark>
                     <code>
-                      32911000
+                      Homeless
                     </code>
                   </mark>
                    or 
                   <mark>
                     <code>
-                      Homeless
+                      32911000
                     </code>
                   </mark>
                 </li>
@@ -5311,7 +5536,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8 prime-ul margin-top-0"
               >
-                Use one of the accepted values listed below
+                If the patient tested was admitted to a hospital for treatment.
+                <br />
+                Use one of the accepted values listed below.
               </div>
             </div>
             <div
@@ -5542,7 +5769,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -5602,7 +5831,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -5662,7 +5893,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Address, continued
                 </div>
               </div>
@@ -5716,7 +5949,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -5776,7 +6011,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -5880,7 +6117,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -5984,7 +6223,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   You can leave this field blank if it’s the same as 
                   <a
                     class="usa-link"
@@ -6089,7 +6330,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   If there are comments from a physician or lab technician you want to relay to your public health department, enter them here. This field isn’t meant for characteristics of COVID-19 tests or statements about false positive or negative results.
                 </div>
               </div>
@@ -6158,7 +6401,9 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
               <div
                 class="grid-col-8"
               >
-                <div>
+                <div
+                  class="margin-bottom-1"
+                >
                   Enter test result status using the accepted format listed below. If left blank, value will default to F for final.
                 </div>
               </div>
