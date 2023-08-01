@@ -22,7 +22,7 @@ export const FHIR_CLIENT_ID = "simple_report.fullelr";
 
 export async function reportToUniversalPipelineTokenBased(
   token: string,
-  ndjsonTestEvents: string
+  ndjsonTestEvents: string,
 ): Promise<Response> {
   const headers = new Headers({
     authorization: `bearer ${token}`,
@@ -45,39 +45,39 @@ export async function handleReportStreamResponse(
   testEventQueue: QueueClient,
   exceptionQueue: QueueClient,
   errorQueue: QueueClient,
-  logging: publisherLogging
+  logging: publisherLogging,
 ) {
   if (reportingResponse.ok) {
     const response: ReportStreamResponse =
       (await reportingResponse.json()) as ReportStreamResponse;
     logging.context.log(
       `Queue: ${testEventQueue.name}. Report Stream response: ${JSON.stringify(
-        response
-      )}`
+        response,
+      )}`,
     );
     await reportExceptions(
       logging.context,
       exceptionQueue,
       response,
-      testEventQueue.name
+      testEventQueue.name,
     );
 
     logging.context.log(
-      `Queue: ${testEventQueue.name}. Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
+      `Queue: ${testEventQueue.name}. Upload to ${response.destinationCount} reporting destinations successful; deleting messages`,
     );
 
     await deleteSuccessfullyParsedMessages(
       logging.context,
       testEventQueue,
       messages,
-      parseFailure
+      parseFailure,
     );
   } else {
     const responseBody = await reportingResponse.text();
     const errorText = `Queue: ${testEventQueue.name}. Failed to upload to ReportStream with response code ${reportingResponse.status}`;
     logging.context.log.error(
       `${errorText}. Response body (${responseBody.length} bytes): `,
-      responseBody
+      responseBody,
     );
 
     const tagOverrides = {
@@ -100,7 +100,7 @@ export async function handleReportStreamResponse(
         logging.context,
         testEventQueue,
         messages,
-        parseFailure
+        parseFailure,
       );
     }
 
@@ -111,7 +111,7 @@ export async function handleReportStreamResponse(
 export function generateJWT(
   reportStreamClient: string,
   reportStreamUrl: string,
-  secret: string
+  secret: string,
 ): string {
   const token = jwt.sign(
     {
@@ -129,20 +129,20 @@ export function generateJWT(
         alg: "RS256",
       },
       audience: reportStreamUrl,
-    }
+    },
   );
 
   return token;
 }
 
 export async function getReportStreamAuthToken(
-  context: Context
+  context: Context,
 ): Promise<string> {
   const tokenURL = `${REPORT_STREAM_BASE_URL}/api/token`;
   const jwt = generateJWT(
     FHIR_CLIENT_ID,
     REPORT_STREAM_BASE_URL,
-    FHIR_REPORT_STREAM_KEY
+    FHIR_REPORT_STREAM_KEY,
   );
 
   const headers = new Headers({
@@ -180,7 +180,7 @@ export async function getReportStreamAuthToken(
   } catch (e) {
     context.log.error(
       "Error while trying to get the ReportStream auth token.",
-      e
+      e,
     );
 
     throw e;

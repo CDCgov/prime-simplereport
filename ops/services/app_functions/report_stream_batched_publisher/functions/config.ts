@@ -1,6 +1,6 @@
 export function fetchFromEnvironmentOrThrow(
   variableName: string,
-  description: string
+  description: string,
 ): string {
   const value = process.env[variableName];
   if (value !== undefined) {
@@ -8,7 +8,7 @@ export function fetchFromEnvironmentOrThrow(
   }
 
   throw new Error(
-    `The ${description} must be provided via the ${variableName} environment variable, but this variable was empty.`
+    `The ${description} must be provided via the ${variableName} environment variable, but this variable was empty.`,
   );
 }
 
@@ -41,12 +41,15 @@ export const ENV = (() => {
     SIMPLE_REPORT_CB_TOKEN:
       "API token for the SimpleReport webhook for ReportStream exceptions",
   };
-  return Object.entries(CONFIG_VALUES).reduce((acc, cur) => {
-    const [configName, description] = [
-      cur[0] as keyof typeof CONFIG_VALUES,
-      cur[1],
-    ];
-    acc[configName] = fetchFromEnvironmentOrThrow(configName, description);
-    return acc;
-  }, {} as { [k in keyof typeof CONFIG_VALUES]: string });
+  return Object.entries(CONFIG_VALUES).reduce(
+    (acc, cur) => {
+      const [configName, description] = [
+        cur[0] as keyof typeof CONFIG_VALUES,
+        cur[1],
+      ];
+      acc[configName] = fetchFromEnvironmentOrThrow(configName, description);
+      return acc;
+    },
+    {} as { [k in keyof typeof CONFIG_VALUES]: string },
+  );
 })();

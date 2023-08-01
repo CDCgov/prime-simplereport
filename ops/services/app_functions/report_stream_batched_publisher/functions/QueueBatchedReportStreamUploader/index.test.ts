@@ -14,7 +14,7 @@ jest.mock(
       trackEvent: jest.fn(),
       trackDependency: jest.fn(),
     },
-  }))
+  })),
 );
 jest.mock("../config", () => ({
   ENV: {
@@ -64,7 +64,7 @@ describe("main function export", () => {
       .mockReturnValue({ name: "dummyQueue" } as QueueClient);
     deleteMessagesMock = jest.spyOn(
       queueHandlers,
-      "deleteSuccessfullyParsedMessages"
+      "deleteSuccessfullyParsedMessages",
     );
     reportExceptionsMock = jest.spyOn(queueHandlers, "reportExceptions");
     fileFailureMock = jest.spyOn(queueHandlers, "publishToQueue");
@@ -148,7 +148,9 @@ describe("main function export", () => {
     // THEN
     expect(getQueueClientMock).toHaveBeenCalledTimes(3);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Queue: ciao. Test Event Parse Failure" })
+      expect.objectContaining({
+        name: "Queue: ciao. Test Event Parse Failure",
+      }),
     );
     expect(deleteMessagesMock).toHaveBeenCalled();
   });
@@ -163,7 +165,9 @@ describe("main function export", () => {
     // THEN
     expect(dequeueMessagesMock).toHaveBeenCalled();
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
-      expect.objectContaining({ name: "Queue: ciao. Test Event Parse Failure" })
+      expect.objectContaining({
+        name: "Queue: ciao. Test Event Parse Failure",
+      }),
     );
     expect(uploadResultMock).not.toHaveBeenCalled();
     expect(reportExceptionsMock).not.toHaveBeenCalled();

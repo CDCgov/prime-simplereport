@@ -5,7 +5,7 @@ import fetch from "node-fetch";
 import fetchMock from "jest-fetch-mock";
 jest.mock(
   "node-fetch",
-  jest.fn(() => require("jest-fetch-mock"))
+  jest.fn(() => require("jest-fetch-mock")),
 );
 
 jest.mock("../config", () => ({
