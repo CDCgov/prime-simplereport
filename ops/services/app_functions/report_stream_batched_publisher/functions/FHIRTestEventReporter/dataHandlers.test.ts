@@ -28,7 +28,7 @@ describe("data handlers", () => {
       expect(processedEvents[0]).toHaveProperty("parseFailure", {});
       expect(processedEvents[0]).toHaveProperty(
         "testEventsNDJSON",
-        '{"patientName":"Dexter"}\n{"patientName":"Dee Dee"}\n{"patientName":"Mandark"}'
+        '{"patientName":"Dexter"}\n{"patientName":"Dee Dee"}\n{"patientName":"Mandark"}',
       );
     });
 
@@ -43,7 +43,7 @@ describe("data handlers", () => {
       expect(processedEvents[0]).toHaveProperty("parseFailure", {});
       expect(processedEvents[0]).toHaveProperty(
         "testEventsNDJSON",
-        '{"patientName":"Dexter"}'
+        '{"patientName":"Dexter"}',
       );
       // bundle 2
       expect(processedEvents[1]).toHaveProperty("messages");
@@ -53,7 +53,7 @@ describe("data handlers", () => {
       expect(processedEvents[1]).toHaveProperty("parseFailure", {});
       expect(processedEvents[1]).toHaveProperty(
         "testEventsNDJSON",
-        '{"patientName":"Dee Dee"}'
+        '{"patientName":"Dee Dee"}',
       );
       // bundle 3
       expect(processedEvents[2]).toHaveProperty("messages");
@@ -63,7 +63,7 @@ describe("data handlers", () => {
       expect(processedEvents[2]).toHaveProperty("parseFailure", {});
       expect(processedEvents[2]).toHaveProperty(
         "testEventsNDJSON",
-        '{"patientName":"Mandark"}'
+        '{"patientName":"Mandark"}',
       );
     });
 
@@ -92,7 +92,7 @@ describe("data handlers", () => {
       expect(processedEvents[0]).toHaveProperty("parseFailure", { "1": true });
       expect(processedEvents[0]).toHaveProperty(
         "testEventsNDJSON",
-        '{"patientName":"Dexter"}'
+        '{"patientName":"Dexter"}',
       );
     });
 
@@ -144,7 +144,7 @@ describe("data handlers", () => {
       expect(processedEvents[0]).toHaveProperty("parseFailure", {});
       expect(processedEvents[0]).toHaveProperty(
         "testEventsNDJSON",
-        '{"patientName":"Dexter"}\n{"patientName":"Dee Dee"}'
+        '{"patientName":"Dexter"}\n{"patientName":"Dee Dee"}',
       );
       //bundle 2 some invalid
       expect(processedEvents[1]).toHaveProperty("messages");
@@ -154,7 +154,7 @@ describe("data handlers", () => {
       expect(processedEvents[1]).toHaveProperty("parseFailure", { "4": true });
       expect(processedEvents[1]).toHaveProperty(
         "testEventsNDJSON",
-        '{"patientName":"Mandark"}'
+        '{"patientName":"Mandark"}',
       );
     });
   });
