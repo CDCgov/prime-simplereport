@@ -251,7 +251,7 @@ public class AuthorizationConfiguration {
 
   /**
    * Require the current user to have the {@link UserPermission#ARCHIVE_PATIENT} permission for the
-   * patient with UUID {@code patientId} or is a site admin
+   * patient with UUID {@code patientId} or is a site admin with a valid orgExternalId
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
