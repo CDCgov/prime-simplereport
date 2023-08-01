@@ -1,16 +1,15 @@
 import React from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 
 import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
+import { RootState } from "../../store";
 
 import { SettingsUser, SITE_ADMIN_ROLE_DESC } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
-import { useSelector } from "react-redux";
-
-import { RootState } from "../../store";
 
 interface Props {
   onClose: () => void;
