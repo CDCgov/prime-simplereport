@@ -670,11 +670,12 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertEquals(1, archivedResult.size());
     assertPatientList(archivedResult, CHARLES);
 
+    String orgExternalId = _org.getExternalId();
     // trying to delete the same user throws an exception
     IllegalGraphqlArgumentException caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
-            () -> _service.setIsDeleted(charlesId, true, _org.getExternalId()));
+            () -> _service.setIsDeleted(charlesId, true, orgExternalId));
     assertEquals("No patient with that ID was found", caught.getMessage());
 
     _service.setIsDeleted(charlesId, false, _org.getExternalId());
