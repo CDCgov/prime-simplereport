@@ -348,20 +348,17 @@ export const MultiSelectDropdown = ({
       </span>
 
       {DropdownComponent ? (
-        <>
-          <DropdownComponent
-            devices={getFilteredDevices(
-              state.filteredOptions.map((o) => o.value)
-            )}
-            setSelectedDevice={selectOption}
-            shouldShowSuggestions={state.isOpen}
-            loading={false}
-            queryString={state.inputValue}
-            multiSelect={true}
-            dropDownRef={dropDownRef}
-          />
-          {state.filteredOptions.length === 0 && "No results found"}
-        </>
+        <DropdownComponent
+          devices={getFilteredDevices(
+            state.filteredOptions.map((o) => o.value)
+          )}
+          setSelectedDevice={selectOption}
+          shouldShowSuggestions={state.isOpen}
+          loading={false}
+          queryString={state.inputValue}
+          multiSelect={true}
+          dropDownRef={dropDownRef}
+        />
       ) : (
         <ul
           data-testid="multi-select-option-list"
