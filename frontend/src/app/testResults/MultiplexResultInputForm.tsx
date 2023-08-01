@@ -102,10 +102,16 @@ const MultiplexResultInputForm: React.FC<Props> = ({
   const isMobile = screen.width <= 600;
   const resultsMultiplexFormat: MultiplexResultState =
     convertFromMultiplexResultInputs(testResults);
-  const inconclusiveCheck =
+  let inconclusiveCheck =
     resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED &&
     resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED &&
     resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
+
+  if (isFluOnly) {
+    inconclusiveCheck =
+      resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED &&
+      resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED;
+  }
 
   /**
    * Handle Setting Results
@@ -139,7 +145,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
     const markedInconclusive = value.target.checked;
     if (markedInconclusive) {
       const inconclusiveState: MultiplexResultState = {
-        covid: TEST_RESULTS.UNDETERMINED,
+        covid: isFluOnly ? TEST_RESULTS.UNKNOWN : TEST_RESULTS.UNDETERMINED,
         fluA: TEST_RESULTS.UNDETERMINED,
         fluB: TEST_RESULTS.UNDETERMINED,
       };
@@ -163,14 +169,22 @@ const MultiplexResultInputForm: React.FC<Props> = ({
    * Form Validation
    * */
   const validateForm = () => {
-    const anyResultIsInconclusive =
+    let anyResultIsInconclusive =
       resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED ||
       resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
       resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
 
-    const allResultsAreEqual =
+    let allResultsAreEqual =
       resultsMultiplexFormat.covid === resultsMultiplexFormat.fluA &&
       resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
+
+    if (isFluOnly) {
+      allResultsAreEqual =
+        resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
+      anyResultIsInconclusive =
+        resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
+        resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
+    }
 
     const covidIsFilled =
       resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
