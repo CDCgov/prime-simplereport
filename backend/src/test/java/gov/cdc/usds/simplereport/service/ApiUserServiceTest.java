@@ -10,7 +10,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -40,6 +39,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
@@ -432,7 +432,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     String email = "allfacilities@example.com";
     PartialOktaUser oktaUser =
         PartialOktaUser.builder()
-            .isAdmin(false)
+            .isSiteAdmin(false)
             .status(UserStatus.ACTIVE)
             .organizationRoleClaims(Optional.empty())
             .build();
@@ -466,7 +466,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     String email = "allfacilities@example.com";
     PartialOktaUser oktaUser =
         PartialOktaUser.builder()
-            .isAdmin(true)
+            .isSiteAdmin(true)
             .status(UserStatus.ACTIVE)
             .organizationRoleClaims(Optional.empty())
             .build();

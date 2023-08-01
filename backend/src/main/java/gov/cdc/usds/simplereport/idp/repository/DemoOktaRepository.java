@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -25,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.context.annotation.Profile;
@@ -374,7 +374,7 @@ public class DemoOktaRepository implements OktaRepository {
     }
 
     return PartialOktaUser.builder()
-        .isAdmin(isAdmin)
+        .isSiteAdmin(isAdmin)
         .status(status)
         .username(username)
         .organizationRoleClaims(orgClaims)

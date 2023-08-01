@@ -23,7 +23,7 @@ appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
 const QueueBatchedTestEventPublisher: AzureFunction = async function (
-  context: Context
+  context: Context,
 ): Promise<void> {
   const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
   const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
@@ -57,14 +57,14 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
   if (parseSuccessCount < 1) {
     context.log(
-      `Queue: ${TEST_EVENT_QUEUE_NAME}. Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`
+      `Queue: ${TEST_EVENT_QUEUE_NAME}. Successfully parsed message count of ${parseSuccessCount} is less than 1; aborting`,
     );
     return;
   }
 
   const uploadStart = new Date().getTime();
   context.log(
-    `Queue: ${TEST_EVENT_QUEUE_NAME}. Starting upload of ${parseSuccessCount} records to ReportStream`
+    `Queue: ${TEST_EVENT_QUEUE_NAME}. Starting upload of ${parseSuccessCount} records to ReportStream`,
   );
 
   const postResult = await uploadResult(csvPayload);
@@ -88,32 +88,32 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
       (await postResult.json()) as ReportStreamResponse;
     context.log(
       `Queue: ${TEST_EVENT_QUEUE_NAME}. Report Stream response: ${JSON.stringify(
-        response
-      )}`
+        response,
+      )}`,
     );
     await reportExceptions(
       context,
       exceptionQueue,
       response,
-      TEST_EVENT_QUEUE_NAME
+      TEST_EVENT_QUEUE_NAME,
     );
 
     context.log(
-      `Queue: ${TEST_EVENT_QUEUE_NAME}. Upload to ${response.destinationCount} reporting destinations successful; deleting messages`
+      `Queue: ${TEST_EVENT_QUEUE_NAME}. Upload to ${response.destinationCount} reporting destinations successful; deleting messages`,
     );
 
     await deleteSuccessfullyParsedMessages(
       context,
       publishingQueue,
       messages,
-      parseFailure
+      parseFailure,
     );
   } else {
     const responseBody = await postResult.text();
     const errorText = `Queue: ${TEST_EVENT_QUEUE_NAME}. Failed to upload to ReportStream with response code ${postResult.status}`;
     context.log.error(
       `${errorText}. Response body (${responseBody.length} bytes): `,
-      responseBody
+      responseBody,
     );
     telemetry.trackEvent({
       name: `Queue: ${TEST_EVENT_QUEUE_NAME}. ReportStream Upload Failed`,
@@ -132,7 +132,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
         context,
         publishingQueue,
         messages,
-        parseFailure
+        parseFailure,
       );
     }
 

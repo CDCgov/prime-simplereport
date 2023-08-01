@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -26,6 +25,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
+import org.openapitools.client.model.UserStatus;
 
 class DemoOktaRepositoryTest {
 
@@ -494,7 +494,7 @@ class DemoOktaRepositoryTest {
                     OrganizationRole.ALL_FACILITIES,
                     OrganizationRole.ADMIN)));
 
-    assertEquals(false, amos.isAdmin);
+    assertEquals(false, amos.isSiteAdmin());
     assertEquals(UserStatus.ACTIVE, amos.getStatus());
     assertEquals(AMOS.getUsername(), amos.getUsername());
     assertTrue(amos.getOrganizationRoleClaims().isPresent());

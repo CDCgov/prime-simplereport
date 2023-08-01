@@ -5,7 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -15,21 +16,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.okta.sdk.client.Client;
-import com.okta.sdk.error.Error;
-import com.okta.sdk.error.ErrorCause;
-import com.okta.sdk.resource.ResourceException;
-import com.okta.sdk.resource.application.Application;
-import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupBuilder;
-import com.okta.sdk.resource.group.GroupList;
-import com.okta.sdk.resource.group.GroupProfile;
-import com.okta.sdk.resource.group.GroupType;
-import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserBuilder;
-import com.okta.sdk.resource.user.UserList;
-import com.okta.sdk.resource.user.UserProfile;
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -42,6 +30,8 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -51,8 +41,20 @@ import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.ApiException;
+import org.openapitools.client.api.ApplicationApi;
+import org.openapitools.client.api.ApplicationGroupsApi;
+import org.openapitools.client.api.GroupApi;
+import org.openapitools.client.api.UserApi;
+import org.openapitools.client.model.Application;
+import org.openapitools.client.model.Group;
+import org.openapitools.client.model.GroupProfile;
+import org.openapitools.client.model.GroupType;
+import org.openapitools.client.model.UpdateUserRequest;
+import org.openapitools.client.model.User;
+import org.openapitools.client.model.UserProfile;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 
 @Import(SliceTestConfiguration.class)
 class LiveOktaRepositoryTest {
@@ -64,27 +66,41 @@ class LiveOktaRepositoryTest {
   private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
       new CurrentTenantDataAccessContextHolder();
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
-  private final Client _client = mock(Client.class);
+  private final GroupApi groupApi = mock(GroupApi.class);
+  private final UserApi userApi = mock(UserApi.class);
+  private final ApplicationApi applicationApi = mock(ApplicationApi.class);
+  private final ApplicationGroupsApi applicationGroupsApi = mock(ApplicationGroupsApi.class);
   private final Application _app = mock(Application.class);
   LiveOktaRepository _repo;
+  ApiException userExistsError =
+      new ApiException(
+          500,
+          "{\"errorCode\":\"E0000001\",\"errorSummary\":\"Api validation failed: login\",\"errorLink\":\"E0000001\",\"errorId\":\"oaeBCIl7rB1RSq4D4V0vu5C2w\",\"errorCauses\":[{\"errorSummary\":\"login: An object with this field already exists in the current organization\"}]}");
 
   @BeforeEach
   public void setup() {
 
-    when(_client.getApplication(MOCK_CLIENT_ID)).thenReturn(_app);
+    when(_app.getId()).thenReturn("1234");
+    when(applicationApi.getApplication(anyString(), isNull())).thenReturn(_app);
+
     _repo =
         new LiveOktaRepository(
-            MOCK_PROPS, _client, MOCK_CLIENT_ID, MOCK_EXTRACTOR, tenantDataAccessContextHolder);
+            MOCK_PROPS,
+            MOCK_CLIENT_ID,
+            MOCK_EXTRACTOR,
+            tenantDataAccessContextHolder,
+            groupApi,
+            applicationApi,
+            userApi,
+            applicationGroupsApi);
   }
 
   @Test
   void getOrganizationRoleClaimsForUser() {
     String username = "fraud@example.com";
 
-    UserList searchUserList = mock(UserList.class);
-    UserList qUserList = mock(UserList.class);
     User user = mock(User.class);
-    GroupList groupList = mock(GroupList.class);
+    var userList = List.of(user);
     Group group1 = mock(Group.class);
     Group group2 = mock(Group.class);
     Group group3 = mock(Group.class);
@@ -93,14 +109,13 @@ class LiveOktaRepositoryTest {
     GroupProfile groupProfile2 = mock(GroupProfile.class);
     GroupProfile groupProfile3 = mock(GroupProfile.class);
     GroupProfile groupProfile4 = mock(GroupProfile.class);
+    var groupList = List.of(group1, group2, group3, group4);
 
-    when(_client.listUsers(null, null, "profile.login eq \"" + username + "\"", null, null))
-        .thenReturn(searchUserList);
-    when(_client.listUsers(username, null, null, null, null)).thenReturn(qUserList);
-    when(searchUserList.stream()).thenReturn(Stream.of(user));
-    when(qUserList.stream()).thenReturn(Stream.of(user));
-    when(user.listGroups()).thenReturn(groupList);
-    when(groupList.stream()).thenReturn(Stream.of(group1, group2, group3, group4));
+    when(user.getId()).thenReturn("1234");
+    when(userApi.listUsers(
+            null, null, null, null, "profile.login eq \"" + username + "\"", null, null))
+        .thenReturn(userList);
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
@@ -157,22 +172,28 @@ class LiveOktaRepositoryTest {
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes userAttributes = new IdentityAttributes(username, personName);
 
-    UserList userList = mock(UserList.class);
     User user = mock(User.class);
+    var userList = List.of(user);
     UserProfile userProfile = mock(UserProfile.class);
-    GroupList groupList = mock(GroupList.class);
     Group group1 = mock(Group.class);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
+    var groupList = List.of(group1);
+    var updateRequest = new UpdateUserRequest();
+    updateRequest.setProfile(userProfile);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of(user));
-    when(userList.single()).thenReturn(user);
     when(user.getProfile()).thenReturn(userProfile);
+    when(user.getId()).thenReturn("1234");
 
-    when(user.listGroups()).thenReturn(groupList);
-    when(groupList.stream()).thenReturn(Stream.of(group1));
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
@@ -182,7 +203,7 @@ class LiveOktaRepositoryTest {
     verify(userProfile).setMiddleName(personName.getMiddleName());
     verify(userProfile).setLastName(personName.getLastName());
     verify(userProfile).setHonorificSuffix(personName.getSuffix());
-    verify(user).update();
+    verify(userApi).updateUser(user.getId(), updateRequest, false);
   }
 
   @Test
@@ -192,29 +213,35 @@ class LiveOktaRepositoryTest {
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes userAttributes = new IdentityAttributes(username, personName);
 
-    UserList userList = mock(UserList.class);
     User user = mock(User.class);
+    var userList = List.of(user);
     UserProfile userProfile = mock(UserProfile.class);
-    GroupList groupList = mock(GroupList.class);
     Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
+    var updateRequest = new UpdateUserRequest();
+    updateRequest.setProfile(userProfile);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of(user));
-    when(userList.single()).thenReturn(user);
     when(user.getProfile()).thenReturn(userProfile);
+    when(user.getId()).thenReturn("1234");
 
-    when(user.listGroups()).thenReturn(groupList);
-    when(groupList.stream()).thenReturn(Stream.of(group1));
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
 
     _repo.updateUserEmail(userAttributes, newUsername);
     verify(userProfile).setEmail(newUsername);
-    verify(user).update();
+    verify(userApi).updateUser(user.getId(), updateRequest, false);
   }
 
   @Test
@@ -223,12 +250,17 @@ class LiveOktaRepositoryTest {
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
 
-    UserList userList = mock(UserList.class);
+    var userList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of());
 
     Throwable caught =
         assertThrows(
@@ -242,12 +274,17 @@ class LiveOktaRepositoryTest {
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
 
-    UserList userList = mock(UserList.class);
+    var userList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of());
 
     Throwable caught =
         assertThrows(
@@ -266,26 +303,30 @@ class LiveOktaRepositoryTest {
     PersonName secondPersonName = new PersonName("Second", "Middle", "Last", "Suffix");
     new IdentityAttributes(newUsername, secondPersonName);
 
-    UserList userList = mock(UserList.class);
     User user = mock(User.class);
+    var userList = List.of(user);
     UserProfile userProfile = mock(UserProfile.class);
-    GroupList groupList = mock(GroupList.class);
     Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of(user));
-    when(userList.single()).thenReturn(user);
     when(user.getProfile()).thenReturn(userProfile);
+    when(user.getId()).thenReturn("1234");
 
-    when(user.listGroups()).thenReturn(groupList);
-    when(groupList.stream()).thenReturn(Stream.of(group1));
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
-    when(user.update()).thenThrow(new ResourceException(new DuplicateUserError()));
+    when(userApi.updateUser(anyString(), any(), eq(false))).thenThrow(userExistsError);
     Throwable caught =
         assertThrows(
             ConflictingUserException.class,
@@ -299,32 +340,36 @@ class LiveOktaRepositoryTest {
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
     IdentityAttributes userAttributes = new IdentityAttributes(username, personName);
 
-    UserList userList = mock(UserList.class);
     User user = mock(User.class);
+    var userList = List.of(user);
     UserProfile userProfile = mock(UserProfile.class);
-    GroupList groupList = mock(GroupList.class);
     Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
     GroupProfile groupProfile1 = mock(GroupProfile.class);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of(user));
-    when(userList.single()).thenReturn(user);
     when(user.getProfile()).thenReturn(userProfile);
+    when(user.getId()).thenReturn("1234");
 
-    when(user.listGroups()).thenReturn(groupList);
-    when(groupList.stream()).thenReturn(Stream.of(group1));
+    when(userApi.listUserGroups("1234")).thenReturn(groupList);
     when(group1.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(group1.getProfile()).thenReturn(groupProfile1);
     when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:MYNIFTYORG:NO_ACCESS");
-    when(user.update()).thenThrow(new ResourceException(new MockOktaResourceError()));
+    when(userApi.updateUser(anyString(), any(), eq(false)))
+        .thenThrow(new ApiException(500, "Something went wrong with Okta"));
     Throwable caught =
         assertThrows(
             IllegalGraphqlArgumentException.class,
             () -> _repo.updateUserEmail(userAttributes, "newemail@example.com"));
-    assertEquals(
-        "HTTP 400, Okta E000001 (Something went wrong with Okta), ErrorId 0", caught.getMessage());
+    assertEquals("Code: 500; Message: Something went wrong with Okta", caught.getMessage());
   }
 
   @Test
@@ -332,25 +377,36 @@ class LiveOktaRepositoryTest {
     String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
 
-    UserList userList = mock(UserList.class);
     User user = mock(User.class);
-    UserProfile userProfile = mock(UserProfile.class);
+    var userList = List.of(user);
+    var userProfile = new UserProfile();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of(user));
-    when(userList.single()).thenReturn(user);
     when(user.getStatus()).thenReturn(UserStatus.SUSPENDED);
     when(user.getProfile()).thenReturn(userProfile);
-
+    when(user.getId()).thenReturn("1234");
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
 
     _repo.reprovisionUser(identityAttributes);
 
-    verify(user).update();
-    verify(user).deactivate();
-    verify(user).activate(true);
+    userProfile.setFirstName(personName.getFirstName());
+    userProfile.setMiddleName(personName.getMiddleName());
+    userProfile.setLastName(personName.getLastName());
+    userProfile.setHonorificSuffix(personName.getSuffix());
+    var updateUserRequest = new UpdateUserRequest();
+    updateUserRequest.setProfile(userProfile);
+
+    verify(userApi).updateUser("1234", updateUserRequest, false);
+    verify(userApi).deactivateUser(user.getId(), false);
+    verify(userApi).activateUser(user.getId(), true);
   }
 
   @Test
@@ -358,14 +414,18 @@ class LiveOktaRepositoryTest {
     String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
 
-    UserList userList = mock(UserList.class);
     User user = mock(User.class);
+    var userList = List.of(user);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of(user));
-    when(userList.single()).thenReturn(user);
     when(user.getStatus()).thenReturn(UserStatus.ACTIVE);
 
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
@@ -381,12 +441,17 @@ class LiveOktaRepositoryTest {
     String username = "fraud@example.com";
     PersonName personName = new PersonName("First", "Middle", "Last", "Suffix");
 
-    UserList userList = mock(UserList.class);
+    var userList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(userList);
-    when(userList.stream()).thenReturn(Stream.of());
 
     IdentityAttributes identityAttributes = new IdentityAttributes(username, personName);
 
@@ -404,17 +469,28 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupProfileName = groupProfilePrefix + ":NO_ACCESS";
-    Map<String, Object> profileProperties = createValidProfileProperties(identityAttributes);
     var mockUserBuilder =
-        setupAndMockUserBuilder(groupProfilePrefix, groupProfileName, profileProperties);
+        setupAndMockUserBuilder(
+            groupProfilePrefix,
+            groupProfileName,
+            personName.getFirstName(),
+            personName.getMiddleName(),
+            personName.getLastName(),
+            personName.getSuffix(),
+            username);
 
     try (var staticMockUserBuilder = mockStatic(UserBuilder.class)) {
       staticMockUserBuilder.when(UserBuilder::instance).thenReturn(mockUserBuilder);
 
       var actual = _repo.createUser(identityAttributes, org, Set.of(), Set.of(), true);
-      verify(mockUserBuilder).setProfileProperties(profileProperties);
-      verify(mockUserBuilder).setGroups(anySet());
-      verify(mockUserBuilder).buildAndCreate(_client);
+      verify(mockUserBuilder).setLogin(username);
+      verify(mockUserBuilder).setEmail(username);
+      verify(mockUserBuilder).setFirstName(personName.getFirstName());
+      verify(mockUserBuilder).setMiddleName(personName.getMiddleName());
+      verify(mockUserBuilder).setLastName(personName.getLastName());
+      verify(mockUserBuilder).setHonorificSuffix(personName.getSuffix());
+      verify(mockUserBuilder).setGroups(anyList());
+      verify(mockUserBuilder).buildAndCreate(userApi);
       verify(mockUserBuilder).setActive(true);
       assertEquals(org.getExternalId(), actual.orElseThrow().getOrganizationExternalId());
       assertEquals(Set.of(OrganizationRole.NO_ACCESS), actual.get().getGrantedRoles());
@@ -427,6 +503,15 @@ class LiveOktaRepositoryTest {
     var personName = new PersonName();
     var identityAttributes = new IdentityAttributes(username, personName);
     var org = new Organization("orgName", "orgType", "1", true);
+
+    Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
+    var groupProfile1 = mock(GroupProfile.class);
+
+    when(groupApi.listGroups(any(), any(), any(), any(), any(), any(), any(), any()))
+        .thenReturn(groupList);
+    when(group1.getProfile()).thenReturn(groupProfile1);
+    when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:1:NO_ACCESS");
 
     Set<Facility> facilities = Set.of();
     Set<OrganizationRole> roles = Set.of();
@@ -444,6 +529,15 @@ class LiveOktaRepositoryTest {
     var identityAttributes = new IdentityAttributes(null, personName);
     var org = new Organization("orgName", "orgType", "1", true);
 
+    Group group1 = mock(Group.class);
+    var groupList = List.of(group1);
+    var groupProfile1 = mock(GroupProfile.class);
+
+    when(groupApi.listGroups(any(), any(), any(), any(), any(), any(), any(), any()))
+        .thenReturn(groupList);
+    when(group1.getProfile()).thenReturn(groupProfile1);
+    when(groupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:1:NO_ACCESS");
+
     Set<Facility> facilities = Set.of();
     Set<OrganizationRole> roles = Set.of();
     Throwable caught =
@@ -459,11 +553,13 @@ class LiveOktaRepositoryTest {
     var personName = new PersonName("First", "Middle", "Last", "Suffix");
     var identityAttributes = new IdentityAttributes(username, personName);
     var org = new Organization("orgName", "orgType", "1", true);
-    var mockGroupList = mock(GroupList.class);
-
-    when(mockGroupList.stream()).then(i -> Stream.of());
-    when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
-    when(_client.listGroups(isNull(), anyString(), isNull())).thenReturn(mockGroupList);
+    var mockGroupList = new ArrayList<Group>();
+    when(groupApi.listGroups(
+            anyString(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockGroupList);
+    when(groupApi.listGroups(
+            isNull(), isNull(), isNull(), isNull(), isNull(), anyString(), isNull(), isNull()))
+        .thenReturn(mockGroupList);
 
     Set<Facility> facilities = Set.of();
     Set<OrganizationRole> roles = Set.of();
@@ -485,12 +581,15 @@ class LiveOktaRepositoryTest {
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupProfileName = groupProfilePrefix + ":NO_ACCESS";
 
-    var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
     var mockGroupProfile = mock(GroupProfile.class);
-    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
-    when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
-    when(_client.listGroups(isNull(), anyString(), isNull())).thenReturn(mockGroupList);
+    var mockGroupList = List.of(mockGroup);
+    when(groupApi.listGroups(
+            anyString(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockGroupList);
+    when(groupApi.listGroups(
+            isNull(), isNull(), isNull(), isNull(), isNull(), anyString(), isNull(), isNull()))
+        .thenReturn(mockGroupList);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn("nonexistent");
 
@@ -512,12 +611,17 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupProfileName = groupProfilePrefix + ":NO_ACCESS";
-    Map<String, Object> profileProperties = createValidProfileProperties(identityAttributes);
     var mockUserBuilder =
-        setupAndMockUserBuilder(groupProfilePrefix, groupProfileName, profileProperties);
+        setupAndMockUserBuilder(
+            groupProfilePrefix,
+            groupProfileName,
+            personName.getFirstName(),
+            personName.getMiddleName(),
+            personName.getLastName(),
+            personName.getSuffix(),
+            username);
 
-    when(mockUserBuilder.buildAndCreate(_client))
-        .thenThrow(new ResourceException(new DuplicateUserError()));
+    when(mockUserBuilder.buildAndCreate(userApi)).thenThrow(userExistsError);
 
     try (var staticMockUserBuilder = mockStatic(UserBuilder.class)) {
       staticMockUserBuilder.when(UserBuilder::instance).thenReturn(mockUserBuilder);
@@ -539,12 +643,18 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupProfileName = groupProfilePrefix + ":NO_ACCESS";
-    Map<String, Object> profileProperties = createValidProfileProperties(identityAttributes);
     var mockUserBuilder =
-        setupAndMockUserBuilder(groupProfilePrefix, groupProfileName, profileProperties);
+        setupAndMockUserBuilder(
+            groupProfilePrefix,
+            groupProfileName,
+            personName.getFirstName(),
+            personName.getMiddleName(),
+            personName.getLastName(),
+            personName.getSuffix(),
+            username);
 
-    when(mockUserBuilder.buildAndCreate(_client))
-        .thenThrow(new ResourceException(new ResourceException(new MockOktaResourceError())));
+    when(mockUserBuilder.buildAndCreate(userApi))
+        .thenThrow(new ApiException(500, "Something went wrong with Okta"));
 
     try (var staticMockUserBuilder = mockStatic(UserBuilder.class)) {
       staticMockUserBuilder.when(UserBuilder::instance).thenReturn(mockUserBuilder);
@@ -555,44 +665,46 @@ class LiveOktaRepositoryTest {
           assertThrows(
               IllegalGraphqlArgumentException.class,
               () -> _repo.createUser(identityAttributes, org, facilities, orgRoles, true));
-      assertEquals(
-          "HTTP 400, Okta E000001 (HTTP 400, Okta E000001 (Something went wrong with Okta), ErrorId 0), ErrorId 0",
-          caught.getMessage());
+      assertEquals("Code: 500; Message: Something went wrong with Okta", caught.getMessage());
     }
   }
 
-  private Map<String, Object> createValidProfileProperties(IdentityAttributes identityAttributes) {
-    return Map.of(
-        "firstName",
-        identityAttributes.getFirstName(),
-        "middleName",
-        identityAttributes.getMiddleName(),
-        "lastName",
-        identityAttributes.getLastName(),
-        "honorificSuffix",
-        identityAttributes.getSuffix(),
-        "email",
-        identityAttributes.getUsername(),
-        "login",
-        identityAttributes.getUsername());
-  }
-
   private UserBuilder setupAndMockUserBuilder(
-      String groupProfilePrefix, String groupProfileName, Map<String, Object> profileProperties) {
-    var mockGroupListQ = mock(GroupList.class);
-    var mockGroupListSearch = mock(GroupList.class);
+      String groupProfilePrefix,
+      String groupProfileName,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      String email) {
     var mockGroup = mock(Group.class);
+    var mockGroupListQ = List.of(mockGroup);
+    var mockGroupListSearch = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
     var mockUserBuilder = mock(UserBuilder.class);
 
-    when(mockGroupListQ.stream()).then(i -> Stream.of(mockGroup));
-    when(mockGroupListSearch.stream()).then(i -> Stream.of(mockGroup));
-    when(_client.listGroups(eq(groupProfilePrefix), isNull(), isNull())).thenReturn(mockGroupListQ);
-    when(_client.listGroups(isNull(), anyString(), isNull())).thenReturn(mockGroupListSearch);
+    when(groupApi.listGroups(
+            eq(groupProfilePrefix),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull()))
+        .thenReturn(mockGroupListQ);
+    when(groupApi.listGroups(
+            isNull(), isNull(), isNull(), isNull(), isNull(), anyString(), isNull(), isNull()))
+        .thenReturn(mockGroupListSearch);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfileName);
-    when(mockUserBuilder.setProfileProperties(profileProperties)).thenReturn(mockUserBuilder);
-    when(mockUserBuilder.setGroups(anySet())).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setFirstName(firstName)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setMiddleName(middleName)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setLastName(lastName)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setHonorificSuffix(suffix)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setLogin(email)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setEmail(email)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.setGroups(anyList())).thenReturn(mockUserBuilder);
     when(mockUserBuilder.setActive(true)).thenReturn(mockUserBuilder);
     return mockUserBuilder;
   }
@@ -602,18 +714,25 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId() + ":NO_ACCESS";
 
-    var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
     var mockGroupProfile = mock(GroupProfile.class);
-    var mockUserList = mock(UserList.class);
+    var mockGroupList = List.of(mockGroup);
     var mockUser = mock(User.class);
     var mockUserProfile = mock(UserProfile.class);
-    when(_client.listGroups(eq(groupProfilePrefix), isNull(), isNull())).thenReturn(mockGroupList);
-    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    var mockUserList = List.of(mockUser);
+    when(groupApi.listGroups(
+            eq(groupProfilePrefix),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull()))
+        .thenReturn(mockGroupList);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
-    when(mockGroup.listUsers()).thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(groupApi.listGroupUsers(any(), isNull(), isNull())).thenReturn(mockUserList);
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("email@example.com");
 
@@ -626,10 +745,11 @@ class LiveOktaRepositoryTest {
   void getAllUsersForOrganization_illegalGraphqlArgumentException_noGroupsFound() {
     var org = new Organization("orgName", "orgType", "1", true);
 
-    var mockGroupList = mock(GroupList.class);
+    var mockGroupList = new ArrayList<Group>();
 
-    when(_client.listGroups(anyString(), isNull(), isNull())).thenReturn(mockGroupList);
-    when(mockGroupList.stream()).then(i -> Stream.of());
+    when(groupApi.listGroups(
+            anyString(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockGroupList);
 
     Throwable caught =
         assertThrows(
@@ -642,18 +762,26 @@ class LiveOktaRepositoryTest {
     var org = new Organization("orgName", "orgType", "1", true);
     var groupProfilePrefix = "SR-UNITTEST-TENANT:" + org.getExternalId() + ":NO_ACCESS";
 
-    var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
     var mockUserProfile = mock(UserProfile.class);
-    when(_client.listGroups(eq(groupProfilePrefix), isNull(), isNull())).thenReturn(mockGroupList);
-    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(groupApi.listGroups(
+            eq(groupProfilePrefix),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull()))
+        .thenReturn(mockGroupList);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
-    when(mockGroup.listUsers()).thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
+    when(mockGroup.getId()).thenReturn("1234");
+    when(groupApi.listGroupUsers(eq("1234"), isNull(), isNull())).thenReturn(mockUserList);
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("email@example.com");
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
@@ -669,59 +797,119 @@ class LiveOktaRepositoryTest {
     var groupOrgPrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
     var orgRole = OrganizationRole.ADMIN;
-    var mockUserList = mock(UserList.class);
-    var mockQUserList = mock(UserList.class);
-
     var mockUser = mock(User.class);
-    var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
     var mockGroupProfile = mock(GroupProfile.class);
-    var mockFullGroupList = mock(GroupList.class);
+    var mockGroupProfileToRemove = mock(GroupProfile.class);
     var mockAdminGroup = mock(Group.class);
+    var mockGroupToRemove = mock(Group.class);
     var mockAdminGroupProfile = mock(GroupProfile.class);
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + userName + "\""),
+            isNull(),
+            isNull()))
+        .thenReturn(List.of(mockUser));
+    when(mockUser.getId()).thenReturn("1234");
+    when(mockAdminGroup.getId()).thenReturn("adminGID");
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
-        .thenReturn(mockUserList);
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockQUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockQUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUser.listGroups()).thenReturn(mockGroupList);
-    when(mockGroupList.stream())
-        .then(i -> Stream.of(mockGroup))
-        .then(i -> Stream.of(mockGroup, mockAdminGroup));
+    when(userApi.listUserGroups("1234"))
+        .thenReturn(List.of(mockGroup, mockGroupToRemove), List.of(mockGroup, mockAdminGroup));
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
-    when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
-        .thenReturn(mockFullGroupList);
-    when(mockFullGroupList.stream()).then(i -> Stream.of(mockAdminGroup));
+    when(mockGroupToRemove.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockGroupToRemove.getId()).thenReturn("removeGID");
+    when(mockGroupToRemove.getProfile()).thenReturn(mockGroupProfileToRemove);
+    when(mockGroupProfileToRemove.getName()).thenReturn(groupOrgPrefix + "-TO-REMOVE");
+    when(groupApi.listGroups(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.name sw \"" + groupOrgPrefix + "\""),
+            isNull(),
+            isNull()))
+        .thenReturn(List.of(mockAdminGroup, mockGroupToRemove));
     when(mockAdminGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockAdminGroup.getProfile()).thenReturn(mockAdminGroupProfile);
     when(mockAdminGroupProfile.getName()).thenReturn(groupOrgPrefix + ":" + orgRole);
 
     var actual = _repo.updateUserPrivileges(userName, org, Set.of(), Set.of(orgRole)).orElseThrow();
-    assertTrue(
-        actual
-            .getGrantedRoles()
-            .containsAll(List.of(OrganizationRole.ADMIN, OrganizationRole.NO_ACCESS)));
+    assertThat(actual.getGrantedRoles())
+        .contains(OrganizationRole.ADMIN, OrganizationRole.NO_ACCESS);
+    verify(groupApi).assignUserToGroup("adminGID", "1234");
+    verify(groupApi).unassignUserFromGroup("removeGID", "1234");
+  }
+
+  @Test
+  void updateUserPrivileges_userFromQResultsOnly() {
+    var userName = "fraud@example.com";
+    var org = new Organization("orgName", "orgType", "1", true);
+    var groupOrgPrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
+    var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
+    var orgRole = OrganizationRole.ADMIN;
+    var mockUser = mock(User.class);
+    var mockUserProfile = mock(UserProfile.class);
+    var mockUserListFromQ = List.of(mockUser);
+    var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
+    var mockGroupProfile = mock(GroupProfile.class);
+    var mockAdminGroup = mock(Group.class);
+    var mockFullGroupList = List.of(mockAdminGroup);
+    var mockAdminGroupProfile = mock(GroupProfile.class);
+    when(userApi.listUsers(
+            eq(userName), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserListFromQ);
+    when(mockUser.getProfile()).thenReturn(mockUserProfile);
+    when(mockUser.getId()).thenReturn("1234");
+    when(mockUserProfile.getLogin()).thenReturn(userName);
+    when(mockAdminGroup.getId()).thenReturn("adminGID");
+
+    when(userApi.listUserGroups("1234"))
+        .thenReturn(mockGroupList, List.of(mockGroup, mockAdminGroup));
+    when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
+    when(groupApi.listGroups(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.name sw \"" + groupOrgPrefix + "\""),
+            isNull(),
+            isNull()))
+        .thenReturn(mockFullGroupList);
+    when(mockAdminGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
+    when(mockAdminGroup.getProfile()).thenReturn(mockAdminGroupProfile);
+    when(mockAdminGroupProfile.getName()).thenReturn(groupOrgPrefix + ":" + orgRole);
+
+    var actual = _repo.updateUserPrivileges(userName, org, Set.of(), Set.of(orgRole)).orElseThrow();
+    assertThat(actual.getGrantedRoles())
+        .contains(OrganizationRole.ADMIN, OrganizationRole.NO_ACCESS);
+    verify(groupApi).assignUserToGroup("adminGID", "1234");
   }
 
   @Test
   void updateUserPrivileges_illegalGraphqlArgumentException_whenNoUsersFound() {
     var userName = "fraud@example.com";
     var org = new Organization("orgName", "orgType", "1", true);
-    var mockUserList = mock(UserList.class);
-    var mockQUserList = mock(UserList.class);
+    var mockUserList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + userName + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockQUserList);
-    when(mockUserList.stream()).then(i -> Stream.of());
-    when(mockQUserList.stream()).then(i -> Stream.of());
 
     Set<Facility> facilities = Set.of();
     Set<OrganizationRole> roles = Set.of();
@@ -737,21 +925,23 @@ class LiveOktaRepositoryTest {
     var userName = "fraud@example.com";
     var org = new Organization("orgName", "orgType", "1", true);
 
-    var mockUserList = mock(UserList.class);
-    var mockQUserList = mock(UserList.class);
     var mockUser = mock(User.class);
-    var mockGroupList = mock(GroupList.class);
+    var mockUserList = List.of(mockUser);
     var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + userName + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockQUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockQUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUser.listGroups()).thenReturn(mockGroupList);
-    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(mockUser.getId()).thenReturn("1234");
+
+    when(userApi.listUserGroups("1234")).thenReturn(mockGroupList);
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn("");
@@ -774,30 +964,38 @@ class LiveOktaRepositoryTest {
     var groupOrgPrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
 
-    var mockUserList = mock(UserList.class);
-    var mockQUserList = mock(UserList.class);
     var mockUser = mock(User.class);
-    var mockGroupList = mock(GroupList.class);
+    var mockUserList = List.of(mockUser);
     var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
-    var mockEmptyGroupList = mock(GroupList.class);
+    var mockEmptyGroupList = new ArrayList<Group>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + userName + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockQUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockQUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUser.listGroups()).thenReturn(mockGroupList);
-    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(mockUser.getId()).thenReturn("1234");
+
+    when(userApi.listUserGroups("1234")).thenReturn(mockGroupList);
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
-    when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
+    when(groupApi.listGroups(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.name sw \"" + groupOrgPrefix + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockEmptyGroupList);
-    when(mockEmptyGroupList.stream()).then(i -> Stream.of());
-
     Set<Facility> facilities = Set.of();
     Set<OrganizationRole> roles = Set.of(OrganizationRole.ADMIN);
     Throwable caught =
@@ -816,25 +1014,35 @@ class LiveOktaRepositoryTest {
     var groupOrgPrefix = "SR-UNITTEST-TENANT:" + org.getExternalId();
     var groupOrgDefaultName = groupOrgPrefix + ":NO_ACCESS";
 
-    var mockUserList = mock(UserList.class);
-    var mockQUserList = mock(UserList.class);
     var mockUser = mock(User.class);
-    var mockGroupList = mock(GroupList.class);
+    var mockUserList = List.of(mockUser);
     var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + userName + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + userName + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(_client.listUsers(eq(userName), isNull(), isNull(), isNull(), isNull()))
-        .thenReturn(mockQUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockQUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUser.listGroups()).thenReturn(mockGroupList);
-    when(mockGroupList.stream()).then(i -> Stream.of(mockGroup));
+    when(mockUser.getId()).thenReturn("1234");
+
+    when(userApi.listUserGroups("1234")).thenReturn(mockGroupList);
     when(mockGroup.getType()).thenReturn(GroupType.OKTA_GROUP);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupOrgDefaultName);
-    when(_client.listGroups(isNull(), eq("profile.name sw \"" + groupOrgPrefix + "\""), isNull()))
+    when(groupApi.listGroups(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.name sw \"" + groupOrgPrefix + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockGroupList);
 
     Set<Facility> userFacilities = Set.of();
@@ -852,28 +1060,38 @@ class LiveOktaRepositoryTest {
   @Test
   void resetUserPassword() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.resetUserPassword(username);
-    verify(mockUser).resetPassword(true);
+    verify(userApi).generateResetPasswordToken("1234", true, false);
   }
 
   @Test
   void resetUserPassword_illegalGraphqlArgumentException_whenNoUsersFound() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
+    var mockUserList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
         assertThrows(
@@ -885,28 +1103,37 @@ class LiveOktaRepositoryTest {
   @Test
   void resetUserMfa() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
-
+    when(mockUser.getId()).thenReturn("1234");
     _repo.resetUserMfa(username);
-    verify(mockUser).resetFactors();
+    verify(userApi).resetFactors("1234");
   }
 
   @Test
   void resetUserMfa_illegalGraphqlArgumentException_whenNoUsersFound() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
+    var mockUserList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
         assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.resetUserMfa(username));
@@ -916,66 +1143,85 @@ class LiveOktaRepositoryTest {
   @Test
   void setUserIsActive_suspend() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.setUserIsActive(username, false);
-    verify(mockUser).suspend();
-    verify(mockUser, times(0)).unsuspend();
+    verify(userApi).suspendUser("1234");
+    verify(userApi, times(0)).unsuspendUser(anyString());
   }
 
   @Test
   void setUserIsActive_unsuspend() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.SUSPENDED);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.setUserIsActive(username, true);
-    verify(mockUser, times(0)).suspend();
-    verify(mockUser).unsuspend();
+    verify(userApi, times(0)).suspendUser(anyString());
+    verify(userApi).unsuspendUser("1234");
   }
 
   @Test
   void setUserIsActive_doNothing() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
 
     _repo.setUserIsActive(username, true);
-    verify(mockUser, times(0)).suspend();
-    verify(mockUser, times(0)).unsuspend();
+    verify(userApi, times(0)).suspendUser(anyString());
+    verify(userApi, times(0)).unsuspendUser(anyString());
   }
 
   @Test
   void setUserIsActive_illegalGraphqlArgumentException_whenNoUsersFound() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
+    var mockUserList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
         assertThrows(
@@ -987,34 +1233,53 @@ class LiveOktaRepositoryTest {
   @Test
   void getUserStatus() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
 
-    assertEquals(UserStatus.ACTIVE, _repo.getUserStatus(username));
+    var actual = _repo.getUserStatus(username);
+    verify(userApi)
+        .listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"fraud@example.com\""),
+            isNull(),
+            isNull());
+    assertEquals(UserStatus.ACTIVE, actual);
   }
 
   @Test
   void getUserStatus_fallsBackToUsingQueryResults() {
     var username = "reallyNewUser@example.com";
-    var mockEmptyUserList = mock(UserList.class);
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
     var mockUserProfile = mock(UserProfile.class);
+    var mockEmptyUserList = new ArrayList<User>();
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockEmptyUserList);
-    when(mockEmptyUserList.stream()).then(i -> Stream.of());
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+    when(userApi.listUsers(
+            eq(username), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn(username);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
@@ -1025,13 +1290,16 @@ class LiveOktaRepositoryTest {
   @Test
   void getUserStatus_illegalGraphqlArgumentException_whenNoUsersFound() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
+    var mockUserList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
-        .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of());
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
 
     Throwable caught =
@@ -1043,18 +1311,29 @@ class LiveOktaRepositoryTest {
   @Test
   void getUserStatus_illegalGraphqlArgumentException_whenLoginDoesNotMatch() {
     var username = "reallyNewUser@example.com";
-    var mockEmptyUserList = mock(UserList.class);
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
     var mockUserProfile = mock(UserProfile.class);
+    var mockEmptyUserList = new ArrayList<User>();
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockEmptyUserList);
-    when(mockEmptyUserList.stream()).then(i -> Stream.of());
-    when(_client.listUsers(eq(username), isNull(), isNull(), isNull(), isNull()))
+    when(userApi.listUsers(
+            eq(username),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("myUsername");
 
@@ -1067,28 +1346,38 @@ class LiveOktaRepositoryTest {
   @Test
   void reactivateUser() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.reactivateUser(username);
-    verify(mockUser).unsuspend();
+    verify(userApi).unsuspendUser("1234");
   }
 
   @Test
   void reactivateUser_illegalGraphqlArgumentException_whenNoUsersFound() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
+    var mockUserList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
         assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.reactivateUser(username));
@@ -1098,46 +1387,61 @@ class LiveOktaRepositoryTest {
   @Test
   void resendActivationEmail_reactivate() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.PROVISIONED);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.resendActivationEmail(username);
-    verify(mockUser).reactivate(true);
+    verify(userApi).reactivateUser("1234", true);
   }
 
   @Test
   void resendActivationEmail_activate() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.STAGED);
+    when(mockUser.getId()).thenReturn("1234");
 
     _repo.resendActivationEmail(username);
-    verify(mockUser).activate(true);
+    verify(userApi).activateUser("1234", true);
   }
 
   @Test
   void resendActivationEmail_illegalGraphqlArgumentException_whenNoUsersFound() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
+    var mockUserList = new ArrayList<User>();
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of());
 
     Throwable caught =
         assertThrows(
@@ -1149,14 +1453,18 @@ class LiveOktaRepositoryTest {
   void
       resendActivationEmail_illegalGraphqlArgumentException_whenUserStatusIsNotProvisionedOrStaged() {
     var username = "fraud@example.com";
-    var mockUserList = mock(UserList.class);
     var mockUser = mock(User.class);
+    var mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
 
     Throwable caught =
@@ -1173,7 +1481,7 @@ class LiveOktaRepositoryTest {
 
     when(mockGroupBuilder.setName(anyString())).thenReturn(mockGroupBuilder);
     when(mockGroupBuilder.setDescription(anyString())).thenReturn(mockGroupBuilder);
-    when(mockGroupBuilder.buildAndCreate(_client)).thenReturn(mockGroup);
+    when(mockGroupBuilder.buildAndCreate(groupApi)).thenReturn(mockGroup);
     when(mockGroup.getId()).thenReturn("id");
     try (var staticMockGroupBuilder = mockStatic(GroupBuilder.class)) {
       staticMockGroupBuilder.when(GroupBuilder::instance).thenReturn(mockGroupBuilder);
@@ -1181,8 +1489,9 @@ class LiveOktaRepositoryTest {
       _repo.createOrganization(org);
       verify(mockGroupBuilder, times(OrganizationRole.values().length)).setName(anyString());
       verify(mockGroupBuilder, times(OrganizationRole.values().length)).setDescription(anyString());
-      verify(mockGroupBuilder, times(OrganizationRole.values().length)).buildAndCreate(_client);
-      verify(_app, times(OrganizationRole.values().length)).createApplicationGroupAssignment("id");
+      verify(mockGroupBuilder, times(OrganizationRole.values().length)).buildAndCreate(groupApi);
+      verify(applicationGroupsApi, times(OrganizationRole.values().length))
+          .assignGroupToApplication(eq("1234"), anyString(), isNull());
     }
   }
 
@@ -1192,39 +1501,52 @@ class LiveOktaRepositoryTest {
     var facilityID = UUID.randomUUID();
     var groupName = "SR-UNITTEST-TENANT:1:FACILITY_ACCESS:" + facilityID;
     var mockFacility = mock(Facility.class);
-    var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
     when(mockFacility.getOrganization()).thenReturn(org);
     when(mockFacility.getInternalId()).thenReturn(facilityID);
-    when(_client.listGroups(eq(groupName), isNull(), isNull())).thenReturn(mockGroupList);
-    when(mockGroupList.iterator()).thenReturn((List.of(mockGroup).iterator()));
+    when(groupApi.listGroups(
+            eq(groupName), isNull(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockGroupList);
+    when(mockGroup.getId()).thenReturn("1234");
+
     _repo.deleteFacility(mockFacility);
-    verify(mockGroup).delete();
+
+    verify(groupApi).deleteGroup("1234");
   }
 
   @Test
   void deleteOrganization() {
     var org = new Organization("orgName", "orgType", "1", true);
-    var mockGroupList = mock(GroupList.class);
     var mockGroup = mock(Group.class);
+    var mockGroupList = List.of(mockGroup);
 
-    when(_client.listGroups(eq("SR-UNITTEST-TENANT:" + org.getExternalId()), isNull(), isNull()))
+    when(groupApi.listGroups(
+            eq("SR-UNITTEST-TENANT:" + org.getExternalId()),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull()))
         .thenReturn(mockGroupList);
-    when(mockGroupList.iterator()).thenReturn((List.of(mockGroup).iterator()));
+    when(mockGroup.getId()).thenReturn("1234");
 
     _repo.deleteOrganization(org);
-    verify(mockGroup).delete();
+
+    verify(groupApi).deleteGroup("1234");
   }
 
   @Test
   void findUser_notFound_error() {
     String username = "nonexistent@example.com";
-    UserList mockUserList = mock(UserList.class);
+    List<User> mockUserList = Collections.EMPTY_LIST;
 
     when(mockUserList.stream()).then(i -> Stream.empty());
-    when(_client.listUsers(isNull(), isNull(), anyString(), isNull(), isNull()))
+    when(userApi.listUsers(isNull(), isNull(), isNull(), isNull(), anyString(), isNull(), isNull()))
         .thenReturn(mockUserList);
-    when(_client.listUsers(anyString(), isNull(), isNull(), isNull(), isNull()))
+    when(userApi.listUsers(anyString(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
         .thenReturn(mockUserList);
 
     Stream.empty().findFirst().isEmpty();
@@ -1237,95 +1559,30 @@ class LiveOktaRepositoryTest {
   @Test
   void findUser_success() {
     String username = "siteadmin@example.com";
-    GroupList mockListGroups = mock(GroupList.class);
-    UserList mockUserList = mock(UserList.class);
+    List<Group> mockUserGroups =
+        List.of(createMockOktaGroup("SR-UNITTEST-ADMINS", GroupType.OKTA_GROUP));
     User mockUser = mock(User.class);
+    List<User> mockUserList = List.of(mockUser);
 
-    when(_client.listUsers(
-            isNull(), isNull(), eq("profile.login eq \"" + username + "\""), isNull(), isNull()))
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
         .thenReturn(mockUserList);
-    when(mockUserList.stream()).then(i -> Stream.of(mockUser));
-    when(mockUserList.single()).thenReturn(mockUser);
+    when(mockUser.getId()).thenReturn("userId");
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
-    when(mockUser.listGroups()).thenReturn(mockListGroups);
-    when(mockListGroups.stream())
-        .then(
-            i -> List.of(createMockOktaGroup("SR-UNITTEST-ADMINS", GroupType.OKTA_GROUP)).stream());
+    when(userApi.listUserGroups(anyString())).thenReturn(mockUserGroups);
 
     PartialOktaUser oktaUser = _repo.findUser(username);
     assertThat(oktaUser).isNotNull();
-
     assertEquals(UserStatus.ACTIVE, oktaUser.getStatus());
     assertEquals(username, oktaUser.getUsername());
-    assertEquals(true, oktaUser.isAdmin());
+    assertEquals(true, oktaUser.isSiteAdmin());
     assertEquals(true, oktaUser.getOrganizationRoleClaims().isEmpty());
-  }
-
-  // Dummy error for duplicate users.
-  // Status, code, and message taken from a real Okta exception.
-  private static class DuplicateUserError implements Error {
-    @Override
-    public int getStatus() {
-      return HttpStatus.BAD_REQUEST.value();
-    }
-
-    @Override
-    public String getCode() {
-      return "E0000001";
-    }
-
-    @Override
-    public String getMessage() {
-      return "Api validation failed: login - login: An object with this field already exists in the current organization";
-    }
-
-    @Override
-    public String getId() {
-      return "0";
-    }
-
-    @Override
-    public List<ErrorCause> getCauses() {
-      return List.of();
-    }
-
-    @Override
-    public Map<String, List<String>> getHeaders() {
-      return Map.of();
-    }
-  }
-
-  // Dummy error for Okta ResourceError
-  private static class MockOktaResourceError implements Error {
-    @Override
-    public int getStatus() {
-      return HttpStatus.BAD_REQUEST.value();
-    }
-
-    @Override
-    public String getCode() {
-      return "E000001";
-    }
-
-    @Override
-    public String getMessage() {
-      return "Something went wrong with Okta";
-    }
-
-    @Override
-    public String getId() {
-      return "0";
-    }
-
-    @Override
-    public List<ErrorCause> getCauses() {
-      return List.of();
-    }
-
-    @Override
-    public Map<String, List<String>> getHeaders() {
-      return Map.of();
-    }
   }
 
   public Group createMockOktaGroup(String name, GroupType type) {

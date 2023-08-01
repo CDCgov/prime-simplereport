@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
@@ -39,6 +38,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.stereotype.Service;
@@ -598,7 +598,10 @@ public class ApiUserService {
 
     PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail());
     return consolidateUser(
-        apiUser, oktaUser.getOrganizationRoleClaims(), oktaUser.getStatus(), oktaUser.isAdmin());
+        apiUser,
+        oktaUser.getOrganizationRoleClaims(),
+        oktaUser.getStatus(),
+        oktaUser.isSiteAdmin());
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -649,11 +652,7 @@ public class ApiUserService {
   public UserInfo getUserByLoginEmail(String loginEmail) {
     Optional<ApiUser> foundUser = _apiUserRepo.findByLoginEmailIncludeArchived(loginEmail);
 
-    if (foundUser.isEmpty()) {
-      throw new NonexistentUserException();
-    }
-
-    ApiUser apiUser = foundUser.get();
+    ApiUser apiUser = foundUser.orElseThrow(NonexistentUserException::new);
 
     try {
       // We hit the okta API just once and resolve the info of status, isAdmin and organization
@@ -661,14 +660,16 @@ public class ApiUserService {
       // consolidateUserInformation logic in the okta repo because the reference to the orgService
       // (necessary to create the org roles) creates a cycle dependency
       PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail());
-      boolean isAdmin = oktaUser.isAdmin();
 
-      if (isAdmin) {
+      if (oktaUser.isSiteAdmin()) {
         throw new RestrictedAccessUserException();
       }
 
       return consolidateUser(
-          apiUser, oktaUser.getOrganizationRoleClaims(), oktaUser.getStatus(), oktaUser.isAdmin());
+          apiUser,
+          oktaUser.getOrganizationRoleClaims(),
+          oktaUser.getStatus(),
+          oktaUser.isSiteAdmin());
     } catch (IllegalGraphqlArgumentException | UnidentifiedUserException e) {
       throw new OktaAccountUserException();
     }
@@ -678,12 +679,9 @@ public class ApiUserService {
       ApiUser apiUser,
       Optional<OrganizationRoleClaims> optClaims,
       UserStatus userStatus,
-      Boolean isAdmin) {
-    if (optClaims.isEmpty()) {
-      throw new UnidentifiedUserException();
-    }
+      Boolean isSiteAdmin) {
 
-    OrganizationRoleClaims claims = optClaims.get();
+    OrganizationRoleClaims claims = optClaims.orElseThrow(UnidentifiedUserException::new);
 
     // use the target user's org so response is built correctly even if site admin is the requester
     Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());
@@ -702,6 +700,6 @@ public class ApiUserService {
     OrganizationRoles orgRoles =
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
 
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin, userStatus);
+    return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
   }
 }
