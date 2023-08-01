@@ -90,6 +90,14 @@ const REACTIVATE_USER = gql`
   }
 `;
 
+const REACTIVATE_USER_AND_RESET_PASSWORD = gql`
+  mutation ReactivateUserAndResetPassword($id: ID!) {
+    reactivateUserAndResetPassword(id: $id) {
+      id
+    }
+  }
+`;
+
 const ADD_USER_TO_ORG = gql`
   mutation AddUserToCurrentOrg(
     $firstName: String
@@ -119,16 +127,25 @@ export interface UserFacilitySetting {
   name: string;
 }
 
+export const SITE_ADMIN_ROLE_DESC = "Admin user (SU)";
+
 const ManageUsersContainer = () => {
   useDocumentTitle("Manage users");
 
   const loggedInUser = useSelector<RootState, User>((state) => state.user);
+  const loggedInUserIsSiteAdmin =
+    loggedInUser.roleDescription.includes(SITE_ADMIN_ROLE_DESC);
+
   const allFacilities = useSelector<RootState, UserFacilitySetting[]>(
     (state) => state.facilities
   );
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
-  const [reactivateUser] = useMutation(REACTIVATE_USER);
+  const [reactivateUser] = useMutation(
+    loggedInUserIsSiteAdmin
+      ? REACTIVATE_USER_AND_RESET_PASSWORD
+      : REACTIVATE_USER
+  );
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
   const [updateUserName] = useUpdateUserNameMutation();
   const [updateUserEmail] = useEditUserEmailMutation();
