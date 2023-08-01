@@ -24,7 +24,7 @@
     "applicationinsights": "^2.7.0",
     "csv-stringify": "^5.6.5",
     "jsonwebtoken": "^9.0.1",
-    "node-fetch": "2.6.6"
+    "node-fetch": "^2.6.12"
   },
   "resolutions": {
     "semver": "7.5.2"
