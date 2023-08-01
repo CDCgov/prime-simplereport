@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import Button from "./Button";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <Button {...args} />;
+const Template: StoryFn = (args) => <Button {...args} />;
 
 export const Default = Template.bind({});
 Default.args = { label: "Button" };

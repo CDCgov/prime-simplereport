@@ -187,6 +187,7 @@ export type Mutation = {
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
+  reactivateUserAndResetPassword?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
@@ -346,6 +347,10 @@ export type MutationMarkPendingOrganizationAsDeletedArgs = {
 };
 
 export type MutationReactivateUserArgs = {
+  id: Scalars["ID"];
+};
+
+export type MutationReactivateUserAndResetPasswordArgs = {
   id: Scalars["ID"];
 };
 
@@ -2268,7 +2273,11 @@ export type GetFacilityResultsMultiplexWithCountQuery = {
         __typename?: "PatientLink";
         internalId?: string | null;
       } | null;
-      facility?: { __typename?: "Facility"; name: string } | null;
+      facility?: {
+        __typename?: "Facility";
+        name: string;
+        isDeleted?: boolean | null;
+      } | null;
     } | null> | null;
   } | null;
 };
@@ -6513,6 +6522,7 @@ export const GetFacilityResultsMultiplexWithCountDocument = gql`
         }
         facility {
           name
+          isDeleted
         }
       }
       totalElements

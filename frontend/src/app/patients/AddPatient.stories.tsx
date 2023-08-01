@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import { Provider } from "react-redux";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
@@ -19,7 +19,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (_args) => (
+const Template: StoryFn = (_args) => (
   <MemoryRouter initialEntries={[`/add-patient?facility=${mockFacilityID}`]}>
     <Provider store={store}>
       <MockedProvider mocks={[]} addTypename={false}>

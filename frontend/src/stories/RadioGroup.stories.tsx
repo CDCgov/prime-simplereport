@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import React, { useState } from "react";
 
 import RadioGroup from "../app/commonComponents/RadioGroup";
@@ -34,7 +34,7 @@ export default {
 
 type Props = React.ComponentProps<typeof RadioGroup>;
 
-const Template: Story<Props> = (args) => {
+const Template: StoryFn<Props> = (args) => {
   const [fruit, setFruit] = useState("");
 
   return (

@@ -3,8 +3,9 @@ package gov.cdc.usds.simplereport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
@@ -27,18 +28,21 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Autowired ApiUserRepository _apiUserRepo;
-  @Autowired OktaRepository _oktaRepo;
+  @SpyBean @Autowired OktaRepository _oktaRepo;
 
   @Autowired OrganizationService _organizationService;
   @Autowired FacilityRepository facilityRepository;
   @Autowired private TestDataFactory _dataFactory;
+
   Set<UUID> emptySet = Collections.emptySet();
 
   // The next several retrieval tests expect the demo users as they are defined in the
@@ -330,6 +334,35 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
 
     UserInfo userInfo = _service.resetUserPassword(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).resetUserPassword(email);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void reactivateUser_orgAdmin_success() {
+    initSampleData();
+
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.reactivateUser(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).reactivateUser(email);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void reactivateAndResetUserPassword_orgAdmin_success() {
+    initSampleData();
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.reactivateUserAndResetPassword(apiUser.getInternalId());
+    verify(_oktaRepo, times(1)).reactivateUser(email);
+    verify(_oktaRepo, times(1)).resetUserPassword(email);
 
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
   }

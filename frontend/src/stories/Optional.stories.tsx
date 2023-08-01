@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import Optional from "../app/commonComponents/Optional";
 
@@ -12,6 +12,6 @@ export default {
 
 type Props = React.ComponentProps<typeof Optional>;
 
-const Template: Story<Props> = (args) => <Optional {...args} />;
+const Template: StoryFn<Props> = (args) => <Optional {...args} />;
 
 export const Default = Template.bind({});

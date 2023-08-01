@@ -441,13 +441,14 @@ public class TestResultUploadService {
               response.getWarnings(),
               response.getErrors());
 
-      TestResultUpload finalResult = (result.getReportId() != null) ? _repo.save(result) : null;
+      result = _repo.save(result);
 
       if (response.getErrors() != null && response.getErrors().length > 0) {
         for (var error : response.getErrors()) {
           error.setSource(ResultUploadErrorSource.REPORT_STREAM);
         }
 
+        TestResultUpload finalResult = result;
         errorRepository.saveAll(
             Arrays.stream(response.getErrors())
                 .map(
