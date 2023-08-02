@@ -17,9 +17,9 @@ interface Props {
   user: SettingsUser;
 }
 
-const ORG_ADMIN_REACTIVATE_COPY =
+export const ORG_ADMIN_REACTIVATE_COPY =
   "Are you sure you want to reactivate this account?";
-const SITE_ADMIN_REACTIVATE_COPY =
+export const SITE_ADMIN_REACTIVATE_COPY =
   "When you reactivate their account, the user will need to choose a new password. Do you want to reactivate this account?";
 
 const ReactivateUserModal: React.FC<Props> = ({

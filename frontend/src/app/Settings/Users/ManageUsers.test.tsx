@@ -16,7 +16,7 @@ import { displayFullName } from "../../utils";
 import { GetUserDocument, UserPermission } from "../../../generated/graphql";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
-import { LimitedUser } from "./ManageUsersContainer";
+import { LimitedUser, SITE_ADMIN_ROLE_DESC } from "./ManageUsersContainer";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
 const allFacilities = [
@@ -42,6 +42,7 @@ const store = mockStore({
   user: {
     firstName: "Kim",
     lastName: "Mendoza",
+    roleDescription: "Admin user",
   },
   facilities: [
     { id: "1", name: "Facility 1" },
@@ -267,6 +268,7 @@ let updateUserName: (obj: any) => Promise<any>;
 let updateUserEmail: (obj: any) => Promise<any>;
 let getUsers: () => Promise<any>;
 let reactivateUser: (obj: any) => Promise<any>;
+let reactivateUserAndResetPassword: (obj: any) => Promise<any>;
 let resetUserPassword: (obj: any) => Promise<any>;
 let resetUserMfa: (obj: any) => Promise<any>;
 let resendUserActivationEmail: (obj: any) => Promise<any>;
@@ -323,6 +325,11 @@ describe("ManageUsers", () => {
     );
     getUsers = jest.fn(() => Promise.resolve({ data: users }));
     reactivateUser = jest.fn((obj) =>
+      Promise.resolve({
+        data: { setUserIsReactivated: { id: obj.variables.id } },
+      })
+    );
+    reactivateUserAndResetPassword = jest.fn((obj) =>
       Promise.resolve({
         data: { setUserIsReactivated: { id: obj.variables.id } },
       })
@@ -769,8 +776,9 @@ describe("ManageUsers", () => {
   });
 
   describe("suspended users", () => {
+    let defaultRender: ReturnType<typeof render>;
     beforeEach(async () => {
-      render(
+      defaultRender = render(
         <TestContainer>
           <ManageUsers
             users={suspendedUsers as LimitedUser[]}
@@ -799,6 +807,39 @@ describe("ManageUsers", () => {
       await act(async () => await userEvent.click(sureButton));
       await waitFor(() => expect(reactivateUser).toBeCalled());
       expect(reactivateUser).toBeCalledWith({
+        variables: { id: suspendedUsers[0].id },
+      });
+    });
+
+    it("when user is an admin account, reactivating triggers the reactivate and reset password hook", async () => {
+      const loggedInSiteAdminUser = loggedInUser;
+      loggedInSiteAdminUser.roleDescription = SITE_ADMIN_ROLE_DESC;
+      defaultRender.rerender(
+        <TestContainer>
+          <ManageUsers
+            users={suspendedUsers as LimitedUser[]}
+            loggedInUser={loggedInSiteAdminUser}
+            allFacilities={allFacilities}
+            updateUserPrivileges={updateUserPrivileges}
+            addUserToOrg={addUserToOrg}
+            deleteUser={deleteUser}
+            getUsers={getUsers}
+            reactivateUser={reactivateUserAndResetPassword}
+            resetUserPassword={() => Promise.resolve()}
+            resetUserMfa={() => Promise.resolve()}
+            resendUserActivationEmail={resendUserActivationEmail}
+            updateUserName={() => Promise.resolve()}
+            updateUserEmail={() => Promise.resolve()}
+          />
+        </TestContainer>
+      );
+
+      const reactivateButton = await screen.findByText("Activate user");
+      await act(async () => await userEvent.click(reactivateButton));
+      const sureButton = await screen.findByText("Yes", { exact: false });
+      await act(async () => await userEvent.click(sureButton));
+      await waitFor(() => expect(reactivateUserAndResetPassword).toBeCalled());
+      expect(reactivateUserAndResetPassword).toBeCalledWith({
         variables: { id: suspendedUsers[0].id },
       });
     });
