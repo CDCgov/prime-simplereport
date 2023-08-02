@@ -113,7 +113,9 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH =
       "@"
           + AUTHORIZER_BEAN
-          + ".userHasSpecificPatientSearchPermission(#facilityId, #archivedStatus, #namePrefixMatch, #includeArchivedFacilities)";
+          + ".userHasSpecificPatientSearchPermission(#facilityId, #archivedStatus, #namePrefixMatch, #includeArchivedFacilities, #orgExternalId)";
+  private static final String SPEL_SITE_ADMIN_CAN_ARCHIVE_PATIENT =
+      "@" + AUTHORIZER_BEAN + ".siteAdminCanArchivePatient(#orgExternalId)";
 
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
@@ -249,7 +251,7 @@ public class AuthorizationConfiguration {
 
   /**
    * Require the current user to have the {@link UserPermission#ARCHIVE_PATIENT} permission for the
-   * patient with UUID {@code patientId}.
+   * patient with UUID {@code patientId} or is a site admin with a valid orgExternalId
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
@@ -258,9 +260,13 @@ public class AuthorizationConfiguration {
   @PreAuthorize(
       SPEL_IS_VALID
           + " && "
+          + "("
+          + SPEL_SITE_ADMIN_CAN_ARCHIVE_PATIENT
+          + " || "
           + SPEL_HAS_PERMISSION_ARCHIVE_PATIENT
           + " && "
-          + SPEL_CAN_VIEW_PATIENT_BY_ID)
+          + SPEL_CAN_VIEW_PATIENT_BY_ID
+          + ")")
   public @interface RequirePermissionArchiveTargetPatient {}
 
   /** Require the current user to have the {@link UserPermission#EDIT_FACILITY} permission. */

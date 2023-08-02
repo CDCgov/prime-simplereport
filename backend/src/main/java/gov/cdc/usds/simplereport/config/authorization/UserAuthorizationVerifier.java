@@ -32,6 +32,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -225,8 +226,13 @@ public class UserAuthorizationVerifier {
       UUID facilityId,
       ArchivedStatus archivedStatus,
       String namePrefixMatch,
-      boolean includeArchivedFacilities) {
+      boolean includeArchivedFacilities,
+      String orgExternalId) {
     Set<UserPermission> perms = new HashSet<>();
+
+    if (StringUtils.isNotEmpty(orgExternalId) && userHasSiteAdminRole()) {
+      return true;
+    }
 
     if (facilityId != null && !userCanAccessFacility(facilityId)) {
       return false;
@@ -246,6 +252,10 @@ public class UserAuthorizationVerifier {
 
     // check all the permissions in one call.
     return userHasPermissions(perms);
+  }
+
+  public boolean siteAdminCanArchivePatient(String orgExternalId) {
+    return StringUtils.isNotEmpty(orgExternalId) && _authService.isSiteAdmin();
   }
 
   public boolean userIsValid() {

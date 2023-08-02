@@ -32,8 +32,8 @@ type Props = React.ComponentProps<typeof StepIndicator>;
 
 const Template: StoryFn<Props> = (args) => <StepIndicator {...args} />;
 
-export const noLabels = Template.bind({});
-noLabels.args = {
+export const NoLabels = Template.bind({});
+NoLabels.args = {
   noLabels: true,
 };
 

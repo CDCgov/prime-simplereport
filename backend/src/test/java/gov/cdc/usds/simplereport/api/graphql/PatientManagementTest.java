@@ -312,6 +312,36 @@ class PatientManagementTest extends BaseGraphqlTest {
   }
 
   @Test
+  void setPatientIsDeleted_siteAdminUser_ok() throws Exception {
+    useOrgAdmin();
+
+    String orgExternalId = _orgService.getCurrentOrganization().getExternalId();
+
+    JsonNode p1 =
+        executeAddPersonMutation(
+                "Sansa",
+                "Stark",
+                "1100-12-25",
+                "1-800-BIZ-NAME",
+                "notbitter",
+                Optional.empty(),
+                Optional.empty())
+            .get("addPatient");
+
+    useSuperUser();
+    Optional<String> expectedError = Optional.empty();
+    Map<String, Object> variables =
+        Map.of(
+            "id",
+            UUID.fromString(p1.get("internalId").asText()),
+            "deleted",
+            true,
+            "orgExternalId",
+            orgExternalId);
+    runQuery("delete-person", variables, expectedError.orElse(null)).get("setPatientIsDeleted");
+  }
+
+  @Test
   void setPatientIsDeleted_standardUser_successDependsOnFacilityAccess() throws Exception {
     UUID facility1Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_1);
     UUID facility2Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_2);

@@ -27,7 +27,7 @@ export interface ReportStreamResponse {
       reportIndex: number;
       trackingId: string;
       destinations: string[];
-    }
+    },
   ];
   warningCount: number;
   errorCount: number;
