@@ -58,6 +58,13 @@ describe("create new device", () => {
           screen.getByText("Swab (445297001)", { exact: false })
         )
     );
+    // in tests, combobox changes not updating the UI after selection so click save button afterward
+    await act(
+      async () => await userEvent.click(screen.getByText("Save changes"))
+    );
+    await waitFor(() =>
+      expect(screen.getAllByText("This is a required field")).toHaveLength(3)
+    );
     await act(
       async () =>
         await userEvent.selectOptions(
