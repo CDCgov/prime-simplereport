@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
@@ -36,6 +35,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.stereotype.Service;

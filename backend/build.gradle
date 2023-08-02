@@ -64,9 +64,11 @@ dependencies {
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.1.7'
-    implementation 'com.okta.sdk:okta-sdk-api:8.2.1'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:8.2.1'
-    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:8.2.1'
+    implementation 'com.okta.sdk:okta-sdk-api:12.0.2'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:12.0.2'
+    // Spring dependency management pulls 5.1.4, but okta 12.0.2 requires 5.2+ for the new
+    // This can be removed in the springboot 3 upgrade
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
@@ -125,7 +127,7 @@ dependencies {
     // WireMock (only used for testing)
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
-    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.4.4'
+    implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.6.2'
     implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.0.4' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://app.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3358779.
 
     implementation 'commons-validator:commons-validator:1.7'

@@ -1,10 +1,12 @@
 mutation setPatientIsDeleted(
     $id: ID!,
     $deleted: Boolean = true,
+    $orgExternalId: String,
     ){
   setPatientIsDeleted(
     id: $id
-    deleted: $deleted
+    deleted: $deleted,
+    orgExternalId: $orgExternalId
   ) {
     internalId
     lookupId

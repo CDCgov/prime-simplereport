@@ -7,7 +7,7 @@ const { SIMPLE_REPORT_CB_TOKEN, SIMPLE_REPORT_CB_URL } = ENV;
 
 const queueTrigger: AzureFunction = async function (
   context: Context,
-  message: ReportStreamCallbackRequest
+  message: ReportStreamCallbackRequest,
 ): Promise<void> {
   const headers = new Headers({
     Accept: "application/json",
@@ -23,7 +23,7 @@ const queueTrigger: AzureFunction = async function (
     throw new Error(`${result.status}: ${await result.text()}`);
   }
   context.log(
-    `Successfully processed exception for record ${message.testEventInternalId} from queue ${message.queueName}`
+    `Successfully processed exception for record ${message.testEventInternalId} from queue ${message.queueName}`,
   );
 };
 

@@ -389,6 +389,7 @@ type Query {
     namePrefixMatch: String
     includeArchivedFacilities: Boolean = false
       @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
+    orgExternalId: String
   ): [Patient]
     @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(
@@ -399,6 +400,7 @@ type Query {
     archivedStatus: ArchivedStatus = UNARCHIVED
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
+    orgExternalId: String
   ): Int @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patient(id: ID!): Patient
   patientExists(
@@ -578,7 +580,11 @@ type Mutation {
     preferredLanguage: String
     testResultDelivery: TestResultDeliveryPreference
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
-  setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
+  setPatientIsDeleted(
+    id: ID!
+    deleted: Boolean!
+    orgExternalId: String
+  ): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   submitQueueItem(
     deviceTypeId: ID!
