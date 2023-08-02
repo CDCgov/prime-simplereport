@@ -1235,6 +1235,15 @@ export type ReactivateUserMutation = {
   reactivateUser?: { __typename?: "User"; id: string } | null;
 };
 
+export type ReactivateUserAndResetPasswordMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ReactivateUserAndResetPasswordMutation = {
+  __typename?: "Mutation";
+  reactivateUserAndResetPassword?: { __typename?: "User"; id: string } | null;
+};
+
 export type AddUserToCurrentOrgMutationVariables = Exact<{
   firstName?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
@@ -3186,6 +3195,57 @@ export type ReactivateUserMutationOptions = Apollo.BaseMutationOptions<
   ReactivateUserMutation,
   ReactivateUserMutationVariables
 >;
+export const ReactivateUserAndResetPasswordDocument = gql`
+  mutation ReactivateUserAndResetPassword($id: ID!) {
+    reactivateUserAndResetPassword(id: $id) {
+      id
+    }
+  }
+`;
+export type ReactivateUserAndResetPasswordMutationFn = Apollo.MutationFunction<
+  ReactivateUserAndResetPasswordMutation,
+  ReactivateUserAndResetPasswordMutationVariables
+>;
+
+/**
+ * __useReactivateUserAndResetPasswordMutation__
+ *
+ * To run a mutation, you first call `useReactivateUserAndResetPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReactivateUserAndResetPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reactivateUserAndResetPasswordMutation, { data, loading, error }] = useReactivateUserAndResetPasswordMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useReactivateUserAndResetPasswordMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ReactivateUserAndResetPasswordMutation,
+    ReactivateUserAndResetPasswordMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ReactivateUserAndResetPasswordMutation,
+    ReactivateUserAndResetPasswordMutationVariables
+  >(ReactivateUserAndResetPasswordDocument, options);
+}
+export type ReactivateUserAndResetPasswordMutationHookResult = ReturnType<
+  typeof useReactivateUserAndResetPasswordMutation
+>;
+export type ReactivateUserAndResetPasswordMutationResult =
+  Apollo.MutationResult<ReactivateUserAndResetPasswordMutation>;
+export type ReactivateUserAndResetPasswordMutationOptions =
+  Apollo.BaseMutationOptions<
+    ReactivateUserAndResetPasswordMutation,
+    ReactivateUserAndResetPasswordMutationVariables
+  >;
 export const AddUserToCurrentOrgDocument = gql`
   mutation AddUserToCurrentOrg(
     $firstName: String
