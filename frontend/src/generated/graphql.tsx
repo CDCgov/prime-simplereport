@@ -404,6 +404,7 @@ export type MutationSetOrganizationIdentityVerifiedArgs = {
 export type MutationSetPatientIsDeletedArgs = {
   deleted: Scalars["Boolean"];
   id: Scalars["ID"];
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetRegistrationLinkIsDeletedArgs = {
@@ -725,6 +726,7 @@ export type QueryPatientsArgs = {
   includeArchived?: InputMaybe<Scalars["Boolean"]>;
   includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
 };
@@ -734,6 +736,7 @@ export type QueryPatientsCountArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   includeArchived?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type QueryQueueArgs = {
@@ -793,7 +796,8 @@ export type QueryUploadSubmissionsArgs = {
 };
 
 export type QueryUserArgs = {
-  id: Scalars["ID"];
+  email?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
 };
 
 export enum ResultValue {
@@ -970,6 +974,7 @@ export type User = {
   firstName?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   isAdmin?: Maybe<Scalars["Boolean"]>;
+  isDeleted?: Maybe<Scalars["Boolean"]>;
   lastName: Scalars["String"];
   middleName?: Maybe<Scalars["String"]>;
   name: NameInfo;
