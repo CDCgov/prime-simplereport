@@ -10,7 +10,6 @@ import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
-
 import "../../../i18n";
 import { cloneDeep } from "lodash";
 
