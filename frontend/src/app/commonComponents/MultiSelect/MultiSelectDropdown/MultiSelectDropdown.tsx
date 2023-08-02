@@ -279,8 +279,8 @@ export const MultiSelectDropdown = ({
     }
   };
 
-  const getFilteredDevices = (deviceIds: String[]): DeviceType[] => {
-    return (deviceOptions || []).filter((d) =>
+  const getFilteredDevices = (deviceIds: string[]): DeviceType[] => {
+    return (deviceOptions ?? []).filter((d) =>
       deviceIds.includes(d.internalId)
     );
   };
@@ -412,13 +412,6 @@ export const MultiSelectDropdown = ({
           )}
         </ul>
       )}
-      {/*
-      {state.filteredOptions.length === 0 ? (
-        <li className="usa-combo-box__list-option--no-results">
-          {!DropdownComponent && (noResults || "No results found")}
-        </li>
-      ) : null}
-      */}
       <div className="usa-combo-box__status usa-sr-only" role="status"></div>
     </div>
   );
