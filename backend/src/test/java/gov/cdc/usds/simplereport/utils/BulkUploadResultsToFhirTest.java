@@ -17,11 +17,10 @@ import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
@@ -229,14 +228,8 @@ public class BulkUploadResultsToFhirTest {
     return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(jsonFile);
   }
 
-  private String readJsonStream(InputStream is) throws IOException {
-    BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-    StringBuilder stringBuilder = new StringBuilder();
-    String line;
-    while ((line = reader.readLine()) != null) {
-      stringBuilder.append(line);
-    }
-    return stringBuilder.toString();
+  private String inputStreamToString(InputStream inputStream) throws IOException {
+    return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
   }
 
   @Test
@@ -267,12 +260,9 @@ public class BulkUploadResultsToFhirTest {
             });
 
     // Mock constructed UTC date object
-    String dateString = "2023-05-24T19:33:06.472Z";
-    Instant instant = Instant.parse(dateString);
-    Date date = Date.from(instant);
-
     var mockedDateGenerator = mock(DateGenerator.class);
-    when(mockedDateGenerator.newDate()).thenReturn(date);
+    when(mockedDateGenerator.newDate())
+        .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
 
     // Mock timezone retrieval from address
     var mockedZoneId = ZoneId.of("US/Central");
@@ -291,21 +281,63 @@ public class BulkUploadResultsToFhirTest {
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
-    String actualBundleString;
     var serializedBundles =
         sut.convertToFhirBundles(
             csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
-    actualBundleString = serializedBundles.get(0);
+    String actualBundleString = serializedBundles.get(0);
 
     InputStream jsonStream =
         getJsonStream("testResultUpload/test-results-upload-valid-as-fhir.json");
-    String expectedBundleString = readJsonStream(jsonStream);
+    String expectedBundleString = inputStreamToString(jsonStream);
 
     var objectMapper = new ObjectMapper();
     var expectedNode = objectMapper.readTree(expectedBundleString);
     var actualNode = objectMapper.readTree(actualBundleString);
 
     assertJsonNodesEqual(expectedNode, actualNode);
+  }
+
+  @Test
+  void convertExistingCsv_matchesFhir_NDJson() throws IOException {
+    // Mock random UUIDs
+    var mockedUUIDGenerator = mock(UUIDGenerator.class);
+    when(mockedUUIDGenerator.randomUUID())
+        .thenAnswer(
+            (Answer<UUID>) invocation -> UUID.fromString("5db534ea-5e97-4861-ba18-d74acc46db15"));
+
+    // Mock constructed UTC date object
+    var mockedDateGenerator = mock(DateGenerator.class);
+    when(mockedDateGenerator.newDate())
+        .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
+
+    // Mock timezone retrieval from address
+    var mockedZoneId = ZoneId.of("US/Central");
+    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenReturn(mockedZoneId);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+
+    sut =
+        new BulkUploadResultsToFhir(
+            resultsUploaderCachingService,
+            gitProperties,
+            mockedUUIDGenerator,
+            mockedDateGenerator,
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
+
+    InputStream csvStream =
+        loadCsv("testResultUpload/test-results-upload-valid-different-results.csv");
+
+    var serializedBundles =
+        sut.convertToFhirBundles(
+            csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    String actualBundles = String.join("\n", serializedBundles);
+
+    InputStream jsonStream =
+        getJsonStream("testResultUpload/test-results-upload-valid-as-fhir.ndjson");
+    String expectedBundleString = inputStreamToString(jsonStream);
+
+    assertThat(actualBundles).isEqualTo(expectedBundleString);
   }
 
   @Test
