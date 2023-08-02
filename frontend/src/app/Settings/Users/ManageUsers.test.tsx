@@ -12,6 +12,8 @@ import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 
 import "../../../i18n";
+import { cloneDeep } from "lodash";
+
 import { displayFullName } from "../../utils";
 import { GetUserDocument, UserPermission } from "../../../generated/graphql";
 
@@ -812,7 +814,7 @@ describe("ManageUsers", () => {
     });
 
     it("when user is an admin account, reactivating triggers the reactivate and reset password hook", async () => {
-      const loggedInSiteAdminUser = loggedInUser;
+      const loggedInSiteAdminUser = cloneDeep(loggedInUser);
       loggedInSiteAdminUser.roleDescription = SITE_ADMIN_ROLE_DESC;
       defaultRender.rerender(
         <TestContainer>
