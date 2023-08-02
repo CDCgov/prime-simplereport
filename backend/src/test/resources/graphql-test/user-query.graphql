@@ -17,5 +17,55 @@ query GetUserDetails($id: ID!) {
         id
       }
     }
+    isDeleted
+    status
+  }
+}
+
+query GetUserByLoginEmail($email: String!) {
+  user(email: $email) {
+    id
+    firstName
+    middleName
+    lastName
+    suffix
+    email
+    role
+    roles
+    permissions
+    organization {
+      name
+      externalId
+      testingFacility {
+        name
+        id
+      }
+    }
+    isDeleted
+    status
+  }
+}
+
+query GetUserNoParams{
+  user {
+    id
+    firstName
+    middleName
+    lastName
+    suffix
+    email
+    role
+    roles
+    permissions
+    organization {
+      name
+      externalId
+      testingFacility {
+        name
+        id
+      }
+    }
+    isDeleted
+    status
   }
 }

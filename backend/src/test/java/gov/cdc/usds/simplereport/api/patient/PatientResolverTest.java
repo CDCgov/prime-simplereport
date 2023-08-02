@@ -4,6 +4,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ArchivedStatus;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -21,15 +23,15 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
 
   @Test
   void patientExists_hasFacilityId_callsServiceWithFacility() {
-    var personService = mock(PersonService.class);
-    var orgService = mock(OrganizationService.class);
-    var org = _dataFactory.saveValidOrganization();
-    var facility = _dataFactory.createValidFacility(org);
+    PersonService personService = mock(PersonService.class);
+    OrganizationService orgService = mock(OrganizationService.class);
+    Organization org = _dataFactory.saveValidOrganization();
+    Facility facility = _dataFactory.createValidFacility(org);
 
     when(orgService.getCurrentOrganization()).thenReturn(org);
     when(orgService.getFacilityInCurrentOrg(facility.getInternalId())).thenReturn(facility);
 
-    var sut = new PatientResolver(personService, orgService);
+    PatientResolver sut = new PatientResolver(personService, orgService);
 
     sut.patientExistsWithoutZip(
         "John", "Schmidt", LocalDate.of(1990, 01, 01), facility.getInternalId());
@@ -41,13 +43,13 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
 
   @Test
   void patientExists_hasNoFacilityId_callsServiceWithNoFacility() {
-    var personService = mock(PersonService.class);
-    var orgService = mock(OrganizationService.class);
-    var org = TestDataBuilder.createValidOrganization();
+    PersonService personService = mock(PersonService.class);
+    OrganizationService orgService = mock(OrganizationService.class);
+    Organization org = TestDataBuilder.createValidOrganization();
 
     when(orgService.getCurrentOrganization()).thenReturn(org);
 
-    var sut = new PatientResolver(personService, orgService);
+    PatientResolver sut = new PatientResolver(personService, orgService);
 
     sut.patientExistsWithoutZip("John", "Schmidt", LocalDate.of(1990, 01, 01), null);
 
@@ -57,33 +59,39 @@ class PatientResolverTest extends BaseServiceTest<PersonService> {
 
   @Test
   void patients_callsService() {
-    var personService = mock(PersonService.class);
-    var orgService = mock(OrganizationService.class);
-    var org = TestDataBuilder.createValidOrganization();
+    PersonService personService = mock(PersonService.class);
+    OrganizationService orgService = mock(OrganizationService.class);
+    Organization org = TestDataBuilder.createValidOrganization();
 
     when(orgService.getCurrentOrganization()).thenReturn(org);
 
-    var sut = new PatientResolver(personService, orgService);
-    var facilityId = UUID.randomUUID();
+    PatientResolver sut = new PatientResolver(personService, orgService);
+    UUID facilityId = UUID.randomUUID();
+    String generatedExternalOrgId = String.format("%s-%s-%s", "NJ", "Org", UUID.randomUUID());
 
-    sut.patients(facilityId, 0, 100, ArchivedStatus.ARCHIVED, null, false);
+    sut.patients(facilityId, 0, 100, ArchivedStatus.ARCHIVED, null, false, generatedExternalOrgId);
 
-    verify(personService).getPatients(facilityId, 0, 100, ArchivedStatus.ARCHIVED, null, false);
+    verify(personService)
+        .getPatients(
+            facilityId, 0, 100, ArchivedStatus.ARCHIVED, null, false, generatedExternalOrgId);
   }
 
   @Test
   void patientsCount_callsService() {
-    var personService = mock(PersonService.class);
-    var orgService = mock(OrganizationService.class);
-    var org = TestDataBuilder.createValidOrganization();
+    PersonService personService = mock(PersonService.class);
+    OrganizationService orgService = mock(OrganizationService.class);
+    Organization org = TestDataBuilder.createValidOrganization();
 
     when(orgService.getCurrentOrganization()).thenReturn(org);
 
-    var sut = new PatientResolver(personService, orgService);
-    var facilityId = UUID.randomUUID();
+    PatientResolver sut = new PatientResolver(personService, orgService);
+    UUID facilityId = UUID.randomUUID();
+    String generatedExternalOrgId = String.format("%s-%s-%s", "NJ", "Org", UUID.randomUUID());
 
-    sut.patientsCount(facilityId, ArchivedStatus.UNARCHIVED, null);
+    sut.patientsCount(facilityId, ArchivedStatus.UNARCHIVED, null, generatedExternalOrgId);
 
-    verify(personService).getPatientsCount(facilityId, ArchivedStatus.UNARCHIVED, null, false);
+    verify(personService)
+        .getPatientsCount(
+            facilityId, ArchivedStatus.UNARCHIVED, null, false, generatedExternalOrgId);
   }
 }
