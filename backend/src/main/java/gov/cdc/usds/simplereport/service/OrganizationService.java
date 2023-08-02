@@ -127,6 +127,11 @@ public class OrganizationService {
                 "An organization with external_id=" + externalId + " does not exist"));
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Organization getOrganizationWithExternalIdAsSiteAdmin(String externalId) {
+    return getOrganization(externalId);
+  }
+
   public Organization getOrganizationById(UUID internalId) {
     Optional<Organization> found = organizationRepository.findById(internalId);
     return found.orElseThrow(

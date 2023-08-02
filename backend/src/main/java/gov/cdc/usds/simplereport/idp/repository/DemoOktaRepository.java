@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -48,9 +49,12 @@ public class DemoOktaRepository implements OktaRepository {
   Map<String, Set<UUID>> orgFacilitiesMap;
   Set<String> inactiveUsernames;
   Set<String> allUsernames;
+  private final Set<String> adminGroupMemberSet;
 
   public DemoOktaRepository(
-      OrganizationExtractor extractor, CurrentTenantDataAccessContextHolder contextHolder) {
+      OrganizationExtractor extractor,
+      CurrentTenantDataAccessContextHolder contextHolder,
+      DemoUserConfiguration demoUserConfiguration) {
     this.usernameOrgRolesMap = new HashMap<>();
     this.orgUsernamesMap = new HashMap<>();
     this.orgFacilitiesMap = new HashMap<>();
@@ -59,6 +63,8 @@ public class DemoOktaRepository implements OktaRepository {
 
     this.organizationExtractor = extractor;
     this.tenantDataContextHolder = contextHolder;
+    this.adminGroupMemberSet =
+        demoUserConfiguration.getSiteAdminEmails().stream().collect(Collectors.toUnmodifiableSet());
 
     log.info("Done initializing Demo Okta repository.");
   }
@@ -342,6 +348,37 @@ public class DemoOktaRepository implements OktaRepository {
               .collect(Collectors.toSet());
       return getOrganizationRoleClaimsFromTenantDataAccess(authorities);
     }
+  }
+
+  public PartialOktaUser findUser(String username) {
+    UserStatus status =
+        inactiveUsernames.contains(username) ? UserStatus.DEPROVISIONED : UserStatus.ACTIVE;
+    boolean isAdmin = adminGroupMemberSet.contains(username);
+
+    Optional<OrganizationRoleClaims> orgClaims;
+
+    try {
+      orgClaims = Optional.ofNullable(usernameOrgRolesMap.get(username));
+    } catch (ScopeNotActiveException e) {
+      // Tests are set up with a full SecurityContextHolder and should not rely on
+      // usernameOrgRolesMap as the source of truth.
+      if (!("UNITTEST".equals(environment)) && usernameOrgRolesMap.containsKey(username)) {
+        orgClaims = Optional.of(usernameOrgRolesMap.get(username));
+      } else {
+        Set<String> authorities =
+            SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+        orgClaims = getOrganizationRoleClaimsFromTenantDataAccess(authorities);
+      }
+    }
+
+    return PartialOktaUser.builder()
+        .isSiteAdmin(isAdmin)
+        .status(status)
+        .username(username)
+        .organizationRoleClaims(orgClaims)
+        .build();
   }
 
   public void reset() {

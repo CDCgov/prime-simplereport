@@ -42,7 +42,7 @@ We may find that we want to expose props for custom event handlers or even a ref
   },
 };
 
-export const completeDatePicker = (argTypes: {
+export const CompleteDatePicker = (argTypes: {
   onSubmit: ((event: React.FormEvent<HTMLFormElement>) => void) &
     React.FormEventHandler<HTMLFormElement>;
   disabled: boolean | undefined;
@@ -69,19 +69,19 @@ export const completeDatePicker = (argTypes: {
   </Form>
 );
 
-export const defaultDatePicker = (): React.ReactElement => (
+export const DefaultDatePicker = (): React.ReactElement => (
   <DatePicker id="birthdate" name="birthdate" />
 );
 
-export const disabled = (): React.ReactElement => (
+export const Disabled = (): React.ReactElement => (
   <DatePicker id="birthdate" name="birthdate" disabled />
 );
 
-export const withDefaultValue = (): React.ReactElement => (
+export const WithDefaultValue = (): React.ReactElement => (
   <DatePicker id="birthdate" name="birthdate" defaultValue="1988-05-16" />
 );
 
-export const withDefaultInvalidValue = (): React.ReactElement => (
+export const WithDefaultInvalidValue = (): React.ReactElement => (
   <DatePicker
     id="birthdate"
     name="birthdate"
@@ -90,7 +90,7 @@ export const withDefaultInvalidValue = (): React.ReactElement => (
   />
 );
 
-export const withMinMaxInSameMonth = (): React.ReactElement => (
+export const WithMinMaxInSameMonth = (): React.ReactElement => (
   <DatePicker
     id="birthdate"
     name="birthdate"
@@ -99,7 +99,7 @@ export const withMinMaxInSameMonth = (): React.ReactElement => (
   />
 );
 
-export const withMinMax = (): React.ReactElement => (
+export const WithMinMax = (): React.ReactElement => (
   <DatePicker
     id="birthdate"
     name="birthdate"
@@ -108,7 +108,7 @@ export const withMinMax = (): React.ReactElement => (
   />
 );
 
-export const withRangeDate = (): React.ReactElement => (
+export const WithRangeDate = (): React.ReactElement => (
   <DatePicker
     id="birthdate"
     name="birthdate"
@@ -117,6 +117,6 @@ export const withRangeDate = (): React.ReactElement => (
   />
 );
 
-export const withLocalizations = (): React.ReactElement => (
+export const WithLocalizations = (): React.ReactElement => (
   <DatePicker id="birthdate" name="birthdate" />
 );
