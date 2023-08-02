@@ -1501,118 +1501,118 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
                 >
                   <mark>
                     <code>
-                      1002-5
+                      American Indian or Alaska Native
                     </code>
                   </mark>
                    or 
                   <mark>
                     <code>
-                      American Indian or Alaska Native
+                      1002-5
                     </code>
                   </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      2028-9
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Asian
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      2028-9
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      2054-5
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Black or African American
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      2054-5
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      2076-8
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Native Hawaiian or Other Pacific Islander
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      2076-8
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      2106-3
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       White
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      2106-3
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      2131-1
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Other
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      2131-1
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
-                  <mark>
-                    <code>
-                      ASKU
-                    </code>
-                  </mark>
-                   or 
                   <mark>
                     <code>
                       Ask, but unknown
                     </code>
                   </mark>
+                   or 
+                  <mark>
+                    <code>
+                      ASKU
+                    </code>
+                  </mark>
                 </li>
                 <li
                   class="bullet-list"
                 >
                   <mark>
                     <code>
-                      UNK
+                      Unknown
                     </code>
                   </mark>
                    or 
                   <mark>
                     <code>
-                      Unknown
+                      UNK
                     </code>
                   </mark>
                 </li>
