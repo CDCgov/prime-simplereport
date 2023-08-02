@@ -272,7 +272,6 @@ describe("ManageUsersContainer", () => {
 
     const reactivateButton = await screen.findByText("Activate user");
     await act(async () => await userEvent.click(reactivateButton));
-    const sureButton = await screen.findByText("Yes", { exact: false });
     expect(await screen.findByText(ORG_ADMIN_REACTIVATE_COPY));
   });
 
@@ -288,7 +287,6 @@ describe("ManageUsersContainer", () => {
 
     const reactivateButton = await screen.findByText("Activate user");
     await act(async () => await userEvent.click(reactivateButton));
-    const sureButton = await screen.findByText("Yes", { exact: false });
     expect(await screen.findByText(SITE_ADMIN_REACTIVATE_COPY));
   });
 });
