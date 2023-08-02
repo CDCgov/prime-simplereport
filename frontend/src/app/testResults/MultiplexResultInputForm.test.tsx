@@ -184,6 +184,36 @@ describe("TestResultInputForm", () => {
     expect(screen.getByText("Submit")).toBeEnabled();
   });
 
+  it("should render with inconclusive flu only values", () => {
+    render(
+      <MultiplexResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResults={[
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_A,
+            testResult: TEST_RESULTS.UNDETERMINED,
+          },
+          {
+            diseaseName: MULTIPLEX_DISEASES.FLU_B,
+            testResult: TEST_RESULTS.UNDETERMINED,
+          },
+        ]}
+        onChange={onChangeFn}
+        onSubmit={onSubmitFn}
+        isFluOnly={true}
+      />
+    );
+
+    expect(screen.getAllByLabelText("Positive (+)")[0]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Positive (+)")[1]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Negative (-)")[0]).not.toBeChecked();
+    expect(screen.getAllByLabelText("Negative (-)")[1]).not.toBeChecked();
+    expect(
+      screen.getByRole("checkbox", { name: /mark test as inconclusive/i })
+    ).toBeChecked();
+    expect(screen.getByText("Submit")).toBeEnabled();
+  });
+
   it("should display submit button as disabled when no diseases have set values", async () => {
     render(
       <MultiplexResultInputForm
