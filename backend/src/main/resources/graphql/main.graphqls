@@ -147,6 +147,7 @@ type User {
   role: Role
   roles: [Role!]! @deprecated(reason: "Users have only one role now")
   status: String
+  isDeleted: Boolean
 }
 
 input UserInput {
@@ -465,7 +466,7 @@ type Query {
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!]
     @requiredPermissions(allOf: ["MANAGE_USERS"])
-  user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  user(id: ID, email: String): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
   uploadSubmission(id: ID!): UploadResponse!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])

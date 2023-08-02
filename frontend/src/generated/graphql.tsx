@@ -796,7 +796,8 @@ export type QueryUploadSubmissionsArgs = {
 };
 
 export type QueryUserArgs = {
-  id: Scalars["ID"];
+  email?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
 };
 
 export enum ResultValue {
@@ -973,6 +974,7 @@ export type User = {
   firstName?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   isAdmin?: Maybe<Scalars["Boolean"]>;
+  isDeleted?: Maybe<Scalars["Boolean"]>;
   lastName: Scalars["String"];
   middleName?: Maybe<Scalars["String"]>;
   name: NameInfo;

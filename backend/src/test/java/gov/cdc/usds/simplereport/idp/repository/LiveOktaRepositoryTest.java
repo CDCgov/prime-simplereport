@@ -31,12 +31,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiException;
@@ -60,7 +62,8 @@ class LiveOktaRepositoryTest {
   private static final AuthorizationProperties MOCK_PROPS =
       new AuthorizationProperties(null, "UNITTEST");
   private static final OrganizationExtractor MOCK_EXTRACTOR = new OrganizationExtractor(MOCK_PROPS);
-  private static final CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
+
+  private CurrentTenantDataAccessContextHolder tenantDataAccessContextHolder =
       new CurrentTenantDataAccessContextHolder();
   private static final String MOCK_CLIENT_ID = "FAKE_CLIENT_ID";
   private final GroupApi groupApi = mock(GroupApi.class);
@@ -76,6 +79,7 @@ class LiveOktaRepositoryTest {
 
   @BeforeEach
   public void setup() {
+
     when(_app.getId()).thenReturn("1234");
     when(applicationApi.getApplication(anyString(), isNull())).thenReturn(_app);
 
@@ -1530,6 +1534,63 @@ class LiveOktaRepositoryTest {
     when(mockGroup.getId()).thenReturn("1234");
 
     _repo.deleteOrganization(org);
+
     verify(groupApi).deleteGroup("1234");
+  }
+
+  @Test
+  void findUser_notFound_error() {
+    String username = "nonexistent@example.com";
+    List<User> mockUserList = Collections.EMPTY_LIST;
+
+    when(mockUserList.stream()).then(i -> Stream.empty());
+    when(userApi.listUsers(isNull(), isNull(), isNull(), isNull(), anyString(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+    when(userApi.listUsers(anyString(), isNull(), isNull(), isNull(), isNull(), isNull(), isNull()))
+        .thenReturn(mockUserList);
+
+    Stream.empty().findFirst().isEmpty();
+    IllegalGraphqlArgumentException caught =
+        assertThrows(IllegalGraphqlArgumentException.class, () -> _repo.findUser(username));
+    assertEquals(
+        "Cannot retrieve Okta user's status with unrecognized username", caught.getMessage());
+  }
+
+  @Test
+  void findUser_success() {
+    String username = "siteadmin@example.com";
+    List<Group> mockUserGroups =
+        List.of(createMockOktaGroup("SR-UNITTEST-ADMINS", GroupType.OKTA_GROUP));
+    User mockUser = mock(User.class);
+    List<User> mockUserList = List.of(mockUser);
+
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
+        .thenReturn(mockUserList);
+    when(mockUser.getId()).thenReturn("userId");
+    when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);
+    when(userApi.listUserGroups(anyString())).thenReturn(mockUserGroups);
+
+    PartialOktaUser oktaUser = _repo.findUser(username);
+    assertThat(oktaUser).isNotNull();
+    assertEquals(UserStatus.ACTIVE, oktaUser.getStatus());
+    assertEquals(username, oktaUser.getUsername());
+    assertEquals(true, oktaUser.isSiteAdmin());
+    assertEquals(true, oktaUser.getOrganizationRoleClaims().isEmpty());
+  }
+
+  public Group createMockOktaGroup(String name, GroupType type) {
+    Group mockGroup = mock(Group.class);
+    GroupProfile mockProfile = mock(GroupProfile.class);
+    when(mockProfile.getName()).thenReturn(name);
+    when(mockGroup.getProfile()).thenReturn(mockProfile);
+    when(mockGroup.getType()).thenReturn(type);
+    return mockGroup;
   }
 }
