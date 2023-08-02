@@ -24,7 +24,7 @@ public interface ApiUserRepository extends EternalSystemManagedEntityRepository<
   @Query(BASE_QUERY + " and loginEmail = :email")
   Optional<ApiUser> findByLoginEmail(String email);
 
-  @Query("FROM #{#entityName} e WHERE loginEmail = lower(:email)")
+  @Query("FROM #{#entityName} e WHERE lower(loginEmail) = lower(:email)")
   Optional<ApiUser> findByLoginEmailIncludeArchived(String email);
 
   @Query(BASE_QUERY + " and loginEmail IN :emails" + NAME_ORDER)

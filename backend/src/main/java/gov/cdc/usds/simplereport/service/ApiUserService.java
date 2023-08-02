@@ -9,6 +9,8 @@ import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -21,6 +23,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.PartialOktaUser;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -593,32 +596,12 @@ public class ApiUserService {
     }
     final ApiUser apiUser = optApiUser.get();
 
-    UserStatus status = _oktaRepo.getUserStatus(apiUser.getLoginEmail());
-
-    Optional<OrganizationRoleClaims> optClaims =
-        _oktaRepo.getOrganizationRoleClaimsForUser(apiUser.getLoginEmail());
-    if (optClaims.isEmpty()) {
-      throw new UnidentifiedUserException();
-    }
-    final OrganizationRoleClaims claims = optClaims.get();
-
-    // use the target user's org so response is built correctly even if site admin is the requester
-    Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());
-
-    List<Facility> facilities = _orgService.getFacilities(org);
-    Set<Facility> facilitiesSet = new HashSet<>(facilities);
-
-    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
-    Set<Facility> accessibleFacilities =
-        allFacilityAccess
-            ? facilitiesSet
-            : facilities.stream()
-                .filter(f -> claims.getFacilities().contains(f.getInternalId()))
-                .collect(Collectors.toSet());
-
-    OrganizationRoles orgRoles =
-        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser), status);
+    PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail());
+    return consolidateUser(
+        apiUser,
+        oktaUser.getOrganizationRoleClaims(),
+        oktaUser.getStatus(),
+        oktaUser.isSiteAdmin());
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -663,5 +646,60 @@ public class ApiUserService {
   public Set<String> getTenantDataAccessAuthoritiesForCurrentUser() {
     ApiUser apiUser = getCurrentApiUser();
     return _tenantService.getTenantDataAccessAuthorities(apiUser);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public UserInfo getUserByLoginEmail(String loginEmail) {
+    Optional<ApiUser> foundUser = _apiUserRepo.findByLoginEmailIncludeArchived(loginEmail);
+
+    ApiUser apiUser = foundUser.orElseThrow(NonexistentUserException::new);
+
+    try {
+      // We hit the okta API just once and resolve the info of status, isAdmin and organization
+      // roles with the same user object. It was not possible to move the entire
+      // consolidateUserInformation logic in the okta repo because the reference to the orgService
+      // (necessary to create the org roles) creates a cycle dependency
+      PartialOktaUser oktaUser = _oktaRepo.findUser(apiUser.getLoginEmail());
+
+      if (oktaUser.isSiteAdmin()) {
+        throw new RestrictedAccessUserException();
+      }
+
+      return consolidateUser(
+          apiUser,
+          oktaUser.getOrganizationRoleClaims(),
+          oktaUser.getStatus(),
+          oktaUser.isSiteAdmin());
+    } catch (IllegalGraphqlArgumentException | UnidentifiedUserException e) {
+      throw new OktaAccountUserException();
+    }
+  }
+
+  private UserInfo consolidateUser(
+      ApiUser apiUser,
+      Optional<OrganizationRoleClaims> optClaims,
+      UserStatus userStatus,
+      Boolean isSiteAdmin) {
+
+    OrganizationRoleClaims claims = optClaims.orElseThrow(UnidentifiedUserException::new);
+
+    // use the target user's org so response is built correctly even if site admin is the requester
+    Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());
+
+    List<Facility> facilities = _orgService.getFacilities(org);
+    Set<Facility> facilitiesSet = new HashSet<>(facilities);
+
+    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
+    Set<Facility> accessibleFacilities =
+        allFacilityAccess
+            ? facilitiesSet
+            : facilities.stream()
+                .filter(f -> claims.getFacilities().contains(f.getInternalId()))
+                .collect(Collectors.toSet());
+
+    OrganizationRoles orgRoles =
+        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
+
+    return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
   }
 }
