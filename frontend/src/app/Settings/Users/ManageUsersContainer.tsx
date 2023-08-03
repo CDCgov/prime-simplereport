@@ -127,15 +127,13 @@ export interface UserFacilitySetting {
   name: string;
 }
 
-export const SITE_ADMIN_ROLE_DESC = "Admin user (SU)";
-
 const ManageUsersContainer = () => {
   useDocumentTitle("Manage users");
 
   const loggedInUser = useSelector<RootState, User>((state) => state.user);
-  const loggedInUserIsSiteAdmin =
-    loggedInUser.roleDescription.includes(SITE_ADMIN_ROLE_DESC);
-
+  const loggedInUserIsSiteAdmin = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
   const allFacilities = useSelector<RootState, UserFacilitySetting[]>(
     (state) => state.facilities
   );

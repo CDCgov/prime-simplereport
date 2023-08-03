@@ -17,7 +17,7 @@ import { displayFullName } from "../../utils";
 import { GetUserDocument, UserPermission } from "../../../generated/graphql";
 
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
-import { LimitedUser, SITE_ADMIN_ROLE_DESC } from "./ManageUsersContainer";
+import { LimitedUser } from "./ManageUsersContainer";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
 const allFacilities = [
@@ -33,6 +33,7 @@ const loggedInUser = {
   id: "b1",
   email: "bob@bobberoo.org",
   roleDescription: "Admin user",
+  isAdmin: false,
 };
 
 const mockStore = configureStore([]);
@@ -814,7 +815,7 @@ describe("ManageUsers", () => {
 
     it("when user is an admin account, reactivating triggers the reactivate and reset password hook", async () => {
       const loggedInSiteAdminUser = cloneDeep(loggedInUser);
-      loggedInSiteAdminUser.roleDescription = SITE_ADMIN_ROLE_DESC;
+      loggedInSiteAdminUser.isAdmin = true;
       defaultRender.rerender(
         <TestContainer>
           <ManageUsers

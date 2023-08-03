@@ -7,7 +7,7 @@ import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
 import { RootState } from "../../store";
 
-import { SettingsUser, SITE_ADMIN_ROLE_DESC } from "./ManageUsersContainer";
+import { SettingsUser } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
@@ -28,8 +28,9 @@ const ReactivateUserModal: React.FC<Props> = ({
   user,
 }) => {
   const loggedInUser = useSelector<RootState, User>((state) => state.user);
-  const loggedInUserIsSiteAdmin =
-    loggedInUser.roleDescription.includes(SITE_ADMIN_ROLE_DESC);
+  const loggedInUserIsSiteAdmin = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
 
   return (
     <Modal

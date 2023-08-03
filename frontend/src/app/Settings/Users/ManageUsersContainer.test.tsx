@@ -19,9 +19,7 @@ import {
   GetUsersAndStatusDocument,
 } from "../../../generated/graphql";
 
-import ManageUsersContainer, {
-  SITE_ADMIN_ROLE_DESC,
-} from "./ManageUsersContainer";
+import ManageUsersContainer from "./ManageUsersContainer";
 import {
   ORG_ADMIN_REACTIVATE_COPY,
   SITE_ADMIN_REACTIVATE_COPY,
@@ -37,6 +35,7 @@ describe("ManageUsersContainer", () => {
       firstName: "Kim",
       lastName: "Mendoza",
       roleDescription: "Admin user",
+      isAdmin: false,
     },
     facilities: [
       { id: "1", name: "Facility 1" },
@@ -277,7 +276,7 @@ describe("ManageUsersContainer", () => {
 
   it("when user is a site admin , modal copy reflects the reset password flow", async () => {
     const storeWithSiteAdminUser = cloneDeep(storeData);
-    storeWithSiteAdminUser.user.roleDescription = SITE_ADMIN_ROLE_DESC;
+    storeWithSiteAdminUser.user.isAdmin = true;
     const testMockStore = mockStore(storeWithSiteAdminUser);
 
     renderComponentWithMocks(supendedUserMocks, testMockStore);
