@@ -1,5 +1,5 @@
 import { initialize, mswLoader } from "msw-storybook-addon";
-import "../src/styles/App.css";
+import "../src/scss/App.scss";
 
 initialize();
 
