@@ -452,7 +452,7 @@
             {
               "system": "http://snomed.info/sct",
               "code": "260373001",
-              "display": "Invalid result"
+              "display": "Detected"
             }
           ]
         },

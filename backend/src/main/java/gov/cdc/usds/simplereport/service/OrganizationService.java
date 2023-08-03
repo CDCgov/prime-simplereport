@@ -437,4 +437,9 @@ public class OrganizationService {
     organization.setIsDeleted(deleted);
     return organizationRepository.save(organization);
   }
+
+  @AuthorizationConfiguration.RequirePermissionToAccessOrg
+  public UUID getPermissibleOrgId(UUID orgId) {
+    return orgId != null ? orgId : getCurrentOrganization().getInternalId();
+  }
 }
