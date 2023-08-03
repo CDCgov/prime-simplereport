@@ -361,7 +361,7 @@ public class BulkUploadResultsToFhir {
                     .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
                         Translators.convertConceptCodeToConceptName(
-                            getDescriptionValue(row.getTestResult().getValue())))
+                            getTestResultSnomed(row.getTestResult().getValue())))
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
