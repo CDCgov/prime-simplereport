@@ -11,6 +11,12 @@ import {
   useEditUserEmailMutation,
   useResetUserMfaMutation,
   UserPermission,
+  ReactivateUserDocument,
+  ReactivateUserAndResetPasswordDocument,
+  useUpdateUserPrivilegesMutation,
+  useSetUserIsDeletedMutation,
+  useAddUserToCurrentOrgMutation,
+  useResetUserPasswordMutation,
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 
@@ -48,78 +54,12 @@ export interface SingleUserData {
   user: SettingsUser;
 }
 
-const UPDATE_USER_PRIVILEGES = gql`
-  mutation UpdateUserPrivileges(
-    $id: ID!
-    $role: Role!
-    $accessAllFacilities: Boolean!
-    $facilities: [ID!]!
-  ) {
-    updateUserPrivileges(
-      id: $id
-      role: $role
-      accessAllFacilities: $accessAllFacilities
-      facilities: $facilities
-    ) {
-      id
-    }
-  }
-`;
-
-const RESET_USER_PASSWORD = gql`
-  mutation ResetUserPassword($id: ID!) {
-    resetUserPassword(id: $id) {
-      id
-    }
-  }
-`;
-
-const DELETE_USER = gql`
-  mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
-    setUserIsDeleted(id: $id, deleted: $deleted) {
-      id
-    }
-  }
-`;
-
 const REACTIVATE_USER = gql`
-  mutation ReactivateUser($id: ID!) {
-    reactivateUser(id: $id) {
-      id
-    }
-  }
+  ${ReactivateUserDocument}
 `;
 
 const REACTIVATE_USER_AND_RESET_PASSWORD = gql`
-  mutation ReactivateUserAndResetPassword($id: ID!) {
-    reactivateUserAndResetPassword(id: $id) {
-      id
-    }
-  }
-`;
-
-const ADD_USER_TO_ORG = gql`
-  mutation AddUserToCurrentOrg(
-    $firstName: String
-    $lastName: String!
-    $email: String!
-    $role: Role!
-    $accessAllFacilities: Boolean
-    $facilities: [ID!]
-  ) {
-    addUserToCurrentOrg(
-      userInput: {
-        firstName: $firstName
-        lastName: $lastName
-        email: $email
-        role: $role
-        accessAllFacilities: $accessAllFacilities
-        facilities: $facilities
-      }
-    ) {
-      id
-    }
-  }
+  ${ReactivateUserAndResetPasswordDocument}
 `;
 
 export interface UserFacilitySetting {
@@ -137,17 +77,17 @@ const ManageUsersContainer = () => {
   const allFacilities = useSelector<RootState, UserFacilitySetting[]>(
     (state) => state.facilities
   );
-  const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
-  const [deleteUser] = useMutation(DELETE_USER);
+  const [updateUserPrivileges] = useUpdateUserPrivilegesMutation();
+  const [deleteUser] = useSetUserIsDeletedMutation();
   const [reactivateUser] = useMutation(
     loggedInUserIsSiteAdmin
       ? REACTIVATE_USER_AND_RESET_PASSWORD
       : REACTIVATE_USER
   );
-  const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
+  const [addUserToOrg] = useAddUserToCurrentOrgMutation();
   const [updateUserName] = useUpdateUserNameMutation();
   const [updateUserEmail] = useEditUserEmailMutation();
-  const [resetPassword] = useMutation(RESET_USER_PASSWORD);
+  const [resetPassword] = useResetUserPasswordMutation();
   const [resetMfa] = useResetUserMfaMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
