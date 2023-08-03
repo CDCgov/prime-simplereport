@@ -27,7 +27,6 @@ const ReactivateUserModal: React.FC<Props> = ({
   onReactivateUser,
   user,
 }) => {
-  const loggedInUser = useSelector<RootState, User>((state) => state.user);
   const loggedInUserIsSiteAdmin = useSelector<RootState, boolean>(
     (state) => state.user.isAdmin
   );
