@@ -327,6 +327,28 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     assertEquals("Organization is already verified.", e.getMessage());
   }
 
+  @Test
+  @WithSimpleReportStandardUser
+  void getPermissibleOrgId_allowsAccessToCurrentOrg() {
+    var actual = _service.getPermissibleOrgId(_service.getCurrentOrganization().getInternalId());
+    assertEquals(actual, _service.getCurrentOrganization().getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void getPermissibleOrgId_nullIdFallsBackToCurrentOrg() {
+    var actual = _service.getPermissibleOrgId(null);
+    assertEquals(actual, _service.getCurrentOrganization().getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void getPermissibleOrgId_throwsAccessDeniedForInaccessibleOrg() {
+    var inaccessibleOrgId = UUID.randomUUID();
+    assertThrows(
+        AccessDeniedException.class, () -> _service.getPermissibleOrgId(inaccessibleOrgId));
+  }
+
   @Nested
   @DisplayName("When updating a facility")
   class UpdateFacilityTest {
