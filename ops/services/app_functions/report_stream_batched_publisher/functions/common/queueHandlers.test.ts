@@ -197,12 +197,12 @@ describe("Queue Handlers", () => {
         context,
         queueClientMock,
         messages,
-        {}
+        {},
       );
 
       // THEN
       expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(
-        messages.length
+        messages.length,
       );
     });
 
@@ -241,34 +241,34 @@ describe("Queue Handlers", () => {
         context,
         queueClientMock,
         messages,
-        parseFailure
+        parseFailure,
       );
 
       // THEN
       expect(queueClientMock.deleteMessage).toHaveBeenCalledTimes(
-        messages.length - 1
+        messages.length - 1,
       );
       expect(queueClientMock.deleteMessage).toHaveBeenCalledWith(
         "apple",
-        "abcd"
+        "abcd",
       );
       expect(queueClientMock.deleteMessage).toHaveBeenCalledWith(
         "banana",
-        "ijkl"
+        "ijkl",
       );
       expect(queueClientMock.deleteMessage).not.toHaveBeenCalledWith(
         "grape",
-        "efgh"
+        "efgh",
       );
 
       expect(context.log).toHaveBeenCalledWith(
-        "Queue: dummyTestEventQueue. Message grape failed to parse; skipping deletion"
+        "Queue: dummyTestEventQueue. Message grape failed to parse; skipping deletion",
       );
       expect(context.log).toHaveBeenCalledWith(
-        "Queue: dummyTestEventQueue. Message apple deleted with request id 123 and has TestEvent id 11"
+        "Queue: dummyTestEventQueue. Message apple deleted with request id 123 and has TestEvent id 11",
       );
       expect(context.log).toHaveBeenCalledWith(
-        "Queue: dummyTestEventQueue. Message banana deleted with request id 123 and has TestEvent id 22"
+        "Queue: dummyTestEventQueue. Message banana deleted with request id 123 and has TestEvent id 22",
       );
     });
   });
@@ -309,12 +309,12 @@ describe("Queue Handlers", () => {
         context,
         queueClientMock,
         response,
-        "dummyTestEventQueue"
+        "dummyTestEventQueue",
       );
 
       // THEN
       expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
-        warnings.length
+        warnings.length,
       );
     });
 
@@ -365,12 +365,12 @@ describe("Queue Handlers", () => {
         context,
         queueClientMock,
         response,
-        "dummyTestEventQueue"
+        "dummyTestEventQueue",
       );
 
       // THEN
       expect(queueClientMock.sendMessage).toHaveBeenCalledTimes(
-        warnings.length + errors.length
+        warnings.length + errors.length,
       );
     });
 
@@ -423,7 +423,7 @@ describe("Queue Handlers", () => {
         context,
         queueClientMock,
         response,
-        "dummyTestEventQueue"
+        "dummyTestEventQueue",
       );
 
       // THEN
@@ -438,7 +438,7 @@ describe("Queue Handlers", () => {
       ];
       expectedMessages.forEach((em) => {
         expect(queueClientMock.sendMessage).toHaveBeenCalledWith(
-          Buffer.from(em).toString("base64")
+          Buffer.from(em).toString("base64"),
         );
       });
     });
@@ -460,7 +460,7 @@ describe("Queue Handlers", () => {
             { resource: { resourceType: "not_DiagnosticReport", id: "123" } },
             { resource: { resourceType: "DiagnosticReport" } },
           ],
-        })
+        }),
       ).toBeUndefined();
     });
 
@@ -470,7 +470,7 @@ describe("Queue Handlers", () => {
           entry: [
             { resource: { resourceType: "DiagnosticReport", id: "123" } },
           ],
-        })
+        }),
       ).toEqual("123");
     });
   });

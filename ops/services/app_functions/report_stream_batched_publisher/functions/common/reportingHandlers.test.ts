@@ -24,7 +24,7 @@ import {
 
 jest.mock(
   "node-fetch",
-  jest.fn(() => fetchMock)
+  jest.fn(() => fetchMock),
 );
 
 jest.mock("../config", () => ({
@@ -39,7 +39,7 @@ jest.mock(
     defaultClient: {
       trackEvent: jest.fn(),
     },
-  }))
+  })),
 );
 
 describe("reportingHandlers", () => {
@@ -105,7 +105,7 @@ describe("reportingHandlers", () => {
       reportExceptionsSpy = jest.spyOn(queueHandlers, "reportExceptions");
       deleteSuccessfullyParsedMessagesSpy = jest.spyOn(
         queueHandlers,
-        "deleteSuccessfullyParsedMessages"
+        "deleteSuccessfullyParsedMessages",
       );
       publishToQueueSpy = jest.spyOn(queueHandlers, "publishToQueue");
     });
@@ -133,7 +133,7 @@ describe("reportingHandlers", () => {
         eventQueueMock,
         exceptionQueueMock,
         errorQueueMock,
-        { telemetry, context }
+        { telemetry, context },
       );
 
       expect(responseMock.json).toHaveBeenCalled();
@@ -143,7 +143,7 @@ describe("reportingHandlers", () => {
         context,
         eventQueueMock,
         messagesMock,
-        parseFailureMock
+        parseFailureMock,
       );
       expect(responseMock.text).not.toHaveBeenCalled();
     });
@@ -167,8 +167,8 @@ describe("reportingHandlers", () => {
           eventQueueMock,
           exceptionQueueMock,
           errorQueueMock,
-          { telemetry, context }
-        )
+          { telemetry, context },
+        ),
       ).rejects.toThrow();
 
       expect(responseMock.json).not.toHaveBeenCalled();
@@ -197,8 +197,8 @@ describe("reportingHandlers", () => {
           eventQueueMock,
           exceptionQueueMock,
           errorQueueMock,
-          { telemetry, context }
-        )
+          { telemetry, context },
+        ),
       ).rejects.toThrow();
 
       expect(responseMock.json).not.toHaveBeenCalled();
@@ -208,7 +208,7 @@ describe("reportingHandlers", () => {
         context,
         eventQueueMock,
         messagesMock,
-        parseFailureMock
+        parseFailureMock,
       );
       expect(responseMock.text).toHaveBeenCalled();
     });
@@ -292,12 +292,12 @@ describe("reportingHandlers", () => {
       fetchMock.mockOnce("error", { status: 400 });
 
       await expect(async () =>
-        getReportStreamAuthToken(context)
+        getReportStreamAuthToken(context),
       ).rejects.toThrow();
 
       expect(context.log.error).toHaveBeenCalledWith(
         "Error while trying to get the ReportStream auth token.",
-        new Error(`ReportStream Error Response: error`)
+        new Error(`ReportStream Error Response: error`),
       );
     });
   });
