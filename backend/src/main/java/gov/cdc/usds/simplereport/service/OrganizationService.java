@@ -205,6 +205,10 @@ public class OrganizationService {
     return facility.getOrganization();
   }
 
+  public Optional<Facility> getFacilityById(UUID facilityId) {
+    return facilityRepository.findById(facilityId);
+  }
+
   public void assertFacilityNameAvailable(String testingFacilityName) {
     Organization org = getCurrentOrganization();
     facilityRepository
@@ -417,10 +421,9 @@ public class OrganizationService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
     Optional<Facility> optionalFacility = facilityRepository.findById(facilityId);
-    if (optionalFacility.isEmpty()) {
-      throw new IllegalGraphqlArgumentException("Facility not found.");
-    }
-    Facility facility = optionalFacility.get();
+    Facility facility =
+        optionalFacility.orElseThrow(
+            () -> new IllegalGraphqlArgumentException("Facility not found."));
     facility.setIsDeleted(deleted);
     return facilityRepository.save(facility);
   }

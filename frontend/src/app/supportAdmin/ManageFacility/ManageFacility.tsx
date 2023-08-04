@@ -1,0 +1,146 @@
+import React, { useState } from "react";
+
+import { Option } from "../../commonComponents/Dropdown";
+import {
+  useDeleteFacilityMutation,
+  useGetAllOrganizationsQuery,
+  useGetFacilitiesByOrgIdLazyQuery,
+} from "../../../generated/graphql";
+import { useDocumentTitle } from "../../utils/hooks";
+import { showSuccess } from "../../utils/srToast";
+
+import FacilitySelectFilter from "./FacilitySelectFilter";
+import FacilityInformation from "./FacilityInformation";
+
+type Facility = {
+  id: string;
+  name: string;
+  city: string | null | undefined;
+  state: string;
+  zipcode: string;
+  org: string;
+  orgType: string;
+};
+
+export interface ManageFacilityState {
+  orgId: string;
+  facilityId: string;
+  facility: Facility | undefined;
+}
+
+const initialState: ManageFacilityState = {
+  orgId: "",
+  facilityId: "",
+  facility: undefined,
+};
+
+const ManageFacility = () => {
+  useDocumentTitle("Manage Facility");
+  const [localState, updateLocalState] =
+    useState<ManageFacilityState>(initialState);
+
+  /**
+   * Fetch organizations (on initial load)
+   */
+  const { data: orgResponse } = useGetAllOrganizationsQuery();
+
+  const orgOptions: Option[] =
+    orgResponse?.organizations?.map((org) => ({
+      value: org.id,
+      label: org.name,
+    })) ?? [];
+
+  /**
+   * Fetch facilities
+   */
+  const [queryGetFacilitiesByOrgId, { data: facilitiesResponse }] =
+    useGetFacilitiesByOrgIdLazyQuery();
+
+  const facilitiesOptions: Option[] =
+    facilitiesResponse?.organization?.facilities.map((facility) => ({
+      value: facility.id,
+      label: facility.name,
+    })) ?? [];
+
+  /**
+   * Fetch facility details
+   */
+
+  /**
+   * Facility select filter handlers
+   */
+  function handleSelectOrganization(e: React.ChangeEvent<HTMLSelectElement>) {
+    const selectedOrg = e.target.value;
+    if (selectedOrg !== "") {
+      queryGetFacilitiesByOrgId({
+        variables: { orgId: selectedOrg },
+        fetchPolicy: "no-cache",
+      }).then();
+    }
+
+    updateLocalState({ ...initialState, orgId: selectedOrg });
+  }
+  function handleSelectFacility(e: React.ChangeEvent<HTMLSelectElement>) {
+    const selectedFacility =
+      facilitiesResponse?.organization?.facilities?.filter(
+        (f) => f.id === e.target.value
+      )?.[0];
+    updateLocalState((prevState) => ({
+      orgId: prevState.orgId,
+      facilityId: e.target.value,
+      facility: {
+        city: selectedFacility?.city,
+        state: selectedFacility?.state || "",
+        zipcode: selectedFacility?.zipCode || "",
+        id: selectedFacility?.id || "",
+        name: selectedFacility?.name || "",
+        org: facilitiesResponse?.organization?.name || "",
+        orgType: facilitiesResponse?.organization?.type || "",
+      },
+    }));
+  }
+
+  function handleClearFilter() {
+    updateLocalState(initialState);
+  }
+
+  /**
+   * Delete facility
+   */
+  const [deleteFacilityMutation] = useDeleteFacilityMutation();
+  function handleDeleteFacility() {
+    deleteFacilityMutation({
+      variables: { facilityId: localState.facilityId },
+    }).then(() => {
+      showSuccess(
+        "",
+        `Facility ${localState.facility?.name} successfully deleted`
+      );
+      handleClearFilter();
+    });
+  }
+
+  /**
+   * HTML
+   */
+  return (
+    <div className="prime-home flex-1">
+      <div className="grid-container">
+        <FacilitySelectFilter
+          onSelectFacility={handleSelectFacility}
+          onClearFilter={handleClearFilter}
+          onSelectOrg={handleSelectOrganization}
+          facilityOptions={facilitiesOptions}
+          organizationOptions={orgOptions}
+          manageFacilityState={localState}
+        />
+        <FacilityInformation
+          manageFacilityState={localState}
+          onFacilityDelete={handleDeleteFacility}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default ManageFacility;

@@ -87,7 +87,7 @@ const Modal = ({
         {showClose && (
           <button
             className="modal__close-button"
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", zIndex: "1" }}
             onClick={() => onClose()}
           >
             <img className="modal__close-img" src={iconClose} alt="Close" />

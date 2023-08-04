@@ -13,7 +13,6 @@ import {
   orgFacilityColumnTitle,
   usersAndPatientsColumnTitle,
 } from "./pageTitles";
-import PageContainer from "./PageContainer";
 
 type CategoryMenuProps = {
   heading: string;
@@ -35,51 +34,64 @@ const SupportAdmin = () => {
   const hivEnabled = useFeature("hivEnabled") as boolean;
 
   return (
-    <PageContainer title="Support admin">
-      <div className="grid-row grid-gap">
-        <CategoryMenu heading={orgFacilityColumnTitle}>
-          <li>
-            <LinkWithQuery to={`/admin/pending-organizations`}>
-              {identityVerificationPageTitle}
-            </LinkWithQuery>
-          </li>
-          <li>
-            <LinkWithQuery to="/admin/add-organization-admin">
-              {addOrgAdminPageTitle}
-            </LinkWithQuery>
-          </li>
-          <li>
-            <LinkWithQuery to="/admin/tenant-data-access">
-              {orgAccessPageTitle}
-            </LinkWithQuery>
-          </li>
-        </CategoryMenu>
-        <CategoryMenu heading={devicesColumnTitle}>
-          <li>
-            <LinkWithQuery to="/admin/create-device-type">
-              {addNewDevicePageTitle}
-            </LinkWithQuery>
-          </li>
-          <li>
-            <LinkWithQuery to="/admin/manage-devices">
-              {editDevicePageTitle}
-            </LinkWithQuery>
-          </li>
-        </CategoryMenu>
-        <CategoryMenu heading={usersAndPatientsColumnTitle}>
-          <li></li>
-        </CategoryMenu>
-        {hivEnabled && (
-          <CategoryMenu heading="Beta">
-            <li>
-              <LinkWithQuery to="/admin/hiv-csv-upload">
-                Beta - HIV CSV Upload
-              </LinkWithQuery>
-            </li>
-          </CategoryMenu>
-        )}
+    <div className="prime-home flex-1">
+      <div className="grid-container">
+        <div className="grid-row">
+          <div className="prime-container card-container">
+            <div className="usa-card__header">
+              <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
+                Support admin
+              </h1>
+            </div>
+            <div className="usa-card__body">
+              <div className="grid-row grid-gap">
+                <CategoryMenu heading={orgFacilityColumnTitle}>
+                  <li>
+                    <LinkWithQuery to={`/admin/pending-organizations`}>
+                      {identityVerificationPageTitle}
+                    </LinkWithQuery>
+                  </li>
+                  <li>
+                    <LinkWithQuery to="/admin/add-organization-admin">
+                      {addOrgAdminPageTitle}
+                    </LinkWithQuery>
+                  </li>
+                  <li>
+                    <LinkWithQuery to="/admin/tenant-data-access">
+                      {orgAccessPageTitle}
+                    </LinkWithQuery>
+                  </li>
+                </CategoryMenu>
+                <CategoryMenu heading={devicesColumnTitle}>
+                  <li>
+                    <LinkWithQuery to="/admin/create-device-type">
+                      {addNewDevicePageTitle}
+                    </LinkWithQuery>
+                  </li>
+                  <li>
+                    <LinkWithQuery to="/admin/manage-devices">
+                      {editDevicePageTitle}
+                    </LinkWithQuery>
+                  </li>
+                </CategoryMenu>
+                <CategoryMenu heading={usersAndPatientsColumnTitle}>
+                  <li></li>
+                </CategoryMenu>
+                {hivEnabled && (
+                  <CategoryMenu heading="Beta">
+                    <li>
+                      <LinkWithQuery to="/admin/hiv-csv-upload">
+                        Beta - HIV CSV Upload
+                      </LinkWithQuery>
+                    </li>
+                  </CategoryMenu>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </PageContainer>
+    </div>
   );
 };
 

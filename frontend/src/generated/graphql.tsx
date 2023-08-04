@@ -1671,7 +1671,7 @@ export type GetAllOrganizationsQuery = {
   __typename?: "Query";
   organizations: Array<{
     __typename?: "Organization";
-    externalId: string;
+    id: string;
     name: string;
   }>;
 };
@@ -1684,13 +1684,26 @@ export type GetFacilitiesByOrgIdQuery = {
   __typename?: "Query";
   organization?: {
     __typename?: "Organization";
+    name: string;
+    type: string;
     facilities: Array<{
       __typename?: "Facility";
       name: string;
       id: string;
-      isDeleted?: boolean | null;
+      city?: string | null;
+      state?: string | null;
+      zipCode?: string | null;
     }>;
   } | null;
+};
+
+export type DeleteFacilityMutationVariables = Exact<{
+  facilityId: Scalars["ID"];
+}>;
+
+export type DeleteFacilityMutation = {
+  __typename?: "Mutation";
+  markFacilityAsDeleted?: string | null;
 };
 
 export type GetPendingOrganizationsQueryVariables = Exact<{
@@ -4885,7 +4898,7 @@ export type GetSupportedDiseasesQueryResult = Apollo.QueryResult<
 export const GetAllOrganizationsDocument = gql`
   query GetAllOrganizations {
     organizations {
-      externalId
+      id
       name
     }
   }
@@ -4943,10 +4956,14 @@ export type GetAllOrganizationsQueryResult = Apollo.QueryResult<
 export const GetFacilitiesByOrgIdDocument = gql`
   query GetFacilitiesByOrgId($orgId: ID!) {
     organization(id: $orgId) {
+      name
+      type
       facilities {
         name
         id
-        isDeleted
+        city
+        state
+        zipCode
       }
     }
   }
@@ -5001,6 +5018,54 @@ export type GetFacilitiesByOrgIdLazyQueryHookResult = ReturnType<
 export type GetFacilitiesByOrgIdQueryResult = Apollo.QueryResult<
   GetFacilitiesByOrgIdQuery,
   GetFacilitiesByOrgIdQueryVariables
+>;
+export const DeleteFacilityDocument = gql`
+  mutation DeleteFacility($facilityId: ID!) {
+    markFacilityAsDeleted(facilityId: $facilityId, deleted: true)
+  }
+`;
+export type DeleteFacilityMutationFn = Apollo.MutationFunction<
+  DeleteFacilityMutation,
+  DeleteFacilityMutationVariables
+>;
+
+/**
+ * __useDeleteFacilityMutation__
+ *
+ * To run a mutation, you first call `useDeleteFacilityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFacilityMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFacilityMutation, { data, loading, error }] = useDeleteFacilityMutation({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *   },
+ * });
+ */
+export function useDeleteFacilityMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteFacilityMutation,
+    DeleteFacilityMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteFacilityMutation,
+    DeleteFacilityMutationVariables
+  >(DeleteFacilityDocument, options);
+}
+export type DeleteFacilityMutationHookResult = ReturnType<
+  typeof useDeleteFacilityMutation
+>;
+export type DeleteFacilityMutationResult =
+  Apollo.MutationResult<DeleteFacilityMutation>;
+export type DeleteFacilityMutationOptions = Apollo.BaseMutationOptions<
+  DeleteFacilityMutation,
+  DeleteFacilityMutationVariables
 >;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {

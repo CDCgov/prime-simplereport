@@ -1,16 +1,27 @@
 query GetAllOrganizations {
     organizations{
-        externalId
+        id
         name
     }
 }
 
 query GetFacilitiesByOrgId($orgId: ID!) {
     organization(id: $orgId){
+        name
+        type
         facilities {
             name
             id
-            isDeleted
+            city
+            state
+            zipCode
         }
     }
+}
+
+mutation DeleteFacility($facilityId: ID!) {
+    markFacilityAsDeleted(
+        facilityId: $facilityId
+        deleted: true
+    )
 }
