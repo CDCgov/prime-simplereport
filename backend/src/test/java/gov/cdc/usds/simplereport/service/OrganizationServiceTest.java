@@ -78,6 +78,15 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   }
 
   @Test
+  @WithSimpleReportSiteAdminUser
+  void getOrganizationWithExternalIdAsSiteAdmin_success() {
+    Organization createdOrg = _dataFactory.saveValidOrganization();
+    Organization foundOrg = _service.getOrganizationById(createdOrg.getInternalId());
+    assertNotNull(foundOrg);
+    assertEquals(createdOrg.getExternalId(), foundOrg.getExternalId());
+  }
+
+  @Test
   void createOrganizationAndFacility_success() {
     // GIVEN
     PersonName orderingProviderName = new PersonName("Bill", "Foo", "Nye", "");
@@ -316,6 +325,28 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             () -> _service.verifyOrganizationNoPermissions(orgExternalId));
 
     assertEquals("Organization is already verified.", e.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void getPermissibleOrgId_allowsAccessToCurrentOrg() {
+    var actual = _service.getPermissibleOrgId(_service.getCurrentOrganization().getInternalId());
+    assertEquals(actual, _service.getCurrentOrganization().getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void getPermissibleOrgId_nullIdFallsBackToCurrentOrg() {
+    var actual = _service.getPermissibleOrgId(null);
+    assertEquals(actual, _service.getCurrentOrganization().getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void getPermissibleOrgId_throwsAccessDeniedForInaccessibleOrg() {
+    var inaccessibleOrgId = UUID.randomUUID();
+    assertThrows(
+        AccessDeniedException.class, () -> _service.getPermissibleOrgId(inaccessibleOrgId));
   }
 
   @Nested

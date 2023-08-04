@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
-import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
+import iconSprite from "../../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 import "./CsvSchemaDocumentation.scss";
 import { getAppInsights } from "../../TelemetryService";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
@@ -80,6 +80,7 @@ export const CsvSchemaDocumentationItem: React.FC<CsvSchemaItemProps> = ({
           <div className="grid-col-8">
             {item.description?.map((line) => (
               <div
+                className="margin-bottom-1"
                 key={`${item.colHeader}-description-${line}`}
                 dangerouslySetInnerHTML={{ __html: `${line}` }}
               />

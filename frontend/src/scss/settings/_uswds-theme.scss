@@ -1,0 +1,26 @@
+// Override USWDS setting variables to create custom theme
+// https://designsystem.digital.gov/documentation/settings/
+@forward "@uswds/uswds/packages/uswds-core" with (
+  // Color
+
+  // Component
+  $theme-step-indicator-min-width: "mobile",
+  $theme-hero-image: "../../../../dist/img/hero.jpg",
+
+  // General
+  $theme-image-path: "../../../../../../dist/img",
+  $theme-show-notifications: false,
+
+  // Spacing
+
+  // Typography
+  $theme-font-path: "../../../../../../dist/fonts",
+  $theme-global-link-styles: true,
+  $theme-font-type-mono: false,
+  $theme-font-type-sans: "public-sans",
+  $theme-font-role-heading: "sans",
+  $theme-font-weight-semibold: 600,
+
+  // Utilities
+  $utilities-use-important: true,
+);

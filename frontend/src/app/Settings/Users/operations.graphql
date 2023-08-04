@@ -70,3 +70,66 @@ mutation ResetUserMfa($id: ID!) {
     id
   }
 }
+
+
+mutation ReactivateUserAndResetPassword($id: ID!) {
+  reactivateUserAndResetPassword(id: $id) {
+    id
+  }
+}
+
+mutation ReactivateUser($id: ID!) {
+  reactivateUser(id: $id) {
+    id
+  }
+}
+
+mutation UpdateUserPrivileges(
+  $id: ID!
+  $role: Role!
+  $accessAllFacilities: Boolean!
+  $facilities: [ID!]!
+) {
+  updateUserPrivileges(
+    id: $id
+    role: $role
+    accessAllFacilities: $accessAllFacilities
+    facilities: $facilities
+  ) {
+    id
+  }
+}
+
+mutation ResetUserPassword($id: ID!) {
+  resetUserPassword(id: $id) {
+    id
+  }
+}
+
+mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
+  setUserIsDeleted(id: $id, deleted: $deleted) {
+    id
+  }
+}
+
+mutation AddUserToCurrentOrg(
+  $firstName: String
+  $lastName: String!
+  $email: String!
+  $role: Role!
+  $accessAllFacilities: Boolean
+  $facilities: [ID!]
+) {
+  addUserToCurrentOrg(
+    userInput: {
+      firstName: $firstName
+      lastName: $lastName
+      email: $email
+      role: $role
+      accessAllFacilities: $accessAllFacilities
+      facilities: $facilities
+    }
+  ) {
+    id
+  }
+}
