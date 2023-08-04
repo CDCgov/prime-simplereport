@@ -282,7 +282,7 @@ public class BulkUploadResultsToFhir {
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
-    String testOrderLoinc = null;
+    String testOrderedCode = row.getTestOrderedCode().getValue();
 
     UUID deviceId = uuidGenerator.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
@@ -290,7 +290,7 @@ public class BulkUploadResultsToFhir {
     var matchingDevice =
         resultsUploaderCachingService
             .getModelAndTestPerformedCodeToDeviceMap()
-            .get(ResultsUploaderCachingService.getMapKey(modelName, testPerformedCode));
+            .get(ResultsUploaderCachingService.getKey(modelName, testPerformedCode));
 
     if (matchingDevice != null) {
       List<DeviceTypeDisease> deviceTypeDiseaseEntries =
@@ -317,7 +317,10 @@ public class BulkUploadResultsToFhir {
               .map(SupportedDisease::getName)
               .orElse(null);
 
-      testOrderLoinc = MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries);
+      testOrderedCode =
+          StringUtils.isEmpty(testOrderedCode)
+              ? MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries)
+              : testOrderedCode;
     } else {
       log.info(
           "No device found for model ("
@@ -326,6 +329,9 @@ public class BulkUploadResultsToFhir {
               + testPerformedCode
               + ")");
     }
+
+    // code was not passed via api or inferred above: defaulting to the test performed code.
+    testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
 
     var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
@@ -355,7 +361,7 @@ public class BulkUploadResultsToFhir {
                     .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
                         Translators.convertConceptCodeToConceptName(
-                            getDescriptionValue(row.getTestResult().getValue())))
+                            getTestResultSnomed(row.getTestResult().getValue())))
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
@@ -385,7 +391,7 @@ public class BulkUploadResultsToFhir {
     var serviceRequest =
         fhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,
-            testOrderLoinc,
+            testOrderedCode,
             uuidGenerator.randomUUID().toString(),
             orderTestDate);
 

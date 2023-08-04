@@ -147,6 +147,7 @@ type User {
   role: Role
   roles: [Role!]! @deprecated(reason: "Users have only one role now")
   status: String
+  isDeleted: Boolean
 }
 
 input UserInput {
@@ -389,6 +390,7 @@ type Query {
     namePrefixMatch: String
     includeArchivedFacilities: Boolean = false
       @requiredPermissions(allOf: ["VIEW_ARCHIVED_FACILITIES"])
+    orgExternalId: String
   ): [Patient]
     @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(
@@ -399,6 +401,7 @@ type Query {
     archivedStatus: ArchivedStatus = UNARCHIVED
       @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
+    orgExternalId: String
   ): Int @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patient(id: ID!): Patient
   patientExists(
@@ -447,6 +450,7 @@ type Query {
     role: String
     startDate: DateTime
     endDate: DateTime
+    orgId: ID
   ): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
@@ -463,7 +467,7 @@ type Query {
   users: [ApiUser] @requiredPermissions(allOf: ["MANAGE_USERS"])
   usersWithStatus: [ApiUserWithStatus!]
     @requiredPermissions(allOf: ["MANAGE_USERS"])
-  user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  user(id: ID, email: String): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
   uploadSubmission(id: ID!): UploadResponse!
     @requiredPermissions(allOf: ["UPLOAD_RESULTS_SPREADSHEET"])
@@ -509,6 +513,7 @@ type Mutation {
   reactivateUser(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   resendActivationEmail(id: ID!): User
     @requiredPermissions(allOf: ["MANAGE_USERS"])
+  reactivateUserAndResetPassword(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setCurrentUserTenantDataAccess(
     organizationExternalId: String
     justification: String
@@ -577,7 +582,11 @@ type Mutation {
     preferredLanguage: String
     testResultDelivery: TestResultDeliveryPreference
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
-  setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
+  setPatientIsDeleted(
+    id: ID!
+    deleted: Boolean!
+    orgExternalId: String
+  ): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   submitQueueItem(
     deviceTypeId: ID!

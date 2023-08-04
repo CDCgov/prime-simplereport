@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { ComponentProps } from "react";
 
 import SingleFileInput from "./SingleFileInput";
@@ -14,7 +14,7 @@ export default {
   },
 } as Meta;
 
-const Template: Story<ComponentProps<typeof SingleFileInput>> = (args) => (
+const Template: StoryFn<ComponentProps<typeof SingleFileInput>> = (args) => (
   <SingleFileInput {...args} />
 );
 

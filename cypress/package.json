@@ -5,7 +5,7 @@
     "devDependencies": {
         "@types/faker": "^5.5.9",
         "cypress": "^11.0.0",
-        "cypress-localstorage-commands": "^1.6.1",
+        "cypress-localstorage-commands": "^2.2.3",
         "eslint-plugin-cypress": "^2.12.1",
         "faker": "^5.5.3",
         "otplib": "^12.0.1"
@@ -18,7 +18,7 @@
         "e2e:nginx:okta": "env $(cat ./../.env | grep -v \"#\" | xargs) CYPRESS_CHECK_COMMIT=$(git rev-parse HEAD) CYPRESS_CHECK_URL=/health/commit cypress open --e2e --project ./../ --config-file cypress/cypress.config.js --config baseUrl=https://localhost.simplereport.gov/app"
     },
     "dependencies": {
-        "axe-core": "^4.4.3",
+        "axe-core": "^4.7.2",
         "cypress-axe": "^1.0.0"
     }
 }

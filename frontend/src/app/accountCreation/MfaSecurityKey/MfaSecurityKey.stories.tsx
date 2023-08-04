@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { getMocks } from "../../../stories/storyMocks";
 
@@ -13,7 +13,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <MfaSecurityKey {...args} />;
+const Template: StoryFn = (args) => <MfaSecurityKey {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

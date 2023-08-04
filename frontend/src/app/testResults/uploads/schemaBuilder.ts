@@ -148,14 +148,14 @@ export const schemaBuilder = (facilityId: string | null) => {
                 required: true,
                 requested: false,
                 acceptedValues: [
-                  "<mark><code>1002-5</code></mark> or <mark><code>American Indian or Alaska Native</code></mark>",
-                  "<mark><code>2028-9</code></mark> or <mark><code>Asian</code></mark>",
-                  "<mark><code>2054-5</code></mark> or <mark><code>Black or African American</code></mark>",
-                  "<mark><code>2076-8</code></mark> or <mark><code>Native Hawaiian or Other Pacific Islander</code></mark>",
-                  "<mark><code>2106-3</code></mark> or <mark><code>White</code></mark>",
-                  "<mark><code>2131-1</code></mark> or <mark><code>Other</code></mark>",
-                  "<mark><code>ASKU</code></mark> or <mark><code>Ask, but unknown</code></mark>",
-                  "<mark><code>UNK</code></mark> or <mark><code>Unknown</code></mark>",
+                  "<mark><code>American Indian or Alaska Native</code></mark> or <mark><code>1002-5</code></mark>",
+                  "<mark><code>Asian</code></mark> or <mark><code>2028-9</code></mark>",
+                  "<mark><code>Black or African American</code></mark> or <mark><code>2054-5</code></mark>",
+                  "<mark><code>Native Hawaiian or Other Pacific Islander</code></mark> or <mark><code>2076-8</code></mark>",
+                  "<mark><code>White</code></mark> or <mark><code>2106-3</code></mark>",
+                  "<mark><code>Other</code></mark> or <mark><code>2131-1</code></mark>",
+                  "<mark><code>Ask, but unknown</code></mark> or <mark><code>ASKU</code></mark>",
+                  "<mark><code>Unknown</code></mark> or <mark><code>UNK</code></mark>",
                 ],
                 description: [
                   'Use one of the LOINC codes listed below, which come from the <a href="https://phinvads.cdc.gov/vads/SearchVocab.action" class="usa-link" target="_blank" rel="noreferrer noopener">PHIN VADS system</a>',
@@ -209,7 +209,7 @@ export const schemaBuilder = (facilityId: string | null) => {
                 requested: false,
                 examples: ["ID12345-6789"],
                 description: [
-                  "A unique ID that identifies a single result, which allows public health departments to refer back to a test event",
+                  "A unique ID that identifies a single result, which allows public health departments to refer back to a test event.",
                 ],
               },
               {
@@ -224,6 +224,7 @@ export const schemaBuilder = (facilityId: string | null) => {
                   "RightSign COVID-19 IgG/IgM Rapid Test Cassette*",
                 ],
                 description: [
+                  "The name of the device or test kit used for testing.",
                   `Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
                 ],
               },
@@ -243,6 +244,21 @@ export const schemaBuilder = (facilityId: string | null) => {
                 description: [
                   `Find your device on the ${deviceCodeLookupLink}, then copy the value for this field.`,
                 ],
+              },
+              {
+                name: "Test ordered LOINC code",
+                colHeader: "test_ordered_code",
+                required: false,
+                requested: false,
+                format: "00000-0",
+                examples: [
+                  "94534-5",
+                  "94558-4",
+                  "97097-0",
+                  "94507-1",
+                  "94508-9",
+                ],
+                description: [],
               },
               {
                 name: "Test result",
@@ -267,8 +283,12 @@ export const schemaBuilder = (facilityId: string | null) => {
                 required: true,
                 requested: false,
                 format:
-                  "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
-                examples: ["11/2/2022 14:17", "9/21/2022"],
+                  "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are acceptable",
+                examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
+                description: [
+                  "Include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
+                ],
               },
               {
                 name: "Specimen collection date",
@@ -276,10 +296,12 @@ export const schemaBuilder = (facilityId: string | null) => {
                 required: false,
                 requested: false,
                 format:
-                  "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
-                examples: ["11/2/2022 14:17", "9/21/2022"],
+                  "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are also acceptable",
+                examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
                 description: [
-                  'If the collection date is unknown, use the <a href="#order_test_date" class="usa-link">order_test_date</a> value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date.',
+                  'Leave this field blank if it’s the same as <a href="#order_test_date" class="usa-link">order_test_date</a>. SimpleReport will default to the <a href="#order_test_date" class="usa-link">order_test_date</a> value.',
+                  "For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
                 ],
               },
               {
@@ -288,10 +310,12 @@ export const schemaBuilder = (facilityId: string | null) => {
                 required: false,
                 requested: false,
                 format:
-                  "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
-                examples: ["11/2/2022 14:17", "9/21/2022"],
+                  "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are also acceptable",
+                examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
                 description: [
-                  'If unknown, use the <a href="#order_test_date" class="usa-link">order_test_date</a> value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date.',
+                  'Leave this field blank if it’s the same as <a href="#order_test_date" class="usa-link">order_test_date</a>. SimpleReport will default to the <a href="#order_test_date" class="usa-link">order_test_date</a> value.',
+                  "For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
                 ],
               },
               {
@@ -300,8 +324,12 @@ export const schemaBuilder = (facilityId: string | null) => {
                 required: true,
                 requested: false,
                 format:
-                  "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
-                examples: ["11/2/2022 14:17", "9/21/2022"],
+                  "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are also acceptable",
+                examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
+                description: [
+                  "Include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
+                ],
               },
               {
                 name: "Date result released",
@@ -309,10 +337,12 @@ export const schemaBuilder = (facilityId: string | null) => {
                 required: false,
                 requested: false,
                 format:
-                  "<code>M/D/YYYY HH:mm</code> is preferred, but <code>M/D/YYYY</code> is acceptable",
-                examples: ["11/2/2022 14:17", "9/21/2022"],
+                  "<code>M/D/YYYY HH:mm TZ</code> is preferred, but <code>M/D/YYYY HH:mm</code> and <code>M/D/YYYY</code> are also acceptable",
+                examples: ["5/23/2023 4:30 CT", "11/2/2022 14:17", "9/21/2022"],
                 description: [
-                  'If unknown, use the <a href="#test_result_date" class="usa-link">test_result_date</a> value. In most cases, these are the same. You can leave this blank if it’s the same as order_test_date.',
+                  'Leave this field blank if it’s the same as <a href="#test_result_date" class="usa-link">test_result_date</a>. SimpleReport will default to the <a href="#test_result_date" class="usa-link">test_result_date</a> value.',
+                  "For any values you do add for this field, include the time and time zone if possible. Time zones can be any common US time zone abbreviation, such as AKDT, AKST, CT, ET, HST, MT, or PT.",
+                  "If you don’t include a time, SimpleReport will default to 12 PM. If you don’t include a time zone, it will default to the time zone of the testing lab address (if available), or ET (Eastern Time).",
                 ],
               },
             ],
@@ -355,7 +385,7 @@ export const schemaBuilder = (facilityId: string | null) => {
                   '<span class="normal-style">Local code example:</span> <em>muc1290</em>',
                 ],
                 description: [
-                  'Enter the National Provider Identifier (NPI), the unique 10-digit number that identifies a healthcare provider. You can find NPIs at the <a href="https://npiregistry.cms.hhs.gov/" class="usa-link" target="_blank" rel="noreferrer noopener">NPI Registry</a>. If you don’t know the NPI, you can enter local coding. Some jurisdictions may not accept a local code, ReportStream will work with you if this is the case.',
+                  'Enter the National Provider Identifier (NPI), the unique 10-digit number that identifies a healthcare provider. You can find NPIs at the <a href="https://npiregistry.cms.hhs.gov/" class="usa-link" target="_blank" rel="noreferrer noopener">NPI Registry</a>. If you don’t know the NPI, you can enter local coding. Some jurisdictions may not accept a local code, and ReportStream will work with you if this is the case.',
                 ],
               },
               {
@@ -532,7 +562,7 @@ export const schemaBuilder = (facilityId: string | null) => {
                   "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
                   "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
                 ],
-                format: "Use one of the accepted values listed below",
+                format: "Use one of the accepted values listed below.",
               },
               {
                 name: "Illness onset date",
@@ -553,7 +583,8 @@ export const schemaBuilder = (facilityId: string | null) => {
                   "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
                   "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
                 ],
-                format: "Use one of the accepted values listed below",
+                format:
+                  "If the patient lives in a setting with shared group spaces, such as assisted living or a prison.<br/>Use one of the accepted values listed below.",
               },
               {
                 name: "Residence type",
@@ -562,24 +593,24 @@ export const schemaBuilder = (facilityId: string | null) => {
                 requested: false,
                 format: "Use one of the accepted values listed below",
                 acceptedValues: [
-                  "<mark><code>22232009</code></mark> or <mark><code>Hospital</code></mark>",
-                  "<mark><code>2081004</code></mark> or <mark><code>Hospital Ship</code></mark>",
-                  "<mark><code>32074000</code></mark> or <mark><code>Long Term Care Hospital</code></mark>",
-                  "<mark><code>224929004</code></mark> or <mark><code>Secure Hospital</code></mark>",
-                  "<mark><code>42665001</code></mark> or <mark><code>Nursing Home</code></mark>",
-                  "<mark><code>30629002</code></mark> or <mark><code>Retirement Home</code></mark>",
-                  "<mark><code>74056004</code></mark> or <mark><code>Orphanage</code></mark>",
-                  "<mark><code>722173008</code></mark> or <mark><code>Prison-based Care Site</code></mark>",
-                  "<mark><code>20078004</code></mark> or <mark><code>Substance Abuse Treatment Center</code></mark>",
-                  "<mark><code>257573002</code></mark> or <mark><code>Boarding House</code></mark>",
-                  "<mark><code>224683003</code></mark> or <mark><code>Military Accommodation</code></mark>",
-                  "<mark><code>284546000</code></mark> or <mark><code>Hospice</code></mark>",
-                  "<mark><code>257628001</code></mark> or <mark><code>Hostel</code></mark>",
-                  "<mark><code>310207003</code></mark> or <mark><code>Sheltered Housing</code></mark>",
-                  "<mark><code>57656006</code></mark> or <mark><code>Penal Institution</code></mark>",
-                  "<mark><code>285113009</code></mark> or <mark><code>Religious Institutional Residence</code></mark>",
-                  "<mark><code>285141008</code></mark> or <mark><code>Work (environment)</code></mark>",
-                  "<mark><code>32911000</code></mark> or <mark><code>Homeless</code></mark>",
+                  "<mark><code>Hospital</code></mark> or <mark><code>22232009</code></mark>",
+                  "<mark><code>Hospital Ship</code></mark> or <mark><code>2081004</code></mark>",
+                  "<mark><code>Long Term Care Hospital</code></mark> or <mark><code>32074000</code></mark>",
+                  "<mark><code>Secure Hospital</code></mark> or <mark><code>224929004</code></mark>",
+                  "<mark><code>Nursing Home</code></mark> or <mark><code>42665001</code></mark>",
+                  "<mark><code>Retirement Home</code></mark> or <mark><code>30629002</code></mark>",
+                  "<mark><code>Orphanage</code></mark> or <mark><code>74056004</code></mark>",
+                  "<mark><code>Prison-based Care Site</code></mark> or <mark><code>722173008</code></mark>",
+                  "<mark><code>Substance Abuse Treatment Center</code></mark> or <mark><code>20078004</code></mark>",
+                  "<mark><code>Boarding House</code></mark> or <mark><code>257573002</code></mark>",
+                  "<mark><code>Military Accommodation</code></mark> or <mark><code>224683003</code></mark>",
+                  "<mark><code>Hospice</code></mark> or <mark><code>284546000</code></mark>",
+                  "<mark><code>Hostel</code></mark> or <mark><code>257628001</code></mark>",
+                  "<mark><code>Sheltered Housing</code></mark> or <mark><code>310207003</code></mark>",
+                  "<mark><code>Penal Institution</code></mark> or <mark><code>57656006</code></mark>",
+                  "<mark><code>Religious Institutional Residence</code></mark> or <mark><code>285113009</code></mark>",
+                  "<mark><code>Work (environment)</code></mark> or <mark><code>285141008</code></mark>",
+                  "<mark><code>Homeless</code></mark> or <mark><code>32911000</code></mark>",
                 ],
                 description: [
                   "If the resident congregate setting is “Y” or “Yes,” then provide residence type",
@@ -595,7 +626,8 @@ export const schemaBuilder = (facilityId: string | null) => {
                   "<mark><code>N</code></mark> or <mark><code>NO</code></mark>",
                   "<mark><code>U</code></mark> or <mark><code>UNK</code></mark>",
                 ],
-                format: "Use one of the accepted values listed below",
+                format:
+                  "If the patient tested was admitted to a hospital for treatment.<br/>Use one of the accepted values listed below.",
               },
               {
                 name: "Intensive care unit",

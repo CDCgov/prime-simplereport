@@ -127,6 +127,11 @@ public class OrganizationService {
                 "An organization with external_id=" + externalId + " does not exist"));
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Organization getOrganizationWithExternalIdAsSiteAdmin(String externalId) {
+    return getOrganization(externalId);
+  }
+
   public Organization getOrganizationById(UUID internalId) {
     Optional<Organization> found = organizationRepository.findById(internalId);
     return found.orElseThrow(
@@ -431,5 +436,10 @@ public class OrganizationService {
     Organization organization = optionalOrganization.get();
     organization.setIsDeleted(deleted);
     return organizationRepository.save(organization);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionToAccessOrg
+  public UUID getPermissibleOrgId(UUID orgId) {
+    return orgId != null ? orgId : getCurrentOrganization().getInternalId();
   }
 }

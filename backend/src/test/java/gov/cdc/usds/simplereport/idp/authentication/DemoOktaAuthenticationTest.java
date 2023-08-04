@@ -3,21 +3,21 @@ package gov.cdc.usds.simplereport.idp.authentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.okta.sdk.resource.user.factor.FactorStatus;
-import com.okta.sdk.resource.user.factor.FactorType;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.UserAccountStatus;
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication.DemoAuthUser;
-import org.json.JSONObject;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openapitools.client.model.FactorStatus;
+import org.openapitools.client.model.FactorType;
 
 class DemoOktaAuthenticationTest {
 
-  private DemoOktaAuthentication _auth = new DemoOktaAuthentication();
+  private final DemoOktaAuthentication _auth = new DemoOktaAuthentication();
 
   private static final String VALID_ACTIVATION_TOKEN = "valid_activation_token";
   private static final String VALID_PHONE_NUMBER = "555-867-5309";
@@ -29,13 +29,13 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void activateUserSuccessful() throws Exception {
+  void activateUserSuccessful() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     assertThat(_auth.getUser(userId)).isNotNull();
   }
 
   @Test
-  void activateUserFails_withoutActivationToken() throws Exception {
+  void activateUserFails_withoutActivationToken() {
     assertThrows(
         InvalidActivationLinkException.class,
         () -> {
@@ -44,7 +44,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void setPasswordSuccessful() throws Exception {
+  void setPasswordSuccessful() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String password = "dummyPassword!";
     _auth.setPassword(userId, password.toCharArray());
@@ -52,7 +52,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void cannotSetPassword_unlessActivationIsCalled() throws Exception {
+  void cannotSetPassword_unlessActivationIsCalled() {
     char[] password = "dummyPassword!".toCharArray();
     Exception exception =
         assertThrows(
@@ -64,7 +64,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void passwordTooShort() throws Exception {
+  void passwordTooShort() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     char[] password = "short".toCharArray();
     Exception exception =
@@ -77,7 +77,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void passwordNoSpecialCharacters() throws Exception {
+  void passwordNoSpecialCharacters() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     char[] password = "longPasswordWithoutSpecialCharacters".toCharArray();
     Exception exception =
@@ -91,7 +91,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void setRecoveryQuestionSuccessful() throws Exception {
+  void setRecoveryQuestionSuccessful() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     String question = "Who was your third grade teacher?";
     String answer = "Teacher";
@@ -101,7 +101,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void cannotSetRecoveryQuestion_withoutValidActivation() throws Exception {
+  void cannotSetRecoveryQuestion_withoutValidActivation() {
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
@@ -114,7 +114,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void cannotSetRecoveryQuestion_withBlankQuestion() throws Exception {
+  void cannotSetRecoveryQuestion_withBlankQuestion() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
@@ -126,7 +126,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void cannotSetRecoveryQuestion_withBlankAnswer() throws Exception {
+  void cannotSetRecoveryQuestion_withBlankAnswer() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     Exception exception =
         assertThrows(
@@ -138,7 +138,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void enrollSmsMfaSuccessful() throws Exception {
+  void enrollSmsMfaSuccessful() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     _auth.enrollSmsMfa(userId, VALID_PHONE_NUMBER);
     DemoAuthUser user = _auth.getUser(userId);
@@ -173,7 +173,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void enrollVoiceCallMfaSuccessful() throws Exception {
+  void enrollVoiceCallMfaSuccessful() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     _auth.enrollVoiceCallMfa(userId, VALID_PHONE_NUMBER);
     DemoAuthUser user = _auth.getUser(userId);
@@ -231,7 +231,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void enrollAuthenticatorAppMfa_successful() throws Exception {
+  void enrollAuthenticatorAppMfa_successful() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     FactorAndQrCode factorData = _auth.enrollAuthenticatorAppMfa(userId, "Google");
     DemoAuthUser user = _auth.getUser(userId);
@@ -244,7 +244,7 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void enrollAuthenticatorAppMfa_successfulWithOktaVerify() throws Exception {
+  void enrollAuthenticatorAppMfa_successfulWithOktaVerify() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
     _auth.enrollAuthenticatorAppMfa(userId, "okta");
     DemoAuthUser user = _auth.getUser(userId);
@@ -277,19 +277,19 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void enrollSecurityKey_successful() throws Exception {
+  void enrollSecurityKey_successful() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
+    var enrollResponse = _auth.enrollSecurityKey(userId);
     DemoAuthUser user = _auth.getUser(userId);
 
     assertThat(user.getMfa().getFactorType()).isEqualTo(FactorType.WEBAUTHN);
     assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.PENDING_ACTIVATION);
-    assertThat(enrollResponse.getJSONObject("activation").has("challenge")).isTrue();
-    assertThat(enrollResponse.has("factorId")).isTrue();
+    assertThat(enrollResponse.getActivation()).containsKey("challenge");
+    assertThat(enrollResponse.getFactorId()).isNotEmpty();
   }
 
   @Test
-  void enrollSecurityKey_failsWithoutActivatedUser() throws Exception {
+  void enrollSecurityKey_failsWithoutActivatedUser() {
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
@@ -300,15 +300,15 @@ class DemoOktaAuthenticationTest {
   }
 
   @Test
-  void activateSecurityKey_successful() throws Exception {
+  void activateSecurityKey_successful() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
-    String factorId = enrollResponse.getString("factorId");
+    var enrollResponse = _auth.enrollSecurityKey(userId);
+    String factorId = enrollResponse.getFactorId();
     _auth.activateSecurityKey(
         userId,
         factorId,
-        enrollResponse.getJSONObject("activation").getString("challenge"),
-        enrollResponse.getJSONObject("activation").getJSONObject("user").getString("id"));
+        enrollResponse.getActivation().get("challenge").toString(),
+        ((Map) enrollResponse.getActivation().get("user")).get("id").toString());
 
     DemoAuthUser user = _auth.getUser(userId);
     assertThat(user.getMfa().getFactorStatus()).isEqualTo(FactorStatus.ACTIVE);
@@ -329,8 +329,8 @@ class DemoOktaAuthenticationTest {
   @Test
   void activateSecurityKey_failsWithInvalidAttestation() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
-    String factorId = enrollResponse.getString("factorId");
+    var enrollResponse = _auth.enrollSecurityKey(userId);
+    String factorId = enrollResponse.getFactorId();
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,
@@ -343,9 +343,9 @@ class DemoOktaAuthenticationTest {
   @Test
   void activateSecurityKey_failsWithInvalidClientData() {
     String userId = _auth.activateUser(VALID_ACTIVATION_TOKEN);
-    JSONObject enrollResponse = _auth.enrollSecurityKey(userId);
-    String factorId = enrollResponse.getString("factorId");
-    String challenge = enrollResponse.getJSONObject("activation").getString("challenge");
+    var enrollResponse = _auth.enrollSecurityKey(userId);
+    String factorId = enrollResponse.getFactorId();
+    String challenge = enrollResponse.getActivation().get("challenge").toString();
     Exception exception =
         assertThrows(
             OktaAuthenticationFailureException.class,

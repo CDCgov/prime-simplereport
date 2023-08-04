@@ -33,11 +33,11 @@ const getQueueServiceClient = (() => {
     }
     const credential = new StorageSharedKeyCredential(
       AZ_STORAGE_ACCOUNT_NAME,
-      AZ_STORAGE_ACCOUNT_KEY
+      AZ_STORAGE_ACCOUNT_KEY,
     );
     queueServiceClient = new QueueServiceClient(
       AZ_STORAGE_QUEUE_SVC_URL,
-      credential
+      credential,
     );
     return queueServiceClient;
   };
@@ -49,7 +49,7 @@ export function getQueueClient(queueName: string) {
 
 export async function dequeueMessages(
   context: Context,
-  queueClient: QueueClient
+  queueClient: QueueClient,
 ): Promise<DequeuedMessageItem[]> {
   context.log(`Queue: ${queueClient.name}. Receiving messages`);
   const messages: DequeuedMessageItem[] = [];
@@ -66,7 +66,7 @@ export async function dequeueMessages(
       if (dequeueResponse?.receivedMessageItems.length) {
         messages.push(...dequeueResponse.receivedMessageItems);
         context.log(
-          `Queue: ${queueClient.name}. Dequeued ${dequeueResponse.receivedMessageItems.length} messages`
+          `Queue: ${queueClient.name}. Dequeued ${dequeueResponse.receivedMessageItems.length} messages`,
         );
       } else {
         // There are no more messages on the queue
@@ -82,20 +82,20 @@ export async function dequeueMessages(
 
 export async function minimumMessagesAvailable(
   context: Context,
-  queueClient: QueueClient
+  queueClient: QueueClient,
 ) {
   const queueProperties = await queueClient.getProperties();
 
   const approxMessageCount = queueProperties.approximateMessagesCount;
   if (approxMessageCount === undefined) {
     context.log(
-      `Queue: ${queueClient.name}. Queue message count is undefined; aborting`
+      `Queue: ${queueClient.name}. Queue message count is undefined; aborting`,
     );
     return false;
   }
   if (approxMessageCount < parseInt(REPORT_STREAM_BATCH_MINIMUM, 10)) {
     context.log(
-      `Queue: ${queueClient.name}. Queue message count of ${approxMessageCount} was < ${REPORT_STREAM_BATCH_MINIMUM} minimum; aborting`
+      `Queue: ${queueClient.name}. Queue message count of ${approxMessageCount} was < ${REPORT_STREAM_BATCH_MINIMUM} minimum; aborting`,
     );
     return false;
   }
@@ -104,19 +104,19 @@ export async function minimumMessagesAvailable(
 
 export async function publishToQueue(
   queueClient: QueueClient,
-  messages: DequeuedMessageItem[]
+  messages: DequeuedMessageItem[],
 ) {
   return Promise.all(
     messages.map((m) =>
-      queueClient.sendMessage(Buffer.from(m.messageText).toString("utf-8"))
-    )
+      queueClient.sendMessage(Buffer.from(m.messageText).toString("utf-8")),
+    ),
   );
 }
 export async function deleteSuccessfullyParsedMessages(
   context: Context,
   queueClient: QueueClient,
   messages: DequeuedMessageItem[],
-  parseFailure: { [k: string]: boolean }
+  parseFailure: { [k: string]: boolean },
 ) {
   const validMessages: DequeuedMessageItem[] = [];
   const deletionPromises: Promise<QueueDeleteMessageResponse>[] = [];
@@ -124,7 +124,7 @@ export async function deleteSuccessfullyParsedMessages(
   for (const message of messages) {
     if (parseFailure[message.messageId]) {
       context.log(
-        `Queue: ${queueClient.name}. Message ${message.messageId} failed to parse; skipping deletion`
+        `Queue: ${queueClient.name}. Message ${message.messageId} failed to parse; skipping deletion`,
       );
     } else {
       validMessages.push(message);
@@ -134,11 +134,11 @@ export async function deleteSuccessfullyParsedMessages(
   for (const message of validMessages) {
     if (message.dequeueCount > 1) {
       context.log(
-        `Queue: ${queueClient.name}. Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`
+        `Queue: ${queueClient.name}. Message has been dequeued ${message.dequeueCount} times, possibly sent more than once to RS`,
       );
     }
     deletionPromises.push(
-      queueClient.deleteMessage(message.messageId, message.popReceipt)
+      queueClient.deleteMessage(message.messageId, message.popReceipt),
     );
   }
 
@@ -153,17 +153,17 @@ export async function deleteSuccessfullyParsedMessages(
           JSON.parse(message.messageText)["Result_ID"] ||
           getTestEventIdFromFHIRBundle(JSON.parse(message.messageText));
         context.log(
-          `Queue: ${queueClient.name}. Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`
+          `Queue: ${queueClient.name}. Message ${message.messageId} deleted with request id ${deleteResponse.requestId} and has TestEvent id ${testEventId}`,
         );
       } else {
         context.log(
-          `Queue: ${queueClient.name}. Failed to delete message ${message.messageId} from the queue:`
+          `Queue: ${queueClient.name}. Failed to delete message ${message.messageId} from the queue:`,
         );
       }
     }
   } catch (e) {
     context.log(
-      `Queue: ${queueClient.name}. The following error has occurred: ${e}`
+      `Queue: ${queueClient.name}. The following error has occurred: ${e}`,
     );
   }
   context.log(`Queue: ${queueClient.name}. Deletion complete`);
@@ -173,25 +173,27 @@ export async function reportExceptions(
   context: Context,
   queueClient: QueueClient,
   response: ReportStreamResponse,
-  eventQueueName: string
+  eventQueueName: string,
 ) {
   context.log(
-    `Queue: ${eventQueueName}. ReportStream response errors: ${response.errorCount}`
+    `Queue: ${eventQueueName}. ReportStream response errors: ${response.errorCount}`,
   );
   context.log(
-    `Queue: ${eventQueueName}. ReportStream response warnings: ${response.warningCount}`
+    `Queue: ${eventQueueName}. ReportStream response warnings: ${response.warningCount}`,
   );
   const payloads: SimpleReportReportStreamResponse[] = response.warnings
     .flatMap((w) => responsesFrom(eventQueueName, context, w, false))
     .concat(
       response.errors.flatMap((e) =>
-        responsesFrom(eventQueueName, context, e, true)
-      )
+        responsesFrom(eventQueueName, context, e, true),
+      ),
     );
   return Promise.all(
     payloads.map((p) =>
-      queueClient.sendMessage(Buffer.from(JSON.stringify(p)).toString("base64"))
-    )
+      queueClient.sendMessage(
+        Buffer.from(JSON.stringify(p)).toString("base64"),
+      ),
+    ),
   );
 }
 
@@ -199,7 +201,7 @@ const responsesFrom = function (
   queueName: string,
   context: Context,
   err: ReportStreamError,
-  isError: boolean
+  isError: boolean,
 ): ReportStreamCallbackRequest[] {
   if (err.trackingIds) {
     return err.trackingIds.map((id) => ({
@@ -212,13 +214,13 @@ const responsesFrom = function (
     context.log(
       `Queue: ${queueName}. ReportStream response ${err.scope} ${
         isError ? "error" : "warning"
-      }: ${err.message}`
+      }: ${err.message}`,
     );
     return [];
   }
 };
 export function getTestEventIdFromFHIRBundle( // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  fhirBundle: Record<any, any>
+  fhirBundle: Record<any, any>,
 ): string | undefined {
   return fhirBundle?.entry?.filter((entry) => {
     return entry.resource?.resourceType === "DiagnosticReport";

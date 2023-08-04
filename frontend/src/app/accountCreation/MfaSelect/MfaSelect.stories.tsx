@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { MfaSelect } from "./MfaSelect";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <MfaSelect {...args} />;
+const Template: StoryFn = (args) => <MfaSelect {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

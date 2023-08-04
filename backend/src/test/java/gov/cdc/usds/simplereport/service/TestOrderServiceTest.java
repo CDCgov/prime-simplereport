@@ -40,6 +40,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -1945,8 +1946,27 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportOrgAdminUser
   void getTestResultsCount() {
     makedata();
-    int size = _service.getTestResultsCount(_site.getInternalId(), null, null, null, null, null);
+    int size =
+        _service.getTestResultsCount(_site.getInternalId(), null, null, null, null, null, null);
     assertEquals(11, size);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void getTestResultsCount_forOrganization() {
+    var testEvents = makeAdminData();
+    var orgId = testEvents.get(0).getOrganization().getInternalId();
+    int size = _service.getTestResultsCount(null, null, null, null, null, null, orgId);
+    assertEquals(4, size);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getTestResultsCount_forOrganization_failsForNonSiteAdmins() {
+    var otherOrgId = UUID.randomUUID();
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _service.getTestResultsCount(null, null, null, null, null, null, otherOrgId));
   }
 
   @Test
@@ -2031,6 +2051,18 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(correctedTestEvent);
     verifyNoInteractions(fhirQueueReportingService);
+  }
+
+  private List<TestEvent> makeAdminData() {
+    var org = _organizationService.createOrganization("Da Org", "airport", "da-org-airport");
+    _organizationService.setIdentityVerified("da-org-airport", true);
+    var facility = _dataFactory.createValidFacility(org, "Da Facilitiy");
+    var person = _dataFactory.createMinimalPerson(org);
+    return List.of(
+        _dataFactory.createTestEvent(person, facility, TestResult.POSITIVE),
+        _dataFactory.createTestEvent(person, facility, TestResult.POSITIVE),
+        _dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE),
+        _dataFactory.createTestEvent(person, facility, TestResult.UNDETERMINED));
   }
 
   private List<TestEvent> makedata() {

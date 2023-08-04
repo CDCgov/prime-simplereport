@@ -187,6 +187,7 @@ export type Mutation = {
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
+  reactivateUserAndResetPassword?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
@@ -349,6 +350,10 @@ export type MutationReactivateUserArgs = {
   id: Scalars["ID"];
 };
 
+export type MutationReactivateUserAndResetPasswordArgs = {
+  id: Scalars["ID"];
+};
+
 export type MutationRemovePatientFromQueueArgs = {
   patientId: Scalars["ID"];
 };
@@ -399,6 +404,7 @@ export type MutationSetOrganizationIdentityVerifiedArgs = {
 export type MutationSetPatientIsDeletedArgs = {
   deleted: Scalars["Boolean"];
   id: Scalars["ID"];
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetRegistrationLinkIsDeletedArgs = {
@@ -720,6 +726,7 @@ export type QueryPatientsArgs = {
   includeArchived?: InputMaybe<Scalars["Boolean"]>;
   includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
 };
@@ -729,6 +736,7 @@ export type QueryPatientsCountArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   includeArchived?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type QueryQueueArgs = {
@@ -753,6 +761,7 @@ export type QueryTestResultsArgs = {
 export type QueryTestResultsCountArgs = {
   endDate?: InputMaybe<Scalars["DateTime"]>;
   facilityId?: InputMaybe<Scalars["ID"]>;
+  orgId?: InputMaybe<Scalars["ID"]>;
   patientId?: InputMaybe<Scalars["ID"]>;
   result?: InputMaybe<Scalars["String"]>;
   role?: InputMaybe<Scalars["String"]>;
@@ -788,7 +797,8 @@ export type QueryUploadSubmissionsArgs = {
 };
 
 export type QueryUserArgs = {
-  id: Scalars["ID"];
+  email?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
 };
 
 export enum ResultValue {
@@ -965,6 +975,7 @@ export type User = {
   firstName?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   isAdmin?: Maybe<Scalars["Boolean"]>;
+  isDeleted?: Maybe<Scalars["Boolean"]>;
   lastName: Scalars["String"];
   middleName?: Maybe<Scalars["String"]>;
   name: NameInfo;
@@ -2262,7 +2273,11 @@ export type GetFacilityResultsMultiplexWithCountQuery = {
         __typename?: "PatientLink";
         internalId?: string | null;
       } | null;
-      facility?: { __typename?: "Facility"; name: string } | null;
+      facility?: {
+        __typename?: "Facility";
+        name: string;
+        isDeleted?: boolean | null;
+      } | null;
     } | null> | null;
   } | null;
 };
@@ -6500,6 +6515,7 @@ export const GetFacilityResultsMultiplexWithCountDocument = gql`
         }
         facility {
           name
+          isDeleted
         }
       }
       totalElements

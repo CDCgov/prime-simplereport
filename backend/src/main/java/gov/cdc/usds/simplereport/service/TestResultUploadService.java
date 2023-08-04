@@ -1,14 +1,23 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.EQUIPMENT_MODEL_NAME;
+import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.TEST_PERFORMED_CODE;
 import static gov.cdc.usds.simplereport.utils.AsyncLoggingUtils.withMDC;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import feign.FeignException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.DependencyFailureException;
+import gov.cdc.usds.simplereport.api.model.errors.EmptyCsvException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -31,16 +40,19 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.stream.Collectors;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -131,154 +143,175 @@ public class TestResultUploadService {
       return validationErrorResult;
     }
 
-    if (!"P".equals(processingModeCodeValue)) {
-      content = attachProcessingModeCode(content);
-    }
-
     TestResultUpload csvResult = null;
-    Future<UploadResponse> csvResponse;
+    TestResultUpload fhirResult = null;
+    Future<FutureResult<UploadResponse, Exception>> csvResponse;
     Future<UploadResponse> fhirResponse = null;
 
     if (content.length > 0) {
-      csvResponse = submitResultsAsCsv(content);
 
+      csvResponse = submitResultsAsCsv(content);
       if (fhirEnabled) {
         fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
       }
 
       try {
-        if (csvResponse.get() == null) {
-          throw new DependencyFailureException("Unable to parse Report Stream response.");
+        if (csvResponse.get().getError() instanceof DependencyFailureException) {
+          throw (DependencyFailureException) csvResponse.get().getError();
         }
-        csvResult = saveSubmissionToDb(csvResponse.get(), org, submissionId);
-        if (fhirResponse != null) {
-          saveSubmissionToDb(fhirResponse.get(), org, submissionId);
+
+        if (csvResponse.get().getValue() != null) {
+          csvResult = saveSubmissionToDb(csvResponse.get().getValue(), org, submissionId);
         }
-      } catch (ExecutionException | InterruptedException e) {
-        log.error("Error Processing Bulk Result Upload.", e);
+
+      } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
+        log.error("Error processing csv in bulk result upload", e);
+        Thread.currentThread().interrupt();
+      }
+
+      try {
+        if (fhirResponse != null && fhirResponse.get() != null) {
+          fhirResult = saveSubmissionToDb(fhirResponse.get(), org, submissionId);
+        }
+      } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
+        log.error("Error processing FHIR in bulk result upload", e);
         Thread.currentThread().interrupt();
       }
     }
-    return csvResult;
+    return Optional.ofNullable(csvResult).orElse(fhirResult);
   }
 
   private byte[] transformCsvContent(byte[] content) {
-    String[] rows = new String(content, StandardCharsets.UTF_8).split("\n");
-    List<String> headers = Arrays.stream(rows[0].split(",")).toList();
+    List<Map<String, String>> updatedRows = new ArrayList<>();
+    final MappingIterator<Map<String, String>> valueIterator =
+        getIteratorForCsv(new ByteArrayInputStream(content));
+    while (valueIterator.hasNext()) {
+      final Map<String, String> row;
+      try {
+        row = getNextRow(valueIterator);
+      } catch (CsvProcessingException ex) {
+        // anything that would land here should have been caught and handled by the file validator
+        log.error("Unable to parse csv.", ex);
+        continue;
+      }
 
-    for (int i = 1; i < rows.length; i++) {
-      var row = rows[i].split(",", -1);
-
-      // row is passed by object reference here
-      modifyRowSpecimenNameToSNOMED(row, headers);
-      // Disabling timezone conversion for now
-      // modifyRowDatetimeStrings(row, headers);
-
-      rows[i] = String.join(",", row);
+      if (isCovidResult(row)) {
+        updatedRows.add(transformCsvRow(row));
+      }
     }
-    return String.join("\n", rows).getBytes();
-  }
 
-  private void modifyRowSpecimenNameToSNOMED(String[] row, List<String> headers) {
-    var snomedMap = resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap();
-    int specimenTypeIndex = headers.indexOf(SPECIMEN_TYPE_COLUMN_NAME);
-    var specimenTypeName = Arrays.stream(row).toList().get(specimenTypeIndex).toLowerCase();
-    if (specimenTypeName.matches(ALPHABET_REGEX)) {
-      row[specimenTypeIndex] = snomedMap.get(specimenTypeName);
+    if (updatedRows.isEmpty()) {
+      return new byte[0];
     }
+
+    var headers = updatedRows.stream().flatMap(row -> row.keySet().stream()).distinct().toList();
+    var csvMapper =
+        new CsvMapper()
+            .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+            .writerFor(List.class)
+            .with(
+                CsvSchema.builder()
+                    .setUseHeader(true)
+                    .addColumns(headers, CsvSchema.ColumnType.STRING)
+                    .build());
+    String csvContent;
+    try {
+      csvContent = csvMapper.writeValueAsString(updatedRows);
+    } catch (JsonProcessingException e) {
+      throw new CsvProcessingException("Error writing transformed csv rows");
+    }
+
+    return csvContent.getBytes(StandardCharsets.UTF_8);
   }
 
-  private String valueAtRowIndex(int index, String[] row) {
-    return Arrays.stream(row).toList().get(index).toLowerCase();
+  private boolean isCovidResult(Map<String, String> row) {
+    String equipmentModelName = row.get(EQUIPMENT_MODEL_NAME);
+    String testPerformedCode = row.get(TEST_PERFORMED_CODE);
+    return resultsUploaderCachingService
+        .getCovidEquipmentModelAndTestPerformedCodeSet()
+        .contains(ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
   }
 
-  private void modifyRowDatetimeStrings(String[] row, List<String> headers) {
-    var testResultDateIndex = headers.indexOf(TEST_RESULT_DATE_COLUMN_NAME);
-    var orderTestDateIndex = headers.indexOf(ORDER_TEST_DATE_COLUMN_NAME);
-    var specimenCollectionDateIndex = headers.indexOf(SPECIMEN_COLLECTION_DATE_COLUMN_NAME);
-    var specimenReceivedDateIndex = headers.indexOf(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME);
-    var dateResultReleasedIndex = headers.indexOf(DATE_RESULT_RELEASED_COLUMN_NAME);
+  private Map<String, String> transformCsvRow(Map<String, String> row) {
 
-    var testResultDate = valueAtRowIndex(testResultDateIndex, row);
-    var orderTestDate = valueAtRowIndex(orderTestDateIndex, row);
-    var specimenCollectionDate = valueAtRowIndex(specimenCollectionDateIndex, row);
-    var specimenReceivedDate = valueAtRowIndex(specimenReceivedDateIndex, row);
-    var dateResultReleased = valueAtRowIndex(dateResultReleasedIndex, row);
+    if (!"P".equals(processingModeCodeValue)
+        && !row.containsKey(PROCESSING_MODE_CODE_COLUMN_NAME)) {
+      row.put(PROCESSING_MODE_CODE_COLUMN_NAME, processingModeCodeValue);
+    }
 
-    var testingLabAddr = getTestingLabAddress(row, headers);
-    var providerAddr = getOrderingFacilityAddress(row, headers);
+    var updatedSpecimenType =
+        modifyRowSpecimenNameToSNOMED(row.get(SPECIMEN_TYPE_COLUMN_NAME).toLowerCase());
 
-    testResultDate =
-        convertToZonedDateTime(testResultDate, resultsUploaderCachingService, testingLabAddr)
-            .toOffsetDateTime()
-            .toString();
-    orderTestDate =
-        convertToZonedDateTime(orderTestDate, resultsUploaderCachingService, providerAddr)
-            .toOffsetDateTime()
-            .toString();
+    var testingLabAddress =
+        new StreetAddress(
+            row.get("testing_lab_street"),
+            row.get("testing_lab_street2"),
+            row.get("testing_lab_city"),
+            row.get("testing_lab_state"),
+            row.get("testing_lab_zip_code"),
+            null);
+    var providerAddress =
+        new StreetAddress(
+            row.get("ordering_provider_street"),
+            row.get("ordering_provider_street2"),
+            row.get("ordering_provider_city"),
+            row.get("ordering_provider_state"),
+            row.get("ordering_provider_zip_code"),
+            null);
 
-    specimenCollectionDate =
-        StringUtils.isNotBlank(specimenCollectionDate)
+    var testResultDate =
+        convertToZonedDateTime(
+            row.get(TEST_RESULT_DATE_COLUMN_NAME),
+            resultsUploaderCachingService,
+            testingLabAddress);
+
+    var orderTestDate =
+        convertToZonedDateTime(
+            row.get(ORDER_TEST_DATE_COLUMN_NAME), resultsUploaderCachingService, providerAddress);
+
+    var specimenCollectionDate =
+        StringUtils.isNotBlank(row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME))
             ? convertToZonedDateTime(
-                    specimenCollectionDate, resultsUploaderCachingService, providerAddr)
-                .toOffsetDateTime()
-                .toString()
+                row.get(SPECIMEN_COLLECTION_DATE_COLUMN_NAME),
+                resultsUploaderCachingService,
+                providerAddress)
             : orderTestDate;
 
-    specimenReceivedDate =
-        StringUtils.isNotBlank(specimenReceivedDate)
+    var testingLabSpecimenReceivedDate =
+        StringUtils.isNotBlank(row.get(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME))
             ? convertToZonedDateTime(
-                    specimenReceivedDate, resultsUploaderCachingService, providerAddr)
-                .toOffsetDateTime()
-                .toString()
+                row.get(TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME),
+                resultsUploaderCachingService,
+                testingLabAddress)
             : orderTestDate;
 
-    dateResultReleased =
-        StringUtils.isNotBlank(dateResultReleased)
+    var dateResultReleased =
+        StringUtils.isNotBlank(row.get(DATE_RESULT_RELEASED_COLUMN_NAME))
             ? convertToZonedDateTime(
-                    dateResultReleased, resultsUploaderCachingService, providerAddr)
-                .toOffsetDateTime()
-                .toString()
+                row.get(DATE_RESULT_RELEASED_COLUMN_NAME),
+                resultsUploaderCachingService,
+                testingLabAddress)
             : testResultDate;
 
-    row[testResultDateIndex] = testResultDate;
-    row[orderTestDateIndex] = orderTestDate;
-    row[specimenCollectionDateIndex] = specimenCollectionDate;
-    row[specimenReceivedDateIndex] = specimenReceivedDate;
-    row[dateResultReleasedIndex] = dateResultReleased;
+    row.put(SPECIMEN_TYPE_COLUMN_NAME, updatedSpecimenType);
+    row.put(TEST_RESULT_DATE_COLUMN_NAME, testResultDate.toOffsetDateTime().toString());
+    row.put(ORDER_TEST_DATE_COLUMN_NAME, orderTestDate.toOffsetDateTime().toString());
+    row.put(
+        SPECIMEN_COLLECTION_DATE_COLUMN_NAME, specimenCollectionDate.toOffsetDateTime().toString());
+    row.put(
+        TESTING_LAB_SPECIMEN_RECEIVED_DATE_COLUMN_NAME,
+        testingLabSpecimenReceivedDate.toOffsetDateTime().toString());
+    row.put(DATE_RESULT_RELEASED_COLUMN_NAME, dateResultReleased.toOffsetDateTime().toString());
+
+    return row;
   }
 
-  private StreetAddress getTestingLabAddress(String[] row, List<String> headers) {
-    return new StreetAddress(
-        valueAtRowIndex(headers.indexOf("testing_lab_street"), row),
-        valueAtRowIndex(headers.indexOf("testing_lab_street2"), row),
-        valueAtRowIndex(headers.indexOf("testing_lab_city"), row),
-        valueAtRowIndex(headers.indexOf("testing_lab_state"), row),
-        valueAtRowIndex(headers.indexOf("testing_lab_zip_code"), row),
-        null);
-  }
-
-  private StreetAddress getOrderingFacilityAddress(String[] row, List<String> headers) {
-    return new StreetAddress(
-        valueAtRowIndex(headers.indexOf("ordering_facility_street"), row),
-        valueAtRowIndex(headers.indexOf("ordering_facility_street2"), row),
-        valueAtRowIndex(headers.indexOf("ordering_facility_city"), row),
-        valueAtRowIndex(headers.indexOf("ordering_facility_state"), row),
-        valueAtRowIndex(headers.indexOf("ordering_facility_zip_code"), row),
-        null);
-  }
-
-  private byte[] attachProcessingModeCode(byte[] content) {
-    String[] row = new String(content, StandardCharsets.UTF_8).split("\n");
-    String headers = row[0];
-    if (!headers.contains(PROCESSING_MODE_CODE_COLUMN_NAME)) {
-      row[0] = headers + "," + PROCESSING_MODE_CODE_COLUMN_NAME;
-      for (int i = 1; i < row.length; i++) {
-        row[i] = row[i] + "," + processingModeCodeValue;
-      }
-      content = Arrays.stream(row).collect(Collectors.joining("\n")).getBytes();
+  private String modifyRowSpecimenNameToSNOMED(String specimenTypeName) {
+    var snomedMap = resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap();
+    if (specimenTypeName.matches(ALPHABET_REGEX)) {
+      return snomedMap.get(specimenTypeName);
     }
-    return content;
+    return specimenTypeName;
   }
 
   public Page<TestResultUpload> getUploadSubmissions(
@@ -344,23 +377,42 @@ public class TestResultUploadService {
             }));
   }
 
-  private Future<UploadResponse> submitResultsAsCsv(byte[] content) {
+  private Future<FutureResult<UploadResponse, Exception>> submitResultsAsCsv(byte[] content) {
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
               long start = System.currentTimeMillis();
-              UploadResponse response;
+              FutureResult<UploadResponse, Exception> result;
+              var csvContent = transformCsvContent(content);
+              if (csvContent.length == 0) {
+                return FutureResult.<UploadResponse, Exception>builder()
+                    .error(new EmptyCsvException())
+                    .build();
+              }
               try {
-                var csvContent = transformCsvContent(content);
-
-                response = _client.uploadCSV(csvContent);
+                result =
+                    FutureResult.<UploadResponse, Exception>builder()
+                        .value(_client.uploadCSV(csvContent))
+                        .build();
               } catch (FeignException e) {
                 log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
-                response = parseFeignException(e);
+                try {
+                  UploadResponse value = mapper.readValue(e.contentUTF8(), UploadResponse.class);
+                  result = FutureResult.<UploadResponse, Exception>builder().value(value).build();
+
+                } catch (JsonProcessingException ex) {
+                  log.error("Unable to parse Report Stream response.", ex);
+                  result =
+                      FutureResult.<UploadResponse, Exception>builder()
+                          .error(
+                              new DependencyFailureException(
+                                  "Unable to parse Report Stream response."))
+                          .build();
+                }
               }
               log.info(
                   "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
-              return response;
+              return result;
             }));
   }
 
@@ -391,13 +443,12 @@ public class TestResultUploadService {
 
       result = _repo.save(result);
 
-      TestResultUpload finalResult = result;
-
       if (response.getErrors() != null && response.getErrors().length > 0) {
         for (var error : response.getErrors()) {
           error.setSource(ResultUploadErrorSource.REPORT_STREAM);
         }
 
+        TestResultUpload finalResult = result;
         errorRepository.saveAll(
             Arrays.stream(response.getErrors())
                 .map(
@@ -406,7 +457,6 @@ public class TestResultUploadService {
                 .toList());
       }
     }
-
     return result;
   }
 
@@ -415,5 +465,12 @@ public class TestResultUploadService {
     FeedbackMessage[] empty = {};
     return new TestResultUpload(
         UUID.randomUUID(), UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
+  }
+
+  @Getter
+  @Builder
+  public static class FutureResult<V, E> {
+    private V value;
+    private E error;
   }
 }

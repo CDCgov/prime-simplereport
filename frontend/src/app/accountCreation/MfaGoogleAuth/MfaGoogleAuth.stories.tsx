@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { getMocks } from "../../../stories/storyMocks";
@@ -14,7 +14,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => (
+const Template: StoryFn = (args) => (
   <MemoryRouter initialEntries={["/"]}>
     <MfaGoogleAuth {...args} />
   </MemoryRouter>

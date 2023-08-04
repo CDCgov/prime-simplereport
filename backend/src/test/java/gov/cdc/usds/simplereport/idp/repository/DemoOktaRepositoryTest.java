@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -16,6 +15,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -25,6 +25,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
+import org.openapitools.client.model.UserStatus;
 
 class DemoOktaRepositoryTest {
 
@@ -48,7 +49,8 @@ class DemoOktaRepositoryTest {
       new CurrentTenantDataAccessContextHolder();
 
   private DemoOktaRepository _repo =
-      new DemoOktaRepository(MOCK_EXTRACTOR, tenantDataAccessContextHolder);
+      new DemoOktaRepository(
+          MOCK_EXTRACTOR, tenantDataAccessContextHolder, mock(DemoUserConfiguration.class));
 
   @BeforeEach
   public void setup() {
@@ -467,6 +469,38 @@ class DemoOktaRepositoryTest {
         true);
 
     assertThat(_repo.fetchAdminUserEmail(ABC)).contains("dianek@gmail.com");
+  }
+
+  @Test
+  void findUser_success() {
+    createOrgAndFacilities();
+    _repo.createUser(
+        AMOS,
+        ABC,
+        Set.of(ABC_1, ABC_2),
+        Set.of(OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
+        true);
+    _repo.createUser(BRAD, ABC, Set.of(ABC_1), Set.of(OrganizationRole.ENTRY_ONLY), true);
+
+    PartialOktaUser amos = _repo.findUser(AMOS.getUsername());
+
+    Optional<OrganizationRoleClaims> amos_expected =
+        Optional.of(
+            new OrganizationRoleClaims(
+                ABC.getExternalId(),
+                Set.of(),
+                Set.of(
+                    OrganizationRole.NO_ACCESS,
+                    OrganizationRole.ALL_FACILITIES,
+                    OrganizationRole.ADMIN)));
+
+    assertEquals(false, amos.isSiteAdmin());
+    assertEquals(UserStatus.ACTIVE, amos.getStatus());
+    assertEquals(AMOS.getUsername(), amos.getUsername());
+    assertTrue(amos.getOrganizationRoleClaims().isPresent());
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(amos_expected.get())
+            .matches(amos.getOrganizationRoleClaims().get()));
   }
 
   private static Facility getFacility(UUID uuid, Organization org) {
