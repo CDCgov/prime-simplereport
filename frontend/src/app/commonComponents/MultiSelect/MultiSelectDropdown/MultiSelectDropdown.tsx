@@ -7,8 +7,13 @@ import React, {
   useCallback,
 } from "react";
 import classnames from "classnames";
+import { uniq } from "lodash";
 
 import { useOutsideClick } from "../../../utils/hooks";
+import {
+  SearchableDevice,
+  searchFields,
+} from "../../../uploads/DeviceLookup/DeviceLookup";
 
 import {
   ActionTypes,
@@ -57,7 +62,7 @@ interface MultiSelectDropDownProps {
   ariaInvalid?: boolean;
   registrationProps?: RegistrationProps;
   DropdownComponent?: (props: any) => JSX.Element;
-  deviceOptions?: DeviceType[];
+  deviceOptions?: FacilityFormDeviceType[];
 }
 
 interface InputProps {
@@ -140,14 +145,16 @@ const handleInputKeyDown =
     } else if (event.key === "Tab") {
       // Clear button is not visible in this case so manually handle focus
       if (state.isOpen) {
-        // If there are filtered options, prevent default
+        // If there are filtered options, prevent default for basic dropdown body
         // If there are "No Results Found", tab over to prevent a keyboard trap
         if (state.filteredOptions.length > 0) {
-          event.preventDefault();
-          dispatch({
-            type: ActionTypes.FOCUS_OPTION,
-            option: state.filteredOptions[0],
-          });
+          if (!state.isExtended) {
+            event.preventDefault();
+            dispatch({
+              type: ActionTypes.FOCUS_OPTION,
+              option: state.filteredOptions[0],
+            });
+          }
         } else {
           dispatch({
             type: ActionTypes.BLUR,
@@ -221,6 +228,8 @@ export const MultiSelectDropdown = ({
     filteredOptions: options,
     filter: undefined,
     inputValue: "",
+    // TODO: more clear name for this
+    isExtended: !!DropdownComponent,
   };
 
   const [state, dispatch] = useMultiSelectDropdown(initialState, options);
@@ -264,7 +273,9 @@ export const MultiSelectDropdown = ({
       (newTarget instanceof Node && !containerRef.current?.contains(newTarget));
 
     if (newTargetIsOutside) {
-      dispatch({ type: ActionTypes.BLUR });
+      if (!state.isExtended) {
+        dispatch({ type: ActionTypes.BLUR });
+      }
     }
   };
 
@@ -279,10 +290,35 @@ export const MultiSelectDropdown = ({
     }
   };
 
-  const getFilteredDevices = (deviceIds: string[]): DeviceType[] => {
+  const getFilteredDevices = (
+    deviceIds: string[]
+  ): FacilityFormDeviceType[] => {
     return (deviceOptions ?? []).filter((d) =>
       deviceIds.includes(d.internalId)
     );
+  };
+
+  const searchFacilityFormDevices = (
+    devices: FacilityFormDeviceType[],
+    query: string
+  ): FacilityFormDeviceType[] => {
+    if (!query) {
+      return devices;
+    }
+
+    const results: FacilityFormDeviceType[] = [];
+
+    for (const field of searchFields) {
+      results.push(
+        // eslint-disable-next-line no-loop-func
+        ...devices.filter((d: FacilityFormDeviceType) => {
+          const value = d[field as keyof SearchableDevice];
+          return value.toLowerCase().includes(query.toLowerCase());
+        })
+      );
+    }
+
+    return uniq(results);
   };
 
   const containerClasses = classnames(
@@ -346,21 +382,19 @@ export const MultiSelectDropdown = ({
           &nbsp;
         </button>
       </span>
-
-      {DropdownComponent ? (
+      {DropdownComponent && deviceOptions ? (
         <>
           <DropdownComponent
-            devices={getFilteredDevices(
-              state.filteredOptions.map((o) => o.value)
+            devices={searchFacilityFormDevices(
+              getFilteredDevices(options.map((d) => d.value)),
+              state.inputValue
             )}
             setSelectedDevice={selectOption}
             shouldShowSuggestions={state.isOpen}
-            loading={false}
             queryString={state.inputValue}
             multiSelect={true}
             dropDownRef={dropDownRef}
           />
-
           {state.filteredOptions.length === 0 &&
             (noResults || "No results found")}
         </>

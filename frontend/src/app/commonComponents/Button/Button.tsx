@@ -24,6 +24,7 @@ interface Props {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   ariaHidden?: boolean;
   ariaLabel?: string;
+  ref?: React.RefObject<HTMLButtonElement> | null;
 }
 
 const Button = ({

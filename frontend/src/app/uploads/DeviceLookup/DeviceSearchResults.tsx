@@ -75,7 +75,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
         <tbody>
           {devices.map((d, idx) => {
             return (
-              <tr key={d.internalId}>
+              <tr key={d.internalId} aria-label={`device-${idx}`}>
                 <td id={`device-${idx}`}>{d.manufacturer}</td>
                 <td id={`model-name-${idx}`}>{d.model}</td>
                 <td id={`test-type-${idx}`}>

@@ -34,7 +34,7 @@ export type MultiSelectProps = {
   placeholder?: string;
   registrationProps?: RegistrationProps;
   DropdownComponent?: (props: any) => JSX.Element;
-  deviceOptions?: DeviceType[];
+  deviceOptions?: FacilityFormDeviceType[];
 };
 
 type PillProps = {

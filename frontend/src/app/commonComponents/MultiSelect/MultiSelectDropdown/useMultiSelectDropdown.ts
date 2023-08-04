@@ -44,6 +44,7 @@ export interface State {
   filter?: string;
   filteredOptions: MultiSelectDropdownOption[];
   inputValue: string;
+  isExtended: boolean;
 }
 
 export const useMultiSelectDropdown = (

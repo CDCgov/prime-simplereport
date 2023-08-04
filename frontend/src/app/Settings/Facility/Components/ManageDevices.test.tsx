@@ -10,6 +10,7 @@ import userEvent from "@testing-library/user-event";
 
 import { FacilityFormData } from "../FacilityForm";
 import mockSupportedDiseaseTestPerformedCovid from "../../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
+import { DeviceType } from "../../../../generated/graphql";
 
 import ManageDevices from "./ManageDevices";
 
@@ -47,6 +48,8 @@ const deviceA = {
   model: "Device A",
   manufacturer: "Manufacturer A",
   supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+  swabTypes: [],
+  testLength: 10,
 };
 const deviceB = {
   internalId: "device-b",
@@ -54,6 +57,8 @@ const deviceB = {
   model: "Device B",
   manufacturer: "Manufacturer B",
   supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+  swabTypes: [],
+  testLength: 10,
 };
 const deviceC = {
   internalId: "device-c",
@@ -61,6 +66,8 @@ const deviceC = {
   model: "Device C",
   manufacturer: "Manufacturer C",
   supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+  swabTypes: [],
+  testLength: 10,
 };
 
 const devices: DeviceType[] = [deviceC, deviceB, deviceA];

@@ -15,18 +15,21 @@ import * as smartyStreets from "../../utils/smartyStreets";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 import "../../../i18n";
+import { DeviceType } from "../../../generated/graphql";
 
 import FacilityForm from "./FacilityForm";
 
 let saveFacility: jest.Mock;
 
-const devices = [
+const devices: DeviceType[] = [
   {
     internalId: "device-1",
     name: "Device 1",
     model: "Device 1",
     manufacturer: "Manufacturer 1",
     supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+    swabTypes: [],
+    testLength: 10,
   },
   {
     internalId: "device-2",
@@ -34,6 +37,8 @@ const devices = [
     model: "Device 2",
     manufacturer: "Manufacturer 2",
     supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+    swabTypes: [],
+    testLength: 10,
   },
 ];
 

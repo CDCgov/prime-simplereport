@@ -7,7 +7,7 @@ import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSe
 import { FacilityFormData } from "../FacilityForm";
 
 interface Props {
-  deviceTypes: DeviceType[];
+  deviceTypes: FacilityFormDeviceType[];
   errors: any;
   newOrg?: boolean;
   formCurrentValues: FacilityFormData;
