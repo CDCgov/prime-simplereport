@@ -41,9 +41,10 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
     implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
 
-    // Security Pins (July 2023)
-    implementation 'org.yaml:snakeyaml:1.33'
-    implementation 'org.springframework.security:spring-security-config:5.7.10'
+    // Security Pins (August 2023)
+    implementation 'org.yaml:snakeyaml:1.33' //Verified 4 Aug 2023. Removal restores snakeyaml to 1.30, which is vulnerable to DoS.
+    implementation 'org.springframework.security:spring-security-config:5.7.10' //Verified 4 Aug 2023. Surrounding versions are vulnerable to myriad issues.
+    implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE' //Verified 4 Aug 2023. Resolves critical vulnerability caused by org.springframework.boot plugin @ 2.7.13.
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -128,7 +129,6 @@ dependencies {
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.35.0"
 
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.6.2'
-    implementation 'ca.uhn.hapi.fhir:org.hl7.fhir.utilities:6.0.4' //TODO: Remove when hapi-fhir-structures-r4 is upgraded to invulnerable version. See https://app.snyk.io/vuln/SNYK-JAVA-CAUHNHAPIFHIR-3358779.
 
     implementation 'commons-validator:commons-validator:1.7'
 }
