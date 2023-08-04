@@ -118,6 +118,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
 
   const results = (
     <div
+      id={"multi-select-deviceTypes-list"}
       className="card-container shadow-3 results-dropdown"
       ref={dropDownRef}
       aria-live="polite"

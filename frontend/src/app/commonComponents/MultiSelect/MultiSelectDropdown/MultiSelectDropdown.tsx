@@ -355,6 +355,7 @@ export const MultiSelectDropdown = ({
         aria-label={placeholder}
         aria-labelledby={`label-for-${id}`}
         aria-owns={listID}
+        aria-controls={listID}
         aria-expanded={state.isOpen}
         aria-invalid={ariaInvalid}
         disabled={isDisabled}
