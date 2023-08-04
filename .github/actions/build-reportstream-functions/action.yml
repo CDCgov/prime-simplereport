@@ -7,13 +7,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install dependencies
-      shell: bash
-      working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
-      run: |
-        echo "::group::Install dependencies"
-        yarn
-        echo "::endgroup::"
     - name: Build function source bundle
       shell: bash
       working-directory: ./ops/services/app_functions/report_stream_batched_publisher/functions
