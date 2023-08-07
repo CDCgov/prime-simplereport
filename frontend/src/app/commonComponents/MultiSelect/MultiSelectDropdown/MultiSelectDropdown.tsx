@@ -7,13 +7,9 @@ import React, {
   useCallback,
 } from "react";
 import classnames from "classnames";
-import { uniq } from "lodash";
 
 import { useOutsideClick } from "../../../utils/hooks";
-import {
-  SearchableDevice,
-  searchFields,
-} from "../../../uploads/DeviceLookup/DeviceLookup";
+import { searchFacilityFormDevices } from "../../../utils/device";
 
 import {
   ActionTypes,
@@ -296,29 +292,6 @@ export const MultiSelectDropdown = ({
     return (deviceOptions ?? []).filter((d) =>
       deviceIds.includes(d.internalId)
     );
-  };
-
-  const searchFacilityFormDevices = (
-    devices: FacilityFormDeviceType[],
-    query: string
-  ): FacilityFormDeviceType[] => {
-    if (!query) {
-      return devices;
-    }
-
-    const results: FacilityFormDeviceType[] = [];
-
-    for (const field of searchFields) {
-      results.push(
-        // eslint-disable-next-line no-loop-func
-        ...devices.filter((d: FacilityFormDeviceType) => {
-          const value = d[field as keyof SearchableDevice];
-          return value.toLowerCase().includes(query.toLowerCase());
-        })
-      );
-    }
-
-    return uniq(results);
   };
 
   const containerClasses = classnames(

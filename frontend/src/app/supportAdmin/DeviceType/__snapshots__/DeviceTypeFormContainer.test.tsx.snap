@@ -248,6 +248,7 @@ Object {
                         id="5"
                       >
                         <input
+                          aria-controls="multi-select-swabTypes-list"
                           aria-expanded="false"
                           aria-invalid="false"
                           aria-labelledby="label-for-5"
@@ -765,6 +766,7 @@ Object {
                       id="5"
                     >
                       <input
+                        aria-controls="multi-select-swabTypes-list"
                         aria-expanded="false"
                         aria-invalid="false"
                         aria-labelledby="label-for-5"

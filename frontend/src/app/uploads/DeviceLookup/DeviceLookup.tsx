@@ -19,6 +19,7 @@ import { useOutsideClick } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
+import { SearchableDevice, searchFields } from "../../utils/device";
 
 import DeviceSearchResults from "./DeviceSearchResults";
 import DeviceDetails from "./DeviceDetails";
@@ -27,11 +28,10 @@ interface Props {
   deviceOptions: DeviceType[];
 }
 
-export const searchFields = ["manufacturer", "name", "model"] as const;
-export type DeviceSearchFields = (typeof searchFields)[number];
-export type SearchableDevice = Pick<DeviceType, DeviceSearchFields>;
-
-const searchDevices = (devices: DeviceType[], query: string): DeviceType[] => {
+export const searchDevices = (
+  devices: DeviceType[],
+  query: string
+): DeviceType[] => {
   if (!query) {
     return [];
   }
