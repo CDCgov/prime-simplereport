@@ -1,4 +1,6 @@
-@use "utilities";
+@use "../settings" as *;
+@use "../components" as *;
+@use "@uswds/uswds/packages/usa-prose";
 
 .prime-home {
   background-color: color("base-lightest");
@@ -79,11 +81,11 @@
     padding: 0 1em;
 
     @include at-media("desktop") {
-      border-left: 1px solid color($theme-color-prime-gray-light);
+      border-left: 1px solid $theme-color-prime-gray-light;
     }
 
     @include at-media("tablet") {
-      border-left: 1px solid color($theme-color-prime-gray-light);
+      border-left: 1px solid $theme-color-prime-gray-light;
     }
 
     &-submit {
@@ -105,7 +107,7 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    border-bottom: 1px solid color($theme-color-prime-gray-light);
+    border-bottom: 1px solid $theme-color-prime-gray-light;
 
     > button {
       margin-top: 0.5rem;
@@ -266,32 +268,32 @@
 
     .timer-ready {
       background-color: color($theme-color-warning);
-      color: color($theme-color-prime-gray-darkest);
+      color: $theme-color-prime-gray-darkest;
       padding: units(1);
 
       .timer-overtime {
-        color: color($theme-color-prime-gray-darkest);
+        color: $theme-color-prime-gray-darkest;
         margin: 0 units(1);
       }
     }
   }
 
   &__info {
-    border-color: color($theme-color-prime-blue);
+    border-color: $theme-color-prime-blue;
 
     .prime-card-container {
-      border-color: color($theme-color-prime-blue);
+      border-color: $theme-color-prime-blue;
     }
   }
 
   &__completed {
     .timer-ready {
       background-color: color($theme-color-warning-lighter);
-      color: color($theme-color-prime-gray-darkest);
+      color: $theme-color-prime-gray-darkest;
       padding: units(1);
 
       .timer-overtime {
-        color: color($theme-color-prime-gray-darkest);
+        color: $theme-color-prime-gray-darkest;
         margin: 0 units(1);
       }
     }
@@ -466,11 +468,11 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 
   &--success {
-    background-color: color($theme-color-prime-green-lighest);
+    background-color: $theme-color-prime-green-lightest;
   }
 
   &--failure {
-    background-color: color($theme-color-prime-red-lightest);
+    background-color: $theme-color-prime-red-lightest;
   }
 
   &--horizontal {
@@ -701,7 +703,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   .usa-nav__primary {
     > .usa-nav__primary-item {
       > a {
-        border-right: 1px solid color($theme-color-prime-gray-light);
+        border-right: 1px solid $theme-color-prime-gray-light;
         font-size: size("heading", "lg");
         font-weight: normal;
         padding: units(3) units(2);
@@ -712,7 +714,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
       }
 
       &:first-child > a {
-        border-left: 1px solid color($theme-color-prime-gray-light);
+        border-left: 1px solid $theme-color-prime-gray-light;
       }
     }
 
@@ -1180,6 +1182,10 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .usa-site-alert {
   .usa-alert--emergency {
-    max-width: utilities.$site-max-width;
+    max-width: $site-max-width;
   }
+}
+
+abbr.usa-hint.usa-hint--required {
+  text-decoration: none;
 }

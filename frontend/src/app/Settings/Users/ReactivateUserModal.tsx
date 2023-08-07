@@ -1,11 +1,14 @@
 import React from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 
 import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
+import { RootState } from "../../store";
 
 import { SettingsUser } from "./ManageUsersContainer";
+
 import "./ManageUsers.scss";
 
 interface Props {
@@ -14,11 +17,20 @@ interface Props {
   user: SettingsUser;
 }
 
+export const ORG_ADMIN_REACTIVATE_COPY =
+  "Are you sure you want to reactivate this account?";
+export const SITE_ADMIN_REACTIVATE_COPY =
+  "When you reactivate their account, the user will need to choose a new password. Do you want to reactivate this account?";
+
 const ReactivateUserModal: React.FC<Props> = ({
   onClose,
   onReactivateUser,
   user,
 }) => {
+  const loggedInUserIsSiteAdmin = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
+
   return (
     <Modal
       isOpen={true}
@@ -62,7 +74,11 @@ const ReactivateUserModal: React.FC<Props> = ({
               6AM EST, their account will be deactivated again.
             </strong>
           </p>
-          <p>Are you sure you want to reactivate this account?</p>
+          <p>
+            {loggedInUserIsSiteAdmin
+              ? SITE_ADMIN_REACTIVATE_COPY
+              : ORG_ADMIN_REACTIVATE_COPY}
+          </p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">

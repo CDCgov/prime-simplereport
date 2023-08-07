@@ -6,7 +6,7 @@ import {
   PATIENT_TERM_PLURAL_CAP,
 } from "../../../config/constants";
 import PatientsNav from "../PatientsNav";
-import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
+import iconSprite from "../../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 
 interface Props {
   additional?: React.ReactNode;
