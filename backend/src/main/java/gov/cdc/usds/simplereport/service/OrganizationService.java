@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -44,6 +45,7 @@ public class OrganizationService {
   private final FacilityRepository facilityRepository;
   private final ProviderRepository providerRepository;
   private final AuthorizationService authorizationService;
+  private final PersonRepository personRepository;
   private final OktaRepository oktaRepository;
   private final CurrentOrganizationRolesContextHolder organizationRolesContext;
   private final OrderingProviderRequiredValidator orderingProviderValidator;
@@ -455,7 +457,8 @@ public class OrganizationService {
 
     return FacilityStats.builder()
         .usersSingleAccessCount(this.oktaRepository.getUsersInSingleFacility(facility))
-        .patientsSingleAccessCount(0) // patient info pending
+        .patientsSingleAccessCount(
+            this.personRepository.countByFacilityAndIsDeleted(facility, false))
         .build();
   }
 
