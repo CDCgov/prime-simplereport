@@ -458,4 +458,9 @@ public class OrganizationService {
         .patientsSingleAccessCount(0) // patient info pending
         .build();
   }
+
+  @AuthorizationConfiguration.RequirePermissionToAccessOrg
+  public UUID getPermissibleOrgId(UUID orgId) {
+    return orgId != null ? orgId : getCurrentOrganization().getInternalId();
+  }
 }

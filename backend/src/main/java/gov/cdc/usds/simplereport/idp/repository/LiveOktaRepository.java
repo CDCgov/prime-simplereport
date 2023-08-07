@@ -81,6 +81,8 @@ public class LiveOktaRepository implements OktaRepository {
   @Value("${okta.client.token}")
   String oktaToken;
 
+  private final String adminGroupName;
+
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
@@ -91,16 +93,19 @@ public class LiveOktaRepository implements OktaRepository {
       UserApi userApi,
       ApplicationGroupsApi applicationGroupsApi) {
     this.rolePrefix = authorizationProperties.getRolePrefix();
+    this.adminGroupName = authorizationProperties.getAdminGroupName();
 
     this.groupApi = groupApi;
     this.userApi = userApi;
     this.applicationGroupsApi = applicationGroupsApi;
+
     try {
       this.app = applicationApi.getApplication(oktaOAuth2ClientId, null);
     } catch (ApiException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
+
     this.extractor = organizationExtractor;
     this.tenantDataContextHolder = tenantDataContextHolder;
   }
@@ -659,6 +664,23 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
+  public PartialOktaUser findUser(String username) {
+    User user =
+        getUserOrThrowError(
+            username, "Cannot retrieve Okta user's status with unrecognized username");
+
+    List<Group> userGroups = userApi.listUserGroups(user.getId()).stream().toList();
+
+    Optional<OrganizationRoleClaims> orgClaims = convertToOrganizationRoleClaims(userGroups);
+
+    return PartialOktaUser.builder()
+        .username(username)
+        .isSiteAdmin(isSiteAdmin(userGroups))
+        .status(user.getStatus())
+        .organizationRoleClaims(orgClaims)
+        .build();
+  }
+
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
       Collection<String> authorities) {
     List<OrganizationRoleClaims> claims = extractor.convertClaims(authorities);
@@ -671,8 +693,13 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {
+    List<Group> userGroups = userApi.listUserGroups(user.getId()).stream().toList();
+    return convertToOrganizationRoleClaims(userGroups);
+  }
+
+  private Optional<OrganizationRoleClaims> convertToOrganizationRoleClaims(List<Group> userGroups) {
     List<String> groupNames =
-        userApi.listUserGroups(user.getId()).stream()
+        userGroups.stream()
             .filter(g -> g.getType() == GroupType.OKTA_GROUP)
             .map(g -> g.getProfile().getName())
             .toList();
@@ -683,6 +710,12 @@ public class LiveOktaRepository implements OktaRepository {
       return Optional.empty();
     }
     return Optional.of(claims.get(0));
+  }
+
+  private boolean isSiteAdmin(List<Group> oktaGroups) {
+    return oktaGroups.stream()
+        .filter(g -> g.getType() == GroupType.OKTA_GROUP)
+        .anyMatch(g -> adminGroupName.equals(g.getProfile().getName()));
   }
 
   private String generateGroupOrgPrefix(String orgExternalId) {

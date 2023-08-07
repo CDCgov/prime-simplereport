@@ -1,3 +1,5 @@
+@use "../settings" as *;
+
 @mixin card($border-radius, $padding: 0) {
   @include u-padding($padding);
   background: color("white");

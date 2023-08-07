@@ -36,7 +36,7 @@ import { SelfRegistration } from "./patientApp/selfRegistration/SelfRegistration
 import "./i18n";
 import getNodeEnv from "./app/utils/getNodeEnv";
 import PrimeErrorBoundary from "./app/PrimeErrorBoundary";
-import "./styles/App.css";
+import "./scss/App.scss";
 import { getUrl } from "./app/utils/url";
 import SessionTimeout from "./app/accountCreation/SessionTimeout";
 import WithFeatureFlags from "./featureFlags/WithFeatureFlags";

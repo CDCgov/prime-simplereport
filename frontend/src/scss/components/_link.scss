@@ -1,3 +1,6 @@
+@use "../settings" as *;
+@use "@uswds/uswds/packages/usa-link";
+
 .sr-link__primary {
   @extend .usa-link;
 
