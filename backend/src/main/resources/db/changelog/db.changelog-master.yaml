@@ -4850,3 +4850,96 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: upload
             columnName: report_id
+  - changeSet:
+      id: remove-unused_columns-from-device_specimen_type
+      author: zedd@skylight.digital
+      comment: remove unused columns from device_specimen_type
+      changes:
+        - tagDatabase:
+            tag: remove-unused_columns-from-device_specimen_type
+        - dropColumn:
+            tableName: device_specimen_type
+            columns:
+              - column:
+                  name: internal_id
+              - column:
+                  name: created_at
+              - column:
+                  name: created_by
+              - column:
+                  name: updated_at
+              - column:
+                  name: updated_by
+              - column:
+                  name: is_deleted
+      rollback:
+        - addColumn:
+            tableName: device_specimen_type
+            columns:
+              - column:
+                  name: internal_id
+                  type: uuid
+              - column:
+                  name: created_at
+                  type: DATETIME
+              - column:
+                  name: created_by
+                  type: uuid
+              - column:
+                  name: updated_at
+                  type: DATETIME
+              - column:
+                  name: updated_by
+                  type: uuid
+              - column:
+                  name: is_deleted
+                  type: boolean
+  - changeSet:
+      id: remove-device_specimen_type_id-from-test_order-and-test_event
+      author: zedd@skylight.digital
+      comment: remove device_specimen_type_id columns from test_order and test_event
+      changes:
+        - tagDatabase:
+            tag: remove-device_specimen_type_id-from-test_order-and-test_event
+        - dropColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: device_specimen_type_id
+        - dropColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: device_specimen_type_id
+      rollback:
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: device_specimen_type_id
+                  type: uuid
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: device_specimen_type_id
+                  type: uuid
+  - changeSet:
+      id: remove-default_device_specimen_type_id-from-facility
+      author: zedd@skylight.digital
+      comment: remove default_device_specimen_type_id columns from facility
+      changes:
+        - tagDatabase:
+            tag: remove-default_device_specimen_type_id-from-facility
+        - dropColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_device_specimen_type_id
+      rollback:
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_device_specimen_type_id
+                  type: uuid
