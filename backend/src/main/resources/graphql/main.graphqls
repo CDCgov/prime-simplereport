@@ -35,6 +35,11 @@ type Facility {
   isDeleted: Boolean
 }
 
+type FacilityStats{
+  usersSingleAccessCount:Int
+  patientsSingleAccessCount: Int
+}
+
 type Provider {
   name: NameInfo
   firstName: String

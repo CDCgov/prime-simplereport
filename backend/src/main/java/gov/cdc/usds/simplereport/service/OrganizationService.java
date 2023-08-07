@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
+import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -439,5 +441,21 @@ public class OrganizationService {
     Organization organization = optionalOrganization.get();
     organization.setIsDeleted(deleted);
     return organizationRepository.save(organization);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public FacilityStats getFacilityStats(@Argument UUID facilityId) {
+    if (facilityId == null) {
+      throw new IllegalGraphqlArgumentException("facilityId cannot be empty.");
+    }
+
+    Facility facility =
+        this.getFacilityById(facilityId)
+            .orElseThrow(() -> new IllegalGraphqlArgumentException("Facility not found."));
+
+    return FacilityStats.builder()
+        .usersSingleAccessCount(this.oktaRepository.getUsersInSingleFacility(facility))
+        .patientsSingleAccessCount(0) // patient info pending
+        .build();
   }
 }

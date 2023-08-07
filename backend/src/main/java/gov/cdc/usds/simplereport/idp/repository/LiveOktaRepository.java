@@ -6,6 +6,7 @@ import com.okta.sdk.resource.user.UserBuilder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.ApplicationApi;
 import org.openapitools.client.api.ApplicationGroupsApi;
@@ -46,7 +48,12 @@ import org.openapitools.client.model.UserProfile;
 import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by jeremyzitomer-usds on 1/7/21
@@ -68,6 +75,12 @@ public class LiveOktaRepository implements OktaRepository {
   private final UserApi userApi;
   private final ApplicationGroupsApi applicationGroupsApi;
 
+  @Value("${okta.client.org-url}")
+  String oktaUrl;
+
+  @Value("${okta.client.token}")
+  String oktaToken;
+
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
@@ -78,6 +91,7 @@ public class LiveOktaRepository implements OktaRepository {
       UserApi userApi,
       ApplicationGroupsApi applicationGroupsApi) {
     this.rolePrefix = authorizationProperties.getRolePrefix();
+
     this.groupApi = groupApi;
     this.userApi = userApi;
     this.applicationGroupsApi = applicationGroupsApi;
@@ -607,6 +621,42 @@ public class LiveOktaRepository implements OktaRepository {
 
     return getOrganizationRoleClaimsForUser(
         getUserOrThrowError(username, "Cannot get org external ID for nonexistent user"));
+  }
+
+  public Integer getUsersInSingleFacility(Facility facility) {
+    // GET /api/v1/groups?q=Everyone&expand=stats <- with the profile name
+    // GET https://{yourOktaDomain}.com/api/v1/groups/group_id?expand=stats <- with the group id
+
+    String facilityAccessGroupName =
+        generateFacilityGroupName(
+            facility.getOrganization().getExternalId(), facility.getInternalId());
+
+    // if we implement getting stats by group Id
+    /*
+     List<Group> facilityAccessGroup = groupApi.listGroups(facilityAccessGroupName,null,null,1,null, null , null, null);
+
+     if(facilityAccessGroup.isEmpty()){
+     return 0;
+     }
+
+    String groupId = facilityAccessGroup.get(0).getId();
+     */
+    RestTemplate restTemplate = new RestTemplate();
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+    headers.add("Authorization", oktaToken);
+    HttpEntity<String> entity = new HttpEntity<>(null, headers);
+    String getUrl = oktaUrl + "/api/v1/groups";
+    Map<String, String> queryParams = Map.of("q", facilityAccessGroupName, "expand", "stats");
+
+    try {
+      String response = restTemplate.postForObject(getUrl, entity, String.class, queryParams);
+      JSONObject responseJson = new JSONObject(response);
+      return responseJson.getJSONObject("_embedded").getJSONObject("stats").getInt("usersCount");
+    } catch (RestClientException | NullPointerException e) {
+      throw new InvalidActivationLinkException("Unable to retrieve okta group stats", e);
+    }
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsFromAuthorities(
