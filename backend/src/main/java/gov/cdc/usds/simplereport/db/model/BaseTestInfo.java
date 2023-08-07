@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
@@ -34,12 +33,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "specimen_type_id")
   private SpecimenType specimenType;
-
-  @Deprecated
-  @Column(nullable = true)
-  @Type(type = "pg_enum")
-  @Enumerated(EnumType.STRING)
-  private TestResult result;
 
   @Column private Date dateTestedBackdate;
 
