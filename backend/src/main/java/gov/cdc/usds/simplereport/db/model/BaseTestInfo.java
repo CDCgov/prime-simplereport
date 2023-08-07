@@ -55,14 +55,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
     super();
   }
 
-  protected BaseTestInfo(BaseTestInfo orig) {
-    this(orig.getPatient(), orig.getFacility());
-  }
-
-  protected BaseTestInfo(Person patient, Facility facility) {
-    this(patient, facility, facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
-  }
-
   protected BaseTestInfo(
       Person patient, Facility facility, DeviceType deviceType, SpecimenType specimenType) {
     super();
@@ -76,7 +68,11 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 
   protected BaseTestInfo(
       BaseTestInfo cloneInfo, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
-    this(cloneInfo);
+    this(
+        cloneInfo.getPatient(),
+        cloneInfo.getFacility(),
+        cloneInfo.getDeviceType(),
+        cloneInfo.getSpecimenType());
     this.reasonForCorrection = reasonForCorrection;
     this.correctionStatus = correctionStatus;
   }
