@@ -19,6 +19,12 @@ resource "azurerm_container_group" "db_client" {
     cpu    = "1"
     memory = "1.5"
 
+    // Not a real port but *a* port is required, so expose a port the container hopefully doesn't respond to
+    ports {
+      port     = 1234
+      protocol = "TCP"
+    }
+
     volume {
       name       = "${var.name}-${var.env}-db-client-volume"
       read_only  = false
