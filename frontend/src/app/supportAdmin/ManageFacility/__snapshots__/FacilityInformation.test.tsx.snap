@@ -1,0 +1,367 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Facility Information Confirmation modal and go back 1`] = `
+<body
+  class="ReactModal__Body--open"
+>
+  <div
+    data-react-modal-body-trap=""
+    style="position: absolute; opacity: 0;"
+    tabindex="0"
+  />
+  <div>
+    <div
+      aria-live="polite"
+      class="prime-container card-container"
+    >
+      <div
+        class="usa-card__header"
+      >
+        <h2
+          class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0"
+        >
+          The new center
+        </h2>
+      </div>
+      <div
+        class="usa-card__body"
+      >
+        <h3
+          class="margin-y-3"
+        >
+          Facility information
+        </h3>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Facility name
+          </h4>
+          <p
+            class="margin-y-1"
+          >
+            The new center
+          </p>
+        </div>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Location
+          </h4>
+          <p
+            class="margin-y-1"
+          >
+            New York, 
+            NY 12345
+          </p>
+        </div>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Organization
+          </h4>
+          <p
+            class="margin-y-1"
+          >
+            Wild trees camp
+          </p>
+        </div>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Organization type
+          </h4>
+          <p
+            class="margin-y-1"
+          >
+            school
+          </p>
+        </div>
+        <h3
+          class="margin-top-6"
+        >
+          Facility controls
+        </h3>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Delete facility
+          </h4>
+          <div
+            class="grid-row width-full flex-justify"
+          >
+            <p
+              class=" desktop:grid-col-8 tablet:grid-col-8 mobile:grid-col-12  margin-y-1 text-italic text-base-darker line-height-sans-3"
+            >
+              Any in-progress tests from this facility will be removed, and an organization admin will need to reassign users and patients only added to this facility.
+            </p>
+            <div
+              class="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 flex-align-end"
+            >
+              <button
+                aria-label="Delete facility The new center"
+                class="usa-button usa-button--outline"
+                type="button"
+              >
+                Delete facility
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal--basic"
+  >
+    <div
+      class="ReactModal__Overlay prime-modal-overlay display-flex flex-align-center flex-justify-center"
+    >
+      <div
+        aria-label="Confirm delete facility"
+        aria-modal="true"
+        class="ReactModal__Content"
+        role="dialog"
+        style="position: initial; top: 40px; left: 40px; right: 40px; bottom: 40px; border: 0px; background: rgb(255, 255, 255); overflow: auto; border-radius: 4px; outline: none; padding: 20px;"
+        tabindex="-1"
+      >
+        <div
+          class="modal__container"
+        >
+          <button
+            class="modal__close-button"
+            style="cursor: pointer; z-index: 1;"
+          >
+            <img
+              alt="Close"
+              class="modal__close-img"
+              src="close.svg"
+            />
+          </button>
+          <main>
+            <div
+              class="modal__content grid-row"
+            >
+              <div
+                class="grid-col"
+              >
+                <h1
+                  class="modal__heading font-heading-lg margin-top-0 margin-bottom-205"
+                >
+                  Delete 
+                  The new center
+                </h1>
+                <div
+                  class="border-top border-base-lighter margin-x-neg-205"
+                />
+                <p
+                  class="margin-top-4"
+                >
+                  Deleting 
+                  The new center
+                   will remove any in-progress tests from the test queue. Users only added to this facility will lose access to SimpleReport until an organization admin reassigns them. Patients only added to this facility also need to be reassigned.
+                </p>
+                <p
+                  class="margin-top-3"
+                >
+                  There are
+                   
+                  <strong>
+                    0
+                     users
+                  </strong>
+                   and
+                   
+                  <strong>
+                    0
+                     patients
+                  </strong>
+                   
+                  added only to this facility.
+                </p>
+                <div
+                  class="border-top border-base-lighter margin-x-neg-205"
+                />
+                <div
+                  class="modal__footer display-flex flex-justify-end margin-top-205"
+                >
+                  <button
+                    class="usa-button usa-button--unstyled margin-right-205"
+                    type="button"
+                  >
+                    No, go back
+                  </button>
+                  <button
+                    class="usa-button margin-right-0"
+                    type="button"
+                  >
+                    Yes, delete facility
+                  </button>
+                </div>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    data-react-modal-body-trap=""
+    style="position: absolute; opacity: 0;"
+    tabindex="0"
+  />
+</body>
+`;
+
+exports[`Facility Information renders facility information 1`] = `
+<body>
+  <div>
+    <div
+      aria-live="polite"
+      class="prime-container card-container"
+    >
+      <div
+        class="usa-card__header"
+      >
+        <h2
+          class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0"
+        >
+          The new center
+        </h2>
+      </div>
+      <div
+        class="usa-card__body"
+      >
+        <h3
+          class="margin-y-3"
+        >
+          Facility information
+        </h3>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Facility name
+          </h4>
+          <p
+            class="margin-y-1"
+          >
+            The new center
+          </p>
+        </div>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Location
+          </h4>
+          <p
+            class="margin-y-1"
+          >
+            New York, 
+            NY 12345
+          </p>
+        </div>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Organization
+          </h4>
+          <p
+            class="margin-y-1"
+          >
+            Wild trees camp
+          </p>
+        </div>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Organization type
+          </h4>
+          <p
+            class="margin-y-1"
+          >
+            school
+          </p>
+        </div>
+        <h3
+          class="margin-top-6"
+        >
+          Facility controls
+        </h3>
+        <div
+          class="margin-y-3"
+        >
+          <h4
+            class="margin-y-1"
+          >
+            Delete facility
+          </h4>
+          <div
+            class="grid-row width-full flex-justify"
+          >
+            <p
+              class=" desktop:grid-col-8 tablet:grid-col-8 mobile:grid-col-12  margin-y-1 text-italic text-base-darker line-height-sans-3"
+            >
+              Any in-progress tests from this facility will be removed, and an organization admin will need to reassign users and patients only added to this facility.
+            </p>
+            <div
+              class="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 flex-align-end"
+            >
+              <button
+                aria-label="Delete facility The new center"
+                class="usa-button usa-button--outline"
+                type="button"
+              >
+                Delete facility
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="modal--basic"
+  />
+</body>
+`;
+
+exports[`Facility Information renders no selected facility 1`] = `
+<div>
+  <div
+    aria-live="polite"
+    class="prime-container card-container"
+  >
+    <p
+      class="usa-card__body padding-y-3"
+    >
+      No facility selected
+    </p>
+  </div>
+</div>
+`;

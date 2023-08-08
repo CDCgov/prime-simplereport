@@ -31,7 +31,7 @@ export interface ManageFacilityState {
   facility: Facility | undefined;
 }
 
-const initialState: ManageFacilityState = {
+export const initialState: ManageFacilityState = {
   orgId: "",
   facilityId: "",
   facility: undefined,
