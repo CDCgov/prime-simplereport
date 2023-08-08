@@ -15,7 +15,6 @@ import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
-import InProgressModal from "./InProgressModal";
 import DeleteUserModal from "./DeleteUserModal";
 import ReactivateUserModal from "./ReactivateUserModal";
 import ResendActivationEmailModal from "./ResendActivationEmailModal";
@@ -31,13 +30,10 @@ interface Props {
   isUpdating: boolean;
   loggedInUser: User;
   allFacilities: UserFacilitySetting[];
+  updateUser: UpdateUser;
+  isUserEdited: boolean;
   handleUpdateUser: () => void;
   handleDeleteUser: (userId: string) => void;
-  updateUser: UpdateUser;
-  showInProgressModal: boolean;
-  updateShowInProgressModal: (showInProgressUserModal: boolean) => void;
-  isUserEdited: boolean;
-  onContinueChangeActiveUser: () => void;
   handleReactivateUser: (userId: string) => void;
   handleEditUserName: (
     userId: string,
@@ -167,13 +163,10 @@ const UserDetail: React.FC<Props> = ({
   loggedInUser,
   allFacilities,
   updateUser,
-  handleUpdateUser,
   isUpdating,
-  handleDeleteUser,
-  showInProgressModal,
-  updateShowInProgressModal,
   isUserEdited,
-  onContinueChangeActiveUser,
+  handleUpdateUser,
+  handleDeleteUser,
   handleReactivateUser,
   handleEditUserName,
   handleEditUserEmail,
@@ -437,12 +430,6 @@ const UserDetail: React.FC<Props> = ({
         </div>
       </nav>
       {navItemSelected === "userInfo" ? userInfoTab : facilityAccessTab}
-      {showInProgressModal && (
-        <InProgressModal
-          onClose={() => updateShowInProgressModal(false)}
-          onContinue={() => onContinueChangeActiveUser()}
-        />
-      )}
       {isUserEdited ? (
         <Prompt
           when={isUserEdited}

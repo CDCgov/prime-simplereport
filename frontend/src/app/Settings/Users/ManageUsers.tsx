@@ -20,6 +20,7 @@ import {
   UserFacilitySetting,
 } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
+import InProgressModal from "./InProgressModal";
 
 interface Props {
   users: LimitedUser[];
@@ -423,10 +424,7 @@ const ManageUsers: React.FC<Props> = ({
               handleUpdateUser={handleUpdateUser}
               handleDeleteUser={handleDeleteUser}
               updateUser={updateUser}
-              showInProgressModal={showInProgressModal}
-              updateShowInProgressModal={updateShowInProgressModal}
               isUserEdited={isUserEdited}
-              onContinueChangeActiveUser={onContinueChangeActiveUser}
               handleReactivateUser={handleReactivateUser}
               handleEditUserName={handleEditUserName}
               handleEditUserEmail={handleEditUserEmail}
@@ -434,6 +432,12 @@ const ManageUsers: React.FC<Props> = ({
               handleResetUserMfa={handleResetUserMfa}
               handleResendUserActivationEmail={handleResendUserActivationEmail}
             />
+            {showInProgressModal && (
+              <InProgressModal
+                onClose={() => updateShowInProgressModal(false)}
+                onContinue={() => onContinueChangeActiveUser()}
+              />
+            )}
           </div>
         </div>
       )}
