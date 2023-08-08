@@ -97,10 +97,6 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
-  const [
-    showResendUserActivationEmailModal,
-    updateShowResendUserActivationEmailModal,
-  ] = useState(false);
   const [isUserEdited, updateIsUserEdited] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error>();
@@ -374,7 +370,6 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowResendUserActivationEmailModal(false);
       showSuccess("", `${fullName} has been sent a new invitation.`);
     } catch (e: any) {
       setError(e);
@@ -428,12 +423,6 @@ const ManageUsers: React.FC<Props> = ({
               handleUpdateUser={handleUpdateUser}
               handleDeleteUser={handleDeleteUser}
               updateUser={updateUser}
-              showResendUserActivationEmailModal={
-                showResendUserActivationEmailModal
-              }
-              updateShowResendUserActivationEmailModal={
-                updateShowResendUserActivationEmailModal
-              }
               showInProgressModal={showInProgressModal}
               updateShowInProgressModal={updateShowInProgressModal}
               isUserEdited={isUserEdited}

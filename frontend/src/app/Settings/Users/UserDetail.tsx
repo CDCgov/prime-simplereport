@@ -34,10 +34,6 @@ interface Props {
   handleUpdateUser: () => void;
   handleDeleteUser: (userId: string) => void;
   updateUser: UpdateUser;
-  showResendUserActivationEmailModal: boolean;
-  updateShowResendUserActivationEmailModal: (
-    showResendUserActivationEmail: boolean
-  ) => void;
   showInProgressModal: boolean;
   updateShowInProgressModal: (showInProgressUserModal: boolean) => void;
   isUserEdited: boolean;
@@ -174,8 +170,6 @@ const UserDetail: React.FC<Props> = ({
   handleUpdateUser,
   isUpdating,
   handleDeleteUser,
-  showResendUserActivationEmailModal,
-  updateShowResendUserActivationEmailModal,
   showInProgressModal,
   updateShowInProgressModal,
   isUserEdited,
@@ -196,6 +190,10 @@ const UserDetail: React.FC<Props> = ({
   const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
   const [showResetPasswordModal, updateShowResetPasswordModal] =
     useState(false);
+  const [
+    showResendUserActivationEmailModal,
+    updateShowResendUserActivationEmailModal,
+  ] = useState(false);
 
   const isUserActive = () =>
     user.status !== OktaUserStatus.SUSPENDED &&
