@@ -14,6 +14,7 @@ resource "azurerm_application_insights" "app_insights" {
   resource_group_name = var.rg_name
   name                = "prime-simple-report-${var.env}-insights"
   disable_ip_masking  = false
+  workspace_id        = data.azurerm_log_analytics_workspace.law.id
 
   daily_data_cap_in_gb = var.ai_ingest_cap_gb
   retention_in_days    = var.ai_retention_days
