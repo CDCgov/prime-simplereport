@@ -363,8 +363,8 @@ const Uploads = () => {
             <p className="usa-alert__text">
               Organizations sending results to the California Department of
               Public Health (CDPH) can now use the bulk results upload feature
-              to report positive flu tests. Report COVID-19 results in one
-              spreadsheet, and flu A and B results in another.&nbsp;
+              to report positive flu tests. Report COVID-19, flu A, and flu B
+              results all from a single spreadsheet.&nbsp;
               <a
                 href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
                 onClick={() => {
