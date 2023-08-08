@@ -1,11 +1,10 @@
 .device-settings {
-  height: fit-content;
-
   .results-dropdown {
     top: 2.5em;
     max-height: 12.1em;
     min-width: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
   }
 
   .results-dropdown__body {
