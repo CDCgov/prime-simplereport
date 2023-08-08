@@ -36,13 +36,14 @@ resource "azurerm_container_group" "db_client" {
     }
 
     readiness_probe {
-      exec                  = ["/bin/sh", "-c", "cat /tmp/healthy"]
+      exec                  = ["cat", "/tmp/healthy"]
       initial_delay_seconds = 30
     }
 
     liveness_probe {
       exec                  = ["cat", "/tmp/healthy"]
       initial_delay_seconds = 30
+      period_seconds        = 10
     }
   }
 }
