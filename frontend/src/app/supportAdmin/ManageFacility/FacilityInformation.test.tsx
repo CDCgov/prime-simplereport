@@ -1,10 +1,8 @@
-/* eslint-disable testing-library/no-unnecessary-act*/
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import FacilityInformation from "./FacilityInformation";
 import { initialState, ManageFacilityState } from "./ManageFacility";
-
 
 describe("Facility Information", () => {
   const handleFacilityDelete = jest.fn();
@@ -55,12 +53,11 @@ describe("Facility Information", () => {
     const deleteFacilityBtn = screen.getByRole("button", {
       name: /delete facility the new center/i,
     });
-    await act(async () => userEvent.click(deleteFacilityBtn));
-
+    userEvent.click(deleteFacilityBtn);
     await screen.findByRole("heading", { name: /delete the new center/i });
     expect(document.body).toMatchSnapshot();
     const noGoBackBtn = screen.getByRole("button", { name: /no, go back/i });
-    await act(async () => userEvent.click(noGoBackBtn));
+    userEvent.click(noGoBackBtn);
     await waitFor(() =>
       expect(
         screen.queryByRole("heading", { name: /delete the new center/i })
@@ -78,13 +75,14 @@ describe("Facility Information", () => {
     const deleteFacilityBtn = screen.getByRole("button", {
       name: /delete facility the new center/i,
     });
-    await act(async () => userEvent.click(deleteFacilityBtn));
 
+    userEvent.click(deleteFacilityBtn);
     await screen.findByRole("heading", { name: /delete the new center/i });
+
     const yesDeleteBtn = screen.getByRole("button", {
       name: /yes, delete facility/i,
     });
-    await act(async () => userEvent.click(yesDeleteBtn));
+    userEvent.click(yesDeleteBtn);
     await waitFor(() =>
       expect(
         screen.queryByRole("heading", { name: /delete the new center/i })
