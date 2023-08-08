@@ -377,9 +377,7 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
-  const user: SettingsUser = userWithPermissions
-    ? userWithPermissions
-    : emptySettingsUser;
+  const user: SettingsUser = userWithPermissions ?? emptySettingsUser;
 
   /**
    * HTML

@@ -55,7 +55,7 @@ const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
       case OktaUserStatus.ACTIVE:
         return (
           <span className="top-user-status padding-left-0">
-            {capitalizeText(user.role || "")}
+            {capitalizeText(user.role ?? "")}
           </span>
         );
       case OktaUserStatus.PROVISIONED:
@@ -118,7 +118,7 @@ const SpecialStatusNotice: React.FC<{
         return (
           <>
             <div className="status-tagline">
-              This user hasn’t set up their acccount.
+              This user hasn’t set up their account.
             </div>
             <Button
               variant="outline"
@@ -380,7 +380,7 @@ const UserDetail: React.FC<Props> = ({
         <UserStatusSubheading user={user} />
       </div>
       <SpecialStatusNotice
-        userStatus={user.status || ""}
+        userStatus={user.status ?? ""}
         isUpdating={isUpdating}
         updateShowReactivateUserModal={updateShowReactivateUserModal}
         updateShowResendUserActivationEmailModal={
@@ -430,61 +430,61 @@ const UserDetail: React.FC<Props> = ({
         </div>
       </nav>
       {navItemSelected === "userInfo" ? userInfoTab : facilityAccessTab}
-      {isUserEdited ? (
+      {isUserEdited && (
         <Prompt
           when={isUserEdited}
           message="You have unsaved changes. Do you want to continue?"
         />
-      ) : null}
-      {showDeleteUserModal ? (
+      )}
+      {showDeleteUserModal && (
         <DeleteUserModal
           user={user}
           onClose={() => updateShowDeleteUserModal(false)}
           onDeleteUser={handleDeleteUser}
         />
-      ) : null}
-      {showReactivateUserModal ? (
+      )}
+      {showReactivateUserModal && (
         <ReactivateUserModal
           user={user}
           onClose={() => updateShowReactivateUserModal(false)}
           onReactivateUser={handleReactivateUser}
         />
-      ) : null}
-      {showResendUserActivationEmailModal ? (
+      )}
+      {showResendUserActivationEmailModal && (
         <ResendActivationEmailModal
           user={user}
           onClose={() => updateShowResendUserActivationEmailModal(false)}
           onResendActivationEmail={handleResendUserActivationEmail}
         />
-      ) : null}
-      {showResetPasswordModal ? (
+      )}
+      {showResetPasswordModal && (
         <ResetUserPasswordModal
           user={user}
           onClose={() => updateShowResetPasswordModal(false)}
           onResetPassword={handleResetUserPassword}
         />
-      ) : null}
-      {showResetMfaModal ? (
+      )}
+      {showResetMfaModal && (
         <ResetUserMfaModal
           user={user}
           onClose={() => updateShowResetMfaModal(false)}
           onResetMfa={handleResetUserMfa}
         />
-      ) : null}
-      {showEditUserNameModal ? (
+      )}
+      {showEditUserNameModal && (
         <EditUserNameModal
           user={user}
           onClose={() => updateEditUserNameModal(false)}
           onEditUserName={handleEditUserName}
         />
-      ) : null}
-      {showEditUserEmailModal ? (
+      )}
+      {showEditUserEmailModal && (
         <EditUserEmailModal
           user={user}
           onClose={() => updateEditUserEmailModal(false)}
           onEditUserEmail={handleEditUserEmail}
         />
-      ) : null}
+      )}
     </div>
   );
 };
