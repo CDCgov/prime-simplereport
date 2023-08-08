@@ -14,6 +14,7 @@ export const searchFacilityFormDevices = (
   query: string
 ): FacilityFormDeviceType[] => {
   if (!query) {
+    console.log(devices);
     return devices;
   }
 

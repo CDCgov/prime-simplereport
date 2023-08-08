@@ -19,7 +19,6 @@ interface FacilityFormDeviceType {
   name: string;
   model: string;
   manufacturer: string;
-  // TODO: screaming
   supportedDiseaseTestPerformed: any;
   testLength?: number;
   swabTypes?: SpecimenType[];

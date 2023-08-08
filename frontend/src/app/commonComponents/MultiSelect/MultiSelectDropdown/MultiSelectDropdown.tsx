@@ -369,8 +369,6 @@ export const MultiSelectDropdown = ({
             multiSelect={true}
             dropDownRef={dropDownRef}
           />
-          {state.filteredOptions.length === 0 &&
-            (noResults || "No results found")}
         </>
       ) : (
         <ul
