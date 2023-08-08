@@ -90,7 +90,10 @@ const ReactivateUserModal: React.FC<Props> = ({
             />
             <Button
               className="margin-right-205"
-              onClick={() => onReactivateUser(user.id)}
+              onClick={() => {
+                onReactivateUser(user.id);
+                onClose();
+              }}
               label="Yes, reactivate"
             />
           </div>

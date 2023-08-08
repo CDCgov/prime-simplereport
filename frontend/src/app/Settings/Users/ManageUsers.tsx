@@ -102,8 +102,6 @@ const ManageUsers: React.FC<Props> = ({
   const [showResetPasswordModal, updateShowResetPasswordModal] =
     useState(false);
   const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
-  const [showReactivateUserModal, updateShowReactivateUserModal] =
-    useState(false);
   const [
     showResendUserActivationEmailModal,
     updateShowResendUserActivationEmailModal,
@@ -366,7 +364,6 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowReactivateUserModal(false);
       reload();
       showSuccess("", `${fullName} has been reactivated.`);
     } catch (e: any) {
@@ -440,8 +437,6 @@ const ManageUsers: React.FC<Props> = ({
               handleUpdateUser={handleUpdateUser}
               handleDeleteUser={handleDeleteUser}
               updateUser={updateUser}
-              showReactivateUserModal={showReactivateUserModal}
-              updateShowReactivateUserModal={updateShowReactivateUserModal}
               showResendUserActivationEmailModal={
                 showResendUserActivationEmailModal
               }
