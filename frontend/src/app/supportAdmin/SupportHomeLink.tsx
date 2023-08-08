@@ -1,5 +1,6 @@
 import React from "react";
-import iconSprite from "@uswds/uswds/dist/img/sprite.svg";
+
+import iconSprite from "/node_modules/@uswds/uswds/dist/img/sprite.svg";
 
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
