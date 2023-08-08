@@ -90,7 +90,7 @@ public class TestEvent extends BaseTestInfo {
     }
   }
 
-  // Constructor for creating corrections. Copy the original event
+  // Constructor for test removals
   public TestEvent(
       TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(event, correctionStatus, reasonForCorrection);
@@ -103,6 +103,7 @@ public class TestEvent extends BaseTestInfo {
     this.priorCorrectedTestEventId = event.getInternalId();
   }
 
+  // Constructor for test corrections
   public TestEvent(
       TestOrder order, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
     super(order, correctionStatus, reasonForCorrection);
