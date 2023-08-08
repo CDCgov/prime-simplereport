@@ -6,13 +6,42 @@ inputs:
     required: true
   docker_compose_file:
     description: The docker compose file to use.
-    required: true
-  git_sha:
+    default: docker-compose.db-liquibase-action.yml
+    required: false
+  action:
     description: The git sha of the image to use.
     required: true
   liquibase_rollback_tag:
     description: Only required if rollback is selected. The Liquibase tag to roll back to
     required: false
+  azure_credentials:
+    description: Azure credentials
+    required: true
+  acr_repo_url:
+    description: ACR repo url
+    required: true
+  acr_admin_username:
+    description: ACR admin username
+    required: true
+  acr_admin_pasword:
+    description: ACR admin password
+    required: true
+  terraform_arm_client_id:
+    description: Terraform ARM client id
+    required: true
+  terraform_arm_client_secret:
+    description: Terraform ARM client secret
+    required: true
+  terraform_arm_subscription_id:
+    description: Terraform ARM subscription id
+    required: true
+  terraform_arm_tenant_id:
+    description: Terraform ARM tenant id
+    required: true
+  okta_api_token:
+    description: Okta API token
+    required: true
+  
 
 runs:
   using: composite
@@ -21,20 +50,20 @@ runs:
     - name: Login to Azure
       uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        creds: ${{ inputs.azure_credentials }}
 
     - name: Login to ACR
       shell: bash
-      run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
+      run: docker login ${{ inputs.acr_repo_url }} -u ${{ inputs.acr_admin_username }} -p ${{ inputs.acr_admin_pasword }}
 
-    - name: Delete existing ${{ inputs.git_sha }} image
+    - name: Delete existing ${{ inputs.action }} image
       shell: bash
       run: |
-        if [ "$(az acr repository show --name simplereportacr --image api/simple-report-api-build:${{ inputs.git_sha }} | jq -r '.name')" == "${{ inputs.git_sha }}" ]; then
-          echo "Deleting ${{ inputs.git_sha }} image"
-          az acr repository delete --name simplereportacr --image api/simple-report-api-build:${{ inputs.git_sha }} --yes
+        if [ "$(az acr repository show --name simplereportacr --image api/simple-report-api-build:${{ inputs.action }} | jq -r '.name')" == "${{ inputs.action }}" ]; then
+          echo "Deleting ${{ inputs.action }} image"
+          az acr repository delete --name simplereportacr --image api/simple-report-api-build:${{ inputs.action }} --yes
         else
-          echo "No ${{ inputs.git_sha }} image to delete"
+          echo "No ${{ inputs.action }} image to delete"
         fi
 
     - name: Set up Docker Buildx
@@ -49,11 +78,6 @@ runs:
 
     - name: Checkout the repo
       uses: actions/checkout@v3
-
-    - name: Login to Azure
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
     
     - name: Terraform setup
       uses: hashicorp/setup-terraform@v2.0.3
@@ -62,18 +86,19 @@ runs:
     
     - name: Terraform
       shell: bash
+      working-directory: ./ops
       env:
-        ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-        ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-        ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-        ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-        OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN }}
+        ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
+        ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
+        ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
+        OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
       run: |
         make init-${{ inputs.deploy_env }}
         terraform -chdir=${{ inputs.deploy_env }} apply \
         -var acr_image_tag=dummy \
         -var liquibase_rollback_tag="${{ inputs.liquibase_rollback_tag }}" \
-        -var image_action=${{ inputs.git_sha }} \
+        -var image_action=${{ inputs.action }} \
         -target module.db_liquibase_action[0] --auto-approve
 
     - name: Display container logs
@@ -83,9 +108,9 @@ runs:
         RESOURCE_GROUP=${{ inputs.deploy_env }}
         if [[ "${{ inputs.deploy_env }}" == *dev* ]]; then RESOURCE_GROUP=dev; fi;
         echo "Resource Group: $RESOURCE_GROUP"
-        az container logs --follow -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-${{ inputs.deploy_env }}-db-${{ inputs.git_sha }}"
-        if [ "$(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-${{ inputs.deploy_env }}-db-${{ inputs.git_sha }}" | jq '.containers[].instanceView.currentState.exitCode')" != "null" ]; then
-          exit $(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-${{ inputs.deploy_env }}-db-${{ inputs.git_sha }}" | jq '.containers[].instanceView.currentState.exitCode')
+        az container logs --follow -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-${{ inputs.deploy_env }}-db-${{ inputs.action }}"
+        if [ "$(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-${{ inputs.deploy_env }}-db-${{ inputs.action }}" | jq '.containers[].instanceView.currentState.exitCode')" != "null" ]; then
+          exit $(az container show -g "prime-simple-report-$RESOURCE_GROUP" --name "simple-report-${{ inputs.deploy_env }}-db-${{ inputs.action }}" | jq '.containers[].instanceView.currentState.exitCode')
         else
           echo "No instance view available for the specified container group."
           exit 1
@@ -98,5 +123,5 @@ runs:
         terraform -chdir=${{ inputs.deploy_env }} destroy \
         -var acr_image_tag=dummy \
         -var liquibase_rollback_tag="" \
-        -var image_action=${{ inputs.git_sha }} \
+        -var image_action=${{ inputs.action }} \
         -target module.db_liquibase_action[0] --auto-approve

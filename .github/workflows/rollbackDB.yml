@@ -3,7 +3,7 @@ name: Rollback DB
 on:
   workflow_dispatch:
     inputs:
-      environment:
+      deploy_env:
         description: |
           The environment of the database.
         required: true
@@ -17,18 +17,12 @@ on:
         type: choice
         options: [validate, clear-checksums, rollback]
         default: validate
-      tag:
+      liquibase_rollback_tag:
         description: |
           Only required if rollback is selected.
           The Liquibase tag to roll back to
         type: string
         default: ""
-
-env:
-  DEPLOY_ENV: ${{ github.event.inputs.environment }}
-  DOCKER_COMPOSE_FILE: docker-compose.db-liquibase-action.yml
-  GIT_SHA: ${{ github.event.inputs.action }}
-  LIQUIBASE_ROLLBACK_TAG: ${{ github.event.inputs.tag }}
 
 jobs:
 
@@ -39,6 +33,15 @@ jobs:
       - name: DB Liquibase Rollback
         uses: ./.github/actions/db-actions
         with:
-          environment: ${{ github.event.inputs.environment }}
+          deploy_env: ${{ github.event.inputs.deploy_env }}
           action: ${{ github.event.inputs.action }}
-          tag: ${{ github.event.inputs.tag }}
+          liquibase_rollback_tag: ${{ github.event.inputs.liquibase_rollback_tag }}
+          azure_credentials: ${{ secrets.AZURE_CREDENTIALS }}
+          acr_repo_url: ${{ secrets.ACR_REPO_URL }}
+          acr_admin_username: ${{ secrets.ACR_ADMIN_USERNAME }}
+          acr_admin_pasword: ${{ secrets.ACR_ADMIN_PASWORD }}
+          terraform_arm_client_id: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+          terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+          terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+          terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+          okta_api_token: ${{ secrets.OKTA_API_TOKEN }}      
