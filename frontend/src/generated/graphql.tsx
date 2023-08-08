@@ -144,6 +144,12 @@ export type FacilityAddressInput = {
   zipCode: Scalars["String"];
 };
 
+export type FacilityStats = {
+  __typename?: "FacilityStats";
+  patientsSingleAccessCount?: Maybe<Scalars["Int"]>;
+  usersSingleAccessCount?: Maybe<Scalars["Int"]>;
+};
+
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
   errorType: Scalars["String"];
@@ -654,6 +660,7 @@ export type Query = {
   deviceTypes: Array<DeviceType>;
   facilities?: Maybe<Array<Maybe<Facility>>>;
   facility?: Maybe<Facility>;
+  facilityStats?: Maybe<FacilityStats>;
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
@@ -686,6 +693,10 @@ export type QueryFacilitiesArgs = {
 
 export type QueryFacilityArgs = {
   id: Scalars["ID"];
+};
+
+export type QueryFacilityStatsArgs = {
+  facilityId: Scalars["ID"];
 };
 
 export type QueryOrganizationArgs = {
@@ -1706,6 +1717,19 @@ export type GetFacilitiesByOrgIdQuery = {
       state?: string | null;
       zipCode?: string | null;
     }>;
+  } | null;
+};
+
+export type GetFacilityStatsQueryVariables = Exact<{
+  facilityId: Scalars["ID"];
+}>;
+
+export type GetFacilityStatsQuery = {
+  __typename?: "Query";
+  facilityStats?: {
+    __typename?: "FacilityStats";
+    usersSingleAccessCount?: number | null;
+    patientsSingleAccessCount?: number | null;
   } | null;
 };
 
@@ -5081,6 +5105,65 @@ export type GetFacilitiesByOrgIdLazyQueryHookResult = ReturnType<
 export type GetFacilitiesByOrgIdQueryResult = Apollo.QueryResult<
   GetFacilitiesByOrgIdQuery,
   GetFacilitiesByOrgIdQueryVariables
+>;
+export const GetFacilityStatsDocument = gql`
+  query GetFacilityStats($facilityId: ID!) {
+    facilityStats(facilityId: $facilityId) {
+      usersSingleAccessCount
+      patientsSingleAccessCount
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityStatsQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityStatsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityStatsQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *   },
+ * });
+ */
+export function useGetFacilityStatsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetFacilityStatsQuery, GetFacilityStatsQueryVariables>(
+    GetFacilityStatsDocument,
+    options
+  );
+}
+export function useGetFacilityStatsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >(GetFacilityStatsDocument, options);
+}
+export type GetFacilityStatsQueryHookResult = ReturnType<
+  typeof useGetFacilityStatsQuery
+>;
+export type GetFacilityStatsLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityStatsLazyQuery
+>;
+export type GetFacilityStatsQueryResult = Apollo.QueryResult<
+  GetFacilityStatsQuery,
+  GetFacilityStatsQueryVariables
 >;
 export const DeleteFacilityDocument = gql`
   mutation DeleteFacility($facilityId: ID!) {

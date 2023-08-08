@@ -3,6 +3,7 @@ import React from "react";
 
 import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import Button from "../../commonComponents/Button/Button";
+import SupportHomeLink from "../SupportHomeLink";
 
 import { ManageFacilityState } from "./ManageFacility";
 
@@ -13,6 +14,7 @@ export interface FacilitySelectFilterProps {
   onSelectOrg: (e: any) => void;
   onSelectFacility: (e: any) => void;
   manageFacilityState: ManageFacilityState;
+  loading: boolean;
 }
 
 const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
@@ -22,6 +24,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
   onClearFilter,
   onSelectOrg,
   onSelectFacility,
+  loading,
 }) => {
   /**
    * HTML
@@ -29,19 +32,22 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
   return (
     <div className="prime-container card-container padding-bottom-3">
       <div className="usa-card__header">
-        <div className="grid-row width-full">
-          <h1 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0">
-            Manage facility
-          </h1>
-          <div className="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12">
-            <Button
-              icon={faSlidersH}
-              disabled={manageFacilityState.orgId === ""}
-              onClick={onClearFilter}
-              ariaLabel="Clear facility selection filters"
-            >
-              Clear filters
-            </Button>
+        <div className="width-full">
+          <SupportHomeLink />
+          <div className="grid-row width-full">
+            <h1 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0">
+              Manage facility
+            </h1>
+            <div className="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12">
+              <Button
+                icon={faSlidersH}
+                disabled={manageFacilityState.orgId === ""}
+                onClick={onClearFilter}
+                ariaLabel="Clear facility selection filters"
+              >
+                Clear filters
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -59,7 +65,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
               ]}
               onChange={onSelectOrg}
               selectedValue={manageFacilityState.orgId}
-              disabled={false}
+              disabled={loading}
             />
           </div>
           <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
@@ -74,7 +80,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
               ]}
               onChange={onSelectFacility}
               selectedValue={manageFacilityState.facilityId}
-              disabled={manageFacilityState.orgId === ""}
+              disabled={manageFacilityState.orgId === "" || loading}
             />
           </div>
         </div>

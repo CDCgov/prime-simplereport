@@ -19,6 +19,14 @@ query GetFacilitiesByOrgId($orgId: ID!) {
     }
 }
 
+
+query GetFacilityStats($facilityId: ID!) {
+    facilityStats(facilityId: $facilityId){
+        usersSingleAccessCount
+        patientsSingleAccessCount
+    }
+}
+
 mutation DeleteFacility($facilityId: ID!) {
     markFacilityAsDeleted(
         facilityId: $facilityId

@@ -5,6 +5,7 @@ import {
   useDeleteFacilityMutation,
   useGetAllOrganizationsQuery,
   useGetFacilitiesByOrgIdLazyQuery,
+  useGetFacilityStatsLazyQuery,
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { showSuccess } from "../../utils/srToast";
@@ -20,6 +21,8 @@ type Facility = {
   zipcode: string;
   org: string;
   orgType: string;
+  usersCount: number;
+  patientsCount: number;
 };
 
 export interface ManageFacilityState {
@@ -42,7 +45,8 @@ const ManageFacility = () => {
   /**
    * Fetch organizations (on initial load)
    */
-  const { data: orgResponse } = useGetAllOrganizationsQuery();
+  const { data: orgResponse, loading: loadingOrgs } =
+    useGetAllOrganizationsQuery();
 
   const orgOptions: Option[] =
     orgResponse?.organizations?.map((org) => ({
@@ -53,8 +57,10 @@ const ManageFacility = () => {
   /**
    * Fetch facilities
    */
-  const [queryGetFacilitiesByOrgId, { data: facilitiesResponse }] =
-    useGetFacilitiesByOrgIdLazyQuery();
+  const [
+    queryGetFacilitiesByOrgId,
+    { data: facilitiesResponse, loading: loadingFacilities },
+  ] = useGetFacilitiesByOrgIdLazyQuery();
 
   const facilitiesOptions: Option[] =
     facilitiesResponse?.organization?.facilities.map((facility) => ({
@@ -63,8 +69,9 @@ const ManageFacility = () => {
     })) ?? [];
 
   /**
-   * Fetch facility details
+   * Fetch facility stats
    */
+  const [queryGetFacilityStats] = useGetFacilityStatsLazyQuery();
 
   /**
    * Facility select filter handlers
@@ -80,24 +87,42 @@ const ManageFacility = () => {
 
     updateLocalState({ ...initialState, orgId: selectedOrg });
   }
-  function handleSelectFacility(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selectedFacility =
-      facilitiesResponse?.organization?.facilities?.filter(
-        (f) => f.id === e.target.value
-      )?.[0];
-    updateLocalState((prevState) => ({
-      orgId: prevState.orgId,
-      facilityId: e.target.value,
-      facility: {
-        city: selectedFacility?.city,
-        state: selectedFacility?.state || "",
-        zipcode: selectedFacility?.zipCode || "",
-        id: selectedFacility?.id || "",
-        name: selectedFacility?.name || "",
-        org: facilitiesResponse?.organization?.name || "",
-        orgType: facilitiesResponse?.organization?.type || "",
-      },
-    }));
+  async function handleSelectFacility(e: React.ChangeEvent<HTMLSelectElement>) {
+    const facilityId = e.target.value;
+
+    if (facilityId === "") {
+      updateLocalState((prevState) => ({
+        ...prevState,
+        facilityId: "",
+        facility: undefined,
+      }));
+    } else {
+      const selectedFacility =
+        facilitiesResponse?.organization?.facilities?.filter(
+          (f) => f.id === e.target.value
+        )?.[0];
+
+      const facilityStats = await queryGetFacilityStats({
+        fetchPolicy: "no-cache",
+        variables: { facilityId },
+      }).then((response) => response.data?.facilityStats);
+
+      updateLocalState((prevState) => ({
+        orgId: prevState.orgId,
+        facilityId: facilityId,
+        facility: {
+          city: selectedFacility?.city,
+          state: selectedFacility?.state || "",
+          zipcode: selectedFacility?.zipCode || "",
+          id: selectedFacility?.id || "",
+          name: selectedFacility?.name || "",
+          org: facilitiesResponse?.organization?.name || "",
+          orgType: facilitiesResponse?.organization?.type || "",
+          usersCount: facilityStats?.usersSingleAccessCount || 0,
+          patientsCount: facilityStats?.patientsSingleAccessCount || 0,
+        },
+      }));
+    }
   }
 
   function handleClearFilter() {
@@ -133,6 +158,7 @@ const ManageFacility = () => {
           facilityOptions={facilitiesOptions}
           organizationOptions={orgOptions}
           manageFacilityState={localState}
+          loading={loadingOrgs || loadingFacilities}
         />
         <FacilityInformation
           manageFacilityState={localState}
