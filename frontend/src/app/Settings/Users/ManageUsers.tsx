@@ -101,7 +101,6 @@ const ManageUsers: React.FC<Props> = ({
   const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
   const [showResetPasswordModal, updateShowResetPasswordModal] =
     useState(false);
-  const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
   const [
     showResendUserActivationEmailModal,
     updateShowResendUserActivationEmailModal,
@@ -318,7 +317,6 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowResetMfaModal(false);
       showSuccess("", `MFA reset for ${fullName}`);
     } catch (e: any) {
       setError(e);
@@ -449,8 +447,6 @@ const ManageUsers: React.FC<Props> = ({
               updateEditUserEmailModal={updateEditUserEmailModal}
               showResetUserPasswordModal={showResetPasswordModal}
               updateShowResetPasswordModal={updateShowResetPasswordModal}
-              showResetUserMfaModal={showResetMfaModal}
-              updateShowResetMfaModal={updateShowResetMfaModal}
               showInProgressModal={showInProgressModal}
               updateShowInProgressModal={updateShowInProgressModal}
               isUserEdited={isUserEdited}
