@@ -1,5 +1,6 @@
 import { StoryFn, Meta } from "@storybook/react";
 import React from "react";
+import { userEvent, within } from "@storybook/testing-library";
 
 import ManageDevices from "./ManageDevices";
 
@@ -19,6 +20,7 @@ const Template: StoryFn<Props> = (args) => (
 
 export const Default = Template.bind({});
 export const Empty = Template.bind({});
+export const Open = Template.bind({});
 
 Default.args = {
   deviceTypes: [
@@ -27,14 +29,31 @@ Default.args = {
       name: "Device One",
       model: "Device One",
       manufacturer: "Manufacturer One",
-      supportedDiseaseTestPerformed: [],
+      supportedDiseaseTestPerformed: [
+        {
+          supportedDisease: {
+            name: "COVID-19",
+          },
+        },
+      ],
     },
     {
       internalId: "fake-id-2",
       name: "Device Two",
       model: "Device Two",
       manufacturer: "Manufacturer Two",
-      supportedDiseaseTestPerformed: [],
+      supportedDiseaseTestPerformed: [
+        {
+          supportedDisease: {
+            name: "Flu A",
+          },
+        },
+        {
+          supportedDisease: {
+            name: "Flu B",
+          },
+        },
+      ],
     },
   ] as FacilityFormDeviceType[],
   errors: [],
@@ -72,4 +91,11 @@ Default.args = {
 Empty.args = {
   ...Default.args,
   deviceTypes: [],
+};
+
+Open.args = Default.args;
+Open.play = ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+  const openMenuButton = canvas.getByTestId("multi-select-toggle");
+  return userEvent.click(openMenuButton);
 };

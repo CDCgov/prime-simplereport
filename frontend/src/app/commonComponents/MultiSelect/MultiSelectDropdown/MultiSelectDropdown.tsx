@@ -224,7 +224,6 @@ export const MultiSelectDropdown = ({
     filteredOptions: options,
     filter: undefined,
     inputValue: "",
-    // TODO: more clear name for this
     isExtended: !!DropdownComponent,
   };
 

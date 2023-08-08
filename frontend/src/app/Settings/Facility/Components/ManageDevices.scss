@@ -1,4 +1,6 @@
 .device-settings {
+  height: fit-content;
+
   .results-dropdown {
     top: 2.5em;
     max-height: 12.1em;
@@ -19,6 +21,10 @@
         top: 0;
         background: white;
       }
+    }
+
+    .usa-button {
+      margin: 0.5em 0;
     }
   }
 }
