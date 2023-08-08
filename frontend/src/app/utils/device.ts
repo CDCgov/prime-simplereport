@@ -14,7 +14,6 @@ export const searchFacilityFormDevices = (
   query: string
 ): FacilityFormDeviceType[] => {
   if (!query) {
-    console.log(devices);
     return devices;
   }
 
@@ -24,7 +23,7 @@ export const searchFacilityFormDevices = (
     results.push(
       // eslint-disable-next-line no-loop-func
       ...devices.filter((d: FacilityFormDeviceType) => {
-        const value = d[field as keyof SearchableDevice];
+        const value = d[field];
         return value.toLowerCase().includes(query.toLowerCase());
       })
     );
