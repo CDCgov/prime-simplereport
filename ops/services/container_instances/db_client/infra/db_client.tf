@@ -36,7 +36,7 @@ resource "azurerm_container_group" "db_client" {
     }
 
     readiness_probe {
-      exec                  = ["/bin/sh", "-c", "touch /tmp/healthy"]
+      exec                  = ["/bin/sh", "-c", "cat /tmp/healthy"]
       initial_delay_seconds = 30
     }
 
