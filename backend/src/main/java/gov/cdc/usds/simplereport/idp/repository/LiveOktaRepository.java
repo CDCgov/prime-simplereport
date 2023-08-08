@@ -4,9 +4,9 @@ import com.okta.sdk.helper.ApiExceptionHelper;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.user.UserBuilder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
@@ -660,7 +660,7 @@ public class LiveOktaRepository implements OktaRepository {
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("stats").getInt("usersCount");
     } catch (RestClientException | NullPointerException e) {
-      throw new InvalidActivationLinkException("Unable to retrieve okta group stats", e);
+      throw new BadRequestException("Unable to retrieve okta group stats", e);
     }
   }
 

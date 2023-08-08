@@ -1,7 +1,6 @@
 import React from "react";
 
-import iconSprite from "/node_modules/@uswds/uswds/dist/img/sprite.svg";
-
+import iconSprite from "../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 const SupportHomeLink: React.FC<any> = () => {

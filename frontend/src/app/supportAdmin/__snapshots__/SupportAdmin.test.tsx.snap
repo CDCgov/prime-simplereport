@@ -17,13 +17,11 @@ exports[`SupportAdming loads menu categories 1`] = `
           <div
             class="usa-card__header"
           >
-            <div>
-              <h1
-                class="font-heading-lg margin-top-0 margin-bottom-0"
-              >
-                Support admin
-              </h1>
-            </div>
+            <h1
+              class="font-heading-lg margin-top-0 margin-bottom-0"
+            >
+              Support admin
+            </h1>
           </div>
           <div
             class="usa-card__body"
@@ -137,13 +135,11 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
           <div
             class="usa-card__header"
           >
-            <div>
-              <h1
-                class="font-heading-lg margin-top-0 margin-bottom-0"
-              >
-                Support admin
-              </h1>
-            </div>
+            <h1
+              class="font-heading-lg margin-top-0 margin-bottom-0"
+            >
+              Support admin
+            </h1>
           </div>
           <div
             class="usa-card__body"
