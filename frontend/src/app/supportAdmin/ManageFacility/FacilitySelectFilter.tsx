@@ -34,11 +34,11 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
       <div className="usa-card__header">
         <div className="width-full">
           <SupportHomeLink />
-          <div className="grid-row width-full">
-            <h1 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0">
+          <div className="grid-row width-full margin-top-1">
+            <h1 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0">
               Manage facility
             </h1>
-            <div className="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12">
+            <div className="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0">
               <Button
                 icon={faSlidersH}
                 disabled={manageFacilityState.orgId === ""}

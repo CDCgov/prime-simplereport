@@ -6,7 +6,7 @@ import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 const SupportHomeLink: React.FC<any> = () => {
   return (
-    <div className="display-flex flex-align-center margin-bottom-2">
+    <div className="display-flex flex-align-center">
       <svg
         className="usa-icon text-base margin-left-neg-2px"
         aria-hidden="true"
