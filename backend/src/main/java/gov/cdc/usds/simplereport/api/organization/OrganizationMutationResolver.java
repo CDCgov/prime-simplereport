@@ -203,7 +203,9 @@ public class OrganizationMutationResolver {
   @Transactional
   @MutationMapping
   public Facility markFacilityAsDeleted(@Argument UUID facilityId, @Argument boolean deleted) {
-    testOrderService.removeFromQueueByFacilityId(facilityId);
+    if (deleted) {
+      testOrderService.removeFromQueueByFacilityId(facilityId);
+    }
     return organizationService.markFacilityAsDeleted(facilityId, deleted);
   }
 }

@@ -15,7 +15,7 @@ const SupportHomeLink: React.FC<any> = () => {
         <use xlinkHref={iconSprite + "#arrow_back"}></use>
       </svg>
       <LinkWithQuery to={`/admin`} className="margin-left-05">
-        Support Admin
+        Support admin
       </LinkWithQuery>
     </div>
   );

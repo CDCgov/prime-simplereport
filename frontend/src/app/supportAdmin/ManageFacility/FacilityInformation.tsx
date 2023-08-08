@@ -34,25 +34,20 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
       <Modal.Header
         styleClassNames={"font-heading-lg margin-top-0 margin-bottom-205"}
       >
-        Delete facility
+        Delete {manageFacilityState.facility?.name}
       </Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
-      <p>
-        Are you sure you want to delete facility{" "}
-        <strong>{manageFacilityState.facility?.name}</strong>?
-      </p>
       <p className="margin-top-4">
-        Doing so will automatically removed ongoing tests from the test queue.
-        Users &amp; patients only assigned to this facility will lose access to
-        Simple Report until they are reassigned.
+        Deleting {manageFacilityState.facility?.name} will remove any
+        in-progress tests from the test queue. Users only added to this facility
+        will lose access to SimpleReport until an organization admin reassigns
+        them. Patients only added to this facility also need to be reassigned.
       </p>
       <p className="margin-top-3">
         There are{" "}
-        <strong>{manageFacilityState.facility?.usersCount} user(s)</strong> and{" "}
-        <strong>
-          {manageFacilityState.facility?.patientsCount} patient(s)
-        </strong>{" "}
-        only assigned to this facility.
+        <strong>{manageFacilityState.facility?.usersCount} users</strong> and{" "}
+        <strong>{manageFacilityState.facility?.patientsCount} patients</strong>{" "}
+        added only to this facility.
       </p>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       <Modal.Footer
@@ -115,10 +110,9 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
               <h4 className="margin-y-1">Delete facility</h4>
               <div className="grid-row width-full flex-justify">
                 <p className=" desktop:grid-col-8 tablet:grid-col-8 mobile:grid-col-12  margin-y-1 text-italic text-base-darker line-height-sans-3">
-                  All users and patients assigned only to this facility will
-                  need to be reassigned to not lose access to simple report.
-                  Ongoing tests under this facility will be automatically
-                  removed from the test queue.
+                  Any in-progress tests from this facility will be removed, and
+                  an organization admin will need to reassign users and patients
+                  only added to this facility.
                 </p>
                 <div className="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 flex-align-end">
                   <Button
