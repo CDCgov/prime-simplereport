@@ -48,8 +48,6 @@ interface Props {
   updateShowResetPasswordModal: (showResetPasswordModal: boolean) => void;
   showResetUserMfaModal: boolean;
   updateShowResetMfaModal: (showResetMfaModal: boolean) => void;
-  showDeleteUserModal: boolean;
-  updateShowDeleteUserModal: (showDeleteUserModal: boolean) => void;
   showInProgressModal: boolean;
   updateShowInProgressModal: (showInProgressUserModal: boolean) => void;
   isUserEdited: boolean;
@@ -198,8 +196,6 @@ const UserDetail: React.FC<Props> = ({
   updateShowResetPasswordModal,
   showResetUserMfaModal,
   updateShowResetMfaModal,
-  showDeleteUserModal,
-  updateShowDeleteUserModal,
   showInProgressModal,
   updateShowInProgressModal,
   isUserEdited,
@@ -212,6 +208,7 @@ const UserDetail: React.FC<Props> = ({
   handleResendUserActivationEmail,
 }) => {
   const [navItemSelected, setNavItemSelected] = useState("userInfo");
+  const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
 
   const isUserActive = () =>
     user.status !== OktaUserStatus.SUSPENDED &&

@@ -102,7 +102,6 @@ const ManageUsers: React.FC<Props> = ({
   const [showResetPasswordModal, updateShowResetPasswordModal] =
     useState(false);
   const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
-  const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [showReactivateUserModal, updateShowReactivateUserModal] =
     useState(false);
   const [
@@ -350,7 +349,6 @@ const ManageUsers: React.FC<Props> = ({
       await getUsers();
       updateActiveUser(nextUser);
       showSuccess("", `User account removed for ${fullName}`);
-      updateShowDeleteUserModal(false);
     } catch (e: any) {
       setError(e);
     }
@@ -458,8 +456,6 @@ const ManageUsers: React.FC<Props> = ({
               updateShowResetPasswordModal={updateShowResetPasswordModal}
               showResetUserMfaModal={showResetMfaModal}
               updateShowResetMfaModal={updateShowResetMfaModal}
-              showDeleteUserModal={showDeleteUserModal}
-              updateShowDeleteUserModal={updateShowDeleteUserModal}
               showInProgressModal={showInProgressModal}
               updateShowInProgressModal={updateShowInProgressModal}
               isUserEdited={isUserEdited}
