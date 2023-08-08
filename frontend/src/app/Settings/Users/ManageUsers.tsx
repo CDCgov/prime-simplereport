@@ -97,7 +97,6 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
-  const [showEditUserNameModal, updateEditUserNameModal] = useState(false);
   const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
   const [showResetPasswordModal, updateShowResetPasswordModal] =
     useState(false);
@@ -263,7 +262,6 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
       const fullName = displayFullName(firstName, "", lastName);
-      updateEditUserNameModal(false);
       showSuccess("", `User name changed to ${fullName}`);
       await queryUserWithPermissions();
     } catch (e: any) {
@@ -441,8 +439,6 @@ const ManageUsers: React.FC<Props> = ({
               updateShowResendUserActivationEmailModal={
                 updateShowResendUserActivationEmailModal
               }
-              showEditUserNameModal={showEditUserNameModal}
-              updateEditUserNameModal={updateEditUserNameModal}
               showEditUserEmailModal={showEditUserEmailModal}
               updateEditUserEmailModal={updateEditUserEmailModal}
               showResetUserPasswordModal={showResetPasswordModal}
