@@ -97,7 +97,6 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
-  const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
   const [showResetPasswordModal, updateShowResetPasswordModal] =
     useState(false);
   const [
@@ -277,7 +276,6 @@ const ManageUsers: React.FC<Props> = ({
           email: emailAddress,
         },
       });
-      updateEditUserEmailModal(false);
       showSuccess("", `User email address changed to ${emailAddress}`);
       await queryUserWithPermissions();
       await getUsers();
@@ -439,8 +437,6 @@ const ManageUsers: React.FC<Props> = ({
               updateShowResendUserActivationEmailModal={
                 updateShowResendUserActivationEmailModal
               }
-              showEditUserEmailModal={showEditUserEmailModal}
-              updateEditUserEmailModal={updateEditUserEmailModal}
               showResetUserPasswordModal={showResetPasswordModal}
               updateShowResetPasswordModal={updateShowResetPasswordModal}
               showInProgressModal={showInProgressModal}
