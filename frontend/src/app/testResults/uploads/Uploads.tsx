@@ -358,26 +358,29 @@ const Uploads = () => {
         <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
           <div className="usa-alert__body">
             <h2 className="usa-alert__heading">
-              What is the bulk results uploader?
+              New: Report flu results to California
             </h2>
             <p className="usa-alert__text">
-              <em>
-                This feature is in beta. That means it’s new, and we’ll continue
-                to update and improve it for our users. Though the feature is in
-                beta, it will route all the results you submit to the
-                appropriate public health department(s). Results you upload here
-                will not appear individually in the "Test results" page.
-              </em>{" "}
-              <br />
-              <br /> The results uploader allows you to report test results in
-              bulk using a CSV file. While we expect most SimpleReport users
-              will continue to report through the regular process, this feature
-              can serve labs and others with an information system that exports
-              spreadsheets, such as an EMR.{" "}
-              <LinkWithQuery to="/results/upload/submit/guide">
-                <strong>Learn more about how it works</strong>
-              </LinkWithQuery>
+              Organizations sending results to the California Department of
+              Public Health (CDPH) can now use the bulk results upload feature
+              to report positive flu tests. Report COVID-19 results in one
+              spreadsheet, and flu A and B results in another.&nbsp;
+              <a
+                href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
+                onClick={() => {
+                  appInsights?.trackEvent({
+                    name: "Access bulk uploader flu guide",
+                  });
+                }}
+              >
+                See more information and guidance about flu reporting
+              </a>
               .
+              <br />
+              <br />
+              All organizations can continue to report COVID-19 results to their
+              public health department using the bulk uploader. Flu reporting
+              will be available in other jurisdictions soon.
             </p>
           </div>
         </div>
