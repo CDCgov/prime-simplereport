@@ -73,7 +73,10 @@ const ResetUserPasswordModal: React.FC<Props> = ({
             />
             <Button
               className="margin-right-205"
-              onClick={() => onResetPassword(user.id)}
+              onClick={() => {
+                onResetPassword(user.id);
+                onClose();
+              }}
               label="Yes, I'm sure"
             />
           </div>
