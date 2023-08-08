@@ -4,7 +4,7 @@ import React from "react";
 import ManageDevices from "./ManageDevices";
 
 export default {
-  title: "Manage Facility / Manage Devices",
+  title: "App / Manage Facility / Manage Devices",
   component: ManageDevices,
   argTypes: {},
 } as Meta;
