@@ -150,3 +150,4 @@ datahub:
   fhir-enabled: true
 features:
   hivEnabled: true
+  manageUserEnabled: true
