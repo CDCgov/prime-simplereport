@@ -335,11 +335,13 @@ public class BulkUploadResultsToFhir {
 
     var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
+    String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
+    String descriptionValue = getSpecimenTypeDescription(specimenCode);
     var specimen =
         fhirConverter.convertToSpecimen(
             ConvertToSpecimenProps.builder()
-                .specimenCode(getSpecimenTypeSnomed(row.getSpecimenType().getValue()))
-                .specimenName(getDescriptionValue(row.getSpecimenType().getValue()))
+                .specimenCode(specimenCode)
+                .specimenName(descriptionValue)
                 .collectionCode(null)
                 .collectionName(null)
                 .id(uuidGenerator.randomUUID().toString())
@@ -439,11 +441,13 @@ public class BulkUploadResultsToFhir {
     return null;
   }
 
-  private String getDescriptionValue(String input) {
+  private String getSpecimenTypeDescription(String input) {
     if (input.matches(ALPHABET_REGEX)) {
       return input;
+    } else if (input.matches(SNOMED_REGEX)) {
+      return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(input);
     }
-    return null; // vs empty string?
+    return null;
   }
 
   private DiagnosticReport.DiagnosticReportStatus mapTestResultStatusToFhirValue(String input) {
