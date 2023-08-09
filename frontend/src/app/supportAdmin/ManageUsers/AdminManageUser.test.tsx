@@ -6,6 +6,8 @@ import { FindUserByEmailDocument } from "../../../generated/graphql";
 
 import { AdminManageUser } from "./AdminManageUser";
 
+jest.mock("uuid", () => ({ v4: () => "123456789" }));
+
 describe("Admin manage user", () => {
   const renderComponent = (mocks?: any[]) =>
     render(

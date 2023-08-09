@@ -120,7 +120,7 @@ exports[`Admin manage user search results matches snapshot 1`] = `
               <div
                 aria-label="Alert: No facility assigned"
                 class="usa-alert usa-alert--warning"
-                id="75ccd5a4-1555-40de-804d-579d7f1d825f"
+                id="123456789"
                 role="region"
               >
                 <div
@@ -133,7 +133,7 @@ exports[`Admin manage user search results matches snapshot 1`] = `
                   </div>
                   <div
                     class="usa-alert__text"
-                    id="2efb39f0-a047-4002-a9ce-dd462db042c4"
+                    id="123456789"
                   >
                     All users must have access to at least one facility
                   </div>
