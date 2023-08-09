@@ -66,6 +66,25 @@ public class BulkUploadResultsToFhirTest {
   @BeforeEach
   public void beforeEach() {
     resultsUploaderCachingService = mock(ResultsUploaderCachingService.class);
+
+    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
+        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+
+    when(resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap())
+        .thenReturn(
+            Map.of(
+                "Nasal swab".toLowerCase(), "445297001",
+                "Anterior nares swab".toLowerCase(), "697989009"));
+
+    when(resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap())
+        .thenReturn(
+            Map.of(
+                "445297001", "Nasal swab",
+                "697989009", "Anterior nares swab"));
+
+    when(resultsUploaderCachingService.getZoneIdByAddress(any()))
+        .thenReturn(ZoneId.of("US/Central"));
+
     FhirConverter fhirConverter = new FhirConverter(uuidGenerator, dateGenerator);
     sut =
         new BulkUploadResultsToFhir(
@@ -200,8 +219,6 @@ public class BulkUploadResultsToFhirTest {
   @Test
   void convertExistingCsv_observationValuesPresent() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid.csv");
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
 
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
 
@@ -264,13 +281,6 @@ public class BulkUploadResultsToFhirTest {
     when(mockedDateGenerator.newDate())
         .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
 
-    // Mock timezone retrieval from address
-    var mockedZoneId = ZoneId.of("US/Central");
-    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenReturn(mockedZoneId);
-
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
-
     sut =
         new BulkUploadResultsToFhir(
             resultsUploaderCachingService,
@@ -298,7 +308,7 @@ public class BulkUploadResultsToFhirTest {
   }
 
   @Test
-  void convertExistingCsv_matchesFhir_NDJson() throws IOException {
+  void convertExistingCsv_matchesFhir_with_specimenType_LOINC() throws IOException {
     // Mock random UUIDs
     var mockedUUIDGenerator = mock(UUIDGenerator.class);
     when(mockedUUIDGenerator.randomUUID())
@@ -310,12 +320,41 @@ public class BulkUploadResultsToFhirTest {
     when(mockedDateGenerator.newDate())
         .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
 
-    // Mock timezone retrieval from address
-    var mockedZoneId = ZoneId.of("US/Central");
-    when(resultsUploaderCachingService.getZoneIdByAddress(any())).thenReturn(mockedZoneId);
+    sut =
+        new BulkUploadResultsToFhir(
+            resultsUploaderCachingService,
+            gitProperties,
+            mockedUUIDGenerator,
+            mockedDateGenerator,
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
 
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
+    InputStream csvStream =
+        loadCsv("testResultUpload/test-results-upload-valid-with-specimenType-loinc.csv");
+
+    var serializedBundles =
+        sut.convertToFhirBundles(
+            csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    String actualBundles = String.join("\n", serializedBundles);
+
+    InputStream jsonStream =
+        getJsonStream("testResultUpload/fhir-for-csv-with-specimenType-loinc.ndjson");
+    String expectedBundleString = inputStreamToString(jsonStream);
+
+    assertThat(actualBundles).isEqualToIgnoringWhitespace(expectedBundleString);
+  }
+
+  @Test
+  void convertExistingCsv_matchesFhir_NDJson() throws IOException {
+    // Mock random UUIDs
+    var mockedUUIDGenerator = mock(UUIDGenerator.class);
+    when(mockedUUIDGenerator.randomUUID())
+        .thenAnswer(
+            (Answer<UUID>) invocation -> UUID.fromString("5db534ea-5e97-4861-ba18-d74acc46db15"));
+
+    // Mock constructed UTC date object
+    var mockedDateGenerator = mock(DateGenerator.class);
+    when(mockedDateGenerator.newDate())
+        .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
 
     sut =
         new BulkUploadResultsToFhir(
@@ -344,9 +383,6 @@ public class BulkUploadResultsToFhirTest {
   void convertExistingCsv_meetsProcessingSpeed() {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-5000-rows.csv");
 
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
-
     var startTime = System.currentTimeMillis();
 
     sut.convertToFhirBundles(input, UUID.randomUUID());
@@ -362,11 +398,6 @@ public class BulkUploadResultsToFhirTest {
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-blank-dates.csv");
     var orderTestDate = Instant.parse("2021-12-20T04:00:00-07:00");
     var testResultDate = Instant.parse("2021-12-23T14:00:00-06:00");
-
-    when(resultsUploaderCachingService.getModelAndTestPerformedCodeToDeviceMap())
-        .thenReturn(Map.of("id now|94534-5", TestDataBuilder.createDeviceTypeForBulkUpload()));
-    when(resultsUploaderCachingService.getZoneIdByAddress(any()))
-        .thenReturn(ZoneId.of("US/Central"));
 
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
     var first = serializedBundles.get(0);
