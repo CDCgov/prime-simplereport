@@ -49,7 +49,7 @@ jobs:
   prerelease_backend:
     # if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
-    needs: [build_docker, build_db_client_docker]
+    needs: [build_frontend, build_docker, build_db_client_docker]
     defaults:
       run:
         working-directory: ./ops
@@ -120,7 +120,7 @@ jobs:
     environment:
       name: Staging
       url: https://stg.simplereport.gov
-    needs: [build_frontend, prerelease_backend]
+    needs: [prerelease_backend]
     steps:
       - uses: actions/checkout@v3
       - uses: azure/login@v1
