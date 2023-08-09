@@ -132,7 +132,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
     verify(
         exactly(1),
         postRequestedFor(urlEqualTo("/api/waters"))
-            .withRequestBody(equalToJson(sampleFhirMessage)));
+            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
   }
 
   private InputStream loadCsv(String csvFile) {

@@ -198,6 +198,12 @@ simple-report-initialization:
       type-code: "445297001"
       collection-location-name: "NOSE"
       collection-location-code: "71836000"
+    - name: Whole blood
+      type-code: "258580003"
+    - name: Venous blood specimen
+      type-code: "122555007"
+    - name: Anterior nares swab
+      type-code: "697989009"
     - name: Swab of the Ear
       type-code: "445297999"
       collection-location-name: "EAR"

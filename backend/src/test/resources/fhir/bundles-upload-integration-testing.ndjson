@@ -897,7 +897,8 @@
               "system": "http://snomed.info/sct",
               "code": "697989009"
             }
-          ]
+          ],
+          "text": "Anterior nares swab"
         },
         "subject": {
           "reference": "Patient/5678"
@@ -1444,7 +1445,8 @@
               "system": "http://snomed.info/sct",
               "code": "697989009"
             }
-          ]
+          ],
+          "text": "Anterior nares swab"
         },
         "subject": {
           "reference": "Patient/90123"
@@ -2035,7 +2037,8 @@
               "system": "http://snomed.info/sct",
               "code": "258580003"
             }
-          ]
+          ],
+          "text": "whole blood"
         },
         "subject": {
           "reference": "Patient/P2300"
@@ -2582,7 +2585,8 @@
               "system": "http://snomed.info/sct",
               "code": "258580003"
             }
-          ]
+          ],
+          "text": "Venous blood specimen"
         },
         "subject": {
           "reference": "Patient/P2300"

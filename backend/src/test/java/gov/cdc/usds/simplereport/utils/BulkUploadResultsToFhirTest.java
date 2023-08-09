@@ -73,14 +73,14 @@ public class BulkUploadResultsToFhirTest {
     when(resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(
             Map.of(
-                "Nasal Swab".toLowerCase(), "445297001",
-                "ANTERIOR NARES SWAB".toLowerCase(), "697989009"));
+                "Nasal swab".toLowerCase(), "445297001",
+                "Anterior nares swab".toLowerCase(), "697989009"));
 
     when(resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap())
         .thenReturn(
             Map.of(
-                "445297001", "Nasal Swab",
-                "697989009", "ANTERIOR NARES SWAB"));
+                "445297001", "Nasal swab",
+                "697989009", "Anterior nares swab"));
 
     when(resultsUploaderCachingService.getZoneIdByAddress(any()))
         .thenReturn(ZoneId.of("US/Central"));
@@ -305,6 +305,42 @@ public class BulkUploadResultsToFhirTest {
     var actualNode = objectMapper.readTree(actualBundleString);
 
     assertJsonNodesEqual(expectedNode, actualNode);
+  }
+
+  @Test
+  void convertExistingCsv_matchesFhir_with_specimenType_LOINC() throws IOException {
+    // Mock random UUIDs
+    var mockedUUIDGenerator = mock(UUIDGenerator.class);
+    when(mockedUUIDGenerator.randomUUID())
+        .thenAnswer(
+            (Answer<UUID>) invocation -> UUID.fromString("5db534ea-5e97-4861-ba18-d74acc46db15"));
+
+    // Mock constructed UTC date object
+    var mockedDateGenerator = mock(DateGenerator.class);
+    when(mockedDateGenerator.newDate())
+        .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
+
+    sut =
+        new BulkUploadResultsToFhir(
+            resultsUploaderCachingService,
+            gitProperties,
+            mockedUUIDGenerator,
+            mockedDateGenerator,
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
+
+    InputStream csvStream =
+        loadCsv("testResultUpload/test-results-upload-valid-with-specimenType-loinc.csv");
+
+    var serializedBundles =
+        sut.convertToFhirBundles(
+            csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    String actualBundles = String.join("\n", serializedBundles);
+
+    InputStream jsonStream =
+        getJsonStream("testResultUpload/fhir-for-csv-with-specimenType-loinc.ndjson");
+    String expectedBundleString = inputStreamToString(jsonStream);
+
+    assertThat(actualBundles).isEqualToIgnoringWhitespace(expectedBundleString);
   }
 
   @Test
