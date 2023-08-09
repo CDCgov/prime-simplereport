@@ -1,22 +1,34 @@
 name: DB Liquibase Action
 description: Runs Liquibase actions in a container
+
 inputs:
+  # Environment configuration
   deploy_env:
     description: The environment of the database.
     required: true
+
+  # Docker Compose file configuration
   docker_compose_file:
     description: The docker compose file to use.
     default: docker-compose.db-liquibase-action.yml
     required: false
+
+  # Liquibase action and git_sha tag value
   action:
     description: The git sha of the image to use.
     required: true
+
+  # Liquibase rollback configuration
   liquibase_rollback_tag:
     description: Only required if rollback is selected. The Liquibase tag to roll back to
     required: false
+
+  # Azure credentials configuration
   azure_credentials:
     description: Azure credentials
     required: true
+
+  # ACR configuration
   acr_repo_url:
     description: ACR repo url
     required: true
@@ -26,6 +38,8 @@ inputs:
   acr_admin_pasword:
     description: ACR admin password
     required: true
+
+  # Terraform ARM configuration
   terraform_arm_client_id:
     description: Terraform ARM client id
     required: true
@@ -42,7 +56,6 @@ inputs:
 runs:
   using: composite
   steps:
-
     - name: Login to Azure
       uses: azure/login@v1
       with:
@@ -55,12 +68,10 @@ runs:
     - name: Delete existing ${{ inputs.action }} image
       shell: bash
       run: |
-        if [ "$(az acr repository show --name simplereportacr --image api/simple-report-api-build:${{ inputs.action }} | jq -r '.name')" == "${{ inputs.action }}" ]; then
-          echo "Deleting ${{ inputs.action }} image"
-          az acr repository delete --name simplereportacr --image api/simple-report-api-build:${{ inputs.action }} --yes
-        else
-          echo "No ${{ inputs.action }} image to delete"
-        fi
+        az acr repository delete \
+          --name simplereportacr \
+          --image api/simple-report-api-build:${{ inputs.action }} \
+          --yes || echo "No ${{ inputs.action }} image to delete"
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
