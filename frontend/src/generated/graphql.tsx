@@ -1673,6 +1673,34 @@ export type GetSupportedDiseasesQuery = {
   }>;
 };
 
+export type FindUserByEmailQueryVariables = Exact<{
+  email: Scalars["String"];
+}>;
+
+export type FindUserByEmailQuery = {
+  __typename?: "Query";
+  user?: {
+    __typename?: "User";
+    id: string;
+    firstName?: string | null;
+    middleName?: string | null;
+    lastName: string;
+    roleDescription: string;
+    role?: Role | null;
+    permissions: Array<UserPermission>;
+    email: string;
+    status?: string | null;
+    organization?: {
+      __typename?: "Organization";
+      testingFacility: Array<{
+        __typename?: "Facility";
+        id: string;
+        name: string;
+      }>;
+    } | null;
+  } | null;
+};
+
 export type GetPendingOrganizationsQueryVariables = Exact<{
   [key: string]: never;
 }>;
@@ -4912,6 +4940,78 @@ export type GetSupportedDiseasesLazyQueryHookResult = ReturnType<
 export type GetSupportedDiseasesQueryResult = Apollo.QueryResult<
   GetSupportedDiseasesQuery,
   GetSupportedDiseasesQueryVariables
+>;
+export const FindUserByEmailDocument = gql`
+  query findUserByEmail($email: String!) {
+    user(email: $email) {
+      id
+      firstName
+      middleName
+      lastName
+      roleDescription
+      role
+      permissions
+      email
+      status
+      organization {
+        testingFacility {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
+/**
+ * __useFindUserByEmailQuery__
+ *
+ * To run a query within a React component, call `useFindUserByEmailQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindUserByEmailQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindUserByEmailQuery({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useFindUserByEmailQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    FindUserByEmailQuery,
+    FindUserByEmailQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<FindUserByEmailQuery, FindUserByEmailQueryVariables>(
+    FindUserByEmailDocument,
+    options
+  );
+}
+export function useFindUserByEmailLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    FindUserByEmailQuery,
+    FindUserByEmailQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    FindUserByEmailQuery,
+    FindUserByEmailQueryVariables
+  >(FindUserByEmailDocument, options);
+}
+export type FindUserByEmailQueryHookResult = ReturnType<
+  typeof useFindUserByEmailQuery
+>;
+export type FindUserByEmailLazyQueryHookResult = ReturnType<
+  typeof useFindUserByEmailLazyQuery
+>;
+export type FindUserByEmailQueryResult = Apollo.QueryResult<
+  FindUserByEmailQuery,
+  FindUserByEmailQueryVariables
 >;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {
