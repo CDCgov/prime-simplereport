@@ -2,314 +2,319 @@
 
 exports[`Admin manage user search results matches snapshot 1`] = `
 <div>
-  <div
-    class="prime-home flex-1"
-  >
+  <div>
     <div
-      class="grid-container"
+      class="Toastify"
+    />
+    <div
+      class="prime-home flex-1"
     >
       <div
-        class="prime-container card-container padding-3"
+        class="grid-container"
       >
         <div
-          class="display-flex flex-justify"
-        >
-          <div>
-            <div
-              class="display-flex flex-align-center"
-            >
-              <svg
-                class="usa-icon text-base margin-left-neg-2px"
-                focusable="false"
-                height="1em"
-                role="img"
-                viewBox="0 0 24 24"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-                />
-              </svg>
-              <a
-                class="margin-left-05"
-                href="/admin"
-              >
-                Support Admin
-              </a>
-            </div>
-            <div
-              class="prime-edit-patient-heading margin-y-0"
-            >
-              <h1
-                class="font-heading-lg margin-top-1 margin-bottom-0"
-              >
-                Manage Users
-              </h1>
-            </div>
-          </div>
-        </div>
-        <div
-          class="padding-top-5 padding-bottom-7"
+          class="prime-container card-container padding-3"
         >
           <div
-            class="prime-search-container"
+            class="display-flex flex-justify"
           >
-            <form
-              class="usa-search usa-search--small prime-search-input display-inline-block"
-              role="search"
-            >
-              <label
-                class="display-block"
-                for="search-field-small"
+            <div>
+              <div
+                class="display-flex flex-align-center"
               >
-                Search by email address of user
-              </label>
-              <div>
-                <input
-                  autocomplete="off"
-                  class="usa-input"
-                  id="search-field-small"
-                  name="search"
-                  placeholder="email@example.com"
-                  type="search"
-                  value="ben@example.com"
-                />
-                <button
-                  class="usa-button"
-                  type="submit"
+                <svg
+                  class="usa-icon text-base margin-left-neg-2px"
+                  focusable="false"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 24 24"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <img
-                    alt="Search"
-                    class="usa-search__submit-icon"
-                    src="search--white.svg"
+                  <path
+                    d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
                   />
-                </button>
+                </svg>
+                <a
+                  class="margin-left-05"
+                  href="/admin"
+                >
+                  Support Admin
+                </a>
               </div>
-            </form>
+              <div
+                class="prime-edit-patient-heading margin-y-0"
+              >
+                <h1
+                  class="font-heading-lg margin-top-1 margin-bottom-0"
+                >
+                  Manage Users
+                </h1>
+              </div>
+            </div>
           </div>
-        </div>
-        <div
-          class="prime-container  manage-users-card"
-        >
           <div
-            class="usa-card__body"
+            class="padding-top-5 padding-bottom-7"
           >
             <div
-              aria-labelledby="user-tab-1cd3b088-e7d0-4be9-9cb7-035e3284d5f5"
-              class="tablet:grid-col padding-left-3 user-detail-column"
-              role="tabpanel"
+              class="prime-search-container"
             >
-              <div>
-                <h2
-                  class="display-inline-block margin-top-1 margin-bottom-0 user-name-header"
+              <form
+                class="usa-search usa-search--small prime-search-input display-inline-block"
+                role="search"
+              >
+                <label
+                  class="display-block"
+                  for="search-field-small"
                 >
-                  Barnes, Ben Billy
-                </h2>
-                <div
-                  class="user-status-subheader"
-                >
-                  <span
-                    class="top-user-status padding-left-0"
+                  Search by email address of user
+                </label>
+                <div>
+                  <input
+                    autocomplete="off"
+                    class="usa-input"
+                    id="search-field-small"
+                    name="search"
+                    placeholder="email@example.com"
+                    type="search"
+                    value="ben@example.com"
                   />
+                  <button
+                    class="usa-button"
+                    type="submit"
+                  >
+                    <img
+                      alt="Search"
+                      class="usa-search__submit-icon"
+                      src="search--white.svg"
+                    />
+                  </button>
                 </div>
-              </div>
+              </form>
+            </div>
+          </div>
+          <div
+            class="prime-container  manage-users-card"
+          >
+            <div
+              class="usa-card__body"
+            >
               <div
-                class="user-header grid-row flex-row flex-align-center"
-              />
-              <div
-                aria-label="Alert: No facility assigned"
-                class="usa-alert usa-alert--warning"
-                id="123456789"
-                role="region"
-              >
-                <div
-                  class="usa-alert__body"
-                >
-                  <div
-                    class="usa-alert__heading text-bold"
-                  >
-                    No facility assigned
-                  </div>
-                  <div
-                    class="usa-alert__text"
-                    id="123456789"
-                  >
-                    All users must have access to at least one facility
-                  </div>
-                </div>
-              </div>
-              <nav
-                aria-label="User action navigation"
-                class="prime-secondary-nav margin-top-4 padding-bottom-0"
-              >
-                <div
-                  aria-owns="user-info-tab-id facility-access-tab-id"
-                  class="usa-nav__secondary-links prime-nav usa-list"
-                  role="tablist"
-                >
-                  <div
-                    class="usa-nav__secondary-item usa-current"
-                  >
-                    <button
-                      aria-selected="true"
-                      class="usa-button--unstyled text-ink text-no-underline"
-                      id="user-info-tab-id"
-                      role="tab"
-                    >
-                      User information
-                    </button>
-                  </div>
-                  <div
-                    class="usa-nav__secondary-item "
-                  >
-                    <button
-                      aria-selected="false"
-                      class="usa-button--unstyled text-ink text-no-underline"
-                      id="facility-access-tab-id"
-                      role="tab"
-                    >
-                      Facility access
-                    </button>
-                  </div>
-                </div>
-              </nav>
-              <div
-                aria-labelledby="user-info-tab-id"
-                class="padding-left-1"
+                aria-labelledby="user-tab-1cd3b088-e7d0-4be9-9cb7-035e3284d5f5"
+                class="tablet:grid-col padding-left-3 user-detail-column"
                 role="tabpanel"
               >
-                <h3
-                  class="basic-info-header"
-                >
-                  Basic information
-                </h3>
-                <div
-                  class="user-header grid-row flex-row flex-align-center"
-                >
-                  <div>
-                    <div
-                      class="userinfo-subheader"
-                    >
-                      Name
-                    </div>
-                    <p
-                      class="userinfo-text"
-                    >
-                      Ben Billy Barnes
-                    </p>
-                  </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
+                <div>
+                  <h2
+                    class="display-inline-block margin-top-1 margin-bottom-0 user-name-header"
                   >
-                    Edit name
-                  </button>
+                    Barnes, Ben Billy
+                  </h2>
+                  <div
+                    class="user-status-subheader"
+                  >
+                    <span
+                      class="top-user-status padding-left-0"
+                    />
+                  </div>
                 </div>
                 <div
                   class="user-header grid-row flex-row flex-align-center"
-                >
-                  <div>
-                    <div
-                      class="userinfo-subheader"
-                    >
-                      Email
-                    </div>
-                    <p
-                      class="userinfo-text"
-                    >
-                      ben@example.com
-                    </p>
-                  </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
-                  >
-                    Edit email
-                  </button>
-                </div>
-                <div
-                  class="userinfo-divider"
                 />
-                <h3
-                  class="user-controls-header"
-                >
-                  User controls
-                </h3>
                 <div
-                  class="user-header grid-row flex-row flex-align-center"
+                  aria-label="Alert: No facility assigned"
+                  class="usa-alert usa-alert--warning"
+                  id="123456789"
+                  role="region"
                 >
                   <div
-                    class="grid-col margin-right-8"
+                    class="usa-alert__body"
                   >
                     <div
-                      class="userinfo-subheader"
+                      class="usa-alert__heading text-bold"
                     >
-                      Password
+                      No facility assigned
                     </div>
-                    <p
-                      class="usercontrols-text"
+                    <div
+                      class="usa-alert__text"
+                      id="123456789"
                     >
-                      Send a link to reset user password. Users must answer a password recovery question to access their account.
-                    </p>
+                      All users must have access to at least one facility
+                    </div>
                   </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
-                  >
-                    Send password reset email
-                  </button>
                 </div>
-                <div
-                  class="user-header grid-row flex-row flex-align-center"
+                <nav
+                  aria-label="User action navigation"
+                  class="prime-secondary-nav margin-top-4 padding-bottom-0"
                 >
                   <div
-                    class="grid-col"
+                    aria-owns="user-info-tab-id facility-access-tab-id"
+                    class="usa-nav__secondary-links prime-nav usa-list"
+                    role="tablist"
                   >
                     <div
-                      class="userinfo-subheader"
+                      class="usa-nav__secondary-item usa-current"
                     >
-                      Reset multi-factor authentication (MFA)
+                      <button
+                        aria-selected="true"
+                        class="usa-button--unstyled text-ink text-no-underline"
+                        id="user-info-tab-id"
+                        role="tab"
+                      >
+                        User information
+                      </button>
                     </div>
-                    <p
-                      class="usercontrols-text"
-                    >
-                      Reset user MFA account access settings
-                    </p>
-                  </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
-                  >
-                    Reset MFA
-                  </button>
-                </div>
-                <div
-                  class="user-header grid-row flex-row flex-align-center"
-                >
-                  <div>
                     <div
-                      class="userinfo-subheader"
+                      class="usa-nav__secondary-item "
+                    >
+                      <button
+                        aria-selected="false"
+                        class="usa-button--unstyled text-ink text-no-underline"
+                        id="facility-access-tab-id"
+                        role="tab"
+                      >
+                        Facility access
+                      </button>
+                    </div>
+                  </div>
+                </nav>
+                <div
+                  aria-labelledby="user-info-tab-id"
+                  class="padding-left-1"
+                  role="tabpanel"
+                >
+                  <h3
+                    class="basic-info-header"
+                  >
+                    Basic information
+                  </h3>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div>
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Name
+                      </div>
+                      <p
+                        class="userinfo-text"
+                      >
+                        Ben Billy Barnes
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
+                    >
+                      Edit name
+                    </button>
+                  </div>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div>
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Email
+                      </div>
+                      <p
+                        class="userinfo-text"
+                      >
+                        ben@example.com
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
+                    >
+                      Edit email
+                    </button>
+                  </div>
+                  <div
+                    class="userinfo-divider"
+                  />
+                  <h3
+                    class="user-controls-header"
+                  >
+                    User controls
+                  </h3>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div
+                      class="grid-col margin-right-8"
+                    >
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Password
+                      </div>
+                      <p
+                        class="usercontrols-text"
+                      >
+                        Send a link to reset user password. Users must answer a password recovery question to access their account.
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
+                    >
+                      Send password reset email
+                    </button>
+                  </div>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div
+                      class="grid-col"
+                    >
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Reset multi-factor authentication (MFA)
+                      </div>
+                      <p
+                        class="usercontrols-text"
+                      >
+                        Reset user MFA account access settings
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
+                    >
+                      Reset MFA
+                    </button>
+                  </div>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div>
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Delete user
+                      </div>
+                      <p
+                        class="usercontrols-text"
+                      >
+                        Permanently delete user account and data
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
                     >
                       Delete user
-                    </div>
-                    <p
-                      class="usercontrols-text"
-                    >
-                      Permanently delete user account and data
-                    </p>
+                    </button>
                   </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
-                  >
-                    Delete user
-                  </button>
                 </div>
               </div>
             </div>

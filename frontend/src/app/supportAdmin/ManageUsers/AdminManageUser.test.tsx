@@ -1,10 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 import {
   EditUserEmailDocument,
   FindUserByEmailDocument,
+  ResetUserPasswordDocument,
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
 
@@ -42,7 +44,10 @@ describe("Admin manage user", () => {
     render(
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
-          <AdminManageUser />
+          <div>
+            <ToastContainer />
+            <AdminManageUser />
+          </div>
         </MockedProvider>
       </MemoryRouter>
     );
@@ -153,7 +158,7 @@ describe("Admin manage user", () => {
   }
 
   describe("editing user", () => {
-    it("edit name handler calls ", async () => {
+    it("edit name handler calls", async () => {
       const updateUserNameResponse = {
         request: {
           query: UpdateUserNameDocument,
@@ -185,7 +190,7 @@ describe("Admin manage user", () => {
 
       await screen.findByText("Smith, Granny Billy");
     });
-    it("edit email handler calls ", async () => {
+    it("edit email handler calls", async () => {
       const updateUserNameResponse = {
         request: {
           query: EditUserEmailDocument,
@@ -213,5 +218,31 @@ describe("Admin manage user", () => {
 
       await screen.findByText("granny@example.com");
     });
+  });
+  it("reset user password handler", async () => {
+    const resetUserPasswordResponse = {
+      request: {
+        query: ResetUserPasswordDocument,
+        variables: {
+          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+        },
+      },
+      result: {
+        data: {
+          resetUserPassword: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+          },
+        },
+      },
+    };
+    renderComponent([...validResponse, resetUserPasswordResponse]);
+    await searchForValidUser();
+    fireEvent.click(screen.getByText("Send password reset email"));
+    await screen.findByText("Reset Barnes, Ben Billy's password");
+    fireEvent.click(screen.getByText("Yes, I'm sure"));
+
+    expect(
+      await screen.findByText("Password reset for Barnes, Ben Billy")
+    ).toBeInTheDocument();
   });
 });

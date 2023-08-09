@@ -7,6 +7,7 @@ import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import {
   useEditUserEmailMutation,
   useFindUserByEmailLazyQuery,
+  useResetUserPasswordMutation,
   useUpdateUserNameMutation,
 } from "../../../generated/graphql";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
@@ -47,6 +48,7 @@ export const AdminManageUser: React.FC = () => {
   });
   const [updateUserName] = useUpdateUserNameMutation();
   const [updateUserEmail] = useEditUserEmailMutation();
+  const [resetPassword] = useResetUserPasswordMutation();
 
   const tempFunction = () => {};
   const tempBoolean = false;
@@ -77,7 +79,6 @@ export const AdminManageUser: React.FC = () => {
     const fullName = displayFullName(firstName, "", lastName);
     showSuccess("", `User name changed to ${fullName}`);
   };
-
   const handleEditUserEmail = async (userId: string, emailAddress: string) => {
     await updateUserEmail({
       variables: {
@@ -90,6 +91,19 @@ export const AdminManageUser: React.FC = () => {
       ...foundUser,
       email: emailAddress,
     } as SettingsUser);
+  };
+  const handleResetUserPassword = async (userId: string) => {
+    await resetPassword({
+      variables: {
+        id: userId,
+      },
+    });
+    const fullName = displayFullName(
+      foundUser?.firstName,
+      foundUser?.middleName,
+      foundUser?.lastName
+    );
+    showSuccess("", `Password reset for ${fullName}`);
   };
 
   return (
@@ -164,9 +178,9 @@ export const AdminManageUser: React.FC = () => {
                   isUserEdited={tempBoolean}
                   handleEditUserName={handleEditUserName}
                   handleEditUserEmail={handleEditUserEmail}
+                  handleResetUserPassword={handleResetUserPassword}
                   handleDeleteUser={tempFunction}
                   handleReactivateUser={tempFunction}
-                  handleResetUserPassword={tempFunction}
                   handleResetUserMfa={tempFunction}
                   handleResendUserActivationEmail={tempFunction}
                   updateUser={{} as UpdateUser}
