@@ -1,30 +1,27 @@
-name: Rollback DB
+name: Liquibase Rollback
 
 concurrency:
-  group: rollback-db
+  group: db-actions
   cancel-in-progress: false
 
 on:
   workflow_dispatch:
     inputs:
       deploy_env:
-        description: |
-          The environment of the database.
+        description: The environment of the database.
         required: true
         type: choice
         options: [demo, dev, dev2, dev3, dev4, dev5, dev6, dev7, pentest, test, training, stg, prod]
         default: dev
       action:
-        description: |
-          The liquibase action to run.
+        description: The liquibase action to run.
         required: true
         type: choice
-        options: [validate, clear-checksums, rollback]
-        default: validate
+        options: [rollback]
+        default: rollback
       liquibase_rollback_tag:
-        description: |
-          Only required if rollback is selected.
-          The Liquibase tag to roll back to
+        description: The Liquibase tag to roll back to
+        required: true
         type: string
         default: ""
 
