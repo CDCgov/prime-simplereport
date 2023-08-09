@@ -15,8 +15,40 @@ describe("Admin manage user", () => {
         </MockedProvider>
       </MemoryRouter>
     );
-  it("displays accurately", () => {
-    const { container } = renderComponent();
+  it("search results matches snapshot", async () => {
+    const { container } = renderComponent([
+      {
+        request: {
+          query: FindUserByEmailDocument,
+          variables: { email: "ben@example.com" },
+        },
+        result: {
+          data: {
+            user: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+              firstName: "Ben",
+              middleName: "Billy",
+              lastName: "Barnes",
+              suffix: "III",
+              email: "ben@example.com",
+              isAdmin: false,
+              roleDescription: "Misconfigured user",
+              permissions: [],
+              role: null,
+              roles: [],
+              status: "ACTIVE",
+            },
+          },
+        },
+      },
+    ]);
+    const searchInput = screen.getByLabelText(
+      "Search by email address of user"
+    );
+    fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
+    fireEvent.click(screen.getByRole("button"));
+
+    await screen.findByText("Barnes, Ben Billy");
     expect(container).toMatchSnapshot();
   });
   describe("search error", () => {
