@@ -5,10 +5,26 @@ import Modal from "../../commonComponents/Modal";
 
 import { ManageFacilityState } from "./ManageFacility";
 
+type FacilityDataItemProps = {
+  title: string;
+  description: string;
+};
+
+const FacilityDataItem: React.FC<FacilityDataItemProps> = ({
+  title,
+  description,
+}) => (
+  <div className="margin-y-3">
+    <h4 className="margin-y-1">{title}</h4>
+    <p className="margin-y-1">{description}</p>
+  </div>
+);
+
 export interface FacilityInformationProps {
   onFacilityDelete: () => void;
   manageFacilityState: ManageFacilityState;
 }
+
 const FacilityInformation: React.FC<FacilityInformationProps> = ({
   manageFacilityState,
   onFacilityDelete,
@@ -82,29 +98,28 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
           </div>
           <div className="usa-card__body">
             <h3 className="margin-y-3">Facility information</h3>
-            <div className="margin-y-3">
-              <h4 className="margin-y-1">Facility name</h4>
-              <p className="margin-y-1">{manageFacilityState.facility.name}</p>
-            </div>
-            <div className="margin-y-3">
-              <h4 className="margin-y-1">Location</h4>
-              <p className="margin-y-1">
-                {manageFacilityState.facility.city &&
-                  manageFacilityState.facility.city !== "" &&
-                  manageFacilityState.facility.city?.concat(", ")}
-                {`${manageFacilityState.facility.state} ${manageFacilityState.facility.zipcode}`}
-              </p>
-            </div>
-            <div className="margin-y-3">
-              <h4 className="margin-y-1">Organization</h4>
-              <p className="margin-y-1">{manageFacilityState.facility.org}</p>
-            </div>
-            <div className="margin-y-3">
-              <h4 className="margin-y-1">Organization type</h4>
-              <p className="margin-y-1">
-                {manageFacilityState.facility.orgType}
-              </p>
-            </div>
+            <FacilityDataItem
+              title="Facility name"
+              description={manageFacilityState.facility.name}
+            />
+            <FacilityDataItem
+              title="Location"
+              description={`${
+                manageFacilityState.facility.city &&
+                manageFacilityState.facility.city !== "" &&
+                manageFacilityState.facility.city?.concat(", ")
+              }${manageFacilityState.facility.state} ${
+                manageFacilityState.facility.zipcode
+              }`}
+            />
+            <FacilityDataItem
+              title="Organization"
+              description={manageFacilityState.facility.org}
+            />
+            <FacilityDataItem
+              title="Organization type"
+              description={manageFacilityState.facility.orgType}
+            />
             <h3 className="margin-top-6">Facility controls</h3>
             <div className="margin-y-3">
               <h4 className="margin-y-1">Delete facility</h4>

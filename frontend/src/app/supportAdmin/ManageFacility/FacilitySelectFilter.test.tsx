@@ -7,7 +7,6 @@ import { Option } from "../../commonComponents/Dropdown";
 import FacilitySelectFilter from "./FacilitySelectFilter";
 import { initialState, ManageFacilityState } from "./ManageFacility";
 
-
 describe("FacilitySelectFilter", () => {
   const handleClearFilter = jest.fn();
   const handleSelectOrg = jest.fn();

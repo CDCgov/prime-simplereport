@@ -576,7 +576,7 @@ public class TestOrderService {
             .getFacilityById(facilityId)
             .orElseThrow(() -> new IllegalGraphqlArgumentException("Facility not found."));
     List<TestOrder> orders = _testOrderRepo.fetchQueueItemsByFacilityId(facility);
-    orders.stream().forEach(order -> order.cancelOrder());
+    orders.stream().forEach(TestOrder::cancelOrder);
     _testOrderRepo.saveAll(orders);
   }
 
