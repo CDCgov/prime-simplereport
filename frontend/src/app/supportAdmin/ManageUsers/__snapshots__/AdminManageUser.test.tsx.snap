@@ -1,0 +1,97 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Admin manage user displays accurately 1`] = `
+<div>
+  <div
+    class="prime-home flex-1"
+  >
+    <div
+      class="grid-container"
+    >
+      <div
+        class="prime-container card-container padding-3"
+      >
+        <div
+          class="display-flex flex-justify"
+        >
+          <div>
+            <div
+              class="display-flex flex-align-center"
+            >
+              <svg
+                class="usa-icon text-base margin-left-neg-2px"
+                focusable="false"
+                height="1em"
+                role="img"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                />
+              </svg>
+              <a
+                class="margin-left-05"
+                href="/admin"
+              >
+                Support Admin
+              </a>
+            </div>
+            <div
+              class="prime-edit-patient-heading margin-y-0"
+            >
+              <h1
+                class="font-heading-lg margin-top-1 margin-bottom-0"
+              >
+                Manage Users
+              </h1>
+            </div>
+          </div>
+        </div>
+        <div
+          class="padding-top-5 padding-bottom-7"
+        >
+          <div
+            class="prime-search-container"
+          >
+            <form
+              class="usa-search usa-search--small prime-search-input display-inline-block"
+              role="search"
+            >
+              <label
+                class="display-block"
+                for="search-field-small"
+              >
+                Search by email address of user
+              </label>
+              <div>
+                <input
+                  autocomplete="off"
+                  class="usa-input"
+                  id="search-field-small"
+                  name="search"
+                  placeholder="email@example.com"
+                  type="search"
+                  value=""
+                />
+                <button
+                  class="usa-button"
+                  disabled=""
+                  type="submit"
+                >
+                  <img
+                    alt="Search"
+                    class="usa-search__submit-icon"
+                    src="search--white.svg"
+                  />
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

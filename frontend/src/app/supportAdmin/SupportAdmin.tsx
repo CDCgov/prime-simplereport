@@ -9,6 +9,7 @@ import {
   devicesColumnTitle,
   editDevicePageTitle,
   identityVerificationPageTitle,
+  manageUserPageTitle,
   orgAccessPageTitle,
   orgFacilityColumnTitle,
   usersAndPatientsColumnTitle,
@@ -32,6 +33,7 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
 const SupportAdmin = () => {
   useDocumentTitle("Support admin");
   const hivEnabled = useFeature("hivEnabled") as boolean;
+  const manageUserEnabled = useFeature("manageUserEnabled") as boolean;
 
   return (
     <div className="prime-home flex-1">
@@ -77,7 +79,15 @@ const SupportAdmin = () => {
                   </li>
                 </CategoryMenu>
                 <CategoryMenu heading={usersAndPatientsColumnTitle}>
-                  <li></li>
+                  <li>
+                    {manageUserEnabled && (
+                      <li>
+                        <LinkWithQuery to="/admin/manage-users">
+                          {manageUserPageTitle}
+                        </LinkWithQuery>
+                      </li>
+                    )}
+                  </li>
                 </CategoryMenu>
                 {hivEnabled && (
                   <CategoryMenu heading="Beta">
