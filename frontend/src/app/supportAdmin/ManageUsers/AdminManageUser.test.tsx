@@ -154,7 +154,7 @@ describe("Admin manage user", () => {
     fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
     fireEvent.click(screen.getByRole("button"));
 
-    await screen.findByText("Barnes, Ben Billy");
+    expect(await screen.findByText("Barnes, Ben Billy")).toBeInTheDocument();
   }
 
   describe("editing user", () => {
@@ -188,7 +188,9 @@ describe("Admin manage user", () => {
       fireEvent.change(lastNameField, { target: { value: "Smith" } });
       fireEvent.click(screen.getByText("Confirm"));
 
-      await screen.findByText("Smith, Granny Billy");
+      expect(
+        await screen.findByText("Smith, Granny Billy")
+      ).toBeInTheDocument();
     });
     it("edit email handler calls", async () => {
       const updateUserNameResponse = {
