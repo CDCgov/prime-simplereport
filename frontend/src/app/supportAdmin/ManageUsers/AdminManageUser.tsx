@@ -9,6 +9,7 @@ import {
   useFindUserByEmailLazyQuery,
   useResetUserMfaMutation,
   useResetUserPasswordMutation,
+  useSetUserIsDeletedMutation,
   useUpdateUserNameMutation,
 } from "../../../generated/graphql";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
@@ -51,6 +52,7 @@ export const AdminManageUser: React.FC = () => {
   const [updateUserEmail] = useEditUserEmailMutation();
   const [resetPassword] = useResetUserPasswordMutation();
   const [resetMfa] = useResetUserMfaMutation();
+  const [deleteUser] = useSetUserIsDeletedMutation();
 
   const tempFunction = () => {};
   const tempBoolean = false;
@@ -119,6 +121,22 @@ export const AdminManageUser: React.FC = () => {
       foundUser?.lastName
     );
     showSuccess("", `MFA reset for ${fullName}`);
+  };
+  const handleDeleteUser = async (userId: string) => {
+    await deleteUser({
+      variables: {
+        id: userId,
+        deleted: true,
+      },
+    });
+    const fullName = displayFullName(
+      foundUser?.firstName,
+      foundUser?.middleName,
+      foundUser?.lastName
+    );
+
+    setFoundUser({ ...foundUser, isDeleted: true } as SettingsUser);
+    showSuccess("", `User account removed for ${fullName}`);
   };
 
   return (
@@ -195,13 +213,13 @@ export const AdminManageUser: React.FC = () => {
                   handleEditUserEmail={handleEditUserEmail}
                   handleResetUserPassword={handleResetUserPassword}
                   handleResetUserMfa={handleResetUserMfa}
-                  handleDeleteUser={tempFunction}
+                  handleDeleteUser={handleDeleteUser}
                   handleReactivateUser={tempFunction}
                   handleResendUserActivationEmail={tempFunction}
-                  updateUser={{} as UpdateUser}
                   // used in facility tab
                   allFacilities={[]}
                   handleUpdateUser={tempFunction}
+                  updateUser={{} as UpdateUser}
                 />
               </div>
             </div>

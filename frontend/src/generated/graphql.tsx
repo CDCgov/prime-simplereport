@@ -1690,6 +1690,7 @@ export type FindUserByEmailQuery = {
     permissions: Array<UserPermission>;
     email: string;
     status?: string | null;
+    isDeleted?: boolean | null;
     organization?: {
       __typename?: "Organization";
       testingFacility: Array<{
@@ -4959,6 +4960,8 @@ export const FindUserByEmailDocument = gql`
           name
         }
       }
+      isDeleted
+      status
     }
   }
 `;

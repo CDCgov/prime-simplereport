@@ -15,5 +15,7 @@ query findUserByEmail($email: String!) {
                 name
             }
         }
+        isDeleted
+        status
     }
 }

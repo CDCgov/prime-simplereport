@@ -8,6 +8,7 @@ import {
   FindUserByEmailDocument,
   ResetUserMfaDocument,
   ResetUserPasswordDocument,
+  SetUserIsDeletedDocument,
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
 
@@ -273,6 +274,32 @@ describe("Admin manage user", () => {
 
     expect(
       await screen.findByText("MFA reset for Barnes, Ben Billy")
+    ).toBeInTheDocument();
+  });
+  it("delete user handler", async () => {
+    const resetUserPasswordResponse = {
+      request: {
+        query: SetUserIsDeletedDocument,
+        variables: {
+          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+          deleted: true,
+        },
+      },
+      result: {
+        data: {
+          setUserIsDeleted: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+          },
+        },
+      },
+    };
+    renderComponent([...validResponse, resetUserPasswordResponse]);
+    await searchForValidUser();
+    fireEvent.click(screen.getAllByText("Delete user")[1]);
+    fireEvent.click(await screen.findByText("Yes, I'm sure"));
+
+    expect(
+      await screen.findByText("User account removed for Barnes, Ben Billy")
     ).toBeInTheDocument();
   });
 });

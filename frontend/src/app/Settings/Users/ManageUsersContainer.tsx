@@ -34,6 +34,7 @@ export interface SettingsUser {
   permissions: UserPermission[];
   email: string;
   status?: Maybe<string>;
+  isDeleted?: boolean;
   organization?: Maybe<{
     testingFacility: UserFacilitySetting[];
   }>;
