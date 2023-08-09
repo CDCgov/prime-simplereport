@@ -232,7 +232,7 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateEditUserNameModal(true)}
             label={"Edit name"}
-            disabled={isUpdating || !isUserActive()}
+            disabled={isUpdating || !isUserActive() || user.isDeleted}
           />
         </div>
         <div
@@ -250,7 +250,7 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateEditUserEmailModal(true)}
             label={"Edit email"}
-            disabled={isUpdating || !isUserActive()}
+            disabled={isUpdating || !isUserActive() || user.isDeleted}
           />
         </div>
         <div className="userinfo-divider"></div>
@@ -273,7 +273,7 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResetPasswordModal(true)}
             label={"Send password reset email"}
-            disabled={isUpdating || !isUserActive()}
+            disabled={isUpdating || !isUserActive() || user.isDeleted}
           />
         </div>
         <div
@@ -295,7 +295,7 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResetMfaModal(true)}
             label={"Reset MFA"}
-            disabled={isUpdating || !isUserActive()}
+            disabled={isUpdating || !isUserActive() || user.isDeleted}
           />
         </div>
         <div
@@ -315,7 +315,7 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowDeleteUserModal(true)}
             label={"Delete user"}
-            disabled={isUpdating || isUserSelf()}
+            disabled={isUpdating || isUserSelf() || user.isDeleted}
           />
         </div>
       </div>

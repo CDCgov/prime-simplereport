@@ -301,5 +301,10 @@ describe("Admin manage user", () => {
     expect(
       await screen.findByText("User account removed for Barnes, Ben Billy")
     ).toBeInTheDocument();
+    expect(screen.getByText("Edit name")).toBeDisabled();
+    expect(screen.getByText("Edit email")).toBeDisabled();
+    expect(screen.getByText("Send password reset email")).toBeDisabled();
+    expect(screen.getByText("Reset MFA")).toBeDisabled();
+    expect(screen.getAllByText("Delete user")[1]).toBeDisabled();
   });
 });
