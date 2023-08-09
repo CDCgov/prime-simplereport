@@ -3,6 +3,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 
 import {
+  EditUserEmailDocument,
   FindUserByEmailDocument,
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
@@ -40,7 +41,7 @@ describe("Admin manage user", () => {
   const renderComponent = (mocks?: any[]) =>
     render(
       <MemoryRouter>
-        <MockedProvider mocks={mocks}>
+        <MockedProvider mocks={mocks} addTypename={false}>
           <AdminManageUser />
         </MockedProvider>
       </MemoryRouter>
@@ -140,6 +141,17 @@ describe("Admin manage user", () => {
       ).toBeInTheDocument();
     });
   });
+
+  async function searchForValidUser() {
+    const searchInput = screen.getByLabelText(
+      "Search by email address of user"
+    );
+    fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
+    fireEvent.click(screen.getByRole("button"));
+
+    await screen.findByText("Barnes, Ben Billy");
+  }
+
   describe("editing user", () => {
     it("edit name handler calls ", async () => {
       const updateUserNameResponse = {
@@ -155,20 +167,14 @@ describe("Admin manage user", () => {
         },
         result: {
           data: {
-            user: {
+            updateUser: {
               id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
             },
           },
         },
       };
       renderComponent([...validResponse, updateUserNameResponse]);
-      const searchInput = screen.getByLabelText(
-        "Search by email address of user"
-      );
-      fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
-      fireEvent.click(screen.getByRole("button"));
-
-      await screen.findByText("Barnes, Ben Billy");
+      await searchForValidUser();
       fireEvent.click(screen.getByText("Edit name"));
       await screen.findByText("Edit name for Barnes, Ben");
       const firstNameField = screen.getByLabelText("First name *");
@@ -178,6 +184,34 @@ describe("Admin manage user", () => {
       fireEvent.click(screen.getByText("Confirm"));
 
       await screen.findByText("Smith, Granny Billy");
+    });
+    it("edit email handler calls ", async () => {
+      const updateUserNameResponse = {
+        request: {
+          query: EditUserEmailDocument,
+          variables: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            email: "granny@example.com",
+          },
+        },
+        result: {
+          data: {
+            updateUserEmail: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+              email: "granny@example.com",
+            },
+          },
+        },
+      };
+      renderComponent([...validResponse, updateUserNameResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getByText("Edit email"));
+      await screen.findByText("Edit email address for Barnes, Ben Billy");
+      const emailField = screen.getByLabelText("Email address *");
+      fireEvent.change(emailField, { target: { value: "granny@example.com" } });
+      fireEvent.click(screen.getByText("Confirm"));
+
+      await screen.findByText("granny@example.com");
     });
   });
 });

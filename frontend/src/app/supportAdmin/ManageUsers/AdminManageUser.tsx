@@ -5,6 +5,7 @@ import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import {
+  useEditUserEmailMutation,
   useFindUserByEmailLazyQuery,
   useUpdateUserNameMutation,
 } from "../../../generated/graphql";
@@ -45,6 +46,7 @@ export const AdminManageUser: React.FC = () => {
     fetchPolicy: "no-cache",
   });
   const [updateUserName] = useUpdateUserNameMutation();
+  const [updateUserEmail] = useEditUserEmailMutation();
 
   const tempFunction = () => {};
   const tempBoolean = false;
@@ -74,6 +76,20 @@ export const AdminManageUser: React.FC = () => {
     } as SettingsUser);
     const fullName = displayFullName(firstName, "", lastName);
     showSuccess("", `User name changed to ${fullName}`);
+  };
+
+  const handleEditUserEmail = async (userId: string, emailAddress: string) => {
+    await updateUserEmail({
+      variables: {
+        id: userId,
+        email: emailAddress,
+      },
+    });
+    showSuccess("", `User email address changed to ${emailAddress}`);
+    setFoundUser({
+      ...foundUser,
+      email: emailAddress,
+    } as SettingsUser);
   };
 
   return (
@@ -147,9 +163,9 @@ export const AdminManageUser: React.FC = () => {
                   isUpdating={tempBoolean}
                   isUserEdited={tempBoolean}
                   handleEditUserName={handleEditUserName}
+                  handleEditUserEmail={handleEditUserEmail}
                   handleDeleteUser={tempFunction}
                   handleReactivateUser={tempFunction}
-                  handleEditUserEmail={tempFunction}
                   handleResetUserPassword={tempFunction}
                   handleResetUserMfa={tempFunction}
                   handleResendUserActivationEmail={tempFunction}
