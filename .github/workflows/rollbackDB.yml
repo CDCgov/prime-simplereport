@@ -1,5 +1,9 @@
 name: Rollback DB
 
+concurrency:
+  group: rollback-db
+  cancel-in-progress: false
+
 on:
   workflow_dispatch:
     inputs:
@@ -44,4 +48,3 @@ jobs:
           terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
           terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
           terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-          okta_api_token: ${{ secrets.OKTA_API_TOKEN }}      

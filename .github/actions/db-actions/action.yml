@@ -38,10 +38,6 @@ inputs:
   terraform_arm_tenant_id:
     description: Terraform ARM tenant id
     required: true
-  okta_api_token:
-    description: Okta API token
-    required: true
-  
 
 runs:
   using: composite
@@ -74,17 +70,15 @@ runs:
       working-directory: ./backend
       env:
         DOCKER_COMPOSE_FILE: ${{ inputs.docker_compose_file }}
+        GIT_SHA: ${{ inputs.action }}
       run: ./build_and_push.sh
-
-    - name: Checkout the repo
-      uses: actions/checkout@v3
     
     - name: Terraform setup
       uses: hashicorp/setup-terraform@v2.0.3
       with:
         terraform_version: 1.3.3
     
-    - name: Terraform
+    - name: Terraform init
       shell: bash
       working-directory: ./ops
       env:
@@ -92,9 +86,17 @@ runs:
         ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
         ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
         ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
-        OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
+      run: make init-${{ inputs.deploy_env }}
+
+    - name: Terraform apply DB db_liquibase_action Container Instance
+      shell: bash
+      working-directory: ./ops
+      env:
+        ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
+        ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
+        ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
       run: |
-        make init-${{ inputs.deploy_env }}
         terraform -chdir=${{ inputs.deploy_env }} apply \
         -var acr_image_tag=dummy \
         -var liquibase_rollback_tag="${{ inputs.liquibase_rollback_tag }}" \
@@ -119,6 +121,12 @@ runs:
     - name: Terraform destroy DB db_liquibase_action Container Instance
       if: always()
       shell: bash
+      working-directory: ./ops
+      env:
+        ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
+        ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
+        ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
       run: |
         terraform -chdir=${{ inputs.deploy_env }} destroy \
         -var acr_image_tag=dummy \
