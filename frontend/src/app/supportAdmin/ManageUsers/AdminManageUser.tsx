@@ -7,6 +7,7 @@ import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import {
   useEditUserEmailMutation,
   useFindUserByEmailLazyQuery,
+  useResetUserMfaMutation,
   useResetUserPasswordMutation,
   useUpdateUserNameMutation,
 } from "../../../generated/graphql";
@@ -49,6 +50,7 @@ export const AdminManageUser: React.FC = () => {
   const [updateUserName] = useUpdateUserNameMutation();
   const [updateUserEmail] = useEditUserEmailMutation();
   const [resetPassword] = useResetUserPasswordMutation();
+  const [resetMfa] = useResetUserMfaMutation();
 
   const tempFunction = () => {};
   const tempBoolean = false;
@@ -104,6 +106,19 @@ export const AdminManageUser: React.FC = () => {
       foundUser?.lastName
     );
     showSuccess("", `Password reset for ${fullName}`);
+  };
+  const handleResetUserMfa = async (userId: string) => {
+    await resetMfa({
+      variables: {
+        id: userId,
+      },
+    });
+    const fullName = displayFullName(
+      foundUser?.firstName,
+      foundUser?.middleName,
+      foundUser?.lastName
+    );
+    showSuccess("", `MFA reset for ${fullName}`);
   };
 
   return (
@@ -179,9 +194,9 @@ export const AdminManageUser: React.FC = () => {
                   handleEditUserName={handleEditUserName}
                   handleEditUserEmail={handleEditUserEmail}
                   handleResetUserPassword={handleResetUserPassword}
+                  handleResetUserMfa={handleResetUserMfa}
                   handleDeleteUser={tempFunction}
                   handleReactivateUser={tempFunction}
-                  handleResetUserMfa={tempFunction}
                   handleResendUserActivationEmail={tempFunction}
                   updateUser={{} as UpdateUser}
                   // used in facility tab

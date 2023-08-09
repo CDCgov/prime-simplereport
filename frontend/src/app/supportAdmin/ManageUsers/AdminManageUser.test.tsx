@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 import {
   EditUserEmailDocument,
   FindUserByEmailDocument,
+  ResetUserMfaDocument,
   ResetUserPasswordDocument,
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
@@ -245,6 +246,33 @@ describe("Admin manage user", () => {
 
     expect(
       await screen.findByText("Password reset for Barnes, Ben Billy")
+    ).toBeInTheDocument();
+  });
+  it("reset user mfa handler", async () => {
+    const resetUserPasswordResponse = {
+      request: {
+        query: ResetUserMfaDocument,
+        variables: {
+          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+        },
+      },
+      result: {
+        data: {
+          resetUserMfa: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+          },
+        },
+      },
+    };
+    renderComponent([...validResponse, resetUserPasswordResponse]);
+    await searchForValidUser();
+    fireEvent.click(screen.getByText("Reset MFA"));
+    fireEvent.click(
+      await screen.findByText("Reset multi-factor authentication")
+    );
+
+    expect(
+      await screen.findByText("MFA reset for Barnes, Ben Billy")
     ).toBeInTheDocument();
   });
 });
