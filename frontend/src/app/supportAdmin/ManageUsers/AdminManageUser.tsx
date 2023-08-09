@@ -74,6 +74,7 @@ export const AdminManageUser: React.FC = () => {
                   ({ data, error }) => {
                     if (!data?.user && !error) {
                       setDisplayedError(userNotFoundError);
+                      setFoundUser(undefined);
                     } else if (
                       error?.message ===
                       "header: Unauthorized access of site admin account; body: Contact development team if you need to access this information."
@@ -85,8 +86,10 @@ export const AdminManageUser: React.FC = () => {
                         "Please escalate this issue to the SimpleReport team.",
                         "Error finding user email"
                       );
+                      setFoundUser(undefined);
                     } else if (error) {
                       setDisplayedError(genericError);
+                      setFoundUser(undefined);
                     } else {
                       setDisplayedError(undefined);
                       setFoundUser(data?.user as SettingsUser);
