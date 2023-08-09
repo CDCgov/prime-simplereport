@@ -340,7 +340,7 @@ public class BulkUploadResultsToFhir {
     var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
     String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
-    String specimenName = getSpecimenTypeDescription(specimenCode);
+    String specimenName = getSpecimenTypeName(specimenCode);
     var specimen =
         fhirConverter.convertToSpecimen(
             ConvertToSpecimenProps.builder()
@@ -445,7 +445,7 @@ public class BulkUploadResultsToFhir {
     return null;
   }
 
-  private String getSpecimenTypeDescription(String loinc) {
+  private String getSpecimenTypeName(String loinc) {
     if (loinc != null) {
       return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(loinc);
     }
