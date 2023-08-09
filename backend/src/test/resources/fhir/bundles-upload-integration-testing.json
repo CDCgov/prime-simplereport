@@ -249,7 +249,7 @@
           "system" : "http://snomed.info/sct",
           "code" : "445297001"
         } ],
-        "text" : "nasal swab"
+        "text" : "swab of the nose"
       },
       "subject" : {
         "reference" : "Patient/1234"
