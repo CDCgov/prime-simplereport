@@ -4,11 +4,15 @@ import { Icon } from "@trussworks/react-uswds";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
-import { useFindUserByEmailLazyQuery } from "../../../generated/graphql";
+import {
+  useFindUserByEmailLazyQuery,
+  useUpdateUserNameMutation,
+} from "../../../generated/graphql";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
-import { showError } from "../../utils/srToast";
+import { showError, showSuccess } from "../../utils/srToast";
 import UserDetail from "../../Settings/Users/UserDetail";
 import { UpdateUser } from "../../Settings/Users/ManageUsers";
+import { displayFullName } from "../../utils";
 
 const userNotFoundError = (
   <div className={"maxw-mobile-lg margin-x-auto"}>
@@ -40,8 +44,38 @@ export const AdminManageUser: React.FC = () => {
   const [getUserByEmail] = useFindUserByEmailLazyQuery({
     fetchPolicy: "no-cache",
   });
+  const [updateUserName] = useUpdateUserNameMutation();
+
   const tempFunction = () => {};
   const tempBoolean = false;
+
+  const handleEditUserName = async (
+    userId: string,
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    suffix: string
+  ) => {
+    await updateUserName({
+      variables: {
+        id: userId,
+        firstName: firstName,
+        middleName: middleName,
+        lastName: lastName,
+        suffix: suffix,
+      },
+    });
+    setFoundUser({
+      ...foundUser,
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+    } as SettingsUser);
+    const fullName = displayFullName(firstName, "", lastName);
+    showSuccess("", `User name changed to ${fullName}`);
+  };
+
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -109,19 +143,20 @@ export const AdminManageUser: React.FC = () => {
               <div className="usa-card__body">
                 <UserDetail
                   user={foundUser}
-                  isUpdating={tempBoolean}
                   loggedInUser={{} as User}
-                  handleDeleteUser={tempFunction}
+                  isUpdating={tempBoolean}
                   isUserEdited={tempBoolean}
+                  handleEditUserName={handleEditUserName}
+                  handleDeleteUser={tempFunction}
                   handleReactivateUser={tempFunction}
-                  handleEditUserName={tempFunction}
                   handleEditUserEmail={tempFunction}
                   handleResetUserPassword={tempFunction}
                   handleResetUserMfa={tempFunction}
                   handleResendUserActivationEmail={tempFunction}
+                  updateUser={{} as UpdateUser}
+                  // used in facility tab
                   allFacilities={[]}
                   handleUpdateUser={tempFunction}
-                  updateUser={{} as UpdateUser}
                 />
               </div>
             </div>
