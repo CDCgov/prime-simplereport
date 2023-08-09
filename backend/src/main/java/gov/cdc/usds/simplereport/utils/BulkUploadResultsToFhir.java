@@ -330,18 +330,22 @@ public class BulkUploadResultsToFhir {
               + ")");
     }
 
+    if (diseaseName == null) {
+      diseaseName = TestResultRow.fluOnlyTestPerformedLoinc.get(testPerformedCode);
+    }
+
     // code was not passed via api or inferred above: defaulting to the test performed code.
     testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
 
     var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
     String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
-    String descriptionValue = getSpecimenTypeDescription(specimenCode);
+    String specimenName = getSpecimenTypeDescription(specimenCode);
     var specimen =
         fhirConverter.convertToSpecimen(
             ConvertToSpecimenProps.builder()
                 .specimenCode(specimenCode)
-                .specimenName(descriptionValue)
+                .specimenName(specimenName)
                 .collectionCode(null)
                 .collectionName(null)
                 .id(uuidGenerator.randomUUID().toString())
@@ -441,11 +445,9 @@ public class BulkUploadResultsToFhir {
     return null;
   }
 
-  private String getSpecimenTypeDescription(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
-      return input;
-    } else if (input.matches(SNOMED_REGEX)) {
-      return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(input);
+  private String getSpecimenTypeDescription(String loinc) {
+    if (loinc != null) {
+      return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(loinc);
     }
     return null;
   }

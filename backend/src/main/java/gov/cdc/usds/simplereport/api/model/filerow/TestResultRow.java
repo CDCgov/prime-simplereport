@@ -1,5 +1,9 @@
 package gov.cdc.usds.simplereport.api.model.filerow;
 
+import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_A_AND_B_NAME;
+import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_A_NAME;
+import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_B_NAME;
+import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_RNA_NAME;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ITEM_SCOPE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
@@ -25,9 +29,9 @@ import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import lombok.Getter;
 
 @Getter
@@ -129,91 +133,96 @@ public class TestResultRow implements FileRow {
   static final String TESTING_LAB_CITY = "testing_lab_city";
   static final String TESTING_LAB_STATE = "testing_lab_state";
   static final String TESTING_LAB_ZIP_CODE_FIELD = "testing_lab_zip_code";
-  static Set<String> fluOnlyTestPerformedLoinc =
-      Set.of(
-          "100973-7",
-          "100974-5",
-          "17015-9",
-          "17016-7",
-          "22096-2",
-          "22825-4",
-          "22827-0",
-          "24015-0",
-          "31437-7",
-          "31438-5",
-          "31859-2",
-          "31864-2",
-          "33535-6",
-          "34487-9",
-          "38381-0",
-          "38382-8",
-          "40982-1",
-          "43874-7",
-          "43895-2",
-          "44558-5",
-          "44563-5",
-          "44564-3",
-          "44567-6",
-          "44570-0",
-          "44571-8",
-          "44573-4",
-          "44575-9",
-          "44577-5",
-          "46082-4",
-          "46083-2",
-          "48310-7",
-          "48509-4",
-          "49521-8",
-          "49523-4",
-          "49524-2",
-          "49531-7",
-          "49535-8",
-          "50697-2",
-          "5229-0",
-          "5230-8",
-          "54243-1",
-          "55463-4",
-          "55464-2",
-          "55465-9",
-          "5862-8",
-          "5863-6",
-          "5866-9",
-          "59423-4",
-          "62462-7",
-          "6435-2",
-          "6437-8",
-          "6438-6",
-          "68986-9",
-          "68987-7",
-          "72356-9",
-          "72366-8",
-          "74785-7",
-          "74786-5",
-          "74787-3",
-          "76078-5",
-          "76080-1",
-          "77026-3",
-          "77027-1",
-          "77028-9",
-          "7920-2",
-          "7931-9",
-          "80381-7",
-          "80382-5",
-          "80383-3",
-          "82166-0",
-          "82167-8",
-          "82168-6",
-          "82169-4",
-          "82170-2",
-          "85476-0",
-          "85477-8",
-          "85478-6",
-          "92141-1",
-          "92142-9",
-          "92976-0",
-          "92977-8",
-          "9531-5",
-          "9534-9");
+
+  public static final HashMap<String, String> fluOnlyTestPerformedLoinc =
+      new HashMap<>() {
+        {
+          put("100973-7", FLU_A_NAME);
+          put("100974-5", FLU_B_NAME);
+          put("17015-9", FLU_B_NAME);
+          put("17016-7", FLU_B_NAME);
+          put("22096-2", FLU_A_NAME);
+          put("22825-4", FLU_A_NAME);
+          put("22827-0", FLU_A_NAME);
+          put("24015-0", FLU_A_AND_B_NAME);
+          put("31437-7", FLU_A_NAME);
+          put("31438-5", FLU_A_NAME);
+          put("31859-2", FLU_A_NAME);
+          put("31864-2", FLU_B_NAME);
+          put("33535-6", FLU_A_AND_B_NAME);
+          put("34487-9", FLU_A_NAME);
+          put("38381-0", FLU_A_NAME);
+          put("38382-8", FLU_B_NAME);
+          put("40982-1", FLU_B_NAME);
+          put("43874-7", FLU_A_NAME);
+          put("43895-2", FLU_B_NAME);
+          put("44558-5", FLU_A_NAME);
+          put("44563-5", FLU_A_NAME);
+          put("44564-3", FLU_A_NAME);
+          put("44567-6", FLU_A_AND_B_NAME);
+          put("44570-0", FLU_B_NAME);
+          put("44571-8", FLU_B_NAME);
+          put("44573-4", FLU_B_NAME);
+          put("44575-9", FLU_B_NAME);
+          put("44577-5", FLU_B_NAME);
+          put("46082-4", FLU_A_NAME);
+          put("46083-2", FLU_B_NAME);
+          put("48310-7", FLU_A_NAME);
+          put("48509-4", FLU_A_AND_B_NAME);
+          put("49521-8", FLU_A_NAME);
+          put("49523-4", FLU_A_NAME);
+          put("49524-2", FLU_A_NAME);
+          put("49531-7", FLU_A_NAME);
+          put("49535-8", FLU_B_NAME);
+          put("50697-2", FLU_A_NAME);
+          put("5229-0", FLU_A_NAME);
+          put("5230-8", FLU_B_NAME);
+          put("54243-1", FLU_RNA_NAME);
+          put("55463-4", FLU_A_NAME);
+          put("55464-2", FLU_A_NAME);
+          put("55465-9", FLU_A_NAME);
+          put("5862-8", FLU_A_NAME);
+          put("5863-6", FLU_A_NAME);
+          put("5866-9", FLU_B_NAME);
+          put("59423-4", FLU_A_NAME);
+          put("62462-7", FLU_A_AND_B_NAME);
+          put("6435-2", FLU_A_AND_B_NAME);
+          put("6437-8", FLU_A_AND_B_NAME);
+          put("6438-6", FLU_A_AND_B_NAME);
+          put("68986-9", FLU_A_NAME);
+          put("68987-7", FLU_A_NAME);
+          put("72356-9", FLU_A_AND_B_NAME);
+          put("72366-8", FLU_A_AND_B_NAME);
+          put("74785-7", FLU_B_NAME);
+          put("74786-5", FLU_B_NAME);
+          put("74787-3", FLU_B_NAME);
+          put("76078-5", FLU_A_NAME);
+          put("76080-1", FLU_B_NAME);
+          put("77026-3", FLU_A_NAME);
+          put("77027-1", FLU_A_NAME);
+          put("77028-9", FLU_A_NAME);
+          put("7920-2", FLU_A_NAME);
+          put("7931-9", FLU_B_NAME);
+          put("80381-7", FLU_A_AND_B_NAME);
+          put("80382-5", FLU_A_NAME);
+          put("80383-3", FLU_B_NAME);
+          put("82166-0", FLU_A_NAME);
+          put("82167-8", FLU_A_NAME);
+          put("82168-6", FLU_A_NAME);
+          put("82169-4", FLU_A_NAME);
+          put("82170-2", FLU_B_NAME);
+          put("85476-0", FLU_A_AND_B_NAME);
+          put("85477-8", FLU_A_NAME);
+          put("85478-6", FLU_B_NAME);
+          put("92141-1", FLU_B_NAME);
+          put("92142-9", FLU_A_NAME);
+          put("92976-0", FLU_B_NAME);
+          put("92977-8", FLU_A_NAME);
+          put("9531-5", FLU_A_NAME);
+          put("9534-9", FLU_B_NAME);
+        }
+      };
+
   private ResultsUploaderCachingService resultsUploaderCachingService;
 
   private static final List<String> requiredFields =
@@ -377,7 +386,7 @@ public class TestResultRow implements FileRow {
   }
 
   private boolean validFluOnlyTestPerformedLoinc(String testPerformedCode) {
-    return testPerformedCode != null && fluOnlyTestPerformedLoinc.contains(testPerformedCode);
+    return testPerformedCode != null && fluOnlyTestPerformedLoinc.containsKey(testPerformedCode);
   }
 
   private boolean validModelTestPerformedCombination(

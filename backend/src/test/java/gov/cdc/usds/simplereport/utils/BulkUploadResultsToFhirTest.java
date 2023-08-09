@@ -344,6 +344,40 @@ public class BulkUploadResultsToFhirTest {
   }
 
   @Test
+  void convertExistingCsv_matchesFhir_with_flu_only() throws IOException {
+    // Mock random UUIDs
+    var mockedUUIDGenerator = mock(UUIDGenerator.class);
+    when(mockedUUIDGenerator.randomUUID())
+        .thenAnswer(
+            (Answer<UUID>) invocation -> UUID.fromString("5db534ea-5e97-4861-ba18-d74acc46db15"));
+
+    // Mock constructed UTC date object
+    var mockedDateGenerator = mock(DateGenerator.class);
+    when(mockedDateGenerator.newDate())
+        .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
+
+    sut =
+        new BulkUploadResultsToFhir(
+            resultsUploaderCachingService,
+            gitProperties,
+            mockedUUIDGenerator,
+            mockedDateGenerator,
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
+
+    InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
+
+    var serializedBundles =
+        sut.convertToFhirBundles(
+            csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    String actualBundles = String.join("\n", serializedBundles);
+
+    InputStream jsonStream = getJsonStream("testResultUpload/fhir-for-csv-with-flu-only.ndjson");
+    String expectedBundleString = inputStreamToString(jsonStream);
+
+    assertThat(actualBundles).isEqualToIgnoringWhitespace(expectedBundleString);
+  }
+
+  @Test
   void convertExistingCsv_matchesFhir_NDJson() throws IOException {
     // Mock random UUIDs
     var mockedUUIDGenerator = mock(UUIDGenerator.class);
