@@ -190,7 +190,8 @@ const UserDetail: React.FC<Props> = ({
 
   const isUserActive = () =>
     user.status !== OktaUserStatus.SUSPENDED &&
-    user.status !== OktaUserStatus.PROVISIONED;
+    user.status !== OktaUserStatus.PROVISIONED &&
+    !user.isDeleted;
 
   const isUserSelf = () => user.id === loggedInUser.id;
 
@@ -232,7 +233,7 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateEditUserNameModal(true)}
             label={"Edit name"}
-            disabled={isUpdating || !isUserActive() || user.isDeleted}
+            disabled={isUpdating || !isUserActive()}
           />
         </div>
         <div
@@ -250,7 +251,7 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateEditUserEmailModal(true)}
             label={"Edit email"}
-            disabled={isUpdating || !isUserActive() || user.isDeleted}
+            disabled={isUpdating || !isUserActive()}
           />
         </div>
         <div className="userinfo-divider"></div>
@@ -273,7 +274,7 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResetPasswordModal(true)}
             label={"Send password reset email"}
-            disabled={isUpdating || !isUserActive() || user.isDeleted}
+            disabled={isUpdating || !isUserActive()}
           />
         </div>
         <div
@@ -295,13 +296,13 @@ const UserDetail: React.FC<Props> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResetMfaModal(true)}
             label={"Reset MFA"}
-            disabled={isUpdating || !isUserActive() || user.isDeleted}
+            disabled={isUpdating || !isUserActive()}
           />
         </div>
         <div
           className={classnames(
             "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": isUserSelf() }
+            { "disabled-dark": isUserSelf() || user.isDeleted }
           )}
         >
           <div>

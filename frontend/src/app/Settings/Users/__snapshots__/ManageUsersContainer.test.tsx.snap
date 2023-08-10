@@ -258,6 +258,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
                 </p>
               </div>
               <button
+                aria-disabled="false"
                 class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
                 type="button"
               >
@@ -280,6 +281,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
                 </p>
               </div>
               <button
+                aria-disabled="false"
                 class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
                 type="button"
               >
@@ -312,6 +314,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
                 </p>
               </div>
               <button
+                aria-disabled="false"
                 class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
                 type="button"
               >
@@ -336,6 +339,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
                 </p>
               </div>
               <button
+                aria-disabled="false"
                 class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
                 type="button"
               >
