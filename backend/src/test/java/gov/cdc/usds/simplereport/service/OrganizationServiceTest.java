@@ -8,7 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 
+import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.OrderingProviderRequiredException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -21,11 +24,14 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,6 +40,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
@@ -42,10 +49,11 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
   @Autowired private TestDataFactory testDataFactory;
   @Autowired private PatientRegistrationLinkRepository patientRegistrationLinkRepository;
-  @Autowired private FacilityRepository facilityRepository;
+  @Autowired @SpyBean private FacilityRepository facilityRepository;
   @Autowired private OrganizationRepository organizationRepository;
-
   @Autowired private DeviceTypeRepository deviceTypeRepository;
+  @Autowired @SpyBean private OktaRepository oktaRepository;
+  @Autowired @SpyBean private PersonRepository personRepository;
 
   @BeforeEach
   void setupData() {
@@ -347,6 +355,40 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     var inaccessibleOrgId = UUID.randomUUID();
     assertThrows(
         AccessDeniedException.class, () -> _service.getPermissibleOrgId(inaccessibleOrgId));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getFacilityStats_notAuthorizedError() {
+    UUID facilityId = UUID.randomUUID();
+    assertThrows(AccessDeniedException.class, () -> _service.getFacilityStats(facilityId));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilityStats_argumentMissingError() {
+    assertThrows(IllegalGraphqlArgumentException.class, () -> _service.getFacilityStats(null));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilityStats_facilityNotFoundError() {
+    UUID facilityId = UUID.randomUUID();
+    doReturn(Optional.empty()).when(this.facilityRepository).findById(facilityId);
+    assertThrows(IllegalGraphqlArgumentException.class, () -> _service.getFacilityStats(null));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getFacilityStats_success() {
+    UUID facilityId = UUID.randomUUID();
+    Facility mockFacility = mock(Facility.class);
+    doReturn(Optional.of(mockFacility)).when(this.facilityRepository).findById(facilityId);
+    doReturn(2).when(oktaRepository).getUsersInSingleFacility(mockFacility);
+    doReturn(1).when(personRepository).countByFacilityAndIsDeleted(mockFacility, false);
+    FacilityStats stats = _service.getFacilityStats(facilityId);
+    assertEquals(2, stats.getUsersSingleAccessCount());
+    assertEquals(1, stats.getPatientsSingleAccessCount());
   }
 
   @Nested

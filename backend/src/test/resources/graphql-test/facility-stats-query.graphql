@@ -1,0 +1,6 @@
+query GetFacilityStats($facilityId: ID!) {
+    facilityStats(facilityId: $facilityId){
+        usersSingleAccessCount
+        patientsSingleAccessCount
+    }
+}

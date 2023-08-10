@@ -2136,8 +2136,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void removeFromQueueByFacilityId_notAuthorizedError() {
+    UUID facilityId = UUID.randomUUID();
     assertThrows(
-        AccessDeniedException.class, () -> _service.removeFromQueueByFacilityId(UUID.randomUUID()));
+        AccessDeniedException.class, () -> _service.removeFromQueueByFacilityId(facilityId));
   }
 
   @Test
@@ -2159,8 +2160,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     doReturn(Optional.of(mockFacility)).when(this._organizationService).getFacilityById(facilityId);
     doReturn(mockOrders).when(_testOrderRepository).fetchQueueItemsByFacilityId(mockFacility);
     ArgumentCaptor<List<TestOrder>> ordersCaptor = ArgumentCaptor.forClass(List.class);
-
     doReturn(null).when(_testOrderRepository).saveAll(ordersCaptor.capture());
+
+    _service.removeFromQueueByFacilityId(facilityId);
+    assertEquals(mockOrders, ordersCaptor.getValue());
   }
 
   private List<TestEvent> makeAdminData() {
