@@ -1,6 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
 
 import { Option } from "../../commonComponents/Dropdown";
 
@@ -56,7 +55,7 @@ describe("FacilitySelectFilter", () => {
       name: /clear facility selection filters/i,
     });
     expect(clearFiltersBtn).toBeEnabled();
-    userEvent.click(clearFiltersBtn);
+    fireEvent.click(clearFiltersBtn);
     await waitFor(() => expect(handleClearFilter).toHaveBeenCalled());
   });
 

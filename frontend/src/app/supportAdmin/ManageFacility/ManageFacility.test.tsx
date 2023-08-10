@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
-import userEvent from "@testing-library/user-event";
 
 import {
   DeleteFacilityDocument,
@@ -75,7 +74,7 @@ describe("ManageFacility", () => {
     }); // picks Dis Organization
 
     await waitFor(() => expect(clearFiltersBtn).toBeEnabled());
-    userEvent.click(clearFiltersBtn);
+    fireEvent.click(clearFiltersBtn);
 
     await waitFor(() => expect(clearFiltersBtn).toBeDisabled());
     expect(orgDropdown).toHaveValue("");
@@ -106,13 +105,13 @@ describe("ManageFacility", () => {
     const deleteFacilityBtn = screen.getByRole("button", {
       name: /delete facility testing site/i,
     });
-    userEvent.click(deleteFacilityBtn);
+    fireEvent.click(deleteFacilityBtn);
 
     await screen.findByRole("heading", { name: /delete testing site/i });
     const yesDeleteBtn = screen.getByRole("button", {
       name: /yes, delete facility/i,
     });
-    userEvent.click(yesDeleteBtn);
+    fireEvent.click(yesDeleteBtn);
 
     await waitFor(() =>
       expect(
@@ -122,7 +121,7 @@ describe("ManageFacility", () => {
 
     // Facility testing site successfully deleted
     // page resets
-    expect(orgDropdown).toHaveValue("");
+    await waitFor(() => expect(orgDropdown).toHaveValue(""));
     expect(facilityDropdown).toHaveValue("");
     expect(clearFiltersBtn).toBeDisabled();
   });

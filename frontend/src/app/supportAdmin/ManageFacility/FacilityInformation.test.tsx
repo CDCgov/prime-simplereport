@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 import FacilityInformation from "./FacilityInformation";
 import { initialState, ManageFacilityState } from "./ManageFacility";
@@ -53,11 +52,11 @@ describe("Facility Information", () => {
     const deleteFacilityBtn = screen.getByRole("button", {
       name: /delete facility the new center/i,
     });
-    userEvent.click(deleteFacilityBtn);
+    fireEvent.click(deleteFacilityBtn);
     await screen.findByRole("heading", { name: /delete the new center/i });
     expect(document.body).toMatchSnapshot();
     const noGoBackBtn = screen.getByRole("button", { name: /no, go back/i });
-    userEvent.click(noGoBackBtn);
+    fireEvent.click(noGoBackBtn);
     await waitFor(() =>
       expect(
         screen.queryByRole("heading", { name: /delete the new center/i })
@@ -76,13 +75,13 @@ describe("Facility Information", () => {
       name: /delete facility the new center/i,
     });
 
-    userEvent.click(deleteFacilityBtn);
+    fireEvent.click(deleteFacilityBtn);
     await screen.findByRole("heading", { name: /delete the new center/i });
 
     const yesDeleteBtn = screen.getByRole("button", {
       name: /yes, delete facility/i,
     });
-    userEvent.click(yesDeleteBtn);
+    fireEvent.click(yesDeleteBtn);
     await waitFor(() =>
       expect(
         screen.queryByRole("heading", { name: /delete the new center/i })
