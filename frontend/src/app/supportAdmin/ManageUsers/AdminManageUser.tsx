@@ -15,7 +15,7 @@ import {
   useUpdateUserNameMutation,
 } from "../../../generated/graphql";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
-import { showError, showSuccess } from "../../utils/srToast";
+import { showSuccess } from "../../utils/srToast";
 import UserDetail from "../../Settings/Users/UserDetail";
 import { UpdateUser } from "../../Settings/Users/ManageUsers";
 import { displayFullName } from "../../utils";
@@ -229,15 +229,9 @@ export const AdminManageUser: React.FC = () => {
                       setFoundUser(undefined);
                     } else if (
                       error?.message ===
-                      "header: Unauthorized access of site admin account; body: Contact development team if you need to access this information."
+                      "header: Error finding user email; body: Please escalate this issue to the SimpleReport team."
                     ) {
-                      // todo: figure out if it's ok to display two errors
-                      // displays error here & in apolloLink for onError
                       setDisplayedError(userIdentityError);
-                      showError(
-                        "Please escalate this issue to the SimpleReport team.",
-                        "Error finding user email"
-                      );
                       setFoundUser(undefined);
                     } else if (error) {
                       setDisplayedError(genericError);

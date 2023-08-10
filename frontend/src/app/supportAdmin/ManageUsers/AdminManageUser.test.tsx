@@ -105,7 +105,7 @@ describe("Admin manage user", () => {
             errors: [
               {
                 message:
-                  "header: Unauthorized access of site admin account; body: Contact development team if you need to access this information.",
+                  "header: Error finding user email; body: Please escalate this issue to the SimpleReport team.",
                 locations: [],
                 path: ["user"],
                 extensions: {
