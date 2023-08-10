@@ -8,6 +8,7 @@ import {
   useEditUserEmailMutation,
   useFindUserByEmailLazyQuery,
   useReactivateUserAndResetPasswordMutation,
+  useResendActivationEmailMutation,
   useResetUserMfaMutation,
   useResetUserPasswordMutation,
   useSetUserIsDeletedMutation,
@@ -57,6 +58,8 @@ export const AdminManageUser: React.FC = () => {
   const [deleteUser] = useSetUserIsDeletedMutation();
   const [reactivateUserAndResetPassword] =
     useReactivateUserAndResetPasswordMutation();
+  const [resendUserActivationEmail] = useResendActivationEmailMutation();
+
   const tempFunction = () => {};
   const tempBoolean = false;
 
@@ -158,7 +161,19 @@ export const AdminManageUser: React.FC = () => {
     } as SettingsUser);
     showSuccess("", `${fullName} has been reactivated.`);
   };
-
+  const handleResendUserActivationEmail = async (userId: string) => {
+    await resendUserActivationEmail({
+      variables: {
+        id: userId,
+      },
+    });
+    const fullName = displayFullName(
+      foundUser?.firstName,
+      foundUser?.middleName,
+      foundUser?.lastName
+    );
+    showSuccess("", `${fullName} has been sent a new invitation.`);
+  };
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -235,7 +250,9 @@ export const AdminManageUser: React.FC = () => {
                   handleResetUserMfa={handleResetUserMfa}
                   handleDeleteUser={handleDeleteUser}
                   handleReactivateUser={handleReactivateUser}
-                  handleResendUserActivationEmail={tempFunction}
+                  handleResendUserActivationEmail={
+                    handleResendUserActivationEmail
+                  }
                   // used in facility tab
                   allFacilities={[]}
                   handleUpdateUser={tempFunction}

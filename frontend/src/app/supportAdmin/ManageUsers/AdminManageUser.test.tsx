@@ -9,6 +9,7 @@ import {
   EditUserEmailDocument,
   FindUserByEmailDocument,
   ReactivateUserAndResetPasswordDocument,
+  ResendActivationEmailDocument,
   ResetUserMfaDocument,
   ResetUserPasswordDocument,
   SetUserIsDeletedDocument,
@@ -363,6 +364,62 @@ describe("Admin manage user", () => {
 
     expect(
       await screen.findByText("Barnes, Ben Billy has been reactivated.")
+    ).toBeInTheDocument();
+  });
+  it("resend user activation handler", async () => {
+    const suspendedUserResponse = {
+      request: {
+        query: FindUserByEmailDocument,
+        variables: { email: "ben@example.com" },
+      },
+      result: {
+        data: {
+          user: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            firstName: "Ben",
+            middleName: "Billy",
+            lastName: "Barnes",
+            suffix: "III",
+            email: "ben@example.com",
+            isAdmin: false,
+            roleDescription: "Misconfigured user",
+            permissions: [],
+            role: null,
+            roles: [],
+            status: OktaUserStatus.PROVISIONED,
+          },
+        },
+      },
+    };
+    const reactivateUserResponse = {
+      request: {
+        query: ResendActivationEmailDocument,
+        variables: {
+          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+        },
+      },
+      result: {
+        data: {
+          resendActivationEmail: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            firstName: "Ben",
+            middleName: "Billy",
+            lastName: "Barnes",
+            email: "bob@example.com",
+            status: OktaUserStatus.PROVISIONED,
+          },
+        },
+      },
+    };
+    renderComponent([suspendedUserResponse, reactivateUserResponse]);
+    await searchForValidUser();
+    fireEvent.click(await screen.findByText("Send account setup email"));
+    fireEvent.click(await screen.findByText("Yes, send email"));
+
+    expect(
+      await screen.findByText(
+        "Barnes, Ben Billy has been sent a new invitation."
+      )
     ).toBeInTheDocument();
   });
 });
