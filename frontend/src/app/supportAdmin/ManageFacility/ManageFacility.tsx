@@ -111,7 +111,7 @@ const ManageFacility = () => {
         orgId: prevState.orgId,
         facilityId: facilityId,
         facility: {
-          city: selectedFacility?.city,
+          city: selectedFacility?.city || "",
           state: selectedFacility?.state || "",
           zipcode: selectedFacility?.zipCode || "",
           id: selectedFacility?.id || "",

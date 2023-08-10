@@ -125,6 +125,28 @@ describe("ManageFacility", () => {
     expect(facilityDropdown).toHaveValue("");
     expect(clearFiltersBtn).toBeDisabled();
   });
+
+  it("loads the page even when no facility is retrieved", async () => {
+    const clearFiltersBtn = getClearFilterBtn();
+    expect(clearFiltersBtn).toBeDisabled();
+
+    const orgDropdown = screen.getByRole("combobox", { name: /organization/i });
+    await waitFor(() => expect(orgDropdown).toBeEnabled());
+    fireEvent.change(orgDropdown, {
+      target: { value: "09cdf298-39b3-41b0-92f7-092c2bfe065e" },
+    }); // picks Dis Organization
+
+    const facilityDropdown = screen.getByRole("combobox", {
+      name: /facility/i,
+    });
+    await waitFor(() => expect(facilityDropdown).toBeEnabled());
+    expect(clearFiltersBtn).toBeEnabled();
+    fireEvent.change(facilityDropdown, {
+      target: { value: "1919865a-92eb-4c46-b73b-471b02b131b8" },
+    }); // picks testing site
+
+    await screen.findByRole("heading", { name: /Incomplete Site/i });
+  });
 });
 
 const mocks: MockedResponse[] = [
@@ -178,6 +200,33 @@ const mocks: MockedResponse[] = [
               city: "Los Angeles",
               state: "CA",
               zipCode: "90000",
+              __typename: "Facility",
+            },
+          ],
+          __typename: "Organization",
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: GetFacilitiesByOrgIdDocument,
+      variables: {
+        orgId: "09cdf298-39b3-41b0-92f7-092c2bfe065e",
+      },
+    },
+    result: {
+      data: {
+        organization: {
+          name: null,
+          type: undefined,
+          facilities: [
+            {
+              name: "Incomplete Site",
+              id: "1919865a-92eb-4c46-b73b-471b02b131b8",
+              city: undefined,
+              state: null,
+              zipCode: undefined,
               __typename: "Facility",
             },
           ],

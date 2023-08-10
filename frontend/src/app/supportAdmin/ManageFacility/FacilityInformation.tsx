@@ -105,7 +105,6 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
             <FacilityDataItem
               title="Location"
               description={`${
-                manageFacilityState.facility.city &&
                 manageFacilityState.facility.city !== "" &&
                 manageFacilityState.facility.city?.concat(", ")
               }${manageFacilityState.facility.state} ${
