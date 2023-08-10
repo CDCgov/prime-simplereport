@@ -166,7 +166,8 @@ public class PatientMutationResolver {
   }
 
   @MutationMapping
-  public Person setPatientIsDeleted(@Argument UUID id, @Argument Boolean deleted) {
-    return personService.setIsDeleted(id, deleted);
+  public Person setPatientIsDeleted(
+      @Argument UUID id, @Argument Boolean deleted, @Argument String orgExternalId) {
+    return personService.setIsDeleted(id, deleted, orgExternalId);
   }
 }

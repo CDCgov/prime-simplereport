@@ -330,16 +330,22 @@ public class BulkUploadResultsToFhir {
               + ")");
     }
 
+    if (diseaseName == null) {
+      diseaseName = TestResultRow.fluOnlyTestPerformedLoinc.get(testPerformedCode);
+    }
+
     // code was not passed via api or inferred above: defaulting to the test performed code.
     testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
 
     var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
+    String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
+    String specimenName = getSpecimenTypeName(specimenCode);
     var specimen =
         fhirConverter.convertToSpecimen(
             ConvertToSpecimenProps.builder()
-                .specimenCode(getSpecimenTypeSnomed(row.getSpecimenType().getValue()))
-                .specimenName(getDescriptionValue(row.getSpecimenType().getValue()))
+                .specimenCode(specimenCode)
+                .specimenName(specimenName)
                 .collectionCode(null)
                 .collectionName(null)
                 .id(uuidGenerator.randomUUID().toString())
@@ -361,7 +367,7 @@ public class BulkUploadResultsToFhir {
                     .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
                         Translators.convertConceptCodeToConceptName(
-                            getDescriptionValue(row.getTestResult().getValue())))
+                            getTestResultSnomed(row.getTestResult().getValue())))
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
@@ -439,11 +445,11 @@ public class BulkUploadResultsToFhir {
     return null;
   }
 
-  private String getDescriptionValue(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
-      return input;
+  private String getSpecimenTypeName(String loinc) {
+    if (loinc != null) {
+      return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(loinc);
     }
-    return null; // vs empty string?
+    return null;
   }
 
   private DiagnosticReport.DiagnosticReportStatus mapTestResultStatusToFhirValue(String input) {

@@ -367,7 +367,7 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "95422-2"
+              "code": "94534-5"
             }
           ]
         },
@@ -452,7 +452,7 @@
             {
               "system": "http://snomed.info/sct",
               "code": "260373001",
-              "display": "Invalid result"
+              "display": "Detected"
             }
           ]
         },

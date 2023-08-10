@@ -106,7 +106,8 @@ public class TestOrderService {
       TestResult result,
       PersonRole role,
       Date startDate,
-      Date endDate) {
+      Date endDate,
+      UUID orgId) {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
@@ -123,12 +124,13 @@ public class TestOrderService {
                     root.get(BaseTestInfo_.facility).get(IdentifiedEntity_.internalId),
                     facilityId));
       } else {
+        final UUID finalOrgId = _organizationService.getPermissibleOrgId(orgId);
         p =
             cb.and(
                 p,
                 cb.equal(
-                    root.get(BaseTestInfo_.organization),
-                    _organizationService.getCurrentOrganization()));
+                    root.get(BaseTestInfo_.organization).get(IdentifiedEntity_.internalId),
+                    finalOrgId));
       }
       if (patientId != null) {
         p =
@@ -188,7 +190,7 @@ public class TestOrderService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return _testEventRepo.findAll(
-        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
+        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate, null),
         pageRequest);
   }
 
@@ -207,7 +209,8 @@ public class TestOrderService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return _testEventRepo.findAll(
-        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate), pageRequest);
+        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate, null),
+        pageRequest);
   }
 
   @Transactional(readOnly = true)
@@ -217,10 +220,12 @@ public class TestOrderService {
       TestResult result,
       PersonRole role,
       Date startDate,
-      Date endDate) {
+      Date endDate,
+      UUID orgId) {
     return (int)
         _testEventRepo.count(
-            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate));
+            buildTestEventSearchFilter(
+                facilityId, patientId, result, role, startDate, endDate, orgId));
   }
 
   @Transactional(readOnly = true)

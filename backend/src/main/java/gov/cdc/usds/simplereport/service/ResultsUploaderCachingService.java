@@ -3,7 +3,8 @@ package gov.cdc.usds.simplereport.service;
 import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
 import static gov.cdc.usds.simplereport.config.CachingConfig.COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
-import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_AND_SNOMED_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.SNOMED_TO_SPECIMEN_NAME_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_TO_SNOMED_MAP;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -156,7 +157,21 @@ public class ResultsUploaderCachingService {
     getCovidEquipmentModelAndTestPerformedCodeSet();
   }
 
-  @Cacheable(SPECIMEN_NAME_AND_SNOMED_MAP)
+  @Cacheable(SNOMED_TO_SPECIMEN_NAME_MAP)
+  public Map<String, String> getSNOMEDToSpecimenTypeNameMap() {
+    log.info("generating SNOMEDToSpecimenTypeNameMap cache");
+    return specimenTypeRepository.findAll().stream()
+        .collect(Collectors.toMap(SpecimenType::getTypeCode, SpecimenType::getName));
+  }
+
+  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
+  @Caching(evict = {@CacheEvict(value = SNOMED_TO_SPECIMEN_NAME_MAP, allEntries = true)})
+  public void cacheSNOMEDToSpecimenTypeNameToMap() {
+    log.info("clear and generate SNOMEDToSpecimenTypeNameMap cache");
+    getSNOMEDToSpecimenTypeNameMap();
+  }
+
+  @Cacheable(SPECIMEN_NAME_TO_SNOMED_MAP)
   public Map<String, String> getSpecimenTypeNameToSNOMEDMap() {
     log.info("generating getSpecimenTypeNameToSNOMEDMap cache");
 
@@ -174,7 +189,7 @@ public class ResultsUploaderCachingService {
   }
 
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
-  @Caching(evict = {@CacheEvict(value = SPECIMEN_NAME_AND_SNOMED_MAP, allEntries = true)})
+  @Caching(evict = {@CacheEvict(value = SPECIMEN_NAME_TO_SNOMED_MAP, allEntries = true)})
   public void cacheSpecimenTypeNameToSNOMEDMap() {
     log.info("clear and generate specimenTypeNameToSNOMEDMap cache");
     getSpecimenTypeNameToSNOMEDMap();

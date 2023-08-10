@@ -124,6 +124,17 @@ public class TestDataBuilder {
         "95422-2");
   }
 
+  public static DeviceTypeDisease createDeviceTypeDiseaseForBulkUpload(
+      SupportedDisease supportedDisease) {
+    return new DeviceTypeDisease(
+        UUID.randomUUID(),
+        supportedDisease,
+        supportedDisease.getLoinc(),
+        "543212134",
+        "BOOMX2",
+        "94534-5");
+  }
+
   public static DeviceTypeDisease createDeviceTypeDisease() {
     SupportedDisease supportedDisease = createCovidSupportedDisease();
     return new DeviceTypeDisease(
@@ -150,7 +161,7 @@ public class TestDataBuilder {
   public static DeviceType createDeviceTypeForBulkUpload() {
     List<SpecimenType> swabTypes = new ArrayList<>();
     List<DeviceTypeDisease> supportedDiseaseTestPerformed =
-        List.of(createDeviceTypeDisease(createCovidSupportedDiseaseForBulkUpload()));
+        List.of(createDeviceTypeDiseaseForBulkUpload(createCovidSupportedDiseaseForBulkUpload()));
     return new DeviceType(
         DEFAULT_DEVICE_TYPE, "Acme", "ID NOW", 15, swabTypes, supportedDiseaseTestPerformed);
   }

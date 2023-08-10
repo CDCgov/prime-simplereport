@@ -3,12 +3,20 @@ package gov.cdc.usds.simplereport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
@@ -17,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.PartialOktaUser;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -24,26 +33,34 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.TestPropertySource;
 
 @TestPropertySource(properties = "hibernate.query.interceptor.error-level=ERROR")
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
-  @Autowired ApiUserRepository _apiUserRepo;
-  @SpyBean @Autowired OktaRepository _oktaRepo;
-
+  @Autowired @SpyBean ApiUserRepository _apiUserRepo;
+  @Autowired @SpyBean OktaRepository _oktaRepo;
   @Autowired OrganizationService _organizationService;
   @Autowired FacilityRepository facilityRepository;
   @Autowired private TestDataFactory _dataFactory;
 
   Set<UUID> emptySet = Collections.emptySet();
+
+  @BeforeEach
+  void cleanup() {
+    reset(_apiUserRepo);
+    reset(_oktaRepo);
+  }
 
   // The next several retrieval tests expect the demo users as they are defined in the
   // no-security and no-okta-mgmt profiles
@@ -378,6 +395,96 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     UserInfo userInfo = _service.resendActivationEmail(apiUser.getInternalId());
 
     assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_success() {
+    initSampleData();
+
+    String email = "allfacilities@example.com";
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+    UserInfo userInfo = _service.getUserByLoginEmail(email);
+
+    assertEquals(apiUser.getInternalId(), userInfo.getInternalId());
+    assertEquals(email, userInfo.getEmail());
+    assertEquals(UserStatus.ACTIVE, userInfo.getUserStatus());
+    assertEquals(false, userInfo.getIsAdmin());
+    assertThat(userInfo.getFacilities()).hasSize(2);
+    assertThat(userInfo.getPermissions()).hasSize(10);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_user_not_found() {
+    doReturn(Optional.empty()).when(this._apiUserRepo).findByLoginEmailIncludeArchived(anyString());
+    NonexistentUserException caught =
+        assertThrows(
+            NonexistentUserException.class,
+            () -> _service.getUserByLoginEmail("nonexistent@email.com"));
+    assertEquals("Cannot find user.", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_accountWithNoOktaGroups_Error() {
+    initSampleData();
+    String email = "allfacilities@example.com";
+    PartialOktaUser oktaUser =
+        PartialOktaUser.builder()
+            .isSiteAdmin(false)
+            .status(UserStatus.ACTIVE)
+            .organizationRoleClaims(Optional.empty())
+            .build();
+
+    when(this._oktaRepo.findUser(anyString())).thenReturn(oktaUser);
+    OktaAccountUserException caught =
+        assertThrows(OktaAccountUserException.class, () -> _service.getUserByLoginEmail(email));
+    assertEquals(
+        "User is not configured correctly: the okta account is not properly setup.",
+        caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_accountNotFoundInOkta_Error() {
+    initSampleData();
+    String email = "allfacilities@example.com";
+
+    when(this._oktaRepo.findUser(anyString())).thenThrow(IllegalGraphqlArgumentException.class);
+    OktaAccountUserException caught =
+        assertThrows(OktaAccountUserException.class, () -> _service.getUserByLoginEmail(email));
+    assertEquals(
+        "User is not configured correctly: the okta account is not properly setup.",
+        caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void getUserByLoginEmail_UnauthorizedSiteAdminAccount_Error() {
+    initSampleData();
+    String email = "allfacilities@example.com";
+    PartialOktaUser oktaUser =
+        PartialOktaUser.builder()
+            .isSiteAdmin(true)
+            .status(UserStatus.ACTIVE)
+            .organizationRoleClaims(Optional.empty())
+            .build();
+
+    when(this._oktaRepo.findUser(anyString())).thenReturn(oktaUser);
+    RestrictedAccessUserException caught =
+        assertThrows(
+            RestrictedAccessUserException.class, () -> _service.getUserByLoginEmail(email));
+    assertEquals("Site admin account cannot be accessed.", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getUserByLoginEmail_not_authorized() {
+    AccessDeniedException caught =
+        assertThrows(
+            AccessDeniedException.class, () -> _service.getUserByLoginEmail("example@email.com"));
+    assertEquals("Access is denied", caught.getMessage());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {

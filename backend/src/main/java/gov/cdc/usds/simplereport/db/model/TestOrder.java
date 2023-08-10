@@ -58,7 +58,7 @@ public class TestOrder extends BaseTestInfo {
     /* for hibernate */ }
 
   public TestOrder(Person patient, Facility facility) {
-    super(patient, facility);
+    super(patient, facility, facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
     this.orderStatus = OrderStatus.PENDING;
     this.results = new HashSet<>();
   }

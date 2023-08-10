@@ -7,8 +7,8 @@
     "coverage": "jest --coverage",
     "clean": "rimraf build",
     "build:compile": "tsc",
-    "build:localSetup": "yarn coverage && yarn prestart && npm prune --production && yarn build:zip",
-    "build:production": "yarn coverage && yarn build && npm prune --production && yarn build:zip",
+    "build:localSetup": "yarn && yarn coverage && yarn prestart && yarn install --production && yarn build:zip",
+    "build:production": "yarn && yarn coverage && yarn build && yarn install --production && yarn build:zip",
     "prebuild:zip": "mkdir -m700 -p build",
     "build:zip": "zip -r build/batched-rs-publisher.zip . -x \"*.zip\" -x \".terraform\" -x \"terraform.*\" -x \"*.tf\" -x \"local.settings.json\" -x \"*.map\"",
     "build": "yarn clean && yarn build:compile",
@@ -19,12 +19,12 @@
     "test": "jest --watch"
   },
   "dependencies": {
-    "@azure/functions": "^1.2.3",
+    "@azure/functions": "^3.5.1",
     "@azure/storage-queue": "^12.6.0",
     "applicationinsights": "^2.7.0",
     "csv-stringify": "^5.6.5",
     "jsonwebtoken": "^9.0.1",
-    "node-fetch": "2.6.6"
+    "node-fetch": "^2.6.12"
   },
   "resolutions": {
     "semver": "7.5.2"

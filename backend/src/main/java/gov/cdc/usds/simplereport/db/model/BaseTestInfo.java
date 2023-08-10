@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
@@ -35,12 +34,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @JoinColumn(name = "specimen_type_id")
   private SpecimenType specimenType;
 
-  @Deprecated
-  @Column(nullable = true)
-  @Type(type = "pg_enum")
-  @Enumerated(EnumType.STRING)
-  private TestResult result;
-
   @Column private Date dateTestedBackdate;
 
   @Column
@@ -53,14 +46,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 
   protected BaseTestInfo() {
     super();
-  }
-
-  protected BaseTestInfo(BaseTestInfo orig) {
-    this(orig.getPatient(), orig.getFacility());
-  }
-
-  protected BaseTestInfo(Person patient, Facility facility) {
-    this(patient, facility, facility.getDefaultDeviceType(), facility.getDefaultSpecimenType());
   }
 
   protected BaseTestInfo(
@@ -76,7 +61,11 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
 
   protected BaseTestInfo(
       BaseTestInfo cloneInfo, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
-    this(cloneInfo);
+    this(
+        cloneInfo.getPatient(),
+        cloneInfo.getFacility(),
+        cloneInfo.getDeviceType(),
+        cloneInfo.getSpecimenType());
     this.reasonForCorrection = reasonForCorrection;
     this.correctionStatus = correctionStatus;
   }
