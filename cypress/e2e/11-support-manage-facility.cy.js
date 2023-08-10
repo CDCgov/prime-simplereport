@@ -46,7 +46,7 @@ describe("Support admin: manage facility", () => {
 
     // displays facility information
     cy.wait("@GetFacilityStats");
-    cy.contains("Testing Site");
+    cy.contains(facilityCreated.name);
     cy.contains("Facility information");
     cy.contains("Facility controls");
     cy.checkAccessibility();
