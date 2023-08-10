@@ -79,15 +79,13 @@ const SupportAdmin = () => {
                   </li>
                 </CategoryMenu>
                 <CategoryMenu heading={usersAndPatientsColumnTitle}>
-                  <li>
-                    {manageUserEnabled && (
-                      <li>
-                        <LinkWithQuery to="/admin/manage-users">
-                          {manageUserPageTitle}
-                        </LinkWithQuery>
-                      </li>
-                    )}
-                  </li>
+                  {manageUserEnabled && (
+                    <li>
+                      <LinkWithQuery to="/admin/manage-users">
+                        {manageUserPageTitle}
+                      </LinkWithQuery>
+                    </li>
+                  )}
                 </CategoryMenu>
                 {hivEnabled && (
                   <CategoryMenu heading="Beta">
