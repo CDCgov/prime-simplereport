@@ -7,6 +7,7 @@ import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import {
   useEditUserEmailMutation,
   useFindUserByEmailLazyQuery,
+  useReactivateUserAndResetPasswordMutation,
   useResetUserMfaMutation,
   useResetUserPasswordMutation,
   useSetUserIsDeletedMutation,
@@ -17,6 +18,7 @@ import { showError, showSuccess } from "../../utils/srToast";
 import UserDetail from "../../Settings/Users/UserDetail";
 import { UpdateUser } from "../../Settings/Users/ManageUsers";
 import { displayFullName } from "../../utils";
+import { OktaUserStatus } from "../../utils/user";
 
 const userNotFoundError = (
   <div className={"maxw-mobile-lg margin-x-auto"}>
@@ -53,7 +55,8 @@ export const AdminManageUser: React.FC = () => {
   const [resetPassword] = useResetUserPasswordMutation();
   const [resetMfa] = useResetUserMfaMutation();
   const [deleteUser] = useSetUserIsDeletedMutation();
-
+  const [reactivateUserAndResetPassword] =
+    useReactivateUserAndResetPasswordMutation();
   const tempFunction = () => {};
   const tempBoolean = false;
 
@@ -138,6 +141,23 @@ export const AdminManageUser: React.FC = () => {
     setFoundUser({ ...foundUser, isDeleted: true } as SettingsUser);
     showSuccess("", `User account removed for ${fullName}`);
   };
+  const handleReactivateUser = async (userId: string) => {
+    await reactivateUserAndResetPassword({
+      variables: {
+        id: userId,
+      },
+    });
+    const fullName = displayFullName(
+      foundUser?.firstName,
+      foundUser?.middleName,
+      foundUser?.lastName
+    );
+    setFoundUser({
+      ...foundUser,
+      status: OktaUserStatus.ACTIVE,
+    } as SettingsUser);
+    showSuccess("", `${fullName} has been reactivated.`);
+  };
 
   return (
     <div className="prime-home flex-1">
@@ -214,7 +234,7 @@ export const AdminManageUser: React.FC = () => {
                   handleResetUserPassword={handleResetUserPassword}
                   handleResetUserMfa={handleResetUserMfa}
                   handleDeleteUser={handleDeleteUser}
-                  handleReactivateUser={tempFunction}
+                  handleReactivateUser={handleReactivateUser}
                   handleResendUserActivationEmail={tempFunction}
                   // used in facility tab
                   allFacilities={[]}

@@ -2,15 +2,19 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import createMockStore from "redux-mock-store";
+import { Provider } from "react-redux";
 
 import {
   EditUserEmailDocument,
   FindUserByEmailDocument,
+  ReactivateUserAndResetPasswordDocument,
   ResetUserMfaDocument,
   ResetUserPasswordDocument,
   SetUserIsDeletedDocument,
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
+import { OktaUserStatus } from "../../utils/user";
 
 import { AdminManageUser } from "./AdminManageUser";
 
@@ -42,16 +46,20 @@ const validResponse = [
   },
 ];
 describe("Admin manage user", () => {
+  const mockStore = createMockStore([]);
+  const mockedStore = mockStore({ user: { isAdmin: true } });
   const renderComponent = (mocks?: any[]) =>
     render(
-      <MemoryRouter>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <div>
-            <ToastContainer />
-            <AdminManageUser />
-          </div>
-        </MockedProvider>
-      </MemoryRouter>
+      <Provider store={mockedStore}>
+        <MemoryRouter>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <div>
+              <ToastContainer />
+              <AdminManageUser />
+            </div>
+          </MockedProvider>
+        </MemoryRouter>
+      </Provider>
     );
   it("search results matches snapshot", async () => {
     const { container } = renderComponent(validResponse);
@@ -307,5 +315,54 @@ describe("Admin manage user", () => {
     expect(screen.getByText("Reset MFA")).toBeDisabled();
     expect(screen.getAllByText("Delete user")[1]).toBeDisabled();
     expect(screen.getByText("Account deleted.")).toBeInTheDocument();
+  });
+  it("reactivate user handler", async () => {
+    const suspendedUserResponse = {
+      request: {
+        query: FindUserByEmailDocument,
+        variables: { email: "ben@example.com" },
+      },
+      result: {
+        data: {
+          user: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            firstName: "Ben",
+            middleName: "Billy",
+            lastName: "Barnes",
+            suffix: "III",
+            email: "ben@example.com",
+            isAdmin: false,
+            roleDescription: "Misconfigured user",
+            permissions: [],
+            role: null,
+            roles: [],
+            status: OktaUserStatus.SUSPENDED,
+          },
+        },
+      },
+    };
+    const reactivateUserResponse = {
+      request: {
+        query: ReactivateUserAndResetPasswordDocument,
+        variables: {
+          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+        },
+      },
+      result: {
+        data: {
+          reactivateUserAndResetPassword: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+          },
+        },
+      },
+    };
+    renderComponent([suspendedUserResponse, reactivateUserResponse]);
+    await searchForValidUser();
+    fireEvent.click(await screen.findByText("Activate user"));
+    fireEvent.click(await screen.findByText("Yes, reactivate"));
+
+    expect(
+      await screen.findByText("Barnes, Ben Billy has been reactivated.")
+    ).toBeInTheDocument();
   });
 });
