@@ -5,16 +5,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
- * Sends test event to ReportStream only after a successful transaction commit.
+ * Allows a test event to be sent to ReportStream after a transaction successfully commits. This
+ * ensures that if a failure occurs when sending the test event to ReportStream, any database
+ * changes from the transaction are not rolled back.
  *
- * @see TestEventToReportStreamEvent
+ * @see ReportTestEventToRSEvent
  */
 @Component
 @RequiredArgsConstructor
-public class TestEventToReportStreamEventListener {
+public class ReportTestEventToRSEventListener {
   @Qualifier("csvQueueReportingService")
   private final TestEventReportingService testEventReportingService;
 
@@ -24,9 +27,9 @@ public class TestEventToReportStreamEventListener {
   @Value("${simple-report.fhir-reporting-enabled:false}")
   private boolean fhirReportingEnabled;
 
-  @TransactionalEventListener
-  public void handleEvent(TestEventToReportStreamEvent testEventToReportStreamEvent) {
-    reportTestEventToRS(testEventToReportStreamEvent.getTestEvent());
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleEvent(ReportTestEventToRSEvent event) {
+    reportTestEventToRS(event.getTestEvent());
   }
 
   private void reportTestEventToRS(TestEvent savedEvent) {

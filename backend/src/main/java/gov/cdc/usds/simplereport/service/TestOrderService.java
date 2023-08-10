@@ -360,7 +360,7 @@ public class TestOrderService {
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
 
     AddTestResultResponse response = new AddTestResultResponse(savedOrder, deliveryStatus);
-    applicationEventPublisher.publishEvent(new TestEventToReportStreamEvent(response));
+    applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
     return response;
   }
 
@@ -552,7 +552,7 @@ public class TestOrderService {
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
         _testOrderRepo.save(order);
 
-        applicationEventPublisher.publishEvent(new TestEventToReportStreamEvent(newRemoveEvent));
+        applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(newRemoveEvent));
 
         return newRemoveEvent;
       }
