@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
+import org.json.JSONArray;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.ApplicationApi;
 import org.openapitools.client.api.ApplicationGroupsApi;
@@ -630,39 +630,31 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public Integer getUsersInSingleFacility(Facility facility) {
-    // GET /api/v1/groups?q=Everyone&expand=stats <- with the profile name
-    // GET https://{yourOktaDomain}.com/api/v1/groups/group_id?expand=stats <- with the group id
-
     String facilityAccessGroupName =
         generateFacilityGroupName(
             facility.getOrganization().getExternalId(), facility.getInternalId());
 
-    // if we implement getting stats by group Id
-    /*
-     List<Group> facilityAccessGroup = groupApi.listGroups(facilityAccessGroupName,null,null,1,null, null , null, null);
-
-     if(facilityAccessGroup.isEmpty()){
-     return 0;
-     }
-
-    String groupId = facilityAccessGroup.get(0).getId();
-     */
     RestTemplate restTemplate = new RestTemplate();
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-    headers.add("Authorization", oktaToken);
+    headers.add("Authorization", "SSWS " + oktaToken);
     HttpEntity<String> entity = new HttpEntity<>(null, headers);
     String getUrl = oktaUrl + "/api/v1/groups?q=" + facilityAccessGroupName + "&expand=stats";
-    // Map<String, String> queryParams = Map.of("q", facilityAccessGroupName, "expand", "stats");
 
     try {
-      // restTemplate.exchange(getUrl, HttpMethod.GET, entity, String.class)
-      // String response = restTemplate.getForObject(getUrl, String.class, queryParams);
       String response =
           restTemplate.exchange(getUrl, HttpMethod.GET, entity, String.class).getBody();
-      JSONObject responseJson = new JSONObject(response);
-      return responseJson.getJSONObject("_embedded").getJSONObject("stats").getInt("usersCount");
+      JSONArray responseJson = new JSONArray(response);
+      if (responseJson.length() == 0) {
+        throw new RuntimeException("Okta group not found.");
+      }
+
+      return responseJson
+          .getJSONObject(0)
+          .getJSONObject("_embedded")
+          .getJSONObject("stats")
+          .getInt("usersCount");
     } catch (RestClientException | NullPointerException e) {
       throw new BadRequestException("Unable to retrieve okta group stats", e);
     }
