@@ -58,6 +58,9 @@ jobs:
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Purge DB Client Container
+        run: |
+          az container delete --name simple-report-training-db-client --resource-group prime-simple-report-training --yes
       - uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_version: 1.3.3
