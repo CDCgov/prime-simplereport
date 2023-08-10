@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import { axe, toHaveNoViolations } from "jest-axe";
+import { configureAxe, toHaveNoViolations } from "jest-axe";
 
 import {
   EditUserEmailDocument,
@@ -20,12 +20,12 @@ import { OktaUserStatus } from "../../utils/user";
 
 import { AdminManageUser } from "./AdminManageUser";
 
-expect.extend(toHaveNoViolations);
 jest.mock("uuid", () => ({
   v4: jest
     .fn()
     .mockReturnValueOnce("123456789")
-    .mockReturnValueOnce("987654321"),
+    .mockReturnValueOnce("987654321")
+    .mockReturnValue("123"),
 }));
 
 const validResponse = [
@@ -54,31 +54,36 @@ const validResponse = [
     },
   },
 ];
-async function searchForValidUser() {
+const searchForValidUser = async () => {
   const searchInput = screen.getByLabelText("Search by email address of user");
   fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
   fireEvent.click(screen.getByRole("button"));
 
   expect(await screen.findByText("Barnes, Ben Billy")).toBeInTheDocument();
-}
+};
 const mockStore = createMockStore([]);
 const mockedStore = mockStore({ user: { isAdmin: true } });
-
+expect.extend(toHaveNoViolations);
+const renderComponent = (mocks?: any[]) =>
+  render(
+    <Provider store={mockedStore}>
+      <MemoryRouter>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <div>
+            <ToastContainer />
+            <AdminManageUser />
+          </div>
+        </MockedProvider>
+      </MemoryRouter>
+    </Provider>
+  );
+const axe = configureAxe({
+  rules: {
+    // disable landmark rules when testing isolated components.
+    region: { enabled: false },
+  },
+});
 describe("Admin manage user", () => {
-  const renderComponent = (mocks?: any[]) =>
-    render(
-      <Provider store={mockedStore}>
-        <MemoryRouter>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <div>
-              <ToastContainer />
-              <AdminManageUser />
-            </div>
-          </MockedProvider>
-        </MemoryRouter>
-      </Provider>
-    );
-
   it("search results matches snapshot", async () => {
     const { container } = renderComponent(validResponse);
     const searchInput = screen.getByLabelText(
@@ -110,6 +115,7 @@ describe("Admin manage user", () => {
       fireEvent.change(searchInput, { target: { value: "bad@example.com" } });
       fireEvent.click(screen.getByRole("button"));
       expect(await screen.findByText("User not found")).toBeInTheDocument();
+      expect(await axe(document.body)).toHaveNoViolations();
     });
     it("displays user is an admin", async () => {
       renderComponent([
@@ -142,6 +148,7 @@ describe("Admin manage user", () => {
       expect(
         await screen.findByText("Can't determine user identity")
       ).toBeInTheDocument();
+      expect(await axe(document.body)).toHaveNoViolations();
     });
     it("displays generic error", async () => {
       renderComponent([
@@ -173,10 +180,11 @@ describe("Admin manage user", () => {
       expect(
         await screen.findByText("Something went wrong")
       ).toBeInTheDocument();
+      expect(await axe(document.body)).toHaveNoViolations();
     });
   });
 
-  describe("editing user", () => {
+  describe("editing basic information", () => {
     it("edit name handler calls", async () => {
       const updateUserNameResponse = {
         request: {
@@ -240,194 +248,196 @@ describe("Admin manage user", () => {
       await screen.findByText("granny@example.com");
     });
   });
-  it("reset user password handler", async () => {
-    const resetUserPasswordResponse = {
-      request: {
-        query: ResetUserPasswordDocument,
-        variables: {
-          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-        },
-      },
-      result: {
-        data: {
-          resetUserPassword: {
+  describe("resetting user controls", () => {
+    it("reset user password handler", async () => {
+      const resetUserPasswordResponse = {
+        request: {
+          query: ResetUserPasswordDocument,
+          variables: {
             id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
           },
         },
-      },
-    };
-    renderComponent([...validResponse, resetUserPasswordResponse]);
-    await searchForValidUser();
-    fireEvent.click(screen.getByText("Send password reset email"));
-    await screen.findByText("Reset Barnes, Ben Billy's password");
-    fireEvent.click(screen.getByText("Yes, I'm sure"));
+        result: {
+          data: {
+            resetUserPassword: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            },
+          },
+        },
+      };
+      renderComponent([...validResponse, resetUserPasswordResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getByText("Send password reset email"));
+      await screen.findByText("Reset Barnes, Ben Billy's password");
+      fireEvent.click(screen.getByText("Yes, I'm sure"));
 
-    expect(
-      await screen.findByText("Password reset for Barnes, Ben Billy")
-    ).toBeInTheDocument();
-  });
-  it("reset user mfa handler", async () => {
-    const resetUserPasswordResponse = {
-      request: {
-        query: ResetUserMfaDocument,
-        variables: {
-          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-        },
-      },
-      result: {
-        data: {
-          resetUserMfa: {
+      expect(
+        await screen.findByText("Password reset for Barnes, Ben Billy")
+      ).toBeInTheDocument();
+    });
+    it("reset user mfa handler", async () => {
+      const resetUserPasswordResponse = {
+        request: {
+          query: ResetUserMfaDocument,
+          variables: {
             id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
           },
         },
-      },
-    };
-    renderComponent([...validResponse, resetUserPasswordResponse]);
-    await searchForValidUser();
-    fireEvent.click(screen.getByText("Reset MFA"));
-    fireEvent.click(
-      await screen.findByText("Reset multi-factor authentication")
-    );
+        result: {
+          data: {
+            resetUserMfa: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            },
+          },
+        },
+      };
+      renderComponent([...validResponse, resetUserPasswordResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getByText("Reset MFA"));
+      fireEvent.click(
+        await screen.findByText("Reset multi-factor authentication")
+      );
 
-    expect(
-      await screen.findByText("MFA reset for Barnes, Ben Billy")
-    ).toBeInTheDocument();
-  });
-  it("delete user handler", async () => {
-    const resetUserPasswordResponse = {
-      request: {
-        query: SetUserIsDeletedDocument,
-        variables: {
-          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-          deleted: true,
-        },
-      },
-      result: {
-        data: {
-          setUserIsDeleted: {
+      expect(
+        await screen.findByText("MFA reset for Barnes, Ben Billy")
+      ).toBeInTheDocument();
+    });
+    it("delete user handler", async () => {
+      const resetUserPasswordResponse = {
+        request: {
+          query: SetUserIsDeletedDocument,
+          variables: {
             id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            deleted: true,
           },
         },
-      },
-    };
-    renderComponent([...validResponse, resetUserPasswordResponse]);
-    await searchForValidUser();
-    fireEvent.click(screen.getAllByText("Delete user")[1]);
-    fireEvent.click(await screen.findByText("Yes, I'm sure"));
+        result: {
+          data: {
+            setUserIsDeleted: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            },
+          },
+        },
+      };
+      renderComponent([...validResponse, resetUserPasswordResponse]);
+      await searchForValidUser();
+      fireEvent.click(screen.getAllByText("Delete user")[1]);
+      fireEvent.click(await screen.findByText("Yes, I'm sure"));
 
-    expect(
-      await screen.findByText("User account removed for Barnes, Ben Billy")
-    ).toBeInTheDocument();
-    expect(screen.getByText("Edit name")).toBeDisabled();
-    expect(screen.getByText("Edit email")).toBeDisabled();
-    expect(screen.getByText("Send password reset email")).toBeDisabled();
-    expect(screen.getByText("Reset MFA")).toBeDisabled();
-    expect(screen.getAllByText("Delete user")[1]).toBeDisabled();
-    expect(screen.getByText("Account deleted.")).toBeInTheDocument();
-  });
-  it("reactivate user handler", async () => {
-    const suspendedUserResponse = {
-      request: {
-        query: FindUserByEmailDocument,
-        variables: { email: "ben@example.com" },
-      },
-      result: {
-        data: {
-          user: {
-            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-            firstName: "Ben",
-            middleName: "Billy",
-            lastName: "Barnes",
-            suffix: "III",
-            email: "ben@example.com",
-            isAdmin: false,
-            roleDescription: "Misconfigured user",
-            permissions: [],
-            role: null,
-            roles: [],
-            status: OktaUserStatus.SUSPENDED,
+      expect(
+        await screen.findByText("User account removed for Barnes, Ben Billy")
+      ).toBeInTheDocument();
+      expect(screen.getByText("Edit name")).toBeDisabled();
+      expect(screen.getByText("Edit email")).toBeDisabled();
+      expect(screen.getByText("Send password reset email")).toBeDisabled();
+      expect(screen.getByText("Reset MFA")).toBeDisabled();
+      expect(screen.getAllByText("Delete user")[1]).toBeDisabled();
+      expect(screen.getByText("Account deleted.")).toBeInTheDocument();
+    });
+    it("reactivate user handler", async () => {
+      const suspendedUserResponse = {
+        request: {
+          query: FindUserByEmailDocument,
+          variables: { email: "ben@example.com" },
+        },
+        result: {
+          data: {
+            user: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+              firstName: "Ben",
+              middleName: "Billy",
+              lastName: "Barnes",
+              suffix: "III",
+              email: "ben@example.com",
+              isAdmin: false,
+              roleDescription: "Misconfigured user",
+              permissions: [],
+              role: null,
+              roles: [],
+              status: OktaUserStatus.SUSPENDED,
+            },
           },
         },
-      },
-    };
-    const reactivateUserResponse = {
-      request: {
-        query: ReactivateUserAndResetPasswordDocument,
-        variables: {
-          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-        },
-      },
-      result: {
-        data: {
-          reactivateUserAndResetPassword: {
+      };
+      const reactivateUserResponse = {
+        request: {
+          query: ReactivateUserAndResetPasswordDocument,
+          variables: {
             id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
           },
         },
-      },
-    };
-    renderComponent([suspendedUserResponse, reactivateUserResponse]);
-    await searchForValidUser();
-    fireEvent.click(await screen.findByText("Activate user"));
-    fireEvent.click(await screen.findByText("Yes, reactivate"));
+        result: {
+          data: {
+            reactivateUserAndResetPassword: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            },
+          },
+        },
+      };
+      renderComponent([suspendedUserResponse, reactivateUserResponse]);
+      await searchForValidUser();
+      fireEvent.click(await screen.findByText("Activate user"));
+      fireEvent.click(await screen.findByText("Yes, reactivate"));
 
-    expect(
-      await screen.findByText("Barnes, Ben Billy has been reactivated.")
-    ).toBeInTheDocument();
-  });
-  it("resend user activation handler", async () => {
-    const suspendedUserResponse = {
-      request: {
-        query: FindUserByEmailDocument,
-        variables: { email: "ben@example.com" },
-      },
-      result: {
-        data: {
-          user: {
-            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-            firstName: "Ben",
-            middleName: "Billy",
-            lastName: "Barnes",
-            suffix: "III",
-            email: "ben@example.com",
-            isAdmin: false,
-            roleDescription: "Misconfigured user",
-            permissions: [],
-            role: null,
-            roles: [],
-            status: OktaUserStatus.PROVISIONED,
+      expect(
+        await screen.findByText("Barnes, Ben Billy has been reactivated.")
+      ).toBeInTheDocument();
+    });
+    it("resend user activation handler", async () => {
+      const suspendedUserResponse = {
+        request: {
+          query: FindUserByEmailDocument,
+          variables: { email: "ben@example.com" },
+        },
+        result: {
+          data: {
+            user: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+              firstName: "Ben",
+              middleName: "Billy",
+              lastName: "Barnes",
+              suffix: "III",
+              email: "ben@example.com",
+              isAdmin: false,
+              roleDescription: "Misconfigured user",
+              permissions: [],
+              role: null,
+              roles: [],
+              status: OktaUserStatus.PROVISIONED,
+            },
           },
         },
-      },
-    };
-    const reactivateUserResponse = {
-      request: {
-        query: ResendActivationEmailDocument,
-        variables: {
-          id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-        },
-      },
-      result: {
-        data: {
-          resendActivationEmail: {
+      };
+      const reactivateUserResponse = {
+        request: {
+          query: ResendActivationEmailDocument,
+          variables: {
             id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
-            firstName: "Ben",
-            middleName: "Billy",
-            lastName: "Barnes",
-            email: "bob@example.com",
-            status: OktaUserStatus.PROVISIONED,
           },
         },
-      },
-    };
-    renderComponent([suspendedUserResponse, reactivateUserResponse]);
-    await searchForValidUser();
-    fireEvent.click(await screen.findByText("Send account setup email"));
-    fireEvent.click(await screen.findByText("Yes, send email"));
+        result: {
+          data: {
+            resendActivationEmail: {
+              id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+              firstName: "Ben",
+              middleName: "Billy",
+              lastName: "Barnes",
+              email: "bob@example.com",
+              status: OktaUserStatus.PROVISIONED,
+            },
+          },
+        },
+      };
+      renderComponent([suspendedUserResponse, reactivateUserResponse]);
+      await searchForValidUser();
+      fireEvent.click(await screen.findByText("Send account setup email"));
+      fireEvent.click(await screen.findByText("Yes, send email"));
 
-    expect(
-      await screen.findByText(
-        "Barnes, Ben Billy has been sent a new invitation."
-      )
-    ).toBeInTheDocument();
+      expect(
+        await screen.findByText(
+          "Barnes, Ben Billy has been sent a new invitation."
+        )
+      ).toBeInTheDocument();
+    });
   });
 });
