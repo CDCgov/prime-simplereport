@@ -50,6 +50,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
@@ -652,11 +653,14 @@ public class LiveOktaRepository implements OktaRepository {
     headers.setAccept(List.of(MediaType.APPLICATION_JSON));
     headers.add("Authorization", oktaToken);
     HttpEntity<String> entity = new HttpEntity<>(null, headers);
-    String getUrl = oktaUrl + "/api/v1/groups";
-    Map<String, String> queryParams = Map.of("q", facilityAccessGroupName, "expand", "stats");
+    String getUrl = oktaUrl + "/api/v1/groups?q=" + facilityAccessGroupName + "&expand=stats";
+    // Map<String, String> queryParams = Map.of("q", facilityAccessGroupName, "expand", "stats");
 
     try {
-      String response = restTemplate.postForObject(getUrl, entity, String.class, queryParams);
+      // restTemplate.exchange(getUrl, HttpMethod.GET, entity, String.class)
+      // String response = restTemplate.getForObject(getUrl, String.class, queryParams);
+      String response =
+          restTemplate.exchange(getUrl, HttpMethod.GET, entity, String.class).getBody();
       JSONObject responseJson = new JSONObject(response);
       return responseJson.getJSONObject("_embedded").getJSONObject("stats").getInt("usersCount");
     } catch (RestClientException | NullPointerException e) {
