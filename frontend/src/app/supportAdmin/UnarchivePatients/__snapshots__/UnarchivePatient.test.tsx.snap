@@ -1,0 +1,251 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`unarchive patient displays archived patients with pagination 1`] = `
+<div>
+  <div
+    class="prime-home flex-1"
+  >
+    <div
+      class="grid-container"
+    >
+      <div
+        class="grid-row"
+      >
+        <div
+          class="prime-container card-container"
+        >
+          <div
+            class="usa-card__header"
+          >
+            <div
+              class="display-flex flex-align-center"
+            >
+              <h1
+                class="font-sans-lg margin-y-0"
+              >
+                Unarchive patient
+              </h1>
+              <span
+                class="sr-showing-patients-on-page margin-left-4"
+              >
+                Loading...
+                Showing 
+                1
+                -
+                2
+                 
+                of 
+                2
+              </span>
+            </div>
+          </div>
+          <div
+            class="bg-base-lightest"
+          >
+            <form
+              class="display-flex grid-row grid-gap flex-row flex-align-end padding-x-3 padding-y-2"
+              role="search"
+            >
+              <div
+                class="desktop:grid-col-4 mobile:grid-col-12"
+              >
+                <div
+                  class="usa-form-group prime-dropdown "
+                >
+                  <label
+                    class="usa-label"
+                    for="7"
+                  >
+                    Organization
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </label>
+                  <select
+                    aria-required="true"
+                    class="usa-select"
+                    id="7"
+                    name="organization"
+                  >
+                    <option
+                      value=""
+                    >
+                      Select an organization
+                    </option>
+                    <option
+                      aria-selected="true"
+                      value="f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+                    >
+                      Space Org
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div
+                class="desktop:grid-col-4 mobile:grid-col-12"
+              >
+                <div
+                  class="usa-form-group prime-dropdown "
+                >
+                  <label
+                    class="usa-label"
+                    for="8"
+                  >
+                    Testing facility
+                    <abbr
+                      class="usa-hint usa-hint--required"
+                      title="required"
+                    >
+                       
+                      *
+                    </abbr>
+                  </label>
+                  <select
+                    aria-required="true"
+                    class="usa-select"
+                    id="8"
+                    name="facility"
+                  >
+                    <option
+                      value=""
+                    >
+                      Select a testing facility
+                    </option>
+                    <option
+                      aria-selected="true"
+                      value="bc0536e-4564-4291-bbf3-0e7b0731f9e8"
+                    >
+                      Mars Facility
+                    </option>
+                    <option
+                      aria-selected="false"
+                      value="d70bb3b3-96bd-40d1-a3ce-b266a7edb91d"
+                    >
+                      Jupiter Facility
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div
+                class="mobile:margin-top-3"
+              >
+                <button
+                  class="usa-button"
+                  type="submit"
+                >
+                  Search
+                </button>
+              </div>
+            </form>
+          </div>
+          <div
+            class="usa-card__body sr-patient-list"
+          >
+            <table
+              class="usa-table usa-table--borderless width-full"
+            >
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                  >
+                    Patient
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Date of birth
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Testing facility
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody
+                aria-live="polite"
+              >
+                <tr
+                  data-testid="sr-archived-patient-row"
+                >
+                  <td>
+                    Gutmann, Rod
+                  </td>
+                  <td>
+                    05/19/1927
+                  </td>
+                  <td>
+                    All facilities
+                  </td>
+                  <td>
+                    <button
+                      class="usa-button"
+                      type="button"
+                    >
+                      Unarchive
+                    </button>
+                  </td>
+                </tr>
+                <tr
+                  data-testid="sr-archived-patient-row"
+                >
+                  <td>
+                    Mode, Mia
+                  </td>
+                  <td>
+                    11/20/1973
+                  </td>
+                  <td>
+                    Mars Facility
+                  </td>
+                  <td>
+                    <button
+                      class="usa-button"
+                      type="button"
+                    >
+                      Unarchive
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            class="usa-card__footer"
+          >
+            <nav
+              aria-label="Pagination"
+              class="usa-pagination"
+              role="navigation"
+            >
+              <ol>
+                <li>
+                  <a
+                    aria-label="Page 1"
+                    class="is-active"
+                    href="/admin/unarchive-patient/1undefined"
+                  >
+                    <span>
+                      1
+                    </span>
+                  </a>
+                </li>
+              </ol>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
