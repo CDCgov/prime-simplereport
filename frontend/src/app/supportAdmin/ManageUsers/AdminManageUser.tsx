@@ -61,7 +61,7 @@ export const AdminManageUser: React.FC = () => {
     useReactivateUserAndResetPasswordMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
-  const handleUpdate = async (func: () => void) => {
+  const handleUpdate = async (func: () => Promise<void>) => {
     setIsUpdating(true);
     try {
       await func();
