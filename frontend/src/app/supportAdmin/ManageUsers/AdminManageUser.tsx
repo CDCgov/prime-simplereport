@@ -51,6 +51,7 @@ export const AdminManageUser: React.FC = () => {
   const [getUserByEmail] = useFindUserByEmailLazyQuery({
     fetchPolicy: "no-cache",
   });
+  const [isUpdating, setIsUpdating] = useState(false);
   const [updateUserName] = useUpdateUserNameMutation();
   const [updateUserEmail] = useEditUserEmailMutation();
   const [resetPassword] = useResetUserPasswordMutation();
@@ -60,9 +61,14 @@ export const AdminManageUser: React.FC = () => {
     useReactivateUserAndResetPasswordMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
 
-  const tempFunction = () => {};
-  const tempBoolean = false;
-
+  const handleUpdate = async (func: () => void) => {
+    setIsUpdating(true);
+    try {
+      await func();
+    } finally {
+      setIsUpdating(false);
+    }
+  };
   const handleEditUserName = async (
     userId: string,
     firstName: string,
@@ -70,109 +76,123 @@ export const AdminManageUser: React.FC = () => {
     lastName: string,
     suffix: string
   ) => {
-    await updateUserName({
-      variables: {
-        id: userId,
-        firstName: firstName,
-        middleName: middleName,
-        lastName: lastName,
-        suffix: suffix,
-      },
+    await handleUpdate(async () => {
+      await updateUserName({
+        variables: {
+          id: userId,
+          firstName: firstName,
+          middleName: middleName,
+          lastName: lastName,
+          suffix: suffix,
+        },
+      });
+      setFoundUser({
+        ...foundUser,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+      } as SettingsUser);
+      const fullName = displayFullName(firstName, "", lastName);
+      showSuccess("", `User name changed to ${fullName}`);
     });
-    setFoundUser({
-      ...foundUser,
-      firstName,
-      middleName,
-      lastName,
-      suffix,
-    } as SettingsUser);
-    const fullName = displayFullName(firstName, "", lastName);
-    showSuccess("", `User name changed to ${fullName}`);
   };
   const handleEditUserEmail = async (userId: string, emailAddress: string) => {
-    await updateUserEmail({
-      variables: {
-        id: userId,
+    await handleUpdate(async () => {
+      await updateUserEmail({
+        variables: {
+          id: userId,
+          email: emailAddress,
+        },
+      });
+      showSuccess("", `User email address changed to ${emailAddress}`);
+      setFoundUser({
+        ...foundUser,
         email: emailAddress,
-      },
+      } as SettingsUser);
     });
-    showSuccess("", `User email address changed to ${emailAddress}`);
-    setFoundUser({
-      ...foundUser,
-      email: emailAddress,
-    } as SettingsUser);
   };
   const handleResetUserPassword = async (userId: string) => {
-    await resetPassword({
-      variables: {
-        id: userId,
-      },
+    await handleUpdate(async () => {
+      await resetPassword({
+        variables: {
+          id: userId,
+        },
+      });
+      const fullName = displayFullName(
+        foundUser?.firstName,
+        foundUser?.middleName,
+        foundUser?.lastName
+      );
+      showSuccess("", `Password reset for ${fullName}`);
     });
-    const fullName = displayFullName(
-      foundUser?.firstName,
-      foundUser?.middleName,
-      foundUser?.lastName
-    );
-    showSuccess("", `Password reset for ${fullName}`);
   };
   const handleResetUserMfa = async (userId: string) => {
-    await resetMfa({
-      variables: {
-        id: userId,
-      },
+    await handleUpdate(async () => {
+      await resetMfa({
+        variables: {
+          id: userId,
+        },
+      });
+      const fullName = displayFullName(
+        foundUser?.firstName,
+        foundUser?.middleName,
+        foundUser?.lastName
+      );
+      showSuccess("", `MFA reset for ${fullName}`);
     });
-    const fullName = displayFullName(
-      foundUser?.firstName,
-      foundUser?.middleName,
-      foundUser?.lastName
-    );
-    showSuccess("", `MFA reset for ${fullName}`);
   };
   const handleDeleteUser = async (userId: string) => {
-    await deleteUser({
-      variables: {
-        id: userId,
-        deleted: true,
-      },
-    });
-    const fullName = displayFullName(
-      foundUser?.firstName,
-      foundUser?.middleName,
-      foundUser?.lastName
-    );
+    await handleUpdate(async () => {
+      await deleteUser({
+        variables: {
+          id: userId,
+          deleted: true,
+        },
+      });
+      const fullName = displayFullName(
+        foundUser?.firstName,
+        foundUser?.middleName,
+        foundUser?.lastName
+      );
 
-    setFoundUser({ ...foundUser, isDeleted: true } as SettingsUser);
-    showSuccess("", `User account removed for ${fullName}`);
+      setFoundUser({ ...foundUser, isDeleted: true } as SettingsUser);
+      showSuccess("", `User account removed for ${fullName}`);
+    });
   };
   const handleReactivateUser = async (userId: string) => {
-    await reactivateUserAndResetPassword({
-      variables: {
-        id: userId,
-      },
+    await handleUpdate(async () => {
+      await reactivateUserAndResetPassword({
+        variables: {
+          id: userId,
+        },
+      });
+      const fullName = displayFullName(
+        foundUser?.firstName,
+        foundUser?.middleName,
+        foundUser?.lastName
+      );
+      setFoundUser({
+        ...foundUser,
+        status: OktaUserStatus.ACTIVE,
+      } as SettingsUser);
+      showSuccess("", `${fullName} has been reactivated.`);
     });
-    const fullName = displayFullName(
-      foundUser?.firstName,
-      foundUser?.middleName,
-      foundUser?.lastName
-    );
-    setFoundUser({
-      ...foundUser,
-      status: OktaUserStatus.ACTIVE,
-    } as SettingsUser);
-    showSuccess("", `${fullName} has been reactivated.`);
   };
   const handleResendUserActivationEmail = async (userId: string) => {
-    await resendUserActivationEmail({
-      variables: {
-        id: userId,
-      },
+    await handleUpdate(async () => {
+      await resendUserActivationEmail({
+        variables: {
+          id: userId,
+        },
+      });
+      const fullName = displayFullName(
+        foundUser?.firstName,
+        foundUser?.middleName,
+        foundUser?.lastName
+      );
+      showSuccess("", `${fullName} has been sent a new invitation.`);
     });
-    const fullName = displayFullName(
-      foundUser?.firstName,
-      foundUser?.middleName,
-      foundUser?.lastName
-    );
-    showSuccess("", `${fullName} has been sent a new invitation.`);
   };
   return (
     <div className="prime-home flex-1">
@@ -241,9 +261,7 @@ export const AdminManageUser: React.FC = () => {
               <div className="usa-card__body">
                 <UserDetail
                   user={foundUser}
-                  loggedInUser={{} as User}
-                  isUpdating={tempBoolean}
-                  isUserEdited={tempBoolean}
+                  isUpdating={isUpdating}
                   handleEditUserName={handleEditUserName}
                   handleEditUserEmail={handleEditUserEmail}
                   handleResetUserPassword={handleResetUserPassword}
@@ -254,9 +272,11 @@ export const AdminManageUser: React.FC = () => {
                     handleResendUserActivationEmail
                   }
                   // used in facility tab
-                  allFacilities={[]}
-                  handleUpdateUser={tempFunction}
                   updateUser={{} as UpdateUser}
+                  loggedInUser={{} as User}
+                  allFacilities={[]}
+                  isUserEdited={false}
+                  handleUpdateUser={() => null}
                 />
               </div>
             </div>
