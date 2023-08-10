@@ -4,6 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
+import { axe, toHaveNoViolations } from "jest-axe";
 
 import {
   EditUserEmailDocument,
@@ -19,7 +20,14 @@ import { OktaUserStatus } from "../../utils/user";
 
 import { AdminManageUser } from "./AdminManageUser";
 
-jest.mock("uuid", () => ({ v4: () => "123456789" }));
+expect.extend(toHaveNoViolations);
+jest.mock("uuid", () => ({
+  v4: jest
+    .fn()
+    .mockReturnValueOnce("123456789")
+    .mockReturnValueOnce("987654321"),
+}));
+
 const validResponse = [
   {
     request: {
@@ -46,9 +54,17 @@ const validResponse = [
     },
   },
 ];
+async function searchForValidUser() {
+  const searchInput = screen.getByLabelText("Search by email address of user");
+  fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
+  fireEvent.click(screen.getByRole("button"));
+
+  expect(await screen.findByText("Barnes, Ben Billy")).toBeInTheDocument();
+}
+const mockStore = createMockStore([]);
+const mockedStore = mockStore({ user: { isAdmin: true } });
+
 describe("Admin manage user", () => {
-  const mockStore = createMockStore([]);
-  const mockedStore = mockStore({ user: { isAdmin: true } });
   const renderComponent = (mocks?: any[]) =>
     render(
       <Provider store={mockedStore}>
@@ -62,6 +78,7 @@ describe("Admin manage user", () => {
         </MemoryRouter>
       </Provider>
     );
+
   it("search results matches snapshot", async () => {
     const { container } = renderComponent(validResponse);
     const searchInput = screen.getByLabelText(
@@ -72,6 +89,7 @@ describe("Admin manage user", () => {
 
     await screen.findByText("Barnes, Ben Billy");
     expect(container).toMatchSnapshot();
+    expect(await axe(container)).toHaveNoViolations();
   });
   describe("search error", () => {
     it("displays user not found", async () => {
@@ -157,16 +175,6 @@ describe("Admin manage user", () => {
       ).toBeInTheDocument();
     });
   });
-
-  async function searchForValidUser() {
-    const searchInput = screen.getByLabelText(
-      "Search by email address of user"
-    );
-    fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
-    fireEvent.click(screen.getByRole("button"));
-
-    expect(await screen.findByText("Barnes, Ben Billy")).toBeInTheDocument();
-  }
 
   describe("editing user", () => {
     it("edit name handler calls", async () => {

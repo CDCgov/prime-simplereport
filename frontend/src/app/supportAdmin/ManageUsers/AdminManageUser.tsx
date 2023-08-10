@@ -203,6 +203,7 @@ export const AdminManageUser: React.FC = () => {
               <div className="display-flex flex-align-center">
                 <Icon.ArrowBack
                   className={"text-base margin-left-neg-2px"}
+                  aria-hidden={true}
                 ></Icon.ArrowBack>
                 <LinkWithQuery to={`/admin`} className="margin-left-05">
                   Support Admin

@@ -23,6 +23,7 @@ exports[`Admin manage user search results matches snapshot 1`] = `
                 class="display-flex flex-align-center"
               >
                 <svg
+                  aria-hidden="true"
                   class="usa-icon text-base margin-left-neg-2px"
                   focusable="false"
                   height="1em"
@@ -124,7 +125,6 @@ exports[`Admin manage user search results matches snapshot 1`] = `
                 <div
                   aria-label="Alert: No facility assigned"
                   class="usa-alert usa-alert--warning"
-                  id="123456789"
                   role="region"
                 >
                   <div
@@ -137,7 +137,6 @@ exports[`Admin manage user search results matches snapshot 1`] = `
                     </div>
                     <div
                       class="usa-alert__text"
-                      id="123456789"
                     >
                       All users must have access to at least one facility
                     </div>
