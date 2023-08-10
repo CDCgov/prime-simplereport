@@ -647,7 +647,7 @@ public class LiveOktaRepository implements OktaRepository {
           restTemplate.exchange(getUrl, HttpMethod.GET, entity, String.class).getBody();
       JSONArray responseJson = new JSONArray(response);
       if (responseJson.length() == 0) {
-        throw new RuntimeException("Okta group not found.");
+        throw new IllegalGraphqlArgumentException("Okta group not found.");
       }
 
       return responseJson
