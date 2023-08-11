@@ -13,6 +13,7 @@ export interface FacilitySelectFilterProps {
   onClearFilter: () => void;
   onSelectOrg: (e: any) => void;
   onSelectFacility: (e: any) => void;
+  onSearch: (e: any) => void;
   manageFacilityState: ManageFacilityState;
   loading: boolean;
 }
@@ -24,6 +25,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
   onClearFilter,
   onSelectOrg,
   onSelectFacility,
+  onSearch,
   loading,
 }) => {
   /**
@@ -51,8 +53,11 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
           </div>
         </div>
       </div>
-      <div className="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1">
-        <div className="grid-row grid-gap padding-bottom-2">
+      <div
+        role="search"
+        className="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1"
+      >
+        <div className="grid-row grid-gap padding-bottom-2 flex-align-end">
           <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
             <Dropdown
               label="Organization"
@@ -70,7 +75,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
           </div>
           <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
             <Dropdown
-              label="Facility"
+              label="Testing facility"
               options={[
                 {
                   label: "- Select -",
@@ -80,8 +85,13 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
               ]}
               onChange={onSelectFacility}
               selectedValue={manageFacilityState.facilityId}
-              disabled={manageFacilityState.orgId === "" || loading}
+              disabled={loading}
             />
+          </div>
+          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
+            <Button onClick={onSearch} ariaLabel="Search facility selection">
+              Search
+            </Button>
           </div>
         </div>
       </div>

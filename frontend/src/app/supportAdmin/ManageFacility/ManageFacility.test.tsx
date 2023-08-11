@@ -100,6 +100,11 @@ describe("ManageFacility", () => {
       target: { value: "1919865a-92eb-4c46-b73b-471b02b131b7" },
     }); // picks testing site
 
+    const searchBtn = screen.getByRole("button", {
+      name: /search/i,
+    });
+    fireEvent.click(searchBtn);
+
     await screen.findByRole("heading", { name: /Testing Site/i });
 
     const deleteFacilityBtn = screen.getByRole("button", {
@@ -144,6 +149,11 @@ describe("ManageFacility", () => {
     fireEvent.change(facilityDropdown, {
       target: { value: "1919865a-92eb-4c46-b73b-471b02b131b8" },
     }); // picks testing site
+
+    const searchBtn = screen.getByRole("button", {
+      name: /search/i,
+    });
+    fireEvent.click(searchBtn);
 
     await screen.findByRole("heading", { name: /Incomplete Site/i });
   });
@@ -240,6 +250,23 @@ const mocks: MockedResponse[] = [
       query: GetFacilityStatsDocument,
       variables: {
         facilityId: "1919865a-92eb-4c46-b73b-471b02b131b7",
+      },
+    },
+    result: {
+      data: {
+        facilityStats: {
+          usersSingleAccessCount: 2,
+          patientsSingleAccessCount: 1,
+          __typename: "FacilityStats",
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: GetFacilityStatsDocument,
+      variables: {
+        facilityId: "1919865a-92eb-4c46-b73b-471b02b131b8",
       },
     },
     result: {

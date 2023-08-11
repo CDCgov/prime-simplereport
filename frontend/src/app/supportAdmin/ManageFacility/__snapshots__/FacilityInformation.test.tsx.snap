@@ -358,7 +358,7 @@ exports[`Facility Information renders no selected facility 1`] = `
     <p
       class="usa-card__body padding-y-3"
     >
-      No facility selected
+      No facility selected. 
     </p>
   </div>
 </div>

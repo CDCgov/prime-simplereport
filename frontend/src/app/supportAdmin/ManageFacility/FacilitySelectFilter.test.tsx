@@ -10,6 +10,7 @@ describe("FacilitySelectFilter", () => {
   const handleClearFilter = jest.fn();
   const handleSelectOrg = jest.fn();
   const handleSelectFacility = jest.fn();
+  const handleSearch = jest.fn();
   const mockOrganizationOptions: Option[] = [
     { value: "123", label: "organization-123" },
   ];
@@ -30,6 +31,7 @@ describe("FacilitySelectFilter", () => {
           onClearFilter={handleClearFilter}
           onSelectOrg={handleSelectOrg}
           onSelectFacility={handleSelectFacility}
+          onSearch={handleSearch}
           manageFacilityState={manageFacilityState}
           loading={true}
         />
@@ -77,5 +79,24 @@ describe("FacilitySelectFilter", () => {
     });
     fireEvent.change(facilityDropdown, { target: { value: "123" } });
     await waitFor(() => expect(handleSelectFacility).toHaveBeenCalled());
+  });
+
+  it("calls event handlers when search button is clicked", async () => {
+    renderWithMocks(mockOrganizationOptions, mockFacilityOptions, {
+      orgId: "123",
+      facilityId: "123",
+      facility: undefined,
+    });
+    const facilityDropdown = screen.getByRole("combobox", {
+      name: /facility/i,
+    });
+    fireEvent.change(facilityDropdown, { target: { value: "123" } });
+
+    const searchBtn = screen.getByRole("button", {
+      name: /search/i,
+    });
+    fireEvent.click(searchBtn);
+
+    await waitFor(() => expect(handleSearch).toHaveBeenCalled());
   });
 });

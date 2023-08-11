@@ -85,21 +85,34 @@ const ManageFacility = () => {
       }).then();
     }
 
-    updateLocalState({ ...initialState, orgId: selectedOrg });
+    updateLocalState((prevState) => ({
+      ...prevState,
+      orgId: selectedOrg,
+      facilityId: "",
+    }));
+    //updateLocalState({ ...initialState, orgId: selectedOrg });
   }
   async function handleSelectFacility(e: React.ChangeEvent<HTMLSelectElement>) {
     const facilityId = e.target.value;
 
+    updateLocalState((prevState) => ({
+      ...prevState,
+      facilityId: facilityId,
+    }));
+  }
+
+  async function handleSearch() {
+    const facilityId = localState.facilityId;
+
     if (facilityId === "") {
       updateLocalState((prevState) => ({
         ...prevState,
-        facilityId: "",
         facility: undefined,
       }));
     } else {
       const selectedFacility =
         facilitiesResponse?.organization?.facilities?.filter(
-          (f) => f.id === e.target.value
+          (f) => f.id === facilityId
         )?.[0];
 
       const facilityStats = await queryGetFacilityStats({
@@ -155,6 +168,7 @@ const ManageFacility = () => {
           onSelectFacility={handleSelectFacility}
           onClearFilter={handleClearFilter}
           onSelectOrg={handleSelectOrganization}
+          onSearch={handleSearch}
           facilityOptions={facilitiesOptions}
           organizationOptions={orgOptions}
           manageFacilityState={localState}

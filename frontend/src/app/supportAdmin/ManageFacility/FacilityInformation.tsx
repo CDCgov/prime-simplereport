@@ -142,7 +142,7 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
           </div>
         </>
       ) : (
-        <p className={"usa-card__body padding-y-3"}>No facility selected</p>
+        <p className={"usa-card__body padding-y-3"}>No facility selected. </p>
       )}
       {confirmationModal}
     </div>
