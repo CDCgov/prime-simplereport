@@ -83,9 +83,7 @@ exports[`Facility Information Confirmation modal and go back 1`] = `
           </h4>
           <p
             class="margin-y-1"
-          >
-            school
-          </p>
+          />
         </div>
         <h3
           class="margin-top-6"
@@ -302,9 +300,7 @@ exports[`Facility Information renders facility information 1`] = `
           </h4>
           <p
             class="margin-y-1"
-          >
-            school
-          </p>
+          />
         </div>
         <h3
           class="margin-top-6"

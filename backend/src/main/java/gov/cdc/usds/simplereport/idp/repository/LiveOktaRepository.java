@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
 import org.openapitools.client.ApiException;
 import org.openapitools.client.api.ApplicationApi;
 import org.openapitools.client.api.ApplicationGroupsApi;
@@ -48,13 +48,7 @@ import org.openapitools.client.model.UserProfile;
 import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Created by jeremyzitomer-usds on 1/7/21
@@ -75,13 +69,6 @@ public class LiveOktaRepository implements OktaRepository {
   private final GroupApi groupApi;
   private final UserApi userApi;
   private final ApplicationGroupsApi applicationGroupsApi;
-
-  @Value("${okta.client.org-url}")
-  String oktaUrl;
-
-  @Value("${okta.client.token}")
-  String oktaToken;
-
   private final String adminGroupName;
 
   public LiveOktaRepository(
@@ -634,28 +621,17 @@ public class LiveOktaRepository implements OktaRepository {
         generateFacilityGroupName(
             facility.getOrganization().getExternalId(), facility.getInternalId());
 
-    RestTemplate restTemplate = new RestTemplate();
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    headers.setAccept(List.of(MediaType.APPLICATION_JSON));
-    headers.add("Authorization", "SSWS " + oktaToken);
-    HttpEntity<String> entity = new HttpEntity<>(null, headers);
-    String getUrl = oktaUrl + "/api/v1/groups?q=" + facilityAccessGroupName + "&expand=stats";
+    List<Group> facilityAccessGroup =
+        groupApi.listGroups(facilityAccessGroupName, null, null, 1, "stats", null, null, null);
+
+    if (facilityAccessGroup.isEmpty()) {
+      return 0;
+    }
 
     try {
-      String response =
-          restTemplate.exchange(getUrl, HttpMethod.GET, entity, String.class).getBody();
-      JSONArray responseJson = new JSONArray(response);
-      if (responseJson.length() == 0) {
-        throw new IllegalGraphqlArgumentException("Okta group not found.");
-      }
-
-      return responseJson
-          .getJSONObject(0)
-          .getJSONObject("_embedded")
-          .getJSONObject("stats")
-          .getInt("usersCount");
-    } catch (RestClientException | NullPointerException e) {
+      LinkedHashMap stats = (LinkedHashMap) facilityAccessGroup.get(0).getEmbedded().get("stats");
+      return ((Integer) stats.get("usersCount"));
+    } catch (NullPointerException e) {
       throw new BadRequestException("Unable to retrieve okta group stats", e);
     }
   }
