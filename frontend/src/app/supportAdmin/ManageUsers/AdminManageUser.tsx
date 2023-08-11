@@ -236,38 +236,34 @@ export const AdminManageUser: React.FC = () => {
           searchEmail={searchEmail}
           disableClearFilters={!searchEmail}
         />
-        <div aria-live={"polite"}>
-          {displayedError && (
-            <div className="prime-container card-container">
-              {displayedError}
+        {displayedError && (
+          <div className="prime-container card-container">{displayedError}</div>
+        )}
+        {foundUser && (
+          <div className="prime-container card-container manage-users-card">
+            <div className="usa-card__body">
+              <UserDetail
+                user={foundUser}
+                isUpdating={isUpdating}
+                handleEditUserName={handleEditUserName}
+                handleEditUserEmail={handleEditUserEmail}
+                handleResetUserPassword={handleResetUserPassword}
+                handleResetUserMfa={handleResetUserMfa}
+                handleDeleteUser={handleDeleteUser}
+                handleReactivateUser={handleReactivateUser}
+                handleResendUserActivationEmail={
+                  handleResendUserActivationEmail
+                }
+                // used in facility tab
+                updateUser={{} as UpdateUser}
+                loggedInUser={{} as User}
+                allFacilities={[]}
+                isUserEdited={false}
+                handleUpdateUser={() => null}
+              />
             </div>
-          )}
-          {foundUser && (
-            <div className="prime-container card-container manage-users-card">
-              <div className="usa-card__body">
-                <UserDetail
-                  user={foundUser}
-                  isUpdating={isUpdating}
-                  handleEditUserName={handleEditUserName}
-                  handleEditUserEmail={handleEditUserEmail}
-                  handleResetUserPassword={handleResetUserPassword}
-                  handleResetUserMfa={handleResetUserMfa}
-                  handleDeleteUser={handleDeleteUser}
-                  handleReactivateUser={handleReactivateUser}
-                  handleResendUserActivationEmail={
-                    handleResendUserActivationEmail
-                  }
-                  // used in facility tab
-                  updateUser={{} as UpdateUser}
-                  loggedInUser={{} as User}
-                  allFacilities={[]}
-                  isUserEdited={false}
-                  handleUpdateUser={() => null}
-                />
-              </div>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
