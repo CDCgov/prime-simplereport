@@ -57,7 +57,7 @@ const validResponse = [
 const searchForValidUser = async () => {
   const searchInput = screen.getByLabelText("Search by email address of user");
   fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
-  fireEvent.click(screen.getByRole("button"));
+  fireEvent.click(screen.getByAltText("Search"));
 
   expect(await screen.findByText("Barnes, Ben Billy")).toBeInTheDocument();
 };
@@ -90,11 +90,46 @@ describe("Admin manage user", () => {
       "Search by email address of user"
     );
     fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByAltText("Search"));
 
     await screen.findByText("Barnes, Ben Billy");
     expect(container).toMatchSnapshot();
     expect(await axe(container)).toHaveNoViolations();
+  });
+  describe("clear filter button", () => {
+    it("should clear search results", async () => {
+      renderComponent(validResponse);
+      await searchForValidUser();
+      fireEvent.click(screen.getByLabelText("Clear user search"));
+      expect(
+        await screen.findByPlaceholderText("email@example.com")
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Ben")).not.toBeInTheDocument();
+    });
+    it("should clear error", async () => {
+      renderComponent([
+        {
+          request: {
+            query: FindUserByEmailDocument,
+            variables: { email: "bad@example.com" },
+          },
+          result: {
+            data: null,
+          },
+        },
+      ]);
+      const searchInput = screen.getByLabelText(
+        "Search by email address of user"
+      );
+      fireEvent.change(searchInput, { target: { value: "bad@example.com" } });
+      fireEvent.click(screen.getByAltText("Search"));
+      expect(await screen.findByText("User not found")).toBeInTheDocument();
+      fireEvent.click(screen.getByLabelText("Clear user search"));
+      expect(
+        await screen.findByPlaceholderText("email@example.com")
+      ).toBeInTheDocument();
+      expect(screen.queryByText("User not found")).not.toBeInTheDocument();
+    });
   });
   describe("search error", () => {
     it("displays user not found", async () => {
@@ -113,7 +148,7 @@ describe("Admin manage user", () => {
         "Search by email address of user"
       );
       fireEvent.change(searchInput, { target: { value: "bad@example.com" } });
-      fireEvent.click(screen.getByRole("button"));
+      fireEvent.click(screen.getByAltText("Search"));
       expect(await screen.findByText("User not found")).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
     });
@@ -144,7 +179,7 @@ describe("Admin manage user", () => {
         "Search by email address of user"
       );
       fireEvent.change(searchInput, { target: { value: "admin@example.com" } });
-      fireEvent.click(screen.getByRole("button"));
+      fireEvent.click(screen.getByAltText("Search"));
       expect(
         await screen.findByText("Can't determine user identity")
       ).toBeInTheDocument();
@@ -176,14 +211,13 @@ describe("Admin manage user", () => {
         "Search by email address of user"
       );
       fireEvent.change(searchInput, { target: { value: "bob@example.com" } });
-      fireEvent.click(screen.getByRole("button"));
+      fireEvent.click(screen.getByAltText("Search"));
       expect(
         await screen.findByText("Something went wrong")
       ).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
     });
   });
-
   describe("editing basic information", () => {
     it("edit name handler calls", async () => {
       const updateUserNameResponse = {

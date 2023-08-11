@@ -10,12 +10,14 @@ interface UserSearchProps {
   onSearchClick: (e: any) => void;
   onInputChange: (e: any) => void;
   searchEmail: string;
+  disableClearFilters: boolean;
 }
 export const UserSearch: React.FC<UserSearchProps> = ({
   onClearFilter,
   onSearchClick,
   onInputChange,
   searchEmail,
+  disableClearFilters,
 }) => {
   return (
     <div className="prime-container card-container padding-bottom-3">
@@ -29,7 +31,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
             <div className="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0">
               <Button
                 icon={faSlidersH}
-                disabled={!searchEmail}
+                disabled={disableClearFilters}
                 onClick={onClearFilter}
                 ariaLabel="Clear user search"
               >
