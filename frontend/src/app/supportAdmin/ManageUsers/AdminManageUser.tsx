@@ -234,7 +234,7 @@ export const AdminManageUser: React.FC = () => {
           onSearchClick={handleSearchClear}
           onInputChange={handleInputChange}
           searchEmail={searchEmail}
-          disableClearFilters={!searchEmail}
+          disableClearFilters={!searchEmail && !foundUser && !displayedError}
         />
         {displayedError && (
           <div className="prime-container card-container">{displayedError}</div>
