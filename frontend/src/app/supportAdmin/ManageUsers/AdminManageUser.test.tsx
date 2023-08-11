@@ -333,6 +333,7 @@ describe("Admin manage user", () => {
       expect(screen.getByText("Reset MFA")).toBeDisabled();
       expect(screen.getAllByText("Delete user")[1]).toBeDisabled();
       expect(screen.getByText("Account deleted.")).toBeInTheDocument();
+      expect(await axe(document.body)).toHaveNoViolations();
     });
     it("reactivate user handler", async () => {
       const suspendedUserResponse = {
