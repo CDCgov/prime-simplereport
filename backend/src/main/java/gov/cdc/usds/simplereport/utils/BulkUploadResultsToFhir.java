@@ -445,9 +445,9 @@ public class BulkUploadResultsToFhir {
     return null;
   }
 
-  private String getSpecimenTypeName(String loinc) {
-    if (loinc != null) {
-      return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(loinc);
+  private String getSpecimenTypeName(String specimenSNOMED) {
+    if (specimenSNOMED != null) {
+      return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(specimenSNOMED);
     }
     return null;
   }
