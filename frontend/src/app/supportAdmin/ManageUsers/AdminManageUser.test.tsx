@@ -85,16 +85,11 @@ const axe = configureAxe({
 });
 describe("Admin manage user", () => {
   it("search results matches snapshot", async () => {
-    const { container } = renderComponent(validResponse);
-    const searchInput = screen.getByLabelText(
-      "Search by email address of user"
-    );
-    fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
-    fireEvent.click(screen.getByAltText("Search"));
+    renderComponent(validResponse);
+    await searchForValidUser();
 
-    await screen.findByText("Barnes, Ben Billy");
-    expect(container).toMatchSnapshot();
-    expect(await axe(container)).toHaveNoViolations();
+    expect(document.body).toMatchSnapshot();
+    expect(await axe(document.body)).toHaveNoViolations();
   });
   describe("clear filter button", () => {
     it("should clear search results", async () => {
@@ -151,6 +146,7 @@ describe("Admin manage user", () => {
       fireEvent.click(screen.getByAltText("Search"));
       expect(await screen.findByText("User not found")).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
+      expect(document.body).toMatchSnapshot();
     });
     it("displays user is an admin", async () => {
       renderComponent([
@@ -184,6 +180,7 @@ describe("Admin manage user", () => {
         await screen.findByText("Can't determine user identity")
       ).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
+      expect(document.body).toMatchSnapshot();
     });
     it("displays generic error", async () => {
       renderComponent([
@@ -216,6 +213,7 @@ describe("Admin manage user", () => {
         await screen.findByText("Something went wrong")
       ).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
+      expect(document.body).toMatchSnapshot();
     });
   });
   describe("editing basic information", () => {

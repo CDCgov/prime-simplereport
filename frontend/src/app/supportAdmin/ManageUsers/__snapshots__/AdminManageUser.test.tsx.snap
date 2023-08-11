@@ -1,352 +1,801 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Admin manage user search results matches snapshot 1`] = `
-<div>
+exports[`Admin manage user search error displays generic error 1`] = `
+<body>
   <div>
-    <div
-      class="Toastify"
-    />
-    <div
-      class="prime-home flex-1"
-    >
+    <div>
       <div
-        class="grid-container"
+        class="Toastify"
+      />
+      <div
+        class="prime-home flex-1"
       >
         <div
-          class="prime-container card-container padding-bottom-3"
+          class="grid-container"
         >
           <div
-            class="usa-card__header"
+            class="prime-container card-container padding-bottom-3"
           >
             <div
-              class="width-full"
+              class="usa-card__header"
             >
               <div
-                class="display-flex flex-align-center"
+                class="width-full"
               >
-                <svg
-                  aria-hidden="true"
-                  class="usa-icon text-base margin-left-neg-2px"
-                  focusable="false"
-                  role="img"
-                >
-                  <use
-                    xlink:href="sprite.svg#arrow_back"
-                  />
-                </svg>
-                <a
-                  class="margin-left-05"
-                  href="/admin"
-                >
-                  Support admin
-                </a>
-              </div>
-              <div
-                class="grid-row width-full margin-top-1"
-              >
-                <h1
-                  class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
-                >
-                  Manage user
-                </h1>
                 <div
-                  class="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0"
+                  class="display-flex flex-align-center"
                 >
-                  <button
-                    aria-disabled="false"
-                    aria-label="Clear user search"
-                    class="usa-button"
-                    type="button"
+                  <svg
+                    aria-hidden="true"
+                    class="usa-icon text-base margin-left-neg-2px"
+                    focusable="false"
+                    role="img"
                   >
-                    <svg
-                      aria-hidden="true"
-                      class="svg-inline--fa fa-sliders margin-right-1"
-                      data-icon="sliders"
-                      data-prefix="fas"
-                      focusable="false"
-                      role="img"
-                      viewBox="0 0 512 512"
-                      xmlns="http://www.w3.org/2000/svg"
+                    <use
+                      xlink:href="sprite.svg#arrow_back"
+                    />
+                  </svg>
+                  <a
+                    class="margin-left-05"
+                    href="/admin"
+                  >
+                    Support admin
+                  </a>
+                </div>
+                <div
+                  class="grid-row width-full margin-top-1"
+                >
+                  <h1
+                    class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
+                  >
+                    Manage user
+                  </h1>
+                  <div
+                    class="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0"
+                  >
+                    <button
+                      aria-disabled="false"
+                      aria-label="Clear user search"
+                      class="usa-button"
+                      type="button"
                     >
-                      <path
-                        d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm32-80c-32.8 0-61 19.7-73.3 48L32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l246.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48l54.7 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-54.7 0c-12.3-28.3-40.5-48-73.3-48zM192 128a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm73.3-64C253 35.7 224.8 16 192 16s-61 19.7-73.3 48L32 64C14.3 64 0 78.3 0 96s14.3 32 32 32l86.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 128c17.7 0 32-14.3 32-32s-14.3-32-32-32L265.3 64z"
-                        fill="currentColor"
-                      />
-                    </svg>
-                    Clear filters
-                  </button>
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-sliders margin-right-1"
+                        data-icon="sliders"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm32-80c-32.8 0-61 19.7-73.3 48L32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l246.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48l54.7 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-54.7 0c-12.3-28.3-40.5-48-73.3-48zM192 128a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm73.3-64C253 35.7 224.8 16 192 16s-61 19.7-73.3 48L32 64C14.3 64 0 78.3 0 96s14.3 32 32 32l86.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 128c17.7 0 32-14.3 32-32s-14.3-32-32-32L265.3 64z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Clear filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1"
+              role="search"
+            >
+              <div
+                class="grid-row grid-gap padding-top-2 padding-bottom-1 flex-align-end"
+              >
+                <div
+                  class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+                >
+                  <div
+                    class="prime-search-container"
+                  >
+                    <form
+                      class="usa-search usa-search--small prime-search-input display-inline-block"
+                      role="search"
+                    >
+                      <label
+                        class="display-block"
+                        for="search-field-small"
+                      >
+                        Search by email address of user
+                      </label>
+                      <div>
+                        <input
+                          autocomplete="off"
+                          class="usa-input"
+                          id="search-field-small"
+                          name="search"
+                          placeholder="email@example.com"
+                          type="search"
+                          value="bob@example.com"
+                        />
+                        <button
+                          class="usa-button"
+                          type="submit"
+                        >
+                          <img
+                            alt="Search"
+                            class="usa-search__submit-icon"
+                            src="search--white.svg"
+                          />
+                        </button>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
           <div
-            class="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1"
-            role="search"
+            class="prime-container card-container"
           >
             <div
-              class="grid-row grid-gap padding-top-2 padding-bottom-1 flex-align-end"
+              class="maxw-mobile-lg margin-x-auto padding-bottom-205"
             >
-              <div
-                class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
-              >
-                <div
-                  class="prime-search-container"
-                >
-                  <form
-                    class="usa-search usa-search--small prime-search-input display-inline-block"
-                    role="search"
-                  >
-                    <label
-                      class="display-block"
-                      for="search-field-small"
-                    >
-                      Search by email address of user
-                    </label>
-                    <div>
-                      <input
-                        autocomplete="off"
-                        class="usa-input"
-                        id="search-field-small"
-                        name="search"
-                        placeholder="email@example.com"
-                        type="search"
-                        value="ben@example.com"
-                      />
-                      <button
-                        class="usa-button"
-                        type="submit"
-                      >
-                        <img
-                          alt="Search"
-                          class="usa-search__submit-icon"
-                          src="search--white.svg"
-                        />
-                      </button>
-                    </div>
-                  </form>
-                </div>
-              </div>
+              <h2>
+                Something went wrong
+              </h2>
+              Please try again or contact the SimpleReport team for help.
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Admin manage user search error displays user is an admin 1`] = `
+<body>
+  <div>
+    <div>
+      <div
+        class="Toastify"
+      />
+      <div
+        class="prime-home flex-1"
+      >
         <div
-          class="prime-container card-container manage-users-card"
+          class="grid-container"
         >
           <div
-            class="usa-card__body"
+            class="prime-container card-container padding-bottom-3"
           >
             <div
-              aria-labelledby="user-tab-1cd3b088-e7d0-4be9-9cb7-035e3284d5f5"
-              class="tablet:grid-col padding-left-3 user-detail-column"
-              role="tabpanel"
+              class="usa-card__header"
             >
-              <div>
-                <h2
-                  class="display-inline-block margin-top-1 margin-bottom-0 user-name-header"
-                >
-                  Barnes, Ben Billy
-                </h2>
-                <div
-                  class="user-status-subheader"
-                >
-                  <span
-                    class="top-user-status padding-left-0"
-                  />
-                </div>
-              </div>
               <div
-                class="user-header grid-row flex-row flex-align-center"
-              />
-              <div
-                aria-label="Alert: No facility assigned"
-                class="usa-alert usa-alert--warning"
-                role="region"
+                class="width-full"
               >
                 <div
-                  class="usa-alert__body"
+                  class="display-flex flex-align-center"
                 >
-                  <div
-                    class="usa-alert__heading text-bold"
+                  <svg
+                    aria-hidden="true"
+                    class="usa-icon text-base margin-left-neg-2px"
+                    focusable="false"
+                    role="img"
                   >
-                    No facility assigned
-                  </div>
-                  <div
-                    class="usa-alert__text"
+                    <use
+                      xlink:href="sprite.svg#arrow_back"
+                    />
+                  </svg>
+                  <a
+                    class="margin-left-05"
+                    href="/admin"
                   >
-                    All users must have access to at least one facility
-                  </div>
+                    Support admin
+                  </a>
                 </div>
-              </div>
-              <nav
-                aria-label="User action navigation"
-                class="prime-secondary-nav margin-top-4 padding-bottom-0"
-              >
                 <div
-                  aria-owns="user-info-tab-id facility-access-tab-id"
-                  class="usa-nav__secondary-links prime-nav usa-list"
-                  role="tablist"
+                  class="grid-row width-full margin-top-1"
                 >
+                  <h1
+                    class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
+                  >
+                    Manage user
+                  </h1>
                   <div
-                    class="usa-nav__secondary-item usa-current"
+                    class="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0"
                   >
                     <button
-                      aria-selected="true"
-                      class="usa-button--unstyled text-ink text-no-underline"
-                      id="user-info-tab-id"
-                      role="tab"
+                      aria-disabled="false"
+                      aria-label="Clear user search"
+                      class="usa-button"
+                      type="button"
                     >
-                      User information
-                    </button>
-                  </div>
-                  <div
-                    class="usa-nav__secondary-item "
-                  >
-                    <button
-                      aria-selected="false"
-                      class="usa-button--unstyled text-ink text-no-underline"
-                      id="facility-access-tab-id"
-                      role="tab"
-                    >
-                      Facility access
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-sliders margin-right-1"
+                        data-icon="sliders"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm32-80c-32.8 0-61 19.7-73.3 48L32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l246.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48l54.7 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-54.7 0c-12.3-28.3-40.5-48-73.3-48zM192 128a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm73.3-64C253 35.7 224.8 16 192 16s-61 19.7-73.3 48L32 64C14.3 64 0 78.3 0 96s14.3 32 32 32l86.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 128c17.7 0 32-14.3 32-32s-14.3-32-32-32L265.3 64z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Clear filters
                     </button>
                   </div>
                 </div>
-              </nav>
+              </div>
+            </div>
+            <div
+              class="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1"
+              role="search"
+            >
               <div
-                aria-labelledby="user-info-tab-id"
-                class="padding-left-1"
+                class="grid-row grid-gap padding-top-2 padding-bottom-1 flex-align-end"
+              >
+                <div
+                  class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+                >
+                  <div
+                    class="prime-search-container"
+                  >
+                    <form
+                      class="usa-search usa-search--small prime-search-input display-inline-block"
+                      role="search"
+                    >
+                      <label
+                        class="display-block"
+                        for="search-field-small"
+                      >
+                        Search by email address of user
+                      </label>
+                      <div>
+                        <input
+                          autocomplete="off"
+                          class="usa-input"
+                          id="search-field-small"
+                          name="search"
+                          placeholder="email@example.com"
+                          type="search"
+                          value="admin@example.com"
+                        />
+                        <button
+                          class="usa-button"
+                          type="submit"
+                        >
+                          <img
+                            alt="Search"
+                            class="usa-search__submit-icon"
+                            src="search--white.svg"
+                          />
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="prime-container card-container"
+          >
+            <div
+              class="maxw-mobile-lg margin-x-auto padding-bottom-205"
+            >
+              <h2>
+                Can't determine user identity
+              </h2>
+              The email address isn't in Okta and can't be displayed. Please escalate the issue to the SimpleReport team.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Admin manage user search error displays user not found 1`] = `
+<body>
+  <div>
+    <div>
+      <div
+        class="Toastify"
+      />
+      <div
+        class="prime-home flex-1"
+      >
+        <div
+          class="grid-container"
+        >
+          <div
+            class="prime-container card-container padding-bottom-3"
+          >
+            <div
+              class="usa-card__header"
+            >
+              <div
+                class="width-full"
+              >
+                <div
+                  class="display-flex flex-align-center"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="usa-icon text-base margin-left-neg-2px"
+                    focusable="false"
+                    role="img"
+                  >
+                    <use
+                      xlink:href="sprite.svg#arrow_back"
+                    />
+                  </svg>
+                  <a
+                    class="margin-left-05"
+                    href="/admin"
+                  >
+                    Support admin
+                  </a>
+                </div>
+                <div
+                  class="grid-row width-full margin-top-1"
+                >
+                  <h1
+                    class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
+                  >
+                    Manage user
+                  </h1>
+                  <div
+                    class="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0"
+                  >
+                    <button
+                      aria-disabled="false"
+                      aria-label="Clear user search"
+                      class="usa-button"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-sliders margin-right-1"
+                        data-icon="sliders"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm32-80c-32.8 0-61 19.7-73.3 48L32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l246.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48l54.7 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-54.7 0c-12.3-28.3-40.5-48-73.3-48zM192 128a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm73.3-64C253 35.7 224.8 16 192 16s-61 19.7-73.3 48L32 64C14.3 64 0 78.3 0 96s14.3 32 32 32l86.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 128c17.7 0 32-14.3 32-32s-14.3-32-32-32L265.3 64z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Clear filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1"
+              role="search"
+            >
+              <div
+                class="grid-row grid-gap padding-top-2 padding-bottom-1 flex-align-end"
+              >
+                <div
+                  class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+                >
+                  <div
+                    class="prime-search-container"
+                  >
+                    <form
+                      class="usa-search usa-search--small prime-search-input display-inline-block"
+                      role="search"
+                    >
+                      <label
+                        class="display-block"
+                        for="search-field-small"
+                      >
+                        Search by email address of user
+                      </label>
+                      <div>
+                        <input
+                          autocomplete="off"
+                          class="usa-input"
+                          id="search-field-small"
+                          name="search"
+                          placeholder="email@example.com"
+                          type="search"
+                          value="bad@example.com"
+                        />
+                        <button
+                          class="usa-button"
+                          type="submit"
+                        >
+                          <img
+                            alt="Search"
+                            class="usa-search__submit-icon"
+                            src="search--white.svg"
+                          />
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="prime-container card-container"
+          >
+            <div
+              class="maxw-mobile-lg margin-x-auto padding-bottom-205"
+            >
+              <h2>
+                User not found
+              </h2>
+              Please check the email address and try the search again, or contact the SimpleReport team for help.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`Admin manage user search results matches snapshot 1`] = `
+<body>
+  <div>
+    <div>
+      <div
+        class="Toastify"
+      />
+      <div
+        class="prime-home flex-1"
+      >
+        <div
+          class="grid-container"
+        >
+          <div
+            class="prime-container card-container padding-bottom-3"
+          >
+            <div
+              class="usa-card__header"
+            >
+              <div
+                class="width-full"
+              >
+                <div
+                  class="display-flex flex-align-center"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="usa-icon text-base margin-left-neg-2px"
+                    focusable="false"
+                    role="img"
+                  >
+                    <use
+                      xlink:href="sprite.svg#arrow_back"
+                    />
+                  </svg>
+                  <a
+                    class="margin-left-05"
+                    href="/admin"
+                  >
+                    Support admin
+                  </a>
+                </div>
+                <div
+                  class="grid-row width-full margin-top-1"
+                >
+                  <h1
+                    class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
+                  >
+                    Manage user
+                  </h1>
+                  <div
+                    class="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0"
+                  >
+                    <button
+                      aria-disabled="false"
+                      aria-label="Clear user search"
+                      class="usa-button"
+                      type="button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-sliders margin-right-1"
+                        data-icon="sliders"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm32-80c-32.8 0-61 19.7-73.3 48L32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l246.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48l54.7 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-54.7 0c-12.3-28.3-40.5-48-73.3-48zM192 128a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm73.3-64C253 35.7 224.8 16 192 16s-61 19.7-73.3 48L32 64C14.3 64 0 78.3 0 96s14.3 32 32 32l86.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 128c17.7 0 32-14.3 32-32s-14.3-32-32-32L265.3 64z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      Clear filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1"
+              role="search"
+            >
+              <div
+                class="grid-row grid-gap padding-top-2 padding-bottom-1 flex-align-end"
+              >
+                <div
+                  class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+                >
+                  <div
+                    class="prime-search-container"
+                  >
+                    <form
+                      class="usa-search usa-search--small prime-search-input display-inline-block"
+                      role="search"
+                    >
+                      <label
+                        class="display-block"
+                        for="search-field-small"
+                      >
+                        Search by email address of user
+                      </label>
+                      <div>
+                        <input
+                          autocomplete="off"
+                          class="usa-input"
+                          id="search-field-small"
+                          name="search"
+                          placeholder="email@example.com"
+                          type="search"
+                          value="ben@example.com"
+                        />
+                        <button
+                          class="usa-button"
+                          type="submit"
+                        >
+                          <img
+                            alt="Search"
+                            class="usa-search__submit-icon"
+                            src="search--white.svg"
+                          />
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="prime-container card-container manage-users-card"
+          >
+            <div
+              class="usa-card__body"
+            >
+              <div
+                aria-labelledby="user-tab-1cd3b088-e7d0-4be9-9cb7-035e3284d5f5"
+                class="tablet:grid-col padding-left-3 user-detail-column"
                 role="tabpanel"
               >
-                <h3
-                  class="basic-info-header"
-                >
-                  Basic information
-                </h3>
-                <div
-                  class="user-header grid-row flex-row flex-align-center"
-                >
-                  <div>
-                    <div
-                      class="userinfo-subheader"
-                    >
-                      Name
-                    </div>
-                    <p
-                      class="userinfo-text"
-                    >
-                      Ben Billy Barnes
-                    </p>
-                  </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
+                <div>
+                  <h2
+                    class="display-inline-block margin-top-1 margin-bottom-0 user-name-header"
                   >
-                    Edit name
-                  </button>
+                    Barnes, Ben Billy
+                  </h2>
+                  <div
+                    class="user-status-subheader"
+                  >
+                    <span
+                      class="top-user-status padding-left-0"
+                    />
+                  </div>
                 </div>
                 <div
                   class="user-header grid-row flex-row flex-align-center"
-                >
-                  <div>
-                    <div
-                      class="userinfo-subheader"
-                    >
-                      Email
-                    </div>
-                    <p
-                      class="userinfo-text"
-                    >
-                      ben@example.com
-                    </p>
-                  </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
-                  >
-                    Edit email
-                  </button>
-                </div>
-                <div
-                  class="userinfo-divider"
                 />
-                <h3
-                  class="user-controls-header"
-                >
-                  User controls
-                </h3>
                 <div
-                  class="user-header grid-row flex-row flex-align-center"
+                  aria-label="Alert: No facility assigned"
+                  class="usa-alert usa-alert--warning"
+                  role="region"
                 >
                   <div
-                    class="grid-col margin-right-8"
+                    class="usa-alert__body"
                   >
                     <div
-                      class="userinfo-subheader"
+                      class="usa-alert__heading text-bold"
                     >
-                      Password
+                      No facility assigned
                     </div>
-                    <p
-                      class="usercontrols-text"
+                    <div
+                      class="usa-alert__text"
                     >
-                      Send a link to reset user password. Users must answer a password recovery question to access their account.
-                    </p>
+                      All users must have access to at least one facility
+                    </div>
                   </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
-                  >
-                    Send password reset email
-                  </button>
                 </div>
-                <div
-                  class="user-header grid-row flex-row flex-align-center"
+                <nav
+                  aria-label="User action navigation"
+                  class="prime-secondary-nav margin-top-4 padding-bottom-0"
                 >
                   <div
-                    class="grid-col"
+                    aria-owns="user-info-tab-id facility-access-tab-id"
+                    class="usa-nav__secondary-links prime-nav usa-list"
+                    role="tablist"
                   >
                     <div
-                      class="userinfo-subheader"
+                      class="usa-nav__secondary-item usa-current"
                     >
-                      Reset multi-factor authentication (MFA)
+                      <button
+                        aria-selected="true"
+                        class="usa-button--unstyled text-ink text-no-underline"
+                        id="user-info-tab-id"
+                        role="tab"
+                      >
+                        User information
+                      </button>
                     </div>
-                    <p
-                      class="usercontrols-text"
-                    >
-                      Reset user MFA account access settings
-                    </p>
-                  </div>
-                  <button
-                    aria-disabled="false"
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
-                  >
-                    Reset MFA
-                  </button>
-                </div>
-                <div
-                  class="user-header grid-row flex-row flex-align-center"
-                >
-                  <div>
                     <div
-                      class="userinfo-subheader"
+                      class="usa-nav__secondary-item "
+                    >
+                      <button
+                        aria-selected="false"
+                        class="usa-button--unstyled text-ink text-no-underline"
+                        id="facility-access-tab-id"
+                        role="tab"
+                      >
+                        Facility access
+                      </button>
+                    </div>
+                  </div>
+                </nav>
+                <div
+                  aria-labelledby="user-info-tab-id"
+                  class="padding-left-1"
+                  role="tabpanel"
+                >
+                  <h3
+                    class="basic-info-header"
+                  >
+                    Basic information
+                  </h3>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div>
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Name
+                      </div>
+                      <p
+                        class="userinfo-text"
+                      >
+                        Ben Billy Barnes
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
+                    >
+                      Edit name
+                    </button>
+                  </div>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div>
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Email
+                      </div>
+                      <p
+                        class="userinfo-text"
+                      >
+                        ben@example.com
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
+                    >
+                      Edit email
+                    </button>
+                  </div>
+                  <div
+                    class="userinfo-divider"
+                  />
+                  <h3
+                    class="user-controls-header"
+                  >
+                    User controls
+                  </h3>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div
+                      class="grid-col margin-right-8"
+                    >
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Password
+                      </div>
+                      <p
+                        class="usercontrols-text"
+                      >
+                        Send a link to reset user password. Users must answer a password recovery question to access their account.
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
+                    >
+                      Send password reset email
+                    </button>
+                  </div>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div
+                      class="grid-col"
+                    >
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Reset multi-factor authentication (MFA)
+                      </div>
+                      <p
+                        class="usercontrols-text"
+                      >
+                        Reset user MFA account access settings
+                      </p>
+                    </div>
+                    <button
+                      aria-disabled="false"
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
+                    >
+                      Reset MFA
+                    </button>
+                  </div>
+                  <div
+                    class="user-header grid-row flex-row flex-align-center"
+                  >
+                    <div>
+                      <div
+                        class="userinfo-subheader"
+                      >
+                        Delete user
+                      </div>
+                      <p
+                        class="usercontrols-text"
+                      >
+                        Permanently delete user account and data
+                      </p>
+                    </div>
+                    <button
+                      class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
+                      type="button"
                     >
                       Delete user
-                    </div>
-                    <p
-                      class="usercontrols-text"
-                    >
-                      Permanently delete user account and data
-                    </p>
+                    </button>
                   </div>
-                  <button
-                    class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
-                    type="button"
-                  >
-                    Delete user
-                  </button>
                 </div>
               </div>
             </div>
@@ -355,5 +804,5 @@ exports[`Admin manage user search results matches snapshot 1`] = `
       </div>
     </div>
   </div>
-</div>
+</body>
 `;
