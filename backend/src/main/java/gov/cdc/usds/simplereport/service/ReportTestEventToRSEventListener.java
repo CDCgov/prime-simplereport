@@ -8,12 +8,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+record ReportTestEventToRSEvent(TestEvent testEvent) {}
+
 /**
  * Allows a test event to be sent to ReportStream after a transaction successfully commits. This
  * ensures that if a failure occurs when sending the test event to ReportStream, any database
  * changes from the transaction are not rolled back.
- *
- * @see ReportTestEventToRSEvent
  */
 @Component
 @RequiredArgsConstructor
@@ -29,7 +29,7 @@ public class ReportTestEventToRSEventListener {
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
   public void handleEvent(ReportTestEventToRSEvent event) {
-    reportTestEventToRS(event.getTestEvent());
+    reportTestEventToRS(event.testEvent());
   }
 
   private void reportTestEventToRS(TestEvent savedEvent) {
