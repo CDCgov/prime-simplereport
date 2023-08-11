@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { Icon } from "@trussworks/react-uswds";
 
 import { useDocumentTitle } from "../../utils/hooks";
-import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import SearchInput from "../../testQueue/addToQueue/SearchInput";
 import {
   useEditUserEmailMutation,
@@ -20,6 +18,7 @@ import UserDetail from "../../Settings/Users/UserDetail";
 import { UpdateUser } from "../../Settings/Users/ManageUsers";
 import { displayFullName } from "../../utils";
 import { OktaUserStatus } from "../../utils/user";
+import SupportHomeLink from "../SupportHomeLink";
 
 const userNotFoundError = (
   <div className={"maxw-mobile-lg margin-x-auto"}>
@@ -200,15 +199,7 @@ export const AdminManageUser: React.FC = () => {
         <div className="prime-container card-container padding-3">
           <div className="display-flex flex-justify">
             <div>
-              <div className="display-flex flex-align-center">
-                <Icon.ArrowBack
-                  className={"text-base margin-left-neg-2px"}
-                  aria-hidden={true}
-                ></Icon.ArrowBack>
-                <LinkWithQuery to={`/admin`} className="margin-left-05">
-                  Support Admin
-                </LinkWithQuery>
-              </div>
+              <SupportHomeLink />
               <div className="prime-edit-patient-heading margin-y-0">
                 <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
                   Manage Users
