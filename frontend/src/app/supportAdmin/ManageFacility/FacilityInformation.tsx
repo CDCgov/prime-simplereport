@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import Modal from "../../commonComponents/Modal";
+import { OrganizationTypeEnum } from "../../signUp/Organization/utils";
 
 import { ManageFacilityState } from "./ManageFacility";
 
@@ -29,6 +30,8 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
   manageFacilityState,
   onFacilityDelete,
 }) => {
+  const OrgTypeDictionary = OrganizationTypeEnum as any;
+
   /**
    * Confirmation modal
    */
@@ -117,7 +120,9 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
             />
             <FacilityDataItem
               title="Organization type"
-              description={manageFacilityState.facility.orgType}
+              description={
+                OrgTypeDictionary[manageFacilityState.facility.orgType]
+              }
             />
             <h3 className="margin-top-6">Facility controls</h3>
             <div className="margin-y-3">
