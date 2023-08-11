@@ -2152,13 +2152,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // WHEN
     List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
-    AddTestResultResponse res =
-        _service.addMultiplexResult(
-            deviceType.getInternalId(),
-            specimenType.getInternalId(),
-            positiveCovidOnlyResult,
-            patient.getInternalId(),
-            null);
+    _service.addMultiplexResult(
+        deviceType.getInternalId(),
+        specimenType.getInternalId(),
+        positiveCovidOnlyResult,
+        patient.getInternalId(),
+        null);
 
     // THEN
     verify(reportTestEventToRSEventListener, times(1)).handleEvent(any());
