@@ -26,7 +26,7 @@
     "browserslist": "4.21.9",
     "classnames": "^2.2.6",
     "flagged": "^2.0.8",
-    "google-libphonenumber": "^3.2.26",
+    "google-libphonenumber": "^3.2.33",
     "graphql": "^16.6.0",
     "i18next": "22.4.15",
     "jwt-decode": "^3.1.2",
