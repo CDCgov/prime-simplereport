@@ -70,7 +70,8 @@ describe("Organization sign up",() => {
     cy.get("[data-testid='combo-box-input']").type(
       `${organization.name}{enter}`
     );
-    cy.get('input[name="justification"]').type("I am a test user").blur();
+    cy.get('input[name="justification"]').type("I am a test user");
+    cy.get('input[name="justification"]').blur();
 
     cy.injectSRAxe();
     cy.checkAccessibility();
