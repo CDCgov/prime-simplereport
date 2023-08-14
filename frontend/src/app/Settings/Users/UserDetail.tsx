@@ -218,6 +218,12 @@ const UserHeading: React.FC<{
     </>
   );
 };
+const isUserActive = (user: SettingsUser) =>
+  user.status !== OktaUserStatus.SUSPENDED &&
+  user.status !== OktaUserStatus.PROVISIONED &&
+  !user.isDeleted;
+const isUserSelf = (user: { id: string }, loggedInUser: { id: string }) =>
+  user.id === loggedInUser.id;
 
 const UserDetail: React.FC<Props> = ({
   user,
@@ -240,19 +246,13 @@ const UserDetail: React.FC<Props> = ({
     displayedTabs[0]
   );
 
-  const isUserActive = () =>
-    user.status !== OktaUserStatus.SUSPENDED &&
-    user.status !== OktaUserStatus.PROVISIONED &&
-    !user.isDeleted;
-  const isUserSelf = () => user.id === loggedInUser.id;
-
   const availableTabs = {
     [UserDetailTab.userInfo]: (
       <UserInfoTab
-        isUserActive={isUserActive}
+        isUserActive={isUserActive(user)}
         user={user}
         isUpdating={isUpdating}
-        isUserSelf={isUserSelf}
+        isUserSelf={isUserSelf(user, loggedInUser)}
         handleDeleteUser={handleDeleteUser}
         handleEditUserEmail={handleEditUserEmail}
         handleResetUserPassword={handleResetUserPassword}
@@ -280,7 +280,7 @@ const UserDetail: React.FC<Props> = ({
     >
       <UserHeading
         user={user}
-        isUserSelf={isUserSelf()}
+        isUserSelf={isUserSelf(user, loggedInUser)}
         isUpdating={isUpdating}
         handleResendUserActivationEmail={handleResendUserActivationEmail}
         handleReactivateUser={handleReactivateUser}

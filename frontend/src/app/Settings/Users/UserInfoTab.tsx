@@ -12,10 +12,10 @@ import EditUserNameModal from "./EditUserNameModal";
 import EditUserEmailModal from "./EditUserEmailModal";
 
 interface UserInfoTabProps {
-  isUserActive: () => boolean;
   user: SettingsUser;
   isUpdating: boolean;
-  isUserSelf: () => boolean;
+  isUserActive: boolean;
+  isUserSelf: boolean;
   handleDeleteUser: (userId: string) => void;
   handleEditUserName: (
     userId: string,
@@ -59,7 +59,7 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
         <div
           className={classnames(
             "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": !isUserActive() }
+            { "disabled-dark": !isUserActive }
           )}
         >
           <div>
@@ -75,13 +75,13 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateEditUserNameModal(true)}
             label={"Edit name"}
-            disabled={isUpdating || !isUserActive()}
+            disabled={isUpdating || !isUserActive}
           />
         </div>
         <div
           className={classnames(
             "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": !isUserActive() }
+            { "disabled-dark": !isUserActive }
           )}
         >
           <div>
@@ -93,7 +93,7 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateEditUserEmailModal(true)}
             label={"Edit email"}
-            disabled={isUpdating || !isUserActive()}
+            disabled={isUpdating || !isUserActive}
           />
         </div>
         <div className="userinfo-divider"></div>
@@ -101,7 +101,7 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
         <div
           className={classnames(
             "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": !isUserActive() }
+            { "disabled-dark": !isUserActive }
           )}
         >
           <div className="grid-col margin-right-8">
@@ -116,13 +116,13 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResetPasswordModal(true)}
             label={"Send password reset email"}
-            disabled={isUpdating || !isUserActive()}
+            disabled={isUpdating || !isUserActive}
           />
         </div>
         <div
           className={classnames(
             "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": !isUserActive() }
+            { "disabled-dark": !isUserActive }
           )}
         >
           <div className="grid-col">
@@ -138,13 +138,13 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowResetMfaModal(true)}
             label={"Reset MFA"}
-            disabled={isUpdating || !isUserActive()}
+            disabled={isUpdating || !isUserActive}
           />
         </div>
         <div
           className={classnames(
             "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": isUserSelf() || user.isDeleted }
+            { "disabled-dark": isUserSelf || user.isDeleted }
           )}
         >
           <div>
@@ -158,7 +158,7 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
             className="margin-left-auto margin-bottom-1"
             onClick={() => updateShowDeleteUserModal(true)}
             label={"Delete user"}
-            disabled={isUpdating || isUserSelf() || user.isDeleted}
+            disabled={isUpdating || isUserSelf || user.isDeleted}
           />
         </div>
       </div>
