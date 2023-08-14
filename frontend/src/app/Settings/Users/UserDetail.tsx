@@ -182,6 +182,43 @@ export enum UserDetailTab {
   facilityAccess = "Facility access",
 }
 
+const UserHeading: React.FC<{
+  user: SettingsUser;
+  isUserSelf: boolean;
+  isUpdating: boolean;
+  handleResendUserActivationEmail: (userId: string) => void;
+  handleReactivateUser: (userId: string) => void;
+}> = ({
+  user,
+  isUserSelf,
+  isUpdating,
+  handleResendUserActivationEmail,
+  handleReactivateUser,
+}) => {
+  return (
+    <>
+      <div>
+        <h2 className="display-inline-block margin-top-1 margin-bottom-0 user-name-header">
+          {displayFullName(user.firstName, user.middleName, user.lastName)}
+          {isUserSelf && (
+            <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
+              YOU
+            </span>
+          )}
+        </h2>
+        <UserStatusSubheading user={user} />
+      </div>
+      <SpecialStatusNotice
+        user={user}
+        isUpdating={isUpdating}
+        handleResendUserActivationEmail={handleResendUserActivationEmail}
+        handleReactivateUser={handleReactivateUser}
+      />
+      <NoFacilityWarning user={user} />
+    </>
+  );
+};
+
 const UserDetail: React.FC<Props> = ({
   user,
   loggedInUser,
@@ -207,19 +244,7 @@ const UserDetail: React.FC<Props> = ({
     user.status !== OktaUserStatus.SUSPENDED &&
     user.status !== OktaUserStatus.PROVISIONED &&
     !user.isDeleted;
-
   const isUserSelf = () => user.id === loggedInUser.id;
-
-  function displayYou() {
-    if (isUserSelf()) {
-      return (
-        <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
-          YOU
-        </span>
-      );
-    }
-    return null;
-  }
 
   const availableTabs = {
     [UserDetailTab.userInfo]: (
@@ -253,20 +278,13 @@ const UserDetail: React.FC<Props> = ({
       aria-labelledby={"user-tab-" + user?.id}
       className="tablet:grid-col padding-left-3 user-detail-column"
     >
-      <div>
-        <h2 className="display-inline-block margin-top-1 margin-bottom-0 user-name-header">
-          {displayFullName(user.firstName, user.middleName, user.lastName)}
-          {displayYou()}
-        </h2>
-        <UserStatusSubheading user={user} />
-      </div>
-      <SpecialStatusNotice
+      <UserHeading
         user={user}
+        isUserSelf={isUserSelf()}
         isUpdating={isUpdating}
         handleResendUserActivationEmail={handleResendUserActivationEmail}
         handleReactivateUser={handleReactivateUser}
       />
-      <NoFacilityWarning user={user} />
       <nav
         className="prime-secondary-nav margin-top-4 padding-bottom-0"
         aria-label="User action navigation"
