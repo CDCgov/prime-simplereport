@@ -17,7 +17,7 @@
 import "./commands";
 import 'cypress-axe';
 
-const faker = require("faker");
+const { faker } = require('@faker-js/faker');
 const dayjs = require("dayjs");
 
 export const testNumber = () => {
@@ -34,7 +34,7 @@ export const generatePatient = () => {
   patient.firstName = faker.name.firstName();
   patient.lastName = faker.name.lastName();
   patient.fullName = `${patient.lastName}, ${patient.firstName}`;
-  patient.dob = dayjs(faker.date.between("1920-01-01", "2002-12-31"));
+  patient.dob = dayjs(faker.date.between({ from: "1920-01-01", to: "2002-12-31" }));
   patient.dobForInput = patient.dob.format(getDobFormat());
   patient.dobForPatientLink = patient.dob.format("MM/DD/YYYY");
   patient.phone = "(800) 232-4636";
@@ -48,30 +48,30 @@ export const generatePatient = () => {
 
 export const generateFacility = () => {
   const facility = {};
-  facility.name = `${testNumber()}-${faker.company.companyName()}`;
+  facility.name = `${testNumber()}-${faker.company.name()}`;
   return facility;
 };
 
 export const generateOrganization = () => {
   const organization = {};
-  organization.name = `${testNumber()}-${faker.company.companyName()}`;
+  organization.name = `${testNumber()}-${faker.company.name()}`;
   return organization;
 };
 
 export const generateMultiplexDevice = () => {
   const multiplexDevice = {};
-  multiplexDevice.name = `multiplex-${testNumber()}-${faker.company.companyName()}-device`;
-  multiplexDevice.model = `multiplex-${testNumber()}-${faker.company.companyName()}-model`;
-  multiplexDevice.manufacturer = `${testNumber()}-${faker.company.companyName()}`;
+  multiplexDevice.name = `multiplex-${testNumber()}-${faker.company.name()}-device`;
+  multiplexDevice.model = `multiplex-${testNumber()}-${faker.company.name()}-model`;
+  multiplexDevice.manufacturer = `${testNumber()}-${faker.company.name()}`;
   multiplexDevice.isMultiplex = true;
   return multiplexDevice;
 }
 
 export const generateCovidOnlyDevice = () => {
   const covidOnlyDevice = {};
-  covidOnlyDevice.name = `covid-${testNumber()}-${faker.company.companyName()}-device`;
-  covidOnlyDevice.model = `covid-${testNumber()}-${faker.company.companyName()}-model`;
-  covidOnlyDevice.manufacturer = `${testNumber()}-${faker.company.companyName()}`;
+  covidOnlyDevice.name = `covid-${testNumber()}-${faker.company.name()}-device`;
+  covidOnlyDevice.model = `covid-${testNumber()}-${faker.company.name()}-model`;
+  covidOnlyDevice.manufacturer = `${testNumber()}-${faker.company.name()}`;
   covidOnlyDevice.isMultiplex = false
   return covidOnlyDevice;
 }
