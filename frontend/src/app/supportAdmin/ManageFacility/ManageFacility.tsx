@@ -90,7 +90,6 @@ const ManageFacility = () => {
       orgId: selectedOrg,
       facilityId: "",
     }));
-    //updateLocalState({ ...initialState, orgId: selectedOrg });
   }
   async function handleSelectFacility(e: React.ChangeEvent<HTMLSelectElement>) {
     const facilityId = e.target.value;

@@ -629,7 +629,8 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     try {
-      LinkedHashMap stats = (LinkedHashMap) facilityAccessGroup.get(0).getEmbedded().get("stats");
+      LinkedHashMap<String, Object> stats =
+          (LinkedHashMap) facilityAccessGroup.get(0).getEmbedded().get("stats");
       return ((Integer) stats.get("usersCount"));
     } catch (NullPointerException e) {
       throw new BadRequestException("Unable to retrieve okta group stats", e);
