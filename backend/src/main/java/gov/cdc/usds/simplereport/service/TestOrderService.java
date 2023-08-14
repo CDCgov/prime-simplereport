@@ -364,9 +364,8 @@ public class TestOrderService {
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
 
-    AddTestResultResponse response = new AddTestResultResponse(savedOrder, deliveryStatus);
     applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
-    return response;
+    return new AddTestResultResponse(savedOrder, deliveryStatus);
   }
 
   private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
