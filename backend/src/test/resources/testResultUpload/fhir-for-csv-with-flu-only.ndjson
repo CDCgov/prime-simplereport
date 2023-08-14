@@ -7,10 +7,10 @@
   "timestamp": "2023-05-24T19:33:06.472Z",
   "entry": [
     {
-      "fullUrl": "MessageHeader/00000000-0000-0000-0000-000000000010",
+      "fullUrl": "MessageHeader/5db534ea-5e97-4861-ba18-d74acc46db15",
       "resource": {
         "resourceType": "MessageHeader",
-        "id": "00000000-0000-0000-0000-000000000010",
+        "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
         "meta": {
           "tag": [
             {
@@ -57,7 +57,7 @@
         },
         "focus": [
           {
-            "reference": "Provenance/00000000-0000-0000-0000-000000000009"
+            "reference": "Provenance/5db534ea-5e97-4861-ba18-d74acc46db15"
           },
           {
             "reference": "DiagnosticReport/123"
@@ -66,10 +66,10 @@
       }
     },
     {
-      "fullUrl": "Provenance/00000000-0000-0000-0000-000000000009",
+      "fullUrl": "Provenance/5db534ea-5e97-4861-ba18-d74acc46db15",
       "resource": {
         "resourceType": "Provenance",
-        "id": "00000000-0000-0000-0000-000000000009",
+        "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
         "recorded": "2023-05-24T19:33:06.472Z",
         "activity": {
           "coding": [
@@ -101,7 +101,7 @@
         ],
         "basedOn": [
           {
-            "reference": "ServiceRequest/00000000-0000-0000-0000-000000000007"
+            "reference": "ServiceRequest/5db534ea-5e97-4861-ba18-d74acc46db15"
           }
         ],
         "status": "final",
@@ -109,23 +109,23 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "94534-5"
+              "code": "5229-0"
             }
           ]
         },
         "subject": {
           "reference": "Patient/1234"
         },
-        "effectiveDateTime": "2021-12-23T14:00:00-06:00",
-        "issued": "2021-12-24T14:00:00-06:00",
+        "effectiveDateTime": "2021-12-20T14:00:00-06:00",
+        "issued": "2021-12-20T14:00:00-06:00",
         "specimen": [
           {
-            "reference": "Specimen/00000000-0000-0000-0000-000000000004"
+            "reference": "Specimen/5db534ea-5e97-4861-ba18-d74acc46db15"
           }
         ],
         "result": [
           {
-            "reference": "Observation/00000000-0000-0000-0000-000000000006"
+            "reference": "Observation/5db534ea-5e97-4861-ba18-d74acc46db15"
           }
         ]
       }
@@ -220,7 +220,7 @@
             "value": "01D1058442"
           }
         ],
-        "name": "My Testing Lab",
+        "name": "My Urgent Care",
         "telecom": [
           {
             "system": "phone",
@@ -231,7 +231,7 @@
         "address": [
           {
             "line": [
-              "300 North Street"
+              "400 Main Street"
             ],
             "city": "Birmingham",
             "state": "AL",
@@ -242,10 +242,10 @@
       }
     },
     {
-      "fullUrl": "Organization/00000000-0000-0000-0000-000000000002",
+      "fullUrl": "Organization/5db534ea-5e97-4861-ba18-d74acc46db15",
       "resource": {
         "resourceType": "Organization",
-        "id": "00000000-0000-0000-0000-000000000002",
+        "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
         "identifier": [
           {
             "use": "official",
@@ -322,28 +322,38 @@
       }
     },
     {
-      "fullUrl": "Specimen/00000000-0000-0000-0000-000000000004",
+      "fullUrl": "Specimen/5db534ea-5e97-4861-ba18-d74acc46db15",
       "resource": {
         "resourceType": "Specimen",
-        "id": "00000000-0000-0000-0000-000000000004",
+        "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
         "identifier": [
           {
-            "value": "00000000-0000-0000-0000-000000000005"
+            "value": "5db534ea-5e97-4861-ba18-d74acc46db15"
           }
         ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "445297001"
+            }
+          ],
+          "text": "Nasal swab"
+        },
         "subject": {
           "reference": "Patient/1234"
         },
-        "collection" : {
-          "collectedDateTime":"2021-12-21T14:00:00-06:00"
+        "receivedTime": "2021-12-20T14:00:00-06:00",
+        "collection": {
+          "collectedDateTime": "2021-12-20T14:00:00-06:00"
         }
       }
     },
     {
-      "fullUrl": "ServiceRequest/00000000-0000-0000-0000-000000000007",
+      "fullUrl": "ServiceRequest/5db534ea-5e97-4861-ba18-d74acc46db15",
       "resource": {
         "resourceType": "ServiceRequest",
-        "id": "00000000-0000-0000-0000-000000000007",
+        "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
         "extension": [
           {
             "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
@@ -357,8 +367,8 @@
             }
           },
           {
-            "url":"https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
-            "valueDateTime":"2021-12-20T14:00:00-06:00"
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime": "2021-12-20T14:00:00-06:00"
           }
         ],
         "status": "completed",
@@ -367,7 +377,7 @@
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "94534-5"
+              "code": "5229-0"
             }
           ]
         },
@@ -375,7 +385,7 @@
           "reference": "Patient/1234"
         },
         "requester": {
-          "reference": "PractitionerRole/00000000-0000-0000-0000-000000000008"
+          "reference": "PractitionerRole/5db534ea-5e97-4861-ba18-d74acc46db15"
         },
         "performer": [
           {
@@ -390,29 +400,28 @@
       }
     },
     {
-      "fullUrl": "Device/00000000-0000-0000-0000-000000000003",
+      "fullUrl": "Device/5db534ea-5e97-4861-ba18-d74acc46db15",
       "resource": {
         "resourceType": "Device",
-        "id": "00000000-0000-0000-0000-000000000003",
-        "manufacturer": "Acme",
+        "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
         "deviceName": [
           {
-            "name": "ID NOW",
+            "name": "model3",
             "type": "model-name"
           }
         ]
       }
     },
     {
-      "fullUrl": "PractitionerRole/00000000-0000-0000-0000-000000000008",
+      "fullUrl": "PractitionerRole/5db534ea-5e97-4861-ba18-d74acc46db15",
       "resource": {
         "resourceType": "PractitionerRole",
-        "id": "00000000-0000-0000-0000-000000000008",
+        "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
         "practitioner": {
           "reference": "Practitioner/1013012657"
         },
         "organization": {
-          "reference": "Organization/00000000-0000-0000-0000-000000000002"
+          "reference": "Organization/5db534ea-5e97-4861-ba18-d74acc46db15"
         }
       }
     },
@@ -425,23 +434,24 @@
       }
     },
     {
-      "fullUrl": "Observation/00000000-0000-0000-0000-000000000006",
+      "fullUrl": "Observation/5db534ea-5e97-4861-ba18-d74acc46db15",
       "resource": {
         "resourceType": "Observation",
-        "id": "00000000-0000-0000-0000-000000000006",
+        "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
         "status": "final",
         "code": {
           "coding": [
             {
               "system": "http://loinc.org",
-              "code": "94534-5"
+              "code": "5229-0"
             }
           ],
-          "text": "COVID-19"
+          "text": "Flu A"
         },
         "subject": {
           "reference": "Patient/1234"
         },
+        "issued": "2021-12-20T20:00:00.000Z",
         "performer": [
           {
             "reference": "Organization/12345000-0000-0000-0000-000000000000"
@@ -468,33 +478,18 @@
           }
         ],
         "method": {
-          "extension": [
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
-              "valueCoding": {
-                "code": "BOOMX2"
-              }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "543212134"
-              }
-            }
-          ],
           "coding": [
             {
-              "display": "ID NOW"
+              "display": "model3"
             }
           ]
         },
         "specimen": {
-          "reference": "Specimen/00000000-0000-0000-0000-000000000004"
+          "reference": "Specimen/5db534ea-5e97-4861-ba18-d74acc46db15"
         },
         "device": {
-          "reference": "Device/00000000-0000-0000-0000-000000000003"
-        },
-        "issued": "2021-12-23T20:00:00.000Z"
+          "reference": "Device/5db534ea-5e97-4861-ba18-d74acc46db15"
+        }
       }
     },
     {

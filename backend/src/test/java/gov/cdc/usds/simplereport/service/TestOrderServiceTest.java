@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -1447,6 +1448,38 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void markAsErrorTest_usesCorrectDeviceAndSpecimenFacilityHasBeenUpdated() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceType device = _dataFactory.getGenericDevice();
+    SpecimenType specimen = _dataFactory.getGenericSpecimen();
+    facility.setDefaultDeviceTypeSpecimenType(device, specimen);
+    Person person = _dataFactory.createFullPerson(org);
+    TestEvent testEvent = _dataFactory.createTestEvent(person, facility);
+
+    facility.getAddress().setState("ND");
+    _organizationService.updateFacility(
+        facility.getInternalId(),
+        facility.getFacilityName(),
+        facility.getCliaNumber(),
+        facility.getAddress(),
+        facility.getTelephone(),
+        facility.getEmail(),
+        facility.getOrderingProvider().getNameInfo(),
+        facility.getOrderingProvider().getAddress(),
+        facility.getOrderingProvider().getProviderId(),
+        facility.getOrderingProvider().getTelephone(),
+        facility.getDeviceTypes().stream().map(IdentifiedEntity::getInternalId).toList());
+
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    TestEvent deletedTest = _service.markAsError(testEvent.getInternalId(), reasonMsg);
+
+    assertEquals(deletedTest.getDeviceType().getInternalId(), device.getInternalId());
+    assertEquals(deletedTest.getSpecimenType().getInternalId(), specimen.getInternalId());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void correctionsTest() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
@@ -1633,6 +1666,49 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     TestEvent originalEvent = _service.markAsCorrection(e.getInternalId(), reasonMsg);
     assertEquals(0, originalEvent.getTestOrder().getDateTestedBackdate().compareTo(dateTested));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void correctTest_usesCorrectDeviceAndSpecimenFacilityHasBeenUpdated() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    DeviceType device = _dataFactory.getGenericDevice();
+    SpecimenType specimen = _dataFactory.getGenericSpecimen();
+    facility.setDefaultDeviceTypeSpecimenType(device, specimen);
+    Person p = _dataFactory.createFullPerson(org);
+    TestEvent originalEvent = _dataFactory.createTestEvent(p, facility);
+
+    facility.getAddress().setState("ND");
+    _organizationService.updateFacility(
+        facility.getInternalId(),
+        facility.getFacilityName(),
+        facility.getCliaNumber(),
+        facility.getAddress(),
+        facility.getTelephone(),
+        facility.getEmail(),
+        facility.getOrderingProvider().getNameInfo(),
+        facility.getOrderingProvider().getAddress(),
+        facility.getOrderingProvider().getProviderId(),
+        facility.getOrderingProvider().getTelephone(),
+        facility.getDeviceTypes().stream().map(IdentifiedEntity::getInternalId).toList());
+
+    // Re-open the original test as a correction
+    String reasonMsg = "Testing correction marking as error " + LocalDateTime.now();
+    _service.markAsCorrection(originalEvent.getInternalId(), reasonMsg);
+
+    // Re-submit the corrected test
+    List<MultiplexResultInput> correctedTestResult = makeCovidOnlyResult(TestResult.UNDETERMINED);
+    AddTestResultResponse response =
+        _service.addMultiplexResult(
+            device.getInternalId(),
+            specimen.getInternalId(),
+            correctedTestResult,
+            p.getInternalId(),
+            null);
+    TestEvent correctedEvent = response.getTestOrder().getTestEvent();
+    assertEquals(correctedEvent.getDeviceType().getInternalId(), device.getInternalId());
+    assertEquals(correctedEvent.getSpecimenType().getInternalId(), specimen.getInternalId());
   }
 
   @Test

@@ -116,7 +116,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
             Objects.requireNonNull(
                 getClass()
                     .getClassLoader()
-                    .getResourceAsStream("fhir/bundles-upload-integration-testing.json")),
+                    .getResourceAsStream("fhir/bundles-upload-integration-testing.ndjson")),
             StandardCharsets.UTF_8);
 
     InputStream input = loadCsv("testResultUpload/test-results-upload-integration.csv");
@@ -132,7 +132,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
     verify(
         exactly(1),
         postRequestedFor(urlEqualTo("/api/waters"))
-            .withRequestBody(equalToJson(sampleFhirMessage, true, true)));
+            .withRequestBody(equalToJson(sampleFhirMessage, false, false)));
   }
 
   private InputStream loadCsv(String csvFile) {
