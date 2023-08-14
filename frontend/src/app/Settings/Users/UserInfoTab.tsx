@@ -1,43 +1,51 @@
 import classnames from "classnames";
-import React from "react";
+import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import { UserDetailTab } from "./UserDetail";
+import DeleteUserModal from "./DeleteUserModal";
+import ResetUserPasswordModal from "./ResetUserPasswordModal";
+import ResetUserMfaModal from "./ResetUserMfaModal";
+import EditUserNameModal from "./EditUserNameModal";
+import EditUserEmailModal from "./EditUserEmailModal";
 
 interface UserInfoTabProps {
   isUserActive: () => boolean;
   user: SettingsUser;
-  updateEditUserNameModal: (
-    value: ((prevState: boolean) => boolean) | boolean
-  ) => void;
   isUpdating: boolean;
-  updateEditUserEmailModal: (
-    value: ((prevState: boolean) => boolean) | boolean
-  ) => void;
-  updateShowResetPasswordModal: (
-    value: ((prevState: boolean) => boolean) | boolean
-  ) => void;
-  updateShowResetMfaModal: (
-    value: ((prevState: boolean) => boolean) | boolean
-  ) => void;
   isUserSelf: () => boolean;
-  updateShowDeleteUserModal: (
-    value: ((prevState: boolean) => boolean) | boolean
+  handleDeleteUser: (userId: string) => void;
+  handleEditUserName: (
+    userId: string,
+    firstName: string,
+    middleName: string,
+    lastName: string,
+    suffix: string
   ) => void;
+  handleEditUserEmail: (userId: string, emailAddress: string) => void;
+  handleResetUserPassword: (userId: string) => void;
+  handleResetUserMfa: (userId: string) => void;
 }
 export const UserInfoTab: React.FC<UserInfoTabProps> = ({
   isUserActive,
   user,
-  updateEditUserNameModal,
   isUpdating,
-  updateEditUserEmailModal,
-  updateShowResetPasswordModal,
-  updateShowResetMfaModal,
   isUserSelf,
-  updateShowDeleteUserModal,
+  handleDeleteUser,
+  handleEditUserName,
+  handleEditUserEmail,
+  handleResetUserPassword,
+  handleResetUserMfa,
 }) => {
+  const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
+  const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
+  const [showEditUserNameModal, updateEditUserNameModal] = useState(false);
+  const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
+  const [showResetPasswordModal, updateShowResetPasswordModal] =
+    useState(false);
+
   return (
     <>
       <div
@@ -154,6 +162,41 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
           />
         </div>
       </div>
+      {showDeleteUserModal && (
+        <DeleteUserModal
+          user={user}
+          onClose={() => updateShowDeleteUserModal(false)}
+          onDeleteUser={handleDeleteUser}
+        />
+      )}
+      {showResetPasswordModal && (
+        <ResetUserPasswordModal
+          user={user}
+          onClose={() => updateShowResetPasswordModal(false)}
+          onResetPassword={handleResetUserPassword}
+        />
+      )}
+      {showResetMfaModal && (
+        <ResetUserMfaModal
+          user={user}
+          onClose={() => updateShowResetMfaModal(false)}
+          onResetMfa={handleResetUserMfa}
+        />
+      )}
+      {showEditUserNameModal && (
+        <EditUserNameModal
+          user={user}
+          onClose={() => updateEditUserNameModal(false)}
+          onEditUserName={handleEditUserName}
+        />
+      )}
+      {showEditUserEmailModal && (
+        <EditUserEmailModal
+          user={user}
+          onClose={() => updateEditUserEmailModal(false)}
+          onEditUserEmail={handleEditUserEmail}
+        />
+      )}
     </>
   );
 };

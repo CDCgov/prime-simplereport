@@ -11,13 +11,8 @@ import Alert from "../../commonComponents/Alert";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
-import DeleteUserModal from "./DeleteUserModal";
 import ReactivateUserModal from "./ReactivateUserModal";
 import ResendActivationEmailModal from "./ResendActivationEmailModal";
-import ResetUserPasswordModal from "./ResetUserPasswordModal";
-import EditUserNameModal from "./EditUserNameModal";
-import EditUserEmailModal from "./EditUserEmailModal";
-import ResetUserMfaModal from "./ResetUserMfaModal";
 import "./ManageUsers.scss";
 import { FacilityAccessTab } from "./FacilityAccessTab";
 import { UserInfoTab } from "./UserInfoTab";
@@ -83,18 +78,22 @@ const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
 
 const SpecialStatusNotice: React.FC<{
   user: SettingsUser;
-  userStatus: string;
   isUpdating: boolean;
-  updateShowReactivateUserModal: (showReactivateUserModal: boolean) => void;
-  updateShowResendUserActivationEmailModal: (
-    showResendUserActivationEmail: boolean
-  ) => void;
+  handleResendUserActivationEmail: (userId: string) => void;
+  handleReactivateUser: (userId: string) => void;
 }> = ({
   user,
   isUpdating,
-  updateShowReactivateUserModal,
-  updateShowResendUserActivationEmailModal,
+  handleResendUserActivationEmail,
+  handleReactivateUser,
 }) => {
+  const [
+    showResendUserActivationEmailModal,
+    updateShowResendUserActivationEmailModal,
+  ] = useState(false);
+  const [showReactivateUserModal, updateShowReactivateUserModal] =
+    useState(false);
+
   function userStatusInfo() {
     if (user.isDeleted) {
       return (
@@ -117,6 +116,13 @@ const SpecialStatusNotice: React.FC<{
                 label="Activate user"
                 disabled={isUpdating}
               />
+              {showReactivateUserModal && (
+                <ReactivateUserModal
+                  user={user}
+                  onClose={() => updateShowReactivateUserModal(false)}
+                  onReactivateUser={handleReactivateUser}
+                />
+              )}
             </>
           );
         case OktaUserStatus.PROVISIONED:
@@ -132,6 +138,15 @@ const SpecialStatusNotice: React.FC<{
                 label="Send account setup email"
                 disabled={isUpdating}
               />
+              {showResendUserActivationEmailModal && (
+                <ResendActivationEmailModal
+                  user={user}
+                  onClose={() =>
+                    updateShowResendUserActivationEmailModal(false)
+                  }
+                  onResendActivationEmail={handleResendUserActivationEmail}
+                />
+              )}
             </>
           );
         default:
@@ -188,18 +203,6 @@ const UserDetail: React.FC<Props> = ({
   const [navItemSelected, setNavItemSelected] = useState<UserDetailTab>(
     displayedTabs[0]
   );
-  const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
-  const [showReactivateUserModal, updateShowReactivateUserModal] =
-    useState(false);
-  const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
-  const [showEditUserNameModal, updateEditUserNameModal] = useState(false);
-  const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
-  const [showResetPasswordModal, updateShowResetPasswordModal] =
-    useState(false);
-  const [
-    showResendUserActivationEmailModal,
-    updateShowResendUserActivationEmailModal,
-  ] = useState(false);
 
   const isUserActive = () =>
     user.status !== OktaUserStatus.SUSPENDED &&
@@ -224,13 +227,13 @@ const UserDetail: React.FC<Props> = ({
       <UserInfoTab
         isUserActive={isUserActive}
         user={user}
-        updateEditUserNameModal={updateEditUserNameModal}
         isUpdating={isUpdating}
-        updateEditUserEmailModal={updateEditUserEmailModal}
-        updateShowResetPasswordModal={updateShowResetPasswordModal}
-        updateShowResetMfaModal={updateShowResetMfaModal}
         isUserSelf={isUserSelf}
-        updateShowDeleteUserModal={updateShowDeleteUserModal}
+        handleDeleteUser={handleDeleteUser}
+        handleEditUserEmail={handleEditUserEmail}
+        handleResetUserPassword={handleResetUserPassword}
+        handleResetUserMfa={handleResetUserMfa}
+        handleEditUserName={handleEditUserName}
       />
     ),
     [UserDetailTab.facilityAccess]: (
@@ -260,12 +263,9 @@ const UserDetail: React.FC<Props> = ({
       </div>
       <SpecialStatusNotice
         user={user}
-        userStatus={user.status ?? ""}
         isUpdating={isUpdating}
-        updateShowReactivateUserModal={updateShowReactivateUserModal}
-        updateShowResendUserActivationEmailModal={
-          updateShowResendUserActivationEmailModal
-        }
+        handleResendUserActivationEmail={handleResendUserActivationEmail}
+        handleReactivateUser={handleReactivateUser}
       />
       <NoFacilityWarning user={user} />
       <nav
@@ -304,55 +304,6 @@ const UserDetail: React.FC<Props> = ({
         <Prompt
           when={isUserEdited}
           message="You have unsaved changes. Do you want to continue?"
-        />
-      )}
-      {showDeleteUserModal && (
-        <DeleteUserModal
-          user={user}
-          onClose={() => updateShowDeleteUserModal(false)}
-          onDeleteUser={handleDeleteUser}
-        />
-      )}
-      {showReactivateUserModal && (
-        <ReactivateUserModal
-          user={user}
-          onClose={() => updateShowReactivateUserModal(false)}
-          onReactivateUser={handleReactivateUser}
-        />
-      )}
-      {showResendUserActivationEmailModal && (
-        <ResendActivationEmailModal
-          user={user}
-          onClose={() => updateShowResendUserActivationEmailModal(false)}
-          onResendActivationEmail={handleResendUserActivationEmail}
-        />
-      )}
-      {showResetPasswordModal && (
-        <ResetUserPasswordModal
-          user={user}
-          onClose={() => updateShowResetPasswordModal(false)}
-          onResetPassword={handleResetUserPassword}
-        />
-      )}
-      {showResetMfaModal && (
-        <ResetUserMfaModal
-          user={user}
-          onClose={() => updateShowResetMfaModal(false)}
-          onResetMfa={handleResetUserMfa}
-        />
-      )}
-      {showEditUserNameModal && (
-        <EditUserNameModal
-          user={user}
-          onClose={() => updateEditUserNameModal(false)}
-          onEditUserName={handleEditUserName}
-        />
-      )}
-      {showEditUserEmailModal && (
-        <EditUserEmailModal
-          user={user}
-          onClose={() => updateEditUserEmailModal(false)}
-          onEditUserEmail={handleEditUserEmail}
         />
       )}
     </div>
