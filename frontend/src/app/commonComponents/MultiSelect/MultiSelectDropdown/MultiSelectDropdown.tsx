@@ -268,9 +268,7 @@ export const MultiSelectDropdown = ({
       (newTarget instanceof Node && !containerRef.current?.contains(newTarget));
 
     if (newTargetIsOutside) {
-      if (!state.isExtended) {
-        dispatch({ type: ActionTypes.BLUR });
-      }
+      dispatch({ type: ActionTypes.BLUR });
     }
   };
 
