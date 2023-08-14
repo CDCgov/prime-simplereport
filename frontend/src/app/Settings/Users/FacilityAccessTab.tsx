@@ -7,38 +7,35 @@ import Prompt from "../../utils/Prompt";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
-import { UserDetailTab } from "./UserDetail";
 
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
 interface FacilityAccessTabProps {
   user: SettingsUser;
-  loggedInUser: User;
+  isUpdating: boolean;
+  isUserEdited: boolean;
+  handleUpdateUser: () => void;
   updateUser: <K extends keyof SettingsUser>(
     key: K,
     value: SettingsUser[K]
   ) => void;
+  loggedInUser: User;
   allFacilities: UserFacilitySetting[];
-  handleUpdateUser: () => void;
-  isUpdating: boolean;
-  isUserEdited: boolean;
 }
-export const FacilityAccessTab: React.FC<FacilityAccessTabProps> = ({
+const FacilityAccessTab: React.FC<FacilityAccessTabProps> = ({
   user,
-  loggedInUser,
-  updateUser,
-  allFacilities,
-  handleUpdateUser,
   isUpdating,
   isUserEdited,
+  updateUser,
+  handleUpdateUser,
+  loggedInUser,
+  allFacilities,
 }) => {
   return (
     <>
       <div
         role="tabpanel"
-        aria-labelledby={`${UserDetailTab.facilityAccess
-          .toLowerCase()
-          .replace(" ", "-")}facility-access-tab-id`}
+        aria-labelledby={"facility-access-tab-id"}
         className="padding-left-1"
       >
         <h3 className="basic-info-header margin-bottom-1">User role</h3>
@@ -86,3 +83,5 @@ export const FacilityAccessTab: React.FC<FacilityAccessTabProps> = ({
     </>
   );
 };
+
+export default FacilityAccessTab;

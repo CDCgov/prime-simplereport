@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Button from "../../commonComponents/Button/Button";
 
 import { SettingsUser } from "./ManageUsersContainer";
-import { UserDetailTab } from "./UserDetail";
 import DeleteUserModal from "./DeleteUserModal";
 import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import ResetUserMfaModal from "./ResetUserMfaModal";
@@ -13,10 +12,9 @@ import EditUserEmailModal from "./EditUserEmailModal";
 
 interface UserInfoTabProps {
   user: SettingsUser;
-  isUpdating: boolean;
   isUserActive: boolean;
-  isUserSelf: boolean;
-  handleDeleteUser: (userId: string) => void;
+  isUserSelf?: boolean;
+  isUpdating: boolean;
   handleEditUserName: (
     userId: string,
     firstName: string,
@@ -27,17 +25,18 @@ interface UserInfoTabProps {
   handleEditUserEmail: (userId: string, emailAddress: string) => void;
   handleResetUserPassword: (userId: string) => void;
   handleResetUserMfa: (userId: string) => void;
+  handleDeleteUser: (userId: string) => void;
 }
-export const UserInfoTab: React.FC<UserInfoTabProps> = ({
-  isUserActive,
+const UserInfoTab: React.FC<UserInfoTabProps> = ({
   user,
-  isUpdating,
+  isUserActive,
   isUserSelf,
-  handleDeleteUser,
+  isUpdating,
   handleEditUserName,
   handleEditUserEmail,
   handleResetUserPassword,
   handleResetUserMfa,
+  handleDeleteUser,
 }) => {
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
@@ -50,9 +49,7 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
     <>
       <div
         role="tabpanel"
-        aria-labelledby={`${UserDetailTab.userInfo
-          .toLowerCase()
-          .replace(" ", "-")}-tab-id`}
+        aria-labelledby={"user-information-tab-id"}
         className="padding-left-1"
       >
         <h3 className="basic-info-header">Basic information</h3>
@@ -200,3 +197,5 @@ export const UserInfoTab: React.FC<UserInfoTabProps> = ({
     </>
   );
 };
+
+export default UserInfoTab;

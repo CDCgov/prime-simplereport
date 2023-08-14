@@ -13,10 +13,13 @@ import {
 } from "../../../generated/graphql";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import { showSuccess } from "../../utils/srToast";
-import UserDetail, { UserDetailTab } from "../../Settings/Users/UserDetail";
-import { UpdateUser } from "../../Settings/Users/ManageUsers";
+import {
+  isUserActive,
+  UserHeading,
+} from "../../Settings/Users/UserDetailUtils";
 import { displayFullName } from "../../utils";
 import { OktaUserStatus } from "../../utils/user";
+import UserInfoTab from "../../Settings/Users/UserInfoTab";
 
 import { UserSearch } from "./UserSearch";
 
@@ -47,6 +50,9 @@ export const AdminManageUser: React.FC = () => {
   const [searchEmail, setSearchEmail] = useState<string>("");
   const [foundUser, setFoundUser] = useState<SettingsUser>();
   const [displayedError, setDisplayedError] = useState<JSX.Element>();
+  const [navItemSelected, setNavItemSelected] = useState<
+    "User information" | "Organization access"
+  >("User information");
   const [getUserByEmail] = useFindUserByEmailLazyQuery({
     fetchPolicy: "no-cache",
   });
@@ -242,26 +248,83 @@ export const AdminManageUser: React.FC = () => {
         {foundUser && (
           <div className="prime-container card-container manage-users-card">
             <div className="usa-card__body">
-              <UserDetail
-                user={foundUser}
-                isUpdating={isUpdating}
-                handleEditUserName={handleEditUserName}
-                handleEditUserEmail={handleEditUserEmail}
-                handleResetUserPassword={handleResetUserPassword}
-                handleResetUserMfa={handleResetUserMfa}
-                handleDeleteUser={handleDeleteUser}
-                handleReactivateUser={handleReactivateUser}
-                handleResendUserActivationEmail={
-                  handleResendUserActivationEmail
-                }
-                displayedTabs={[UserDetailTab.userInfo]}
-                // used in facility tab
-                updateUser={{} as UpdateUser}
-                loggedInUser={{} as User}
-                allFacilities={[]}
-                isUserEdited={false}
-                handleUpdateUser={() => null}
-              />
+              <div
+                role="tabpanel"
+                aria-labelledby={"user-tab-" + foundUser?.id}
+                className="tablet:grid-col padding-left-3 user-detail-column"
+              >
+                <UserHeading
+                  user={foundUser}
+                  isUpdating={isUpdating}
+                  handleResendUserActivationEmail={
+                    handleResendUserActivationEmail
+                  }
+                  handleReactivateUser={handleReactivateUser}
+                />
+                <nav
+                  className="prime-secondary-nav margin-top-4 padding-bottom-0"
+                  aria-label="User action navigation"
+                >
+                  <div
+                    role="tablist"
+                    aria-owns={`user-information-tab-id facility-access-tab-id`}
+                    className="usa-nav__secondary-links prime-nav usa-list"
+                  >
+                    <div
+                      className={`usa-nav__secondary-item ${
+                        navItemSelected === "User information"
+                          ? "usa-current"
+                          : ""
+                      }`}
+                    >
+                      <button
+                        id={`user-information-tab-id`}
+                        role="tab"
+                        className="usa-button--unstyled text-ink text-no-underline"
+                        onClick={() => setNavItemSelected("User information")}
+                        aria-selected={navItemSelected === "User information"}
+                      >
+                        User information
+                      </button>
+                    </div>
+                    <div
+                      className={`usa-nav__secondary-item ${
+                        navItemSelected === "Organization access"
+                          ? "usa-current"
+                          : ""
+                      }`}
+                    >
+                      <button
+                        id={`organization-access-tab-id`}
+                        role="tab"
+                        className="usa-button--unstyled text-ink text-no-underline"
+                        onClick={() =>
+                          setNavItemSelected("Organization access")
+                        }
+                        aria-selected={
+                          navItemSelected === "Organization access"
+                        }
+                      >
+                        Organization access
+                      </button>
+                    </div>
+                  </div>
+                </nav>
+                {navItemSelected === "User information" ? (
+                  <UserInfoTab
+                    user={foundUser}
+                    isUserActive={isUserActive(foundUser)}
+                    isUpdating={isUpdating}
+                    handleEditUserName={handleEditUserName}
+                    handleEditUserEmail={handleEditUserEmail}
+                    handleResetUserPassword={handleResetUserPassword}
+                    handleResetUserMfa={handleResetUserMfa}
+                    handleDeleteUser={handleDeleteUser}
+                  />
+                ) : (
+                  <div></div>
+                )}
+              </div>
             </div>
           </div>
         )}

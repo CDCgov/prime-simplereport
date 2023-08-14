@@ -13,7 +13,7 @@ import {
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
-import UserDetail, { UserDetailTab } from "./UserDetail";
+import { isUserActive, isUserSelf, UserHeading } from "./UserDetailUtils";
 import {
   LimitedUser,
   SettingsUser,
@@ -21,6 +21,8 @@ import {
 } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
 import InProgressModal from "./InProgressModal";
+import UserInfoTab from "./UserInfoTab";
+import FacilityAccessTab from "./FacilityAccessTab";
 
 interface Props {
   users: LimitedUser[];
@@ -101,7 +103,9 @@ const ManageUsers: React.FC<Props> = ({
   const [isUserEdited, updateIsUserEdited] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error>();
-
+  const [navItemSelected, setNavItemSelected] = useState<
+    "User information" | "Facility access"
+  >("User information");
   if (error) {
     throw error;
   }
@@ -414,26 +418,88 @@ const ManageUsers: React.FC<Props> = ({
               users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
             />
-            <UserDetail
-              user={user}
-              isUpdating={isUpdating}
-              loggedInUser={loggedInUser}
-              allFacilities={allFacilities}
-              handleUpdateUser={handleUpdateUser}
-              handleDeleteUser={handleDeleteUser}
-              updateUser={updateUser}
-              isUserEdited={isUserEdited}
-              handleReactivateUser={handleReactivateUser}
-              handleEditUserName={handleEditUserName}
-              handleEditUserEmail={handleEditUserEmail}
-              handleResetUserPassword={handleResetUserPassword}
-              handleResetUserMfa={handleResetUserMfa}
-              handleResendUserActivationEmail={handleResendUserActivationEmail}
-              displayedTabs={[
-                UserDetailTab.userInfo,
-                UserDetailTab.facilityAccess,
-              ]}
-            />
+            <div
+              role="tabpanel"
+              aria-labelledby={"user-tab-" + user?.id}
+              className="tablet:grid-col padding-left-3 user-detail-column"
+            >
+              <UserHeading
+                user={user}
+                isUserSelf={isUserSelf(user, loggedInUser)}
+                isUpdating={isUpdating}
+                handleResendUserActivationEmail={
+                  handleResendUserActivationEmail
+                }
+                handleReactivateUser={handleReactivateUser}
+              />
+              <nav
+                className="prime-secondary-nav margin-top-4 padding-bottom-0"
+                aria-label="User action navigation"
+              >
+                <div
+                  role="tablist"
+                  aria-owns={`user-information-tab-id facility-access-tab-id`}
+                  className="usa-nav__secondary-links prime-nav usa-list"
+                >
+                  <div
+                    className={`usa-nav__secondary-item ${
+                      navItemSelected === "User information"
+                        ? "usa-current"
+                        : ""
+                    }`}
+                  >
+                    <button
+                      id={`user-information-tab-id`}
+                      role="tab"
+                      className="usa-button--unstyled text-ink text-no-underline"
+                      onClick={() => setNavItemSelected("User information")}
+                      aria-selected={navItemSelected === "User information"}
+                    >
+                      User information
+                    </button>
+                  </div>
+                  <div
+                    className={`usa-nav__secondary-item ${
+                      navItemSelected === "Facility access" ? "usa-current" : ""
+                    }`}
+                  >
+                    <button
+                      id={`facility-access-tab-id`}
+                      role="tab"
+                      className="usa-button--unstyled text-ink text-no-underline"
+                      onClick={() => setNavItemSelected("Facility access")}
+                      aria-selected={navItemSelected === "Facility access"}
+                    >
+                      Facility access
+                    </button>
+                  </div>
+                </div>
+              </nav>
+              {navItemSelected === "User information" ? (
+                <UserInfoTab
+                  user={user}
+                  isUserActive={isUserActive(user)}
+                  isUserSelf={isUserSelf(user, loggedInUser)}
+                  isUpdating={isUpdating}
+                  handleEditUserName={handleEditUserName}
+                  handleEditUserEmail={handleEditUserEmail}
+                  handleResetUserPassword={handleResetUserPassword}
+                  handleResetUserMfa={handleResetUserMfa}
+                  handleDeleteUser={handleDeleteUser}
+                />
+              ) : (
+                <FacilityAccessTab
+                  user={user}
+                  isUpdating={isUpdating}
+                  isUserEdited={isUserEdited}
+                  handleUpdateUser={handleUpdateUser}
+                  updateUser={updateUser}
+                  loggedInUser={loggedInUser}
+                  allFacilities={allFacilities}
+                />
+              )}
+            </div>
+
             {showInProgressModal && (
               <InProgressModal
                 onClose={() => updateShowInProgressModal(false)}

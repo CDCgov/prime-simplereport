@@ -8,39 +8,14 @@ import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg"
 import { OktaUserStatus } from "../../utils/user";
 import Alert from "../../commonComponents/Alert";
 
-import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
-import { UpdateUser } from "./ManageUsers";
+import { SettingsUser } from "./ManageUsersContainer";
 import ReactivateUserModal from "./ReactivateUserModal";
 import ResendActivationEmailModal from "./ResendActivationEmailModal";
 import "./ManageUsers.scss";
-import { FacilityAccessTab } from "./FacilityAccessTab";
-import { UserInfoTab } from "./UserInfoTab";
 
-interface Props {
-  user: SettingsUser;
-  isUpdating: boolean;
-  loggedInUser: User;
-  allFacilities: UserFacilitySetting[];
-  updateUser: UpdateUser;
-  isUserEdited: boolean;
-  handleUpdateUser: () => void;
-  handleDeleteUser: (userId: string) => void;
-  handleReactivateUser: (userId: string) => void;
-  handleEditUserName: (
-    userId: string,
-    firstName: string,
-    middleName: string,
-    lastName: string,
-    suffix: string
-  ) => void;
-  handleEditUserEmail: (userId: string, emailAddress: string) => void;
-  handleResetUserPassword: (userId: string) => void;
-  handleResetUserMfa: (userId: string) => void;
-  handleResendUserActivationEmail: (userId: string) => void;
-  displayedTabs: UserDetailTab[];
-}
-
-const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
+export const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({
+  user,
+}) => {
   function getUserStatusText() {
     switch (user.status) {
       case OktaUserStatus.ACTIVE:
@@ -75,7 +50,7 @@ const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
   return <div className="user-status-subheader">{getUserStatusText()}</div>;
 };
 
-const SpecialStatusNotice: React.FC<{
+export const SpecialStatusNotice: React.FC<{
   user: SettingsUser;
   isUpdating: boolean;
   handleResendUserActivationEmail: (userId: string) => void;
@@ -161,7 +136,9 @@ const SpecialStatusNotice: React.FC<{
   );
 };
 
-const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
+export const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({
+  user,
+}) => {
   if (
     user?.id &&
     (!user?.organization?.testingFacility ||
@@ -177,14 +154,10 @@ const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
   }
   return null;
 };
-export enum UserDetailTab {
-  userInfo = "User information",
-  facilityAccess = "Facility access",
-}
 
-const UserHeading: React.FC<{
+export const UserHeading: React.FC<{
   user: SettingsUser;
-  isUserSelf: boolean;
+  isUserSelf?: boolean;
   isUpdating: boolean;
   handleResendUserActivationEmail: (userId: string) => void;
   handleReactivateUser: (userId: string) => void;
@@ -218,107 +191,11 @@ const UserHeading: React.FC<{
     </>
   );
 };
-const isUserActive = (user: SettingsUser) =>
+export const isUserActive = (user: SettingsUser) =>
   user.status !== OktaUserStatus.SUSPENDED &&
   user.status !== OktaUserStatus.PROVISIONED &&
   !user.isDeleted;
-const isUserSelf = (user: { id: string }, loggedInUser: { id: string }) =>
-  user.id === loggedInUser.id;
-
-const UserDetail: React.FC<Props> = ({
-  user,
-  loggedInUser,
-  allFacilities,
-  updateUser,
-  isUpdating,
-  isUserEdited,
-  handleUpdateUser,
-  handleDeleteUser,
-  handleReactivateUser,
-  handleEditUserName,
-  handleEditUserEmail,
-  handleResetUserPassword,
-  handleResetUserMfa,
-  handleResendUserActivationEmail,
-  displayedTabs,
-}) => {
-  const [navItemSelected, setNavItemSelected] = useState<UserDetailTab>(
-    displayedTabs[0]
-  );
-
-  const availableTabs = {
-    [UserDetailTab.userInfo]: (
-      <UserInfoTab
-        isUserActive={isUserActive(user)}
-        user={user}
-        isUpdating={isUpdating}
-        isUserSelf={isUserSelf(user, loggedInUser)}
-        handleDeleteUser={handleDeleteUser}
-        handleEditUserEmail={handleEditUserEmail}
-        handleResetUserPassword={handleResetUserPassword}
-        handleResetUserMfa={handleResetUserMfa}
-        handleEditUserName={handleEditUserName}
-      />
-    ),
-    [UserDetailTab.facilityAccess]: (
-      <FacilityAccessTab
-        user={user}
-        loggedInUser={loggedInUser}
-        updateUser={updateUser}
-        allFacilities={allFacilities}
-        handleUpdateUser={handleUpdateUser}
-        isUpdating={isUpdating}
-        isUserEdited={isUserEdited}
-      />
-    ),
-  };
-  return (
-    <div
-      role="tabpanel"
-      aria-labelledby={"user-tab-" + user?.id}
-      className="tablet:grid-col padding-left-3 user-detail-column"
-    >
-      <UserHeading
-        user={user}
-        isUserSelf={isUserSelf(user, loggedInUser)}
-        isUpdating={isUpdating}
-        handleResendUserActivationEmail={handleResendUserActivationEmail}
-        handleReactivateUser={handleReactivateUser}
-      />
-      <nav
-        className="prime-secondary-nav margin-top-4 padding-bottom-0"
-        aria-label="User action navigation"
-      >
-        <div
-          role="tablist"
-          aria-owns={`${displayedTabs
-            .map((tab) => tab.toLowerCase().replace(" ", "-") + "-tab-id")
-            .join(" ")}`}
-          className="usa-nav__secondary-links prime-nav usa-list"
-        >
-          {displayedTabs.map((tab) => (
-            <div
-              className={`usa-nav__secondary-item ${
-                navItemSelected === tab ? "usa-current" : ""
-              }`}
-              key={tab.toLowerCase().replace(" ", "-") + "-key"}
-            >
-              <button
-                id={`${tab.toLowerCase().replace(" ", "-")}-tab-id`}
-                role="tab"
-                className="usa-button--unstyled text-ink text-no-underline"
-                onClick={() => setNavItemSelected(tab)}
-                aria-selected={navItemSelected === tab}
-              >
-                {tab}
-              </button>
-            </div>
-          ))}
-        </div>
-      </nav>
-      {availableTabs[navItemSelected]}
-    </div>
-  );
-};
-
-export default UserDetail;
+export const isUserSelf = (
+  user: { id: string },
+  loggedInUser: { id: string }
+) => user.id === loggedInUser.id;
