@@ -44,6 +44,9 @@ describe("Support admin: manage facility", () => {
     cy.wait("@GetFacilitiesByOrgId");
     cy.get("div.bg-base-lightest select").eq(1).select(facilityCreated.id);
 
+    // clicks search button
+    cy.get("button").contains("Search").click();
+
     // displays facility information
     cy.wait("@GetFacilityStats");
     cy.contains(facilityCreated.name);
