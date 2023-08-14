@@ -71,6 +71,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
               onChange={onSelectOrg}
               selectedValue={manageFacilityState.orgId}
               disabled={loading}
+              required={true}
             />
           </div>
           <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
@@ -86,6 +87,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
               onChange={onSelectFacility}
               selectedValue={manageFacilityState.facilityId}
               disabled={loading}
+              required={true}
             />
           </div>
           <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
