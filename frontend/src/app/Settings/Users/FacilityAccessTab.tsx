@@ -2,6 +2,7 @@ import React from "react";
 
 import Button from "../../commonComponents/Button/Button";
 import { Role } from "../../permissions";
+import Prompt from "../../utils/Prompt";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
@@ -76,6 +77,12 @@ export const FacilityAccessTab: React.FC<FacilityAccessTabProps> = ({
           />
         </div>
       </div>
+      {isUserEdited && (
+        <Prompt
+          when={isUserEdited}
+          message="You have unsaved changes. Do you want to continue?"
+        />
+      )}
     </>
   );
 };

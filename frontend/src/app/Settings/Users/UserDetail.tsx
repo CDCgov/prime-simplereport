@@ -5,7 +5,6 @@ import Button from "../../commonComponents/Button/Button";
 import { capitalizeText, formatUserStatus } from "../../utils/text";
 import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactivated.svg";
 import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
-import Prompt from "../../utils/Prompt";
 import { OktaUserStatus } from "../../utils/user";
 import Alert from "../../commonComponents/Alert";
 
@@ -300,12 +299,6 @@ const UserDetail: React.FC<Props> = ({
         </div>
       </nav>
       {availableTabs[navItemSelected]}
-      {isUserEdited && (
-        <Prompt
-          when={isUserEdited}
-          message="You have unsaved changes. Do you want to continue?"
-        />
-      )}
     </div>
   );
 };
