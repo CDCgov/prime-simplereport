@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import classnames from "classnames";
 
-import { Role } from "../../permissions";
 import { displayFullName } from "../../utils";
 import Button from "../../commonComponents/Button/Button";
 import { capitalizeText, formatUserStatus } from "../../utils/text";
@@ -13,8 +11,6 @@ import Alert from "../../commonComponents/Alert";
 
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { UpdateUser } from "./ManageUsers";
-import UserRoleSettingsForm from "./UserRoleSettingsForm";
-import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import DeleteUserModal from "./DeleteUserModal";
 import ReactivateUserModal from "./ReactivateUserModal";
 import ResendActivationEmailModal from "./ResendActivationEmailModal";
@@ -22,8 +18,9 @@ import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import EditUserNameModal from "./EditUserNameModal";
 import EditUserEmailModal from "./EditUserEmailModal";
 import ResetUserMfaModal from "./ResetUserMfaModal";
-
 import "./ManageUsers.scss";
+import { FacilityAccessTab } from "./FacilityAccessTab";
+import { UserInfoTab } from "./UserInfoTab";
 
 interface Props {
   user: SettingsUser;
@@ -46,8 +43,8 @@ interface Props {
   handleResetUserPassword: (userId: string) => void;
   handleResetUserMfa: (userId: string) => void;
   handleResendUserActivationEmail: (userId: string) => void;
+  displayedTabs: UserDetailTab[];
 }
-const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
 const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
   function getUserStatusText() {
@@ -166,6 +163,10 @@ const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
   }
   return null;
 };
+export enum UserDetailTab {
+  userInfo = "User information",
+  facilityAccess = "Facility access",
+}
 
 const UserDetail: React.FC<Props> = ({
   user,
@@ -182,8 +183,11 @@ const UserDetail: React.FC<Props> = ({
   handleResetUserPassword,
   handleResetUserMfa,
   handleResendUserActivationEmail,
+  displayedTabs,
 }) => {
-  const [navItemSelected, setNavItemSelected] = useState("userInfo");
+  const [navItemSelected, setNavItemSelected] = useState<UserDetailTab>(
+    displayedTabs[0]
+  );
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [showReactivateUserModal, updateShowReactivateUserModal] =
     useState(false);
@@ -215,167 +219,32 @@ const UserDetail: React.FC<Props> = ({
     return null;
   }
 
-  const userInfoTab = (
-    <>
-      <div
-        role="tabpanel"
-        aria-labelledby="user-info-tab-id"
-        className="padding-left-1"
-      >
-        <h3 className="basic-info-header">Basic information</h3>
-        <div
-          className={classnames(
-            "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": !isUserActive() }
-          )}
-        >
-          <div>
-            <div className="userinfo-subheader">Name</div>
-            <p className="userinfo-text">
-              {user.firstName +
-                (user.middleName ? ` ${user.middleName} ` : " ") +
-                user.lastName}
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateEditUserNameModal(true)}
-            label={"Edit name"}
-            disabled={isUpdating || !isUserActive()}
-          />
-        </div>
-        <div
-          className={classnames(
-            "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": !isUserActive() }
-          )}
-        >
-          <div>
-            <div className="userinfo-subheader">Email</div>
-            <p className="userinfo-text">{user.email}</p>
-          </div>
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateEditUserEmailModal(true)}
-            label={"Edit email"}
-            disabled={isUpdating || !isUserActive()}
-          />
-        </div>
-        <div className="userinfo-divider"></div>
-        <h3 className="user-controls-header">User controls</h3>
-        <div
-          className={classnames(
-            "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": !isUserActive() }
-          )}
-        >
-          <div className="grid-col margin-right-8">
-            <div className="userinfo-subheader">Password</div>
-            <p className="usercontrols-text">
-              Send a link to reset user password. Users must answer a password
-              recovery question to access their account.
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateShowResetPasswordModal(true)}
-            label={"Send password reset email"}
-            disabled={isUpdating || !isUserActive()}
-          />
-        </div>
-        <div
-          className={classnames(
-            "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": !isUserActive() }
-          )}
-        >
-          <div className="grid-col">
-            <div className="userinfo-subheader">
-              Reset multi-factor authentication (MFA)
-            </div>
-            <p className="usercontrols-text">
-              Reset user MFA account access settings
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateShowResetMfaModal(true)}
-            label={"Reset MFA"}
-            disabled={isUpdating || !isUserActive()}
-          />
-        </div>
-        <div
-          className={classnames(
-            "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": isUserSelf() || user.isDeleted }
-          )}
-        >
-          <div>
-            <div className="userinfo-subheader">Delete user</div>
-            <p className="usercontrols-text">
-              Permanently delete user account and data
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateShowDeleteUserModal(true)}
-            label={"Delete user"}
-            disabled={isUpdating || isUserSelf() || user.isDeleted}
-          />
-        </div>
-      </div>
-    </>
-  );
-  const facilityAccessTab = (
-    <>
-      <div
-        role="tabpanel"
-        aria-labelledby="facility-access-tab-id"
-        className="padding-left-1"
-      >
-        <h3 className="basic-info-header margin-bottom-1">User role</h3>
-        <div className="userrole-subtext">
-          Admins have full access to use and change settings on SimpleReport.
-          Standard and testing-only users have limited access for specific
-          tasks, as described below.
-        </div>
-        <UserRoleSettingsForm
-          activeUser={user}
-          loggedInUser={loggedInUser}
-          onUpdateUser={updateUser}
-        />
-        <UserFacilitiesSettingsForm
-          activeUser={user}
-          allFacilities={allFacilities}
-          onUpdateUser={updateUser}
-        />
-        <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
-          <Button
-            type="button"
-            variant="outline"
-            className="margin-left-auto"
-            onClick={handleUpdateUser}
-            label={isUpdating ? "Saving..." : "Save changes"}
-            disabled={
-              !user.role ||
-              !roles.includes(user.role) ||
-              user?.organization?.testingFacility.length === 0 ||
-              !isUserEdited ||
-              !["Admin user", "Admin user (SU)"].includes(
-                loggedInUser.roleDescription
-              ) ||
-              isUpdating
-            }
-          />
-        </div>
-      </div>
-    </>
-  );
+  const availableTabs = {
+    [UserDetailTab.userInfo]: (
+      <UserInfoTab
+        isUserActive={isUserActive}
+        user={user}
+        updateEditUserNameModal={updateEditUserNameModal}
+        isUpdating={isUpdating}
+        updateEditUserEmailModal={updateEditUserEmailModal}
+        updateShowResetPasswordModal={updateShowResetPasswordModal}
+        updateShowResetMfaModal={updateShowResetMfaModal}
+        isUserSelf={isUserSelf}
+        updateShowDeleteUserModal={updateShowDeleteUserModal}
+      />
+    ),
+    [UserDetailTab.facilityAccess]: (
+      <FacilityAccessTab
+        user={user}
+        loggedInUser={loggedInUser}
+        updateUser={updateUser}
+        allFacilities={allFacilities}
+        handleUpdateUser={handleUpdateUser}
+        isUpdating={isUpdating}
+        isUserEdited={isUserEdited}
+      />
+    ),
+  };
   return (
     <div
       role="tabpanel"
@@ -405,42 +274,32 @@ const UserDetail: React.FC<Props> = ({
       >
         <div
           role="tablist"
-          aria-owns={"user-info-tab-id facility-access-tab-id"}
+          aria-owns={`${displayedTabs
+            .map((tab) => tab.toLowerCase().replace(" ", "-") + "-tab-id")
+            .join(" ")}`}
           className="usa-nav__secondary-links prime-nav usa-list"
         >
-          <div
-            className={`usa-nav__secondary-item ${
-              navItemSelected === "userInfo" ? "usa-current" : ""
-            }`}
-          >
-            <button
-              id="user-info-tab-id"
-              role="tab"
-              className="usa-button--unstyled text-ink text-no-underline"
-              onClick={() => setNavItemSelected("userInfo")}
-              aria-selected={navItemSelected === "userInfo"}
+          {displayedTabs.map((tab) => (
+            <div
+              className={`usa-nav__secondary-item ${
+                navItemSelected === tab ? "usa-current" : ""
+              }`}
+              key={tab.toLowerCase().replace(" ", "-") + "-key"}
             >
-              User information
-            </button>
-          </div>
-          <div
-            className={`usa-nav__secondary-item ${
-              navItemSelected === "facilityAccess" ? "usa-current" : ""
-            }`}
-          >
-            <button
-              id="facility-access-tab-id"
-              role="tab"
-              className="usa-button--unstyled text-ink text-no-underline"
-              onClick={() => setNavItemSelected("facilityAccess")}
-              aria-selected={navItemSelected === "facilityAccess"}
-            >
-              Facility access
-            </button>
-          </div>
+              <button
+                id={`${tab.toLowerCase().replace(" ", "-")}-tab-id`}
+                role="tab"
+                className="usa-button--unstyled text-ink text-no-underline"
+                onClick={() => setNavItemSelected(tab)}
+                aria-selected={navItemSelected === tab}
+              >
+                {tab}
+              </button>
+            </div>
+          ))}
         </div>
       </nav>
-      {navItemSelected === "userInfo" ? userInfoTab : facilityAccessTab}
+      {availableTabs[navItemSelected]}
       {isUserEdited && (
         <Prompt
           when={isUserEdited}

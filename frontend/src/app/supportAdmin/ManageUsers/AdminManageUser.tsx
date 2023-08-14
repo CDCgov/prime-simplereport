@@ -13,7 +13,7 @@ import {
 } from "../../../generated/graphql";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import { showSuccess } from "../../utils/srToast";
-import UserDetail from "../../Settings/Users/UserDetail";
+import UserDetail, { UserDetailTab } from "../../Settings/Users/UserDetail";
 import { UpdateUser } from "../../Settings/Users/ManageUsers";
 import { displayFullName } from "../../utils";
 import { OktaUserStatus } from "../../utils/user";
@@ -254,6 +254,7 @@ export const AdminManageUser: React.FC = () => {
                 handleResendUserActivationEmail={
                   handleResendUserActivationEmail
                 }
+                displayedTabs={[UserDetailTab.userInfo]}
                 // used in facility tab
                 updateUser={{} as UpdateUser}
                 loggedInUser={{} as User}

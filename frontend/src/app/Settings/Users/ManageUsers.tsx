@@ -6,17 +6,17 @@ import { displayFullName } from "../../utils";
 import { showSuccess } from "../../utils/srToast";
 import reload from "../../utils/reload";
 import {
-  UserPermission,
-  useGetUserLazyQuery,
   GetUsersAndStatusQuery,
+  useGetUserLazyQuery,
+  UserPermission,
 } from "../../../generated/graphql";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
-import UserDetail from "./UserDetail";
+import UserDetail, { UserDetailTab } from "./UserDetail";
 import {
-  SettingsUser,
   LimitedUser,
+  SettingsUser,
   UserFacilitySetting,
 } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
@@ -429,6 +429,10 @@ const ManageUsers: React.FC<Props> = ({
               handleResetUserPassword={handleResetUserPassword}
               handleResetUserMfa={handleResetUserMfa}
               handleResendUserActivationEmail={handleResendUserActivationEmail}
+              displayedTabs={[
+                UserDetailTab.userInfo,
+                UserDetailTab.facilityAccess,
+              ]}
             />
             {showInProgressModal && (
               <InProgressModal
