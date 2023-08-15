@@ -8,6 +8,7 @@ import {
   addOrgAdminPageTitle,
   devicesColumnTitle,
   editDevicePageTitle,
+  escalationPageTitle,
   identityVerificationPageTitle,
   orgAccessPageTitle,
   orgFacilityColumnTitle,
@@ -32,7 +33,6 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
 const SupportAdmin = () => {
   useDocumentTitle("Support admin");
   const hivEnabled = useFeature("hivEnabled") as boolean;
-
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -62,6 +62,11 @@ const SupportAdmin = () => {
                     <LinkWithQuery to="/admin/tenant-data-access">
                       {orgAccessPageTitle}
                     </LinkWithQuery>
+                    <li>
+                      <LinkWithQuery to="/admin/escalate-to-engineering">
+                        {escalationPageTitle}
+                      </LinkWithQuery>
+                    </li>
                   </li>
                 </CategoryMenu>
                 <CategoryMenu heading={devicesColumnTitle}>
