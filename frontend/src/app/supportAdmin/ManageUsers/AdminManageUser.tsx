@@ -243,10 +243,15 @@ export const AdminManageUser: React.FC = () => {
           disableClearFilters={!searchEmail && !foundUser && !displayedError}
         />
         {displayedError && (
-          <div className="prime-container card-container">{displayedError}</div>
+          <div className="prime-container card-container" aria-live={"polite"}>
+            {displayedError}
+          </div>
         )}
         {foundUser && (
-          <div className="prime-container card-container manage-users-card">
+          <div
+            className="prime-container card-container manage-users-card"
+            aria-live={"polite"}
+          >
             <div className="usa-card__body">
               <div
                 role="tabpanel"
