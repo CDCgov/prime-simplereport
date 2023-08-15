@@ -53,4 +53,5 @@ extend type Mutation {
   markFacilityAsDeleted(facilityId: ID!, deleted: Boolean!): String
   markOrganizationAsDeleted(organizationId: ID!, deleted: Boolean!): String
   markDeviceTypeAsDeleted(deviceId: ID, deviceName: String):DeviceType
+  sendSupportEscalation: String
 }

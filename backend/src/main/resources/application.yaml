@@ -150,3 +150,6 @@ datahub:
   fhir-enabled: true
 features:
   hivEnabled: true
+slack:
+  hook:
+    token: ${SLACK_HOOK_TOKEN}
