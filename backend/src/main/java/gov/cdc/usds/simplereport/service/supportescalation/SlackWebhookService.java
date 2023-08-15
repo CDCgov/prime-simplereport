@@ -1,20 +1,17 @@
 package gov.cdc.usds.simplereport.service.supportescalation;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
+@AllArgsConstructor
 public class SlackWebhookService {
 
-  private SlackConfig slackConfig;
-
-  public SlackWebhookService(SlackConfig slackConfig) {
-    this.slackConfig = slackConfig;
-  }
+  private SlackConfigService slackConfigService;
 
   public boolean sendSlackEscalationMessage() {
-    boolean escalationSucceeded = slackConfig.makeEscalationRequest();
-    return escalationSucceeded;
+    return slackConfigService.makeEscalationRequest();
   }
 }

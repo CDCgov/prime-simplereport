@@ -1,19 +1,18 @@
 package gov.cdc.usds.simplereport.service.supportescalation;
 
-import gov.cdc.usds.simplereport.api.model.errors.SlackEscalationException;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-@Configuration
+@Service
 @Slf4j
-public class SlackConfig {
+public class SlackConfigService {
   private final String escalationMessage = "A new support escalation has been received!";
 
   private String url = "https://hooks.slack.com/services/";
@@ -22,7 +21,7 @@ public class SlackConfig {
   private final HttpEntity<String> entity;
   private final RestTemplate restTemplate;
 
-  public SlackConfig(@Value("${slack.hook.token}") String token) {
+  public SlackConfigService(@Value("${slack.hook.token}") String token) {
     String requestText = "{\"text\":\" " + escalationMessage + " \"}";
 
     HttpHeaders headers = new HttpHeaders();
@@ -36,16 +35,14 @@ public class SlackConfig {
 
   public boolean makeEscalationRequest() {
     log.info("making escalation request");
+    String response = "";
     try {
       String postUrl = url + token;
-      String response = restTemplate.postForObject(postUrl, entity, String.class);
-
-      // Slack will respond with "ok" if the command was successful.
+      response = restTemplate.postForObject(postUrl, entity, String.class);
       if (response.contains("ok")) return true;
+    } catch (RestClientException e) {
       log.error("Slack returned unexpected: " + response);
-      throw new SlackEscalationException();
-    } catch (RestClientException | SlackEscalationException e) {
-      return false;
     }
+    return false;
   }
 }

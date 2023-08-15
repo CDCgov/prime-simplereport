@@ -16,8 +16,7 @@ describe("Escalations", () => {
         <Provider store={store}>
           <MockedProvider mocks={[WhoAmIQueryMock]} addTypename={false}>
             <MemoryRouter>
-              {" "}
-              <Escalations />{" "}
+              <Escalations />
             </MemoryRouter>
           </MockedProvider>
         </Provider>
