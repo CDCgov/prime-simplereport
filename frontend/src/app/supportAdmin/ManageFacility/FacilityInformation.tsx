@@ -31,6 +31,8 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
   onFacilityDelete,
 }) => {
   const OrgTypeDictionary = OrganizationTypeEnum as any;
+  const usersCount = manageFacilityState.facility?.usersCount;
+  const patientsCount = manageFacilityState.facility?.patientsCount;
 
   /**
    * Confirmation modal
@@ -64,8 +66,15 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
       </p>
       <p className="margin-top-3">
         There are{" "}
-        <strong>{manageFacilityState.facility?.usersCount} users</strong> and{" "}
-        <strong>{manageFacilityState.facility?.patientsCount} patients</strong>{" "}
+        <strong>
+          {usersCount}
+          {usersCount === 1 ? " user" : " users"}
+        </strong>{" "}
+        and{" "}
+        <strong>
+          {patientsCount}
+          {patientsCount === 1 ? " patient" : " patients"}
+        </strong>{" "}
         added only to this facility.
       </p>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>

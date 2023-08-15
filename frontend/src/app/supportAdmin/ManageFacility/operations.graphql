@@ -1,5 +1,5 @@
 query GetAllOrganizations {
-    organizations{
+    organizations(identityVerified: true){
         id
         name
     }

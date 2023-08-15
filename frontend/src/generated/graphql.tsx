@@ -4980,7 +4980,7 @@ export type GetSupportedDiseasesQueryResult = Apollo.QueryResult<
 >;
 export const GetAllOrganizationsDocument = gql`
   query GetAllOrganizations {
-    organizations {
+    organizations(identityVerified: true) {
       id
       name
     }
