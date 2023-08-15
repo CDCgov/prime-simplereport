@@ -65,14 +65,14 @@ exports[`SupportAdmin loads menu categories 1`] = `
                     >
                       Access organization account
                     </a>
-                    <li>
-                      <a
-                        class=""
-                        href="/admin/escalate-to-engineering"
-                      >
-                        Escalate to engineering
-                      </a>
-                    </li>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/escalate-to-engineering"
+                    >
+                      Escalate to engineering
+                    </a>
                   </li>
                 </ul>
               </div>
@@ -193,14 +193,14 @@ exports[`SupportAdmin loads menu categories including Beta 1`] = `
                     >
                       Access organization account
                     </a>
-                    <li>
-                      <a
-                        class=""
-                        href="/admin/escalate-to-engineering"
-                      >
-                        Escalate to engineering
-                      </a>
-                    </li>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/escalate-to-engineering"
+                    >
+                      Escalate to engineering
+                    </a>
                   </li>
                 </ul>
               </div>
