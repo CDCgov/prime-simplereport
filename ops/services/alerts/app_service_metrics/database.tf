@@ -22,7 +22,8 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -33,7 +34,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "db_connection_exhaustion
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.database_id

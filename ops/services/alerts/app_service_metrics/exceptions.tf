@@ -29,7 +29,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "graphql_query_validation
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_service_id
@@ -56,7 +57,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_insights_id
@@ -105,7 +107,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "account_request_failures
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_insights_id
@@ -140,7 +143,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "experian_auth_failures" 
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_insights_id
@@ -175,7 +179,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "all_experian_auth_failur
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_insights_id
@@ -210,7 +215,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary"
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_insights_id

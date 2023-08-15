@@ -25,7 +25,8 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
   dynamic "action" {
     for_each = var.action_group_ids
     content {
-      action_group_id = action.value
+      action_group_id    = action.value
+      webhook_properties = {"Alert Response Docs": "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response"}
     }
   }
 }
@@ -51,7 +52,8 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
   dynamic "action" {
     for_each = var.action_group_ids
     content {
-      action_group_id = action.value
+      action_group_id    = action.value
+      webhook_properties = {"Alert Response Docs": "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
     }
   }
 }
@@ -66,7 +68,8 @@ resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
   detector_type       = "FailureAnomaliesDetector"
 
   action_group {
-    ids = var.action_group_ids
+    ids             = var.action_group_ids
+    webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -104,7 +107,8 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -142,7 +146,8 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -170,7 +175,8 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -198,7 +204,8 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -228,7 +235,8 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -239,7 +247,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "bulk_results_upload" {
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_insights_id
@@ -269,7 +278,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_batched_up
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_insights_id
@@ -298,7 +308,8 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_fhir_batch
   resource_group_name = var.rg_name
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 
   data_source_id = var.app_insights_id
@@ -346,7 +357,8 @@ ${local.skip_on_weekends}
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -369,7 +381,8 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
   dynamic "action" {
     for_each = var.action_group_ids
     content {
-      action_group_id = action.value
+      action_group_id    = action.value
+      webhook_properties = {"Alert Response Docs": "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
     }
   }
 }
@@ -398,6 +411,7 @@ and duration >= 180000
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }

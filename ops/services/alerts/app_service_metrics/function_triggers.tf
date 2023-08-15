@@ -56,7 +56,8 @@ requests
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
@@ -86,7 +87,8 @@ requests
   }
 
   action {
-    action_group = var.action_group_ids
+    action_group           = var.action_group_ids
+    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
   }
 }
 
