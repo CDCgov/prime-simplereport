@@ -100,6 +100,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @MockBean(name = "fhirQueueReportingService")
   TestEventReportingService fhirQueueReportingService;
 
+  @SpyBean ReportTestEventToRSEventListener reportTestEventToRSEventListener;
+
   @Captor ArgumentCaptor<TestEvent> testEventArgumentCaptor;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
@@ -2164,6 +2166,66 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     _service.removeFromQueueByFacilityId(facilityId);
     assertEquals(mockOrders, ordersCaptor.getValue());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void addTestResult_sentToReportingService() {
+    // GIVEN
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person patient = _dataFactory.createFullPerson(org);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        patient,
+        "",
+        Collections.emptyMap(),
+        LocalDate.of(1865, 12, 25),
+        false);
+    DeviceType deviceType = _dataFactory.getGenericDevice();
+    SpecimenType specimenType = _dataFactory.getGenericSpecimen();
+    facility.setDefaultDeviceTypeSpecimenType(deviceType, specimenType);
+
+    // WHEN
+    List<MultiplexResultInput> positiveCovidOnlyResult = makeCovidOnlyResult(TestResult.POSITIVE);
+    _service.addMultiplexResult(
+        deviceType.getInternalId(),
+        specimenType.getInternalId(),
+        positiveCovidOnlyResult,
+        patient.getInternalId(),
+        null);
+
+    // THEN
+    verify(reportTestEventToRSEventListener, times(1)).handleEvent(any());
+    verify(testEventReportingService, times(1)).report(any());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void removeTest_sentToReportingService() {
+    // GIVEN
+    List<MultiplexResultInput> originalResults =
+        makeMultiplexTestResult(TestResult.NEGATIVE, TestResult.POSITIVE, TestResult.NEGATIVE);
+
+    TestOrder order = addTestToQueue();
+    AddTestResultResponse response =
+        _service.addMultiplexResult(
+            order.getDeviceType().getInternalId(),
+            order.getSpecimenType().getInternalId(),
+            originalResults,
+            order.getPatient().getInternalId(),
+            convertDate(LocalDateTime.of(2022, 6, 5, 10, 10, 10, 10)));
+
+    TestEvent originalEvent = response.getTestOrder().getTestEvent();
+
+    // WHEN
+    _service.markAsError(originalEvent.getInternalId(), "Duplicate test");
+
+    // THEN
+    // Invoked once when result is added, invoked again when marked as error
+    verify(reportTestEventToRSEventListener, times(2)).handleEvent(any());
+    verify(testEventReportingService, times(2)).report(any());
   }
 
   private List<TestEvent> makeAdminData() {

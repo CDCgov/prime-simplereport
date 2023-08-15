@@ -50,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -86,6 +87,8 @@ public class TestOrderService {
 
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
+
+  private final ApplicationEventPublisher applicationEventPublisher;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
@@ -338,7 +341,6 @@ public class TestOrderService {
 
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
-      reportTestEventToRS(savedEvent);
     } finally {
       unlockOrder(order.getInternalId());
     }
@@ -361,17 +363,9 @@ public class TestOrderService {
 
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
+
+    applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
     return new AddTestResultResponse(savedOrder, deliveryStatus);
-  }
-
-  private void reportTestEventToRS(TestEvent savedEvent) {
-    if (savedEvent.hasCovidResult()) {
-      _testEventReportingService.report(savedEvent);
-    }
-
-    if (savedEvent.hasFluResult() && fhirReportingEnabled) {
-      _fhirQueueReportingService.report(savedEvent);
-    }
   }
 
   private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
@@ -557,12 +551,13 @@ public class TestOrderService {
         _testEventRepo.save(newRemoveEvent);
         newRemoveEvent = resultService.addResultsToTestEvent(newRemoveEvent, results);
 
-        reportTestEventToRS(newRemoveEvent);
-
         order.setReasonForCorrection(reasonForCorrection);
         order.setTestEventRef(newRemoveEvent);
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
         _testOrderRepo.save(order);
+
+        applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(newRemoveEvent));
+
         return newRemoveEvent;
       }
       default -> throw new IllegalGraphqlArgumentException("Invalid TestCorrectionStatus");
