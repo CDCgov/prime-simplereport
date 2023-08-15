@@ -7,8 +7,8 @@ import {
 import Button from "../../commonComponents/Button/Button";
 
 interface SearchResultsProps {
-  devices: DeviceType[];
-  setSelectedDevice: (d: DeviceType | null) => void;
+  items: DeviceType[];
+  setSelectedItem: (d: DeviceType | null) => void;
   shouldShowSuggestions: boolean;
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;
@@ -18,8 +18,8 @@ interface SearchResultsProps {
 
 const DeviceSearchResults = (props: SearchResultsProps) => {
   const {
-    devices,
-    setSelectedDevice,
+    items,
+    setSelectedItem,
     shouldShowSuggestions,
     loading,
     dropDownRef,
@@ -31,7 +31,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
 
   if (loading) {
     resultsContent = <p>Searching...</p>;
-  } else if (devices.length === 0) {
+  } else if (items.length === 0) {
     resultsContent = (
       <div
         className={
@@ -79,7 +79,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
           </tr>
         </thead>
         <tbody>
-          {devices.map((d, idx) => {
+          {items.map((d, idx) => {
             return (
               <tr key={d.internalId} aria-label={`device-${idx}`}>
                 <td id={`device-${idx}`}>{d.manufacturer}</td>
@@ -109,7 +109,7 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
                       label={multiSelect ? "Add" : "Select"}
                       ariaLabel={`Select ${d.manufacturer} ${d.model}`}
                       onClick={() => {
-                        setSelectedDevice(d);
+                        setSelectedItem(d);
                       }}
                     />
                   }

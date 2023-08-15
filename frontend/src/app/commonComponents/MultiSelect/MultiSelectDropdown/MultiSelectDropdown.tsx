@@ -9,7 +9,6 @@ import React, {
 import classnames from "classnames";
 
 import { useOutsideClick } from "../../../utils/hooks";
-import { searchFacilityFormDevices } from "../../../utils/device";
 
 import {
   ActionTypes,
@@ -58,7 +57,7 @@ interface MultiSelectDropDownProps {
   ariaInvalid?: boolean;
   registrationProps?: RegistrationProps;
   DropdownComponent?: (props: any) => JSX.Element;
-  deviceOptions?: FacilityFormDeviceType[];
+  getDropdownItemsByQuery?: (query: string) => any[];
 }
 
 interface InputProps {
@@ -213,7 +212,7 @@ export const MultiSelectDropdown = ({
   ariaInvalid,
   registrationProps,
   DropdownComponent,
-  deviceOptions,
+  getDropdownItemsByQuery,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -283,14 +282,6 @@ export const MultiSelectDropdown = ({
     }
   };
 
-  const getFilteredDevices = (
-    deviceIds: string[]
-  ): FacilityFormDeviceType[] => {
-    return (deviceOptions ?? []).filter((d) =>
-      deviceIds.includes(d.internalId)
-    );
-  };
-
   const containerClasses = classnames(
     "usa-combo-box usa-combo-box--pristine",
     className
@@ -353,14 +344,11 @@ export const MultiSelectDropdown = ({
           &nbsp;
         </button>
       </span>
-      {DropdownComponent && deviceOptions ? (
+      {DropdownComponent && getDropdownItemsByQuery ? (
         <>
           <DropdownComponent
-            devices={searchFacilityFormDevices(
-              getFilteredDevices(options.map((d) => d.value)),
-              state.inputValue
-            )}
-            setSelectedDevice={selectOption}
+            items={getDropdownItemsByQuery(state.inputValue)}
+            setSelectedItem={selectOption}
             shouldShowSuggestions={state.isOpen}
             queryString={state.inputValue}
             multiSelect={true}

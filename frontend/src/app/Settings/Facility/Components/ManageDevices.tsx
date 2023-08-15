@@ -5,6 +5,7 @@ import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResul
 import "./ManageDevices.scss";
 import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { FacilityFormData } from "../FacilityForm";
+import { searchFacilityFormDevices } from "../../../utils/device";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
@@ -30,6 +31,17 @@ const ManageDevices: React.FC<Props> = ({
     }))
   );
 
+  const getFilteredDevices = (
+    deviceIds: string[]
+  ): FacilityFormDeviceType[] => {
+    return (deviceTypes ?? []).filter((d) => deviceIds.includes(d.internalId));
+  };
+
+  const getDevicesByQuery = (query: string) => {
+    const deviceIds = getDeviceTypeOptions.map((d) => d.value);
+    return searchFacilityFormDevices(getFilteredDevices(deviceIds), query);
+  };
+
   return (
     <div className="prime-container card-container device-settings">
       <div className="usa-card__header">
@@ -53,7 +65,7 @@ const ManageDevices: React.FC<Props> = ({
           required
           placeholder="Search for a device to add it"
           DropdownComponent={DeviceSearchResults}
-          deviceOptions={deviceTypes}
+          getDropdownItemsByQuery={getDevicesByQuery}
           errorMessage={errors?.devices?.message}
           registrationProps={registrationProps}
         />

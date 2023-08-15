@@ -130,8 +130,8 @@ const DeviceLookup = (props: Props) => {
             showSubmitButton={false}
           />
           <DeviceSearchResults
-            devices={searchDevices(props.deviceOptions, queryString)}
-            setSelectedDevice={setSelectedDevice}
+            items={searchDevices(props.deviceOptions, queryString)}
+            setSelectedItem={setSelectedDevice}
             shouldShowSuggestions={showDropdown}
             loading={debounced !== queryString}
             queryString={queryString}

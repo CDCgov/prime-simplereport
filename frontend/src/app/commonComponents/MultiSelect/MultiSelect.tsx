@@ -34,7 +34,7 @@ export type MultiSelectProps = {
   placeholder?: string;
   registrationProps?: RegistrationProps;
   DropdownComponent?: (props: any) => JSX.Element;
-  deviceOptions?: FacilityFormDeviceType[];
+  getDropdownItemsByQuery?: (query: string) => any[];
 };
 
 type PillProps = {
@@ -77,7 +77,7 @@ export const MultiSelect = ({
   placeholder,
   registrationProps,
   DropdownComponent,
-  deviceOptions,
+  getDropdownItemsByQuery,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -194,7 +194,7 @@ export const MultiSelect = ({
             ariaInvalid={validationStatus === "error"}
             registrationProps={registrationProps}
             DropdownComponent={DropdownComponent}
-            deviceOptions={deviceOptions}
+            getDropdownItemsByQuery={getDropdownItemsByQuery}
           />
           <fieldset
             className={`fieldset--unstyled pill-container${
