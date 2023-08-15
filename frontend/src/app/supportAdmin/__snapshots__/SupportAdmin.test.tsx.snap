@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SupportAdming loads menu categories 1`] = `
+exports[`SupportAdmin loads menu categories 1`] = `
 <div>
   <div
     class="prime-home flex-1"
@@ -128,7 +128,7 @@ exports[`SupportAdming loads menu categories 1`] = `
 </div>
 `;
 
-exports[`SupportAdming loads menu categories including Beta 1`] = `
+exports[`SupportAdmin loads menu categories including Beta 1`] = `
 <div>
   <div
     class="prime-home flex-1"
