@@ -24,7 +24,7 @@ public class SupportEscalationMutationResolver {
       }
       throw new IOException("Escalation didn't return success");
     } catch (IOException e) {
-      log.info("Slack escalation failed");
+      log.error("Slack escalation failed");
       throw new GenericGraphqlException();
     }
   }

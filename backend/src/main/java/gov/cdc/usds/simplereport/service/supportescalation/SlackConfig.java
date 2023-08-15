@@ -40,10 +40,9 @@ public class SlackConfig {
       String postUrl = url + token;
       String response = restTemplate.postForObject(postUrl, entity, String.class);
 
-      log.info(response);
       // Slack will respond with "ok" if the command was successful.
       if (response.contains("ok")) return true;
-      log.info("Slack returned unexpected: " + response);
+      log.error("Slack returned unexpected: " + response);
       throw new SlackEscalationException();
     } catch (RestClientException | SlackEscalationException e) {
       return false;
