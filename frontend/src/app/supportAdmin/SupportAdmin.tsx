@@ -62,11 +62,11 @@ const SupportAdmin = () => {
                     <LinkWithQuery to="/admin/tenant-data-access">
                       {orgAccessPageTitle}
                     </LinkWithQuery>
-                    <li>
-                      <LinkWithQuery to="/admin/escalate-to-engineering">
-                        {escalationPageTitle}
-                      </LinkWithQuery>
-                    </li>
+                  </li>
+                  <li>
+                    <LinkWithQuery to="/admin/escalate-to-engineering">
+                      {escalationPageTitle}
+                    </LinkWithQuery>
                   </li>
                 </CategoryMenu>
                 <CategoryMenu heading={devicesColumnTitle}>
