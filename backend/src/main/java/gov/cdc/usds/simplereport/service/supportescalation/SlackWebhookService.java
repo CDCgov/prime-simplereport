@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service.supportescalation;
 
-import gov.cdc.usds.simplereport.api.model.errors.SlackEscalationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ public class SlackWebhookService {
     this.slackConfig = slackConfig;
   }
 
-  public boolean sendSlackEscalationMessage() throws SlackEscalationException {
+  public boolean sendSlackEscalationMessage() {
     boolean escalationSucceeded = slackConfig.makeEscalationRequest();
     return escalationSucceeded;
   }
