@@ -8,7 +8,6 @@ import {
   addOrgAdminPageTitle,
   devicesColumnTitle,
   editDevicePageTitle,
-  escalationPageTitle,
   identityVerificationPageTitle,
   orgAccessPageTitle,
   orgFacilityColumnTitle,
@@ -61,11 +60,6 @@ const SupportAdmin = () => {
                   <li>
                     <LinkWithQuery to="/admin/tenant-data-access">
                       {orgAccessPageTitle}
-                    </LinkWithQuery>
-                  </li>
-                  <li>
-                    <LinkWithQuery to="/admin/escalate-to-engineering">
-                      {escalationPageTitle}
                     </LinkWithQuery>
                   </li>
                 </CategoryMenu>
