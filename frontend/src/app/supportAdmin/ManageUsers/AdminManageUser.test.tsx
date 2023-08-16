@@ -363,7 +363,7 @@ describe("Admin manage users", () => {
       expect(screen.getByText("Edit email")).toBeDisabled();
       expect(screen.getByText("Send password reset email")).toBeDisabled();
       expect(screen.getByText("Reset MFA")).toBeDisabled();
-      expect(screen.getAllByText("Delete user")[1]).toBeDisabled();
+      expect(screen.queryByText("Delete user")).not.toBeInTheDocument();
       expect(screen.getByText("Account deleted.")).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
     });

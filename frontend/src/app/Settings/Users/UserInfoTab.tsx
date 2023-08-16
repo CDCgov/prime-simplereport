@@ -138,26 +138,28 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
             disabled={isUpdating || !isUserActive}
           />
         </div>
-        <div
-          className={classnames(
-            "user-header grid-row flex-row flex-align-center",
-            { "disabled-dark": isUserSelf || user.isDeleted }
-          )}
-        >
-          <div>
-            <div className="userinfo-subheader">Delete user</div>
-            <p className="usercontrols-text">
-              Permanently delete user account and data
-            </p>
+        {!user.isDeleted && (
+          <div
+            className={classnames(
+              "user-header grid-row flex-row flex-align-center",
+              { "disabled-dark": isUserSelf }
+            )}
+          >
+            <div>
+              <div className="userinfo-subheader">Delete user</div>
+              <p className="usercontrols-text">
+                Permanently delete user account and data
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              className="margin-left-auto margin-bottom-1"
+              onClick={() => updateShowDeleteUserModal(true)}
+              label={"Delete user"}
+              disabled={isUpdating || isUserSelf}
+            />
           </div>
-          <Button
-            variant="outline"
-            className="margin-left-auto margin-bottom-1"
-            onClick={() => updateShowDeleteUserModal(true)}
-            label={"Delete user"}
-            disabled={isUpdating || isUserSelf || user.isDeleted}
-          />
-        </div>
+        )}
       </div>
       {showDeleteUserModal && (
         <DeleteUserModal
