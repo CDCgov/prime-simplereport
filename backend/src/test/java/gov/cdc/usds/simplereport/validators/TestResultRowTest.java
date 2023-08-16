@@ -6,6 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
@@ -405,7 +406,10 @@ class TestResultRowTest {
     invalidIndividualFields.put("specimen_type", "100");
     invalidIndividualFields.put("testing_lab_clia", "à");
     var testResultRow =
-        new TestResultRow(invalidIndividualFields, mockResultsUploaderCachingService());
+        new TestResultRow(
+            invalidIndividualFields,
+            mockResultsUploaderCachingService(),
+            mock(FeatureFlagsConfig.class));
 
     var actual = testResultRow.validateIndividualValues();
 

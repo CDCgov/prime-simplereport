@@ -22,6 +22,7 @@ public class DiseaseService {
   public static final String FLU_B_NAME = "Flu B";
   public static final String FLU_A_AND_B_NAME = "Flu A and B";
   public static final String FLU_RNA_NAME = "Flu RNA";
+  public static final String RSV_NAME = "RSV";
 
   private final SupportedDiseaseRepository _supportedDiseaseRepo;
 

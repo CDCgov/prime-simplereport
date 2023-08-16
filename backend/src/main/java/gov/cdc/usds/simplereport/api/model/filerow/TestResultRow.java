@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.api.model.filerow;
 import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_A_AND_B_NAME;
 import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_A_NAME;
 import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_B_NAME;
-import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_RNA_NAME;
+import static gov.cdc.usds.simplereport.service.DiseaseService.RSV_NAME;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ITEM_SCOPE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
@@ -23,6 +23,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateYes
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateZipCode;
 import static java.util.Collections.emptyList;
 
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
@@ -134,95 +135,170 @@ public class TestResultRow implements FileRow {
   static final String TESTING_LAB_STATE = "testing_lab_state";
   static final String TESTING_LAB_ZIP_CODE_FIELD = "testing_lab_zip_code";
 
-  public static final Map<String, String> fluOnlyTestPerformedLoinc = new HashMap<>();
+  public static final Map<String, String> diseaseSpecificLoincMap = new HashMap<>();
 
   static {
-    fluOnlyTestPerformedLoinc.put("100973-7", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("100974-5", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("17015-9", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("17016-7", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("22096-2", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("22825-4", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("22827-0", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("24015-0", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("31437-7", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("31438-5", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("31859-2", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("31864-2", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("33535-6", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("34487-9", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("38381-0", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("38382-8", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("40982-1", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("43874-7", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("43895-2", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("44558-5", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("44563-5", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("44564-3", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("44567-6", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("44570-0", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("44571-8", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("44573-4", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("44575-9", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("44577-5", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("46082-4", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("46083-2", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("48310-7", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("48509-4", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("49521-8", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("49523-4", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("49524-2", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("49531-7", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("49535-8", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("50697-2", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("5229-0", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("5230-8", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("54243-1", FLU_RNA_NAME);
-    fluOnlyTestPerformedLoinc.put("55463-4", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("55464-2", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("55465-9", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("5862-8", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("5863-6", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("5866-9", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("59423-4", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("62462-7", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("6435-2", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("6437-8", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("6438-6", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("68986-9", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("68987-7", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("72356-9", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("72366-8", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("74785-7", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("74786-5", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("74787-3", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("76078-5", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("76080-1", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("77026-3", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("77027-1", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("77028-9", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("7920-2", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("7931-9", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("80381-7", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("80382-5", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("80383-3", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("82166-0", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("82167-8", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("82168-6", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("82169-4", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("82170-2", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("85476-0", FLU_A_AND_B_NAME);
-    fluOnlyTestPerformedLoinc.put("85477-8", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("85478-6", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("92141-1", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("92142-9", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("92976-0", FLU_B_NAME);
-    fluOnlyTestPerformedLoinc.put("92977-8", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("9531-5", FLU_A_NAME);
-    fluOnlyTestPerformedLoinc.put("9534-9", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("100973-7", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("100974-5", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("17015-9", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("17016-7", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("22096-2", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("22825-4", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("22827-0", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("24015-0", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("31437-7", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("31438-5", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("31859-2", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("31864-2", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("33535-6", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("34487-9", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("38381-0", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("38382-8", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("40982-1", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("43874-7", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("43895-2", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("44558-5", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("44563-5", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("44564-3", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("44567-6", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("44570-0", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("44571-8", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("44573-4", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("44575-9", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("44577-5", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("46082-4", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("46083-2", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("48310-7", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("48509-4", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("49521-8", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("49523-4", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("49524-2", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("49531-7", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("49535-8", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("50697-2", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("5229-0", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("5230-8", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("54243-1", RSV_NAME);
+    diseaseSpecificLoincMap.put("55463-4", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("55464-2", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("55465-9", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("5862-8", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("5863-6", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("5866-9", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("59423-4", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("62462-7", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("6435-2", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("6437-8", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("6438-6", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("68986-9", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("68987-7", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("72356-9", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("72366-8", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("74785-7", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("74786-5", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("74787-3", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("76078-5", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("76080-1", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("77026-3", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("77027-1", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("77028-9", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("7920-2", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("7931-9", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("80381-7", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("80382-5", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("80383-3", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("82166-0", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("82167-8", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("82168-6", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("82169-4", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("82170-2", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("85476-0", FLU_A_AND_B_NAME);
+    diseaseSpecificLoincMap.put("85477-8", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("85478-6", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("92141-1", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("92142-9", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("92976-0", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("92977-8", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("9531-5", FLU_A_NAME);
+    diseaseSpecificLoincMap.put("9534-9", FLU_B_NAME);
+    diseaseSpecificLoincMap.put("101298-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("101425-7", RSV_NAME);
+    diseaseSpecificLoincMap.put("101426-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("14129-1", RSV_NAME);
+    diseaseSpecificLoincMap.put("17517-4", RSV_NAME);
+    diseaseSpecificLoincMap.put("17518-2", RSV_NAME);
+    diseaseSpecificLoincMap.put("17519-0", RSV_NAME);
+    diseaseSpecificLoincMap.put("17520-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("22466-7", RSV_NAME);
+    diseaseSpecificLoincMap.put("22467-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("24224-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("24225-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("24298-2", RSV_NAME);
+    diseaseSpecificLoincMap.put("24299-0", RSV_NAME);
+    diseaseSpecificLoincMap.put("30075-6", RSV_NAME);
+    diseaseSpecificLoincMap.put("30076-4", RSV_NAME);
+    diseaseSpecificLoincMap.put("30147-3", RSV_NAME);
+    diseaseSpecificLoincMap.put("30148-1", RSV_NAME);
+    diseaseSpecificLoincMap.put("31583-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("31949-1", RSV_NAME);
+    diseaseSpecificLoincMap.put("31950-9", RSV_NAME);
+    diseaseSpecificLoincMap.put("32040-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("33045-6", RSV_NAME);
+    diseaseSpecificLoincMap.put("33382-3", RSV_NAME);
+    diseaseSpecificLoincMap.put("33390-6", RSV_NAME);
+    diseaseSpecificLoincMap.put("40987-0", RSV_NAME);
+    diseaseSpecificLoincMap.put("40988-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("40989-6", RSV_NAME);
+    diseaseSpecificLoincMap.put("41012-6", RSV_NAME);
+    diseaseSpecificLoincMap.put("41456-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("49037-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("50329-2", RSV_NAME);
+    diseaseSpecificLoincMap.put("5294-4", RSV_NAME);
+    diseaseSpecificLoincMap.put("5295-1", RSV_NAME);
+    diseaseSpecificLoincMap.put("52975-0", RSV_NAME);
+    diseaseSpecificLoincMap.put("55100-2", RSV_NAME);
+    diseaseSpecificLoincMap.put("5874-3", RSV_NAME);
+    diseaseSpecificLoincMap.put("5875-0", RSV_NAME);
+    diseaseSpecificLoincMap.put("5876-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("5877-6", RSV_NAME);
+    diseaseSpecificLoincMap.put("60271-4", RSV_NAME);
+    diseaseSpecificLoincMap.put("68966-1", RSV_NAME);
+    diseaseSpecificLoincMap.put("69929-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("69962-9", RSV_NAME);
+    diseaseSpecificLoincMap.put("72885-7", RSV_NAME);
+    diseaseSpecificLoincMap.put("76088-4", RSV_NAME);
+    diseaseSpecificLoincMap.put("76089-2", RSV_NAME);
+    diseaseSpecificLoincMap.put("77022-2", RSV_NAME);
+    diseaseSpecificLoincMap.put("77023-0", RSV_NAME);
+    diseaseSpecificLoincMap.put("77389-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("77390-3", RSV_NAME);
+    diseaseSpecificLoincMap.put("7990-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("7991-3", RSV_NAME);
+    diseaseSpecificLoincMap.put("7992-1", RSV_NAME);
+    diseaseSpecificLoincMap.put("80597-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("80598-6", RSV_NAME);
+    diseaseSpecificLoincMap.put("82176-9", RSV_NAME);
+    diseaseSpecificLoincMap.put("85479-4", RSV_NAME);
+    diseaseSpecificLoincMap.put("88202-7", RSV_NAME);
+    diseaseSpecificLoincMap.put("88204-3", RSV_NAME);
+    diseaseSpecificLoincMap.put("88527-7", RSV_NAME);
+    diseaseSpecificLoincMap.put("88528-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("88595-4", RSV_NAME);
+    diseaseSpecificLoincMap.put("88597-0", RSV_NAME);
+    diseaseSpecificLoincMap.put("88909-7", RSV_NAME);
+    diseaseSpecificLoincMap.put("91133-9", RSV_NAME);
+    diseaseSpecificLoincMap.put("91782-3", RSV_NAME);
+    diseaseSpecificLoincMap.put("91785-6", RSV_NAME);
+    diseaseSpecificLoincMap.put("91794-8", RSV_NAME);
+    diseaseSpecificLoincMap.put("91795-5", RSV_NAME);
+    diseaseSpecificLoincMap.put("92131-2", RSV_NAME);
+    diseaseSpecificLoincMap.put("92957-0", RSV_NAME);
+    diseaseSpecificLoincMap.put("9573-7", RSV_NAME);
+    diseaseSpecificLoincMap.put("9574-5", RSV_NAME);
   }
 
   private ResultsUploaderCachingService resultsUploaderCachingService;
+  private FeatureFlagsConfig featureFlagsConfig;
 
   private static final List<String> requiredFields =
       List.of(
@@ -261,9 +337,12 @@ public class TestResultRow implements FileRow {
           TESTING_LAB_ZIP_CODE_FIELD);
 
   public TestResultRow(
-      Map<String, String> rawRow, ResultsUploaderCachingService resultsUploaderCachingService) {
+      Map<String, String> rawRow,
+      ResultsUploaderCachingService resultsUploaderCachingService,
+      FeatureFlagsConfig featureFlagsConfig) {
     this(rawRow);
     this.resultsUploaderCachingService = resultsUploaderCachingService;
+    this.featureFlagsConfig = featureFlagsConfig;
   }
 
   public TestResultRow(Map<String, String> rawRow) {
@@ -367,7 +446,7 @@ public class TestResultRow implements FileRow {
       String equipmentModelName, String testPerformedCode) {
 
     if (validModelTestPerformedCombination(equipmentModelName, testPerformedCode)
-        || validFluOnlyTestPerformedLoinc(testPerformedCode)) {
+        || validDiseaseTestPerformedLoinc(testPerformedCode)) {
       return emptyList();
     }
 
@@ -384,8 +463,12 @@ public class TestResultRow implements FileRow {
             .build());
   }
 
-  private boolean validFluOnlyTestPerformedLoinc(String testPerformedCode) {
-    return testPerformedCode != null && fluOnlyTestPerformedLoinc.containsKey(testPerformedCode);
+  private boolean validDiseaseTestPerformedLoinc(String testPerformedCode) {
+    if (testPerformedCode == null) {
+      return false;
+    }
+    String disease = diseaseSpecificLoincMap.get(testPerformedCode);
+    return disease != null && (!RSV_NAME.equals(disease) || featureFlagsConfig.isRsvEnabled());
   }
 
   private boolean validModelTestPerformedCombination(

@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
+import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -76,6 +78,7 @@ class FileValidatorTest {
   FileValidator<PatientUploadRow> patientBulkUploadFileValidator =
       new FileValidator<>(PatientUploadRow::new);
   FileValidator<TestResultRow> testResultFileValidator;
+  @Mock FeatureFlagsConfig featureFlagsConfig;
 
   @BeforeEach
   public void setup() {
@@ -85,7 +88,8 @@ class FileValidatorTest {
     when(resultsUploaderCachingService.getSpecimenTypeNameToSNOMEDMap())
         .thenReturn(Map.of("nasal swab", "000111222"));
     testResultFileValidator =
-        new FileValidator<>(row -> new TestResultRow(row, resultsUploaderCachingService));
+        new FileValidator<>(
+            row -> new TestResultRow(row, resultsUploaderCachingService, featureFlagsConfig));
   }
 
   @Test
@@ -296,6 +300,30 @@ class FileValidatorTest {
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
     assertThat(errors).isEmpty();
+  }
+
+  @Test
+  void testResults_validFile_rsvOnly() {
+    // GIVEN
+    when(featureFlagsConfig.isRsvEnabled()).thenReturn(true);
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-rsv-only.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).isEmpty();
+  }
+
+  @Test
+  void testResults_validFile_rsvDisabled() {
+    // GIVEN
+    when(featureFlagsConfig.isRsvEnabled()).thenReturn(false);
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-rsv-only.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).hasSize(1);
+    assertThat(errors.get(0).getMessage())
+        .isEqualTo("Invalid equipment_model_name and test_performed_code combination");
   }
 
   @Test
