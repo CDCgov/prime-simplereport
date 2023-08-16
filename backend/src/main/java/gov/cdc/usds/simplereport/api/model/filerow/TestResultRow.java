@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.model.filerow;
 import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_A_AND_B_NAME;
 import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_A_NAME;
 import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_B_NAME;
+import static gov.cdc.usds.simplereport.service.DiseaseService.FLU_RNA_NAME;
 import static gov.cdc.usds.simplereport.service.DiseaseService.RSV_NAME;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ITEM_SCOPE;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
@@ -177,7 +178,7 @@ public class TestResultRow implements FileRow {
           .put("50697-2", FLU_A_NAME)
           .put("5229-0", FLU_A_NAME)
           .put("5230-8", FLU_B_NAME)
-          .put("54243-1", RSV_NAME)
+          .put("54243-1", FLU_RNA_NAME)
           .put("55463-4", FLU_A_NAME)
           .put("55464-2", FLU_A_NAME)
           .put("55465-9", FLU_A_NAME)
