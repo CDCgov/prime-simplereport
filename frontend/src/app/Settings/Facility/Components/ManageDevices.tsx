@@ -25,7 +25,7 @@ const ManageDevices: React.FC<Props> = ({
 }) => {
   const getDeviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
-      label: device.name,
+      label: device.model,
       value: device.internalId,
     }))
   );
