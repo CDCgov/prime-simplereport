@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
+import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -219,8 +220,8 @@ public class BulkUploadResultsToFhir {
                 .dob(LocalDate.parse(row.getPatientDob().getValue(), DATE_TIME_FORMATTER))
                 .address(patientAddr)
                 .country(DEFAULT_COUNTRY)
-                .race(row.getPatientRace().getValue())
-                .ethnicity(row.getPatientEthnicity().getValue())
+                .race(getRaceLiteral(row.getPatientRace().getValue()))
+                .ethnicity(getEthnicityLiteral(row.getPatientEthnicity().getValue()))
                 .tribalAffiliations(new ArrayList<>())
                 .build());
 
@@ -425,6 +426,20 @@ public class BulkUploadResultsToFhir {
             .gitProperties(gitProperties)
             .processingId(processingModeCode)
             .build());
+  }
+
+  private String getEthnicityLiteral(String input) {
+    if (!input.matches(ALPHABET_REGEX)) {
+      return PersonUtils.ETHNICITY_MAP.get(input).get(1);
+    }
+    return input;
+  }
+
+  private String getRaceLiteral(String input) {
+    if (!input.matches(ALPHABET_REGEX)) {
+      return PersonUtils.raceMap.get(input);
+    }
+    return input;
   }
 
   private String getTestResultSnomed(String input) {

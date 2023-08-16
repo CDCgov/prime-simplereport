@@ -660,21 +660,38 @@ public class PersonUtils {
     return tribeCodes;
   }
 
-  public static final Map<String, String> raceMap =
-      Map.of(
-          "native", "1002-5",
-          "asian", "2028-9",
-          "black", "2054-5",
-          "pacific", "2076-8",
-          "white", "2106-3",
-          "other", "2131-1",
-          "unknown", MappingConstants.UNK_CODE,
-          "refused", MappingConstants.ASKED_BUT_UNKNOWN_CODE // Asked, but unknown
-          );
+  public static final Map<String, String> raceMap = new HashMap<>();
+
+  static {
+    raceMap.put("native", "1002-5");
+    raceMap.put("1002-5", "native");
+    raceMap.put("american indian or alaska native", "1002-5");
+    raceMap.put("asian", "2028-9");
+    raceMap.put("2028-9", "asian");
+    raceMap.put("black", "2054-5");
+    raceMap.put("2054-5", "black");
+    raceMap.put("black or african american", "2054-5");
+    raceMap.put("pacific", "2076-8");
+    raceMap.put("2076-8", "pacific");
+    raceMap.put("native hawaiian or other pacific islander", "2076-8");
+    raceMap.put("white", "2106-3");
+    raceMap.put("2106-3", "white");
+    raceMap.put("other", "2131-1");
+    raceMap.put("2131-1", "other");
+    raceMap.put("unknown", MappingConstants.UNK_CODE);
+    raceMap.put("unk", MappingConstants.UNK_CODE);
+    raceMap.put("refused", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
+    raceMap.put("ask, but unknown", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
+    raceMap.put("asku", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
+  }
 
   public static final Map<String, List<String>> ETHNICITY_MAP =
       Map.of(
           "hispanic", List.of("H", "Hispanic or Latino"),
+          "hispanic or latino", List.of("H", "Hispanic or Latino"),
+          "2135-2", List.of("H", "Hispanic or Latino"),
           "not_hispanic", List.of("N", "Not Hispanic or Latino"),
+          "not hispanic or latino", List.of("N", "Not Hispanic or Latino"),
+          "2186-5", List.of("N", "Not Hispanic or Latino"),
           "refused", List.of("U", "unknown"));
 }

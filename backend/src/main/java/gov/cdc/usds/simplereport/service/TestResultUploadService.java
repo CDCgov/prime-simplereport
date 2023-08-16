@@ -363,6 +363,10 @@ public class TestResultUploadService {
                 ndJson.append(bundle).append(System.lineSeparator());
               }
 
+              System.out.println("-----");
+              System.out.println(ndJson.toString().trim());
+              System.out.println("-----");
+
               UploadResponse response;
               try {
                 response =
