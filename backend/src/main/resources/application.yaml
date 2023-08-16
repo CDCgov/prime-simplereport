@@ -152,4 +152,4 @@ features:
   hivEnabled: true
 slack:
   hook:
-    token: ${SLACK_HOOK_TOKEN}
+    token: ${SLACK_HOOK_TOKEN:foo}
