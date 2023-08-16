@@ -35,12 +35,14 @@ public class SlackConfigService {
 
   public boolean makeEscalationRequest() {
     log.info("making escalation request");
+    String response = "";
     try {
       String postUrl = url + token;
-      restTemplate.postForObject(postUrl, entity, String.class);
-      return true;
+      response = restTemplate.postForObject(postUrl, entity, String.class);
+      if (response.contains("ok")) return true;
+      throw new RestClientException("Slack escalation didn't return ok response");
     } catch (RestClientException e) {
-      log.error("Slack returned unexpected: " + e);
+      log.error("Slack returned unexpected response: " + response);
       return false;
     }
   }
