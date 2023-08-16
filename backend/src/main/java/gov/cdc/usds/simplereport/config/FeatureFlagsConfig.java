@@ -26,7 +26,6 @@ public class FeatureFlagsConfig {
 
   private boolean multiplexEnabled;
   private boolean hivEnabled;
-  private boolean manageUserEnabled;
 
   @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
@@ -38,7 +37,6 @@ public class FeatureFlagsConfig {
     switch (flagName) {
       case "multiplexEnabled" -> setMultiplexEnabled(flagValue);
       case "hivEnabled" -> setHivEnabled(flagValue);
-      case "manageUserEnabled" -> setManageUserEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }

@@ -17,7 +17,6 @@ interface Props {
 
 const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
   const hivEnabled = useFeature("hivEnabled") as boolean;
-  const manageUserEnabled = useFeature("manageUserEnabled") as boolean;
 
   if (!isAdmin) {
     return <Navigate to="/queue" />;
@@ -41,9 +40,7 @@ const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
         path="tenant-data-access"
         element={<TenantDataAccessFormContainer />}
       />
-      {manageUserEnabled && (
-        <Route path="manage-users" element={<AdminManageUser />} />
-      )}
+      <Route path="manage-users" element={<AdminManageUser />} />
       {hivEnabled && (
         <Route path="hiv-csv-upload" element={<HivUploadForm />} />
       )}

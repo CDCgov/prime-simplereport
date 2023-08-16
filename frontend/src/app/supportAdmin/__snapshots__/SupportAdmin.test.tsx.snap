@@ -107,7 +107,16 @@ exports[`SupportAdming loads menu categories 1`] = `
                 </h2>
                 <ul
                   class="usa-list padding-left-2"
-                />
+                >
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-users"
+                    >
+                      Manage users
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -225,7 +234,16 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                 </h2>
                 <ul
                   class="usa-list padding-left-2"
-                />
+                >
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-users"
+                    >
+                      Manage users
+                    </a>
+                  </li>
+                </ul>
               </div>
               <div
                 class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
