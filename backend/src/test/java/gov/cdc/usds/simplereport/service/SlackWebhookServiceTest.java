@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.service.supportescalation.SlackConfigService;
 import gov.cdc.usds.simplereport.service.supportescalation.SlackWebhookService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
-import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -21,7 +20,7 @@ class SlackWebhookServiceTest extends BaseServiceTest<SlackWebhookService> {
 
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
-  void sendSlackEscalationMessage_success() throws IOException {
+  void sendSlackEscalationMessage_success() {
     // GIVEN
     when(config.makeEscalationRequest()).thenReturn(true);
 
