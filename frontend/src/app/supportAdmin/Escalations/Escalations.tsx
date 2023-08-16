@@ -4,9 +4,10 @@ import { useSendSupportEscalationMutation } from "../../../generated/graphql";
 import Button from "../../commonComponents/Button/Button";
 import { showSuccess } from "../../utils/srToast";
 import { useDocumentTitle } from "../../utils/hooks";
+import { escalationPageTitle } from "../pageTitles";
 
 export const Escalations = () => {
-  useDocumentTitle("Escalations");
+  useDocumentTitle(escalationPageTitle);
   const [escalateToSlack] = useSendSupportEscalationMutation();
 
   return (
