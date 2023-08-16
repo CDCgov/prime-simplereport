@@ -24,7 +24,7 @@ import UserInfoTab from "../../Settings/Users/UserInfoTab";
 import { UserSearch } from "./UserSearch";
 
 const userNotFoundError = (
-  <div className={"maxw-mobile-lg margin-x-auto padding-bottom-205"}>
+  <div className={"padding-x-3 padding-bottom-205"}>
     <h2>User not found</h2>
     Please check the email address and try the search again, or contact the
     SimpleReport team for help.
@@ -32,7 +32,7 @@ const userNotFoundError = (
 );
 
 const userIdentityError = (
-  <div className={"maxw-mobile-lg margin-x-auto padding-bottom-205"}>
+  <div className={"padding-x-3 padding-bottom-205"}>
     <h2>Can't determine user identity</h2>
     The email address isn't in Okta and can't be displayed. Please escalate the
     issue to the SimpleReport team.
@@ -40,7 +40,7 @@ const userIdentityError = (
 );
 
 const genericError = (
-  <div className={"maxw-mobile-lg margin-x-auto padding-bottom-205"}>
+  <div className={"padding-x-3 padding-bottom-205"}>
     <h2>Something went wrong</h2>
     Please try again or contact the SimpleReport team for help.
   </div>

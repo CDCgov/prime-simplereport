@@ -135,7 +135,7 @@ exports[`Admin manage users search error displays generic error 1`] = `
             class="prime-container card-container"
           >
             <div
-              class="maxw-mobile-lg margin-x-auto padding-bottom-205"
+              class="padding-x-3 padding-bottom-205"
             >
               <h2>
                 Something went wrong
@@ -285,7 +285,7 @@ exports[`Admin manage users search error displays user is an admin 1`] = `
             class="prime-container card-container"
           >
             <div
-              class="maxw-mobile-lg margin-x-auto padding-bottom-205"
+              class="padding-x-3 padding-bottom-205"
             >
               <h2>
                 Can't determine user identity
@@ -435,7 +435,7 @@ exports[`Admin manage users search error displays user not found 1`] = `
             class="prime-container card-container"
           >
             <div
-              class="maxw-mobile-lg margin-x-auto padding-bottom-205"
+              class="padding-x-3 padding-bottom-205"
             >
               <h2>
                 User not found
