@@ -359,12 +359,12 @@ describe("Admin manage users", () => {
       expect(
         await screen.findByText("User account removed for Barnes, Ben Billy")
       ).toBeInTheDocument();
-      expect(screen.getByText("Edit name")).toBeDisabled();
+      expect(await screen.findByText("Edit name")).toBeDisabled();
       expect(screen.getByText("Edit email")).toBeDisabled();
       expect(screen.getByText("Send password reset email")).toBeDisabled();
       expect(screen.getByText("Reset MFA")).toBeDisabled();
       expect(screen.queryByText("Delete user")).not.toBeInTheDocument();
-      expect(screen.getByText("Account deleted.")).toBeInTheDocument();
+      expect(screen.getByText("Account deleted")).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
     });
     it("reactivate user handler", async () => {

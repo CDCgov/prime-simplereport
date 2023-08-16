@@ -161,7 +161,11 @@ export const AdminManageUser: React.FC = () => {
         foundUser?.lastName
       );
 
-      setFoundUser({ ...foundUser, isDeleted: true } as SettingsUser);
+      setFoundUser({
+        ...foundUser,
+        isDeleted: true,
+        status: OktaUserStatus.DEPROVISIONED,
+      } as SettingsUser);
       showSuccess("", `User account removed for ${fullName}`);
     });
   };
