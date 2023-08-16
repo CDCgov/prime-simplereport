@@ -134,8 +134,6 @@ export function formatUserStatus(status?: string | null) {
     return "Account deactivated";
   } else if (status === OktaUserStatus.PROVISIONED) {
     return "Account pending";
-  } else if (status === OktaUserStatus.DEPROVISIONED) {
-    return "Account deleted";
   } else {
     return capitalizeText(status);
   }

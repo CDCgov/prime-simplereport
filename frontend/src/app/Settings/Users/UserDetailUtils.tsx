@@ -17,34 +17,32 @@ export const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({
   user,
 }) => {
   function getUserStatusText() {
-    switch (user.status) {
-      case OktaUserStatus.ACTIVE:
-        return (
-          <span className="top-user-status padding-left-0">
-            {capitalizeText(user.role ?? "")}
+    if (user.status === OktaUserStatus.ACTIVE) {
+      return (
+        <span className="top-user-status padding-left-0">
+          {capitalizeText(user.role ?? "")}
+        </span>
+      );
+    } else if (user.status === OktaUserStatus.PROVISIONED) {
+      return (
+        <>
+          <PendingIcon />
+          <span className="top-user-status">
+            {formatUserStatus(user.status)}
           </span>
-        );
-      case OktaUserStatus.PROVISIONED:
-        return (
-          <>
-            <PendingIcon />
-            <span className="top-user-status">
-              {formatUserStatus(user.status)}
-            </span>
-          </>
-        );
-      case OktaUserStatus.DEPROVISIONED:
-      case OktaUserStatus.SUSPENDED:
-        return (
-          <>
-            <DeactivatedIcon />
-            <span className="top-user-status">
-              {formatUserStatus(user.status)}
-            </span>
-          </>
-        );
-      default:
-        return "";
+        </>
+      );
+    } else if (user.status === OktaUserStatus.SUSPENDED) {
+      return (
+        <>
+          <DeactivatedIcon />
+          <span className="top-user-status">
+            {user.isDeleted ? "Account deleted" : formatUserStatus(user.status)}
+          </span>
+        </>
+      );
+    } else {
+      return "";
     }
   }
 
@@ -70,54 +68,52 @@ export const SpecialStatusNotice: React.FC<{
     useState(false);
 
   function userStatusInfo() {
-    switch (user.status ?? "") {
-      case OktaUserStatus.SUSPENDED:
-        return (
-          <>
-            <div className="status-tagline">
-              Users are deactivated after 60 days of inactivity.
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowReactivateUserModal(true)}
-              label="Activate user"
-              disabled={isUpdating}
+    if (user.status === OktaUserStatus.SUSPENDED && !user.isDeleted) {
+      return (
+        <>
+          <div className="status-tagline">
+            Users are deactivated after 60 days of inactivity.
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowReactivateUserModal(true)}
+            label="Activate user"
+            disabled={isUpdating}
+          />
+          {showReactivateUserModal && (
+            <ReactivateUserModal
+              user={user}
+              onClose={() => updateShowReactivateUserModal(false)}
+              onReactivateUser={handleReactivateUser}
             />
-            {showReactivateUserModal && (
-              <ReactivateUserModal
-                user={user}
-                onClose={() => updateShowReactivateUserModal(false)}
-                onReactivateUser={handleReactivateUser}
-              />
-            )}
-          </>
-        );
-      case OktaUserStatus.PROVISIONED:
-        return (
-          <>
-            <div className="status-tagline">
-              This user hasn’t set up their account.
-            </div>
-            <Button
-              variant="outline"
-              className="margin-left-auto margin-bottom-1"
-              onClick={() => updateShowResendUserActivationEmailModal(true)}
-              label="Send account setup email"
-              disabled={isUpdating}
+          )}
+        </>
+      );
+    } else if (user.status === OktaUserStatus.PROVISIONED) {
+      return (
+        <>
+          <div className="status-tagline">
+            This user hasn’t set up their account.
+          </div>
+          <Button
+            variant="outline"
+            className="margin-left-auto margin-bottom-1"
+            onClick={() => updateShowResendUserActivationEmailModal(true)}
+            label="Send account setup email"
+            disabled={isUpdating}
+          />
+          {showResendUserActivationEmailModal && (
+            <ResendActivationEmailModal
+              user={user}
+              onClose={() => updateShowResendUserActivationEmailModal(false)}
+              onResendActivationEmail={handleResendUserActivationEmail}
             />
-            {showResendUserActivationEmailModal && (
-              <ResendActivationEmailModal
-                user={user}
-                onClose={() => updateShowResendUserActivationEmailModal(false)}
-                onResendActivationEmail={handleResendUserActivationEmail}
-              />
-            )}
-          </>
-        );
-      default:
-        return null;
+          )}
+        </>
+      );
     }
+    return;
   }
 
   return (
