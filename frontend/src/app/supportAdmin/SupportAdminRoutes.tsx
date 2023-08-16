@@ -8,7 +8,7 @@ import TenantDataAccessFormContainer from "./TenantDataAccess/TenantDataAccessFo
 import SupportAdmin from "./SupportAdmin";
 import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganizationsContainer";
 import ManageDeviceTypeFormContainer from "./DeviceType/ManageDeviceTypeFormContainer";
-import UnarchivePatientContainer from "./UnarchivePatients/UnarchivePatientContainer";
+import UnarchivePatient from "./UnarchivePatients/UnarchivePatient";
 import { HivUploadForm } from "./HIVUpload/HivUploadForm";
 import { AdminManageUser } from "./ManageUsers/AdminManageUser";
 import ManageFacility from "./ManageFacility/ManageFacility";
@@ -46,9 +46,8 @@ const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
       <Route path="manage-facility" element={<ManageFacility />} />
       <Route path="escalate-to-engineering" element={<Escalations />} />
       <Route path="manage-users" element={<AdminManageUser />} />
-      <Route path={"unarchive-patient"}>
-        <Route path=":pageNumber" element={<UnarchivePatientContainer />} />
-        <Route path="" element={<UnarchivePatientContainer />} />
+      <Route path="unarchive-patient" element={<UnarchivePatient />}>
+        <Route path=":pageNumber" element={<UnarchivePatient />} />
       </Route>
       {hivEnabled && (
         <Route path="hiv-csv-upload" element={<HivUploadForm />} />
