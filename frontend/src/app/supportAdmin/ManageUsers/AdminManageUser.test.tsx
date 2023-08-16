@@ -83,7 +83,7 @@ const axe = configureAxe({
     region: { enabled: false },
   },
 });
-describe("Admin manage user", () => {
+describe("Admin manage users", () => {
   it("search results matches snapshot", async () => {
     renderComponent(validResponse);
     await searchForValidUser();
