@@ -15,28 +15,28 @@ interface UserInfoTabProps {
   isUserActive: boolean;
   isUserSelf?: boolean;
   isUpdating: boolean;
-  handleEditUserName: (
+  onEditUserName: (
     userId: string,
     firstName: string,
     middleName: string,
     lastName: string,
     suffix: string
   ) => void;
-  handleEditUserEmail: (userId: string, emailAddress: string) => void;
-  handleResetUserPassword: (userId: string) => void;
-  handleResetUserMfa: (userId: string) => void;
-  handleDeleteUser: (userId: string) => void;
+  onEditUserEmail: (userId: string, emailAddress: string) => void;
+  onResetUserPassword: (userId: string) => void;
+  onResetUserMfa: (userId: string) => void;
+  onDeleteUser: (userId: string) => void;
 }
 const UserInfoTab: React.FC<UserInfoTabProps> = ({
   user,
   isUserActive,
   isUserSelf,
   isUpdating,
-  handleEditUserName,
-  handleEditUserEmail,
-  handleResetUserPassword,
-  handleResetUserMfa,
-  handleDeleteUser,
+  onEditUserName,
+  onEditUserEmail,
+  onResetUserPassword,
+  onResetUserMfa,
+  onDeleteUser,
 }) => {
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
@@ -163,35 +163,35 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
         <DeleteUserModal
           user={user}
           onClose={() => updateShowDeleteUserModal(false)}
-          onDeleteUser={handleDeleteUser}
+          onDeleteUser={onDeleteUser}
         />
       )}
       {showResetPasswordModal && (
         <ResetUserPasswordModal
           user={user}
           onClose={() => updateShowResetPasswordModal(false)}
-          onResetPassword={handleResetUserPassword}
+          onResetPassword={onResetUserPassword}
         />
       )}
       {showResetMfaModal && (
         <ResetUserMfaModal
           user={user}
           onClose={() => updateShowResetMfaModal(false)}
-          onResetMfa={handleResetUserMfa}
+          onResetMfa={onResetUserMfa}
         />
       )}
       {showEditUserNameModal && (
         <EditUserNameModal
           user={user}
           onClose={() => updateEditUserNameModal(false)}
-          onEditUserName={handleEditUserName}
+          onEditUserName={onEditUserName}
         />
       )}
       {showEditUserEmailModal && (
         <EditUserEmailModal
           user={user}
           onClose={() => updateEditUserEmailModal(false)}
-          onEditUserEmail={handleEditUserEmail}
+          onEditUserEmail={onEditUserEmail}
         />
       )}
     </>

@@ -14,8 +14,8 @@ interface FacilityAccessTabProps {
   user: SettingsUser;
   isUpdating: boolean;
   isUserEdited: boolean;
-  handleUpdateUser: () => void;
-  updateUser: <K extends keyof SettingsUser>(
+  onUpdateUser: () => void;
+  updateLocalUserState: <K extends keyof SettingsUser>(
     key: K,
     value: SettingsUser[K]
   ) => void;
@@ -26,8 +26,8 @@ const FacilityAccessTab: React.FC<FacilityAccessTabProps> = ({
   user,
   isUpdating,
   isUserEdited,
-  updateUser,
-  handleUpdateUser,
+  updateLocalUserState,
+  onUpdateUser,
   loggedInUser,
   allFacilities,
 }) => {
@@ -47,19 +47,19 @@ const FacilityAccessTab: React.FC<FacilityAccessTabProps> = ({
         <UserRoleSettingsForm
           activeUser={user}
           loggedInUser={loggedInUser}
-          onUpdateUser={updateUser}
+          onUpdateUser={updateLocalUserState}
         />
         <UserFacilitiesSettingsForm
           activeUser={user}
           allFacilities={allFacilities}
-          onUpdateUser={updateUser}
+          onUpdateUser={updateLocalUserState}
         />
         <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
           <Button
             type="button"
             variant="outline"
             className="margin-left-auto"
-            onClick={handleUpdateUser}
+            onClick={onUpdateUser}
             label={isUpdating ? "Saving..." : "Save changes"}
             disabled={
               !user.role ||

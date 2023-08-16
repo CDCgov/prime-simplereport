@@ -132,7 +132,7 @@ const ManageUsers: React.FC<Props> = ({
   }, [activeUser, queryUserWithPermissions]);
 
   // only updates the local state
-  const updateUser: UpdateUser = (key, value) => {
+  const updateLocalUserState: UpdateUser = (key, value) => {
     if (activeUser && userWithPermissions) {
       updateUserWithPermissions({
         ...userWithPermissions,
@@ -156,7 +156,7 @@ const ManageUsers: React.FC<Props> = ({
   };
 
   // proceed with changing the active user
-  const onContinueChangeActiveUser = () => {
+  const handleContinueChangeActiveUser = () => {
     updateIsUserEdited(false);
     updateShowInProgressModal(false);
     if (nextActiveUserId) {
@@ -481,29 +481,28 @@ const ManageUsers: React.FC<Props> = ({
                   isUserActive={isUserActive(user)}
                   isUserSelf={isUserSelf(user, loggedInUser)}
                   isUpdating={isUpdating}
-                  handleEditUserName={handleEditUserName}
-                  handleEditUserEmail={handleEditUserEmail}
-                  handleResetUserPassword={handleResetUserPassword}
-                  handleResetUserMfa={handleResetUserMfa}
-                  handleDeleteUser={handleDeleteUser}
+                  onEditUserName={handleEditUserName}
+                  onEditUserEmail={handleEditUserEmail}
+                  onResetUserPassword={handleResetUserPassword}
+                  onResetUserMfa={handleResetUserMfa}
+                  onDeleteUser={handleDeleteUser}
                 />
               ) : (
                 <FacilityAccessTab
                   user={user}
                   isUpdating={isUpdating}
                   isUserEdited={isUserEdited}
-                  handleUpdateUser={handleUpdateUser}
-                  updateUser={updateUser}
+                  onUpdateUser={handleUpdateUser}
+                  updateLocalUserState={updateLocalUserState}
                   loggedInUser={loggedInUser}
                   allFacilities={allFacilities}
                 />
               )}
             </div>
-
             {showInProgressModal && (
               <InProgressModal
                 onClose={() => updateShowInProgressModal(false)}
-                onContinue={() => onContinueChangeActiveUser()}
+                onContinue={() => handleContinueChangeActiveUser()}
               />
             )}
           </div>

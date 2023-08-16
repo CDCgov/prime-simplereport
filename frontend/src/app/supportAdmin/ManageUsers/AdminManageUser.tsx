@@ -320,11 +320,11 @@ export const AdminManageUser: React.FC = () => {
                     user={foundUser}
                     isUserActive={isUserActive(foundUser)}
                     isUpdating={isUpdating}
-                    handleEditUserName={handleEditUserName}
-                    handleEditUserEmail={handleEditUserEmail}
-                    handleResetUserPassword={handleResetUserPassword}
-                    handleResetUserMfa={handleResetUserMfa}
-                    handleDeleteUser={handleDeleteUser}
+                    onEditUserName={handleEditUserName}
+                    onEditUserEmail={handleEditUserEmail}
+                    onResetUserPassword={handleResetUserPassword}
+                    onResetUserMfa={handleResetUserMfa}
+                    onDeleteUser={handleDeleteUser}
                   />
                 ) : (
                   <div></div>
