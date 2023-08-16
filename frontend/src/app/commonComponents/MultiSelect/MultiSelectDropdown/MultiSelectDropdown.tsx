@@ -57,7 +57,7 @@ interface MultiSelectDropDownProps {
   ariaInvalid?: boolean;
   registrationProps?: RegistrationProps;
   DropdownComponent?: (props: any) => JSX.Element;
-  getDropdownItemsByQuery?: (query: string) => any[];
+  getFilteredDropdownComponentItems?: (query: string) => any[];
 }
 
 interface InputProps {
@@ -212,7 +212,7 @@ export const MultiSelectDropdown = ({
   ariaInvalid,
   registrationProps,
   DropdownComponent,
-  getDropdownItemsByQuery,
+  getFilteredDropdownComponentItems,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -344,10 +344,10 @@ export const MultiSelectDropdown = ({
           &nbsp;
         </button>
       </span>
-      {DropdownComponent && getDropdownItemsByQuery ? (
+      {DropdownComponent && getFilteredDropdownComponentItems ? (
         <>
           <DropdownComponent
-            items={getDropdownItemsByQuery(state.inputValue)}
+            items={getFilteredDropdownComponentItems(state.inputValue)}
             setSelectedItem={selectOption}
             shouldShowSuggestions={state.isOpen}
             queryString={state.inputValue}

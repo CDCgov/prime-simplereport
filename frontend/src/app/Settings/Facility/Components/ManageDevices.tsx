@@ -24,7 +24,7 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
-  const getDeviceTypeOptions = Array.from(
+  const deviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
       label: device.model,
       value: device.internalId,
@@ -37,9 +37,9 @@ const ManageDevices: React.FC<Props> = ({
     return (deviceTypes ?? []).filter((d) => deviceIds.includes(d.internalId));
   };
 
-  const getDevicesByQuery = (query: string) => {
-    const deviceIds = getDeviceTypeOptions.map((d) => d.value);
-    return searchFacilityFormDevices(getFilteredDevices(deviceIds), query);
+  const searchDevicesByInput = (inputValue: string) => {
+    const deviceIds = deviceTypeOptions.map((d) => d.value);
+    return searchFacilityFormDevices(getFilteredDevices(deviceIds), inputValue);
   };
 
   return (
@@ -59,13 +59,13 @@ const ManageDevices: React.FC<Props> = ({
           label="Device types"
           name="deviceTypes"
           onChange={onChange}
-          options={getDeviceTypeOptions}
+          options={deviceTypeOptions}
           initialSelectedValues={formCurrentValues.devices}
           validationStatus={errors?.devices?.type ? "error" : "success"}
           required
           placeholder="Search for a device to add it"
           DropdownComponent={DeviceSearchResults}
-          getDropdownItemsByQuery={getDevicesByQuery}
+          getFilteredDropdownComponentItems={searchDevicesByInput}
           errorMessage={errors?.devices?.message}
           registrationProps={registrationProps}
         />
