@@ -23,11 +23,14 @@ export const Escalations = () => {
             <div className="usa-card__body margin-top-1">
               <div className="grid-row grid-gap margin-top-2">
                 <div className="tablet:grid-col">
-                  <p>
+                  <p className="usa-prose">
                     Use the below button to notify the SimpleReport engineering
                     team about a tier 2 escalation. Make sure you've filled out
                     information about the escalation in{" "}
-                    <a href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61">
+                    <a
+                      target="_blank"
+                      href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61" rel="noreferrer"
+                    >
                       the Smartsheet tracker
                     </a>
                   </p>

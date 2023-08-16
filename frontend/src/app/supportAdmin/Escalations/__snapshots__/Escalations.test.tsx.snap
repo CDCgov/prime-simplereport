@@ -40,11 +40,14 @@ exports[`Escalations Renders the page 1`] = `
               <div
                 class="tablet:grid-col"
               >
-                <p>
+                <p
+                  class="usa-prose"
+                >
                   Use the below button to notify the SimpleReport engineering team about a tier 2 escalation. Make sure you've filled out information about the escalation in
                    
                   <a
                     href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61"
+                    target="_blank"
                   >
                     the Smartsheet tracker
                   </a>
