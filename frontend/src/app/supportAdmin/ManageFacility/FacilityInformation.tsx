@@ -65,7 +65,7 @@ const FacilityInformation: React.FC<FacilityInformationProps> = ({
         them. Patients only added to this facility also need to be reassigned.
       </p>
       <p className="margin-top-3">
-        There are{" "}
+        {usersCount === 1 ? "There is " : "There are "}
         <strong>
           {usersCount}
           {usersCount === 1 ? " user" : " users"}

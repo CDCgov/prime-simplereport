@@ -9,6 +9,7 @@ import {
 } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { showSuccess } from "../../utils/srToast";
+import { manageFacility } from "../pageTitles";
 
 import FacilitySelectFilter from "./FacilitySelectFilter";
 import FacilityInformation from "./FacilityInformation";
@@ -38,7 +39,7 @@ export const initialState: ManageFacilityState = {
 };
 
 const ManageFacility = () => {
-  useDocumentTitle("Manage Facility");
+  useDocumentTitle(manageFacility);
   const [localState, updateLocalState] =
     useState<ManageFacilityState>(initialState);
 
@@ -63,10 +64,12 @@ const ManageFacility = () => {
   ] = useGetFacilitiesByOrgIdLazyQuery();
 
   const facilitiesOptions: Option[] =
-    facilitiesResponse?.organization?.facilities.map((facility) => ({
-      value: facility.id,
-      label: facility.name,
-    })) ?? [];
+    localState.orgId === "" || !facilitiesResponse?.organization?.facilities
+      ? []
+      : facilitiesResponse?.organization?.facilities.map((facility) => ({
+          value: facility.id,
+          label: facility.name,
+        }));
 
   /**
    * Fetch facility stats
