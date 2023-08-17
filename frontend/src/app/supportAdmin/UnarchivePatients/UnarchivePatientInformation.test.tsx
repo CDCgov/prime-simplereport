@@ -113,6 +113,9 @@ describe("unarchive patient information", () => {
       screen.getByText("Next").closest("a")?.getAttribute("href")
     ).toContain("/admin/unarchive-patient/2");
     // check results
+    expect(
+      screen.getByText("Showing 1-2 of 3", { collapseWhitespace: false })
+    ).toBeInTheDocument();
     checkTableHeadersExist();
     checkPatientResultRows();
   });

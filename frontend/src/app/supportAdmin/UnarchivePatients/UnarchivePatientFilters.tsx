@@ -9,7 +9,6 @@ import { unarchivePatientTitle } from "../pageTitles";
 import { UnarchivePatientState } from "./UnarchivePatient";
 
 interface UnarchivePatientProps {
-  currentPage: number;
   orgOptions: Option<string>[];
   onSelectOrg: (orgInternalId: string) => void;
   onSelectFacility: (id: string) => void;
@@ -19,7 +18,6 @@ interface UnarchivePatientProps {
   unarchivePatientState: UnarchivePatientState;
 }
 const UnarchivePatientFilters = ({
-  currentPage,
   orgOptions,
   onSelectOrg,
   onSelectFacility,
@@ -34,47 +32,17 @@ const UnarchivePatientFilters = ({
     formState: { errors },
   } = useForm({});
 
-  const displayPagination = () => {
-    if (
-      !loading &&
-      unarchivePatientState.patients &&
-      unarchivePatientState.patientsCount
-    ) {
-      return (
-        unarchivePatientState.patientsCount > 0 &&
-        unarchivePatientState.patients.length > 0
-      );
-    } else {
-      return false;
-    }
-  };
-
   return (
     <div className="prime-container card-container">
       <div className="usa-card__header">
         <div className="desktop:display-flex grid-row width-full">
           <div className="desktop:grid-col-6 desktop:display-flex desktop:flex-row flex-align-center">
             <h1 className="font-sans-lg margin-y-0">{unarchivePatientTitle}</h1>
-            <span className="sr-showing-patients-on-page desktop:margin-left-4">
-              {loading && "Loading..."}
-              {displayPagination() && (
-                <>
-                  Showing{" "}
-                  {(currentPage - 1) * unarchivePatientState.entriesPerPage + 1}
-                  -
-                  {Math.min(
-                    unarchivePatientState.entriesPerPage * currentPage,
-                    unarchivePatientState.patientsCount ?? 0
-                  )}{" "}
-                  of {unarchivePatientState.patientsCount}
-                </>
-              )}
-            </span>
           </div>
           <div className="mobile-lg:display-block mobile-lg:grid-col-6 desktop:display-flex flex-align-end flex-column">
             <Button
               icon={faSlidersH}
-              disabled={unarchivePatientState.orgId === "" || loading}
+              disabled={unarchivePatientState.orgId === ""}
               onClick={() => onClearFilter()}
               ariaLabel="Clear facility selection filters"
             >
@@ -94,7 +62,7 @@ const UnarchivePatientFilters = ({
               label="Organization"
               name="organization"
               value={unarchivePatientState.orgId}
-              defaultOption={"Select an organization"}
+              defaultOption={"- Select -"}
               defaultSelect={true}
               required={true}
               options={orgOptions}
@@ -113,7 +81,7 @@ const UnarchivePatientFilters = ({
             <Select
               label="Testing facility"
               name="facilities"
-              defaultOption={"Select a testing facility"}
+              defaultOption={"- Select -"}
               defaultSelect={true}
               required={true}
               value={unarchivePatientState.facilityId}

@@ -86,7 +86,6 @@ const UnarchivePatient = () => {
     loading: loadingOrgs,
     error,
   } = useGetOrganizationsQuery({
-    fetchPolicy: "no-cache",
     variables: { identityVerified: true },
   });
 
@@ -236,7 +235,6 @@ const UnarchivePatient = () => {
     <div className="prime-home flex-1">
       <div className="grid-container">
         <UnarchivePatientFilters
-          currentPage={currentPage}
           orgOptions={orgOptions}
           onSelectOrg={handleSelectOrganization}
           onSelectFacility={handleSelectFacility}

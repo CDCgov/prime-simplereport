@@ -52,7 +52,6 @@ describe("unarchive patient filters", () => {
     };
     render(
       <UnarchivePatientFilters
-        currentPage={1}
         orgOptions={mockOrgOptions}
         onSelectOrg={onSelectOrg}
         onSelectFacility={onSelectFacility}
@@ -67,7 +66,6 @@ describe("unarchive patient filters", () => {
     expect(
       screen.getByText("Testing facility is required")
     ).toBeInTheDocument();
-    expect(screen.getByText("Clear filters")).toBeDisabled();
   });
   it("displays no errors and calls event handlers when search fields are completed", async () => {
     let unarchivePatientState: UnarchivePatientState = {
@@ -81,7 +79,6 @@ describe("unarchive patient filters", () => {
     };
     render(
       <UnarchivePatientFilters
-        currentPage={1}
         orgOptions={mockOrgOptions}
         onSelectOrg={onSelectOrg}
         onSelectFacility={onSelectFacility}
@@ -106,15 +103,12 @@ describe("unarchive patient filters", () => {
       screen.queryByText("Testing facility is required")
     ).not.toBeInTheDocument();
     expect(onSearch).toHaveBeenCalledTimes(1);
-    expect(
-      screen.getByText("Showing 1-2 of 2", { collapseWhitespace: false })
-    ).toBeInTheDocument();
     await act(
       async () => await userEvent.click(screen.getByText("Clear filters"))
     );
     expect(onClearFilter).toHaveBeenCalledTimes(1);
   });
-  it("disables buttons and displays loading if patients are loading", async () => {
+  it("disables select options if patients are loading", async () => {
     let unarchivePatientState: UnarchivePatientState = {
       pageUrl: "/admin/unarchive-patient",
       entriesPerPage: 20,
@@ -126,7 +120,6 @@ describe("unarchive patient filters", () => {
     };
     render(
       <UnarchivePatientFilters
-        currentPage={1}
         orgOptions={mockOrgOptions}
         onSelectOrg={onSelectOrg}
         onSelectFacility={onSelectFacility}
@@ -138,8 +131,6 @@ describe("unarchive patient filters", () => {
     );
     expect(screen.getByLabelText("Organization *")).toBeDisabled();
     expect(screen.getByLabelText("Testing facility *")).toBeDisabled();
-    expect(screen.getByText("Clear filters")).toBeDisabled();
     expect(screen.getByText("Search")).toBeDisabled();
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 });

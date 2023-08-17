@@ -272,10 +272,10 @@ describe("Unarchive patient", () => {
       async () => await userEvent.click(screen.getByText("Clear filters"))
     );
     expect(screen.getByLabelText("Testing facility *")).toHaveDisplayValue(
-      "Select a testing facility"
+      "- Select -"
     );
     expect(screen.getByLabelText("Organization *")).toHaveDisplayValue(
-      "Select an organization"
+      "- Select -"
     );
     expect(
       screen.getByText(

@@ -111,6 +111,20 @@ const UnarchivePatientInformation = ({
           <h2 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0">
             {displayFacilityName()}
           </h2>
+          <div className="sr-showing-patients-on-page margin-top-3">
+            {loading && "Loading..."}
+            {displayPagination() && (
+              <>
+                Showing{" "}
+                {(currentPage - 1) * unarchivePatientState.entriesPerPage + 1}-
+                {Math.min(
+                  unarchivePatientState.entriesPerPage * currentPage,
+                  unarchivePatientState.patientsCount ?? 0
+                )}{" "}
+                of {unarchivePatientState.patientsCount}
+              </>
+            )}
+          </div>
           <div className=" sr-patient-list">
             <table className="usa-table usa-table--borderless width-full">
               <thead>
