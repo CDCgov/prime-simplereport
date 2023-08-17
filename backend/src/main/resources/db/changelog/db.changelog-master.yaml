@@ -5000,3 +5000,15 @@ databaseChangeLog:
               - column:
                   name: result
                   type: ${database.defaultSchemaName}.TEST_RESULT
+  - changeSet:
+      id: add-missing-header-to-test_result_upload_error
+      author: boban@skylight.digital
+      comment: add MISSING_HEADER to test_result_upload_error
+      changes:
+        - sql:
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'MISSING_HEADER';
+      rollback:
+        - sql:
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR REMOVE VALUE 'MISSING_HEADER';
