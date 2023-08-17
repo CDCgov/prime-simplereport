@@ -33,6 +33,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFIL
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -60,6 +61,7 @@ import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -926,10 +928,18 @@ public class FhirConverter {
       @NotNull TestEvent testEvent, GitProperties gitProperties, String processingId) {
 
     Date currentDate = dateGenerator.newDate();
+
     ZonedDateTime dateTested =
         testEvent.getDateTested() != null
             ? ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC)
             : null;
+
+    int testDuration =
+        Optional.ofNullable(testEvent.getDeviceType())
+            .map(DeviceType::getTestLength)
+            .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
+    ZonedDateTime specimenCollectionDate =
+        dateTested != null ? dateTested.minus(Duration.ofMinutes(testDuration)) : null;
 
     return createFhirBundle(
         CreateFhirBundleProps.builder()
@@ -940,7 +950,10 @@ public class FhirConverter {
             .device(convertToDevice(testEvent.getDeviceType()))
             .specimen(
                 convertToSpecimen(
-                    testEvent.getSpecimenType(), uuidGenerator.randomUUID(), null, null))
+                    testEvent.getSpecimenType(),
+                    uuidGenerator.randomUUID(),
+                    specimenCollectionDate,
+                    dateTested))
             .resultObservations(
                 convertToObservation(
                     testEvent.getResults(),

@@ -1441,7 +1441,7 @@ class FhirConverterTest {
     supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluADisease));
     supportedTestOrders.add(TestDataBuilder.createDeviceTypeDisease(fluBDisease));
     var deviceType =
-        new DeviceType("name", "manufacturer", "model", 0, new ArrayList<>(), supportedTestOrders);
+        new DeviceType("name", "manufacturer", "model", 7, new ArrayList<>(), supportedTestOrders);
 
     var specimenType = new SpecimenType("name", "typeCode");
     var provider =
