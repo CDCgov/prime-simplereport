@@ -71,10 +71,6 @@ const getOrgExternalIdWithInternalId = (
   return org?.externalId;
 };
 
-const getSortedOrgs = (orgs: UnarchivePatientOrganization[] | undefined) => {
-  return orgs ? orgs.sort((a, b) => (a.name > b.name ? 1 : -1)) : [];
-};
-
 const UnarchivePatient = () => {
   const navigate = useNavigate();
   const [localState, updateLocalState] =
@@ -133,17 +129,17 @@ const UnarchivePatient = () => {
     }
   };
 
-  const sortedOrgs = getSortedOrgs(orgsResponse?.organizations);
+  const orgs = orgsResponse?.organizations || [];
 
   useEffect(() => {
     fetchAndSetPatients(
-      getOrgExternalIdWithInternalId(sortedOrgs, localState.orgId)
+      getOrgExternalIdWithInternalId(orgs, localState.orgId)
     ).then();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   const orgOptions: Option<string>[] =
-    sortedOrgs.map((org: UnarchivePatientOrganization) => ({
+    orgs.map((org: UnarchivePatientOrganization) => ({
       label: org.name,
       value: org.internalId,
     })) ?? [];
@@ -215,7 +211,7 @@ const UnarchivePatient = () => {
         searchParams = `?facility=${activeFacility.id}`;
       }
       let orgExternalId = getOrgExternalIdWithInternalId(
-        sortedOrgs,
+        orgs,
         localState.orgId
       );
       if (orgExternalId) {
