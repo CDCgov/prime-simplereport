@@ -1,9 +1,22 @@
+const whoAmIQuery = `
+  query WhoAmI {
+    whoami {
+      organization {
+        name
+        externalId
+        facilities {
+          id
+          name
+        }
+      }
+    }
+  }
+`
 export const whoAmI=()=>{
   return cy.makePOSTRequest({
     operationName: "WhoAmI",
     variables: {},
-    query:
-      "query WhoAmI {\n  whoami {\n organization {\n  id\n  facilities {\n      id\n    }\n  }\n} \n}",
+    query: whoAmIQuery,
   });
 }
 
@@ -73,6 +86,33 @@ return cy.makePOSTRequest({
 });
 };
 
+const getPatientsByFacilityWithOrgQuery = `query GetPatientsByFacilityWithOrg($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $archivedStatus: ArchivedStatus, $namePrefixMatch: String, $orgExternalId: String) {
+  patients(
+      facilityId: $facilityId
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+      archivedStatus: $archivedStatus
+      namePrefixMatch: $namePrefixMatch
+      orgExternalId:$orgExternalId
+      ) {
+          internalId
+          firstName
+          lastName
+          birthDate
+         }
+      }`;
+
+const archivePatientMutation= `mutation ArchivePatient($patientId: ID!, $isDeleted: Boolean! $orgExternalId: String) {
+      setPatientIsDeleted(
+      id: $patientId
+      deleted: $isDeleted
+      orgExternalId: $orgExternalId
+      ) {
+              id
+        }
+      }`;
+
+
 export const getPatientWithLastNameByFacilityWithOrg = (facilityId, patientLastName, orgExternalId) => {
   return cy.makePOSTRequest({
     operationName: "GetPatientsByFacilityWithOrg",
@@ -99,29 +139,3 @@ export const unarchivePatient = (patientId, orgExternalId) => {
     query: archivePatientMutation,
   });
 };
-
-const getPatientsByFacilityWithOrgQuery = `query GetPatientsByFacilityWithOrg($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $archivedStatus: ArchivedStatus, $namePrefixMatch: String, $orgExternalId: String) {
-  patients(
-      facilityId: $facilityId
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-      archivedStatus: $archivedStatus
-      namePrefixMatch: $namePrefixMatch
-      orgExternalId:$orgExternalId
-      ) {
-          internalId
-          firstName
-          lastName
-          birthDate
-         }
-      }`;
-
-const archivePatientMutation= `mutation ArchivePatient($patientId: ID!, $isDeleted: Boolean! $orgExternalId: String) {
-      setPatientIsDeleted(
-      id: $patientId
-      deleted: $isDeleted
-      orgExternalId: $orgExternalId
-      ) {
-              id
-        }
-      }`;

@@ -7,7 +7,7 @@ loginHooks();
 describe("Unarchive patient",() => {
   let org, facility, patient, lastName;
 
-  before(()=>{
+  beforeEach(()=>{
     cy.task("getPatientName").then((name) => {
       let patientName = name;
       lastName = patientName.split(",")[0];
@@ -17,7 +17,7 @@ describe("Unarchive patient",() => {
     });
     whoAmI().then((res) => {
       org = res.body.data.whoami.organization;
-      facility = res.body.data.whoami.organization.testingFacility[0];
+      facility = res.body.data.whoami.organization.facilities[0];
       getPatientWithLastNameByFacilityWithOrg(facility.id, lastName, org.externalId).then((res) => {
         patient = res.body.data.patients[0];
         // unarchive patient in case it is archived because test re-ran
@@ -30,6 +30,8 @@ describe("Unarchive patient",() => {
     cy.visit("/patients");
     cy.get("#search-field-small").type(patient.lastName);
     cy.get(".sr-patient-list").contains(patient.lastName);
+    cy.get(".App").contains('Loading...').should('not.exist');
+
     cy.get(`#action_${patient.internalId}`).click();
     cy.contains("Archive patient").click();
     cy.contains("Yes, I'm sure").click();
@@ -43,7 +45,7 @@ describe("Unarchive patient",() => {
     cy.get('select[name="organization"]').select(org.name);
     cy.get('select[name="facility"]').select(facility.name);
     cy.contains("Search").click();
-    cy.get(".sr-patient-list").contains('Loading...').should('not.exist');
+    cy.get(".App").contains('Loading...').should('not.exist');
     cy.contains(patient.firstName).should('exist');
     cy.contains(patient.lastName).should('exist');
     cy.checkAccessibility();
