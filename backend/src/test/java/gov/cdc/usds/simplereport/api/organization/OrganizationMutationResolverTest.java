@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.organization;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -22,6 +23,7 @@ import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PersonService;
+import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -50,6 +52,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
   @Mock ApiUserService mockedApiUserService;
   @Mock OrganizationService mockedOrganizationService;
   @Mock OrganizationQueueService mockedOrganizationQueueService;
+  @Mock TestOrderService mockedtestOrderService;
   @InjectMocks OrganizationMutationResolver organizationMutationResolver;
 
   private Facility facility;
@@ -208,6 +211,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
     // THEN
     verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), true);
+    verify(mockedtestOrderService).removeFromQueueByFacilityId(facility.getInternalId());
   }
 
   @Test
@@ -217,6 +221,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
 
     // THEN
     verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), false);
+    verify(mockedtestOrderService, never()).removeFromQueueByFacilityId(facility.getInternalId());
   }
 
   @Test
@@ -241,6 +246,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
     verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), deleted);
     verify(mockedApiUserService).getAllUsersByOrganization(organization);
     verify(mockedApiUserService).setIsDeleted(orgUserInfo.getInternalId(), deleted);
+    verify(mockedtestOrderService).removeFromQueueByFacilityId(facility.getInternalId());
   }
 
   @Test
@@ -262,6 +268,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
         .markOrganizationAsDeleted(organization.getInternalId(), deleted);
     verify(mockedOrganizationService).markFacilityAsDeleted(facility.getInternalId(), deleted);
     verify(mockedApiUserService).setIsDeleted(orgUserInfo.getInternalId(), deleted);
+    verify(mockedtestOrderService, never()).removeFromQueueByFacilityId(facility.getInternalId());
   }
 
   @Test

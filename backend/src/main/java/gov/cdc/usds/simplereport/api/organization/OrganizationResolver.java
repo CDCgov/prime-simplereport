@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.organization;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
+import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -100,5 +101,10 @@ public class OrganizationResolver {
     Optional<Facility> facility =
         facilities.stream().filter(f -> f.getInternalId().equals(id)).findFirst();
     return facility.map(ApiFacility::new);
+  }
+
+  @QueryMapping
+  public FacilityStats facilityStats(@Argument UUID facilityId) {
+    return this._organizationService.getFacilityStats(facilityId);
   }
 }

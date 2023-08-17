@@ -12,3 +12,5 @@ export const escalationPageTitle = `Escalate to engineering`;
 export const orgFacilityColumnTitle = "Organizations & facilities";
 export const devicesColumnTitle = "Devices";
 export const usersAndPatientsColumnTitle = `Users & ${PATIENT_TERM_PLURAL}`;
+
+export const manageFacility = "Manage Facility";

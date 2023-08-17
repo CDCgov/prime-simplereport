@@ -4,6 +4,7 @@ import com.okta.sdk.helper.ApiExceptionHelper;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.user.UserBuilder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
+import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,7 +69,6 @@ public class LiveOktaRepository implements OktaRepository {
   private final GroupApi groupApi;
   private final UserApi userApi;
   private final ApplicationGroupsApi applicationGroupsApi;
-
   private final String adminGroupName;
 
   public LiveOktaRepository(
@@ -81,6 +82,7 @@ public class LiveOktaRepository implements OktaRepository {
       ApplicationGroupsApi applicationGroupsApi) {
     this.rolePrefix = authorizationProperties.getRolePrefix();
     this.adminGroupName = authorizationProperties.getAdminGroupName();
+
     this.groupApi = groupApi;
     this.userApi = userApi;
     this.applicationGroupsApi = applicationGroupsApi;
@@ -612,6 +614,27 @@ public class LiveOktaRepository implements OktaRepository {
 
     return getOrganizationRoleClaimsForUser(
         getUserOrThrowError(username, "Cannot get org external ID for nonexistent user"));
+  }
+
+  public Integer getUsersInSingleFacility(Facility facility) {
+    String facilityAccessGroupName =
+        generateFacilityGroupName(
+            facility.getOrganization().getExternalId(), facility.getInternalId());
+
+    List<Group> facilityAccessGroup =
+        groupApi.listGroups(facilityAccessGroupName, null, null, 1, "stats", null, null, null);
+
+    if (facilityAccessGroup.isEmpty()) {
+      return 0;
+    }
+
+    try {
+      LinkedHashMap<String, Object> stats =
+          (LinkedHashMap) facilityAccessGroup.get(0).getEmbedded().get("stats");
+      return ((Integer) stats.get("usersCount"));
+    } catch (NullPointerException e) {
+      throw new BadRequestException("Unable to retrieve okta group stats", e);
+    }
   }
 
   public PartialOktaUser findUser(String username) {
