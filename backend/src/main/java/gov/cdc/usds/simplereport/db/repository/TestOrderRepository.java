@@ -45,4 +45,7 @@ public interface TestOrderRepository
 
   @Query(BASE_ORG_QUERY + " and q.testEvent = :testEvent")
   TestOrder findByTestEvent(Organization org, TestEvent testEvent);
+
+  @Query(BASE_QUERY + IS_PENDING + " and q.facility = :facility")
+  List<TestOrder> fetchQueueItemsByFacilityId(Facility facility);
 }

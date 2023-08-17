@@ -144,6 +144,12 @@ export type FacilityAddressInput = {
   zipCode: Scalars["String"];
 };
 
+export type FacilityStats = {
+  __typename?: "FacilityStats";
+  patientsSingleAccessCount?: Maybe<Scalars["Int"]>;
+  usersSingleAccessCount?: Maybe<Scalars["Int"]>;
+};
+
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
   errorType: Scalars["String"];
@@ -197,6 +203,7 @@ export type Mutation = {
   sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]>;
+  sendSupportEscalation?: Maybe<Scalars["String"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
@@ -654,6 +661,7 @@ export type Query = {
   deviceTypes: Array<DeviceType>;
   facilities?: Maybe<Array<Maybe<Facility>>>;
   facility?: Maybe<Facility>;
+  facilityStats?: Maybe<FacilityStats>;
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
@@ -686,6 +694,10 @@ export type QueryFacilitiesArgs = {
 
 export type QueryFacilityArgs = {
   id: Scalars["ID"];
+};
+
+export type QueryFacilityStatsArgs = {
+  facilityId: Scalars["ID"];
 };
 
 export type QueryOrganizationArgs = {
@@ -1673,6 +1685,60 @@ export type GetSupportedDiseasesQuery = {
   }>;
 };
 
+export type GetAllOrganizationsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetAllOrganizationsQuery = {
+  __typename?: "Query";
+  organizations: Array<{
+    __typename?: "Organization";
+    id: string;
+    name: string;
+  }>;
+};
+
+export type GetFacilitiesByOrgIdQueryVariables = Exact<{
+  orgId: Scalars["ID"];
+}>;
+
+export type GetFacilitiesByOrgIdQuery = {
+  __typename?: "Query";
+  organization?: {
+    __typename?: "Organization";
+    name: string;
+    type: string;
+    facilities: Array<{
+      __typename?: "Facility";
+      name: string;
+      id: string;
+      city?: string | null;
+      state?: string | null;
+      zipCode?: string | null;
+    }>;
+  } | null;
+};
+
+export type GetFacilityStatsQueryVariables = Exact<{
+  facilityId: Scalars["ID"];
+}>;
+
+export type GetFacilityStatsQuery = {
+  __typename?: "Query";
+  facilityStats?: {
+    __typename?: "FacilityStats";
+    usersSingleAccessCount?: number | null;
+    patientsSingleAccessCount?: number | null;
+  } | null;
+};
+
+export type DeleteFacilityMutationVariables = Exact<{
+  facilityId: Scalars["ID"];
+}>;
+
+export type DeleteFacilityMutation = {
+  __typename?: "Mutation";
+  markFacilityAsDeleted?: string | null;
+};
+
 export type GetPendingOrganizationsQueryVariables = Exact<{
   [key: string]: never;
 }>;
@@ -1757,6 +1823,15 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
       externalId: string;
     } | null;
   } | null;
+};
+
+export type SendSupportEscalationMutationVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type SendSupportEscalationMutation = {
+  __typename?: "Mutation";
+  sendSupportEscalation?: string | null;
 };
 
 export type GetPatientQueryVariables = Exact<{
@@ -4913,6 +4988,237 @@ export type GetSupportedDiseasesQueryResult = Apollo.QueryResult<
   GetSupportedDiseasesQuery,
   GetSupportedDiseasesQueryVariables
 >;
+export const GetAllOrganizationsDocument = gql`
+  query GetAllOrganizations {
+    organizations(identityVerified: true) {
+      id
+      name
+    }
+  }
+`;
+
+/**
+ * __useGetAllOrganizationsQuery__
+ *
+ * To run a query within a React component, call `useGetAllOrganizationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllOrganizationsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllOrganizationsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetAllOrganizationsQuery,
+    GetAllOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetAllOrganizationsQuery,
+    GetAllOrganizationsQueryVariables
+  >(GetAllOrganizationsDocument, options);
+}
+export function useGetAllOrganizationsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAllOrganizationsQuery,
+    GetAllOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetAllOrganizationsQuery,
+    GetAllOrganizationsQueryVariables
+  >(GetAllOrganizationsDocument, options);
+}
+export type GetAllOrganizationsQueryHookResult = ReturnType<
+  typeof useGetAllOrganizationsQuery
+>;
+export type GetAllOrganizationsLazyQueryHookResult = ReturnType<
+  typeof useGetAllOrganizationsLazyQuery
+>;
+export type GetAllOrganizationsQueryResult = Apollo.QueryResult<
+  GetAllOrganizationsQuery,
+  GetAllOrganizationsQueryVariables
+>;
+export const GetFacilitiesByOrgIdDocument = gql`
+  query GetFacilitiesByOrgId($orgId: ID!) {
+    organization(id: $orgId) {
+      name
+      type
+      facilities {
+        name
+        id
+        city
+        state
+        zipCode
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetFacilitiesByOrgIdQuery__
+ *
+ * To run a query within a React component, call `useGetFacilitiesByOrgIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilitiesByOrgIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilitiesByOrgIdQuery({
+ *   variables: {
+ *      orgId: // value for 'orgId'
+ *   },
+ * });
+ */
+export function useGetFacilitiesByOrgIdQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetFacilitiesByOrgIdQuery,
+    GetFacilitiesByOrgIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilitiesByOrgIdQuery,
+    GetFacilitiesByOrgIdQueryVariables
+  >(GetFacilitiesByOrgIdDocument, options);
+}
+export function useGetFacilitiesByOrgIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilitiesByOrgIdQuery,
+    GetFacilitiesByOrgIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilitiesByOrgIdQuery,
+    GetFacilitiesByOrgIdQueryVariables
+  >(GetFacilitiesByOrgIdDocument, options);
+}
+export type GetFacilitiesByOrgIdQueryHookResult = ReturnType<
+  typeof useGetFacilitiesByOrgIdQuery
+>;
+export type GetFacilitiesByOrgIdLazyQueryHookResult = ReturnType<
+  typeof useGetFacilitiesByOrgIdLazyQuery
+>;
+export type GetFacilitiesByOrgIdQueryResult = Apollo.QueryResult<
+  GetFacilitiesByOrgIdQuery,
+  GetFacilitiesByOrgIdQueryVariables
+>;
+export const GetFacilityStatsDocument = gql`
+  query GetFacilityStats($facilityId: ID!) {
+    facilityStats(facilityId: $facilityId) {
+      usersSingleAccessCount
+      patientsSingleAccessCount
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityStatsQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityStatsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityStatsQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *   },
+ * });
+ */
+export function useGetFacilityStatsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetFacilityStatsQuery, GetFacilityStatsQueryVariables>(
+    GetFacilityStatsDocument,
+    options
+  );
+}
+export function useGetFacilityStatsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >(GetFacilityStatsDocument, options);
+}
+export type GetFacilityStatsQueryHookResult = ReturnType<
+  typeof useGetFacilityStatsQuery
+>;
+export type GetFacilityStatsLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityStatsLazyQuery
+>;
+export type GetFacilityStatsQueryResult = Apollo.QueryResult<
+  GetFacilityStatsQuery,
+  GetFacilityStatsQueryVariables
+>;
+export const DeleteFacilityDocument = gql`
+  mutation DeleteFacility($facilityId: ID!) {
+    markFacilityAsDeleted(facilityId: $facilityId, deleted: true)
+  }
+`;
+export type DeleteFacilityMutationFn = Apollo.MutationFunction<
+  DeleteFacilityMutation,
+  DeleteFacilityMutationVariables
+>;
+
+/**
+ * __useDeleteFacilityMutation__
+ *
+ * To run a mutation, you first call `useDeleteFacilityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFacilityMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFacilityMutation, { data, loading, error }] = useDeleteFacilityMutation({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *   },
+ * });
+ */
+export function useDeleteFacilityMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteFacilityMutation,
+    DeleteFacilityMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteFacilityMutation,
+    DeleteFacilityMutationVariables
+  >(DeleteFacilityDocument, options);
+}
+export type DeleteFacilityMutationHookResult = ReturnType<
+  typeof useDeleteFacilityMutation
+>;
+export type DeleteFacilityMutationResult =
+  Apollo.MutationResult<DeleteFacilityMutation>;
+export type DeleteFacilityMutationOptions = Apollo.BaseMutationOptions<
+  DeleteFacilityMutation,
+  DeleteFacilityMutationVariables
+>;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {
     pendingOrganizations {
@@ -5277,6 +5583,53 @@ export type SetCurrentUserTenantDataAccessOpMutationOptions =
     SetCurrentUserTenantDataAccessOpMutation,
     SetCurrentUserTenantDataAccessOpMutationVariables
   >;
+export const SendSupportEscalationDocument = gql`
+  mutation SendSupportEscalation {
+    sendSupportEscalation
+  }
+`;
+export type SendSupportEscalationMutationFn = Apollo.MutationFunction<
+  SendSupportEscalationMutation,
+  SendSupportEscalationMutationVariables
+>;
+
+/**
+ * __useSendSupportEscalationMutation__
+ *
+ * To run a mutation, you first call `useSendSupportEscalationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendSupportEscalationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendSupportEscalationMutation, { data, loading, error }] = useSendSupportEscalationMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSendSupportEscalationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SendSupportEscalationMutation,
+    SendSupportEscalationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SendSupportEscalationMutation,
+    SendSupportEscalationMutationVariables
+  >(SendSupportEscalationDocument, options);
+}
+export type SendSupportEscalationMutationHookResult = ReturnType<
+  typeof useSendSupportEscalationMutation
+>;
+export type SendSupportEscalationMutationResult =
+  Apollo.MutationResult<SendSupportEscalationMutation>;
+export type SendSupportEscalationMutationOptions = Apollo.BaseMutationOptions<
+  SendSupportEscalationMutation,
+  SendSupportEscalationMutationVariables
+>;
 export const GetPatientDocument = gql`
   query GetPatient($internalId: ID!) {
     patient(id: $internalId) {

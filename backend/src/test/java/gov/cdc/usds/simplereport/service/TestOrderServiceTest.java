@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -19,6 +21,7 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.model.AddTestResultResponse;
 import gov.cdc.usds.simplereport.api.model.OrganizationLevelDashboardMetrics;
 import gov.cdc.usds.simplereport.api.model.TopLevelDashboardMetrics;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentQueueItemException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -58,6 +61,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -81,10 +85,10 @@ import org.springframework.test.context.TestPropertySource;
 @SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
-  @Autowired private OrganizationService _organizationService;
+  @Autowired @SpyBean private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
   @Autowired private TestEventRepository _testEventRepository;
-  @Autowired private TestOrderRepository _testOrderRepository;
+  @Autowired @SpyBean private TestOrderRepository _testOrderRepository;
   @Autowired private ResultRepository _resultRepository;
   @Autowired private TestDataFactory _dataFactory;
   @SpyBean private PatientLinkService patientLinkService;
@@ -2129,6 +2133,39 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the corrected event is sent to storage queue
     verify(testEventReportingService).report(correctedTestEvent);
     verifyNoInteractions(fhirQueueReportingService);
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void removeFromQueueByFacilityId_notAuthorizedError() {
+    UUID facilityId = UUID.randomUUID();
+    assertThrows(
+        AccessDeniedException.class, () -> _service.removeFromQueueByFacilityId(facilityId));
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void removeFromQueueByFacilityId_facilityNotFoundError() {
+    UUID facilityId = UUID.randomUUID();
+    when(this._organizationService.getFacilityById(facilityId)).thenReturn(Optional.empty());
+    assertThrows(
+        IllegalGraphqlArgumentException.class,
+        () -> _service.removeFromQueueByFacilityId(facilityId));
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void removeFromQueueByFacilityId_success() {
+    UUID facilityId = UUID.randomUUID();
+    Facility mockFacility = mock(Facility.class);
+    List<TestOrder> mockOrders = List.of();
+    doReturn(Optional.of(mockFacility)).when(this._organizationService).getFacilityById(facilityId);
+    doReturn(mockOrders).when(_testOrderRepository).fetchQueueItemsByFacilityId(mockFacility);
+    ArgumentCaptor<List<TestOrder>> ordersCaptor = ArgumentCaptor.forClass(List.class);
+    doReturn(null).when(_testOrderRepository).saveAll(ordersCaptor.capture());
+
+    _service.removeFromQueueByFacilityId(facilityId);
+    assertEquals(mockOrders, ordersCaptor.getValue());
   }
 
   @Test

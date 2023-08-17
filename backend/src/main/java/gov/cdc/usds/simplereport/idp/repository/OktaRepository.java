@@ -66,5 +66,7 @@ public interface OktaRepository {
 
   Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 
+  Integer getUsersInSingleFacility(Facility facility);
+
   PartialOktaUser findUser(String username);
 }

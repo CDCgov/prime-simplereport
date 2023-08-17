@@ -660,21 +660,46 @@ public class PersonUtils {
     return tribeCodes;
   }
 
-  public static final Map<String, String> raceMap =
-      Map.of(
-          "native", "1002-5",
-          "asian", "2028-9",
-          "black", "2054-5",
-          "pacific", "2076-8",
-          "white", "2106-3",
-          "other", "2131-1",
-          "unknown", MappingConstants.UNK_CODE,
-          "refused", MappingConstants.ASKED_BUT_UNKNOWN_CODE // Asked, but unknown
-          );
+  public static final Map<String, String> raceMap = new HashMap<>();
+  private static final String NATIVE_CODE = "1002-5";
+  private static final String ASIAN_CODE = "2028-9";
+  private static final String BLACK_CODE = "2054-5";
+  private static final String PACIFIC_CODE = "2076-8";
+  private static final String WHITE_CODE = "2106-3";
+  private static final String OTHER_CODE = "2131-1";
 
+  static {
+    raceMap.put("native", NATIVE_CODE);
+    raceMap.put(NATIVE_CODE, "native");
+    raceMap.put("american indian or alaska native", NATIVE_CODE);
+    raceMap.put("asian", ASIAN_CODE);
+    raceMap.put(ASIAN_CODE, "asian");
+    raceMap.put("black", BLACK_CODE);
+    raceMap.put(BLACK_CODE, "black");
+    raceMap.put("black or african american", BLACK_CODE);
+    raceMap.put("pacific", PACIFIC_CODE);
+    raceMap.put(PACIFIC_CODE, "pacific");
+    raceMap.put("native hawaiian or other pacific islander", PACIFIC_CODE);
+    raceMap.put("white", WHITE_CODE);
+    raceMap.put(WHITE_CODE, "white");
+    raceMap.put("other", OTHER_CODE);
+    raceMap.put(OTHER_CODE, "other");
+    raceMap.put("unknown", MappingConstants.UNK_CODE);
+    raceMap.put("unk", MappingConstants.UNK_CODE);
+    raceMap.put("refused", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
+    raceMap.put("ask, but unknown", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
+    raceMap.put("asku", MappingConstants.ASKED_BUT_UNKNOWN_CODE); // Asked, but unknown
+  }
+
+  private static final List<String> hispanic = List.of("H", "Hispanic or Latino");
+  private static final List<String> not_hispanic = List.of("N", "Not Hispanic or Latino");
   public static final Map<String, List<String>> ETHNICITY_MAP =
       Map.of(
-          "hispanic", List.of("H", "Hispanic or Latino"),
-          "not_hispanic", List.of("N", "Not Hispanic or Latino"),
+          "hispanic", hispanic,
+          "hispanic or latino", hispanic,
+          "2135-2", hispanic,
+          "not_hispanic", not_hispanic,
+          "not hispanic or latino", not_hispanic,
+          "2186-5", not_hispanic,
           "refused", List.of("U", "unknown"));
 }

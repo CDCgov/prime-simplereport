@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
+import gov.cdc.usds.simplereport.api.model.FacilityStats;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -15,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
+import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +45,7 @@ public class OrganizationService {
   private final FacilityRepository facilityRepository;
   private final ProviderRepository providerRepository;
   private final AuthorizationService authorizationService;
+  private final PersonRepository personRepository;
   private final OktaRepository oktaRepository;
   private final CurrentOrganizationRolesContextHolder organizationRolesContext;
   private final OrderingProviderRequiredValidator orderingProviderValidator;
@@ -203,6 +207,10 @@ public class OrganizationService {
     }
 
     return facility.getOrganization();
+  }
+
+  public Optional<Facility> getFacilityById(UUID facilityId) {
+    return facilityRepository.findById(facilityId);
   }
 
   public void assertFacilityNameAvailable(String testingFacilityName) {
@@ -417,10 +425,9 @@ public class OrganizationService {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public Facility markFacilityAsDeleted(UUID facilityId, boolean deleted) {
     Optional<Facility> optionalFacility = facilityRepository.findById(facilityId);
-    if (optionalFacility.isEmpty()) {
-      throw new IllegalGraphqlArgumentException("Facility not found.");
-    }
-    Facility facility = optionalFacility.get();
+    Facility facility =
+        optionalFacility.orElseThrow(
+            () -> new IllegalGraphqlArgumentException("Facility not found."));
     facility.setIsDeleted(deleted);
     return facilityRepository.save(facility);
   }
@@ -436,6 +443,23 @@ public class OrganizationService {
     Organization organization = optionalOrganization.get();
     organization.setIsDeleted(deleted);
     return organizationRepository.save(organization);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public FacilityStats getFacilityStats(@Argument UUID facilityId) {
+    if (facilityId == null) {
+      throw new IllegalGraphqlArgumentException("facilityId cannot be empty.");
+    }
+
+    Facility facility =
+        this.getFacilityById(facilityId)
+            .orElseThrow(() -> new IllegalGraphqlArgumentException("Facility not found."));
+
+    return FacilityStats.builder()
+        .usersSingleAccessCount(this.oktaRepository.getUsersInSingleFacility(facility))
+        .patientsSingleAccessCount(
+            this.personRepository.countByFacilityAndIsDeleted(facility, false))
+        .build();
   }
 
   @AuthorizationConfiguration.RequirePermissionToAccessOrg

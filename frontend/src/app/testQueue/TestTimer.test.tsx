@@ -1,4 +1,10 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
@@ -135,9 +141,8 @@ describe("TestTimerWidget", () => {
 
       const timerButton = await screen.findByRole("button");
 
-      await act(async () => await userEvent.click(timerButton));
+      fireEvent.click(timerButton);
       await screen.findByText("0:00");
-
       await screen.findByText("RESULT READY");
 
       expect(trackEventMock).toHaveBeenCalledWith(

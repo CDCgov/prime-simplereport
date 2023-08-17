@@ -564,6 +564,17 @@ public class TestOrderService {
     }
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void removeFromQueueByFacilityId(UUID facilityId) {
+    Facility facility =
+        _organizationService
+            .getFacilityById(facilityId)
+            .orElseThrow(() -> new IllegalGraphqlArgumentException("Facility not found."));
+    List<TestOrder> orders = _testOrderRepo.fetchQueueItemsByFacilityId(facility);
+    orders.stream().forEach(TestOrder::cancelOrder);
+    _testOrderRepo.saveAll(orders);
+  }
+
   private void ensureCorrectionFlowBackwardCompatibility(TestEvent event) {
     // Backward compatibility shim
     // we know if we are using the older version when the result has both TestEvent and TestOrder

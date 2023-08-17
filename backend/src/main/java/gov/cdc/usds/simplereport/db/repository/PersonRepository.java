@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import java.util.Collection;
@@ -18,6 +19,8 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
   List<Person> findAllByInternalIdIn(Collection<UUID> ids);
 
   int count(Specification<Person> searchSpec);
+
+  int countByFacilityAndIsDeleted(Facility facility, boolean isDeleted);
 
   @Query(
       BASE_ALLOW_DELETED_QUERY
