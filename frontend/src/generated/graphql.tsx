@@ -203,6 +203,7 @@ export type Mutation = {
   sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]>;
+  sendSupportEscalation?: Maybe<Scalars["String"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
@@ -1822,6 +1823,15 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
       externalId: string;
     } | null;
   } | null;
+};
+
+export type SendSupportEscalationMutationVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type SendSupportEscalationMutation = {
+  __typename?: "Mutation";
+  sendSupportEscalation?: string | null;
 };
 
 export type GetPatientQueryVariables = Exact<{
@@ -5573,6 +5583,53 @@ export type SetCurrentUserTenantDataAccessOpMutationOptions =
     SetCurrentUserTenantDataAccessOpMutation,
     SetCurrentUserTenantDataAccessOpMutationVariables
   >;
+export const SendSupportEscalationDocument = gql`
+  mutation SendSupportEscalation {
+    sendSupportEscalation
+  }
+`;
+export type SendSupportEscalationMutationFn = Apollo.MutationFunction<
+  SendSupportEscalationMutation,
+  SendSupportEscalationMutationVariables
+>;
+
+/**
+ * __useSendSupportEscalationMutation__
+ *
+ * To run a mutation, you first call `useSendSupportEscalationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendSupportEscalationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendSupportEscalationMutation, { data, loading, error }] = useSendSupportEscalationMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSendSupportEscalationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SendSupportEscalationMutation,
+    SendSupportEscalationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SendSupportEscalationMutation,
+    SendSupportEscalationMutationVariables
+  >(SendSupportEscalationDocument, options);
+}
+export type SendSupportEscalationMutationHookResult = ReturnType<
+  typeof useSendSupportEscalationMutation
+>;
+export type SendSupportEscalationMutationResult =
+  Apollo.MutationResult<SendSupportEscalationMutation>;
+export type SendSupportEscalationMutationOptions = Apollo.BaseMutationOptions<
+  SendSupportEscalationMutation,
+  SendSupportEscalationMutationVariables
+>;
 export const GetPatientDocument = gql`
   query GetPatient($internalId: ID!) {
     patient(id: $internalId) {

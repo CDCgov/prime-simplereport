@@ -32,7 +32,6 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
 const SupportAdmin = () => {
   useDocumentTitle("Support admin");
   const hivEnabled = useFeature("hivEnabled") as boolean;
-
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
