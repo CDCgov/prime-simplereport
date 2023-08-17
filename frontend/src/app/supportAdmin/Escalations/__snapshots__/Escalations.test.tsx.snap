@@ -47,6 +47,7 @@ exports[`Escalations Renders the page 1`] = `
                    
                   <a
                     href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61"
+                    rel="noreferrer"
                     target="_blank"
                   >
                     the Smartsheet tracker
