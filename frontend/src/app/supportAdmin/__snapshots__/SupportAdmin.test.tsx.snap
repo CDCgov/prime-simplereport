@@ -64,6 +64,14 @@ exports[`SupportAdmin loads menu categories 1`] = `
                       Access organization account
                     </a>
                   </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-facility"
+                    >
+                      Manage facility
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div
@@ -180,6 +188,14 @@ exports[`SupportAdmin loads menu categories including Beta 1`] = `
                       href="/admin/tenant-data-access"
                     >
                       Access organization account
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-facility"
+                    >
+                      Manage facility
                     </a>
                   </li>
                 </ul>
