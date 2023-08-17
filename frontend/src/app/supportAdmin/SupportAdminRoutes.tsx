@@ -9,6 +9,7 @@ import SupportAdmin from "./SupportAdmin";
 import PendingOrganizationsContainer from "./PendingOrganizations/PendingOrganizationsContainer";
 import ManageDeviceTypeFormContainer from "./DeviceType/ManageDeviceTypeFormContainer";
 import { HivUploadForm } from "./HIVUpload/HivUploadForm";
+import { Escalations } from "./Escalations/Escalations";
 
 interface Props {
   isAdmin: boolean;
@@ -39,6 +40,7 @@ const SupportAdminRoutes: React.FC<Props> = ({ isAdmin }) => {
         path="tenant-data-access"
         element={<TenantDataAccessFormContainer />}
       />
+      <Route path="escalate-to-engineering" element={<Escalations />} />
       {hivEnabled && (
         <Route path="hiv-csv-upload" element={<HivUploadForm />} />
       )}

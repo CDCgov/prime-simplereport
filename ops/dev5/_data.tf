@@ -235,3 +235,8 @@ data "azurerm_key_vault_secret" "datahub_signing_key" {
   name         = "datahub-signing-key-test"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
+
+data "azurerm_key_vault_secret" "slack_hook_token" {
+  name         = "slack-hook-token-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
