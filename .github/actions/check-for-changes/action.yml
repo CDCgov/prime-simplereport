@@ -1,0 +1,27 @@
+name: Check for Changes
+description: Check for changes in a folder or file
+inputs:
+  what_to_check:
+    description: The file or folder to check for changes
+    required: true
+outputs:
+  has_changes:
+    description: true or false string
+    value: ${{ jobs.check_for_changes.outputs.has_changes }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - shell: bash
+      id: check_for_changes
+      run: |
+        echo "::group::Set has_changes output"
+        diff=$(git diff-tree --no-commit-id --name-only -r "origin/main" HEAD -- "${{ inputs.what_to_check }}")
+        echo "Diff: $diff"
+        diff_length=$(echo ${#diff})
+        has_diff=$([ $diff_length -gt 0 ] && echo "true" || echo "false")
+        echo "The Changes: ${has_diff}"
+        echo "has_changes=${has_diff}" >> "$GITHUB_OUTPUT"
+        echo "::endgroup::"
