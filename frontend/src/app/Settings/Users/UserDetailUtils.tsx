@@ -41,8 +41,6 @@ export const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({
           </span>
         </>
       );
-    } else {
-      return "";
     }
   }
 
@@ -113,7 +111,6 @@ export const SpecialStatusNotice: React.FC<{
         </>
       );
     }
-    return;
   }
 
   return (
