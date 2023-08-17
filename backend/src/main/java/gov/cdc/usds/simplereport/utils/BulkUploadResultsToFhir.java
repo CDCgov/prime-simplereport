@@ -430,7 +430,8 @@ public class BulkUploadResultsToFhir {
 
   private String getEthnicityLiteral(String input) {
     if (!input.matches(ALPHABET_REGEX)) {
-      return PersonUtils.ETHNICITY_MAP.get(input).get(1);
+      List<String> ethnicityList = PersonUtils.ETHNICITY_MAP.get(input);
+      return ethnicityList != null ? ethnicityList.get(1) : input;
     }
     return input;
   }
