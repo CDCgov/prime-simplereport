@@ -169,16 +169,11 @@ const UnarchivePatient = () => {
   };
 
   const handleSelectFacility = async (selectedFacilityId: string) => {
-    if (selectedFacilityId === "") {
-      updateLocalState((prevState) => ({
-        ...prevState,
-        patients: undefined,
-        patientsCount: undefined,
-      }));
-    }
     updateLocalState((prevState) => ({
       ...prevState,
       facilityId: selectedFacilityId,
+      patients: undefined,
+      patientsCount: undefined,
     }));
   };
 
