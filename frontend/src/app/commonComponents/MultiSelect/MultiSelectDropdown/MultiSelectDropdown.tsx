@@ -142,18 +142,18 @@ const handleInputKeyDown =
       if (state.isOpen) {
         // If there are filtered options, prevent default for basic dropdown body
         // If there are "No Results Found", tab over to prevent a keyboard trap
-        if (state.filteredOptions.length > 0) {
-          if (!state.isExtended) {
+        if (!state.isExtended) {
+          if (state.filteredOptions.length > 0) {
             event.preventDefault();
             dispatch({
               type: ActionTypes.FOCUS_OPTION,
               option: state.filteredOptions[0],
             });
+          } else {
+            dispatch({
+              type: ActionTypes.BLUR,
+            });
           }
-        } else {
-          dispatch({
-            type: ActionTypes.BLUR,
-          });
         }
       }
 
