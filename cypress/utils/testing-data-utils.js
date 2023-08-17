@@ -7,7 +7,6 @@ export const whoAmI=()=>{
   });
 }
 
-
 export const addMockFacility=(facilityName)=>{
 return cy.makePOSTRequest({
   operationName: "AddFacility",
@@ -73,3 +72,56 @@ return cy.makePOSTRequest({
 }`,
 });
 };
+
+export const getPatientWithLastNameByFacilityWithOrg = (facilityId, patientLastName, orgExternalId) => {
+  return cy.makePOSTRequest({
+    operationName: "GetPatientsByFacilityWithOrg",
+    variables: {
+      facilityId: facilityId,
+      pageNumber: 0,
+      pageSize: 1,
+      archivedStatus: "ALL",
+      namePrefixMatch: patientLastName,
+      orgExternalId: orgExternalId,
+    },
+    query: getPatientsByFacilityWithOrgQuery,
+  });
+};
+
+export const unarchivePatient = (patientId, orgExternalId) => {
+  return cy.makePOSTRequest({
+    operationName: "ArchivePatient",
+    variables: {
+      patientId: patientId,
+      isDeleted: false,
+      orgExternalId: orgExternalId
+    },
+    query: archivePatientMutation,
+  });
+};
+
+const getPatientsByFacilityWithOrgQuery = `query GetPatientsByFacilityWithOrg($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $archivedStatus: ArchivedStatus, $namePrefixMatch: String, $orgExternalId: String) {
+  patients(
+      facilityId: $facilityId
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+      archivedStatus: $archivedStatus
+      namePrefixMatch: $namePrefixMatch
+      orgExternalId:$orgExternalId
+      ) {
+          internalId
+          firstName
+          lastName
+          birthDate
+         }
+      }`;
+
+const archivePatientMutation= `mutation ArchivePatient($patientId: ID!, $isDeleted: Boolean! $orgExternalId: String) {
+      setPatientIsDeleted(
+      id: $patientId
+      deleted: $isDeleted
+      orgExternalId: $orgExternalId
+      ) {
+              id
+        }
+      }`;

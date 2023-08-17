@@ -1,6 +1,7 @@
 const {graphqlURL} = require("../utils/request-utils");
 const {aliasGraphqlOperations} = require("../utils/graphql-test-utils");
 const {loginHooks} = require("../support/e2e");
+const {whoAmI, getPatientWithLastNameByFacilityWithOrg, unarchivePatient} = require("../utils/testing-data-utils");
 
 loginHooks();
 describe("Unarchive patient",() => {
@@ -14,36 +15,13 @@ describe("Unarchive patient",() => {
     cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
-    cy.makePOSTRequest({
-      operationName: "WhoAmI",
-      variables: {},
-      query: whoAmIQuery,
-    }).then((res) => {
+    whoAmI().then((res) => {
       org = res.body.data.whoami.organization;
       facility = res.body.data.whoami.organization.testingFacility[0];
-      cy.makePOSTRequest({
-        operationName: "GetPatientsByFacilityWithOrg",
-        variables: {
-          facilityId: facility.id,
-          pageNumber: 0,
-          pageSize: 1,
-          archivedStatus: "ALL",
-          namePrefixMatch: lastName,
-          orgExternalId: org.externalId,
-        },
-        query: getPatientsByFacilityWithOrgQuery,
-      }).then((res) => {
+      getPatientWithLastNameByFacilityWithOrg(facility.id, lastName, org.externalId).then((res) => {
         patient = res.body.data.patients[0];
         // unarchive patient in case it is archived because test re-ran
-        cy.makePOSTRequest({
-          operationName: "ArchivePatient",
-          variables: {
-            patientId: patient.internalId,
-            isDeleted: false,
-            orgExternalId: org.externalId
-          },
-          query: archivePatientMutation,
-        })
+        unarchivePatient(patient.internalId, org.externalId);
       });
     })
   });
@@ -71,44 +49,3 @@ describe("Unarchive patient",() => {
     cy.checkAccessibility();
     })
 });
-
-const getPatientsByFacilityWithOrgQuery = `query GetPatientsByFacilityWithOrg($facilityId: ID!, $pageNumber: Int!, $pageSize: Int!, $archivedStatus: ArchivedStatus, $namePrefixMatch: String, $orgExternalId: String) {
-  patients(
-      facilityId: $facilityId
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-      archivedStatus: $archivedStatus
-      namePrefixMatch: $namePrefixMatch
-      orgExternalId:$orgExternalId
-      ) {
-          internalId
-          firstName
-          lastName
-          birthDate
-         }
-      }`
-
-const archivePatientMutation= `mutation ArchivePatient($patientId: ID!, $isDeleted: Boolean! $orgExternalId: String) {
-      setPatientIsDeleted(
-      id: $patientId
-      deleted: $isDeleted
-      orgExternalId: $orgExternalId
-      ) {
-              id
-        }
-      }`
-
-const whoAmIQuery = `
-  query WhoAmI {
-    whoami {
-      organization {
-        name
-        externalId
-        testingFacility {
-          id
-          name
-        }
-      }
-    }
-  }
-`
