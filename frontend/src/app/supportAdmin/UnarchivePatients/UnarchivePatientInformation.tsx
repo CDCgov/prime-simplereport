@@ -108,22 +108,25 @@ const UnarchivePatientInformation = ({
       )}
       {!displayInstructions && !loading && (
         <div className="usa-card__header display-block">
-          <h2 className="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-top-0 margin-bottom-0">
-            {displayFacilityName()}
-          </h2>
-          <div className="sr-showing-patients-on-page margin-top-3">
-            {loading && "Loading..."}
-            {displayPagination() && (
-              <>
-                Showing{" "}
-                {(currentPage - 1) * unarchivePatientState.entriesPerPage + 1}-
-                {Math.min(
-                  unarchivePatientState.entriesPerPage * currentPage,
-                  unarchivePatientState.patientsCount ?? 0
-                )}{" "}
-                of {unarchivePatientState.patientsCount}
-              </>
-            )}
+          <div className="display-flex flex-wrap flex-row">
+            <h2 className="margin-right-4 margin-bottom-1">
+              {displayFacilityName()}
+            </h2>
+            <div className="sr-showing-patients-on-page display-flex flex-align-center">
+              {loading && "Loading..."}
+              {displayPagination() && (
+                <>
+                  Showing{" "}
+                  {(currentPage - 1) * unarchivePatientState.entriesPerPage + 1}
+                  -
+                  {Math.min(
+                    unarchivePatientState.entriesPerPage * currentPage,
+                    unarchivePatientState.patientsCount ?? 0
+                  )}{" "}
+                  of {unarchivePatientState.patientsCount}
+                </>
+              )}
+            </div>
           </div>
           <div className=" sr-patient-list">
             <table className="usa-table usa-table--borderless width-full">
