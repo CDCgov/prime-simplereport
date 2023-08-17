@@ -29,7 +29,8 @@ export const Escalations = () => {
                     information about the escalation in{" "}
                     <a
                       target="_blank"
-                      href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61" rel="noreferrer"
+                      href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61"
+                      rel="noreferrer"
                     >
                       the Smartsheet tracker
                     </a>
