@@ -13,6 +13,7 @@ import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
 import { GraphQLError } from "graphql/error";
 import { MemoryRouter } from "react-router-dom";
+import { configureAxe, toHaveNoViolations } from "jest-axe";
 
 import {
   ArchivedStatus,
@@ -68,8 +69,16 @@ export const mockOrg2: UnarchivePatientOrganization = {
   facilities: [],
 };
 
+const axe = configureAxe({
+  rules: {
+    // disable landmark rules when testing isolated components.
+    region: { enabled: false },
+  },
+});
+
 const mockNavigate = jest.fn();
 const mockLocation = jest.fn();
+expect.extend(toHaveNoViolations);
 
 jest.mock("react-router-dom", () => {
   const original = jest.requireActual("react-router-dom");
@@ -132,6 +141,7 @@ describe("Unarchive patient", () => {
     expect(screen.getByLabelText("Organization *")).toBeInTheDocument();
     expect(screen.getByLabelText("Testing facility *")).toBeInTheDocument();
     expect(screen.getByText("Search")).toBeEnabled();
+    expect(await axe(document.body)).toHaveNoViolations();
     // selecting an org with no facilities
     await selectDropdown("Organization *", mockOrg2.name);
     await waitFor(() =>
@@ -268,6 +278,7 @@ describe("Unarchive patient", () => {
     await clickSearch();
     await waitForElementToBeRemoved(() => screen.queryAllByText("Loading..."));
     checkPatientResultRows();
+    expect(await axe(document.body)).toHaveNoViolations();
     await act(
       async () => await userEvent.click(screen.getByText("Clear filters"))
     );
@@ -282,6 +293,13 @@ describe("Unarchive patient", () => {
         "Filter by organization and testing facility to display archived patients."
       )
     ).toBeInTheDocument();
+    // show form errors
+    await clickSearch();
+    expect(screen.getByText("Organization is required")).toBeInTheDocument();
+    expect(
+      screen.getByText("Testing facility is required")
+    ).toBeInTheDocument();
+    expect(await axe(document.body)).toHaveNoViolations();
   });
 });
 export const clickSearch = async () => {
