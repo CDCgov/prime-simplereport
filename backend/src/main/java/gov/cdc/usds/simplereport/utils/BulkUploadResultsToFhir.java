@@ -332,7 +332,7 @@ public class BulkUploadResultsToFhir {
     }
 
     if (diseaseName == null) {
-      diseaseName = TestResultRow.fluOnlyTestPerformedLoinc.get(testPerformedCode);
+      diseaseName = TestResultRow.diseaseSpecificLoincMap.get(testPerformedCode);
     }
 
     // code was not passed via api or inferred above: defaulting to the test performed code.
