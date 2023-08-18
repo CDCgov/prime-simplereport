@@ -208,7 +208,7 @@ public class DemoOktaRepository implements OktaRepository {
 
   public UserStatus getUserStatus(String username) {
     if (inactiveUsernames.contains(username)) {
-      return UserStatus.DEPROVISIONED;
+      return UserStatus.SUSPENDED;
     } else {
       return UserStatus.ACTIVE;
     }
@@ -352,7 +352,7 @@ public class DemoOktaRepository implements OktaRepository {
 
   public PartialOktaUser findUser(String username) {
     UserStatus status =
-        inactiveUsernames.contains(username) ? UserStatus.DEPROVISIONED : UserStatus.ACTIVE;
+        inactiveUsernames.contains(username) ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
     boolean isAdmin = adminGroupMemberSet.contains(username);
 
     Optional<OrganizationRoleClaims> orgClaims;

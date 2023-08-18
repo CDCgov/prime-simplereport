@@ -1,0 +1,21 @@
+query findUserByEmail($email: String!) {
+    user(email: $email){
+        id
+        firstName
+        middleName
+        lastName
+        roleDescription
+        role
+        permissions
+        email
+        status
+        organization {
+            testingFacility {
+                id
+                name
+            }
+        }
+        isDeleted
+        status
+    }
+}

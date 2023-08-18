@@ -69,7 +69,10 @@ const ResendActivationEmailModal: React.FC<Props> = ({
             />
             <Button
               className="margin-right-205"
-              onClick={() => onResendActivationEmail(user.id)}
+              onClick={() => {
+                onResendActivationEmail(user.id);
+                onClose();
+              }}
               label="Yes, send email"
             />
           </div>

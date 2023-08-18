@@ -62,7 +62,10 @@ const ResetUserMfaModal: React.FC<Props> = ({ onClose, onResetMfa, user }) => {
             />
             <Button
               className="margin-right-205"
-              onClick={() => onResetMfa(user.id)}
+              onClick={() => {
+                onResetMfa(user.id);
+                onClose();
+              }}
               label="Reset multi-factor authentication"
             />
           </div>

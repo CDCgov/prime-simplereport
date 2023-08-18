@@ -47,6 +47,7 @@ const EditUserEmailModal: React.FC<EditUserEmailModalProps> = ({
    */
   const onSubmit = (formData: EmailFormData) => {
     onEditUserEmail(user.id, formData.email);
+    onClose();
   };
 
   /**
