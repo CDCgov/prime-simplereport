@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { UnarchivePatientState } from "./UnarchivePatient";
@@ -26,6 +26,12 @@ jest.mock("react-router-dom", () => {
 });
 
 describe("unarchive patient information", () => {
+  let handlePaginationClick: jest.Mock;
+
+  beforeEach(() => {
+    handlePaginationClick = jest.fn();
+  });
+
   it("displays instructions on initial state", async () => {
     let unarchivePatientState: UnarchivePatientState = {
       pageUrl: "/admin/unarchive-patient",
@@ -42,6 +48,7 @@ describe("unarchive patient information", () => {
           unarchivePatientState={unarchivePatientState}
           currentPage={1}
           loading={false}
+          handlePaginationClick={handlePaginationClick}
         />
       </MemoryRouter>
     );
@@ -69,6 +76,7 @@ describe("unarchive patient information", () => {
           unarchivePatientState={unarchivePatientState}
           currentPage={1}
           loading={true}
+          handlePaginationClick={handlePaginationClick}
         />
       </MemoryRouter>
     );
@@ -95,6 +103,7 @@ describe("unarchive patient information", () => {
           unarchivePatientState={unarchivePatientState}
           currentPage={1}
           loading={false}
+          handlePaginationClick={handlePaginationClick}
         />
       </MemoryRouter>
     );
@@ -118,6 +127,11 @@ describe("unarchive patient information", () => {
     ).toBeInTheDocument();
     checkTableHeadersExist();
     checkPatientResultRows();
+    // check pagination
+    await act(async () => screen.getAllByText("1")[0].closest("a")?.click());
+    expect(handlePaginationClick).toHaveBeenCalledWith(1);
+    await act(async () => screen.getAllByText("2")[0].closest("a")?.click());
+    expect(handlePaginationClick).toHaveBeenNthCalledWith(2, 2);
   });
   it("displays no results", async () => {
     let unarchivePatientState: UnarchivePatientState = {
@@ -135,6 +149,7 @@ describe("unarchive patient information", () => {
           unarchivePatientState={unarchivePatientState}
           currentPage={1}
           loading={false}
+          handlePaginationClick={handlePaginationClick}
         />
       </MemoryRouter>
     );

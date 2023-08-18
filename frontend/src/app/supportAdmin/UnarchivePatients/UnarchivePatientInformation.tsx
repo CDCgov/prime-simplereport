@@ -18,11 +18,13 @@ interface UnarchivePatientInformationProps {
   unarchivePatientState: UnarchivePatientState;
   currentPage: number;
   loading: boolean;
+  handlePaginationClick: (pageNumber: number) => void;
 }
 const UnarchivePatientInformation = ({
   unarchivePatientState,
   currentPage,
   loading,
+  handlePaginationClick,
 }: UnarchivePatientInformationProps) => {
   const displayInstructions =
     unarchivePatientState.patients === undefined &&
@@ -148,6 +150,7 @@ const UnarchivePatientInformation = ({
                 currentPage={currentPage}
                 entriesPerPage={unarchivePatientState.entriesPerPage}
                 totalEntries={unarchivePatientState.patientsCount ?? 0}
+                onPaginationClick={handlePaginationClick}
               />
             </div>
           )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -76,11 +76,10 @@ const UnarchivePatient = () => {
   const [localState, updateLocalState] =
     useState<UnarchivePatientState>(initialState);
   const { pageNumber } = useParams();
-  const currentPage = pageNumber ? +pageNumber : 1;
+  let currentPage = pageNumber ? +pageNumber : 1;
   const [activeFacility] = useSelectedFacility();
 
   useDocumentTitle(unarchivePatientTitle);
-
   const {
     data: orgsResponse,
     loading: loadingOrgs,
@@ -107,12 +106,16 @@ const UnarchivePatient = () => {
     fetchPolicy: "no-cache",
   });
 
-  const fetchAndSetPatients = async (orgExternalId: string | undefined) => {
+  const fetchAndSetPatients = async (
+    orgExternalId: string | undefined,
+    pageNumber?: number
+  ) => {
     if (localState.orgId && localState.facilityId && orgExternalId) {
+      let pageNumberParam = pageNumber ? pageNumber : currentPage;
       let { data: patientsRes } = await queryGetPatientsByFacilityWithOrg({
         variables: {
           facilityId: localState.facilityId,
-          pageNumber: currentPage - 1,
+          pageNumber: pageNumberParam - 1,
           pageSize: localState.entriesPerPage,
           archivedStatus: ArchivedStatus.Archived,
           orgExternalId: orgExternalId,
@@ -129,13 +132,6 @@ const UnarchivePatient = () => {
   };
 
   const orgs = orgsResponse?.organizations || [];
-
-  useEffect(() => {
-    fetchAndSetPatients(
-      getOrgExternalIdWithInternalId(orgs, localState.orgId)
-    ).then();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
 
   const orgOptions: Option<string>[] =
     orgs.map((org: UnarchivePatientOrganization) => ({
@@ -209,17 +205,15 @@ const UnarchivePatient = () => {
         localState.orgId
       );
       if (orgExternalId) {
+        currentPage = 1;
         await fetchAndSetPatientsCount(orgExternalId);
-        await fetchAndSetPatients(orgExternalId);
-      }
-      // clear pagination on search submit
-      if (currentPage > 1) {
+        await fetchAndSetPatients(orgExternalId, currentPage);
+        // reset url to clear page number from pagination
         navigate(`${localState.pageUrl}${searchParams}`);
       }
     }
   };
 
-  // fix clearing facility options
   const handleClearFilter = () => {
     updateLocalState((prevState) => ({
       ...prevState,
@@ -229,6 +223,12 @@ const UnarchivePatient = () => {
       patientsCount: undefined,
       facilities: [],
     }));
+  };
+  const handlePaginationClick = async (pageNumber: number) => {
+    await fetchAndSetPatients(
+      getOrgExternalIdWithInternalId(orgs, localState.orgId),
+      pageNumber
+    );
   };
 
   return (
@@ -247,6 +247,7 @@ const UnarchivePatient = () => {
           unarchivePatientState={localState}
           currentPage={currentPage}
           loading={loadingPatients || loadingPatientsCount}
+          handlePaginationClick={handlePaginationClick}
         />
       </div>
     </div>
