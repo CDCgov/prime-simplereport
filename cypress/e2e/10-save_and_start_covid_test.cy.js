@@ -43,7 +43,8 @@ describe('Save and start covid test',()=>{
       // a11y scan of edit patient page
       cy.injectSRAxe();
       cy.checkAccessibility();
-      cy.get('input[name="middleName"]').clear().type(testNumber().toString(10));
+      cy.get('input[name="middleName"]').clear();
+      cy.get('input[name="middleName"]').type(testNumber().toString(10));
       cy.get(".prime-save-patient-changes-start-test").click();
     });
 
@@ -159,7 +160,8 @@ describe('Save and start covid test',()=>{
       cy.wait("@GetFacilityQueue", {timeout: 20000});
 
       cy.get(".card-name").contains(patientName).click();
-      cy.get('input[name="middleName"]').clear().type(testNumber().toString(10));
+      cy.get('input[name="middleName"]').clear();
+      cy.get('input[name="middleName"]').type(testNumber().toString(10));
     });
     it("clicks save changes and verifies test queue redirect", () => {
       cy.get(".prime-save-patient-changes").first().click();

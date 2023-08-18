@@ -5,6 +5,7 @@ extend type Query {
   organizations(identityVerified: Boolean): [Organization!]!
   pendingOrganizations: [PendingOrganization!]!
   organization(id: ID!): Organization
+  facilityStats(facilityId: ID!): FacilityStats
 }
 extend type Mutation {
   resendToReportStream(testEventIds: [ID!]!, fhirOnly: Boolean!): Boolean
@@ -53,4 +54,5 @@ extend type Mutation {
   markFacilityAsDeleted(facilityId: ID!, deleted: Boolean!): String
   markOrganizationAsDeleted(organizationId: ID!, deleted: Boolean!): String
   markDeviceTypeAsDeleted(deviceId: ID, deviceName: String):DeviceType
+  sendSupportEscalation: String
 }

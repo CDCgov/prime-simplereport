@@ -4,7 +4,7 @@ import * as flaggedMock from "flagged";
 
 import SupportAdmin from "./SupportAdmin";
 
-describe("SupportAdming", () => {
+describe("SupportAdmin", () => {
   const renderWithRouter = () =>
     render(
       <MemoryRouter>

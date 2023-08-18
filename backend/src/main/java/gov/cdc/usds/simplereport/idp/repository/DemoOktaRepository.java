@@ -388,4 +388,22 @@ public class DemoOktaRepository implements OktaRepository {
     inactiveUsernames.clear();
     allUsernames.clear();
   }
+
+  public Integer getUsersInSingleFacility(Facility facility) {
+    Integer accessCount = 0;
+
+    for (OrganizationRoleClaims existingClaims : usernameOrgRolesMap.values()) {
+      boolean hasAllFacilityAccess =
+          existingClaims.getGrantedRoles().stream()
+              .anyMatch(role -> OrganizationRole.ALL_FACILITIES.getName().equals(role.name()));
+      boolean hasSpecificFacilityAccess =
+          existingClaims.getFacilities().stream()
+              .anyMatch(facilityAccessId -> facility.getInternalId().equals(facilityAccessId));
+      if (!hasAllFacilityAccess && hasSpecificFacilityAccess) {
+        accessCount++;
+      }
+    }
+
+    return accessCount;
+  }
 }

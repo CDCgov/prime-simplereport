@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`App should show error UI 1`] = `
+<div>
+  <p>
+    Server connection error...
+  </p>
+</div>
+`;
+
+exports[`Escalations Renders the page 1`] = `
+<div>
+  <div
+    class="prime-home flex-1"
+  >
+    <div
+      class="grid-container"
+    >
+      <div
+        class="grid-row"
+      >
+        <form
+          class="prime-container card-container"
+        >
+          <div
+            class="usa-card__header"
+          >
+            <h1
+              class="font-heading-lg margin-top-0 margin-bottom-0"
+            >
+              Escalate to engineering
+            </h1>
+          </div>
+          <div
+            class="usa-card__body margin-top-1"
+          >
+            <div
+              class="grid-row grid-gap margin-top-2"
+            >
+              <div
+                class="tablet:grid-col"
+              >
+                <p
+                  class="usa-prose"
+                >
+                  Use the below button to notify the SimpleReport engineering team about a tier 2 escalation. Make sure you've filled out information about the escalation in
+                   
+                  <a
+                    href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61"
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    the Smartsheet tracker
+                  </a>
+                </p>
+                <button
+                  class="usa-button width-half margin-top-2 submit-button"
+                  type="button"
+                >
+                  Submit escalation
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+`;

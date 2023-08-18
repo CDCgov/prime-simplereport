@@ -2,24 +2,24 @@
 
 $site-max-width: 1200px;
 
-$theme-color-prime-blue-lightest: "cyan-5";
-$theme-color-prime-blue-light: "blue-10";
-$theme-color-prime-blue: "blue-50";
-$theme-color-prime-blue-dark: "blue-60";
-$theme-color-prime-blue-darkest: "blue-80v";
+$theme-color-prime-blue-lightest: color("cyan-5");
+$theme-color-prime-blue-light: color("blue-10");
+$theme-color-prime-blue: color("blue-50");
+$theme-color-prime-blue-dark: color("blue-60");
+$theme-color-prime-blue-darkest: color("blue-80v");
 
-$theme-color-prime-blue-cool-light: "blue-cool-30v";
-$theme-color-prime-blue-cool-dark: "blue-cool-60v";
+$theme-color-prime-blue-cool-light: color("blue-cool-30v");
+$theme-color-prime-blue-cool-dark: color("blue-cool-60v");
 
-$theme-color-prime-red-lightest: "red-5";
-$theme-color-prime-red-light: "red-30";
-$theme-color-prime-red: "red-60";
-$theme-color-prime-red-dark: "red-60v";
+$theme-color-prime-red-lightest: color("red-5");
+$theme-color-prime-red-light: color("red-30");
+$theme-color-prime-red: color("red-60");
+$theme-color-prime-red-dark: color("red-60v");
 
-$theme-color-prime-green-lightest: "green-cool-5";
-$theme-color-prime-green-light: "green-cool-20v";
-$theme-color-prime-green: "green-cool-40v";
-$theme-color-prime-green-dark: "green-cool-50";
+$theme-color-prime-green-lightest: color("green-cool-5");
+$theme-color-prime-green-light: color("green-cool-20v");
+$theme-color-prime-green: color("green-cool-40v");
+$theme-color-prime-green-dark: color("green-cool-50");
 
 $theme-color-prime-gray-light: color("gray-10");
 $theme-color-prime-gray: color("gray-30");

@@ -298,14 +298,15 @@ public class FhirConverter {
     ext.setUrl(RACE_EXTENSION_URL);
     var codeable = new CodeableConcept();
     var coding = codeable.addCoding();
-    if (PersonUtils.raceMap.containsKey(race)) {
+    String raceKey = race.toLowerCase();
+    if (StringUtils.isNotBlank(race) && PersonUtils.raceMap.containsKey(raceKey)) {
       if (MappingConstants.UNKNOWN_STRING.equalsIgnoreCase(race)
           || "refused".equalsIgnoreCase(race)) {
         coding.setSystem(NULL_CODE_SYSTEM);
       } else {
         coding.setSystem(RACE_CODING_SYSTEM);
       }
-      coding.setCode(PersonUtils.raceMap.get(race));
+      coding.setCode(PersonUtils.raceMap.get(raceKey));
       codeable.setText(race);
     } else {
       coding.setSystem(NULL_CODE_SYSTEM);
@@ -322,11 +323,12 @@ public class FhirConverter {
       ext.setUrl(ETHNICITY_EXTENSION_URL);
       var codeableConcept = new CodeableConcept();
       var coding = codeableConcept.addCoding().setSystem(ETHNICITY_CODE_SYSTEM);
-      if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicity)) {
+      String ethnicityKey = ethnicity.toLowerCase();
+      if (PersonUtils.ETHNICITY_MAP.containsKey(ethnicityKey)) {
         coding
-            .setCode(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(0))
-            .setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
-        codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicity).get(1));
+            .setCode(PersonUtils.ETHNICITY_MAP.get(ethnicityKey).get(0))
+            .setDisplay(PersonUtils.ETHNICITY_MAP.get(ethnicityKey).get(1));
+        codeableConcept.setText(PersonUtils.ETHNICITY_MAP.get(ethnicityKey).get(1));
       } else {
         coding.setCode(MappingConstants.U_CODE).setDisplay(MappingConstants.UNKNOWN_STRING);
         codeableConcept.setText(MappingConstants.UNKNOWN_STRING);

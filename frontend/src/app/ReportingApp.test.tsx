@@ -97,7 +97,7 @@ const store = {
 
 store.dispatch = mockDispatch;
 
-const WhoAmIQueryMock = {
+export const WhoAmIQueryMock = {
   request: {
     query: WHOAMI_QUERY,
     fetchPolicy: "no-cache",

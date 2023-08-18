@@ -1,0 +1,35 @@
+query GetAllOrganizations {
+    organizations(identityVerified: true){
+        id
+        name
+    }
+}
+
+query GetFacilitiesByOrgId($orgId: ID!) {
+    organization(id: $orgId){
+        name
+        type
+        facilities {
+            name
+            id
+            city
+            state
+            zipCode
+        }
+    }
+}
+
+
+query GetFacilityStats($facilityId: ID!) {
+    facilityStats(facilityId: $facilityId){
+        usersSingleAccessCount
+        patientsSingleAccessCount
+    }
+}
+
+mutation DeleteFacility($facilityId: ID!) {
+    markFacilityAsDeleted(
+        facilityId: $facilityId
+        deleted: true
+    )
+}

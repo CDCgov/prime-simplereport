@@ -27,6 +27,9 @@ okta:
   client:
     org-url: http://localhost:8088
     token: foo
+slack:
+  hook:
+    token: foo
 management:
   endpoints:
     web:
