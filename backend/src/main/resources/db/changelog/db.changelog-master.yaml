@@ -5008,7 +5008,4 @@ databaseChangeLog:
         - sql:
             sql: |
               ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'MISSING_HEADER';
-      rollback:
-        - sql:
-            sql: |
-              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR REMOVE VALUE 'MISSING_HEADER';
+      rollback: ""
