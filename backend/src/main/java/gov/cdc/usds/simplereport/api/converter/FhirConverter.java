@@ -782,6 +782,12 @@ public class FhirConverter {
     observation.setValue(valueCodeableConcept);
   }
 
+  private static int getTestDuration(TestEvent testEvent) {
+    return Optional.ofNullable(testEvent.getDeviceType())
+        .map(DeviceType::getTestLength)
+        .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
+  }
+
   public ServiceRequest convertToServiceRequest(
       @NotNull TestOrder order, ZonedDateTime orderTestDate) {
     ServiceRequestStatus serviceRequestStatus = null;
@@ -874,9 +880,13 @@ public class FhirConverter {
 
     ZonedDateTime dateTested = null;
     if (testEvent.getDateTested() != null) {
+      int testDuration = getTestDuration(testEvent);
       // getDateTested returns a Date representing an exact moment of time so
       // finding a specific timezone for the TestEvent is not required to ensure it is accurate
-      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC);
+      dateTested =
+          ZonedDateTime.ofInstant(
+              testEvent.getDateTested().toInstant().minus(Duration.ofMinutes(testDuration)),
+              ZoneOffset.UTC);
     }
     ZonedDateTime dateIssued = null;
     if (currentDate != null)
@@ -934,10 +944,7 @@ public class FhirConverter {
             ? ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC)
             : null;
 
-    int testDuration =
-        Optional.ofNullable(testEvent.getDeviceType())
-            .map(DeviceType::getTestLength)
-            .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
+    int testDuration = getTestDuration(testEvent);
     ZonedDateTime specimenCollectionDate =
         dateTested != null ? dateTested.minus(Duration.ofMinutes(testDuration)) : null;
 

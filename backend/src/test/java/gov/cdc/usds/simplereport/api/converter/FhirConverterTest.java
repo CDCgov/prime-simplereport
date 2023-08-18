@@ -34,6 +34,7 @@ import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -994,6 +995,15 @@ class FhirConverterTest {
             "$CURRENT_DATE_TIMEZONE",
             new DateTimeType(
                     date, TemporalPrecisionEnum.SECOND, TimeZone.getTimeZone(ZoneOffset.UTC))
+                .getValueAsString());
+
+    expectedSerialized =
+        expectedSerialized.replace(
+            "$EFFECTIVE_DATETIME_ZONE",
+            new DateTimeType(
+                    new Date(date.toInstant().minus(Duration.ofMinutes(15)).toEpochMilli()),
+                    TemporalPrecisionEnum.SECOND,
+                    TimeZone.getTimeZone(ZoneOffset.UTC))
                 .getValueAsString());
 
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
