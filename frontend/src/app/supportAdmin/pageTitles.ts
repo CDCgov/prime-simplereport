@@ -14,5 +14,5 @@ export const orgFacilityColumnTitle = "Organizations & facilities";
 export const devicesColumnTitle = "Devices";
 export const usersAndPatientsColumnTitle = `Users & ${PATIENT_TERM_PLURAL}`;
 
-export const manageFacility = "Manage Facility";
+export const manageFacility = "Manage facility";
 export const unarchivePatientTitle = `Unarchive ${PATIENT_TERM}`;
