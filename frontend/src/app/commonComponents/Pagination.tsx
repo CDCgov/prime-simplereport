@@ -60,7 +60,6 @@ const Pagination = ({
     children: React.ReactNode;
   }) => {
     let pageNumber = getNumberFromUrlPath(props.to);
-    // let onLinkClick = onPaginationClick && pageNumber ? onPaginationClick(pageNumber) : null;
     return (
       <LinkWithQuery
         to={`${baseRoute}/${props.to}`}
