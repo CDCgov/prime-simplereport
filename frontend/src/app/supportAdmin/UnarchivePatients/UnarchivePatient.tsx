@@ -111,7 +111,7 @@ const UnarchivePatient = () => {
     pageNumber?: number
   ) => {
     if (localState.orgId && localState.facilityId && orgExternalId) {
-      let pageNumberParam = pageNumber ? pageNumber : currentPage;
+      let pageNumberParam = pageNumber || currentPage;
       let { data: patientsRes } = await queryGetPatientsByFacilityWithOrg({
         variables: {
           facilityId: localState.facilityId,
