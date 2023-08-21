@@ -7,29 +7,31 @@ import {
 import Button from "../../commonComponents/Button/Button";
 
 interface SearchResultsProps {
-  devices: DeviceType[];
-  setSelectedDevice: (d: DeviceType | null) => void;
+  items: DeviceType[];
+  setSelectedItem: (d: DeviceType | null) => void;
   shouldShowSuggestions: boolean;
   loading: boolean;
   dropDownRef?: React.RefObject<HTMLDivElement>;
   queryString?: string;
+  multiSelect?: boolean;
 }
 
 const DeviceSearchResults = (props: SearchResultsProps) => {
   const {
-    devices,
-    setSelectedDevice,
+    items,
+    setSelectedItem,
     shouldShowSuggestions,
     loading,
     dropDownRef,
     queryString,
+    multiSelect,
   } = props;
 
   let resultsContent;
 
   if (loading) {
     resultsContent = <p>Searching...</p>;
-  } else if (devices.length === 0) {
+  } else if (items.length === 0) {
     resultsContent = (
       <div
         className={
@@ -37,14 +39,29 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
         }
       >
         <div className="margin-bottom-105">
-          No device found matching <strong>{queryString}</strong>.
+          {queryString ? (
+            <>
+              No device found matching <strong>{queryString}</strong>.
+            </>
+          ) : (
+            <>No devices found.</>
+          )}
         </div>
-        <span>
-          Please try a different search term from the device's name or
-          manufacturer. <br /> If you need help, contact{" "}
-          <a href="mailto:support@simplereport.gov">support@simplereport.gov</a>
-          .
-        </span>
+        {multiSelect ? (
+          <span>
+            Please check the list of added devices or try a different search
+            term from the device's name or manufacturer.
+          </span>
+        ) : (
+          <span>
+            Please try a different search term from the device's name or
+            manufacturer. <br /> If you need help, contact{" "}
+            <a href="mailto:support@simplereport.gov">
+              support@simplereport.gov
+            </a>
+            .
+          </span>
+        )}
       </div>
     );
   } else {
@@ -62,48 +79,52 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
           </tr>
         </thead>
         <tbody>
-          {devices.map((d, idx) => (
-            <tr key={d.internalId}>
-              <td id={`device-${idx}`}>{d.manufacturer}</td>
-              <td id={`model-name-${idx}`}>{d.model}</td>
-              <td id={`test-type-${idx}`}>
-                {d.supportedDiseaseTestPerformed
-                  ?.reduce(
-                    (
-                      diseaseNames: Array<String>,
-                      disease: SupportedDiseaseTestPerformed
-                    ) => {
-                      const diseaseName = disease.supportedDisease.name;
+          {items.map((d, idx) => {
+            return (
+              <tr key={d.internalId} aria-label={`device-${idx}`}>
+                <td id={`device-${idx}`}>{d.manufacturer}</td>
+                <td id={`model-name-${idx}`}>{d.model}</td>
+                <td id={`test-type-${idx}`}>
+                  {d.supportedDiseaseTestPerformed
+                    ?.reduce(
+                      (
+                        diseaseNames: Array<String>,
+                        disease: SupportedDiseaseTestPerformed
+                      ) => {
+                        const diseaseName = disease.supportedDisease.name;
 
-                      if (!diseaseNames.includes(diseaseName)) {
-                        diseaseNames.push(diseaseName);
-                      }
+                        if (!diseaseNames.includes(diseaseName)) {
+                          diseaseNames.push(diseaseName);
+                        }
 
-                      return diseaseNames;
-                    },
-                    []
-                  )
-                  .join(", ")}
-              </td>
-              <td id={`view-${idx}`}>
-                {
-                  <Button
-                    label={"Select"}
-                    ariaLabel={`Select ${d.manufacturer} ${d.model}`}
-                    onClick={() => {
-                      setSelectedDevice(d);
-                    }}
-                  />
-                }
-              </td>
-            </tr>
-          ))}
+                        return diseaseNames;
+                      },
+                      []
+                    )
+                    .join(", ")}
+                </td>
+                <td id={`view-${idx}`}>
+                  {
+                    <Button
+                      label={multiSelect ? "Add" : "Select"}
+                      ariaLabel={`Select ${d.manufacturer} ${d.model}`}
+                      onClick={() => {
+                        setSelectedItem(d);
+                      }}
+                    />
+                  }
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     );
   }
+
   const results = (
     <div
+      id={"multi-select-deviceTypes-list"}
       className="card-container shadow-3 results-dropdown"
       ref={dropDownRef}
       aria-live="polite"
@@ -118,6 +139,8 @@ const DeviceSearchResults = (props: SearchResultsProps) => {
       </div>
     </div>
   );
+
   return <>{shouldShowSuggestions && results}</>;
 };
+
 export default DeviceSearchResults;

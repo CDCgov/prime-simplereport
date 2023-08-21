@@ -9,15 +9,19 @@ type RequiredExceptFor<T, TOptional extends keyof T> = Pick<
 > &
   Partial<T>;
 
-interface FacilityFormDeviceType {
-  internalId: string;
-  name: string;
-  testLength?: number;
-}
-
 interface SpecimenType {
   internalId: string;
   name: string;
+}
+
+interface FacilityFormDeviceType {
+  internalId: string;
+  name: string;
+  model: string;
+  manufacturer: string;
+  supportedDiseaseTestPerformed: any;
+  testLength?: number;
+  swabTypes?: SpecimenType[];
 }
 
 interface Address {

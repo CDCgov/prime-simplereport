@@ -1,4 +1,4 @@
-import { render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 import Pagination from "./Pagination";
@@ -44,5 +44,21 @@ describe("Pagination", () => {
       );
       expect(container).toMatchSnapshot(`Pagination '${name}'`);
     });
+  });
+
+  it("should handle onClick event", async () => {
+    let onPaginationClick: jest.Mock = jest.fn();
+    let mockProp = {
+      ...defaults,
+      onPaginationClick,
+    };
+    const props = { ...mockProp, ...testCases["with baseRoute"] } as any;
+    render(
+      <MemoryRouter>
+        <Pagination {...props} />
+      </MemoryRouter>
+    );
+    await act(async () => screen.getAllByText("1")[0].closest("a")?.click());
+    expect(onPaginationClick).toHaveBeenCalledWith(1);
   });
 });

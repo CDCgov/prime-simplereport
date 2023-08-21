@@ -19,6 +19,7 @@ import { useOutsideClick } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
+import { SearchableDevice, searchFields } from "../../utils/device";
 
 import DeviceSearchResults from "./DeviceSearchResults";
 import DeviceDetails from "./DeviceDetails";
@@ -27,11 +28,10 @@ interface Props {
   deviceOptions: DeviceType[];
 }
 
-const searchFields = ["manufacturer", "name", "model"] as const;
-type DeviceSearchFields = (typeof searchFields)[number];
-type SearchableDevice = Pick<DeviceType, DeviceSearchFields>;
-
-const searchDevices = (devices: DeviceType[], query: string): DeviceType[] => {
+export const searchDevices = (
+  devices: DeviceType[],
+  query: string
+): DeviceType[] => {
   if (!query) {
     return [];
   }
@@ -130,12 +130,13 @@ const DeviceLookup = (props: Props) => {
             showSubmitButton={false}
           />
           <DeviceSearchResults
-            devices={searchDevices(props.deviceOptions, queryString)}
-            setSelectedDevice={setSelectedDevice}
+            items={searchDevices(props.deviceOptions, queryString)}
+            setSelectedItem={setSelectedDevice}
             shouldShowSuggestions={showDropdown}
             loading={debounced !== queryString}
             queryString={queryString}
             dropDownRef={dropDownRef}
+            multiSelect={false}
           />
           {selectedDevice && <DeviceDetails device={selectedDevice} />}
         </div>

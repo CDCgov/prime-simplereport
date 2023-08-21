@@ -4738,7 +4738,7 @@
   resolved "https://registry.yarnpkg.com/@storybook/mdx2-csf/-/mdx2-csf-1.1.0.tgz#97f6df04d0bf616991cc1005a073ac004a7281e5"
   integrity sha512-TXJJd5RAKakWx4BtpwvSNdgTDkKM6RkXU8GK34S/LhidQ5Pjz3wcnqb0TxEkfhK/ztbP8nKHqXFwLfa2CYkvQw==
 
-"@storybook/node-logger@7.1.1", "@storybook/node-logger@^7.1.1":
+"@storybook/node-logger@7.1.1":
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.1.1.tgz#d305960c10fd591bad37b52b429e72caafa0b028"
   integrity sha512-gnAuNM+wNoOcGnUM6hLsYV0lwUgRI39Ep/Pp3VF1oXZAthEyrQRm7ImbeAdt93ObPc9DZgqTx9OI8QnErZuJiA==
@@ -4747,6 +4747,11 @@
   version "7.2.3"
   resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.2.3.tgz#42efba67bd4dceba71988e1c1890e8fae8bb1232"
   integrity sha512-7oUDf3kNtUXn04tMscvUVb9joYT11vPN25OAoCoLVP/qvED1EdDmAaNC2MzBzCatzGmto67aGbY5F4gjC+sY1w==
+
+"@storybook/node-logger@^7.3.2":
+  version "7.3.2"
+  resolved "https://registry.yarnpkg.com/@storybook/node-logger/-/node-logger-7.3.2.tgz#c8fea7b87d63c7b50757646af990d7cf13f7c71e"
+  integrity sha512-XCCYiLa5mQ7KeDQcZ4awlyWDmtxJHLIJeedvXx29JUNztUjgwyon9rlNvxtxtGj6171zgn9MERFh920WyJOOOQ==
 
 "@storybook/postinstall@7.1.1":
   version "7.1.1"
@@ -15999,10 +16004,10 @@ react-transition-group@^4.4.5:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react-uid@^2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/react-uid/-/react-uid-2.3.2.tgz#09107543bb3184b53ca70275adb919217b94974d"
-  integrity sha512-oeaoT4YOjsqHdrEJoO8SONNNBsoGh7AJPbsNqRK6Dv8UMdctWxA4ncj9gAA/Odki5g0GZaDSR7HydBJ8HxwgNg==
+react-uid@^2.3.3:
+  version "2.3.3"
+  resolved "https://registry.yarnpkg.com/react-uid/-/react-uid-2.3.3.tgz#6a485ccc868555997f3506c6db97a3e735d97adf"
+  integrity sha512-iNpDovcb9qBpBTo8iUgqRSQOS8GV3bWoNaTaUptHkXtAooXSo0OWe7vN6TqqB8x3x0bNBbQx96kkmSltQ5h9kQ==
   dependencies:
     tslib "^2.0.0"
 

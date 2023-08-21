@@ -286,12 +286,14 @@ public class OrganizationInitializingService {
       List<ConfigPatientRegistrationLink> patientRegistrationLinks,
       Map<String, Facility> facilitiesByName) {
     for (ConfigPatientRegistrationLink p : patientRegistrationLinks) {
-      String orgExternalId = p.getOrganizationExternalId();
-      String facilityName = p.getFacilityName();
-      if (null != orgExternalId) {
-        createPatientSelfRegistrationLinkWithOrg(p, orgExternalId);
-      } else if (null != p.getFacilityName()) {
-        createPatientSelfRegistrationLinkWithFacility(p, facilityName, facilitiesByName);
+      if (_prlRepository.findByPatientRegistrationLinkIgnoreCase(p.getLink()).isEmpty()) {
+        String orgExternalId = p.getOrganizationExternalId();
+        String facilityName = p.getFacilityName();
+        if (null != orgExternalId) {
+          createPatientSelfRegistrationLinkWithOrg(p, orgExternalId);
+        } else if (null != p.getFacilityName()) {
+          createPatientSelfRegistrationLinkWithFacility(p, facilityName, facilitiesByName);
+        }
       }
     }
   }

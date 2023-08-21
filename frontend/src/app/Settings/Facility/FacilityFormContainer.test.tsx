@@ -15,20 +15,32 @@ import {
   GetFacilitiesDocument as GET_FACILITY_QUERY,
   UpdateFacilityDocument as UPDATE_FACILITY_MUTATION,
   AddFacilityDocument as ADD_FACILITY_MUTATION,
+  DeviceType,
 } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
+import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
 
 import { FacilityFormData, Props as FacilityFormProps } from "./FacilityForm";
 import FacilityFormContainer from "./FacilityFormContainer";
 
-export const deviceTypes: FacilityFormDeviceType[] = [
+export const deviceTypes: DeviceType[] = [
   {
     internalId: "bc0536ea-4564-4291-bbf3-0e7b0731f6e8",
     name: "Fake Device 1",
+    model: "Fake Device 1",
+    manufacturer: "Manufacturer 1",
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+    swabTypes: [],
+    testLength: 10,
   },
   {
     internalId: "ee85bdfb-b6c9-4951-ae30-6c025be4580e",
     name: "Fake Device 2",
+    model: "Device 2",
+    manufacturer: "Manufacturer 2",
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+    swabTypes: [],
+    testLength: 10,
   },
 ];
 

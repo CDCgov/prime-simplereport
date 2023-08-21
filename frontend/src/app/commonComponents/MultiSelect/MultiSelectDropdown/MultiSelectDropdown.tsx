@@ -4,8 +4,11 @@ import React, {
   useEffect,
   useRef,
   Ref,
+  useCallback,
 } from "react";
 import classnames from "classnames";
+
+import { useOutsideClick } from "../../../utils/hooks";
 
 import {
   ActionTypes,
@@ -53,6 +56,8 @@ interface MultiSelectDropDownProps {
   placeholder?: string;
   ariaInvalid?: boolean;
   registrationProps?: RegistrationProps;
+  DropdownComponent?: (props: any) => JSX.Element;
+  getFilteredDropdownComponentItems?: (query: string) => any[];
 }
 
 interface InputProps {
@@ -135,18 +140,20 @@ const handleInputKeyDown =
     } else if (event.key === "Tab") {
       // Clear button is not visible in this case so manually handle focus
       if (state.isOpen) {
-        // If there are filtered options, prevent default
+        // If there are filtered options, prevent default for basic dropdown body
         // If there are "No Results Found", tab over to prevent a keyboard trap
-        if (state.filteredOptions.length > 0) {
-          event.preventDefault();
-          dispatch({
-            type: ActionTypes.FOCUS_OPTION,
-            option: state.filteredOptions[0],
-          });
-        } else {
-          dispatch({
-            type: ActionTypes.BLUR,
-          });
+        if (!state.isExtended) {
+          if (state.filteredOptions.length > 0) {
+            event.preventDefault();
+            dispatch({
+              type: ActionTypes.FOCUS_OPTION,
+              option: state.filteredOptions[0],
+            });
+          } else {
+            dispatch({
+              type: ActionTypes.BLUR,
+            });
+          }
         }
       }
 
@@ -204,6 +211,8 @@ export const MultiSelectDropdown = ({
   placeholder,
   ariaInvalid,
   registrationProps,
+  DropdownComponent,
+  getFilteredDropdownComponentItems,
 }: MultiSelectDropDownProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -214,6 +223,7 @@ export const MultiSelectDropdown = ({
     filteredOptions: options,
     filter: undefined,
     inputValue: "",
+    isExtended: !!DropdownComponent,
   };
 
   const [state, dispatch] = useMultiSelectDropdown(initialState, options);
@@ -277,6 +287,14 @@ export const MultiSelectDropdown = ({
     className
   );
   const listID = `multi-select-${name}-list`;
+  const dropDownRef = useRef(null);
+  const hideOnOutsideClick = useCallback(() => {
+    dispatch({
+      type: state.isOpen ? ActionTypes.CLOSE_LIST : ActionTypes.OPEN_LIST,
+    });
+  }, [dispatch, state.isOpen]);
+
+  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   return (
     <div
@@ -298,6 +316,7 @@ export const MultiSelectDropdown = ({
         aria-label={placeholder}
         aria-labelledby={`label-for-${id}`}
         aria-owns={listID}
+        aria-controls={listID}
         aria-expanded={state.isOpen}
         aria-invalid={ariaInvalid}
         disabled={isDisabled}
@@ -325,53 +344,65 @@ export const MultiSelectDropdown = ({
           &nbsp;
         </button>
       </span>
-      <ul
-        data-testid="multi-select-option-list"
-        tabIndex={-1}
-        id={listID}
-        className="usa-combo-box__list"
-        role="listbox"
-        hidden={!state.isOpen}
-      >
-        {state.filteredOptions.map((option, index) => {
-          const focused = option === state.focusedOption;
-          const itemClasses = classnames("usa-combo-box__list-option", {
-            "usa-combo-box__list-option--focused": focused,
-          });
+      {DropdownComponent && getFilteredDropdownComponentItems ? (
+        <>
+          <DropdownComponent
+            items={getFilteredDropdownComponentItems(state.inputValue)}
+            setSelectedItem={selectOption}
+            shouldShowSuggestions={state.isOpen}
+            queryString={state.inputValue}
+            multiSelect={true}
+            dropDownRef={dropDownRef}
+          />
+        </>
+      ) : (
+        <ul
+          data-testid="multi-select-option-list"
+          tabIndex={-1}
+          id={listID}
+          className="usa-combo-box__list"
+          role="listbox"
+          hidden={!state.isOpen}
+        >
+          {state.filteredOptions.map((option, index) => {
+            const focused = option === state.focusedOption;
+            const itemClasses = classnames("usa-combo-box__list-option", {
+              "usa-combo-box__list-option--focused": focused,
+            });
 
-          return (
-            <li
-              ref={focused ? itemRef : null}
-              value={option.value}
-              key={option.value}
-              className={itemClasses}
-              tabIndex={focused ? 0 : -1}
-              role="option"
-              aria-selected={focused}
-              aria-setsize={64}
-              aria-posinset={index + 1}
-              id={listID + `--option-${index}`}
-              onKeyDown={handleListItemKeyDown(dispatch, state, selectOption)}
-              onBlur={handleListItemBlur}
-              data-testid={`multi-select-option-${option.value}`}
-              onMouseMove={(): void =>
-                dispatch({ type: ActionTypes.FOCUS_OPTION, option: option })
-              }
-              onClick={(): void => {
-                selectOption(option);
-              }}
-            >
-              {option.label}
+            return (
+              <li
+                ref={focused ? itemRef : null}
+                value={option.value}
+                key={option.value}
+                className={itemClasses}
+                tabIndex={focused ? 0 : -1}
+                role="option"
+                aria-selected={focused}
+                aria-setsize={64}
+                aria-posinset={index + 1}
+                id={listID + `--option-${index}`}
+                onKeyDown={handleListItemKeyDown(dispatch, state, selectOption)}
+                onBlur={handleListItemBlur}
+                data-testid={`multi-select-option-${option.value}`}
+                onMouseMove={(): void =>
+                  dispatch({ type: ActionTypes.FOCUS_OPTION, option: option })
+                }
+                onClick={(): void => {
+                  selectOption(option);
+                }}
+              >
+                {option.label}
+              </li>
+            );
+          })}
+          {state.filteredOptions.length === 0 && (
+            <li className="usa-combo-box__list-option--no-results">
+              {noResults || "No results found"}
             </li>
-          );
-        })}
-        {state.filteredOptions.length === 0 ? (
-          <li className="usa-combo-box__list-option--no-results">
-            {noResults || "No results found"}
-          </li>
-        ) : null}
-      </ul>
-
+          )}
+        </ul>
+      )}
       <div className="usa-combo-box__status usa-sr-only" role="status"></div>
     </div>
   );

@@ -12,5 +12,5 @@ interface DeviceType {
     testkitNameId?: string;
     equipmentUid?: string;
     testOrderedLoincCode: string;
-  };
+  }[];
 }
