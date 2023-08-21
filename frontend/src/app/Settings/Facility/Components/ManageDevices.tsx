@@ -1,8 +1,11 @@
 import React from "react";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
+import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
+import "./ManageDevices.scss";
 import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { FacilityFormData } from "../FacilityForm";
+import { searchFacilityFormDevices } from "../../../utils/device";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
@@ -21,15 +24,26 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
-  const getDeviceTypeOptions = Array.from(
+  const deviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
-      label: device.name,
+      label: device.model,
       value: device.internalId,
     }))
   );
 
+  const getFilteredDevices = (
+    deviceIds: string[]
+  ): FacilityFormDeviceType[] => {
+    return (deviceTypes ?? []).filter((d) => deviceIds.includes(d.internalId));
+  };
+
+  const searchDevicesByInput = (inputValue: string) => {
+    const deviceIds = deviceTypeOptions.map((d) => d.value);
+    return searchFacilityFormDevices(getFilteredDevices(deviceIds), inputValue);
+  };
+
   return (
-    <div className="prime-container card-container">
+    <div className="prime-container card-container device-settings">
       <div className="usa-card__header">
         <h2 className="font-heading-lg">Manage devices</h2>
       </div>
@@ -45,11 +59,13 @@ const ManageDevices: React.FC<Props> = ({
           label="Device types"
           name="deviceTypes"
           onChange={onChange}
-          options={getDeviceTypeOptions}
+          options={deviceTypeOptions}
           initialSelectedValues={formCurrentValues.devices}
           validationStatus={errors?.devices?.type ? "error" : "success"}
           required
-          placeholder="Add device"
+          placeholder="Search for a device to add it"
+          DropdownComponent={DeviceSearchResults}
+          getFilteredDropdownComponentItems={searchDevicesByInput}
           errorMessage={errors?.devices?.message}
           registrationProps={registrationProps}
         />

@@ -1122,6 +1122,12 @@ export type GetFacilitiesQuery = {
     __typename?: "DeviceType";
     internalId: string;
     name: string;
+    model: string;
+    manufacturer: string;
+    supportedDiseaseTestPerformed: Array<{
+      __typename?: "SupportedDiseaseTestPerformed";
+      supportedDisease: { __typename?: "SupportedDisease"; name: string };
+    }>;
   }>;
 };
 
@@ -2771,6 +2777,13 @@ export const GetFacilitiesDocument = gql`
     deviceTypes {
       internalId
       name
+      model
+      manufacturer
+      supportedDiseaseTestPerformed {
+        supportedDisease {
+          name
+        }
+      }
     }
   }
 `;

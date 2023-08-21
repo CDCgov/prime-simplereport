@@ -452,6 +452,7 @@ Object {
                         id="45"
                       >
                         <input
+                          aria-controls="multi-select-swabTypes-list"
                           aria-expanded="false"
                           aria-invalid="false"
                           aria-labelledby="label-for-45"
@@ -1216,6 +1217,7 @@ Object {
                       id="45"
                     >
                       <input
+                        aria-controls="multi-select-swabTypes-list"
                         aria-expanded="false"
                         aria-invalid="false"
                         aria-labelledby="label-for-45"

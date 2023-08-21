@@ -33,6 +33,8 @@ export type MultiSelectProps = {
   inputProps?: JSX.IntrinsicElements["input"];
   placeholder?: string;
   registrationProps?: RegistrationProps;
+  DropdownComponent?: (props: any) => JSX.Element;
+  getFilteredDropdownComponentItems?: (inputValue: string) => any[];
 };
 
 type PillProps = {
@@ -74,6 +76,8 @@ export const MultiSelect = ({
   initialSelectedValues,
   placeholder,
   registrationProps,
+  DropdownComponent,
+  getFilteredDropdownComponentItems,
 }: MultiSelectProps): React.ReactElement => {
   const isDisabled = !!disabled;
 
@@ -105,6 +109,16 @@ export const MultiSelect = ({
     setSelectedItems(Array.from(new Set(newSelectedItems)));
     setAvailableOptions(
       availableOptions.filter((_option) => _option.value !== option.value)
+    );
+  };
+
+  const onItemAdded = (option: any) => {
+    const newSelectedItems = selectedItems
+      ? [...selectedItems, option.internalId]
+      : [option.internalId];
+    setSelectedItems(Array.from(new Set(newSelectedItems)));
+    setAvailableOptions(
+      availableOptions.filter((_option) => _option.value !== option.internalId)
     );
   };
 
@@ -169,17 +183,20 @@ export const MultiSelect = ({
           {getLabel(id)}
           {getErrorMessage(id)}
           {getHintText()}
-
           <MultiSelectDropdown
             id={id}
             name={name}
             options={availableOptions}
-            onChange={onItemSelected}
+            onChange={DropdownComponent ? onItemAdded : onItemSelected}
             className="multi-select-dropdown"
             disabled={isDisabled}
             placeholder={placeholder}
             ariaInvalid={validationStatus === "error"}
             registrationProps={registrationProps}
+            DropdownComponent={DropdownComponent}
+            getFilteredDropdownComponentItems={
+              getFilteredDropdownComponentItems
+            }
           />
           <fieldset
             className={`fieldset--unstyled pill-container${
