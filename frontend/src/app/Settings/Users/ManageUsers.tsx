@@ -10,10 +10,11 @@ import {
   useGetUserLazyQuery,
   UserPermission,
 } from "../../../generated/graphql";
+import { UserHeading } from "../../commonComponents/UserDetails/UserHeadings";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
-import { isUserActive, isUserSelf, UserHeading } from "./UserDetailUtils";
+import { isUserActive, isUserSelf } from "./UserDetailUtils";
 import {
   LimitedUser,
   SettingsUser,
@@ -427,10 +428,9 @@ const ManageUsers: React.FC<Props> = ({
                 user={user}
                 isUserSelf={isUserSelf(user, loggedInUser)}
                 isUpdating={isUpdating}
-                handleResendUserActivationEmail={
-                  handleResendUserActivationEmail
-                }
-                handleReactivateUser={handleReactivateUser}
+                onResendUserActivationEmail={handleResendUserActivationEmail}
+                onReactivateUser={handleReactivateUser}
+                onUndeleteUser={() => {}}
               />
               <nav
                 className="prime-secondary-nav margin-top-4 padding-bottom-0"

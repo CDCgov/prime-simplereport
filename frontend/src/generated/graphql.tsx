@@ -1768,6 +1768,35 @@ export type FindUserByEmailQuery = {
   } | null;
 };
 
+export type UndeleteUserMutationVariables = Exact<{
+  userId: Scalars["ID"];
+}>;
+
+export type UndeleteUserMutation = {
+  __typename?: "Mutation";
+  setUserIsDeleted?: {
+    __typename?: "User";
+    id: string;
+    firstName?: string | null;
+    middleName?: string | null;
+    lastName: string;
+    roleDescription: string;
+    role?: Role | null;
+    permissions: Array<UserPermission>;
+    email: string;
+    status?: string | null;
+    isDeleted?: boolean | null;
+    organization?: {
+      __typename?: "Organization";
+      testingFacility: Array<{
+        __typename?: "Facility";
+        id: string;
+        name: string;
+      }>;
+    } | null;
+  } | null;
+};
+
 export type GetPendingOrganizationsQueryVariables = Exact<{
   [key: string]: never;
 }>;
@@ -5321,6 +5350,71 @@ export type FindUserByEmailLazyQueryHookResult = ReturnType<
 export type FindUserByEmailQueryResult = Apollo.QueryResult<
   FindUserByEmailQuery,
   FindUserByEmailQueryVariables
+>;
+export const UndeleteUserDocument = gql`
+  mutation undeleteUser($userId: ID!) {
+    setUserIsDeleted(id: $userId, deleted: false) {
+      id
+      firstName
+      middleName
+      lastName
+      roleDescription
+      role
+      permissions
+      email
+      status
+      isDeleted
+      organization {
+        testingFacility {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+export type UndeleteUserMutationFn = Apollo.MutationFunction<
+  UndeleteUserMutation,
+  UndeleteUserMutationVariables
+>;
+
+/**
+ * __useUndeleteUserMutation__
+ *
+ * To run a mutation, you first call `useUndeleteUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUndeleteUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [undeleteUserMutation, { data, loading, error }] = useUndeleteUserMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useUndeleteUserMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UndeleteUserMutation,
+    UndeleteUserMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UndeleteUserMutation,
+    UndeleteUserMutationVariables
+  >(UndeleteUserDocument, options);
+}
+export type UndeleteUserMutationHookResult = ReturnType<
+  typeof useUndeleteUserMutation
+>;
+export type UndeleteUserMutationResult =
+  Apollo.MutationResult<UndeleteUserMutation>;
+export type UndeleteUserMutationOptions = Apollo.BaseMutationOptions<
+  UndeleteUserMutation,
+  UndeleteUserMutationVariables
 >;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {

@@ -18,12 +18,12 @@ import {
   GetUserDocument,
   GetUsersAndStatusDocument,
 } from "../../../generated/graphql";
-
-import ManageUsersContainer from "./ManageUsersContainer";
 import {
   ORG_ADMIN_REACTIVATE_COPY,
   SITE_ADMIN_REACTIVATE_COPY,
-} from "./ReactivateUserModal";
+} from "../../commonComponents/UserDetails/ReactivateUserModal";
+
+import ManageUsersContainer from "./ManageUsersContainer";
 
 describe("ManageUsersContainer", () => {
   const mockStore = configureStore([]);
