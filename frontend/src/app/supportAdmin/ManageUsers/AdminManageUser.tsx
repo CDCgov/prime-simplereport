@@ -207,22 +207,18 @@ export const AdminManageUser: React.FC = () => {
   const handleUndeleteUser = async () => {
     await undeleteUser({
       variables: { userId: foundUser?.id as string },
-    }).then((response) => response.data?.setUserIsDeleted);
+    });
+    await retrieveUser();
 
-    const updatedUser = await getUserByEmail({
-      variables: { email: searchEmail },
-    }).then((response) => response.data?.user);
     const fullName = displayFullName(
       foundUser?.firstName,
       foundUser?.middleName,
       foundUser?.lastName
     );
-    setFoundUser({ ...updatedUser } as SettingsUser);
     showSuccess("", `User account undeleted for ${fullName}`);
   };
 
-  const handleSearchClear = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const retrieveUser = async () => {
     getUserByEmail({ variables: { email: searchEmail } }).then(
       ({ data, error }) => {
         if (!data?.user && !error) {
@@ -259,7 +255,10 @@ export const AdminManageUser: React.FC = () => {
       <div className="grid-container">
         <UserSearch
           onClearFilter={handleClearFilter}
-          onSearchClick={handleSearchClear}
+          onSearchClick={(e) => {
+            e.preventDefault();
+            retrieveUser();
+          }}
           onInputChange={handleInputChange}
           searchEmail={searchEmail}
           disableClearFilters={!searchEmail && !foundUser && !displayedError}

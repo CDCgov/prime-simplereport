@@ -623,9 +623,6 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                   </div>
                 </div>
                 <div
-                  class="user-header grid-row flex-row flex-align-center"
-                />
-                <div
                   aria-label="Alert: No facility assigned"
                   class="usa-alert usa-alert--warning"
                   role="region"
