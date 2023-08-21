@@ -359,7 +359,7 @@ export type MutationMoveUserToNewOrganizationArgs = {
   facilitiesToAssign?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
   newOrgExternalId: Scalars["String"];
   roleToAssign?: InputMaybe<Role>;
-  userEmailToMove: Scalars["String"];
+  userToMoveEmail: Scalars["String"];
 };
 
 export type MutationReactivateUserArgs = {
