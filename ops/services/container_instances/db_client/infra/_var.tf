@@ -32,11 +32,6 @@ variable "acr_server" {
   default     = "simplereportacr.azurecr.io"
 }
 
-variable "acr_image_tag" {
-  description = "Database client ACR tag to deploy"
-  type        = string
-}
-
 # Client container specifics
 variable "subnet_id" {
   description = "The subnet to deploy the container instance to"
