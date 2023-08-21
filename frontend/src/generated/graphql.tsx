@@ -1783,23 +1783,8 @@ export type UndeleteUserMutation = {
   setUserIsDeleted?: {
     __typename?: "User";
     id: string;
-    firstName?: string | null;
-    middleName?: string | null;
-    lastName: string;
-    roleDescription: string;
-    role?: Role | null;
-    permissions: Array<UserPermission>;
     email: string;
-    status?: string | null;
     isDeleted?: boolean | null;
-    organization?: {
-      __typename?: "Organization";
-      testingFacility: Array<{
-        __typename?: "Facility";
-        id: string;
-        name: string;
-      }>;
-    } | null;
   } | null;
 };
 
@@ -5416,21 +5401,8 @@ export const UndeleteUserDocument = gql`
   mutation undeleteUser($userId: ID!) {
     setUserIsDeleted(id: $userId, deleted: false) {
       id
-      firstName
-      middleName
-      lastName
-      roleDescription
-      role
-      permissions
       email
-      status
       isDeleted
-      organization {
-        testingFacility {
-          id
-          name
-        }
-      }
     }
   }
 `;

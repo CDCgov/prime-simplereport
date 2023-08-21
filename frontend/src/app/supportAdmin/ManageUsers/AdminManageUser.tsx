@@ -205,18 +205,22 @@ export const AdminManageUser: React.FC = () => {
   };
 
   const handleUndeleteUser = async () => {
-    const updatedUser = await undeleteUser({
+    await undeleteUser({
       variables: { userId: foundUser?.id as string },
     }).then((response) => response.data?.setUserIsDeleted);
+
+    const updatedUser = await getUserByEmail({
+      variables: { email: searchEmail },
+    }).then((response) => response.data?.user);
     const fullName = displayFullName(
       foundUser?.firstName,
       foundUser?.middleName,
       foundUser?.lastName
     );
-    console.log(updatedUser);
     setFoundUser({ ...updatedUser } as SettingsUser);
     showSuccess("", `User account undeleted for ${fullName}`);
   };
+
   const handleSearchClear = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     getUserByEmail({ variables: { email: searchEmail } }).then(
