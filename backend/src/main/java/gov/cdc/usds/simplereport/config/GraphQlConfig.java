@@ -72,9 +72,8 @@ public class GraphQlConfig {
       }
 
       if (exception instanceof RestrictedAccessUserException) {
-        String errorBody = "Contact development team if you need to access this information.";
         String errorMessage =
-            String.format("header: Unauthorized access of site admin account; body: %s", errorBody);
+            "header: Error finding user email; body: Please escalate this issue to the SimpleReport team.";
         return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 

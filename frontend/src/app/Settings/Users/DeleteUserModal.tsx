@@ -66,7 +66,10 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
             />
             <Button
               className="margin-right-205"
-              onClick={() => onDeleteUser(user.id)}
+              onClick={() => {
+                onDeleteUser(user.id);
+                onClose();
+              }}
               label="Yes, I'm sure"
             />
           </div>

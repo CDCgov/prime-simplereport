@@ -10,6 +10,8 @@ import {
   editDevicePageTitle,
   escalationPageTitle,
   identityVerificationPageTitle,
+  manageUserPageTitle,
+  manageFacility,
   orgAccessPageTitle,
   orgFacilityColumnTitle,
   usersAndPatientsColumnTitle,
@@ -66,6 +68,11 @@ const SupportAdmin = () => {
                       {escalationPageTitle}
                     </LinkWithQuery>
                   </li>
+                  <li>
+                    <LinkWithQuery to="/admin/manage-facility">
+                      {manageFacility}
+                    </LinkWithQuery>
+                  </li>
                 </CategoryMenu>
                 <CategoryMenu heading={devicesColumnTitle}>
                   <li>
@@ -80,7 +87,11 @@ const SupportAdmin = () => {
                   </li>
                 </CategoryMenu>
                 <CategoryMenu heading={usersAndPatientsColumnTitle}>
-                  <li></li>
+                  <li>
+                    <LinkWithQuery to="/admin/manage-users">
+                      {manageUserPageTitle}
+                    </LinkWithQuery>
+                  </li>
                 </CategoryMenu>
                 {hivEnabled && (
                   <CategoryMenu heading="Beta">

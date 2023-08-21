@@ -1,6 +1,6 @@
 version: "3.2"
 services:
-  api:
+  dbclient:
     build:
       context: .
       dockerfile: Dockerfile

@@ -72,6 +72,14 @@ exports[`SupportAdmin loads menu categories 1`] = `
                       Escalate to engineering
                     </a>
                   </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-facility"
+                    >
+                      Manage facility
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div
@@ -114,7 +122,14 @@ exports[`SupportAdmin loads menu categories 1`] = `
                 <ul
                   class="usa-list padding-left-2"
                 >
-                  <li />
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-users"
+                    >
+                      Manage users
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -198,6 +213,14 @@ exports[`SupportAdmin loads menu categories including Beta 1`] = `
                       Escalate to engineering
                     </a>
                   </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-facility"
+                    >
+                      Manage facility
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div
@@ -240,7 +263,14 @@ exports[`SupportAdmin loads menu categories including Beta 1`] = `
                 <ul
                   class="usa-list padding-left-2"
                 >
-                  <li />
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-users"
+                    >
+                      Manage users
+                    </a>
+                  </li>
                 </ul>
               </div>
               <div

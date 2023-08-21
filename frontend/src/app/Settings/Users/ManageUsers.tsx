@@ -6,20 +6,23 @@ import { displayFullName } from "../../utils";
 import { showSuccess } from "../../utils/srToast";
 import reload from "../../utils/reload";
 import {
-  UserPermission,
-  useGetUserLazyQuery,
   GetUsersAndStatusQuery,
+  useGetUserLazyQuery,
+  UserPermission,
 } from "../../../generated/graphql";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
-import UserDetail from "./UserDetail";
+import { isUserActive, isUserSelf, UserHeading } from "./UserDetailUtils";
 import {
-  SettingsUser,
   LimitedUser,
+  SettingsUser,
   UserFacilitySetting,
 } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
+import InProgressModal from "./InProgressModal";
+import UserInfoTab from "./UserInfoTab";
+import FacilityAccessTab from "./FacilityAccessTab";
 
 interface Props {
   users: LimitedUser[];
@@ -97,22 +100,12 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
-  const [showEditUserNameModal, updateEditUserNameModal] = useState(false);
-  const [showEditUserEmailModal, updateEditUserEmailModal] = useState(false);
-  const [showResetPasswordModal, updateShowResetPasswordModal] =
-    useState(false);
-  const [showResetMfaModal, updateShowResetMfaModal] = useState(false);
-  const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
-  const [showReactivateUserModal, updateShowReactivateUserModal] =
-    useState(false);
-  const [
-    showResendUserActivationEmailModal,
-    updateShowResendUserActivationEmailModal,
-  ] = useState(false);
   const [isUserEdited, updateIsUserEdited] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [error, setError] = useState<Error>();
-
+  const [navItemSelected, setNavItemSelected] = useState<
+    "User information" | "Facility access"
+  >("User information");
   if (error) {
     throw error;
   }
@@ -139,7 +132,7 @@ const ManageUsers: React.FC<Props> = ({
   }, [activeUser, queryUserWithPermissions]);
 
   // only updates the local state
-  const updateUser: UpdateUser = (key, value) => {
+  const updateLocalUserState: UpdateUser = (key, value) => {
     if (activeUser && userWithPermissions) {
       updateUserWithPermissions({
         ...userWithPermissions,
@@ -163,7 +156,7 @@ const ManageUsers: React.FC<Props> = ({
   };
 
   // proceed with changing the active user
-  const onContinueChangeActiveUser = () => {
+  const handleContinueChangeActiveUser = () => {
     updateIsUserEdited(false);
     updateShowInProgressModal(false);
     if (nextActiveUserId) {
@@ -267,7 +260,6 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
       const fullName = displayFullName(firstName, "", lastName);
-      updateEditUserNameModal(false);
       showSuccess("", `User name changed to ${fullName}`);
       await queryUserWithPermissions();
     } catch (e: any) {
@@ -283,7 +275,6 @@ const ManageUsers: React.FC<Props> = ({
           email: emailAddress,
         },
       });
-      updateEditUserEmailModal(false);
       showSuccess("", `User email address changed to ${emailAddress}`);
       await queryUserWithPermissions();
       await getUsers();
@@ -302,7 +293,6 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowResetPasswordModal(false);
       showSuccess("", `Password reset for ${fullName}`);
     } catch (e: any) {
       setError(e);
@@ -321,7 +311,6 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowResetMfaModal(false);
       showSuccess("", `MFA reset for ${fullName}`);
     } catch (e: any) {
       setError(e);
@@ -350,7 +339,6 @@ const ManageUsers: React.FC<Props> = ({
       await getUsers();
       updateActiveUser(nextUser);
       showSuccess("", `User account removed for ${fullName}`);
-      updateShowDeleteUserModal(false);
     } catch (e: any) {
       setError(e);
     }
@@ -368,7 +356,6 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowReactivateUserModal(false);
       reload();
       showSuccess("", `${fullName} has been reactivated.`);
     } catch (e: any) {
@@ -388,16 +375,13 @@ const ManageUsers: React.FC<Props> = ({
         userWithPermissions?.middleName,
         userWithPermissions?.lastName
       );
-      updateShowResendUserActivationEmailModal(false);
       showSuccess("", `${fullName} has been sent a new invitation.`);
     } catch (e: any) {
       setError(e);
     }
   };
 
-  const user: SettingsUser = userWithPermissions
-    ? userWithPermissions
-    : emptySettingsUser;
+  const user: SettingsUser = userWithPermissions ?? emptySettingsUser;
 
   /**
    * HTML
@@ -434,43 +418,93 @@ const ManageUsers: React.FC<Props> = ({
               users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
             />
-            <UserDetail
-              user={user}
-              isUpdating={isUpdating}
-              loggedInUser={loggedInUser}
-              allFacilities={allFacilities}
-              handleUpdateUser={handleUpdateUser}
-              handleDeleteUser={handleDeleteUser}
-              updateUser={updateUser}
-              showReactivateUserModal={showReactivateUserModal}
-              updateShowReactivateUserModal={updateShowReactivateUserModal}
-              showResendUserActivationEmailModal={
-                showResendUserActivationEmailModal
-              }
-              updateShowResendUserActivationEmailModal={
-                updateShowResendUserActivationEmailModal
-              }
-              showEditUserNameModal={showEditUserNameModal}
-              updateEditUserNameModal={updateEditUserNameModal}
-              showEditUserEmailModal={showEditUserEmailModal}
-              updateEditUserEmailModal={updateEditUserEmailModal}
-              showResetUserPasswordModal={showResetPasswordModal}
-              updateShowResetPasswordModal={updateShowResetPasswordModal}
-              showResetUserMfaModal={showResetMfaModal}
-              updateShowResetMfaModal={updateShowResetMfaModal}
-              showDeleteUserModal={showDeleteUserModal}
-              updateShowDeleteUserModal={updateShowDeleteUserModal}
-              showInProgressModal={showInProgressModal}
-              updateShowInProgressModal={updateShowInProgressModal}
-              isUserEdited={isUserEdited}
-              onContinueChangeActiveUser={onContinueChangeActiveUser}
-              handleReactivateUser={handleReactivateUser}
-              handleEditUserName={handleEditUserName}
-              handleEditUserEmail={handleEditUserEmail}
-              handleResetUserPassword={handleResetUserPassword}
-              handleResetUserMfa={handleResetUserMfa}
-              handleResendUserActivationEmail={handleResendUserActivationEmail}
-            />
+            <div
+              role="tabpanel"
+              aria-labelledby={"user-tab-" + user?.id}
+              className="tablet:grid-col padding-left-3 user-detail-column"
+            >
+              <UserHeading
+                user={user}
+                isUserSelf={isUserSelf(user, loggedInUser)}
+                isUpdating={isUpdating}
+                handleResendUserActivationEmail={
+                  handleResendUserActivationEmail
+                }
+                handleReactivateUser={handleReactivateUser}
+              />
+              <nav
+                className="prime-secondary-nav margin-top-4 padding-bottom-0"
+                aria-label="User action navigation"
+              >
+                <div
+                  role="tablist"
+                  aria-owns={`user-information-tab-id facility-access-tab-id`}
+                  className="usa-nav__secondary-links prime-nav usa-list"
+                >
+                  <div
+                    className={`usa-nav__secondary-item ${
+                      navItemSelected === "User information"
+                        ? "usa-current"
+                        : ""
+                    }`}
+                  >
+                    <button
+                      id={`user-information-tab-id`}
+                      role="tab"
+                      className="usa-button--unstyled text-ink text-no-underline"
+                      onClick={() => setNavItemSelected("User information")}
+                      aria-selected={navItemSelected === "User information"}
+                    >
+                      User information
+                    </button>
+                  </div>
+                  <div
+                    className={`usa-nav__secondary-item ${
+                      navItemSelected === "Facility access" ? "usa-current" : ""
+                    }`}
+                  >
+                    <button
+                      id={`facility-access-tab-id`}
+                      role="tab"
+                      className="usa-button--unstyled text-ink text-no-underline"
+                      onClick={() => setNavItemSelected("Facility access")}
+                      aria-selected={navItemSelected === "Facility access"}
+                    >
+                      Facility access
+                    </button>
+                  </div>
+                </div>
+              </nav>
+              {navItemSelected === "User information" ? (
+                <UserInfoTab
+                  user={user}
+                  isUserActive={isUserActive(user)}
+                  isUserSelf={isUserSelf(user, loggedInUser)}
+                  isUpdating={isUpdating}
+                  onEditUserName={handleEditUserName}
+                  onEditUserEmail={handleEditUserEmail}
+                  onResetUserPassword={handleResetUserPassword}
+                  onResetUserMfa={handleResetUserMfa}
+                  onDeleteUser={handleDeleteUser}
+                />
+              ) : (
+                <FacilityAccessTab
+                  user={user}
+                  isUpdating={isUpdating}
+                  isUserEdited={isUserEdited}
+                  onUpdateUser={handleUpdateUser}
+                  updateLocalUserState={updateLocalUserState}
+                  loggedInUser={loggedInUser}
+                  allFacilities={allFacilities}
+                />
+              )}
+            </div>
+            {showInProgressModal && (
+              <InProgressModal
+                onClose={() => updateShowInProgressModal(false)}
+                onContinue={() => handleContinueChangeActiveUser()}
+              />
+            )}
           </div>
         </div>
       )}
