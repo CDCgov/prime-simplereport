@@ -3,7 +3,7 @@ import { UseFormRegisterReturn } from "react-hook-form";
 
 import Dropdown from "./Dropdown";
 
-type Option<T> = {
+export type Option<T> = {
   label: string;
   value: T;
   disabled?: boolean;
