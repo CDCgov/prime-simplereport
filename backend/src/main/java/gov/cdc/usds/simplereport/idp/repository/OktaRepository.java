@@ -5,10 +5,13 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import org.openapitools.client.model.UserStatus;
 
 /**
@@ -18,55 +21,62 @@ import org.openapitools.client.model.UserStatus;
  */
 public interface OktaRepository {
 
-  Optional<OrganizationRoleClaims> createUser(
-      IdentityAttributes userIdentity,
-      Organization org,
-      Set<Facility> facilities,
-      Set<OrganizationRole> roles,
-      boolean active);
+    Optional<OrganizationRoleClaims> createUser(
+            IdentityAttributes userIdentity,
+            Organization org,
+            Set<Facility> facilities,
+            Set<OrganizationRole> roles,
+            boolean active);
 
-  Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
+    Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
 
-  Optional<OrganizationRoleClaims> updateUserEmail(IdentityAttributes userIdentity, String email);
+    Optional<OrganizationRoleClaims> updateUserEmail(IdentityAttributes userIdentity, String email);
 
-  void reprovisionUser(IdentityAttributes userIdentity);
+    void reprovisionUser(IdentityAttributes userIdentity);
 
-  Optional<OrganizationRoleClaims> updateUserPrivileges(
-      String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
+    Optional<OrganizationRoleClaims> updateUserPrivileges(
+            String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
-  void resetUserPassword(String username);
+    void moveUserToNewOrganization(
+            String userToMoveEmail,
+            Organization org,
+            Set<Facility> facilities,
+            OrganizationRole roles,
+            boolean assignedToAllFacilities);
 
-  void resetUserMfa(String username);
+    void resetUserPassword(String username);
 
-  void setUserIsActive(String username, boolean active);
+    void resetUserMfa(String username);
 
-  void reactivateUser(String username);
+    void setUserIsActive(String username, boolean active);
 
-  void resendActivationEmail(String username);
+    void reactivateUser(String username);
 
-  UserStatus getUserStatus(String username);
+    void resendActivationEmail(String username);
 
-  Set<String> getAllUsersForOrganization(Organization org);
+    UserStatus getUserStatus(String username);
 
-  Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org);
+    Set<String> getAllUsersForOrganization(Organization org);
 
-  void createOrganization(Organization org);
+    Map<String, UserStatus> getAllUsersWithStatusForOrganization(Organization org);
 
-  void activateOrganization(Organization org);
+    void createOrganization(Organization org);
 
-  String activateOrganizationWithSingleUser(Organization org);
+    void activateOrganization(Organization org);
 
-  List<String> fetchAdminUserEmail(Organization org);
+    String activateOrganizationWithSingleUser(Organization org);
 
-  void createFacility(Facility facility);
+    List<String> fetchAdminUserEmail(Organization org);
 
-  void deleteOrganization(Organization org);
+    void createFacility(Facility facility);
 
-  void deleteFacility(Facility facility);
+    void deleteOrganization(Organization org);
 
-  Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
+    void deleteFacility(Facility facility);
 
-  Integer getUsersInSingleFacility(Facility facility);
+    Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 
-  PartialOktaUser findUser(String username);
+    Integer getUsersInSingleFacility(Facility facility);
+
+    PartialOktaUser findUser(String username);
 }
