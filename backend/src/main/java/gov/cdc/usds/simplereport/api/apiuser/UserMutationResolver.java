@@ -27,6 +27,9 @@ public class UserMutationResolver {
 
   private final ApiUserService _us;
 
+  public static final String MOVE_USER_ARGUMENT_ERROR =
+      "Moving a user to a new organization must specify a list of facilities for them to access or allow them access to all facilities";
+
   public UserMutationResolver(ApiUserService us) {
     _us = us;
   }
@@ -171,9 +174,8 @@ public class UserMutationResolver {
       @Argument boolean accessAllFacilities,
       @Argument List<UUID> facilitiesToAssign,
       @Argument Role roleToAssign) {
-    if (!accessAllFacilities && facilitiesToAssign == null) {
-      throw new IllegalGraphqlArgumentException(
-          "Moving a user to a new organization must specify a list of facilities for them to access or allow them access to all facilities");
+    if (!accessAllFacilities && facilitiesToAssign.isEmpty()) {
+      throw new IllegalGraphqlArgumentException(MOVE_USER_ARGUMENT_ERROR);
     }
     List<UUID> facilityToAssignList = facilitiesToAssign == null ? List.of() : facilitiesToAssign;
     _us.moveUserToNewOrganization(

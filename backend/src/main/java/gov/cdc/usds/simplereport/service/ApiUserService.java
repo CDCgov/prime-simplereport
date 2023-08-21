@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.api.apiuser.UserMutationResolver.MOVE_USER_ARGUMENT_ERROR;
+
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
@@ -711,6 +713,10 @@ public class ApiUserService {
       Boolean allFacilitiesAccess,
       Optional<List<UUID>> optFacilityList,
       OrganizationRole newRole) {
+
+    if (!allFacilitiesAccess && optFacilityList.isEmpty()) {
+      throw new IllegalArgumentException(MOVE_USER_ARGUMENT_ERROR);
+    }
 
     Organization newOrg = _orgService.getOrganization(newOrgExternalId);
     Collection<UUID> facilityIdsToGiveAccess =
