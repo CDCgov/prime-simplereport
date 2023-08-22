@@ -177,12 +177,11 @@ public class UserMutationResolver {
     if (!accessAllFacilities && facilitiesToAssign.isEmpty()) {
       throw new IllegalGraphqlArgumentException(MOVE_USER_ARGUMENT_ERROR);
     }
-    List<UUID> facilityToAssignList = facilitiesToAssign == null ? List.of() : facilitiesToAssign;
     _us.moveUserToNewOrganization(
         userToMoveEmail,
         newOrgExternalId,
         accessAllFacilities,
-        Optional.of(facilityToAssignList),
+        Optional.of(facilitiesToAssign),
         roleToAssign.toOrganizationRole());
   }
 }

@@ -1,14 +1,11 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.api.apiuser.UserMutationResolver.MOVE_USER_ARGUMENT_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
@@ -30,12 +27,7 @@ import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -488,13 +480,55 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   }
 
   @Test
-  @WithSimpleReportOrgAdminUser
+  @WithSimpleReportSiteAdminUser
   void moveUserToNewOrganization_assignToAllFacilities_success() {
     initSampleData();
     final String email = "allfacilities@example.com";
-    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+    Organization orgToTestMovementTo = _dataFactory.saveValidOrganization();
+    String orgToMoveExternalId = orgToTestMovementTo.getExternalId();
+    Organization fetchedOrg = _organizationService.getOrganization(orgToMoveExternalId);
 
-    String orgToTestMovementTo = "";
+    _service.moveUserToNewOrganization(
+        email, orgToMoveExternalId, true, Optional.of(List.of()), OrganizationRole.ADMIN);
+    verify(_oktaRepo, times(1))
+        .moveUserToNewOrganization(email, fetchedOrg, Set.of(), OrganizationRole.ADMIN, true);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void moveUserToNewOrganization_assignToAllFalseWithoutFacilities_throwsIllegalArgException() {
+    initSampleData();
+    final String email = "allfacilities@example.com";
+    Organization orgToTestMovementTo = _dataFactory.saveValidOrganization();
+    String moveOrgExternalId = orgToTestMovementTo.getExternalId();
+
+    IllegalArgumentException caught =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                _service.moveUserToNewOrganization(
+                    email,
+                    moveOrgExternalId,
+                    false,
+                    Optional.of(List.of()),
+                    OrganizationRole.USER));
+    assertEquals(MOVE_USER_ARGUMENT_ERROR, caught.getMessage());
+
+    IllegalArgumentException caught2 =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                _service.moveUserToNewOrganization(
+                    email, moveOrgExternalId, false, null, OrganizationRole.USER));
+    assertEquals(MOVE_USER_ARGUMENT_ERROR, caught2.getMessage());
+
+    IllegalArgumentException caught3 =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                _service.moveUserToNewOrganization(
+                    email, moveOrgExternalId, false, OrganizationRole.USER));
+    assertEquals(MOVE_USER_ARGUMENT_ERROR, caught3.getMessage());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {

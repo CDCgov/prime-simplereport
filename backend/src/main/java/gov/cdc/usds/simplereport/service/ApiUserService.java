@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.model.Group;
 import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
@@ -707,14 +708,28 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public void moveUserToNewOrganization(
+  public Map<String, Group> moveUserToNewOrganization(
+      String userToMoveEmail,
+      String newOrgExternalId,
+      Boolean allFacilitiesAccess,
+      OrganizationRole newRole) {
+    return moveUserToNewOrganization(
+        userToMoveEmail, newOrgExternalId, allFacilitiesAccess, Optional.empty(), newRole);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public Map<String, Group> moveUserToNewOrganization(
       String userToMoveEmail,
       String newOrgExternalId,
       Boolean allFacilitiesAccess,
       Optional<List<UUID>> optFacilityList,
       OrganizationRole newRole) {
 
-    if (Boolean.FALSE.equals(allFacilitiesAccess) && optFacilityList.isEmpty()) {
+    Boolean facilityListIsNullOrEmpty =
+        optFacilityList == null
+            || !optFacilityList.isPresent()
+            || optFacilityList.get().size() == 0;
+    if (Boolean.FALSE.equals(allFacilitiesAccess) && facilityListIsNullOrEmpty) {
       throw new IllegalArgumentException(MOVE_USER_ARGUMENT_ERROR);
     }
 
@@ -736,7 +751,7 @@ public class ApiUserService {
           "Facilities with the following id(s) passed in for the user to be assigned weren't found. Check those facility id(s) exist in the specified organization "
               + facilityIdsToGiveAccess);
     }
-    _oktaRepo.moveUserToNewOrganization(
+    return _oktaRepo.moveUserToNewOrganization(
         userToMoveEmail, newOrg, facilitiesToGiveAccessTo, newRole, allFacilitiesAccess);
   }
 }
