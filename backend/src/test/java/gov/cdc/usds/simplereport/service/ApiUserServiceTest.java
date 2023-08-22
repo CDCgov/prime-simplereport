@@ -528,16 +528,8 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
             IllegalArgumentException.class,
             () ->
                 _service.moveUserToNewOrganization(
-                    email, moveOrgExternalId, false, null, OrganizationRole.USER));
-    assertEquals(MOVE_USER_ARGUMENT_ERROR, caught2.getMessage());
-
-    IllegalArgumentException caught3 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () ->
-                _service.moveUserToNewOrganization(
                     email, moveOrgExternalId, false, OrganizationRole.USER));
-    assertEquals(MOVE_USER_ARGUMENT_ERROR, caught3.getMessage());
+    assertEquals(MOVE_USER_ARGUMENT_ERROR, caught2.getMessage());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {

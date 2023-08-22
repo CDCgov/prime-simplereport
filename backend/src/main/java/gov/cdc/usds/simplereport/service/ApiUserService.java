@@ -726,7 +726,7 @@ public class ApiUserService {
       OrganizationRole newRole) {
 
     Boolean facilityListIsNullOrEmpty =
-        optFacilityList == null || !optFacilityList.isPresent() || optFacilityList.get().isEmpty();
+        !optFacilityList.isPresent() || optFacilityList.get().isEmpty();
     if (Boolean.FALSE.equals(allFacilitiesAccess)
         && Boolean.TRUE.equals(facilityListIsNullOrEmpty)) {
       throw new IllegalArgumentException(MOVE_USER_ARGUMENT_ERROR);
