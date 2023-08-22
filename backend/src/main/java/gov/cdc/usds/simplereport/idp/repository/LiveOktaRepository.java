@@ -72,7 +72,7 @@ public class LiveOktaRepository implements OktaRepository {
   private final ApplicationGroupsApi applicationGroupsApi;
   private final String adminGroupName;
 
-  private final String OKTA_ORG_PROFILE_MATCHER = "profile.name sw \"";
+  private static final String OKTA_ORG_PROFILE_MATCHER = "profile.name sw \"";
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,

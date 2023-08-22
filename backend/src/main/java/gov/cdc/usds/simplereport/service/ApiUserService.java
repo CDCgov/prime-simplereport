@@ -714,7 +714,7 @@ public class ApiUserService {
       Optional<List<UUID>> optFacilityList,
       OrganizationRole newRole) {
 
-    if (!allFacilitiesAccess && optFacilityList.isEmpty()) {
+    if (Boolean.FALSE.equals(allFacilitiesAccess) && optFacilityList.isEmpty()) {
       throw new IllegalArgumentException(MOVE_USER_ARGUMENT_ERROR);
     }
 

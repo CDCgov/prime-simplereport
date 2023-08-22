@@ -1599,8 +1599,8 @@ class LiveOktaRepositoryTest {
             "siteadmin@example.com", mockOrgToMoveTo, Set.of(), OrganizationRole.ADMIN, false);
     verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
 
-    assertThat(mappedOrgs.containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)).isTrue();
-    assertThat(mappedOrgs.containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS")).isTrue();
+    assertThat(mappedOrgs).containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest);
+    assertThat(mappedOrgs).containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
   }
 
   @Test
@@ -1623,16 +1623,12 @@ class LiveOktaRepositoryTest {
 
     verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
 
-    assertThat(mappedOrgs.containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS")).isTrue();
-    assertThat(mappedOrgs.containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)).isTrue();
-    assertThat(
-            mappedOrgs.containsKey(
-                "SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID1))
-        .isTrue();
-    assertThat(
-            mappedOrgs.containsKey(
-                "SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID2))
-        .isTrue();
+    assertThat(mappedOrgs).containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
+    assertThat(mappedOrgs).containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest);
+    assertThat(mappedOrgs)
+        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID1);
+    assertThat(mappedOrgs)
+        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID2);
   }
 
   private Set<Facility> generateMockFacilitiesFromUUIDs(List<UUID> facilitiesToGenerate) {
