@@ -1,7 +1,6 @@
 import { OktaUserStatus } from "../../utils/user";
 
 import { SettingsUser } from "./ManageUsersContainer";
-//import "./ManageUsers.scss";
 
 export const isUserActive = (user: SettingsUser) =>
   user.status !== OktaUserStatus.SUSPENDED &&
