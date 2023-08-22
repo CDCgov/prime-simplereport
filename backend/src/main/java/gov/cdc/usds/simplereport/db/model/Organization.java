@@ -39,8 +39,7 @@ public class Organization extends EternalAuditedEntity {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Organization that = (Organization) o;
-    return Objects.equals(externalId, that.externalId)
-        && Objects.equals(getInternalId(), that.getInternalId());
+    return Objects.equals(getInternalId(), that.getInternalId());
   }
 
   @Override
