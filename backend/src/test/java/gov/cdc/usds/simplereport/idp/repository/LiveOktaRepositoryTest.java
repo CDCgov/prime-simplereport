@@ -1599,8 +1599,9 @@ class LiveOktaRepositoryTest {
             "siteadmin@example.com", mockOrgToMoveTo, Set.of(), OrganizationRole.ADMIN, false);
     verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
 
-    assertThat(mappedOrgs).containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest);
-    assertThat(mappedOrgs).containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
+    assertThat(mappedOrgs)
+        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
+        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
   }
 
   @Test
@@ -1623,11 +1624,10 @@ class LiveOktaRepositoryTest {
 
     verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
 
-    assertThat(mappedOrgs).containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
-    assertThat(mappedOrgs).containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest);
     assertThat(mappedOrgs)
-        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID1);
-    assertThat(mappedOrgs)
+        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS")
+        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
+        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID1)
         .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID2);
   }
 
