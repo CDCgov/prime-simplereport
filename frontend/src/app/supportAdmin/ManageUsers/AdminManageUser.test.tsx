@@ -336,7 +336,7 @@ describe("Admin manage users", () => {
       ).toBeInTheDocument();
     });
     it("delete user handler", async () => {
-      const resetUserPasswordResponse = {
+      const deleteUserResponse = {
         request: {
           query: SetUserIsDeletedDocument,
           variables: {
@@ -352,9 +352,10 @@ describe("Admin manage users", () => {
           },
         },
       };
-      renderComponent([...validResponse, resetUserPasswordResponse]);
+      renderComponent([...validResponse, deleteUserResponse]);
       await searchForValidUser();
       fireEvent.click(screen.getAllByText("Delete user")[1]);
+      await screen.findByText(/Remove user/i);
       fireEvent.click(await screen.findByText("Yes, I'm sure"));
 
       expect(
@@ -368,6 +369,7 @@ describe("Admin manage users", () => {
       expect(screen.getByText("Account deleted")).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
     });
+
     it("reactivate user handler", async () => {
       const suspendedUserResponse = {
         request: {
