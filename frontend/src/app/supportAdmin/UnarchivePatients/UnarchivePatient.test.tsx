@@ -13,7 +13,7 @@ import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
 import { GraphQLError } from "graphql/error";
 import { MemoryRouter } from "react-router-dom";
-import { configureAxe, toHaveNoViolations } from "jest-axe";
+import { configureAxe } from "jest-axe";
 
 import {
   ArchivedStatus,
@@ -78,7 +78,6 @@ const axe = configureAxe({
 
 const mockNavigate = jest.fn();
 const mockLocation = jest.fn();
-expect.extend(toHaveNoViolations);
 
 jest.mock("react-router-dom", () => {
   const original = jest.requireActual("react-router-dom");

@@ -4,7 +4,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
-import { configureAxe, toHaveNoViolations } from "jest-axe";
+import { configureAxe } from "jest-axe";
 
 import {
   EditUserEmailDocument,
@@ -64,7 +64,7 @@ const searchForValidUser = async () => {
 };
 const mockStore = createMockStore([]);
 const mockedStore = mockStore({ user: { isAdmin: true } });
-expect.extend(toHaveNoViolations);
+
 const renderComponent = (mocks?: any[]) =>
   render(
     <Provider store={mockedStore}>
