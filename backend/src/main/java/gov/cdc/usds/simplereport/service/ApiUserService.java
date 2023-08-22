@@ -41,7 +41,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.openapitools.client.model.Group;
 import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
@@ -708,7 +707,7 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Map<String, Group> moveUserToNewOrganization(
+  public List<String> moveUserToNewOrganization(
       String userToMoveEmail,
       String newOrgExternalId,
       Boolean allFacilitiesAccess,
@@ -718,7 +717,7 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Map<String, Group> moveUserToNewOrganization(
+  public List<String> moveUserToNewOrganization(
       String userToMoveEmail,
       String newOrgExternalId,
       Boolean allFacilitiesAccess,

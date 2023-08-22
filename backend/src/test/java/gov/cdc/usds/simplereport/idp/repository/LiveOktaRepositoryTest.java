@@ -1594,14 +1594,14 @@ class LiveOktaRepositoryTest {
     Organization mockOrgToMoveTo = mock(Organization.class);
     when(mockOrgToMoveTo.getExternalId()).thenReturn("FOLLOWUP_GROUPS");
 
-    Map<String, Group> mappedOrgs =
+    List<String> assignedGroupIds =
         _repo.moveUserToNewOrganization(
             "siteadmin@example.com", mockOrgToMoveTo, Set.of(), OrganizationRole.ADMIN, false);
     verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
 
-    assertThat(mappedOrgs)
-        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
-        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
+    assertThat(assignedGroupIds)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
   }
 
   @Test
@@ -1618,17 +1618,17 @@ class LiveOktaRepositoryTest {
     Organization mockOrgToMoveTo = mock(Organization.class);
     when(mockOrgToMoveTo.getExternalId()).thenReturn("FOLLOWUP_GROUPS");
 
-    Map<String, Group> mappedOrgs =
+    List<String> assignedGroupIds =
         _repo.moveUserToNewOrganization(
             "siteadmin@example.com", mockOrgToMoveTo, mockFacilities, OrganizationRole.USER, false);
 
     verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
 
-    assertThat(mappedOrgs)
-        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS")
-        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
-        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID1)
-        .containsKey("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID2);
+    assertThat(assignedGroupIds)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS")
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID1)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID2);
   }
 
   private Set<Facility> generateMockFacilitiesFromUUIDs(List<UUID> facilitiesToGenerate) {

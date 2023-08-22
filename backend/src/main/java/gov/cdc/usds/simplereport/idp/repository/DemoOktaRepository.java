@@ -24,7 +24,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.openapitools.client.model.Group;
 import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
@@ -186,15 +185,29 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   @Override
-  public Map<String, Group> moveUserToNewOrganization(
+  public List<String> moveUserToNewOrganization(
       String userToMoveEmail,
       Organization org,
       Set<Facility> facilities,
       OrganizationRole roles,
       boolean allFacilitiesAccess) {
-    log.info("implement me");
-    Map<String, Group> orgMap = new HashMap<>();
-    return orgMap;
+
+    String oldOrgId = usernameOrgRolesMap.get(userToMoveEmail).getOrganizationExternalId();
+    orgUsernamesMap.get(oldOrgId).remove(userToMoveEmail);
+    orgUsernamesMap.get(org.getExternalId()).add(userToMoveEmail);
+    OrganizationRoleClaims newRoleClaims =
+        new OrganizationRoleClaims(
+            org.getExternalId(),
+            facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet()),
+            Set.of(roles, OrganizationRole.getDefault()));
+
+    usernameOrgRolesMap.replace(userToMoveEmail, newRoleClaims);
+
+    // Live Okta repository returns list of Group names, but our demo repo didn't implement
+    // group mappings and it didn't feel worth it to add that implementation since the return is
+    // used
+    // mostly for testing. Return the list of facility ID's in the new org instead
+    return orgFacilitiesMap.get(org.getExternalId()).stream().map(UUID::toString).toList();
   }
 
   public void resetUserPassword(String username) {

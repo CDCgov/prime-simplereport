@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import org.openapitools.client.model.Group;
 import org.openapitools.client.model.UserStatus;
 
 /**
@@ -35,7 +34,7 @@ public interface OktaRepository {
   Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
-  Map<String, Group> moveUserToNewOrganization(
+  List<String> moveUserToNewOrganization(
       String userToMoveEmail,
       Organization org,
       Set<Facility> facilities,
