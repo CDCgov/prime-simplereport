@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -14,6 +14,7 @@ import {
   ResetUserMfaDocument,
   ResetUserPasswordDocument,
   SetUserIsDeletedDocument,
+  UndeleteUserDocument,
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
 import { OktaUserStatus } from "../../utils/user";
@@ -472,5 +473,100 @@ describe("Admin manage users", () => {
         )
       ).toBeInTheDocument();
     });
+  });
+
+  it("Undelete user", async () => {
+    const deletedUserResponse = {
+      request: {
+        query: FindUserByEmailDocument,
+        variables: { email: "ben@example.com" },
+      },
+      result: {
+        data: {
+          user: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            firstName: "Ben",
+            middleName: "Billy",
+            lastName: "Barnes",
+            suffix: "III",
+            email: "ben@example.com",
+            isAdmin: false,
+            roleDescription: "Misconfigured user",
+            permissions: [],
+            role: null,
+            roles: [],
+            status: OktaUserStatus.SUSPENDED,
+            isDeleted: true,
+          },
+        },
+      },
+    };
+
+    const undeletedUserResponse = {
+      request: {
+        query: FindUserByEmailDocument,
+        variables: { email: "ben@example.com" },
+      },
+      result: {
+        data: {
+          user: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            firstName: "Ben",
+            middleName: "Billy",
+            lastName: "Barnes",
+            suffix: "III",
+            email: "ben@example.com",
+            isAdmin: false,
+            roleDescription: "Misconfigured user",
+            permissions: [],
+            role: null,
+            roles: [],
+            status: OktaUserStatus.ACTIVE,
+            isDeleted: false,
+          },
+        },
+      },
+    };
+
+    const undeleteUserResponse = {
+      request: {
+        query: UndeleteUserDocument,
+        variables: {
+          userId: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+        },
+      },
+      result: {
+        data: {
+          setUserIsDeleted: {
+            id: "1cd3b088-e7d0-4be9-9cb7-035e3284d5f5",
+            email: "ben@example.com",
+            isDeleted: false,
+            __typename: "User",
+          },
+        },
+      },
+    };
+    renderComponent([
+      deletedUserResponse,
+      undeleteUserResponse,
+      undeletedUserResponse,
+    ]);
+    await searchForValidUser();
+    expect(document.body).toMatchSnapshot(); // deleted account
+    await screen.findByRole("heading", { name: /barnes, ben billy/i });
+    const undeleteBtn = screen.getByRole("button", { name: /undelete user/i });
+    fireEvent.click(undeleteBtn);
+
+    await screen.findByRole("heading", { name: /undelete barnes, ben billy/i });
+    expect(document.body).toMatchSnapshot(); //confirmation modal
+    const confirmUndeleteBtn = screen.getByRole("button", {
+      name: /yes, undelete user/i,
+    });
+    fireEvent.click(confirmUndeleteBtn);
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("heading", { name: /undelete barnes, ben billy/i })
+      ).not.toBeInTheDocument()
+    );
   });
 });
