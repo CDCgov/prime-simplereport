@@ -9,6 +9,7 @@ import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactiva
 import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
 
 import { SpecialStatusNotice } from "./SpecialStatusNotice";
+import "./UserHeading.scss";
 
 const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
   if (

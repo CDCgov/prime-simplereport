@@ -9,6 +9,7 @@ import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import ResetUserMfaModal from "./ResetUserMfaModal";
 import EditUserNameModal from "./EditUserNameModal";
 import EditUserEmailModal from "./EditUserEmailModal";
+import "./UserInfoTab.scss";
 
 interface UserInfoTabProps {
   user: SettingsUser;
