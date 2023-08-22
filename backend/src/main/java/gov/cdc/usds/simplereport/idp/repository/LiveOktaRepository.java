@@ -349,7 +349,7 @@ public class LiveOktaRepository implements OktaRepository {
 
     groupsToUnassign.stream()
         // only match on the org-related group ids and not the Okta-wide orgs like "Everyone"
-        .filter(g -> g.getProfile().getName().contains("SR-DEV-TENANT"))
+        .filter(g -> g.getProfile().getName().contains("TENANT"))
         .forEach(g -> groupApi.unassignUserFromGroup(g.getId(), oktaUserToMove.getId()));
 
     // add them to the new groups
