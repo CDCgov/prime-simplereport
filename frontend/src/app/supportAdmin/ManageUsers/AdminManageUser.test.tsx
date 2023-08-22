@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
@@ -14,6 +14,7 @@ import {
   ResetUserMfaDocument,
   ResetUserPasswordDocument,
   SetUserIsDeletedDocument,
+  UndeleteUserDocument,
   UpdateUserNameDocument,
 } from "../../../generated/graphql";
 import { OktaUserStatus } from "../../utils/user";
@@ -357,16 +358,16 @@ describe("Admin manage users", () => {
       await screen.findByText(/Remove user/i);
       fireEvent.click(await screen.findByText("Yes, I'm sure"));
 
-      expect(
-        await screen.findByText("User account removed for Barnes, Ben Billy")
-      ).toBeInTheDocument();
       expect(await screen.findByText("Edit name")).toBeDisabled();
+      expect(await axe(document.body)).toHaveNoViolations();
       expect(screen.getByText("Edit email")).toBeDisabled();
       expect(screen.getByText("Send password reset email")).toBeDisabled();
       expect(screen.getByText("Reset MFA")).toBeDisabled();
       expect(screen.queryByText("Delete user")).not.toBeInTheDocument();
       expect(screen.getByText("Account deleted")).toBeInTheDocument();
-      expect(await axe(document.body)).toHaveNoViolations();
+      expect(
+        await screen.findByText("User account removed for Barnes, Ben Billy")
+      ).toBeInTheDocument();
     });
 
     it("reactivate user handler", async () => {
@@ -476,7 +477,7 @@ describe("Admin manage users", () => {
     });
   });
 
-  /*it("Undelete user", async () => {
+  it("Undelete user", async () => {
     const deletedUserResponse = {
       request: {
         query: FindUserByEmailDocument,
@@ -569,5 +570,5 @@ describe("Admin manage users", () => {
         screen.queryByRole("heading", { name: /undelete barnes, ben billy/i })
       ).not.toBeInTheDocument()
     );
-  });*/
+  });
 });
