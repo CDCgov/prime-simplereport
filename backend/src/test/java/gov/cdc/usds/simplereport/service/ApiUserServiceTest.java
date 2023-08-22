@@ -486,12 +486,12 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     final String email = "allfacilities@example.com";
     Organization orgToTestMovementTo = _dataFactory.saveValidOrganization();
     String orgToMoveExternalId = orgToTestMovementTo.getExternalId();
-    Organization fetchedOrg = _organizationService.getOrganization(orgToMoveExternalId);
 
     _service.moveUserToNewOrganization(
         email, orgToMoveExternalId, true, Optional.of(List.of()), OrganizationRole.ADMIN);
     verify(_oktaRepo, times(1))
-        .moveUserToNewOrganization(email, fetchedOrg, Set.of(), OrganizationRole.ADMIN, true);
+        .moveUserToNewOrganization(
+            email, orgToTestMovementTo, Set.of(), OrganizationRole.ADMIN, true);
   }
 
   @Test
