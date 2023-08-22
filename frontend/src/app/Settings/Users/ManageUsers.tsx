@@ -10,7 +10,7 @@ import {
   useGetUserLazyQuery,
   UserPermission,
 } from "../../../generated/graphql";
-import { UserHeading } from "../../commonComponents/UserDetails/UserHeadings";
+import UserHeading from "../../commonComponents/UserDetails/UserHeading";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";

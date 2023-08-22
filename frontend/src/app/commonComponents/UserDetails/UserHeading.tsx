@@ -26,7 +26,40 @@ const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
   }
   return null;
 };
-export const UserHeading: React.FC<{
+
+const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
+  function getUserStatusText() {
+    if (user.status === OktaUserStatus.ACTIVE) {
+      return (
+        <span className="top-user-status padding-left-0">
+          {capitalizeText(user.role ?? "")}
+        </span>
+      );
+    } else if (user.status === OktaUserStatus.PROVISIONED) {
+      return (
+        <>
+          <PendingIcon />
+          <span className="top-user-status">
+            {formatUserStatus(user.status)}
+          </span>
+        </>
+      );
+    } else if (user.status === OktaUserStatus.SUSPENDED) {
+      return (
+        <>
+          <DeactivatedIcon />
+          <span className="top-user-status">
+            {user.isDeleted ? "Account deleted" : formatUserStatus(user.status)}
+          </span>
+        </>
+      );
+    }
+  }
+
+  return <div className="user-status-subheader">{getUserStatusText()}</div>;
+};
+
+const UserHeading: React.FC<{
   user: SettingsUser;
   isUserSelf?: boolean;
   isUpdating: boolean;
@@ -66,36 +99,4 @@ export const UserHeading: React.FC<{
   );
 };
 
-export const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({
-  user,
-}) => {
-  function getUserStatusText() {
-    if (user.status === OktaUserStatus.ACTIVE) {
-      return (
-        <span className="top-user-status padding-left-0">
-          {capitalizeText(user.role ?? "")}
-        </span>
-      );
-    } else if (user.status === OktaUserStatus.PROVISIONED) {
-      return (
-        <>
-          <PendingIcon />
-          <span className="top-user-status">
-            {formatUserStatus(user.status)}
-          </span>
-        </>
-      );
-    } else if (user.status === OktaUserStatus.SUSPENDED) {
-      return (
-        <>
-          <DeactivatedIcon />
-          <span className="top-user-status">
-            {user.isDeleted ? "Account deleted" : formatUserStatus(user.status)}
-          </span>
-        </>
-      );
-    }
-  }
-
-  return <div className="user-status-subheader">{getUserStatusText()}</div>;
-};
+export default UserHeading;

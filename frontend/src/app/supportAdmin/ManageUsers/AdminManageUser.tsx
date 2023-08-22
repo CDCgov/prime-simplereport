@@ -18,7 +18,7 @@ import { isUserActive } from "../../Settings/Users/UserDetailUtils";
 import { displayFullName } from "../../utils";
 import { OktaUserStatus } from "../../utils/user";
 import UserInfoTab from "../../Settings/Users/UserInfoTab";
-import { UserHeading } from "../../commonComponents/UserDetails/UserHeadings";
+import UserHeading from "../../commonComponents/UserDetails/UserHeading";
 
 import { UserSearch } from "./UserSearch";
 
