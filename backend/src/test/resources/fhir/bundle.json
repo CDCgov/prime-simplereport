@@ -307,7 +307,7 @@
             "value": "$SPECIMEN_IDENTIFIER"
           }
         ],
-        "receivedTime": "2023-07-14T15:52:34+00:00",
+        "receivedTime": "2023-07-14T15:45:34+00:00",
         "collection": {
           "collectedDateTime": "2023-07-14T15:45:34+00:00"
         }

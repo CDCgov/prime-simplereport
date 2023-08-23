@@ -960,7 +960,7 @@ public class FhirConverter {
                     testEvent.getSpecimenType(),
                     uuidGenerator.randomUUID(),
                     specimenCollectionDate,
-                    dateTested))
+                    specimenCollectionDate))
             .resultObservations(
                 convertToObservation(
                     testEvent.getResults(),
