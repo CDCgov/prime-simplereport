@@ -40,8 +40,8 @@ const UndeleteUserModal: React.FC<Props> = ({
       </Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       <p className="margin-top-4">
-        This user will regain access to the organization and facilities it was
-        previously assigned to.
+        This user will regain access to the organization and facilities they
+        were previously assigned to.
       </p>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
       <Modal.Footer

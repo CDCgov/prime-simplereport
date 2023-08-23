@@ -173,7 +173,7 @@ exports[`Admin manage users Undelete user 1`] = `
                   <div
                     class="status-tagline"
                   >
-                    This user is deleted.
+                    This user no longer has access to SimpleReport. Select Undelete to restore their account.
                   </div>
                   <button
                     aria-disabled="false"
@@ -548,7 +548,7 @@ exports[`Admin manage users Undelete user 2`] = `
                   <div
                     class="status-tagline"
                   >
-                    This user is deleted.
+                    This user no longer has access to SimpleReport. Select Undelete to restore their account.
                   </div>
                   <button
                     aria-disabled="false"
@@ -784,7 +784,7 @@ exports[`Admin manage users Undelete user 2`] = `
                 <p
                   class="margin-top-4"
                 >
-                  This user will regain access to the organization and facilities it was previously assigned to.
+                  This user will regain access to the organization and facilities they were previously assigned to.
                 </p>
                 <div
                   class="border-top border-base-lighter margin-x-neg-205"

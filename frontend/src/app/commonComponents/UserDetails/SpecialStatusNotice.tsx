@@ -44,7 +44,8 @@ export const SpecialStatusNotice: React.FC<{
         }}
       />
     );
-    statusDescription = "This user is deleted.";
+    statusDescription =
+      "This user no longer has access to SimpleReport. Select Undelete to restore their account.";
     handleStatusBtnLabel = "Undelete user";
   } else if (user.status === OktaUserStatus.SUSPENDED) {
     confirmationModal = (
