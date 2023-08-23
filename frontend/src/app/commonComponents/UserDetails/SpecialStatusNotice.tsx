@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import { OktaUserStatus } from "../../utils/user";
@@ -25,14 +25,16 @@ export const SpecialStatusNotice: React.FC<{
    * Setup labels and modal per status
    */
   let confirmationModal: JSX.Element = <></>;
-  let statusDescription: string = "",
+  let statusDescription: null | ReactNode = null,
     handleStatusBtnLabel: string = "";
 
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const closeModal = () => setShowConfirmationModal(false);
-
-  if (user.isDeleted) {
+  if (user.status === OktaUserStatus.UPDATING) {
+    statusDescription =
+      "Account is being restored. Please allow a few moments for the user's record to update.";
+  } else if (user.isDeleted) {
     confirmationModal = (
       <UndeleteUserModal
         isOpen={showConfirmationModal}
@@ -44,8 +46,13 @@ export const SpecialStatusNotice: React.FC<{
         }}
       />
     );
-    statusDescription =
-      "This user no longer has access to SimpleReport. Select Undelete to restore their account.";
+    statusDescription = (
+      <>
+        This user no longer has access to SimpleReport. Click the{" "}
+        <span className="text-bold">Undelete user</span> button to restore this
+        account
+      </>
+    );
     handleStatusBtnLabel = "Undelete user";
   } else if (user.status === OktaUserStatus.SUSPENDED) {
     confirmationModal = (
@@ -82,14 +89,16 @@ export const SpecialStatusNotice: React.FC<{
    */
   return statusDescription ? (
     <div className="user-header grid-row flex-row flex-align-center">
-      <div className="status-tagline">{statusDescription}</div>
-      <Button
-        variant="outline"
-        className="margin-left-auto margin-bottom-1"
-        onClick={() => setShowConfirmationModal(true)}
-        label={handleStatusBtnLabel}
-        disabled={isUpdating}
-      />
+      <div className="status-tagline margin-top-105">{statusDescription}</div>
+      {handleStatusBtnLabel && (
+        <Button
+          variant="outline"
+          className="margin-left-auto margin-bottom-1"
+          onClick={() => setShowConfirmationModal(true)}
+          label={handleStatusBtnLabel}
+          disabled={isUpdating}
+        />
+      )}
       {confirmationModal}
     </div>
   ) : null;

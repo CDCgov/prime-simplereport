@@ -171,9 +171,15 @@ exports[`Admin manage users Undelete user 1`] = `
                   class="user-header grid-row flex-row flex-align-center"
                 >
                   <div
-                    class="status-tagline"
+                    class="status-tagline margin-top-105"
                   >
-                    This user no longer has access to SimpleReport. Select Undelete to restore their account.
+                    This user no longer has access to SimpleReport. Click the 
+                    <span
+                      class="text-bold"
+                    >
+                      Undelete user
+                    </span>
+                     button to restore this account
                   </div>
                   <button
                     aria-disabled="false"
@@ -546,9 +552,15 @@ exports[`Admin manage users Undelete user 2`] = `
                   class="user-header grid-row flex-row flex-align-center"
                 >
                   <div
-                    class="status-tagline"
+                    class="status-tagline margin-top-105"
                   >
-                    This user no longer has access to SimpleReport. Select Undelete to restore their account.
+                    This user no longer has access to SimpleReport. Click the 
+                    <span
+                      class="text-bold"
+                    >
+                      Undelete user
+                    </span>
+                     button to restore this account
                   </div>
                   <button
                     aria-disabled="false"
@@ -1627,6 +1639,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                       </p>
                     </div>
                     <button
+                      aria-disabled="false"
                       class="usa-button usa-button--outline margin-left-auto margin-bottom-1"
                       type="button"
                     >

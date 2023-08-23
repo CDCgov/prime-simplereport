@@ -2,6 +2,7 @@ import classnames from "classnames";
 import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
+import { OktaUserStatus } from "../../utils/user";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import DeleteUserModal from "./DeleteUserModal";
@@ -143,7 +144,10 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
           <div
             className={classnames(
               "user-header grid-row flex-row flex-align-center",
-              { "disabled-dark": isUserSelf }
+              {
+                "disabled-dark":
+                  isUserSelf || user.status === OktaUserStatus.UPDATING,
+              }
             )}
           >
             <div>
@@ -157,7 +161,11 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
               className="margin-left-auto margin-bottom-1"
               onClick={() => updateShowDeleteUserModal(true)}
               label={"Delete user"}
-              disabled={isUpdating || isUserSelf}
+              disabled={
+                isUpdating ||
+                isUserSelf ||
+                user.status === OktaUserStatus.UPDATING
+              }
             />
           </div>
         )}

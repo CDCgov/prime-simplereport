@@ -208,14 +208,20 @@ export const AdminManageUser: React.FC = () => {
     await undeleteUser({
       variables: { userId: foundUser?.id as string },
     });
-    await retrieveUser();
-
     const fullName = displayFullName(
       foundUser?.firstName,
       foundUser?.middleName,
       foundUser?.lastName
     );
-    showSuccess("", `User account undeleted for ${fullName}`);
+    showSuccess(
+      "Please allow a few moments for the user's record to update.",
+      `User account undeleted for ${fullName}`
+    );
+    setFoundUser({
+      ...foundUser,
+      isDeleted: false,
+      status: OktaUserStatus.UPDATING,
+    } as SettingsUser);
   };
 
   const retrieveUser = async () => {
