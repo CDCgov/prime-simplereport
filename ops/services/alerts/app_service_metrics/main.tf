@@ -26,7 +26,7 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
     for_each = var.action_group_ids
     content {
       action_group_id    = action.value
-      webhook_properties = {"Alert Response Docs": "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response"}
+      webhook_properties = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
     }
   }
 }
@@ -53,7 +53,7 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
     for_each = var.action_group_ids
     content {
       action_group_id    = action.value
-      webhook_properties = {"Alert Response Docs": "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
+      webhook_properties = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
     }
   }
 }
@@ -382,7 +382,7 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
     for_each = var.action_group_ids
     content {
       action_group_id    = action.value
-      webhook_properties = {"Alert Response Docs": "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
+      webhook_properties = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
     }
   }
 }

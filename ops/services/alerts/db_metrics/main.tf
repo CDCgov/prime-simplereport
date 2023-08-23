@@ -20,7 +20,7 @@ resource "azurerm_monitor_metric_alert" "db_storage" {
     for_each = var.action_group_ids
     content {
       action_group_id    = action.value
-      webhook_properties = {"Alert Response Docs": "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
+      webhook_properties = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
     }
   }
 }
