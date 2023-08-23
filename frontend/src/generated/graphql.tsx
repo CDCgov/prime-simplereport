@@ -1,6 +1,5 @@
 import { gql } from "@apollo/client";
 import * as Apollo from "@apollo/client";
-
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = {
@@ -192,7 +191,6 @@ export type Mutation = {
   markFacilityAsDeleted?: Maybe<Scalars["String"]>;
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
-  moveUserToNewOrganization?: Maybe<Scalars["Boolean"]>;
   reactivateUser?: Maybe<User>;
   reactivateUserAndResetPassword?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
@@ -220,6 +218,7 @@ export type Mutation = {
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
+  updateUserPrivilegesAndGroupAccess?: Maybe<Scalars["Boolean"]>;
 };
 
 export type MutationAddFacilityArgs = {
@@ -352,14 +351,6 @@ export type MutationMarkOrganizationAsDeletedArgs = {
 export type MutationMarkPendingOrganizationAsDeletedArgs = {
   deleted: Scalars["Boolean"];
   orgExternalId: Scalars["String"];
-};
-
-export type MutationMoveUserToNewOrganizationArgs = {
-  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
-  facilitiesToAssign?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
-  newOrgExternalId: Scalars["String"];
-  roleToAssign?: InputMaybe<Role>;
-  userToMoveEmail: Scalars["String"];
 };
 
 export type MutationReactivateUserArgs = {
@@ -517,6 +508,14 @@ export type MutationUpdateUserPrivilegesArgs = {
   facilities?: InputMaybe<Array<Scalars["ID"]>>;
   id: Scalars["ID"];
   role: Role;
+};
+
+export type MutationUpdateUserPrivilegesAndGroupAccessArgs = {
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  facilities?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
+  orgExternalId: Scalars["String"];
+  role?: InputMaybe<Role>;
+  username: Scalars["String"];
 };
 
 export type NameInfo = {
