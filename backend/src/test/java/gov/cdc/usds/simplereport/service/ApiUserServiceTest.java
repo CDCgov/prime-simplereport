@@ -13,7 +13,12 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.ApiUserWithStatus;
 import gov.cdc.usds.simplereport.api.model.Role;
-import gov.cdc.usds.simplereport.api.model.errors.*;
+import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
