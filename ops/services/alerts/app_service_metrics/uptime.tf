@@ -72,7 +72,7 @@ resource "azurerm_monitor_metric_alert" "uptime" {
     for_each = var.action_group_ids
     content {
       action_group_id    = action.value
-      webhook_properties = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
+      webhook_properties = var.wiki_docs_json
     }
   }
 }

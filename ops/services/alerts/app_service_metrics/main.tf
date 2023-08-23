@@ -26,7 +26,7 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
     for_each = var.action_group_ids
     content {
       action_group_id    = action.value
-      webhook_properties = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
+      webhook_properties = var.wiki_docs_json
     }
   }
 }
@@ -53,7 +53,7 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
     for_each = var.action_group_ids
     content {
       action_group_id    = action.value
-      webhook_properties = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
+      webhook_properties = var.wiki_docs_json
     }
   }
 }
@@ -69,7 +69,7 @@ resource "azurerm_monitor_smart_detector_alert_rule" "failure_anomalies" {
 
   action_group {
     ids             = var.action_group_ids
-    webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    webhook_payload = var.wiki_docs_text
   }
 }
 
@@ -108,7 +108,7 @@ ${local.skip_on_weekends}
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 }
 
@@ -147,7 +147,7 @@ ${local.skip_on_weekends}
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 }
 
@@ -176,7 +176,7 @@ ${local.skip_on_weekends}
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 }
 
@@ -205,7 +205,7 @@ ${local.skip_on_weekends}
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 }
 
@@ -236,7 +236,7 @@ ${local.skip_on_weekends}
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 }
 
@@ -248,7 +248,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "bulk_results_upload" {
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 
   data_source_id = var.app_insights_id
@@ -279,7 +279,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_batched_up
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 
   data_source_id = var.app_insights_id
@@ -309,7 +309,7 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "report_stream_fhir_batch
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 
   data_source_id = var.app_insights_id
@@ -358,7 +358,7 @@ ${local.skip_on_weekends}
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 }
 
@@ -382,7 +382,7 @@ resource "azurerm_monitor_metric_alert" "function_app_memory_alert" {
     for_each = var.action_group_ids
     content {
       action_group_id    = action.value
-      webhook_properties = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
+      webhook_properties = var.wiki_docs_json
     }
   }
 }
@@ -412,6 +412,6 @@ and duration >= 180000
 
   action {
     action_group           = var.action_group_ids
-    custom_webhook_payload = "{\"Alert Response Docs\": \"https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response\" }"
+    custom_webhook_payload = var.wiki_docs_text
   }
 }
