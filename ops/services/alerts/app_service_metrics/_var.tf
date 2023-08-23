@@ -56,11 +56,11 @@ variable "tags" {
 
 # Monitoring settings
 variable "mem_threshold" {
-  default = 1
+  default = 70
 }
 
 variable "cpu_threshold" {
-  default = 1
+  default = 70
 }
 
 variable "cpu_window_size" {
