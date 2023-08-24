@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
+import static gov.cdc.usds.simplereport.service.ApiUserService.MOVE_USER_ARGUMENT_ERROR;
+
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.api.model.UserInput;
-import gov.cdc.usds.simplereport.api.model.errors.GenericGraphqlException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -26,9 +28,6 @@ import org.springframework.stereotype.Controller;
 public class UserMutationResolver {
 
   private final ApiUserService _us;
-
-  public static final String MOVE_USER_ARGUMENT_ERROR =
-      "Operation must specify a list of facilities for the user to access or allow them access to all facilities";
 
   public UserMutationResolver(ApiUserService us) {
     _us = us;
@@ -174,12 +173,8 @@ public class UserMutationResolver {
       @Argument boolean accessAllFacilities,
       @Argument List<UUID> facilities,
       @Argument Role role) {
-    if (!accessAllFacilities && facilities.isEmpty()) {
-      throw new IllegalGraphqlArgumentException(MOVE_USER_ARGUMENT_ERROR);
-    }
-    List<UUID> facilityIdsToAssign = facilities == null ? List.of() : facilities;
-
     try {
+      List<UUID> facilityIdsToAssign = facilities == null ? List.of() : facilities;
       _us.updateUserPrivilegesAndGroupAccess(
           username,
           orgExternalId,
@@ -189,8 +184,11 @@ public class UserMutationResolver {
       return new User(_us.getUserByLoginEmail(username));
 
     } catch (IllegalArgumentException e) {
-      throw new GenericGraphqlException(
-          "Error updating user privileges and / or group access: ", e.getMessage());
+      throw new IllegalGraphqlArgumentException(
+          "Error updating user privileges and / or group access: " + MOVE_USER_ARGUMENT_ERROR);
+    } catch (UnidentifiedFacilityException e) {
+      throw new IllegalGraphqlArgumentException(
+          "Error updating user privileges and / or group access: " + e.getMessage());
     }
   }
 }

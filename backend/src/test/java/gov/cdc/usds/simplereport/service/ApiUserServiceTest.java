@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.api.apiuser.UserMutationResolver.MOVE_USER_ARGUMENT_ERROR;
+import static gov.cdc.usds.simplereport.service.ApiUserService.MOVE_USER_ARGUMENT_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;

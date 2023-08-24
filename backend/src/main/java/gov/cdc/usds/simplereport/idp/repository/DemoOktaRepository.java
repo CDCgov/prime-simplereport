@@ -185,7 +185,7 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   @Override
-  public List<String> updateUserPrivilegesAndGroupAccess(
+  public void updateUserPrivilegesAndGroupAccess(
       String username,
       Organization org,
       Set<Facility> facilities,
@@ -202,12 +202,6 @@ public class DemoOktaRepository implements OktaRepository {
             Set.of(roles, OrganizationRole.getDefault()));
 
     usernameOrgRolesMap.replace(username, newRoleClaims);
-
-    // Live Okta repository returns list of Group names, but our demo repo didn't implement
-    // group mappings and it didn't feel worth it to add that implementation since the return is
-    // used
-    // mostly for testing. Return the list of facility ID's in the new org instead
-    return orgFacilitiesMap.get(org.getExternalId()).stream().map(UUID::toString).toList();
   }
 
   public void resetUserPassword(String username) {

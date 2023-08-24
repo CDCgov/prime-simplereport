@@ -34,7 +34,7 @@ public interface OktaRepository {
   Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
-  List<String> updateUserPrivilegesAndGroupAccess(
+  void updateUserPrivilegesAndGroupAccess(
       String username,
       Organization org,
       Set<Facility> facilities,

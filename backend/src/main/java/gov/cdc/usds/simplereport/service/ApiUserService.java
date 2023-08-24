@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.api.apiuser.UserMutationResolver.MOVE_USER_ARGUMENT_ERROR;
-
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
@@ -31,7 +29,6 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -74,6 +71,9 @@ public class ApiUserService {
   @Autowired private WebhookContextHolder _webhookContextHolder;
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
+
+  public static final String MOVE_USER_ARGUMENT_ERROR =
+      "Operation must specify a list of facilities for the user to access or allow them access to all facilities";
 
   private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
     log.info("User with id={} updated by user with id={}", authorId, updatedUserId);
@@ -708,14 +708,14 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<String> updateUserPrivilegesAndGroupAccess(
+  public void updateUserPrivilegesAndGroupAccess(
       String username, String orgExternalId, boolean allFacilitiesAccess, OrganizationRole role) {
-    return updateUserPrivilegesAndGroupAccess(
+    updateUserPrivilegesAndGroupAccess(
         username, orgExternalId, allFacilitiesAccess, List.of(), role);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<String> updateUserPrivilegesAndGroupAccess(
+  public void updateUserPrivilegesAndGroupAccess(
       String username,
       String orgExternalId,
       boolean allFacilitiesAccess,
@@ -728,26 +728,32 @@ public class ApiUserService {
     }
 
     Organization newOrg = _orgService.getOrganization(orgExternalId);
-    Collection<UUID> facilityIdsToGiveAccess =
+    Set<UUID> facilityIdsToGiveAccess =
         allFacilitiesAccess
             // use an empty set of facilities if user can access all facilities anyway
             ? Set.of()
-            : facilities;
+            : new HashSet<>(facilities);
 
     Set<Facility> facilitiesToGiveAccessTo =
         _orgService.getFacilities(newOrg, facilityIdsToGiveAccess);
 
     if (facilitiesToGiveAccessTo.size() != facilityIdsToGiveAccess.size()) {
-      Set<UUID> facilityIdsFound =
-          facilitiesToGiveAccessTo.stream().map(f -> f.getInternalId()).collect(Collectors.toSet());
-      List<UUID> facilityIdDiff =
-          facilityIdsToGiveAccess.stream()
-              .filter(id -> !facilityIdsFound.contains(id))
-              .collect(Collectors.toList());
-
+      Set<UUID> facilityIdDiff =
+          dedupeFoundAndPassedInFacilityIds(facilitiesToGiveAccessTo, facilityIdsToGiveAccess);
       throw new UnidentifiedFacilityException(facilityIdDiff, orgExternalId);
     }
-    return _oktaRepo.updateUserPrivilegesAndGroupAccess(
+    _oktaRepo.updateUserPrivilegesAndGroupAccess(
         username, newOrg, facilitiesToGiveAccessTo, role, allFacilitiesAccess);
+  }
+
+  private Set<UUID> dedupeFoundAndPassedInFacilityIds(
+      Set<Facility> facilitiesToGiveAccessTo, Set<UUID> facilityIdsToGiveAccess) {
+    Set<UUID> facilityIdsFound =
+        facilitiesToGiveAccessTo.stream().map(f -> f.getInternalId()).collect(Collectors.toSet());
+    Set<UUID> facilityIdDiff =
+        facilityIdsToGiveAccess.stream()
+            .filter(id -> !facilityIdsFound.contains(id))
+            .collect(Collectors.toSet());
+    return facilityIdDiff;
   }
 }
