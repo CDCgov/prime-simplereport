@@ -750,10 +750,8 @@ public class ApiUserService {
       Set<Facility> facilitiesToGiveAccessTo, Set<UUID> facilityIdsToGiveAccess) {
     Set<UUID> facilityIdsFound =
         facilitiesToGiveAccessTo.stream().map(f -> f.getInternalId()).collect(Collectors.toSet());
-    Set<UUID> facilityIdDiff =
-        facilityIdsToGiveAccess.stream()
-            .filter(id -> !facilityIdsFound.contains(id))
-            .collect(Collectors.toSet());
-    return facilityIdDiff;
+    return facilityIdsToGiveAccess.stream()
+        .filter(id -> !facilityIdsFound.contains(id))
+        .collect(Collectors.toSet());
   }
 }
