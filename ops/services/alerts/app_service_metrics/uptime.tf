@@ -71,7 +71,8 @@ resource "azurerm_monitor_metric_alert" "uptime" {
   dynamic "action" {
     for_each = var.action_group_ids
     content {
-      action_group_id = action.value
+      action_group_id    = action.value
+      webhook_properties = var.wiki_docs_json
     }
   }
 }
