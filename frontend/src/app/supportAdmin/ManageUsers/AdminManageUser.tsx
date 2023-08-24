@@ -225,7 +225,7 @@ export const AdminManageUser: React.FC = () => {
   };
 
   const retrieveUser = async () => {
-    getUserByEmail({ variables: { email: searchEmail } }).then(
+    getUserByEmail({ variables: { email: searchEmail.trim() } }).then(
       ({ data, error }) => {
         if (!data?.user && !error) {
           setDisplayedError(userNotFoundError);
