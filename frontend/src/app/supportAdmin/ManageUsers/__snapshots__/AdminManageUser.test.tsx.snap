@@ -173,7 +173,8 @@ exports[`Admin manage users Undelete user 1`] = `
                   <div
                     class="status-tagline margin-top-105"
                   >
-                    This user no longer has access to SimpleReport. Click the 
+                    This user no longer has access to SimpleReport. Click the
+                     
                     <span
                       class="text-bold"
                     >
@@ -554,7 +555,8 @@ exports[`Admin manage users Undelete user 2`] = `
                   <div
                     class="status-tagline margin-top-105"
                   >
-                    This user no longer has access to SimpleReport. Click the 
+                    This user no longer has access to SimpleReport. Click the
+                     
                     <span
                       class="text-bold"
                     >
