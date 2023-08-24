@@ -709,12 +709,9 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<String> updateUserPrivilegesAndGroupAccess(
-      String userToMoveEmail,
-      String newOrgExternalId,
-      boolean allFacilitiesAccess,
-      OrganizationRole newRole) {
+      String username, String orgExternalId, boolean allFacilitiesAccess, OrganizationRole role) {
     return updateUserPrivilegesAndGroupAccess(
-        userToMoveEmail, newOrgExternalId, allFacilitiesAccess, List.of(), newRole);
+        username, orgExternalId, allFacilitiesAccess, List.of(), role);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
