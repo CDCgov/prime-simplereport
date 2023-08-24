@@ -188,7 +188,7 @@ public class UserMutationResolver {
           role.toOrganizationRole());
     } catch (IllegalArgumentException e) {
       throw new GenericGraphqlException(
-          "Error moving user to a new organization: ", e.getMessage());
+          "Error updating user privileges and / or group access: ", e.getMessage());
     }
   }
 }
