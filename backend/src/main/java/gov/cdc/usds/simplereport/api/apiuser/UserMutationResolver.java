@@ -28,7 +28,7 @@ public class UserMutationResolver {
   private final ApiUserService _us;
 
   public static final String MOVE_USER_ARGUMENT_ERROR =
-      "Moving a user to a new organization must specify a list of facilities for them to access or allow them access to all facilities";
+      "Operation must specify a list of facilities for the user to access or allow them access to all facilities";
 
   public UserMutationResolver(ApiUserService us) {
     _us = us;
