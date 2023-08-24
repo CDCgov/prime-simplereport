@@ -33,6 +33,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFIL
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFILIATION_STRING;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -60,6 +61,7 @@ import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.MultiplexUtils;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -780,6 +782,12 @@ public class FhirConverter {
     observation.setValue(valueCodeableConcept);
   }
 
+  private static int getTestDuration(TestEvent testEvent) {
+    return Optional.ofNullable(testEvent.getDeviceType())
+        .map(DeviceType::getTestLength)
+        .orElse(FALLBACK_DEFAULT_TEST_MINUTES);
+  }
+
   public ServiceRequest convertToServiceRequest(
       @NotNull TestOrder order, ZonedDateTime orderTestDate) {
     ServiceRequestStatus serviceRequestStatus = null;
@@ -872,9 +880,13 @@ public class FhirConverter {
 
     ZonedDateTime dateTested = null;
     if (testEvent.getDateTested() != null) {
+      int testDuration = getTestDuration(testEvent);
       // getDateTested returns a Date representing an exact moment of time so
       // finding a specific timezone for the TestEvent is not required to ensure it is accurate
-      dateTested = ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC);
+      dateTested =
+          ZonedDateTime.ofInstant(
+              testEvent.getDateTested().toInstant().minus(Duration.ofMinutes(testDuration)),
+              ZoneOffset.UTC);
     }
     ZonedDateTime dateIssued = null;
     if (currentDate != null)
@@ -926,10 +938,15 @@ public class FhirConverter {
       @NotNull TestEvent testEvent, GitProperties gitProperties, String processingId) {
 
     Date currentDate = dateGenerator.newDate();
+
     ZonedDateTime dateTested =
         testEvent.getDateTested() != null
             ? ZonedDateTime.ofInstant(testEvent.getDateTested().toInstant(), ZoneOffset.UTC)
             : null;
+
+    int testDuration = getTestDuration(testEvent);
+    ZonedDateTime specimenCollectionDate =
+        dateTested != null ? dateTested.minus(Duration.ofMinutes(testDuration)) : null;
 
     return createFhirBundle(
         CreateFhirBundleProps.builder()
@@ -940,7 +957,10 @@ public class FhirConverter {
             .device(convertToDevice(testEvent.getDeviceType()))
             .specimen(
                 convertToSpecimen(
-                    testEvent.getSpecimenType(), uuidGenerator.randomUUID(), null, null))
+                    testEvent.getSpecimenType(),
+                    uuidGenerator.randomUUID(),
+                    specimenCollectionDate,
+                    specimenCollectionDate))
             .resultObservations(
                 convertToObservation(
                     testEvent.getResults(),
