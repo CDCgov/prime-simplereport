@@ -219,7 +219,7 @@ export type Mutation = {
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
-  updateUserPrivilegesAndGroupAccess?: Maybe<Scalars["Boolean"]>;
+  updateUserPrivilegesAndGroupAccess?: Maybe<Scalars["String"]>;
 };
 
 export type MutationAddFacilityArgs = {

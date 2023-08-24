@@ -7,7 +7,7 @@ import graphql.language.SourceLocation;
 import java.util.List;
 import java.util.UUID;
 
-/** Exception to throw when a user can't be identified */
+/** Exception to throw when a facility ID can't be found in an organization query */
 public class UnidentifiedFacilityException extends RuntimeException implements GraphQLError {
 
   private static final long serialVersionUID = 1L;

@@ -168,7 +168,7 @@ public class UserMutationResolver {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   @MutationMapping
-  public void updateUserPrivilegesAndGroupAccess(
+  public User updateUserPrivilegesAndGroupAccess(
       @Argument String username,
       @Argument String orgExternalId,
       @Argument boolean accessAllFacilities,
@@ -186,6 +186,8 @@ public class UserMutationResolver {
           accessAllFacilities,
           facilityIdsToAssign,
           role.toOrganizationRole());
+      return new User(_us.getUserByLoginEmail(username));
+
     } catch (IllegalArgumentException e) {
       throw new GenericGraphqlException(
           "Error updating user privileges and / or group access: ", e.getMessage());

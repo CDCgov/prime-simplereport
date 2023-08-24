@@ -353,7 +353,10 @@ public class LiveOktaRepository implements OktaRepository {
 
     // add them to the new groups
     String organizationExternalId = org.getExternalId();
-    EnumSet<OrganizationRole> rolesToCreate = EnumSet.of(OrganizationRole.getDefault(), role);
+    EnumSet<OrganizationRole> rolesToCreate =
+        assignedToAllFacilities
+            ? EnumSet.of(OrganizationRole.getDefault(), role, OrganizationRole.ALL_FACILITIES)
+            : EnumSet.of(OrganizationRole.getDefault(), role);
 
     Set<String> groupNamesToAdd = new HashSet<>();
     groupNamesToAdd.addAll(

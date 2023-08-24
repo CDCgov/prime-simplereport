@@ -60,5 +60,5 @@ extend type Mutation {
     orgExternalId: String!,
     accessAllFacilities: Boolean = false,
     facilities: [ID] = [],
-    role: Role!): Boolean
+    role: Role!): String
 }
