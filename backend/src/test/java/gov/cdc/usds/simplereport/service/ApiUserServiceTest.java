@@ -558,7 +558,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     String expectedError =
         "Facilities with id(s) "
             + facilityListThatShouldThrowId
-            + " for org"
+            + " for org "
             + moveOrgExternalId
             + " weren't found. Check those facility id(s) exist in the specified organization";
     assertEquals(expectedError, caught.getMessage());
