@@ -515,7 +515,7 @@ export type MutationUpdateUserPrivilegesAndGroupAccessArgs = {
   accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
   facilities?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
   orgExternalId: Scalars["String"];
-  role?: InputMaybe<Role>;
+  role: Role;
   username: Scalars["String"];
 };
 

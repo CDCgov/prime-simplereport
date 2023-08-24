@@ -58,7 +58,7 @@ extend type Mutation {
   updateUserPrivilegesAndGroupAccess(
     username: String!,
     orgExternalId: String!,
-    accessAllFacilities: Boolean,
-    facilities: [ID],
-    role: Role): Boolean
+    accessAllFacilities: Boolean = false,
+    facilities: [ID] = [],
+    role: Role!): Boolean
 }
