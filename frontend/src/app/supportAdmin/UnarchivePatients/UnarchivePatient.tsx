@@ -7,9 +7,10 @@ import {
   useGetOrganizationWithFacilitiesLazyQuery,
   useGetPatientsByFacilityWithOrgLazyQuery,
   useGetPatientsCountByFacilityWithOrgLazyQuery,
+  useUnarchivePatientMutation,
 } from "../../../generated/graphql";
 import { LoadingCard } from "../../commonComponents/LoadingCard/LoadingCard";
-import { showError } from "../../utils/srToast";
+import { showError, showSuccess } from "../../utils/srToast";
 import { Option } from "../../commonComponents/Select";
 import { useSelectedFacility } from "../../facilitySelect/useSelectedFacility";
 import { useDocumentTitle } from "../../utils/hooks";
@@ -17,6 +18,7 @@ import { unarchivePatientTitle } from "../pageTitles";
 
 import UnarchivePatientInformation from "./UnarchivePatientInformation";
 import UnarchivePatientFilters from "./UnarchivePatientFilters";
+import UnarchivePatientModal from "./UnarchivePatientModal";
 
 export type UnarchivePatientOrganization = {
   internalId: string;
@@ -51,6 +53,7 @@ export interface UnarchivePatientState {
   patientsCount: number | undefined;
   patients: UnarchivePatientPatient[] | undefined;
   facilities: UnarchivePatientFacility[];
+  patient: UnarchivePatientPatient | undefined;
 }
 
 export const initialState: UnarchivePatientState = {
@@ -61,6 +64,7 @@ export const initialState: UnarchivePatientState = {
   patientsCount: undefined,
   patients: undefined,
   facilities: [],
+  patient: undefined,
 };
 
 const getOrgExternalIdWithInternalId = (
@@ -80,6 +84,15 @@ const UnarchivePatient = () => {
   const [activeFacility] = useSelectedFacility();
 
   useDocumentTitle(unarchivePatientTitle);
+
+  const getSearchParamsStr = () => {
+    if (activeFacility?.id) {
+      return `?facility=${activeFacility.id}`;
+    } else {
+      return "";
+    }
+  };
+
   const {
     data: orgsResponse,
     loading: loadingOrgs,
@@ -105,6 +118,8 @@ const UnarchivePatient = () => {
   ] = useGetPatientsCountByFacilityWithOrgLazyQuery({
     fetchPolicy: "no-cache",
   });
+
+  const [unarchivePatientMutation] = useUnarchivePatientMutation();
 
   const fetchAndSetPatients = async (
     orgExternalId: string | undefined,
@@ -196,10 +211,7 @@ const UnarchivePatient = () => {
 
   const handleSearch = async () => {
     if (localState.orgId && localState.facilityId) {
-      let searchParams = "";
-      if (activeFacility?.id) {
-        searchParams = `?facility=${activeFacility.id}`;
-      }
+      let searchParams = getSearchParamsStr();
       let orgExternalId = getOrgExternalIdWithInternalId(
         orgs,
         localState.orgId
@@ -224,11 +236,53 @@ const UnarchivePatient = () => {
       facilities: [],
     }));
   };
+
   const handlePaginationClick = async (pageNumber: number) => {
     await fetchAndSetPatients(
       getOrgExternalIdWithInternalId(orgs, localState.orgId),
       pageNumber
     );
+  };
+
+  const handleUnarchivePatient = (
+    patient: UnarchivePatientPatient | undefined
+  ) => {
+    updateLocalState((prevState) => ({
+      ...prevState,
+      patient: patient,
+    }));
+  };
+
+  const handleUnarchivePatientConfirmation = async (patientId: string) => {
+    let orgExternalId = getOrgExternalIdWithInternalId(orgs, localState.orgId);
+
+    if (orgExternalId) {
+      try {
+        await unarchivePatientMutation({
+          variables: {
+            id: patientId,
+            orgExternalId: orgExternalId,
+          },
+        });
+
+        // when un-archiving last patient on page, it sets the current page to be the previous page
+        if (localState.patients?.length === 1) {
+          if (currentPage > 1) {
+            currentPage = currentPage - 1;
+            let searchParams = getSearchParamsStr();
+            navigate(`${localState.pageUrl}/${currentPage}${searchParams}`);
+          }
+        }
+        await fetchAndSetPatients(orgExternalId, currentPage);
+        await fetchAndSetPatientsCount(orgExternalId);
+        showSuccess("", "Patient successfully unarchived");
+      } catch (e) {
+        showError(
+          "Please escalate this issue to the SimpleReport team.",
+          "Error unarchiving patient"
+        );
+      }
+    }
   };
 
   return (
@@ -248,7 +302,15 @@ const UnarchivePatient = () => {
           currentPage={currentPage}
           loading={loadingPatients || loadingPatientsCount}
           handlePaginationClick={handlePaginationClick}
+          onUnarchivePatient={handleUnarchivePatient}
         />
+        {localState.patient !== undefined && (
+          <UnarchivePatientModal
+            onClose={() => handleUnarchivePatient(undefined)}
+            onUnarchivePatientConfirmation={handleUnarchivePatientConfirmation}
+            patient={localState.patient}
+          />
+        )}
       </div>
     </div>
   );

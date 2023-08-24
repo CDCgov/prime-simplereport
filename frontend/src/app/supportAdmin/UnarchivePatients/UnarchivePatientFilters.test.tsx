@@ -1,6 +1,7 @@
 import React from "react";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { MemoryRouter } from "react-router-dom";
 
 import { Option } from "../../commonComponents/Select";
 
@@ -49,17 +50,20 @@ describe("unarchive patient filters", () => {
       patientsCount: 2,
       patients: undefined,
       facilities: [mockFacility1, mockFacility2],
+      patient: undefined,
     };
     render(
-      <UnarchivePatientFilters
-        orgOptions={mockOrgOptions}
-        onSelectOrg={onSelectOrg}
-        onSelectFacility={onSelectFacility}
-        onSearch={onSearch}
-        onClearFilter={onClearFilter}
-        loading={false}
-        unarchivePatientState={unarchivePatientState}
-      />
+      <MemoryRouter>
+        <UnarchivePatientFilters
+          orgOptions={mockOrgOptions}
+          onSelectOrg={onSelectOrg}
+          onSelectFacility={onSelectFacility}
+          onSearch={onSearch}
+          onClearFilter={onClearFilter}
+          loading={false}
+          unarchivePatientState={unarchivePatientState}
+        />
+      </MemoryRouter>
     );
     await clickSearch();
     expect(screen.getByText("Organization is required")).toBeInTheDocument();
@@ -76,17 +80,20 @@ describe("unarchive patient filters", () => {
       patientsCount: 2,
       patients: [mockPatient1, mockPatient2],
       facilities: [mockFacility1, mockFacility2],
+      patient: undefined,
     };
     render(
-      <UnarchivePatientFilters
-        orgOptions={mockOrgOptions}
-        onSelectOrg={onSelectOrg}
-        onSelectFacility={onSelectFacility}
-        onSearch={onSearch}
-        onClearFilter={onClearFilter}
-        loading={false}
-        unarchivePatientState={unarchivePatientState}
-      />
+      <MemoryRouter>
+        <UnarchivePatientFilters
+          orgOptions={mockOrgOptions}
+          onSelectOrg={onSelectOrg}
+          onSelectFacility={onSelectFacility}
+          onSearch={onSearch}
+          onClearFilter={onClearFilter}
+          loading={false}
+          unarchivePatientState={unarchivePatientState}
+        />
+      </MemoryRouter>
     );
     await selectDropdown("Organization *", mockOrg1.name);
     expect(onSelectOrg).toHaveBeenCalledTimes(1);
@@ -117,17 +124,20 @@ describe("unarchive patient filters", () => {
       patientsCount: 2,
       patients: [mockPatient1, mockPatient2],
       facilities: [mockFacility1, mockFacility2],
+      patient: undefined,
     };
     render(
-      <UnarchivePatientFilters
-        orgOptions={mockOrgOptions}
-        onSelectOrg={onSelectOrg}
-        onSelectFacility={onSelectFacility}
-        onSearch={onSearch}
-        onClearFilter={onClearFilter}
-        loading={true}
-        unarchivePatientState={unarchivePatientState}
-      />
+      <MemoryRouter>
+        <UnarchivePatientFilters
+          orgOptions={mockOrgOptions}
+          onSelectOrg={onSelectOrg}
+          onSelectFacility={onSelectFacility}
+          onSearch={onSearch}
+          onClearFilter={onClearFilter}
+          loading={true}
+          unarchivePatientState={unarchivePatientState}
+        />
+      </MemoryRouter>
     );
     expect(screen.getByLabelText("Organization *")).toBeDisabled();
     expect(screen.getByLabelText("Testing facility *")).toBeDisabled();

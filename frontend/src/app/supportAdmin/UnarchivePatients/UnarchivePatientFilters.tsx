@@ -5,6 +5,7 @@ import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import Select, { Option } from "../../commonComponents/Select";
 import Button from "../../commonComponents/Button/Button";
 import { unarchivePatientTitle } from "../pageTitles";
+import SupportHomeLink from "../SupportHomeLink";
 
 import { UnarchivePatientState } from "./UnarchivePatient";
 
@@ -34,7 +35,10 @@ const UnarchivePatientFilters = ({
 
   return (
     <div className="prime-container card-container">
-      <div className="usa-card__header">
+      <div className="width-full display-block margin-left-3 margin-top-3">
+        <SupportHomeLink />
+      </div>
+      <div className="usa-card__header padding-top-2">
         <div className="desktop:display-flex grid-row width-full">
           <div className="desktop:grid-col-6 desktop:display-flex desktop:flex-row flex-align-center">
             <h1 className="font-sans-lg margin-y-0">{unarchivePatientTitle}</h1>

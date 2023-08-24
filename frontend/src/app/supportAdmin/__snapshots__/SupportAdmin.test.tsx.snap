@@ -130,6 +130,14 @@ exports[`SupportAdmin loads menu categories 1`] = `
                       Manage users
                     </a>
                   </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/unarchive-patient"
+                    >
+                      Unarchive patient
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
@@ -269,6 +277,14 @@ exports[`SupportAdmin loads menu categories including Beta 1`] = `
                       href="/admin/manage-users"
                     >
                       Manage users
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/unarchive-patient"
+                    >
+                      Unarchive patient
                     </a>
                   </li>
                 </ul>
