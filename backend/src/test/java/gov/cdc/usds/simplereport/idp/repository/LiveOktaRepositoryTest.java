@@ -1593,7 +1593,6 @@ class LiveOktaRepositoryTest {
 
     Organization mockOrgToMoveTo = mock(Organization.class);
     when(mockOrgToMoveTo.getExternalId()).thenReturn("FOLLOWUP_GROUPS");
-
     List<String> assignedGroupIds =
         _repo.updateUserPrivilegesAndGroupAccess(
             "siteadmin@example.com", mockOrgToMoveTo, Set.of(), OrganizationRole.ADMIN, false);
@@ -1644,7 +1643,7 @@ class LiveOktaRepositoryTest {
 
   private void setupMoveUserConfig(OrganizationRole roleToTest, Set<Facility> facilitiesToReturn) {
 
-    // using the "DEV" tenant prefix to follow string matching in the actual method
+    // using the tenant prefix to follow string matching in the actual method
     Group initialMockGroup =
         createMockOktaGroup("SR-DEV-TENANT-INITIAL_GROUPS", GroupType.OKTA_GROUP);
     when(initialMockGroup.getId()).thenReturn("mockInitialGroupId");

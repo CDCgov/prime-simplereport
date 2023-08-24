@@ -334,7 +334,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   @Override
-  public void updateUserPrivilegesAndGroupAccess(
+  public List<String> updateUserPrivilegesAndGroupAccess(
       String username,
       Organization org,
       Set<Facility> facilities,
@@ -387,6 +387,7 @@ public class LiveOktaRepository implements OktaRepository {
 
     orgsToAddUserToMap.forEach(
         (name, group) -> groupApi.assignUserToGroup(group.getId(), oktaUserToMove.getId()));
+    return orgsToAddUserToMap.keySet().stream().toList();
   }
 
   @Override
