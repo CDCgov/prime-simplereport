@@ -16,7 +16,6 @@ export const MfaSecurityKey = () => {
     // if the user's browser doesn't support WebAuthn, display a message telling them to use a different browser
     if (!navigator?.credentials) {
       setUnsupported(true);
-      return;
     }
   }, []);
 
