@@ -513,13 +513,13 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     final String email = "allfacilities@example.com";
     Organization orgToTestMovementTo = _dataFactory.saveValidOrganization();
     String moveOrgExternalId = orgToTestMovementTo.getExternalId();
-
+    List<UUID> emptyList = List.of();
     IllegalArgumentException caught =
         assertThrows(
             IllegalArgumentException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
-                    email, moveOrgExternalId, false, List.of(), OrganizationRole.USER));
+                    email, moveOrgExternalId, false, emptyList, OrganizationRole.USER));
     assertEquals(MOVE_USER_ARGUMENT_ERROR, caught.getMessage());
 
     IllegalArgumentException caught2 =
