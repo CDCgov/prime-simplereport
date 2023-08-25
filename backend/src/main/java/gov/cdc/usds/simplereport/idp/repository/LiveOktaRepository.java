@@ -238,17 +238,9 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
-    var users =
-        userApi.listUsers(
-            null,
-            null,
-            null,
-            null,
-            generateLoginSearchTerm(userIdentity.getUsername()),
-            null,
-            null);
-    throwErrorIfEmpty(users.stream(), "Cannot update Okta user with unrecognized username");
-    User user = users.get(0);
+    var user =
+        getUserOrThrowError(
+            userIdentity.getUsername(), "Cannot update Okta user with unrecognized username");
     updateUser(user, userIdentity);
 
     return getOrganizationRoleClaimsForUser(user);
@@ -269,18 +261,10 @@ public class LiveOktaRepository implements OktaRepository {
   @Override
   public Optional<OrganizationRoleClaims> updateUserEmail(
       IdentityAttributes userIdentity, String email) {
-    var users =
-        userApi.listUsers(
-            null,
-            null,
-            null,
-            null,
-            generateLoginSearchTerm(userIdentity.getUsername()),
-            null,
-            null);
-    throwErrorIfEmpty(
-        users.stream(), "Cannot update email of Okta user with unrecognized username");
-    User user = users.get(0);
+    var user =
+        getUserOrThrowError(
+            userIdentity.getUsername(),
+            "Cannot update email of Okta user with unrecognized username");
     UserProfile profile = user.getProfile();
     profile.setLogin(email);
     profile.setEmail(email);
@@ -303,17 +287,9 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public void reprovisionUser(IdentityAttributes userIdentity) {
-    var users =
-        userApi.listUsers(
-            null,
-            null,
-            null,
-            null,
-            generateLoginSearchTerm(userIdentity.getUsername()),
-            null,
-            null);
-    throwErrorIfEmpty(users.stream(), "Cannot reprovision Okta user with unrecognized username");
-    User user = users.get(0);
+    var user =
+        getUserOrThrowError(
+            userIdentity.getUsername(), "Cannot reprovision Okta user with unrecognized username");
     UserStatus userStatus = user.getStatus();
 
     // any org user "deleted" through our api will be in SUSPENDED state
@@ -423,30 +399,24 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public void resetUserPassword(String username) {
-    var users =
-        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    throwErrorIfEmpty(
-        users.stream(), "Cannot reset password for Okta user with unrecognized username");
-    User user = users.get(0);
+    var user =
+        getUserOrThrowError(
+            username, "Cannot reset password for Okta user with unrecognized username");
     userApi.generateResetPasswordToken(user.getId(), true, false);
   }
 
   @Override
   public void resetUserMfa(String username) {
-    var users =
-        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    throwErrorIfEmpty(users.stream(), "Cannot reset MFA for Okta user with unrecognized username");
-    User user = users.get(0);
+    var user =
+        getUserOrThrowError(username, "Cannot reset MFA for Okta user with unrecognized username");
     userApi.resetFactors(user.getId());
   }
 
   @Override
   public void setUserIsActive(String username, boolean active) {
-    var users =
-        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    throwErrorIfEmpty(
-        users.stream(), "Cannot update active status of Okta user with unrecognized username");
-    User user = users.get(0);
+    var user =
+        getUserOrThrowError(
+            username, "Cannot update active status of Okta user with unrecognized username");
 
     if (active && user.getStatus() == UserStatus.SUSPENDED) {
       userApi.unsuspendUser(user.getId());
@@ -464,19 +434,15 @@ public class LiveOktaRepository implements OktaRepository {
 
   @Override
   public void reactivateUser(String username) {
-    var users =
-        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
-    User user = users.get(0);
+    var user =
+        getUserOrThrowError(username, "Cannot reactivate Okta user with unrecognized username");
     userApi.unsuspendUser(user.getId());
   }
 
   @Override
   public void resendActivationEmail(String username) {
-    var users =
-        userApi.listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null);
-    throwErrorIfEmpty(users.stream(), "Cannot reactivate Okta user with unrecognized username");
-    User user = users.get(0);
+    var user =
+        getUserOrThrowError(username, "Cannot reactivate Okta user with unrecognized username");
     if (user.getStatus() == UserStatus.PROVISIONED) {
       userApi.reactivateUser(user.getId(), true);
     } else if (user.getStatus() == UserStatus.STAGED) {
@@ -720,27 +686,18 @@ public class LiveOktaRepository implements OktaRepository {
     return ":" + OrganizationExtractor.FACILITY_ACCESS_MARKER + ":" + facilityId;
   }
 
-  private String generateLoginSearchTerm(String username) {
-    return "profile.login eq \"" + username + "\"";
+  private User getUserOrThrowError(String email, String errorMessage) {
+    try {
+      return userApi.getUser(email);
+    } catch (ApiException e) {
+      throw new IllegalGraphqlArgumentException(errorMessage);
+    }
   }
 
   private void throwErrorIfEmpty(Stream<?> stream, String errorMessage) {
     if (stream.findAny().isEmpty()) {
       throw new IllegalGraphqlArgumentException(errorMessage);
     }
-  }
-
-  private User getUserOrThrowError(String username, String errorMessage) {
-    var searchUsersStream =
-        userApi
-            .listUsers(null, null, null, null, generateLoginSearchTerm(username), null, null)
-            .stream();
-    var user = searchUsersStream.findFirst();
-    if (user.isEmpty()) {
-      var qUsersStream = userApi.listUsers(username, null, null, null, null, null, null).stream();
-      user = qUsersStream.filter(u -> u.getProfile().getLogin().equals(username)).findFirst();
-    }
-    return user.orElseThrow(() -> new IllegalGraphqlArgumentException(errorMessage));
   }
 
   private String prettifyOktaError(ApiException e) {
