@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -489,9 +488,9 @@ class LiveOktaRepositoryTest {
       verify(mockUserBuilder).setMiddleName(personName.getMiddleName());
       verify(mockUserBuilder).setLastName(personName.getLastName());
       verify(mockUserBuilder).setHonorificSuffix(personName.getSuffix());
-      verify(mockUserBuilder).setGroups(anyList());
       verify(mockUserBuilder).buildAndCreate(userApi);
       verify(mockUserBuilder).setActive(true);
+      verify(groupApi).assignUserToGroup("gid123", "uid123");
       assertEquals(org.getExternalId(), actual.orElseThrow().getOrganizationExternalId());
       assertEquals(Set.of(OrganizationRole.NO_ACCESS), actual.get().getGrantedRoles());
     }
@@ -682,6 +681,7 @@ class LiveOktaRepositoryTest {
     var mockGroupListSearch = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
     var mockUserBuilder = mock(UserBuilder.class);
+    var mockUser = mock(User.class);
 
     when(groupApi.listGroups(
             eq(groupProfilePrefix),
@@ -697,6 +697,7 @@ class LiveOktaRepositoryTest {
             isNull(), isNull(), isNull(), isNull(), isNull(), anyString(), isNull(), isNull()))
         .thenReturn(mockGroupListSearch);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+    when(mockGroup.getId()).thenReturn("gid123");
     when(mockGroupProfile.getName()).thenReturn(groupProfileName);
     when(mockUserBuilder.setFirstName(firstName)).thenReturn(mockUserBuilder);
     when(mockUserBuilder.setMiddleName(middleName)).thenReturn(mockUserBuilder);
@@ -704,8 +705,9 @@ class LiveOktaRepositoryTest {
     when(mockUserBuilder.setHonorificSuffix(suffix)).thenReturn(mockUserBuilder);
     when(mockUserBuilder.setLogin(email)).thenReturn(mockUserBuilder);
     when(mockUserBuilder.setEmail(email)).thenReturn(mockUserBuilder);
-    when(mockUserBuilder.setGroups(anyList())).thenReturn(mockUserBuilder);
     when(mockUserBuilder.setActive(true)).thenReturn(mockUserBuilder);
+    when(mockUserBuilder.buildAndCreate(any())).thenReturn(mockUser);
+    when(mockUser.getId()).thenReturn("uid123");
     return mockUserBuilder;
   }
 
