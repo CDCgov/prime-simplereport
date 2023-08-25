@@ -17,7 +17,6 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -124,7 +123,7 @@ public class LiveOktaRepository implements OktaRepository {
             .collect(Collectors.toSet()));
 
     // Search and q results need to be combined because search results have a delay of the newest
-    // added groups. There is an open ticket for the okta sdk to investigate this issue
+    // added groups.
     // https://github.com/okta/okta-sdk-java/issues/750
     var searchResults =
         groupApi
@@ -171,16 +170,17 @@ public class LiveOktaRepository implements OktaRepository {
             .collect(Collectors.toSet());
     validateRequiredFields(userIdentity);
     try {
-      UserBuilder.instance()
-          .setFirstName(userIdentity.getFirstName())
-          .setMiddleName(userIdentity.getMiddleName())
-          .setLastName(userIdentity.getLastName())
-          .setHonorificSuffix(userIdentity.getSuffix())
-          .setEmail(userIdentity.getUsername())
-          .setLogin(userIdentity.getUsername())
-          .setGroups(new ArrayList<>(groupIdsToAdd))
-          .setActive(active)
-          .buildAndCreate(userApi);
+      var user =
+          UserBuilder.instance()
+              .setFirstName(userIdentity.getFirstName())
+              .setMiddleName(userIdentity.getMiddleName())
+              .setLastName(userIdentity.getLastName())
+              .setHonorificSuffix(userIdentity.getSuffix())
+              .setEmail(userIdentity.getUsername())
+              .setLogin(userIdentity.getUsername())
+              .setActive(active)
+              .buildAndCreate(userApi);
+      groupIdsToAdd.forEach(groupId -> groupApi.assignUserToGroup(groupId, user.getId()));
     } catch (ApiException e) {
       if (e.getMessage()
           .contains("An object with this field already exists in the current organization")) {
