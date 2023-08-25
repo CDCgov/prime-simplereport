@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.api.model.UserInput;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -186,9 +185,6 @@ public class UserMutationResolver {
     } catch (IllegalArgumentException e) {
       throw new IllegalGraphqlArgumentException(
           "Error updating user privileges and / or group access: " + MOVE_USER_ARGUMENT_ERROR);
-    } catch (UnidentifiedFacilityException e) {
-      throw new IllegalGraphqlArgumentException(
-          "Error updating user privileges and / or group access: " + e.getMessage());
     }
   }
 }
