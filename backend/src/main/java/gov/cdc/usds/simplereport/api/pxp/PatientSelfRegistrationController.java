@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.pxp;
 import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
+import static gov.cdc.usds.simplereport.api.Translators.parseGenderIdentity;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
@@ -76,6 +77,7 @@ public class PatientSelfRegistrationController {
             parseEthnicity(body.getEthnicity()),
             parseTribalAffiliation(body.getTribalAffiliation()),
             parseGender(body.getGender()),
+            parseGenderIdentity(body.getGenderIdentity()),
             body.getResidentCongregateSetting(),
             body.getEmployedInHealthcare(),
             parseString(body.getPreferredLanguage()),

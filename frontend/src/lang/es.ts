@@ -55,6 +55,15 @@ export const es: LanguageConfig = {
         other: OTHER,
         refused: REFUSED,
       },
+      genderIdentity: {
+        female: "Femenino",
+        male: "Masculino",
+        transwoman: "trans femme or transwoman",
+        transman: "trans masculine or transman",
+        nonbinary: "nonbinary or gender non-conforming",
+        other: "gender identity not listed here",
+        refused: REFUSED,
+      },
       gender: {
         female: "Femenino",
         male: "Masculino",
@@ -177,6 +186,7 @@ export const es: LanguageConfig = {
           tribalAffiliation: "Afiliación tribal",
           ethnicity: "¿Es usted hispano o latino?",
           gender: "Sexo asignado al nacer",
+          genderIdentity: "What's your gender identity?",
           genderHelpText:
             "Por lo general, este es el género que está escrito en su certificado de nacimiento original.",
         },

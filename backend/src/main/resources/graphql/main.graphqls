@@ -210,6 +210,8 @@ type Patient
   birthDate: LocalDate
   gender: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  genderIdentity: String
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   ethnicity: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   tribalAffiliation: [String] @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   address: AddressInfo @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
@@ -545,6 +547,7 @@ type Mutation {
     ethnicity: String
     tribalAffiliation: String
     gender: String
+    genderIdentity: String
     residentCongregateSetting: Boolean
     employedInHealthcare: Boolean
     preferredLanguage: String
@@ -580,6 +583,7 @@ type Mutation {
     ethnicity: String @Size(min: 0, max: 32)
     tribalAffiliation: String @Size(min: 0, max: 3)
     gender: String @Size(min: 0, max: 32)
+    genderIdentity: String
     residentCongregateSetting: Boolean
     employedInHealthcare: Boolean
     preferredLanguage: String

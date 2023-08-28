@@ -8,7 +8,9 @@ import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import lombok.Getter;
 
+@Getter
 public class PatientSelfRegistration extends PersonUpdate {
   private final String registrationLink;
   private final String lookupId;
@@ -38,6 +40,7 @@ public class PatientSelfRegistration extends PersonUpdate {
       @JsonProperty("ethnicity") String ethnicity,
       @JsonProperty("tribalAffiliation") String tribalAffiliation,
       @JsonProperty("gender") String gender,
+      @JsonProperty("genderIdentity") String genderIdentity,
       @JsonProperty("residentCongregateSetting") Boolean residentCongregateSetting,
       @JsonProperty("employedInHealthcare") Boolean employedInHealthcare,
       @JsonProperty("preferredLanguage") String preferredLanguage,
@@ -54,6 +57,7 @@ public class PatientSelfRegistration extends PersonUpdate {
         ethnicity,
         tribalAffiliation,
         gender,
+        genderIdentity,
         residentCongregateSetting,
         employedInHealthcare,
         preferredLanguage,
@@ -65,34 +69,6 @@ public class PatientSelfRegistration extends PersonUpdate {
     this.lastName = lastName;
     this.suffix = suffix;
     this.birthDate = birthDate;
-  }
-
-  public String getRegistrationLink() {
-    return registrationLink;
-  }
-
-  public String getLookupId() {
-    return lookupId;
-  }
-
-  public String getFirstName() {
-    return firstName;
-  }
-
-  public String getMiddleName() {
-    return middleName;
-  }
-
-  public String getLastName() {
-    return lastName;
-  }
-
-  public String getSuffix() {
-    return suffix;
-  }
-
-  public LocalDate getBirthDate() {
-    return birthDate;
   }
 
   @Override
@@ -121,6 +97,7 @@ public class PatientSelfRegistration extends PersonUpdate {
         && Objects.equals(getEthnicity(), that.getEthnicity())
         && Objects.equals(getTribalAffiliation(), that.getTribalAffiliation())
         && Objects.equals(getGender(), that.getGender())
+        && Objects.equals(getGenderIdentity(), that.getGenderIdentity())
         && Objects.equals(getResidentCongregateSetting(), that.getResidentCongregateSetting())
         && Objects.equals(getEmployedInHealthcare(), that.getEmployedInHealthcare())
         && Objects.equals(getPreferredLanguage(), that.getPreferredLanguage());
@@ -146,6 +123,7 @@ public class PatientSelfRegistration extends PersonUpdate {
         getEthnicity(),
         getTribalAffiliation(),
         getGender(),
+        getGenderIdentity(),
         getResidentCongregateSetting(),
         getEmployedInHealthcare(),
         getPreferredLanguage());

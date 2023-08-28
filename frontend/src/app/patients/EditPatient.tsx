@@ -46,6 +46,7 @@ export const GET_PATIENT = gql`
       ethnicity
       tribalAffiliation
       gender
+      genderIdentity
       residentCongregateSetting
       employedInHealthcare
       preferredLanguage
@@ -83,6 +84,7 @@ interface GetPatientResponse {
     ethnicity: Ethnicity | null;
     tribalAffiliation: (TribalAffiliation | null)[] | null;
     gender: Gender | null;
+    genderIdentity: GenderIdentity | null;
     residentCongregateSetting: boolean | null;
     employedInHealthcare: boolean | null;
     preferredLanguage: Language | null;
@@ -117,6 +119,7 @@ export const UPDATE_PATIENT = gql`
     $ethnicity: String
     $tribalAffiliation: String
     $gender: String
+    $genderIdentity: String
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
@@ -145,6 +148,7 @@ export const UPDATE_PATIENT = gql`
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
       gender: $gender
+      genderIdentity: $genderIdentity
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage

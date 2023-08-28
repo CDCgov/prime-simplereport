@@ -274,6 +274,26 @@ public class Translators {
         "\"" + g + "\" must be one of [" + String.join(", ", GENDERS) + "].");
   }
 
+  private static final Set<String> GENDER_IDENTITIES =
+      Set.of("female", "male", "transwoman", "transman", "nonbinary", OTHER, REFUSED);
+
+  public static String parseGenderIdentity(String genderIdentityInput) {
+    String genderIdentity = parseString(genderIdentityInput);
+    if (genderIdentity == null) {
+      return null;
+    }
+    genderIdentity = genderIdentity.toLowerCase();
+    if (GENDER_IDENTITIES.contains(genderIdentity)) {
+      return genderIdentity;
+    }
+    throw new IllegalGraphqlArgumentException(
+        "\""
+            + genderIdentityInput
+            + "\" must be one of ["
+            + String.join(", ", GENDER_IDENTITIES)
+            + "].");
+  }
+
   public static TestResult parseTestResult(String r) {
     String result = parseString(r);
     if (result == null) {

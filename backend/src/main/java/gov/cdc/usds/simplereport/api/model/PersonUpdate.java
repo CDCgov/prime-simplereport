@@ -8,7 +8,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.util.List;
 import java.util.Objects;
+import lombok.Getter;
 
+@Getter
 public class PersonUpdate {
   private final StreetAddress address;
   private final String country;
@@ -21,6 +23,7 @@ public class PersonUpdate {
   private final String ethnicity;
   private final String tribalAffiliation;
   private final String gender;
+  private final String genderIdentity;
   private final Boolean residentCongregateSetting;
   private final Boolean employedInHealthcare;
   private final String preferredLanguage;
@@ -39,6 +42,7 @@ public class PersonUpdate {
       @JsonProperty("ethnicity") String ethnicity,
       @JsonProperty("tribalAffiliation") String tribalAffiliation,
       @JsonProperty("gender") String gender,
+      @JsonProperty("genderIdentity") String genderIdentity,
       @JsonProperty("residentCongregateSetting") Boolean residentCongregateSetting,
       @JsonProperty("employedInHealthcare") Boolean employedInHealthcare,
       @JsonProperty("preferredLanguage") String preferredLanguage,
@@ -54,70 +58,11 @@ public class PersonUpdate {
     this.ethnicity = ethnicity;
     this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
+    this.genderIdentity = genderIdentity;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
     this.preferredLanguage = preferredLanguage;
     this.testResultDelivery = testResultDelivery;
-  }
-
-  public StreetAddress getAddress() {
-    return address;
-  }
-
-  public String getCountry() {
-    return country;
-  }
-
-  public String getEmail() {
-    return email;
-  }
-
-  public List<String> getEmails() {
-    return emails;
-  }
-
-  public Boolean getEmployedInHealthcare() {
-    return employedInHealthcare;
-  }
-
-  public String getEthnicity() {
-    return ethnicity;
-  }
-
-  public String getTribalAffiliation() {
-    return tribalAffiliation;
-  }
-
-  public String getGender() {
-    return gender;
-  }
-
-  public String getRace() {
-    return race;
-  }
-
-  public Boolean getResidentCongregateSetting() {
-    return residentCongregateSetting;
-  }
-
-  public PersonRole getRole() {
-    return role;
-  }
-
-  public String getTelephone() {
-    return telephone;
-  }
-
-  public List<PhoneNumberInput> getPhoneNumbers() {
-    return phoneNumbers;
-  }
-
-  public String getPreferredLanguage() {
-    return preferredLanguage;
-  }
-
-  public TestResultDeliveryPreference getTestResultDelivery() {
-    return testResultDelivery;
   }
 
   @Override
@@ -140,6 +85,7 @@ public class PersonUpdate {
         && Objects.equals(ethnicity, that.ethnicity)
         && Objects.equals(tribalAffiliation, that.tribalAffiliation)
         && Objects.equals(gender, that.gender)
+        && Objects.equals(genderIdentity, that.genderIdentity)
         && Objects.equals(residentCongregateSetting, that.residentCongregateSetting)
         && Objects.equals(employedInHealthcare, that.employedInHealthcare);
   }
@@ -158,6 +104,7 @@ public class PersonUpdate {
         ethnicity,
         tribalAffiliation,
         gender,
+        genderIdentity,
         residentCongregateSetting,
         employedInHealthcare);
   }

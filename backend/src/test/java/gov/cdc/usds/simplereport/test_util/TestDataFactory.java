@@ -276,6 +276,7 @@ public class TestDataFactory {
             "not_hispanic",
             null,
             "male",
+            "male",
             false,
             false,
             language,
