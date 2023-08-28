@@ -1,7 +1,7 @@
 name: Dependabot Gradle Helper
 on:
   workflow_dispatch:
-  pull_request:
+  pull_request_target:
     paths: 
       - backend/build.gradle
 
@@ -28,14 +28,14 @@ jobs:
     # Run when manually requested or when dependabot creates/updates a PR
     # DO NOT run if somebody else updates a PR (a probably unnecessarily strict guard against infinite 
     # workflow loops, in case we ever enable this workflow to trigger other workflows)
-    if: github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch'
+    if: github.actor == 'dependabot[bot]' || github.actor == 'alismx' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GH_WORKFLOW_PAT }} # https://github.com/stefanzweifel/git-auto-commit-action#commits-made-by-this-action-do-not-trigger-new-workflow-runs
+          token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.head_ref }}
           fetch-depth: 0 # Disable shallow clones: we need to be able to push
       - name: Set up JDK ${{env.JAVA_VERSION}}
