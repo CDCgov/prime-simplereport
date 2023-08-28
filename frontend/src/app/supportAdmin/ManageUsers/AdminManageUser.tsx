@@ -205,27 +205,25 @@ export const AdminManageUser: React.FC = () => {
   };
 
   const handleUndeleteUser = async () => {
-    await undeleteUser({
-      variables: { userId: foundUser?.id as string },
+    await handleUpdate(async () => {
+      await undeleteUser({
+        variables: { userId: foundUser?.id as string },
+      });
+
+      await retrieveUser();
+
+      const fullName = displayFullName(
+        foundUser?.firstName,
+        foundUser?.middleName,
+        foundUser?.lastName
+      );
+
+      showSuccess("", `User account undeleted for ${fullName}`);
     });
-    const fullName = displayFullName(
-      foundUser?.firstName,
-      foundUser?.middleName,
-      foundUser?.lastName
-    );
-    showSuccess(
-      "Please allow a few moments for the user's record to update.",
-      `User account undeleted for ${fullName}`
-    );
-    setFoundUser({
-      ...foundUser,
-      isDeleted: false,
-      status: OktaUserStatus.UPDATING,
-    } as SettingsUser);
   };
 
   const retrieveUser = async () => {
-    getUserByEmail({ variables: { email: searchEmail.trim() } }).then(
+    return getUserByEmail({ variables: { email: searchEmail.trim() } }).then(
       ({ data, error }) => {
         if (!data?.user && !error) {
           setDisplayedError(userNotFoundError);

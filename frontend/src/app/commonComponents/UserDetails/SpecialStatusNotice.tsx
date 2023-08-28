@@ -31,10 +31,7 @@ export const SpecialStatusNotice: React.FC<{
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
 
   const closeModal = () => setShowConfirmationModal(false);
-  if (user.status === OktaUserStatus.UPDATING) {
-    statusDescription =
-      "Account is being restored. Please allow a few moments for the user's record to update.";
-  } else if (user.isDeleted) {
+  if (user.isDeleted) {
     confirmationModal = (
       <UndeleteUserModal
         isOpen={showConfirmationModal}

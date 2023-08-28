@@ -33,8 +33,4 @@ export enum OktaUserStatus {
   ACTIVE = "ACTIVE",
   PROVISIONED = "PROVISIONED",
   SUSPENDED = "SUSPENDED",
-  // this status does not exist in okta, but it handles the scenario
-  // where okta is not done propagating the status update and the UI
-  // needs to display the user's permissions
-  UPDATING = "UPDATING",
 }
