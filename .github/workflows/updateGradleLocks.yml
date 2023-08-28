@@ -28,7 +28,7 @@ jobs:
     # Run when manually requested or when dependabot creates/updates a PR
     # DO NOT run if somebody else updates a PR (a probably unnecessarily strict guard against infinite 
     # workflow loops, in case we ever enable this workflow to trigger other workflows)
-    if: github.actor == 'dependabot[bot]' || github.actor == 'alismx' || github.event_name == 'workflow_dispatch'
+    if: github.actor == 'dependabot[bot]' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     permissions:
       contents: write
