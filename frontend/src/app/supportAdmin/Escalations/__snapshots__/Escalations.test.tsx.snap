@@ -14,83 +14,81 @@ exports[`Escalations Renders the page 1`] = `
     class="prime-home flex-1"
   >
     <div
-      class="usa-card__header padding-top-2"
+      class="grid-container"
     >
       <div
-        class="grid-container"
+        class="prime-container card-container padding-bottom-3"
       >
         <div
-          class="grid-row"
+          class="usa-card__header"
         >
-          <form
-            class="prime-container card-container"
+          <div
+            class="width-full"
           >
             <div
-              class="usa-card__header padding-top-2"
+              class="display-flex flex-align-center"
             >
-              <div
-                class="width-full display-block  margin-top-3"
+              <svg
+                aria-hidden="true"
+                class="usa-icon text-base margin-left-neg-2px"
+                focusable="false"
+                height="1em"
+                role="img"
+                viewBox="0 0 24 24"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <div
-                  class="display-flex flex-align-center"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="usa-icon text-base margin-left-neg-2px"
-                    focusable="false"
-                    height="1em"
-                    role="img"
-                    viewBox="0 0 24 24"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
-                    />
-                  </svg>
-                  <a
-                    class="margin-left-05"
-                    href="/admin"
-                  >
-                    Support admin
-                  </a>
-                </div>
-                <h1
-                  class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
-                >
-                  Escalate to engineering
-                </h1>
-              </div>
+                <path
+                  d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                />
+              </svg>
+              <a
+                class="margin-left-05"
+                href="/admin"
+              >
+                Support admin
+              </a>
             </div>
             <div
-              class="usa-card__body margin-top-1"
+              class="grid-row width-full margin-top-1"
+            >
+              <h1
+                class="desktop:grid-col-fill tablet:grid-col-fill mobile:grid-col-12 font-heading-lg margin-bottom-0"
+              >
+                Escalate to engineering
+              </h1>
+            </div>
+          </div>
+        </div>
+        <div
+          class="usa-card__body margin-top-1"
+        >
+          <form>
+            <div
+              class="grid-row grid-gap margin-top-2"
             >
               <div
-                class="grid-row grid-gap margin-top-2"
+                class="tablet:grid-col"
               >
-                <div
-                  class="tablet:grid-col"
+                <p
+                  class="usa-prose"
                 >
-                  <p
-                    class="usa-prose"
+                  Use the below button to notify the SimpleReport engineering team about a tier 2 escalation. Make sure you've filled out information about the escalation in
+                   
+                  <a
+                    href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61"
+                    rel="noreferrer"
+                    target="_blank"
                   >
-                    Use the below button to notify the SimpleReport engineering team about a tier 2 escalation. Make sure you've filled out information about the escalation in
-                     
-                    <a
-                      href="https://app.smartsheetgov.com/sheets/wwchRWw4jr55WpX8XwC2h9Mr9rVr3Q3hww64pW61"
-                      rel="noreferrer"
-                      target="_blank"
-                    >
-                      the Smartsheet tracker
-                    </a>
-                  </p>
-                  <button
-                    class="usa-button width-half margin-top-2 submit-button"
-                    type="button"
-                  >
-                    Submit escalation
-                  </button>
-                </div>
+                    the Smartsheet tracker
+                  </a>
+                </p>
+                <button
+                  class="usa-button width-half margin-top-2 submit-button"
+                  type="button"
+                >
+                  Submit escalation
+                </button>
               </div>
             </div>
           </form>
