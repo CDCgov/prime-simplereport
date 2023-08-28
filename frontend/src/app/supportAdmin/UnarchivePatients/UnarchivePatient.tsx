@@ -165,6 +165,7 @@ const UnarchivePatient = () => {
   const handleSelectOrganization = async (selectedOrgInternalId: string) => {
     updateLocalState(() => ({
       ...initialState,
+      orgId: selectedOrgInternalId,
     }));
     if (selectedOrgInternalId) {
       let { data: facilitiesRes } = await queryGetOrgWithFacilities({
@@ -172,7 +173,6 @@ const UnarchivePatient = () => {
       });
       updateLocalState((prevState) => ({
         ...prevState,
-        orgId: selectedOrgInternalId,
         facilities: facilitiesRes?.organization?.facilities || [],
       }));
     }
