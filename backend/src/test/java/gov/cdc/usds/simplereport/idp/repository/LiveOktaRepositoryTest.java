@@ -1188,17 +1188,8 @@ class LiveOktaRepositoryTest {
 
     String username = "siteadmin@example.com";
     User mockUser = mock(User.class);
-    List<User> mockUserList = List.of(mockUser);
 
-    when(userApi.listUsers(
-            isNull(),
-            isNull(),
-            isNull(),
-            isNull(),
-            eq("profile.login eq \"" + username + "\""),
-            isNull(),
-            isNull()))
-        .thenReturn(mockUserList);
+    when(userApi.getUser(username)).thenReturn(mockUser);
     when(mockUser.getId()).thenReturn("userId");
     when(userApi.listUserGroups(anyString())).thenReturn(initialGroups);
 
