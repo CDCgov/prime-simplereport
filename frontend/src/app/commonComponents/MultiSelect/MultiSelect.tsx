@@ -191,6 +191,7 @@ export const MultiSelect = ({
             className="multi-select-dropdown"
             disabled={isDisabled}
             placeholder={placeholder}
+            inputProps={{ "aria-required": required }}
             ariaInvalid={validationStatus === "error"}
             registrationProps={registrationProps}
             DropdownComponent={DropdownComponent}
