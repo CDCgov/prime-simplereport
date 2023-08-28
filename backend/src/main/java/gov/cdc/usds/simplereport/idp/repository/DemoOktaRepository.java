@@ -184,6 +184,31 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(newRoleClaims);
   }
 
+  @Override
+  public List<String> updateUserPrivilegesAndGroupAccess(
+      String username,
+      Organization org,
+      Set<Facility> facilities,
+      OrganizationRole roles,
+      boolean allFacilitiesAccess) {
+
+    String oldOrgId = usernameOrgRolesMap.get(username).getOrganizationExternalId();
+    orgUsernamesMap.get(oldOrgId).remove(username);
+    orgUsernamesMap.get(org.getExternalId()).add(username);
+    OrganizationRoleClaims newRoleClaims =
+        new OrganizationRoleClaims(
+            org.getExternalId(),
+            facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet()),
+            Set.of(roles, OrganizationRole.getDefault()));
+
+    usernameOrgRolesMap.replace(username, newRoleClaims);
+
+    // Live Okta repository returns list of Group names, but our demo repo didn't implement
+    // group mappings and it didn't feel worth it to add that implementation since the return is
+    // used mostly for testing. Return the list of facility ID's in the new org instead
+    return orgFacilitiesMap.get(org.getExternalId()).stream().map(UUID::toString).toList();
+  }
+
   public void resetUserPassword(String username) {
     if (!usernameOrgRolesMap.containsKey(username)) {
       throw new IllegalGraphqlArgumentException(

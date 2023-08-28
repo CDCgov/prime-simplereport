@@ -219,6 +219,7 @@ export type Mutation = {
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
+  updateUserPrivilegesAndGroupAccess: User;
 };
 
 export type MutationAddFacilityArgs = {
@@ -508,6 +509,14 @@ export type MutationUpdateUserPrivilegesArgs = {
   facilities?: InputMaybe<Array<Scalars["ID"]>>;
   id: Scalars["ID"];
   role: Role;
+};
+
+export type MutationUpdateUserPrivilegesAndGroupAccessArgs = {
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  facilities?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
+  orgExternalId: Scalars["String"];
+  role: Role;
+  username: Scalars["String"];
 };
 
 export type NameInfo = {

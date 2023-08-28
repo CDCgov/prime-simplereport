@@ -70,6 +70,8 @@ public class LiveOktaRepository implements OktaRepository {
   private final ApplicationGroupsApi applicationGroupsApi;
   private final String adminGroupName;
 
+  private static final String OKTA_ORG_PROFILE_MATCHER = "profile.name sw \"";
+
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
@@ -133,7 +135,7 @@ public class LiveOktaRepository implements OktaRepository {
                 null,
                 null,
                 null,
-                "profile.name sw \"" + generateGroupOrgPrefix(organizationExternalId) + "\"",
+                OKTA_ORG_PROFILE_MATCHER + generateGroupOrgPrefix(organizationExternalId) + "\"",
                 null,
                 null)
             .stream();
@@ -332,6 +334,63 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   @Override
+  public List<String> updateUserPrivilegesAndGroupAccess(
+      String username,
+      Organization org,
+      Set<Facility> facilities,
+      OrganizationRole role,
+      boolean assignedToAllFacilities) {
+
+    // unassign user from current groups
+
+    User oktaUserToMove = getUserOrThrowError(username, "Couldn't find user");
+    List<Group> groupsToUnassign = userApi.listUserGroups(oktaUserToMove.getId());
+
+    groupsToUnassign.stream()
+        // only match on the org-related group ids and not the Okta-wide orgs like "Everyone"
+        .filter(g -> g.getProfile().getName().contains("TENANT"))
+        .forEach(g -> groupApi.unassignUserFromGroup(g.getId(), oktaUserToMove.getId()));
+
+    // add them to the new groups
+    String organizationExternalId = org.getExternalId();
+    EnumSet<OrganizationRole> rolesToCreate =
+        assignedToAllFacilities
+            ? EnumSet.of(OrganizationRole.getDefault(), role, OrganizationRole.ALL_FACILITIES)
+            : EnumSet.of(OrganizationRole.getDefault(), role);
+
+    Set<String> groupNamesToAdd = new HashSet<>();
+    groupNamesToAdd.addAll(
+        rolesToCreate.stream()
+            .map(r -> generateRoleGroupName(organizationExternalId, r))
+            .collect(Collectors.toSet()));
+
+    groupNamesToAdd.addAll(
+        facilities.stream()
+            .map(f -> generateFacilityGroupName(organizationExternalId, f.getInternalId()))
+            .collect(Collectors.toSet()));
+
+    String groupOrgPrefix = generateGroupOrgPrefix(org.getExternalId());
+    Map<String, Group> orgsToAddUserToMap =
+        groupApi
+            .listGroups(
+                null,
+                null,
+                null,
+                null,
+                null,
+                OKTA_ORG_PROFILE_MATCHER + groupOrgPrefix + "\"",
+                null,
+                null)
+            .stream()
+            .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
+            .collect(Collectors.toMap(g -> g.getProfile().getName(), Function.identity()));
+
+    orgsToAddUserToMap.forEach(
+        (name, group) -> groupApi.assignUserToGroup(group.getId(), oktaUserToMove.getId()));
+    return orgsToAddUserToMap.keySet().stream().toList();
+  }
+
+  @Override
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
     User user =
@@ -390,7 +449,7 @@ public class LiveOktaRepository implements OktaRepository {
                   null,
                   null,
                   null,
-                  "profile.name sw \"" + groupOrgPrefix + "\"",
+                  OKTA_ORG_PROFILE_MATCHER + groupOrgPrefix + "\"",
                   null,
                   null)
               .stream()

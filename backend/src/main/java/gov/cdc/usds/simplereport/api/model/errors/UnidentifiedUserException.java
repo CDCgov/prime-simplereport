@@ -4,6 +4,7 @@ import graphql.ErrorClassification;
 import graphql.ErrorType;
 import graphql.GraphQLError;
 import graphql.language.SourceLocation;
+import java.util.Collections;
 import java.util.List;
 
 /** Exception to throw when a user can't be identified */
@@ -17,7 +18,7 @@ public class UnidentifiedUserException extends RuntimeException implements Graph
 
   @Override // should-be-defaulted unused interface method
   public List<SourceLocation> getLocations() {
-    return null;
+    return Collections.emptyList();
   }
 
   @Override
