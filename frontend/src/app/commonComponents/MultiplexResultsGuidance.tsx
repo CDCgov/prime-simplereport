@@ -25,7 +25,6 @@ const PositiveFluResultInfo = ({
       )}
       <p>{t("testResult.fluNotes.positive.p0")}</p>
       <Trans
-        t={t}
         parent="p"
         i18nKey="testResult.fluNotes.positive.p1"
         components={[
@@ -40,7 +39,6 @@ const PositiveFluResultInfo = ({
         ]}
       />
       <Trans
-        t={t}
         parent="p"
         i18nKey="testResult.fluNotes.positive.p2"
         components={[
