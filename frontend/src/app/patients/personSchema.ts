@@ -271,9 +271,10 @@ const updateFieldSchemata: (
   genderIdentity: yup
     .mixed()
     .oneOf(
-      getValues(GENDER_IDENTITY_VALUES),
+      [...getValues(GENDER_IDENTITY_VALUES), null],
       t("patient.form.errors.genderIdentity") || ""
-    ),
+    )
+    .nullable(),
   residentCongregateSetting: yup.boolean().nullable(),
   employedInHealthcare: yup.boolean().nullable(),
   tribalAffiliation: yup
