@@ -147,9 +147,7 @@ describe("MfaSelect routing", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          "Insert your Security Key in your computer’s USB port or connect it with a USB cable."
-        )
+        screen.getByText("How to register your security key.")
       ).toBeInTheDocument();
     });
   });
