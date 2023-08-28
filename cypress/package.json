@@ -4,7 +4,7 @@
     "private": true,
     "devDependencies": {
         "@faker-js/faker": "^8.0.2",
-        "cypress": "^11.0.0",
+        "cypress": "^12.17.4",
         "cypress-localstorage-commands": "^2.2.4",
         "eslint": "^8.48.0",
         "eslint-plugin-cypress": "^2.14.0",
