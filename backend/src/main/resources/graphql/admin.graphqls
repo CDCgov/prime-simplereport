@@ -55,4 +55,10 @@ extend type Mutation {
   markOrganizationAsDeleted(organizationId: ID!, deleted: Boolean!): String
   markDeviceTypeAsDeleted(deviceId: ID, deviceName: String):DeviceType
   sendSupportEscalation: String
+  updateUserPrivilegesAndGroupAccess(
+    username: String!,
+    orgExternalId: String!,
+    accessAllFacilities: Boolean = false,
+    facilities: [ID] = [],
+    role: Role!): User!
 }

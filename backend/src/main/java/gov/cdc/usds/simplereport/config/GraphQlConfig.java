@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.config.scalars.datetime.DateTimeScalar;
 import gov.cdc.usds.simplereport.config.scalars.localdate.LocalDateScalar;
 import graphql.validation.rules.OnValidationErrorStrategy;
@@ -94,6 +95,13 @@ public class GraphQlConfig {
             "Sorry, our system was unable to report your test result. Please try"
                 + " again, or reach out to support@simplereport.gov for help.";
         String errorMessage = String.format("header: Error submitting test; body: %s", errorBody);
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
+      }
+
+      if (exception instanceof UnidentifiedFacilityException) {
+        String errorMessage =
+            "header: Error updating user privileges and / or group access; body: "
+                + exception.getMessage();
         return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
       }
 

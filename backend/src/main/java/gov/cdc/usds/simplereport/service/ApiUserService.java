@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -70,6 +71,9 @@ public class ApiUserService {
   @Autowired private WebhookContextHolder _webhookContextHolder;
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
+
+  public static final String MOVE_USER_ARGUMENT_ERROR =
+      "Operation must specify a list of facilities for the user to access or allow them access to all facilities";
 
   private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
     log.info("User with id={} updated by user with id={}", authorId, updatedUserId);
@@ -701,5 +705,53 @@ public class ApiUserService {
         new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
 
     return new UserInfo(apiUser, Optional.of(orgRoles), isSiteAdmin, userStatus);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void updateUserPrivilegesAndGroupAccess(
+      String username, String orgExternalId, boolean allFacilitiesAccess, OrganizationRole role) {
+    updateUserPrivilegesAndGroupAccess(
+        username, orgExternalId, allFacilitiesAccess, List.of(), role);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void updateUserPrivilegesAndGroupAccess(
+      String username,
+      String orgExternalId,
+      boolean allFacilitiesAccess,
+      List<UUID> facilities,
+      OrganizationRole role)
+      throws IllegalGraphqlArgumentException {
+
+    if (!allFacilitiesAccess && facilities.isEmpty()) {
+      throw new IllegalArgumentException(MOVE_USER_ARGUMENT_ERROR);
+    }
+
+    Organization newOrg = _orgService.getOrganization(orgExternalId);
+    Set<UUID> facilityIdsToGiveAccess =
+        allFacilitiesAccess
+            // use an empty set of facilities if user can access all facilities anyway
+            ? Set.of()
+            : new HashSet<>(facilities);
+
+    Set<Facility> facilitiesToGiveAccessTo =
+        _orgService.getFacilities(newOrg, facilityIdsToGiveAccess);
+
+    if (facilitiesToGiveAccessTo.size() != facilityIdsToGiveAccess.size()) {
+      Set<UUID> facilityIdDiff =
+          dedupeFoundAndPassedInFacilityIds(facilitiesToGiveAccessTo, facilityIdsToGiveAccess);
+      throw new UnidentifiedFacilityException(facilityIdDiff, orgExternalId);
+    }
+    _oktaRepo.updateUserPrivilegesAndGroupAccess(
+        username, newOrg, facilitiesToGiveAccessTo, role, allFacilitiesAccess);
+  }
+
+  private Set<UUID> dedupeFoundAndPassedInFacilityIds(
+      Set<Facility> facilitiesToGiveAccessTo, Set<UUID> facilityIdsToGiveAccess) {
+    Set<UUID> facilityIdsFound =
+        facilitiesToGiveAccessTo.stream().map(f -> f.getInternalId()).collect(Collectors.toSet());
+    return facilityIdsToGiveAccess.stream()
+        .filter(id -> !facilityIdsFound.contains(id))
+        .collect(Collectors.toSet());
   }
 }
