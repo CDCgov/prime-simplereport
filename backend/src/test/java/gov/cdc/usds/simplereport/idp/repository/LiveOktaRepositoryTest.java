@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.client.ApiException;
@@ -1120,6 +1122,128 @@ class LiveOktaRepositoryTest {
     assertEquals(username, oktaUser.getUsername());
     assertEquals(true, oktaUser.isSiteAdmin());
     assertEquals(true, oktaUser.getOrganizationRoleClaims().isEmpty());
+  }
+
+  @Test
+  void moveUserToNewOrganization_admin_success() {
+    OrganizationRole roleToTest = OrganizationRole.ADMIN;
+    setupMoveUserConfig(roleToTest, Set.of());
+
+    Organization mockOrgToMoveTo = mock(Organization.class);
+    when(mockOrgToMoveTo.getExternalId()).thenReturn("FOLLOWUP_GROUPS");
+    List<String> assignedGroupIds =
+        _repo.updateUserPrivilegesAndGroupAccess(
+            "siteadmin@example.com", mockOrgToMoveTo, Set.of(), OrganizationRole.ADMIN, false);
+    verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
+
+    assertThat(assignedGroupIds)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
+  }
+
+  @Test
+  void moveUserToNewOrganization_userWithFacilityList_success() {
+    OrganizationRole roleToTest = OrganizationRole.USER;
+    String mockUUID1 = "ce8782ca-18ba-4384-95fc-fbb7be0ef577";
+    String mockUUID2 = "05bc0080-ad53-4b7a-a4b5-d1f86059a304";
+
+    Set<Facility> mockFacilities =
+        generateMockFacilitiesFromUUIDs(
+            List.of(UUID.fromString(mockUUID1), UUID.fromString((mockUUID2))));
+    setupMoveUserConfig(roleToTest, mockFacilities);
+
+    Organization mockOrgToMoveTo = mock(Organization.class);
+    when(mockOrgToMoveTo.getExternalId()).thenReturn("FOLLOWUP_GROUPS");
+
+    List<String> assignedGroupIds =
+        _repo.updateUserPrivilegesAndGroupAccess(
+            "siteadmin@example.com", mockOrgToMoveTo, mockFacilities, OrganizationRole.USER, false);
+
+    verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
+
+    assertThat(assignedGroupIds)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS")
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID1)
+        .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + "FACILITY_ACCESS" + ":" + mockUUID2);
+  }
+
+  private Set<Facility> generateMockFacilitiesFromUUIDs(List<UUID> facilitiesToGenerate) {
+    return facilitiesToGenerate.stream()
+        .map(
+            id -> {
+              Facility mockFacilityToMoveTo = mock(Facility.class);
+              when(mockFacilityToMoveTo.getInternalId()).thenReturn(id);
+              return mockFacilityToMoveTo;
+            })
+        .collect(Collectors.toSet());
+  }
+
+  private void setupMoveUserConfig(OrganizationRole roleToTest, Set<Facility> facilitiesToReturn) {
+
+    // using the tenant prefix to follow string matching in the actual method
+    Group initialMockGroup =
+        createMockOktaGroup("SR-DEV-TENANT-INITIAL_GROUPS", GroupType.OKTA_GROUP);
+    when(initialMockGroup.getId()).thenReturn("mockInitialGroupId");
+    List<Group> initialGroups = List.of(initialMockGroup);
+
+    String username = "siteadmin@example.com";
+    User mockUser = mock(User.class);
+    List<User> mockUserList = List.of(mockUser);
+
+    when(userApi.listUsers(
+            isNull(),
+            isNull(),
+            isNull(),
+            isNull(),
+            eq("profile.login eq \"" + username + "\""),
+            isNull(),
+            isNull()))
+        .thenReturn(mockUserList);
+    when(mockUser.getId()).thenReturn("userId");
+    when(userApi.listUserGroups(anyString())).thenReturn(initialGroups);
+
+    Group mockGroup1 = createMockOktaGroup("SR-UNITTEST-TENANT", GroupType.OKTA_GROUP);
+    GroupProfile mockGroupProfile1 = mock(GroupProfile.class);
+    when(mockGroupProfile1.getName()).thenReturn("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
+    when(mockGroup1.getProfile()).thenReturn(mockGroupProfile1);
+
+    Group mockGroup2 = createMockOktaGroup("SR-UNITTEST-TENANT", GroupType.OKTA_GROUP);
+    GroupProfile mockGroupProfile2 = mock(GroupProfile.class);
+    when(mockGroupProfile2.getName())
+        .thenReturn("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest.toString());
+    when(mockGroup2.getProfile()).thenReturn(mockGroupProfile2);
+
+    Set<Group> groupsToMoveTo = new HashSet<>();
+    groupsToMoveTo.addAll(Set.of(mockGroup1, mockGroup2));
+
+    groupsToMoveTo.addAll(
+        facilitiesToReturn.stream()
+            .map(
+                f -> {
+                  String mockGroupName =
+                      "SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:"
+                          + "FACILITY_ACCESS:"
+                          + f.getInternalId();
+                  GroupProfile mockGroupProfile = mock(GroupProfile.class);
+                  when(mockGroupProfile.getName()).thenReturn(mockGroupName);
+
+                  Group mockGroup = createMockOktaGroup(mockGroupName, GroupType.OKTA_GROUP);
+                  when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
+                  return mockGroup;
+                })
+            .collect(Collectors.toList()));
+
+    when(groupApi.listGroups(
+            null,
+            null,
+            null,
+            null,
+            null,
+            "profile.name sw \"" + "SR-UNITTEST-TENANT:FOLLOWUP_GROUPS" + "\"",
+            null,
+            null))
+        .thenReturn(groupsToMoveTo.stream().toList());
   }
 
   public Group createMockOktaGroup(String name, GroupType type) {

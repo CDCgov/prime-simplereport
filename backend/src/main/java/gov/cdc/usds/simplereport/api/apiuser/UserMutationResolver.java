@@ -1,9 +1,12 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
+import static gov.cdc.usds.simplereport.service.ApiUserService.MOVE_USER_ARGUMENT_ERROR;
+
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.api.model.UserInput;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -159,5 +162,29 @@ public class UserMutationResolver {
             Translators.parseStringNoTrim(organizationExternalId),
             Translators.parseString(justification));
     return new User(user);
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  @MutationMapping
+  public User updateUserPrivilegesAndGroupAccess(
+      @Argument String username,
+      @Argument String orgExternalId,
+      @Argument boolean accessAllFacilities,
+      @Argument List<UUID> facilities,
+      @Argument Role role) {
+    try {
+      List<UUID> facilityIdsToAssign = facilities == null ? List.of() : facilities;
+      _us.updateUserPrivilegesAndGroupAccess(
+          username,
+          orgExternalId,
+          accessAllFacilities,
+          facilityIdsToAssign,
+          role.toOrganizationRole());
+      return new User(_us.getUserByLoginEmail(username));
+
+    } catch (IllegalArgumentException e) {
+      throw new IllegalGraphqlArgumentException(
+          "Error updating user privileges and / or group access: " + MOVE_USER_ARGUMENT_ERROR);
+    }
   }
 }
