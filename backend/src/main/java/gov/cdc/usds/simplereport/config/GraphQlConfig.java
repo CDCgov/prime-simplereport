@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
@@ -99,6 +100,13 @@ public class GraphQlConfig {
       }
 
       if (exception instanceof UnidentifiedFacilityException) {
+        String errorMessage =
+            "header: Error updating user privileges and / or group access; body: "
+                + exception.getMessage();
+        return Mono.just(singletonList(new GenericGraphqlException(errorMessage, errorPath)));
+      }
+
+      if (exception instanceof PrivilegeUpdateFacilityAccessException) {
         String errorMessage =
             "header: Error updating user privileges and / or group access; body: "
                 + exception.getMessage();
