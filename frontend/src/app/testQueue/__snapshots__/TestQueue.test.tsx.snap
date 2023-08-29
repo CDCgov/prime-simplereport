@@ -388,6 +388,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    data-testid="covid-test-result-abc"
                     id="covid-test-result-abc"
                   >
                     <legend
@@ -806,6 +807,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 >
                   <fieldset
                     class="usa-fieldset prime-radios"
+                    data-testid="covid-test-result-def"
                     id="covid-test-result-def"
                   >
                     <legend
