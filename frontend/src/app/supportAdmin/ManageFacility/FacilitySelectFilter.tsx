@@ -1,21 +1,25 @@
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { Ref } from "react";
+import { ComboBox, ComboBoxRef } from "@trussworks/react-uswds";
 
-import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import Button from "../../commonComponents/Button/Button";
 import SupportHomeLink from "../SupportHomeLink";
+import { Option } from "../../commonComponents/Dropdown";
+import Required from "../../commonComponents/Required";
 
 import { ManageFacilityState } from "./ManageFacility";
 
 export interface FacilitySelectFilterProps {
   organizationOptions: Option[];
   facilityOptions: Option[];
-  onClearFilter: () => void;
-  onSelectOrg: (e: any) => void;
-  onSelectFacility: (e: any) => void;
-  onSearch: (e: any) => void;
   manageFacilityState: ManageFacilityState;
+  onClearFilter: () => void;
+  onSelectOrg: (selectedOrg: string | undefined) => void;
+  onSelectFacility: (selectedFacility: string | undefined) => void;
+  onSearch: (e: any) => void;
   loading: boolean;
+  facilityRef: Ref<ComboBoxRef> | undefined;
+  orgRef: Ref<ComboBoxRef> | undefined;
 }
 
 const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
@@ -27,6 +31,8 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
   onSelectFacility,
   onSearch,
   loading,
+  facilityRef,
+  orgRef,
 }) => {
   /**
    * HTML
@@ -43,7 +49,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
             <div className="desktop:grid-col-auto tablet:grid-col-auto mobile:grid-col-12 margin-top-2 tablet:margin-top-0">
               <Button
                 icon={faSlidersH}
-                disabled={manageFacilityState.orgId === ""}
+                disabled={manageFacilityState.orgId === undefined}
                 onClick={onClearFilter}
                 ariaLabel="Clear facility selection filters"
               >
@@ -58,40 +64,36 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
         className="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1"
       >
         <div className="grid-row grid-gap padding-bottom-2 flex-align-end">
-          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
-            <Dropdown
-              label="Organization"
-              options={[
-                {
-                  label: "- Select -",
-                  value: "",
-                },
-                ...organizationOptions,
-              ]}
-              onChange={onSelectOrg}
-              selectedValue={manageFacilityState.orgId}
+          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em">
+            <Required label={"Organization"}></Required>
+            <ComboBox
+              name={"Organization"}
+              id={"manage-facility-org-select"}
+              options={organizationOptions}
+              onChange={(val) => {
+                onSelectOrg(val);
+              }}
               disabled={loading}
-              required={true}
+              ref={orgRef}
             />
           </div>
-          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
-            <Dropdown
-              label="Testing facility"
-              options={[
-                {
-                  label: "- Select -",
-                  value: "",
-                },
-                ...facilityOptions,
-              ]}
-              onChange={onSelectFacility}
-              selectedValue={manageFacilityState.facilityId}
+          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em">
+            <Required label={"Testing facility"}></Required>
+            <ComboBox
+              name={"Facility"}
+              id={"manage-facility-facility-select"}
+              options={facilityOptions}
+              onChange={(val) => onSelectFacility(val)}
               disabled={loading}
-              required={true}
+              ref={facilityRef}
             />
           </div>
-          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1">
-            <Button onClick={onSearch} ariaLabel="Search facility selection">
+          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 ">
+            <Button
+              onClick={onSearch}
+              disabled={manageFacilityState.facilityId === undefined}
+              ariaLabel="Search facility selection"
+            >
               Search
             </Button>
           </div>
