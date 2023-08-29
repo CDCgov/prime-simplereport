@@ -12,5 +12,5 @@ terraform fmt -recursive
 for d in $TERRAFORM_DIRS
 do
     echo "Initializing/formatting/validating $d";
-    (cd $d && rm .terraform.lock.hcl || true && terraform init -upgrade -backend=false && terraform validate)
+    (cd $d && rm -f .terraform.lock.hcl && terraform init -upgrade -backend=false && terraform validate)
 done
