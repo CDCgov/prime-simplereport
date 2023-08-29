@@ -106,6 +106,7 @@ const addPatientRequestParams = {
   race: "other",
   ethnicity: "refused",
   gender: "female",
+  genderIdentity: "female",
   facilityId: mockFacilityID,
   preferredLanguage: null,
   testResultDelivery: "SMS",
@@ -345,6 +346,11 @@ describe("AddPatient", () => {
               value: "female",
               exact: true,
             },
+            "What's your gender identity?": {
+              label: "Female",
+              value: "female",
+              exact: true,
+            },
           }
         );
         await act(
@@ -559,6 +565,11 @@ describe("AddPatient", () => {
               value: "female",
               exact: true,
             },
+            "What's your gender identity?": {
+              label: "Female",
+              value: "female",
+              exact: true,
+            },
           }
         );
         jest
@@ -622,6 +633,11 @@ describe("AddPatient", () => {
               exact: true,
             },
             "Sex assigned at birth": {
+              label: "Female",
+              value: "female",
+              exact: true,
+            },
+            "What's your gender identity?": {
               label: "Female",
               value: "female",
               exact: true,
