@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
@@ -71,9 +72,6 @@ public class ApiUserService {
   @Autowired private WebhookContextHolder _webhookContextHolder;
 
   @Autowired private ApiUserContextHolder _apiUserContextHolder;
-
-  public static final String MOVE_USER_ARGUMENT_ERROR =
-      "Operation must specify a list of facilities for the user to access or allow them access to all facilities";
 
   private void createUserUpdatedAuditLog(Object authorId, Object updatedUserId) {
     log.info("User with id={} updated by user with id={}", authorId, updatedUserId);
@@ -724,7 +722,7 @@ public class ApiUserService {
       throws IllegalGraphqlArgumentException {
 
     if (!allFacilitiesAccess && facilities.isEmpty()) {
-      throw new IllegalArgumentException(MOVE_USER_ARGUMENT_ERROR);
+      throw new PrivilegeUpdateFacilityAccessException();
     }
 
     Organization newOrg = _orgService.getOrganization(orgExternalId);

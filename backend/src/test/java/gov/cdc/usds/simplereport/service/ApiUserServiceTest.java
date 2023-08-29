@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.service.ApiUserService.MOVE_USER_ARGUMENT_ERROR;
+import static gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException.PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
@@ -508,27 +509,27 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @Test
   @WithSimpleReportSiteAdminUser
   void
-      updateUserPrivilegesAndGroupAccess_assignToAllFalseWithoutFacilities_throwsIllegalArgException() {
+      updateUserPrivilegesAndGroupAccess_assignToAllFalseWithoutFacilities_throwsPrivilegeUpdateFacilityAccessException() {
     initSampleData();
     final String email = "allfacilities@example.com";
     Organization orgToTestMovementTo = _dataFactory.saveValidOrganization();
     String moveOrgExternalId = orgToTestMovementTo.getExternalId();
     List<UUID> emptyList = List.of();
-    IllegalArgumentException caught =
+    PrivilegeUpdateFacilityAccessException caught =
         assertThrows(
-            IllegalArgumentException.class,
+            PrivilegeUpdateFacilityAccessException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
                     email, moveOrgExternalId, false, emptyList, OrganizationRole.USER));
-    assertEquals(MOVE_USER_ARGUMENT_ERROR, caught.getMessage());
+    assertEquals(PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR, caught.getMessage());
 
-    IllegalArgumentException caught2 =
+    PrivilegeUpdateFacilityAccessException caught2 =
         assertThrows(
-            IllegalArgumentException.class,
+            PrivilegeUpdateFacilityAccessException.class,
             () ->
                 _service.updateUserPrivilegesAndGroupAccess(
                     email, moveOrgExternalId, false, OrganizationRole.USER));
-    assertEquals(MOVE_USER_ARGUMENT_ERROR, caught2.getMessage());
+    assertEquals(PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR, caught2.getMessage());
   }
 
   @Test
