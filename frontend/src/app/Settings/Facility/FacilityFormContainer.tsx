@@ -20,9 +20,9 @@ interface Props {
 }
 
 const FacilityFormContainer: any = (props: Props) => {
-  useDocumentTitle("Add new facility");
   const { facilityId } = useParams();
   const [activeFacility] = useSelectedFacility();
+  useDocumentTitle(facilityId ? `Edit facility` : "Add new facility");
   const { data, loading, error } = useGetFacilitiesQuery({
     fetchPolicy: "no-cache",
   });
