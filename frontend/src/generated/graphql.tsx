@@ -1931,6 +1931,16 @@ export type GetPatientsCountByFacilityWithOrgQuery = {
   patientsCount?: number | null;
 };
 
+export type UnarchivePatientMutationVariables = Exact<{
+  id: Scalars["ID"];
+  orgExternalId: Scalars["String"];
+}>;
+
+export type UnarchivePatientMutation = {
+  __typename?: "Mutation";
+  setPatientIsDeleted?: { __typename?: "Patient"; internalId: string } | null;
+};
+
 export type SendSupportEscalationMutationVariables = Exact<{
   [key: string]: never;
 }>;
@@ -6034,6 +6044,61 @@ export type GetPatientsCountByFacilityWithOrgLazyQueryHookResult = ReturnType<
 export type GetPatientsCountByFacilityWithOrgQueryResult = Apollo.QueryResult<
   GetPatientsCountByFacilityWithOrgQuery,
   GetPatientsCountByFacilityWithOrgQueryVariables
+>;
+export const UnarchivePatientDocument = gql`
+  mutation UnarchivePatient($id: ID!, $orgExternalId: String!) {
+    setPatientIsDeleted(
+      id: $id
+      deleted: false
+      orgExternalId: $orgExternalId
+    ) {
+      internalId
+    }
+  }
+`;
+export type UnarchivePatientMutationFn = Apollo.MutationFunction<
+  UnarchivePatientMutation,
+  UnarchivePatientMutationVariables
+>;
+
+/**
+ * __useUnarchivePatientMutation__
+ *
+ * To run a mutation, you first call `useUnarchivePatientMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnarchivePatientMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unarchivePatientMutation, { data, loading, error }] = useUnarchivePatientMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      orgExternalId: // value for 'orgExternalId'
+ *   },
+ * });
+ */
+export function useUnarchivePatientMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UnarchivePatientMutation,
+    UnarchivePatientMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UnarchivePatientMutation,
+    UnarchivePatientMutationVariables
+  >(UnarchivePatientDocument, options);
+}
+export type UnarchivePatientMutationHookResult = ReturnType<
+  typeof useUnarchivePatientMutation
+>;
+export type UnarchivePatientMutationResult =
+  Apollo.MutationResult<UnarchivePatientMutation>;
+export type UnarchivePatientMutationOptions = Apollo.BaseMutationOptions<
+  UnarchivePatientMutation,
+  UnarchivePatientMutationVariables
 >;
 export const SendSupportEscalationDocument = gql`
   mutation SendSupportEscalation {

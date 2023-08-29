@@ -19,12 +19,14 @@ interface UnarchivePatientInformationProps {
   currentPage: number;
   loading: boolean;
   handlePaginationClick: (pageNumber: number) => void;
+  onUnarchivePatient: (patient: UnarchivePatientPatient) => void;
 }
 const UnarchivePatientInformation = ({
   unarchivePatientState,
   currentPage,
   loading,
   handlePaginationClick,
+  onUnarchivePatient,
 }: UnarchivePatientInformationProps) => {
   const displayInstructions =
     unarchivePatientState.patients === undefined &&
@@ -53,6 +55,7 @@ const UnarchivePatientInformation = ({
                   type="button"
                   label="Unarchive"
                   aria-label={`Unarchive ${fullName}`}
+                  onClick={() => onUnarchivePatient(patient)}
                 />
               </td>
             </tr>
