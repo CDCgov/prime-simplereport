@@ -50,7 +50,8 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             null,
             "",
             null,
-            "",
+            "male",
+            "nonbinary",
             false,
             false,
             "English",
@@ -64,6 +65,8 @@ class PersonRepositoryTest extends BaseRepositoryTest {
                 PersonService.DEFAULT_PAGINATION_PAGESIZE));
     assertEquals(1, found.size());
     assertEquals("Joe", found.get(0).getFirstName());
+    assertEquals("male", found.get(0).getGender());
+    assertEquals("nonbinary", found.get(0).getGenderIdentity());
     Person createdPerson = found.get(0);
     UUID personId = createdPerson.getInternalId();
 

@@ -126,6 +126,7 @@ class PersonSerializationTest extends BaseNonSpringBootTestConfiguration {
             "generic",
             Arrays.asList("123"),
             "Male-ish",
+            "Male-ish",
             true,
             false,
             "English",

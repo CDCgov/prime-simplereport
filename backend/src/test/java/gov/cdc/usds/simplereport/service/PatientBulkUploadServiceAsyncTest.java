@@ -281,6 +281,7 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
         "not_hispanic",
         null,
         "female",
+        "female",
         false,
         false,
         "",
