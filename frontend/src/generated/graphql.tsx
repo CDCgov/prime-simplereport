@@ -1516,6 +1516,7 @@ export type GetPatientDetailsQuery = {
     ethnicity?: string | null;
     tribalAffiliation?: Array<string | null> | null;
     gender?: string | null;
+    genderIdentity?: string | null;
     residentCongregateSetting?: boolean | null;
     employedInHealthcare?: boolean | null;
     preferredLanguage?: string | null;
@@ -1554,6 +1555,7 @@ export type UpdatePatientMutationVariables = Exact<{
   ethnicity?: InputMaybe<Scalars["String"]>;
   tribalAffiliation?: InputMaybe<Scalars["String"]>;
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
   employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
@@ -4364,6 +4366,7 @@ export const GetPatientDetailsDocument = gql`
       ethnicity
       tribalAffiliation
       gender
+      genderIdentity
       residentCongregateSetting
       employedInHealthcare
       preferredLanguage
@@ -4449,6 +4452,7 @@ export const UpdatePatientDocument = gql`
     $ethnicity: String
     $tribalAffiliation: String
     $gender: String
+    $genderIdentity: String
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
@@ -4477,6 +4481,7 @@ export const UpdatePatientDocument = gql`
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
       gender: $gender
+      genderIdentity: $genderIdentity
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
@@ -4526,6 +4531,7 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      ethnicity: // value for 'ethnicity'
  *      tribalAffiliation: // value for 'tribalAffiliation'
  *      gender: // value for 'gender'
+ *      genderIdentity: // value for 'genderIdentity'
  *      residentCongregateSetting: // value for 'residentCongregateSetting'
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'
