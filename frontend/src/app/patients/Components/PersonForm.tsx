@@ -652,7 +652,6 @@ const PersonForm = (props: Props) => {
         />
         <RadioGroup
           legend={t("patient.form.demographics.genderIdentity")}
-          // hintText={t("patient.form.demographics.genderHelpText")}
           name="genderIdentity"
           validationStatus={validationStatus("genderIdentity")}
           buttons={GENDER_IDENTITY_VALUES}
