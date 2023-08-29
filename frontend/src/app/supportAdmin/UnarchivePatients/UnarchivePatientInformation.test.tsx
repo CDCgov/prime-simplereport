@@ -27,9 +27,11 @@ jest.mock("react-router-dom", () => {
 
 describe("unarchive patient information", () => {
   let handlePaginationClick: jest.Mock;
+  let onUnarchivePatient: jest.Mock;
 
   beforeEach(() => {
     handlePaginationClick = jest.fn();
+    onUnarchivePatient = jest.fn();
   });
 
   it("displays instructions on initial state", async () => {
@@ -41,6 +43,7 @@ describe("unarchive patient information", () => {
       patientsCount: undefined,
       patients: undefined,
       facilities: [],
+      patient: undefined,
     };
     render(
       <MemoryRouter>
@@ -49,6 +52,7 @@ describe("unarchive patient information", () => {
           currentPage={1}
           loading={false}
           handlePaginationClick={handlePaginationClick}
+          onUnarchivePatient={onUnarchivePatient}
         />
       </MemoryRouter>
     );
@@ -69,6 +73,7 @@ describe("unarchive patient information", () => {
       patientsCount: 2,
       patients: [mockPatient1],
       facilities: [mockFacility1, mockFacility2],
+      patient: undefined,
     };
     render(
       <MemoryRouter>
@@ -77,6 +82,7 @@ describe("unarchive patient information", () => {
           currentPage={1}
           loading={true}
           handlePaginationClick={handlePaginationClick}
+          onUnarchivePatient={onUnarchivePatient}
         />
       </MemoryRouter>
     );
@@ -96,6 +102,7 @@ describe("unarchive patient information", () => {
       patientsCount: 3,
       patients: [mockPatient1, mockPatient2],
       facilities: [mockFacility1, mockFacility2],
+      patient: undefined,
     };
     render(
       <MemoryRouter>
@@ -104,6 +111,7 @@ describe("unarchive patient information", () => {
           currentPage={1}
           loading={false}
           handlePaginationClick={handlePaginationClick}
+          onUnarchivePatient={onUnarchivePatient}
         />
       </MemoryRouter>
     );
@@ -132,6 +140,8 @@ describe("unarchive patient information", () => {
     expect(handlePaginationClick).toHaveBeenCalledWith(1);
     await act(async () => screen.getAllByText("2")[0].closest("a")?.click());
     expect(handlePaginationClick).toHaveBeenNthCalledWith(2, 2);
+    await act(async () => screen.getAllByText("Unarchive")[0].click());
+    expect(onUnarchivePatient).toHaveBeenNthCalledWith(1, mockPatient1);
   });
   it("displays no results", async () => {
     let unarchivePatientState: UnarchivePatientState = {
@@ -142,6 +152,7 @@ describe("unarchive patient information", () => {
       patientsCount: 0,
       patients: [],
       facilities: [mockFacility1, mockFacility2],
+      patient: undefined,
     };
     render(
       <MemoryRouter>
@@ -150,6 +161,7 @@ describe("unarchive patient information", () => {
           currentPage={1}
           loading={false}
           handlePaginationClick={handlePaginationClick}
+          onUnarchivePatient={onUnarchivePatient}
         />
       </MemoryRouter>
     );
