@@ -80,7 +80,7 @@ const DeviceLookup = (props: Props) => {
   // Close dropdown menu when a device is selected
   useEffect(() => {
     setShowSuggestion(false);
-  }, [selectedDevice]);
+  }, [selectedDevice, setShowSuggestion]);
 
   return (
     <div className="device-lookup-container prime-container card-container">

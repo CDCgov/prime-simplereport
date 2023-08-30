@@ -2,12 +2,7 @@ import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-import React, {
-  ChangeEventHandler,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { ChangeEventHandler, useEffect, useMemo, useState } from "react";
 import moment from "moment";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { Label } from "@trussworks/react-uswds";
@@ -188,12 +183,15 @@ export const DetachedTestResultsList = ({
   const [endDateError, setEndDateError] = useState<string | undefined>();
   const [startDate, setStartDate] = useState<string | null>("0");
   const [endDate, setEndDate] = useState<string | null>("0");
-
+  const {
+    ref: dropDownRef,
+    isComponentVisible: showSuggestion,
+    setIsComponentVisible: setShowSuggestion,
+  } = useComponentVisible(true);
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
-
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const isOrgAdmin = hasPermission(
@@ -249,7 +247,7 @@ export const DetachedTestResultsList = ({
         setShowSuggestion(false);
       }
     }
-  }, [filterParams, data, setDebounced]);
+  }, [filterParams, data, setDebounced, setShowSuggestion]);
 
   useDebouncedEffect(
     () => {
@@ -287,11 +285,7 @@ export const DetachedTestResultsList = ({
     );
     setShowSuggestion(false);
   };
-  const {
-    ref: dropDownRef,
-    isComponentVisible: showSuggestion,
-    setIsComponentVisible: setShowSuggestion,
-  } = useComponentVisible(true);
+
   const showDropdown = useMemo(
     () => allowQuery && showSuggestion,
     [allowQuery, showSuggestion]
