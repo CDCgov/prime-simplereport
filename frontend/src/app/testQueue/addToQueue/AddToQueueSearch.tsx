@@ -1,9 +1,7 @@
 import React, {
   useEffect,
   useState,
-  useRef,
   useMemo,
-  useCallback,
 } from "react";
 import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
 
@@ -14,7 +12,6 @@ import {
   SEARCH_DEBOUNCE_TIME,
 } from "../constants";
 import { showAlertNotification } from "../../utils/srToast";
-import { useOutsideClick } from "../../utils/hooks";
 import { Patient } from "../../patients/ManagePatients";
 import { AoEAnswersDelivery } from "../AoEForm/AoEForm";
 import { getAppInsights } from "../../TelemetryService";
@@ -25,6 +22,7 @@ import {
   GetPatientsByFacilityForQueueDocument,
   UpdateAoeDocument,
 } from "../../../generated/graphql";
+import useComponentVisible from "../../commonComponents/ComponentVisible";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
@@ -80,22 +78,20 @@ const AddToQueueSearchBox = ({
   );
 
   const [mutationError, updateMutationError] = useState(null);
-  const [showSuggestion, setShowSuggestion] = useState(true);
   const [selectedPatient, setSelectedPatient] = useState<Patient>();
 
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
-
+  const {
+    ref: dropDownRef,
+    isComponentVisible: showSuggestion,
+    setIsComponentVisible: setShowSuggestion,
+  } = useComponentVisible(true);
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
   const showDropdown = useMemo(
     () => allowQuery && showSuggestion,
     [allowQuery, showSuggestion]
   );
-
-  const dropDownRef = useRef(null);
-  const hideOnOutsideClick = useCallback(() => {
-    setShowSuggestion(false);
-  }, []);
 
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
@@ -107,7 +103,6 @@ const AddToQueueSearchBox = ({
     skip: !startTestPatientId || patientsInQueue.includes(startTestPatientId),
   });
 
-  useOutsideClick(dropDownRef, hideOnOutsideClick);
   useEffect(() => {
     if (queryString.trim() !== "") {
       queryPatients();
