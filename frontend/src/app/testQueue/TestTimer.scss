@@ -1,5 +1,6 @@
+@use "../../scss/settings" as settings;
+
 .timer-button {
-  border: none;
   border-radius: 3px;
   min-width: 80px;
   cursor: pointer;
@@ -8,21 +9,22 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
+  border: 1px solid settings.$theme-color-prime-blue;
 }
 
 .timer-reset {
-  color: white;
-  background-color: #005ea2;
+  color: #005ea2;
+  background-color: white;
 }
 
 .timer-running {
-  color: white;
-  background-color: #162e51;
+  color: #162e51;
+  background-color: white;
 }
 
 .timer-ready {
-  color: green;
-  background-color: white;
+  color: white;
+  background-color: green;
 }
 
 .timer-overtime {
