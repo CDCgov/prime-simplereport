@@ -11,6 +11,7 @@ import { TestTimerWidget, useTestTimer } from "../TestTimer";
 import { RootState } from "../../store";
 
 import TestForm from "./TestForm";
+import "./TestCard.scss";
 
 export interface TestCardProps {
   testOrder: QueriedTestOrder;
