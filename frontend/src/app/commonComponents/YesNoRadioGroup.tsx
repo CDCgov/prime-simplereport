@@ -57,7 +57,7 @@ const YesNoRadioGroup: React.FC<Props> = ({
   errorMessage,
   required,
 }) => {
-  const { YES_NO_UNKNOWN_VALUES: values } = useTranslatedConstants();
+  const { YES_NO_VALUES: values } = useTranslatedConstants();
 
   return (
     <RadioGroup
