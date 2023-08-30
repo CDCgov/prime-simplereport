@@ -5009,3 +5009,17 @@ databaseChangeLog:
             sql: |
               ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'MISSING_HEADER';
       rollback: ""
+  - changeSet:
+      id: add-gender_identity-to-person-table
+      author: zedd@skylight.digital
+      comment: Add gender_identity and person table
+      changes:
+        - tagDatabase:
+            tag: add-gender_identity-to-person-table
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: gender_identity
+                  type: text
+                  remarks: represents the persons gender identity
