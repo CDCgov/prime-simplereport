@@ -28,4 +28,7 @@ module.exports = {
     name: "@storybook/react-webpack5",
     options: { fastRefresh: true },
   },
+  typescript: {
+    reactDocgen: "react-docgen",
+  },
 };

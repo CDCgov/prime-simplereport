@@ -4,6 +4,8 @@ import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import "./TestTimer.scss";
+import { Button } from "@trussworks/react-uswds";
+
 import { getAppInsights } from "../../app/TelemetryService";
 
 const alarmModule = require("./test-timer.mp3");
@@ -15,12 +17,14 @@ type DateTimeStamp = ReturnType<typeof Date.now>;
 function toMillis(minutes: number) {
   return minutes * 60 * 1000;
 }
+
 export interface TimerTrackEventMetadata {
   facilityName: string | undefined;
   organizationName: string;
   patientId: string;
   testOrderId: string;
 }
+
 export class Timer {
   id: string;
   startedAt: DateTimeStamp;
@@ -234,15 +238,22 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
 
   if (!running) {
     return (
-      <button
-        className="timer-button timer-reset"
+      <Button
+        type={"button"}
+        className={"timer-button timer-reset"}
         onClick={() => start(trackTimerStart)}
-        data-testid="timer"
         aria-label="Start timer"
+        data-testid="timer"
       >
-        <span role="timer">{mmss(countdown)}</span>{" "}
-        <FontAwesomeIcon alt-text="stopwatch" icon={faStopwatch as IconProp} />
-      </button>
+        <FontAwesomeIcon
+          className="padding-x-1"
+          alt-text="stopwatch"
+          icon={faStopwatch as IconProp}
+        />
+        <span className="padding-right-1" role="timer">
+          Start timer
+        </span>{" "}
+      </Button>
     );
   }
   if (countdown >= 0) {
