@@ -5,18 +5,20 @@ const useOutsideClick = (
   onClickOutside: () => void
 ) => {
   useEffect(() => {
-    const handleClickOutside = (ev: MouseEvent) => {
+    const handleClickOutside = (ev: Event) => {
       if (ref.current && !ref.current.contains(ev.target as Node)) {
         onClickOutside();
       }
     };
 
     document.addEventListener<"mousedown">("mousedown", handleClickOutside);
+    document.addEventListener("focusin", handleClickOutside);
     return () => {
       document.removeEventListener<"mousedown">(
         "mousedown",
         handleClickOutside
       );
+      document.removeEventListener("focusin", handleClickOutside);
     };
   }, [ref, onClickOutside]);
 };
