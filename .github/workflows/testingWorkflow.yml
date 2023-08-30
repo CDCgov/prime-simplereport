@@ -14,31 +14,12 @@ on:
 
 jobs:
 
-  build_backend_image:
-    uses: ./.github/workflows/buildBackendImage.yml
-
-  build_cypress_image:
-    uses: ./.github/workflows/buildCypressImage.yml
-
-  build_database_image:
-    uses: ./.github/workflows/buildDatabaseImage.yml
-
-  build_frontend_image:
-    uses: ./.github/workflows/buildFrontendImage.yml
-
-  build_frontend_lighthouse_image:
-    uses: ./.github/workflows/buildFrontendLighthouseImage.yml
-
-  build_nginx_image:
-    uses: ./.github/workflows/buildNginxImage.yml
+  build_docker_images:
+    uses: ./.github/workflows/buildDockerImages.yml
 
   e2e_local:
     needs:
-      - build_backend_image
-      - build_cypress_image
-      - build_database_image
-      - build_frontend_image
-      - build_nginx_image
+      - build_docker_images
     uses: ./.github/workflows/e2eLocal.yml
     secrets:
       CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
@@ -55,10 +36,7 @@ jobs:
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
   lighthouse:
     needs:
-      - build_backend_image
-      - build_database_image
-      - build_nginx_image
-      - build_frontend_lighthouse_image
+      - build_docker_images
     uses: ./.github/workflows/lighthouse.yml
     with:
       DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
@@ -67,7 +45,7 @@ jobs:
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
   tests:
     needs:
-      - build_database_image
+      - build_docker_images
     uses: ./.github/workflows/test.yml
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -78,7 +56,7 @@ jobs:
 
   liquibase_action_checks:
     needs:
-      - build_database_image
+      - build_docker_images
     uses: ./.github/workflows/testDBActions.yml
     with:
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
