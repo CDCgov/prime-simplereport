@@ -83,6 +83,9 @@ const OrganizationComboDropDown: React.FC<Props> = ({
                   name={name}
                   defaultValue={value}
                   onChange={onChange}
+                  assistiveHint={
+                    error?.message ? `Error: ${error?.message}` : undefined
+                  }
                   ref={ref}
                 />
               </div>
