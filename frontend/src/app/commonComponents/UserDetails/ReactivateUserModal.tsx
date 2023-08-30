@@ -1,27 +1,39 @@
 import React from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 
-import Button from "../../commonComponents/Button/Button";
+import Button from "../Button/Button";
 import { displayFullName } from "../../utils";
-
-import { SettingsUser } from "./ManageUsersContainer";
-import "./ManageUsers.scss";
+import { RootState } from "../../store";
+import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
+import "../../Settings/Users/ManageUsers.scss";
 
 interface Props {
   onClose: () => void;
-  onResendActivationEmail: (userId: string) => void;
+  onReactivateUser: (userId: string) => void;
   user: SettingsUser;
+  isOpen: boolean;
 }
 
-const ResendActivationEmailModal: React.FC<Props> = ({
+export const ORG_ADMIN_REACTIVATE_COPY =
+  "Are you sure you want to reactivate this account?";
+export const SITE_ADMIN_REACTIVATE_COPY =
+  "When you reactivate their account, the user will need to choose a new password. Do you want to reactivate this account?";
+
+const ReactivateUserModal: React.FC<Props> = ({
   onClose,
-  onResendActivationEmail,
+  onReactivateUser,
   user,
+  isOpen,
 }) => {
+  const loggedInUserIsSiteAdmin = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
+
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       style={{
         content: {
           maxHeight: "90vh",
@@ -30,14 +42,15 @@ const ResendActivationEmailModal: React.FC<Props> = ({
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      contentLabel="Unsaved changes to current user"
+      contentLabel="Confirm reactivate user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
       onRequestClose={onClose}
     >
       <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Resend account setup email
+            Reactivate account:{" "}
+            {displayFullName(user.firstName, user.middleName, user.lastName)}
           </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
@@ -49,14 +62,22 @@ const ResendActivationEmailModal: React.FC<Props> = ({
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         <div className="grid-row grid-gap">
           <p>
-            Do you want to resend an account setup email to{" "}
             <strong>
               {displayFullName(user.firstName, user.middleName, user.lastName)}
             </strong>
-            ?
+            's SimpleReport account is currently inactive. They can't log in
+            until their account is reactivated.
           </p>
           <p>
-            Doing so will email this person a new link to set up their account.
+            <strong>
+              Please note: If this user doesn't log in to SimpleReport before
+              6AM EST, their account will be deactivated again.
+            </strong>
+          </p>
+          <p>
+            {loggedInUserIsSiteAdmin
+              ? SITE_ADMIN_REACTIVATE_COPY
+              : ORG_ADMIN_REACTIVATE_COPY}
           </p>
         </div>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
@@ -70,10 +91,10 @@ const ResendActivationEmailModal: React.FC<Props> = ({
             <Button
               className="margin-right-205"
               onClick={() => {
-                onResendActivationEmail(user.id);
+                onReactivateUser(user.id);
                 onClose();
               }}
-              label="Yes, send email"
+              label="Yes, reactivate"
             />
           </div>
         </div>
@@ -82,4 +103,4 @@ const ResendActivationEmailModal: React.FC<Props> = ({
   );
 };
 
-export default ResendActivationEmailModal;
+export default ReactivateUserModal;

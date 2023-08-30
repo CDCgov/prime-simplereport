@@ -8,6 +8,7 @@ import fetchMock from "jest-fetch-mock";
 import "jest-location-mock";
 import ReactModal from "react-modal";
 import moment from "moment";
+import { toHaveNoViolations } from "jest-axe";
 
 fetchMock.enableMocks();
 
@@ -41,3 +42,5 @@ moment.suppressDeprecationWarnings = true;
 // This prevents tests from timing out and causing this error in CI:
 // TypeError: Cannot read property 'createEvent' of null
 jest.setTimeout(30000);
+
+expect.extend(toHaveNoViolations);

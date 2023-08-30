@@ -62,7 +62,7 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // data validation
-    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.14'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.19'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.14.0'
 
     // UI layer dependencies

@@ -19,3 +19,13 @@ query findUserByEmail($email: String!) {
         status
     }
 }
+
+mutation undeleteUser($userId: ID!){
+    setUserIsDeleted(
+        id: $userId
+        deleted: false){
+        id
+        email
+        isDeleted
+    }
+}

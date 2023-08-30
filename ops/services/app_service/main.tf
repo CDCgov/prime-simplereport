@@ -55,11 +55,6 @@ resource "azurerm_linux_web_app" "service" {
     ftps_state              = "Disabled"
     vnet_route_all_enabled  = false
 
-    cors {
-      allowed_origins     = []
-      support_credentials = false
-    }
-
     // NOTE: If this code is removed, TF will not automatically delete it with the current provider version! It must be removed manually from the App Service -> Networking blade!
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id
@@ -97,11 +92,6 @@ resource "azurerm_linux_web_app_slot" "staging" {
     use_32_bit_worker       = false
     ftps_state              = "Disabled"
     vnet_route_all_enabled  = false
-
-    cors {
-      allowed_origins     = []
-      support_credentials = false
-    }
 
     # This application stack is what we use to deploy the docker image to the staging slot
     # After it becomes healthy, we swap the staging slot with the production slot to complete the deployment
