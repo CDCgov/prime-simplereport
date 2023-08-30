@@ -123,21 +123,25 @@ describe("OrganizationForm", () => {
     });
 
     await userEvent.tab();
-    expect(
-      screen.getByText(
-        "U.S. Virgin Islands isn't connected to SimpleReport yet.",
-        {
-          exact: false,
-        }
-      )
-    ).toBeInTheDocument();
+    const messageString =
+      "U.S. Virgin Islands isn't connected to SimpleReport yet.";
 
-    screen.getByLabelText("acknowledged").click();
     await waitFor(() => {
-      expect(screen.getByText("Continue sign up")).toBeEnabled();
+      screen.getByText(messageString, {
+        exact: false,
+      });
     });
 
-    screen.getByText("Continue sign up").click();
+    const acknowledgedCheckbox = screen.getByLabelText("acknowledged");
+    await waitFor(async () => {
+      await userEvent.click(acknowledgedCheckbox);
+      expect(acknowledgedCheckbox).toBeChecked();
+    });
+
+    await waitFor(async () => {
+      expect(screen.getByText("Continue sign up")).toBeEnabled();
+      await userEvent.click(screen.getByText("Continue sign up"));
+    });
 
     expect(getOrgStateDropdown().value).toEqual("VI");
   });
@@ -174,7 +178,7 @@ describe("OrganizationForm", () => {
 
     await userEvent.type(getEmailInput(), "ever@greatest.com");
     await userEvent.type(getPhoneInput(), "8008675309");
-    act(() => getSubmitButton().click());
+    getSubmitButton().click();
 
     expect(
       await screen.findByText(
@@ -195,9 +199,7 @@ describe("OrganizationForm", () => {
     await userEvent.type(getLastNameInput(), "Ever");
     await userEvent.type(getEmailInput(), "duplicate@test.com");
 
-    await act(() => {
-      getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
       await screen.findByText(
@@ -221,9 +223,7 @@ describe("OrganizationForm", () => {
     await userEvent.type(getEmailInput(), "admin@example.com");
 
     await userEvent.type(getPhoneInput(), "8008675309");
-    await act(() => {
-      getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
       await screen.findByText(
@@ -246,9 +246,8 @@ describe("OrganizationForm", () => {
 
     await userEvent.type(getEmailInput(), "admin@example.com");
     await userEvent.type(getPhoneInput(), "8008675309");
-    await act(() => {
-      getSubmitButton().click();
-    });
+    getSubmitButton().click();
+
     expect(
       await screen.findByText(
         "Your organization is already registered with SimpleReport. Check your email for instructions on setting up your account.",
@@ -270,9 +269,7 @@ describe("OrganizationForm", () => {
 
     await userEvent.type(getPhoneInput(), "8008675309");
 
-    await act(() => {
-      getSubmitButton().click();
-    });
+    getSubmitButton().click();
 
     expect(
       screen.queryByText(
