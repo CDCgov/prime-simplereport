@@ -414,10 +414,15 @@ const QueueItem = ({
           : cacheTestResults.filter(
               (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
             ),
-      }).then(() => {
-        setSaveState("idle");
-        setDirtyState(false);
-      });
+      })
+        .then(() => {
+          setSaveState("idle");
+          setDirtyState(false);
+        })
+        .finally(() => {
+          setSaveState("idle");
+          setDirtyState(false);
+        });
     }
     // eslint-disable-next-line
   }, [deviceId, specimenId, dateTested, cacheTestResults]);
