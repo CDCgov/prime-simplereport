@@ -40,11 +40,25 @@ describe("Support admin: manage facility", () => {
 
     // selects organization
     cy.wait("@GetAllOrganizations");
-    cy.get("div.bg-base-lightest input").first().select(organizationId);
 
-    // selects facility
+    // selects org combo box
+    cy.get("[data-testid=\"org-selection-container\"] " +
+      "> [data-testid=\"combo-box\"] ")
+      .within(() => {
+        // within the org selection box
+        cy.get("[data-testid=\"combo-box-input\"]").click();
+        cy.get(`[data-testid=\"combo-box-option-${organizationId}\"]`).click();
+      });
+
+    // selects facility combo box
     cy.wait("@GetFacilitiesByOrgId");
-    cy.get("div.bg-base-lightest input").eq(1).select(facilityCreated.id);
+    cy.get("[data-testid=\"facility-selection-container\"] " +
+      "> [data-testid=\"combo-box\"]")
+      .within(() => {
+        // within the org selection box
+        cy.get("[data-testid=\"combo-box-input\"]").click();
+        cy.get(`[data-testid=\"combo-box-option-${facilityCreated.id}\"]`).click();
+      });
 
     // clicks search button
     cy.get("button").contains("Search").click();
