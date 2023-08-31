@@ -57,11 +57,11 @@ describe("FacilitySelectFilter", () => {
         <FacilitySelectFilter
           organizationOptions={orgOptions}
           facilityOptions={facilityOptions}
-          manageFacilityState={manageFacilityState}
           onClearFilter={handleClearFilter}
           onSelectOrg={handleSelectOrg}
           onSelectFacility={handleSelectFacility}
           onSearch={handleSearch}
+          manageFacilityState={manageFacilityState}
           loading={true}
           orgRef={orgRef}
           facilityRef={facilityRef}
@@ -82,9 +82,9 @@ describe("FacilitySelectFilter", () => {
 
   it("calls handleClearFilter upon clicking clear filters button", async () => {
     renderWithMocks(mockOrganizationOptions, mockFacilityOptions, {
+      orgId: "123",
       facilityId: undefined,
       facility: undefined,
-      orgId: "123",
     });
     const clearFiltersBtn = screen.getByRole("button", {
       name: /clear facility selection filters/i,
@@ -105,9 +105,9 @@ describe("FacilitySelectFilter", () => {
 
   it("calls event handlers when facility is selected", async () => {
     renderWithMocks(mockOrganizationOptions, mockFacilityOptions, {
-      facilityId: "",
+      orgId: undefined,
+      facilityId: undefined,
       facility: undefined,
-      orgId: "",
     });
 
     const [facilityDropdown] = getFacilityComboBoxElements();
@@ -117,9 +117,9 @@ describe("FacilitySelectFilter", () => {
 
   it("calls event handlers when search button is clicked", async () => {
     renderWithMocks(mockOrganizationOptions, mockFacilityOptions, {
+      orgId: undefined,
       facilityId: "123",
       facility: undefined,
-      orgId: undefined,
     });
 
     const searchBtn = screen.getByRole("button", {

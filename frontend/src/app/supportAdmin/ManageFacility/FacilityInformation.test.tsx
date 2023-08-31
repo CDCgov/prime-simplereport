@@ -6,8 +6,8 @@ import { initialState, ManageFacilityState } from "./ManageFacility";
 describe("Facility Information", () => {
   const handleFacilityDelete = jest.fn();
   const mockManageFacilityState: ManageFacilityState = {
+    orgId: "123",
     facilityId: "123",
-    orgId: "456",
     facility: {
       city: "New York",
       state: "NY",

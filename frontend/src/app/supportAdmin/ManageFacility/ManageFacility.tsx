@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ComboBoxRef } from "@trussworks/react-uswds";
 
 import { Option } from "../../commonComponents/Dropdown";
@@ -169,7 +169,6 @@ const ManageFacility = () => {
    * Delete facility
    */
   const [deleteFacilityMutation] = useDeleteFacilityMutation();
-
   function handleDeleteFacility() {
     if (localState.facilityId) {
       deleteFacilityMutation({
