@@ -49,14 +49,13 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Getter @Column private String lookupId;
 
-  @Getter
   @Column(nullable = false)
   @Embedded
   @JsonUnwrapped
   private PersonName nameInfo;
 
   @Getter @Column private LocalDate birthDate;
-  @Getter @Embedded private StreetAddress address;
+  @Embedded private StreetAddress address;
   @Getter @Column private String country;
   @Getter @Column private String gender;
   @Getter @Column private String genderIdentity;
@@ -304,6 +303,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.email = email;
   }
 
+  public PersonName getNameInfo() {
+    return nameInfo;
+  }
+
   public String getFirstName() {
     return nameInfo.getFirstName();
   }
@@ -318,6 +321,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public String getSuffix() {
     return nameInfo.getSuffix();
+  }
+
+  public StreetAddress getAddress() {
+    return address;
   }
 
   public String getTelephone() {
