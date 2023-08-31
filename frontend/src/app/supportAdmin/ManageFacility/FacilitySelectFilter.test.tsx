@@ -101,7 +101,7 @@ describe("FacilitySelectFilter", () => {
 
   it("calls event handlers when facility is selected", async () => {
     renderWithMocks(mockOrganizationOptions, mockFacilityOptions, {
-      orgId: undefined,
+      orgId: "123",
       facilityId: undefined,
       facility: undefined,
     });
@@ -113,7 +113,7 @@ describe("FacilitySelectFilter", () => {
 
   it("calls event handlers when search button is clicked", async () => {
     renderWithMocks(mockOrganizationOptions, mockFacilityOptions, {
-      orgId: undefined,
+      orgId: "123",
       facilityId: "123",
       facility: undefined,
     });
