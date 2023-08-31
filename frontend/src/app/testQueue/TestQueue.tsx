@@ -70,7 +70,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
       variables: {
         facilityId: activeFacilityId,
       },
-      notifyOnNetworkStatusChange: true,
     });
 
   const location = useLocation();
