@@ -87,9 +87,11 @@ const OrganizationForm = () => {
       data: organization,
       schema,
     });
+    console.log(validation);
     if (validation.valid) {
       try {
         const res = await SignUpApi.createOrganization(organization);
+        console.log(res);
         setOrgExternalId(res.orgExternalId);
       } catch (error: any) {
         const message = error.message || error;
