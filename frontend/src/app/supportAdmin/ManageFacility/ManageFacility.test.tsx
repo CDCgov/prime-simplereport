@@ -54,12 +54,13 @@ describe("ManageFacility", () => {
     );
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
-    await act(async () => {
-      await userEvent.type(orgComboBoxInput, "dis");
-      await userEvent.click(
-        within(orgComboBoxList).getByText("Dis Organization")
-      );
-    });
+    await act(async () => await userEvent.type(orgComboBoxInput, "dis"));
+    await act(
+      async () =>
+        await userEvent.click(
+          within(orgComboBoxList).getByText("Dis Organization")
+        )
+    );
     expect(orgComboBoxInput).toHaveValue("Dis Organization");
     expect(clearFiltersBtn).toBeEnabled();
 
@@ -77,17 +78,16 @@ describe("ManageFacility", () => {
     );
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
 
-    await act(async () => {
-      await userEvent.type(orgComboBoxInput, "dis");
-      await userEvent.click(
-        within(orgComboBoxList).getByText("Dis Organization")
-      );
-    });
+    await act(async () => await userEvent.type(orgComboBoxInput, "dis"));
+    await act(
+      async () =>
+        await userEvent.click(
+          within(orgComboBoxList).getByText("Dis Organization")
+        )
+    );
 
     await waitFor(() => expect(clearFiltersBtn).toBeEnabled());
-    await act(async () => {
-      await userEvent.click(clearFiltersBtn);
-    });
+    await act(async () => await userEvent.click(clearFiltersBtn));
 
     await waitFor(() => expect(clearFiltersBtn).toBeDisabled());
     expect(orgComboBoxInput).toHaveValue("");
@@ -112,45 +112,43 @@ describe("ManageFacility", () => {
     );
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
-    await act(async () => {
-      await userEvent.type(orgComboBoxInput, "dis");
-      await userEvent.click(
-        within(orgComboBoxList).getByText("Dis Organization")
-      );
-    });
+    await act(async () => await userEvent.type(orgComboBoxInput, "dis"));
+    await act(
+      async () =>
+        await userEvent.click(
+          within(orgComboBoxList).getByText("Dis Organization")
+        )
+    );
 
     await waitFor(() => expect(facilityComboBoxInput).toBeEnabled());
     await waitFor(() => expect(clearFiltersBtn).toBeEnabled());
-    await act(async () => {
-      await userEvent.type(facilityComboBoxInput, "testing site");
-      await userEvent.click(
-        within(facilityComboBoxList).getByText("Testing Site")
-      );
-    });
+    await act(
+      async () => await userEvent.type(facilityComboBoxInput, "testing site")
+    );
+    await act(
+      async () =>
+        await userEvent.click(
+          within(facilityComboBoxList).getByText("Testing Site")
+        )
+    );
 
     const searchBtn = screen.getByRole("button", {
       name: /search/i,
     });
-    await act(async () => {
-      await userEvent.click(searchBtn);
-    });
+    await act(async () => await userEvent.click(searchBtn));
 
     await screen.findByRole("heading", { name: /Testing Site/i });
 
     const deleteFacilityBtn = screen.getByRole("button", {
       name: /delete facility testing site/i,
     });
-    await act(async () => {
-      await userEvent.click(deleteFacilityBtn);
-    });
+    await act(async () => await userEvent.click(deleteFacilityBtn));
 
     await screen.findByRole("heading", { name: /delete testing site/i });
     const yesDeleteBtn = screen.getByRole("button", {
       name: /yes, delete facility/i,
     });
-    await act(async () => {
-      await userEvent.click(yesDeleteBtn);
-    });
+    await act(async () => await userEvent.click(yesDeleteBtn));
 
     await waitFor(() =>
       expect(
@@ -176,12 +174,13 @@ describe("ManageFacility", () => {
     );
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
-    await act(async () => {
-      await userEvent.type(orgComboBoxInput, "dat");
-      await userEvent.click(
-        within(orgComboBoxList).getByText("Dat Organization")
-      );
-    });
+    await act(async () => await userEvent.type(orgComboBoxInput, "dat"));
+    await act(
+      async () =>
+        await userEvent.click(
+          within(orgComboBoxList).getByText("Dat Organization")
+        )
+    );
 
     const facilitySelectionDiv = screen.getByText("Testing facility");
     const facilityComboBoxInput =
@@ -192,19 +191,18 @@ describe("ManageFacility", () => {
 
     await waitFor(() => expect(facilityComboBoxInput).toBeEnabled());
     expect(clearFiltersBtn).toBeEnabled();
-    await act(async () => {
-      await userEvent.type(facilityComboBoxInput, "incom");
-      await userEvent.click(
-        within(facilityComboBoxList).getByText("Incomplete Site")
-      );
-    });
+    await act(async () => await userEvent.type(facilityComboBoxInput, "incom"));
+    await act(
+      async () =>
+        await userEvent.click(
+          within(facilityComboBoxList).getByText("Incomplete Site")
+        )
+    );
 
     const searchBtn = screen.getByRole("button", {
       name: /search/i,
     });
-    await act(async () => {
-      await userEvent.click(searchBtn);
-    });
+    await act(async () => await userEvent.click(searchBtn));
 
     await screen.findByRole("heading", { name: /Incomplete Site/i });
   });
