@@ -40,11 +40,11 @@ describe("Support admin: manage facility", () => {
 
     // selects organization
     cy.wait("@GetAllOrganizations");
-    cy.get("div.bg-base-lightest select").first().select(organizationId);
+    cy.get("div.bg-base-lightest input").first().select(organizationId);
 
     // selects facility
     cy.wait("@GetFacilitiesByOrgId");
-    cy.get("div.bg-base-lightest select").eq(1).select(facilityCreated.id);
+    cy.get("div.bg-base-lightest input").eq(1).select(facilityCreated.id);
 
     // clicks search button
     cy.get("button").contains("Search").click();
