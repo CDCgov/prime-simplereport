@@ -1,6 +1,6 @@
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import React, { Ref } from "react";
-import { ComboBox, ComboBoxRef } from "@trussworks/react-uswds";
+import { ComboBox, ComboBoxRef, Label } from "@trussworks/react-uswds";
 
 import Button from "../../commonComponents/Button/Button";
 import SupportHomeLink from "../SupportHomeLink";
@@ -64,8 +64,13 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
         className="bg-base-lightest padding-left-3 padding-right-3 padding-bottom-1"
       >
         <div className="grid-row grid-gap padding-bottom-2 flex-align-end">
-          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em">
-            <Required label={"Organization"}></Required>
+          <div
+            data-testid={"org-selection-container"}
+            className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em"
+          >
+            <Label htmlFor="manage-facility-org-select">
+              Organization <Required />
+            </Label>
             <ComboBox
               name={"Organization"}
               id={"manage-facility-org-select"}
@@ -77,8 +82,14 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
               ref={orgRef}
             />
           </div>
-          <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em">
-            <Required label={"Testing facility"}></Required>
+          <div
+            data-testid={"facility-selection-container"}
+            className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em"
+          >
+            <Label htmlFor="manage-facility-facility-select">
+              Testing facility <Required />
+            </Label>
+
             <ComboBox
               name={"Facility"}
               id={"manage-facility-facility-select"}

@@ -11,6 +11,10 @@ import {
 } from "../../../generated/graphql";
 
 import ManageFacility from "./ManageFacility";
+import {
+  getFacilityComboBoxElements,
+  getOrgComboBoxElements,
+} from "./FacilitySelectFilter.test";
 
 describe("ManageFacility", () => {
   const renderWithMocks = () =>
@@ -35,9 +39,8 @@ describe("ManageFacility", () => {
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
-    const orgSelectionDiv = screen.getByText("Organization");
-    const orgDropdown = within(orgSelectionDiv).getByRole("combobox");
-    await waitFor(() => expect(orgDropdown).toBeEnabled());
+    const [orgComboBoxInput] = getOrgComboBoxElements();
+    await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
 
     expect(clearFiltersBtn).toBeDisabled();
     expect(screen.getByText(/No facility selected/)).toBeInTheDocument();
@@ -47,11 +50,7 @@ describe("ManageFacility", () => {
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
-    const orgSelectionDiv = screen.getByText("Organization");
-    const orgComboBoxInput = within(orgSelectionDiv).getByRole("combobox");
-    const orgComboBoxList = within(orgSelectionDiv).getByTestId(
-      "combo-box-option-list"
-    );
+    const [orgComboBoxInput, orgComboBoxList] = getOrgComboBoxElements();
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
     await act(async () => await userEvent.type(orgComboBoxInput, "dis"));
@@ -71,11 +70,7 @@ describe("ManageFacility", () => {
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
-    const orgSelectionDiv = screen.getByText("Organization");
-    const orgComboBoxInput = within(orgSelectionDiv).getByRole("combobox");
-    const orgComboBoxList = within(orgSelectionDiv).getByTestId(
-      "combo-box-option-list"
-    );
+    const [orgComboBoxInput, orgComboBoxList] = getOrgComboBoxElements();
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
 
     await act(async () => await userEvent.type(orgComboBoxInput, "dis"));
@@ -98,18 +93,9 @@ describe("ManageFacility", () => {
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
-    const orgSelectionDiv = screen.getByText("Organization");
-    const orgComboBoxInput = within(orgSelectionDiv).getByRole("combobox");
-    const orgComboBoxList = within(orgSelectionDiv).getByTestId(
-      "combo-box-option-list"
-    );
-
-    const facilitySelectionDiv = screen.getByText("Testing facility");
-    const facilityComboBoxInput =
-      within(facilitySelectionDiv).getByRole("combobox");
-    const facilityComboBoxList = within(facilitySelectionDiv).getByTestId(
-      "combo-box-option-list"
-    );
+    const [orgComboBoxInput, orgComboBoxList] = getOrgComboBoxElements();
+    const [facilityComboBoxInput, facilityComboBoxList] =
+      getFacilityComboBoxElements();
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
     await act(async () => await userEvent.type(orgComboBoxInput, "dis"));
@@ -167,11 +153,9 @@ describe("ManageFacility", () => {
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
-    const orgSelectionDiv = screen.getByText("Organization");
-    const orgComboBoxInput = within(orgSelectionDiv).getByRole("combobox");
-    const orgComboBoxList = within(orgSelectionDiv).getByTestId(
-      "combo-box-option-list"
-    );
+    const [orgComboBoxInput, orgComboBoxList] = getOrgComboBoxElements();
+    const [facilityComboBoxInput, facilityComboBoxList] =
+      getFacilityComboBoxElements();
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
     await act(async () => await userEvent.type(orgComboBoxInput, "dat"));
@@ -180,13 +164,6 @@ describe("ManageFacility", () => {
         await userEvent.click(
           within(orgComboBoxList).getByText("Dat Organization")
         )
-    );
-
-    const facilitySelectionDiv = screen.getByText("Testing facility");
-    const facilityComboBoxInput =
-      within(facilitySelectionDiv).getByRole("combobox");
-    const facilityComboBoxList = within(facilitySelectionDiv).getByTestId(
-      "combo-box-option-list"
     );
 
     await waitFor(() => expect(facilityComboBoxInput).toBeEnabled());

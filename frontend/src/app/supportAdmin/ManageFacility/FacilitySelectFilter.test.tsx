@@ -14,6 +14,25 @@ import { Option } from "../../commonComponents/Dropdown";
 import FacilitySelectFilter from "./FacilitySelectFilter";
 import { initialState, ManageFacilityState } from "./ManageFacility";
 
+export const getOrgComboBoxElements = () => {
+  const orgSelectionDiv = screen.getByTestId("org-selection-container");
+  const orgComboBoxInput = screen.getByLabelText("Organization *");
+  const orgComboBoxList = within(orgSelectionDiv).getByTestId(
+    "combo-box-option-list"
+  );
+  return [orgComboBoxInput, orgComboBoxList] as const;
+};
+
+export const getFacilityComboBoxElements = () => {
+  const facilitySelectionDiv = screen.getByTestId(
+    "facility-selection-container"
+  );
+  const facilityComboBoxInput = screen.getByLabelText("Testing facility *");
+  const facilityComboBoxList = within(facilitySelectionDiv).getByTestId(
+    "combo-box-option-list"
+  );
+  return [facilityComboBoxInput, facilityComboBoxList] as const;
+};
 describe("FacilitySelectFilter", () => {
   const handleClearFilter = jest.fn();
   const handleSelectOrg = jest.fn();
@@ -54,11 +73,8 @@ describe("FacilitySelectFilter", () => {
   it("disables controls when loading data", () => {
     renderWithMocks([], [], initialState);
 
-    const orgSelectionDiv = screen.getByText("Organization");
-    const orgDropdown = within(orgSelectionDiv).getByRole("combobox");
-
-    const facilitySelectionDiv = screen.getByText("Testing facility");
-    const facilityDropdown = within(facilitySelectionDiv).getByRole("combobox");
+    const [orgDropdown] = getOrgComboBoxElements();
+    const [facilityDropdown] = getFacilityComboBoxElements();
 
     expect(facilityDropdown).toBeDisabled();
     expect(orgDropdown).toBeDisabled();
@@ -81,8 +97,7 @@ describe("FacilitySelectFilter", () => {
   it("calls event handlers when organization is selected", async () => {
     renderWithMocks(mockOrganizationOptions, mockFacilityOptions, initialState);
 
-    const orgSelectionDiv = screen.getByText("Organization");
-    const orgDropdown = within(orgSelectionDiv).getByRole("combobox");
+    const [orgDropdown] = getOrgComboBoxElements();
 
     fireEvent.change(orgDropdown, { target: { value: "123" } });
     await waitFor(() => expect(handleSelectOrg).toHaveBeenCalled());
@@ -95,9 +110,7 @@ describe("FacilitySelectFilter", () => {
       orgId: "",
     });
 
-    const facilitySelectionDiv = screen.getByText("Testing facility");
-    const facilityDropdown = within(facilitySelectionDiv).getByRole("combobox");
-
+    const [facilityDropdown] = getFacilityComboBoxElements();
     fireEvent.change(facilityDropdown, { target: { value: "123" } });
     await waitFor(() => expect(handleSelectFacility).toHaveBeenCalled());
   });
