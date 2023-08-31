@@ -1,13 +1,8 @@
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import { ComboBoxRef } from "@trussworks/react-uswds";
+import userEvent from "@testing-library/user-event";
 
 import { Option } from "../../commonComponents/Dropdown";
 
@@ -69,6 +64,7 @@ describe("FacilitySelectFilter", () => {
       </MemoryRouter>
     );
   };
+  const user = userEvent.setup();
 
   it("disables controls when loading data", () => {
     renderWithMocks([], [], initialState);
@@ -90,16 +86,16 @@ describe("FacilitySelectFilter", () => {
       name: /clear facility selection filters/i,
     });
     expect(clearFiltersBtn).toBeEnabled();
-    fireEvent.click(clearFiltersBtn);
+    await act(() => user.click(clearFiltersBtn));
     await waitFor(() => expect(handleClearFilter).toHaveBeenCalled());
   });
 
   it("calls event handlers when organization is selected", async () => {
     renderWithMocks(mockOrganizationOptions, mockFacilityOptions, initialState);
 
-    const [orgDropdown] = getOrgComboBoxElements();
+    const [, orgDropdown] = getOrgComboBoxElements();
 
-    fireEvent.change(orgDropdown, { target: { value: "123" } });
+    await act(() => user.selectOptions(orgDropdown, ["organization-123"]));
     await waitFor(() => expect(handleSelectOrg).toHaveBeenCalled());
   });
 
@@ -110,8 +106,8 @@ describe("FacilitySelectFilter", () => {
       facility: undefined,
     });
 
-    const [facilityDropdown] = getFacilityComboBoxElements();
-    fireEvent.change(facilityDropdown, { target: { value: "123" } });
+    const [, facilityDropdown] = getFacilityComboBoxElements();
+    await act(() => user.selectOptions(facilityDropdown, ["facility-123"]));
     await waitFor(() => expect(handleSelectFacility).toHaveBeenCalled());
   });
 
@@ -126,7 +122,7 @@ describe("FacilitySelectFilter", () => {
       name: /search/i,
     });
     expect(searchBtn).toBeEnabled();
-    fireEvent.click(searchBtn);
+    await act(() => user.click(searchBtn));
 
     await waitFor(() => expect(handleSearch).toHaveBeenCalled());
   });
