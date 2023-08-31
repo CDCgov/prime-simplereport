@@ -220,8 +220,6 @@ const QueueItem = ({
   const [updateAoe] = useMutation(UPDATE_AOE);
   const [editQueueItem] = useEditQueueItemMutation();
 
-  const DEBOUNCE_TIME = 300;
-
   const [mutationError, updateMutationError] = useState(null);
   const [saveState, setSaveState] = useState<SaveState>("idle");
 
@@ -405,28 +403,22 @@ const QueueItem = ({
   }, [devicesMap, deviceId, specimenId]);
 
   useEffect(() => {
-    let debounceTimer: ReturnType<typeof setTimeout>;
     if (dirtyState) {
-      setDirtyState(false);
       setSaveState("editing");
-      debounceTimer = setTimeout(async () => {
-        await updateQueueItem({
-          deviceId,
-          dateTested,
-          specimenTypeId: specimenId,
-          results: doesDeviceSupportMultiPlex(deviceId)
-            ? cacheTestResults
-            : cacheTestResults.filter(
-                (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
-              ),
-        });
+      updateQueueItem({
+        deviceId,
+        dateTested,
+        specimenTypeId: specimenId,
+        results: doesDeviceSupportMultiPlex(deviceId)
+          ? cacheTestResults
+          : cacheTestResults.filter(
+              (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
+            ),
+      }).then(() => {
         setSaveState("idle");
-      }, DEBOUNCE_TIME);
+        setDirtyState(false);
+      });
     }
-    return () => {
-      clearTimeout(debounceTimer);
-      setSaveState("idle");
-    };
     // eslint-disable-next-line
   }, [deviceId, specimenId, dateTested, cacheTestResults]);
 
@@ -805,7 +797,11 @@ const QueueItem = ({
             max={formatDate(moment().toDate())}
             value={formatDate(moment(dateTested).toDate())}
             onChange={(event) => handleDateChange(event.target.value)}
-            disabled={deviceTypeIsInvalid() || specimenTypeIsInvalid()}
+            disabled={
+              deviceTypeIsInvalid() ||
+              specimenTypeIsInvalid() ||
+              saveState === "editing"
+            }
           />
           <input
             hidden={shouldUseCurrentDateTime}
@@ -821,7 +817,11 @@ const QueueItem = ({
             step="60"
             value={moment(dateTested).format("HH:mm")}
             onChange={(e) => handleTimeChange(e.target.value)}
-            disabled={deviceTypeIsInvalid() || specimenTypeIsInvalid()}
+            disabled={
+              deviceTypeIsInvalid() ||
+              specimenTypeIsInvalid() ||
+              saveState === "editing"
+            }
           />
         </>
       );
@@ -939,7 +939,9 @@ const QueueItem = ({
                             }
                             aria-label="Use current date and time"
                             disabled={
-                              deviceTypeIsInvalid() || specimenTypeIsInvalid()
+                              deviceTypeIsInvalid() ||
+                              specimenTypeIsInvalid() ||
+                              saveState === "editing"
                             }
                           />
                           <label
@@ -980,6 +982,7 @@ const QueueItem = ({
                       validationStatus={
                         deviceTypeErrorMessage ? "error" : "success"
                       }
+                      disabled={saveState === "editing"}
                     />
                   </div>
                   <div className="prime-li flex-align-self-end tablet:grid-col-5 padding-right-2">
@@ -991,7 +994,10 @@ const QueueItem = ({
                       onChange={onSpecimenChange}
                       className="card-dropdown"
                       data-testid="specimen-type-dropdown"
-                      disabled={specimenTypeOptions.length === 0}
+                      disabled={
+                        specimenTypeOptions.length === 0 ||
+                        saveState === "editing"
+                      }
                       errorMessage={specimenTypeErrorMessage}
                       validationStatus={
                         specimenTypeErrorMessage ? "error" : "success"
