@@ -49,7 +49,7 @@ const genericError = (
 export const AdminManageUser: React.FC = () => {
   useDocumentTitle("Manage Users");
   //ToDo Remove this
-  const [searchEmail, setSearchEmail] = useState<string>("sarah@example.com");
+  const [searchEmail, setSearchEmail] = useState<string>("ruby@example.com");
   useEffect(() => {
     retrieveUser();
   }, []);

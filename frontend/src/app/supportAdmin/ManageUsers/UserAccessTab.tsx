@@ -15,15 +15,8 @@ import UserOrganizationFormField from "../../commonComponents/UserDetails/UserOr
 import UserRoleFormField from "../../commonComponents/UserDetails/UserRoleFormField";
 import { Role } from "../../permissions";
 import { showSuccess } from "../../utils/srToast";
+import { displayFullName } from "../../utils";
 
-/*
-* username: String!,
-    orgExternalId: String!,
-    accessAllFacilities: Boolean = false,
-    facilities: [ID] = [],
-    role: Role!): User!*/
-
-//MutationUpdateUserPrivilegesAndGroupAccessArgs
 type UserAccessFormData = {
   organizationId: string;
   role: Role;
@@ -35,12 +28,9 @@ export interface UserAccessTabProps {
   isUpdating: boolean;
 }
 
-// set the form with react hook forms
-// set the prompt warning of moving away from the component
-// can the DOM be split? but each element need to be compatible
-// with react hook forms
-// the container is the one that has the logic to call the right mutation
-//
+// Set the prompt warning of moving away from the component in manage user component
+// Move all the react-hook-form logic to manage user component so the form is not lost when changing tabs
+// Make sure the latest user information is retrieve after this update takes effect.
 const UserAccessTab: React.FC<UserAccessTabProps> = ({ user }) => {
   // retrieve organizations
   // retrieve facilities by org
@@ -48,6 +38,17 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({ user }) => {
 
   // maybe adding the prompt when a user triggers a new search?
 
+  const getDefaultFacilities = () => {
+    const facilityIds: string[] = [];
+
+    if (user.role === "ADMIN") {
+      facilityIds.push("ALL_FACILITIES");
+    }
+
+    return facilityIds.concat(
+      user.organization?.testingFacility.map((facility) => facility.id) || []
+    );
+  };
   /**
    * Form state setup
    */
@@ -57,12 +58,12 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({ user }) => {
     formState: { errors, dirtyFields },
     watch,
     register,
+    reset,
     setValue,
   } = useForm<UserAccessFormData>({
     defaultValues: {
       organizationId: user.organization?.id || "",
-      facilityIds:
-        user.organization?.testingFacility.map((facility) => facility.id) || [],
+      facilityIds: getDefaultFacilities(),
       role: user.role || "USER",
     },
   });
@@ -97,27 +98,39 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({ user }) => {
           ({ id: facility.id, name: facility.name } as UserFacilitySetting)
       )
     : [];
+
   /**
    * Submit access updates
    */
-
-  const [updateUserPrivilegesAndGroupAccess] =
+  const [updateUserPrivilegesAndGroupAccess, { loading: updatingPrivileges }] =
     useUpdateUserPrivilegesAndGroupAccessMutation();
   const onSubmit = async (userAccessData: UserAccessFormData) => {
-    console.log("submitting data", userAccessData);
+    const allFacilityAccess = !!userAccessData.facilityIds.find(
+      (id) => id === "ALL_FACILITIES"
+    );
+
     await updateUserPrivilegesAndGroupAccess({
       variables: {
         username: user.email,
         role: userAccessData.role as MutationRole,
-        orgExternalId: userAccessData.organizationId,
-        accessAllFacilities: false,
-        facilities: userAccessData.facilityIds,
+        orgExternalId: facilitiesResponse?.organization?.externalId || "",
+        accessAllFacilities: allFacilityAccess,
+        facilities: userAccessData.facilityIds.filter(
+          (id) => id !== "ALL_FACILITIES"
+        ),
       },
     });
-    showSuccess("User updated", "hooray");
-    // I might need to convert the orgID to externalOrgId before pushing for the update
+
+    const fullName = displayFullName(
+      user?.firstName,
+      user?.middleName,
+      user?.lastName
+    );
+
+    showSuccess("", `Access updated for ${fullName}`);
+    reset(userAccessData);
   };
-  console.log("dirty fields: ", isDirtyAlt, dirtyFields);
+
   return (
     <div
       role="tabpanel"
@@ -142,7 +155,13 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({ user }) => {
           setValue={setValue}
           disabled={loadingFacilities}
         />
-        <Button type="submit" label="Save changes" disabled={!isDirtyAlt} />
+        <Button
+          className={"margin-y-4"}
+          variant="outline"
+          type="submit"
+          label={"Save changes"}
+          disabled={!isDirtyAlt || updatingPrivileges}
+        />
       </form>
     </div>
   );
