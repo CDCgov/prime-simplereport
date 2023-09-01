@@ -35,9 +35,10 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
 
     assertThat(supportedDiseasesMap)
         .isNotNull()
-        .hasSize(3)
+        .hasSize(4)
         .containsEntry(_service.covid().getInternalId(), _service.covid())
         .containsEntry(_service.fluA().getInternalId(), _service.fluA())
-        .containsEntry(_service.fluB().getInternalId(), _service.fluB());
+        .containsEntry(_service.fluB().getInternalId(), _service.fluB())
+        .containsEntry(_service.rsv().getInternalId(), _service.rsv());
   }
 }
