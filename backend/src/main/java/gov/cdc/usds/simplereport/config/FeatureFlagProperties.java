@@ -10,4 +10,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class FeatureFlagProperties {
   private boolean multiplexEnabled;
   private boolean hivEnabled;
+  private boolean rsvEnabled;
 }

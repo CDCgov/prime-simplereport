@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.filerow.PatientUploadRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
+import gov.cdc.usds.simplereport.config.FeatureFlagProperties;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -305,7 +306,9 @@ class FileValidatorTest {
   @Test
   void testResults_validFile_rsvOnly() {
     // GIVEN
-    when(featureFlagsConfig.isRsvEnabled()).thenReturn(true);
+    var featureFlagProperties = new FeatureFlagProperties();
+    featureFlagProperties.setRsvEnabled(true);
+    when(featureFlagsConfig.getFeatureFlagProperties()).thenReturn(featureFlagProperties);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-rsv-only.csv");
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
@@ -316,7 +319,9 @@ class FileValidatorTest {
   @Test
   void testResults_validFile_rsvDisabled() {
     // GIVEN
-    when(featureFlagsConfig.isRsvEnabled()).thenReturn(false);
+    var featureFlagProperties = new FeatureFlagProperties();
+    featureFlagProperties.setRsvEnabled(false);
+    when(featureFlagsConfig.getFeatureFlagProperties()).thenReturn(featureFlagProperties);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-rsv-only.csv");
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
