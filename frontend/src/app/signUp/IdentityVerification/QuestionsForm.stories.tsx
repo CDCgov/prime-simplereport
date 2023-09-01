@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { getMocks } from "../../../stories/storyMocks";
 
@@ -24,7 +24,7 @@ export default {
 
 type Props = React.ComponentProps<typeof QuestionsFormContainer>;
 
-const Template: Story<Props> = (args) => <QuestionsFormContainer {...args} />;
+const Template: StoryFn<Props> = (args) => <QuestionsFormContainer {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

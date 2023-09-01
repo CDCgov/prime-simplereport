@@ -144,6 +144,12 @@ export type FacilityAddressInput = {
   zipCode: Scalars["String"];
 };
 
+export type FacilityStats = {
+  __typename?: "FacilityStats";
+  patientsSingleAccessCount?: Maybe<Scalars["Int"]>;
+  usersSingleAccessCount?: Maybe<Scalars["Int"]>;
+};
+
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
   errorType: Scalars["String"];
@@ -187,6 +193,7 @@ export type Mutation = {
   markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
   reactivateUser?: Maybe<User>;
+  reactivateUserAndResetPassword?: Maybe<User>;
   removePatientFromQueue?: Maybe<Scalars["String"]>;
   resendActivationEmail?: Maybe<User>;
   resendToReportStream?: Maybe<Scalars["Boolean"]>;
@@ -196,6 +203,7 @@ export type Mutation = {
   sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
   sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]>;
+  sendSupportEscalation?: Maybe<Scalars["String"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
   setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
   setPatientIsDeleted?: Maybe<Patient>;
@@ -211,6 +219,7 @@ export type Mutation = {
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
+  updateUserPrivilegesAndGroupAccess: User;
 };
 
 export type MutationAddFacilityArgs = {
@@ -349,6 +358,10 @@ export type MutationReactivateUserArgs = {
   id: Scalars["ID"];
 };
 
+export type MutationReactivateUserAndResetPasswordArgs = {
+  id: Scalars["ID"];
+};
+
 export type MutationRemovePatientFromQueueArgs = {
   patientId: Scalars["ID"];
 };
@@ -399,6 +412,7 @@ export type MutationSetOrganizationIdentityVerifiedArgs = {
 export type MutationSetPatientIsDeletedArgs = {
   deleted: Scalars["Boolean"];
   id: Scalars["ID"];
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type MutationSetRegistrationLinkIsDeletedArgs = {
@@ -495,6 +509,14 @@ export type MutationUpdateUserPrivilegesArgs = {
   facilities?: InputMaybe<Array<Scalars["ID"]>>;
   id: Scalars["ID"];
   role: Role;
+};
+
+export type MutationUpdateUserPrivilegesAndGroupAccessArgs = {
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  facilities?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
+  orgExternalId: Scalars["String"];
+  role: Role;
+  username: Scalars["String"];
 };
 
 export type NameInfo = {
@@ -648,6 +670,7 @@ export type Query = {
   deviceTypes: Array<DeviceType>;
   facilities?: Maybe<Array<Maybe<Facility>>>;
   facility?: Maybe<Facility>;
+  facilityStats?: Maybe<FacilityStats>;
   organization?: Maybe<Organization>;
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
@@ -680,6 +703,10 @@ export type QueryFacilitiesArgs = {
 
 export type QueryFacilityArgs = {
   id: Scalars["ID"];
+};
+
+export type QueryFacilityStatsArgs = {
+  facilityId: Scalars["ID"];
 };
 
 export type QueryOrganizationArgs = {
@@ -720,6 +747,7 @@ export type QueryPatientsArgs = {
   includeArchived?: InputMaybe<Scalars["Boolean"]>;
   includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
   pageNumber?: InputMaybe<Scalars["Int"]>;
   pageSize?: InputMaybe<Scalars["Int"]>;
 };
@@ -729,6 +757,7 @@ export type QueryPatientsCountArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   includeArchived?: InputMaybe<Scalars["Boolean"]>;
   namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]>;
 };
 
 export type QueryQueueArgs = {
@@ -753,6 +782,7 @@ export type QueryTestResultsArgs = {
 export type QueryTestResultsCountArgs = {
   endDate?: InputMaybe<Scalars["DateTime"]>;
   facilityId?: InputMaybe<Scalars["ID"]>;
+  orgId?: InputMaybe<Scalars["ID"]>;
   patientId?: InputMaybe<Scalars["ID"]>;
   result?: InputMaybe<Scalars["String"]>;
   role?: InputMaybe<Scalars["String"]>;
@@ -788,7 +818,8 @@ export type QueryUploadSubmissionsArgs = {
 };
 
 export type QueryUserArgs = {
-  id: Scalars["ID"];
+  email?: InputMaybe<Scalars["String"]>;
+  id?: InputMaybe<Scalars["ID"]>;
 };
 
 export enum ResultValue {
@@ -856,8 +887,6 @@ export type TestOrder = {
   patient: Patient;
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
-  /** @deprecated use results as source of truth */
-  result?: Maybe<Scalars["String"]>;
   results: Array<MultiplexResult>;
   specimenType: SpecimenType;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
@@ -879,8 +908,6 @@ export type TestResult = {
   patientLink?: Maybe<PatientLink>;
   pregnancy?: Maybe<Scalars["String"]>;
   reasonForCorrection?: Maybe<Scalars["String"]>;
-  /** @deprecated use results as source of truth */
-  result?: Maybe<Scalars["String"]>;
   results?: Maybe<Array<Maybe<MultiplexResult>>>;
   symptomOnset?: Maybe<Scalars["LocalDate"]>;
   symptoms?: Maybe<Scalars["String"]>;
@@ -965,6 +992,7 @@ export type User = {
   firstName?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   isAdmin?: Maybe<Scalars["Boolean"]>;
+  isDeleted?: Maybe<Scalars["Boolean"]>;
   lastName: Scalars["String"];
   middleName?: Maybe<Scalars["String"]>;
   name: NameInfo;
@@ -1103,6 +1131,12 @@ export type GetFacilitiesQuery = {
     __typename?: "DeviceType";
     internalId: string;
     name: string;
+    model: string;
+    manufacturer: string;
+    supportedDiseaseTestPerformed: Array<{
+      __typename?: "SupportedDiseaseTestPerformed";
+      supportedDisease: { __typename?: "SupportedDisease"; name: string };
+    }>;
   }>;
 };
 
@@ -1183,60 +1217,6 @@ export type AllSelfRegistrationLinksQuery = {
       }>;
     } | null;
   };
-};
-
-export type UpdateUserPrivilegesMutationVariables = Exact<{
-  id: Scalars["ID"];
-  role: Role;
-  accessAllFacilities: Scalars["Boolean"];
-  facilities: Array<Scalars["ID"]> | Scalars["ID"];
-}>;
-
-export type UpdateUserPrivilegesMutation = {
-  __typename?: "Mutation";
-  updateUserPrivileges?: { __typename?: "User"; id: string } | null;
-};
-
-export type ResetUserPasswordMutationVariables = Exact<{
-  id: Scalars["ID"];
-}>;
-
-export type ResetUserPasswordMutation = {
-  __typename?: "Mutation";
-  resetUserPassword?: { __typename?: "User"; id: string } | null;
-};
-
-export type SetUserIsDeletedMutationVariables = Exact<{
-  id: Scalars["ID"];
-  deleted: Scalars["Boolean"];
-}>;
-
-export type SetUserIsDeletedMutation = {
-  __typename?: "Mutation";
-  setUserIsDeleted?: { __typename?: "User"; id: string } | null;
-};
-
-export type ReactivateUserMutationVariables = Exact<{
-  id: Scalars["ID"];
-}>;
-
-export type ReactivateUserMutation = {
-  __typename?: "Mutation";
-  reactivateUser?: { __typename?: "User"; id: string } | null;
-};
-
-export type AddUserToCurrentOrgMutationVariables = Exact<{
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName: Scalars["String"];
-  email: Scalars["String"];
-  role: Role;
-  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
-  facilities?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
-}>;
-
-export type AddUserToCurrentOrgMutation = {
-  __typename?: "Mutation";
-  addUserToCurrentOrg?: { __typename?: "User"; id: string } | null;
 };
 
 export type GetUserQueryVariables = Exact<{
@@ -1329,6 +1309,69 @@ export type ResetUserMfaMutationVariables = Exact<{
 export type ResetUserMfaMutation = {
   __typename?: "Mutation";
   resetUserMfa?: { __typename?: "User"; id: string } | null;
+};
+
+export type ReactivateUserAndResetPasswordMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ReactivateUserAndResetPasswordMutation = {
+  __typename?: "Mutation";
+  reactivateUserAndResetPassword?: { __typename?: "User"; id: string } | null;
+};
+
+export type ReactivateUserMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ReactivateUserMutation = {
+  __typename?: "Mutation";
+  reactivateUser?: { __typename?: "User"; id: string } | null;
+};
+
+export type UpdateUserPrivilegesMutationVariables = Exact<{
+  id: Scalars["ID"];
+  role: Role;
+  accessAllFacilities: Scalars["Boolean"];
+  facilities: Array<Scalars["ID"]> | Scalars["ID"];
+}>;
+
+export type UpdateUserPrivilegesMutation = {
+  __typename?: "Mutation";
+  updateUserPrivileges?: { __typename?: "User"; id: string } | null;
+};
+
+export type ResetUserPasswordMutationVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type ResetUserPasswordMutation = {
+  __typename?: "Mutation";
+  resetUserPassword?: { __typename?: "User"; id: string } | null;
+};
+
+export type SetUserIsDeletedMutationVariables = Exact<{
+  id: Scalars["ID"];
+  deleted: Scalars["Boolean"];
+}>;
+
+export type SetUserIsDeletedMutation = {
+  __typename?: "Mutation";
+  setUserIsDeleted?: { __typename?: "User"; id: string } | null;
+};
+
+export type AddUserToCurrentOrgMutationVariables = Exact<{
+  firstName?: InputMaybe<Scalars["String"]>;
+  lastName: Scalars["String"];
+  email: Scalars["String"];
+  role: Role;
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  facilities?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
+}>;
+
+export type AddUserToCurrentOrgMutation = {
+  __typename?: "Mutation";
+  addUserToCurrentOrg?: { __typename?: "User"; id: string } | null;
 };
 
 export type GetCurrentOrganizationQueryVariables = Exact<{
@@ -1657,6 +1700,103 @@ export type GetSupportedDiseasesQuery = {
   }>;
 };
 
+export type GetAllOrganizationsQueryVariables = Exact<{ [key: string]: never }>;
+
+export type GetAllOrganizationsQuery = {
+  __typename?: "Query";
+  organizations: Array<{
+    __typename?: "Organization";
+    id: string;
+    name: string;
+  }>;
+};
+
+export type GetFacilitiesByOrgIdQueryVariables = Exact<{
+  orgId: Scalars["ID"];
+}>;
+
+export type GetFacilitiesByOrgIdQuery = {
+  __typename?: "Query";
+  organization?: {
+    __typename?: "Organization";
+    name: string;
+    type: string;
+    facilities: Array<{
+      __typename?: "Facility";
+      name: string;
+      id: string;
+      city?: string | null;
+      state?: string | null;
+      zipCode?: string | null;
+    }>;
+  } | null;
+};
+
+export type GetFacilityStatsQueryVariables = Exact<{
+  facilityId: Scalars["ID"];
+}>;
+
+export type GetFacilityStatsQuery = {
+  __typename?: "Query";
+  facilityStats?: {
+    __typename?: "FacilityStats";
+    usersSingleAccessCount?: number | null;
+    patientsSingleAccessCount?: number | null;
+  } | null;
+};
+
+export type DeleteFacilityMutationVariables = Exact<{
+  facilityId: Scalars["ID"];
+}>;
+
+export type DeleteFacilityMutation = {
+  __typename?: "Mutation";
+  markFacilityAsDeleted?: string | null;
+};
+
+export type FindUserByEmailQueryVariables = Exact<{
+  email: Scalars["String"];
+}>;
+
+export type FindUserByEmailQuery = {
+  __typename?: "Query";
+  user?: {
+    __typename?: "User";
+    id: string;
+    firstName?: string | null;
+    middleName?: string | null;
+    lastName: string;
+    roleDescription: string;
+    role?: Role | null;
+    permissions: Array<UserPermission>;
+    email: string;
+    status?: string | null;
+    isDeleted?: boolean | null;
+    organization?: {
+      __typename?: "Organization";
+      testingFacility: Array<{
+        __typename?: "Facility";
+        id: string;
+        name: string;
+      }>;
+    } | null;
+  } | null;
+};
+
+export type UndeleteUserMutationVariables = Exact<{
+  userId: Scalars["ID"];
+}>;
+
+export type UndeleteUserMutation = {
+  __typename?: "Mutation";
+  setUserIsDeleted?: {
+    __typename?: "User";
+    id: string;
+    email: string;
+    isDeleted?: boolean | null;
+  } | null;
+};
+
 export type GetPendingOrganizationsQueryVariables = Exact<{
   [key: string]: never;
 }>;
@@ -1717,6 +1857,7 @@ export type GetOrganizationsQuery = {
   __typename?: "Query";
   organizations: Array<{
     __typename?: "Organization";
+    internalId: string;
     externalId: string;
     name: string;
   }>;
@@ -1741,6 +1882,72 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
       externalId: string;
     } | null;
   } | null;
+};
+
+export type GetOrganizationWithFacilitiesQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetOrganizationWithFacilitiesQuery = {
+  __typename?: "Query";
+  organization?: {
+    __typename?: "Organization";
+    externalId: string;
+    name: string;
+    facilities: Array<{ __typename?: "Facility"; id: string; name: string }>;
+  } | null;
+};
+
+export type GetPatientsByFacilityWithOrgQueryVariables = Exact<{
+  facilityId: Scalars["ID"];
+  pageNumber: Scalars["Int"];
+  pageSize: Scalars["Int"];
+  archivedStatus?: InputMaybe<ArchivedStatus>;
+  orgExternalId: Scalars["String"];
+}>;
+
+export type GetPatientsByFacilityWithOrgQuery = {
+  __typename?: "Query";
+  patients?: Array<{
+    __typename?: "Patient";
+    internalId: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    middleName?: string | null;
+    birthDate?: any | null;
+    isDeleted?: boolean | null;
+    facility?: { __typename?: "Facility"; id: string; name: string } | null;
+  } | null> | null;
+};
+
+export type GetPatientsCountByFacilityWithOrgQueryVariables = Exact<{
+  facilityId: Scalars["ID"];
+  archivedStatus?: InputMaybe<ArchivedStatus>;
+  orgExternalId: Scalars["String"];
+}>;
+
+export type GetPatientsCountByFacilityWithOrgQuery = {
+  __typename?: "Query";
+  patientsCount?: number | null;
+};
+
+export type UnarchivePatientMutationVariables = Exact<{
+  id: Scalars["ID"];
+  orgExternalId: Scalars["String"];
+}>;
+
+export type UnarchivePatientMutation = {
+  __typename?: "Mutation";
+  setPatientIsDeleted?: { __typename?: "Patient"; internalId: string } | null;
+};
+
+export type SendSupportEscalationMutationVariables = Exact<{
+  [key: string]: never;
+}>;
+
+export type SendSupportEscalationMutation = {
+  __typename?: "Mutation";
+  sendSupportEscalation?: string | null;
 };
 
 export type GetPatientQueryVariables = Exact<{
@@ -2262,7 +2469,11 @@ export type GetFacilityResultsMultiplexWithCountQuery = {
         __typename?: "PatientLink";
         internalId?: string | null;
       } | null;
-      facility?: { __typename?: "Facility"; name: string } | null;
+      facility?: {
+        __typename?: "Facility";
+        name: string;
+        isDeleted?: boolean | null;
+      } | null;
     } | null> | null;
   } | null;
 };
@@ -2599,6 +2810,13 @@ export const GetFacilitiesDocument = gql`
     deviceTypes {
       internalId
       name
+      model
+      manufacturer
+      supportedDiseaseTestPerformed {
+        supportedDisease {
+          name
+        }
+      }
     }
   }
 `;
@@ -2958,291 +3176,6 @@ export type AllSelfRegistrationLinksQueryResult = Apollo.QueryResult<
   AllSelfRegistrationLinksQuery,
   AllSelfRegistrationLinksQueryVariables
 >;
-export const UpdateUserPrivilegesDocument = gql`
-  mutation UpdateUserPrivileges(
-    $id: ID!
-    $role: Role!
-    $accessAllFacilities: Boolean!
-    $facilities: [ID!]!
-  ) {
-    updateUserPrivileges(
-      id: $id
-      role: $role
-      accessAllFacilities: $accessAllFacilities
-      facilities: $facilities
-    ) {
-      id
-    }
-  }
-`;
-export type UpdateUserPrivilegesMutationFn = Apollo.MutationFunction<
-  UpdateUserPrivilegesMutation,
-  UpdateUserPrivilegesMutationVariables
->;
-
-/**
- * __useUpdateUserPrivilegesMutation__
- *
- * To run a mutation, you first call `useUpdateUserPrivilegesMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useUpdateUserPrivilegesMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [updateUserPrivilegesMutation, { data, loading, error }] = useUpdateUserPrivilegesMutation({
- *   variables: {
- *      id: // value for 'id'
- *      role: // value for 'role'
- *      accessAllFacilities: // value for 'accessAllFacilities'
- *      facilities: // value for 'facilities'
- *   },
- * });
- */
-export function useUpdateUserPrivilegesMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    UpdateUserPrivilegesMutation,
-    UpdateUserPrivilegesMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    UpdateUserPrivilegesMutation,
-    UpdateUserPrivilegesMutationVariables
-  >(UpdateUserPrivilegesDocument, options);
-}
-export type UpdateUserPrivilegesMutationHookResult = ReturnType<
-  typeof useUpdateUserPrivilegesMutation
->;
-export type UpdateUserPrivilegesMutationResult =
-  Apollo.MutationResult<UpdateUserPrivilegesMutation>;
-export type UpdateUserPrivilegesMutationOptions = Apollo.BaseMutationOptions<
-  UpdateUserPrivilegesMutation,
-  UpdateUserPrivilegesMutationVariables
->;
-export const ResetUserPasswordDocument = gql`
-  mutation ResetUserPassword($id: ID!) {
-    resetUserPassword(id: $id) {
-      id
-    }
-  }
-`;
-export type ResetUserPasswordMutationFn = Apollo.MutationFunction<
-  ResetUserPasswordMutation,
-  ResetUserPasswordMutationVariables
->;
-
-/**
- * __useResetUserPasswordMutation__
- *
- * To run a mutation, you first call `useResetUserPasswordMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useResetUserPasswordMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [resetUserPasswordMutation, { data, loading, error }] = useResetUserPasswordMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useResetUserPasswordMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    ResetUserPasswordMutation,
-    ResetUserPasswordMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    ResetUserPasswordMutation,
-    ResetUserPasswordMutationVariables
-  >(ResetUserPasswordDocument, options);
-}
-export type ResetUserPasswordMutationHookResult = ReturnType<
-  typeof useResetUserPasswordMutation
->;
-export type ResetUserPasswordMutationResult =
-  Apollo.MutationResult<ResetUserPasswordMutation>;
-export type ResetUserPasswordMutationOptions = Apollo.BaseMutationOptions<
-  ResetUserPasswordMutation,
-  ResetUserPasswordMutationVariables
->;
-export const SetUserIsDeletedDocument = gql`
-  mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
-    setUserIsDeleted(id: $id, deleted: $deleted) {
-      id
-    }
-  }
-`;
-export type SetUserIsDeletedMutationFn = Apollo.MutationFunction<
-  SetUserIsDeletedMutation,
-  SetUserIsDeletedMutationVariables
->;
-
-/**
- * __useSetUserIsDeletedMutation__
- *
- * To run a mutation, you first call `useSetUserIsDeletedMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useSetUserIsDeletedMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [setUserIsDeletedMutation, { data, loading, error }] = useSetUserIsDeletedMutation({
- *   variables: {
- *      id: // value for 'id'
- *      deleted: // value for 'deleted'
- *   },
- * });
- */
-export function useSetUserIsDeletedMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    SetUserIsDeletedMutation,
-    SetUserIsDeletedMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    SetUserIsDeletedMutation,
-    SetUserIsDeletedMutationVariables
-  >(SetUserIsDeletedDocument, options);
-}
-export type SetUserIsDeletedMutationHookResult = ReturnType<
-  typeof useSetUserIsDeletedMutation
->;
-export type SetUserIsDeletedMutationResult =
-  Apollo.MutationResult<SetUserIsDeletedMutation>;
-export type SetUserIsDeletedMutationOptions = Apollo.BaseMutationOptions<
-  SetUserIsDeletedMutation,
-  SetUserIsDeletedMutationVariables
->;
-export const ReactivateUserDocument = gql`
-  mutation ReactivateUser($id: ID!) {
-    reactivateUser(id: $id) {
-      id
-    }
-  }
-`;
-export type ReactivateUserMutationFn = Apollo.MutationFunction<
-  ReactivateUserMutation,
-  ReactivateUserMutationVariables
->;
-
-/**
- * __useReactivateUserMutation__
- *
- * To run a mutation, you first call `useReactivateUserMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useReactivateUserMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [reactivateUserMutation, { data, loading, error }] = useReactivateUserMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useReactivateUserMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    ReactivateUserMutation,
-    ReactivateUserMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    ReactivateUserMutation,
-    ReactivateUserMutationVariables
-  >(ReactivateUserDocument, options);
-}
-export type ReactivateUserMutationHookResult = ReturnType<
-  typeof useReactivateUserMutation
->;
-export type ReactivateUserMutationResult =
-  Apollo.MutationResult<ReactivateUserMutation>;
-export type ReactivateUserMutationOptions = Apollo.BaseMutationOptions<
-  ReactivateUserMutation,
-  ReactivateUserMutationVariables
->;
-export const AddUserToCurrentOrgDocument = gql`
-  mutation AddUserToCurrentOrg(
-    $firstName: String
-    $lastName: String!
-    $email: String!
-    $role: Role!
-    $accessAllFacilities: Boolean
-    $facilities: [ID!]
-  ) {
-    addUserToCurrentOrg(
-      userInput: {
-        firstName: $firstName
-        lastName: $lastName
-        email: $email
-        role: $role
-        accessAllFacilities: $accessAllFacilities
-        facilities: $facilities
-      }
-    ) {
-      id
-    }
-  }
-`;
-export type AddUserToCurrentOrgMutationFn = Apollo.MutationFunction<
-  AddUserToCurrentOrgMutation,
-  AddUserToCurrentOrgMutationVariables
->;
-
-/**
- * __useAddUserToCurrentOrgMutation__
- *
- * To run a mutation, you first call `useAddUserToCurrentOrgMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useAddUserToCurrentOrgMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [addUserToCurrentOrgMutation, { data, loading, error }] = useAddUserToCurrentOrgMutation({
- *   variables: {
- *      firstName: // value for 'firstName'
- *      lastName: // value for 'lastName'
- *      email: // value for 'email'
- *      role: // value for 'role'
- *      accessAllFacilities: // value for 'accessAllFacilities'
- *      facilities: // value for 'facilities'
- *   },
- * });
- */
-export function useAddUserToCurrentOrgMutation(
-  baseOptions?: Apollo.MutationHookOptions<
-    AddUserToCurrentOrgMutation,
-    AddUserToCurrentOrgMutationVariables
-  >
-) {
-  const options = { ...defaultOptions, ...baseOptions };
-  return Apollo.useMutation<
-    AddUserToCurrentOrgMutation,
-    AddUserToCurrentOrgMutationVariables
-  >(AddUserToCurrentOrgDocument, options);
-}
-export type AddUserToCurrentOrgMutationHookResult = ReturnType<
-  typeof useAddUserToCurrentOrgMutation
->;
-export type AddUserToCurrentOrgMutationResult =
-  Apollo.MutationResult<AddUserToCurrentOrgMutation>;
-export type AddUserToCurrentOrgMutationOptions = Apollo.BaseMutationOptions<
-  AddUserToCurrentOrgMutation,
-  AddUserToCurrentOrgMutationVariables
->;
 export const GetUserDocument = gql`
   query GetUser($id: ID!) {
     user(id: $id) {
@@ -3589,6 +3522,342 @@ export type ResetUserMfaMutationResult =
 export type ResetUserMfaMutationOptions = Apollo.BaseMutationOptions<
   ResetUserMfaMutation,
   ResetUserMfaMutationVariables
+>;
+export const ReactivateUserAndResetPasswordDocument = gql`
+  mutation ReactivateUserAndResetPassword($id: ID!) {
+    reactivateUserAndResetPassword(id: $id) {
+      id
+    }
+  }
+`;
+export type ReactivateUserAndResetPasswordMutationFn = Apollo.MutationFunction<
+  ReactivateUserAndResetPasswordMutation,
+  ReactivateUserAndResetPasswordMutationVariables
+>;
+
+/**
+ * __useReactivateUserAndResetPasswordMutation__
+ *
+ * To run a mutation, you first call `useReactivateUserAndResetPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReactivateUserAndResetPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reactivateUserAndResetPasswordMutation, { data, loading, error }] = useReactivateUserAndResetPasswordMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useReactivateUserAndResetPasswordMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ReactivateUserAndResetPasswordMutation,
+    ReactivateUserAndResetPasswordMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ReactivateUserAndResetPasswordMutation,
+    ReactivateUserAndResetPasswordMutationVariables
+  >(ReactivateUserAndResetPasswordDocument, options);
+}
+export type ReactivateUserAndResetPasswordMutationHookResult = ReturnType<
+  typeof useReactivateUserAndResetPasswordMutation
+>;
+export type ReactivateUserAndResetPasswordMutationResult =
+  Apollo.MutationResult<ReactivateUserAndResetPasswordMutation>;
+export type ReactivateUserAndResetPasswordMutationOptions =
+  Apollo.BaseMutationOptions<
+    ReactivateUserAndResetPasswordMutation,
+    ReactivateUserAndResetPasswordMutationVariables
+  >;
+export const ReactivateUserDocument = gql`
+  mutation ReactivateUser($id: ID!) {
+    reactivateUser(id: $id) {
+      id
+    }
+  }
+`;
+export type ReactivateUserMutationFn = Apollo.MutationFunction<
+  ReactivateUserMutation,
+  ReactivateUserMutationVariables
+>;
+
+/**
+ * __useReactivateUserMutation__
+ *
+ * To run a mutation, you first call `useReactivateUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useReactivateUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [reactivateUserMutation, { data, loading, error }] = useReactivateUserMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useReactivateUserMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ReactivateUserMutation,
+    ReactivateUserMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ReactivateUserMutation,
+    ReactivateUserMutationVariables
+  >(ReactivateUserDocument, options);
+}
+export type ReactivateUserMutationHookResult = ReturnType<
+  typeof useReactivateUserMutation
+>;
+export type ReactivateUserMutationResult =
+  Apollo.MutationResult<ReactivateUserMutation>;
+export type ReactivateUserMutationOptions = Apollo.BaseMutationOptions<
+  ReactivateUserMutation,
+  ReactivateUserMutationVariables
+>;
+export const UpdateUserPrivilegesDocument = gql`
+  mutation UpdateUserPrivileges(
+    $id: ID!
+    $role: Role!
+    $accessAllFacilities: Boolean!
+    $facilities: [ID!]!
+  ) {
+    updateUserPrivileges(
+      id: $id
+      role: $role
+      accessAllFacilities: $accessAllFacilities
+      facilities: $facilities
+    ) {
+      id
+    }
+  }
+`;
+export type UpdateUserPrivilegesMutationFn = Apollo.MutationFunction<
+  UpdateUserPrivilegesMutation,
+  UpdateUserPrivilegesMutationVariables
+>;
+
+/**
+ * __useUpdateUserPrivilegesMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserPrivilegesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserPrivilegesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserPrivilegesMutation, { data, loading, error }] = useUpdateUserPrivilegesMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      role: // value for 'role'
+ *      accessAllFacilities: // value for 'accessAllFacilities'
+ *      facilities: // value for 'facilities'
+ *   },
+ * });
+ */
+export function useUpdateUserPrivilegesMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateUserPrivilegesMutation,
+    UpdateUserPrivilegesMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateUserPrivilegesMutation,
+    UpdateUserPrivilegesMutationVariables
+  >(UpdateUserPrivilegesDocument, options);
+}
+export type UpdateUserPrivilegesMutationHookResult = ReturnType<
+  typeof useUpdateUserPrivilegesMutation
+>;
+export type UpdateUserPrivilegesMutationResult =
+  Apollo.MutationResult<UpdateUserPrivilegesMutation>;
+export type UpdateUserPrivilegesMutationOptions = Apollo.BaseMutationOptions<
+  UpdateUserPrivilegesMutation,
+  UpdateUserPrivilegesMutationVariables
+>;
+export const ResetUserPasswordDocument = gql`
+  mutation ResetUserPassword($id: ID!) {
+    resetUserPassword(id: $id) {
+      id
+    }
+  }
+`;
+export type ResetUserPasswordMutationFn = Apollo.MutationFunction<
+  ResetUserPasswordMutation,
+  ResetUserPasswordMutationVariables
+>;
+
+/**
+ * __useResetUserPasswordMutation__
+ *
+ * To run a mutation, you first call `useResetUserPasswordMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useResetUserPasswordMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [resetUserPasswordMutation, { data, loading, error }] = useResetUserPasswordMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useResetUserPasswordMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    ResetUserPasswordMutation,
+    ResetUserPasswordMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    ResetUserPasswordMutation,
+    ResetUserPasswordMutationVariables
+  >(ResetUserPasswordDocument, options);
+}
+export type ResetUserPasswordMutationHookResult = ReturnType<
+  typeof useResetUserPasswordMutation
+>;
+export type ResetUserPasswordMutationResult =
+  Apollo.MutationResult<ResetUserPasswordMutation>;
+export type ResetUserPasswordMutationOptions = Apollo.BaseMutationOptions<
+  ResetUserPasswordMutation,
+  ResetUserPasswordMutationVariables
+>;
+export const SetUserIsDeletedDocument = gql`
+  mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
+    setUserIsDeleted(id: $id, deleted: $deleted) {
+      id
+    }
+  }
+`;
+export type SetUserIsDeletedMutationFn = Apollo.MutationFunction<
+  SetUserIsDeletedMutation,
+  SetUserIsDeletedMutationVariables
+>;
+
+/**
+ * __useSetUserIsDeletedMutation__
+ *
+ * To run a mutation, you first call `useSetUserIsDeletedMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSetUserIsDeletedMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [setUserIsDeletedMutation, { data, loading, error }] = useSetUserIsDeletedMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      deleted: // value for 'deleted'
+ *   },
+ * });
+ */
+export function useSetUserIsDeletedMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SetUserIsDeletedMutation,
+    SetUserIsDeletedMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SetUserIsDeletedMutation,
+    SetUserIsDeletedMutationVariables
+  >(SetUserIsDeletedDocument, options);
+}
+export type SetUserIsDeletedMutationHookResult = ReturnType<
+  typeof useSetUserIsDeletedMutation
+>;
+export type SetUserIsDeletedMutationResult =
+  Apollo.MutationResult<SetUserIsDeletedMutation>;
+export type SetUserIsDeletedMutationOptions = Apollo.BaseMutationOptions<
+  SetUserIsDeletedMutation,
+  SetUserIsDeletedMutationVariables
+>;
+export const AddUserToCurrentOrgDocument = gql`
+  mutation AddUserToCurrentOrg(
+    $firstName: String
+    $lastName: String!
+    $email: String!
+    $role: Role!
+    $accessAllFacilities: Boolean
+    $facilities: [ID!]
+  ) {
+    addUserToCurrentOrg(
+      userInput: {
+        firstName: $firstName
+        lastName: $lastName
+        email: $email
+        role: $role
+        accessAllFacilities: $accessAllFacilities
+        facilities: $facilities
+      }
+    ) {
+      id
+    }
+  }
+`;
+export type AddUserToCurrentOrgMutationFn = Apollo.MutationFunction<
+  AddUserToCurrentOrgMutation,
+  AddUserToCurrentOrgMutationVariables
+>;
+
+/**
+ * __useAddUserToCurrentOrgMutation__
+ *
+ * To run a mutation, you first call `useAddUserToCurrentOrgMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useAddUserToCurrentOrgMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [addUserToCurrentOrgMutation, { data, loading, error }] = useAddUserToCurrentOrgMutation({
+ *   variables: {
+ *      firstName: // value for 'firstName'
+ *      lastName: // value for 'lastName'
+ *      email: // value for 'email'
+ *      role: // value for 'role'
+ *      accessAllFacilities: // value for 'accessAllFacilities'
+ *      facilities: // value for 'facilities'
+ *   },
+ * });
+ */
+export function useAddUserToCurrentOrgMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    AddUserToCurrentOrgMutation,
+    AddUserToCurrentOrgMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    AddUserToCurrentOrgMutation,
+    AddUserToCurrentOrgMutationVariables
+  >(AddUserToCurrentOrgDocument, options);
+}
+export type AddUserToCurrentOrgMutationHookResult = ReturnType<
+  typeof useAddUserToCurrentOrgMutation
+>;
+export type AddUserToCurrentOrgMutationResult =
+  Apollo.MutationResult<AddUserToCurrentOrgMutation>;
+export type AddUserToCurrentOrgMutationOptions = Apollo.BaseMutationOptions<
+  AddUserToCurrentOrgMutation,
+  AddUserToCurrentOrgMutationVariables
 >;
 export const GetCurrentOrganizationDocument = gql`
   query GetCurrentOrganization {
@@ -4842,6 +5111,363 @@ export type GetSupportedDiseasesQueryResult = Apollo.QueryResult<
   GetSupportedDiseasesQuery,
   GetSupportedDiseasesQueryVariables
 >;
+export const GetAllOrganizationsDocument = gql`
+  query GetAllOrganizations {
+    organizations(identityVerified: true) {
+      id
+      name
+    }
+  }
+`;
+
+/**
+ * __useGetAllOrganizationsQuery__
+ *
+ * To run a query within a React component, call `useGetAllOrganizationsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetAllOrganizationsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetAllOrganizationsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetAllOrganizationsQuery(
+  baseOptions?: Apollo.QueryHookOptions<
+    GetAllOrganizationsQuery,
+    GetAllOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetAllOrganizationsQuery,
+    GetAllOrganizationsQueryVariables
+  >(GetAllOrganizationsDocument, options);
+}
+export function useGetAllOrganizationsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetAllOrganizationsQuery,
+    GetAllOrganizationsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetAllOrganizationsQuery,
+    GetAllOrganizationsQueryVariables
+  >(GetAllOrganizationsDocument, options);
+}
+export type GetAllOrganizationsQueryHookResult = ReturnType<
+  typeof useGetAllOrganizationsQuery
+>;
+export type GetAllOrganizationsLazyQueryHookResult = ReturnType<
+  typeof useGetAllOrganizationsLazyQuery
+>;
+export type GetAllOrganizationsQueryResult = Apollo.QueryResult<
+  GetAllOrganizationsQuery,
+  GetAllOrganizationsQueryVariables
+>;
+export const GetFacilitiesByOrgIdDocument = gql`
+  query GetFacilitiesByOrgId($orgId: ID!) {
+    organization(id: $orgId) {
+      name
+      type
+      facilities {
+        name
+        id
+        city
+        state
+        zipCode
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetFacilitiesByOrgIdQuery__
+ *
+ * To run a query within a React component, call `useGetFacilitiesByOrgIdQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilitiesByOrgIdQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilitiesByOrgIdQuery({
+ *   variables: {
+ *      orgId: // value for 'orgId'
+ *   },
+ * });
+ */
+export function useGetFacilitiesByOrgIdQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetFacilitiesByOrgIdQuery,
+    GetFacilitiesByOrgIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetFacilitiesByOrgIdQuery,
+    GetFacilitiesByOrgIdQueryVariables
+  >(GetFacilitiesByOrgIdDocument, options);
+}
+export function useGetFacilitiesByOrgIdLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilitiesByOrgIdQuery,
+    GetFacilitiesByOrgIdQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilitiesByOrgIdQuery,
+    GetFacilitiesByOrgIdQueryVariables
+  >(GetFacilitiesByOrgIdDocument, options);
+}
+export type GetFacilitiesByOrgIdQueryHookResult = ReturnType<
+  typeof useGetFacilitiesByOrgIdQuery
+>;
+export type GetFacilitiesByOrgIdLazyQueryHookResult = ReturnType<
+  typeof useGetFacilitiesByOrgIdLazyQuery
+>;
+export type GetFacilitiesByOrgIdQueryResult = Apollo.QueryResult<
+  GetFacilitiesByOrgIdQuery,
+  GetFacilitiesByOrgIdQueryVariables
+>;
+export const GetFacilityStatsDocument = gql`
+  query GetFacilityStats($facilityId: ID!) {
+    facilityStats(facilityId: $facilityId) {
+      usersSingleAccessCount
+      patientsSingleAccessCount
+    }
+  }
+`;
+
+/**
+ * __useGetFacilityStatsQuery__
+ *
+ * To run a query within a React component, call `useGetFacilityStatsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetFacilityStatsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetFacilityStatsQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *   },
+ * });
+ */
+export function useGetFacilityStatsQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<GetFacilityStatsQuery, GetFacilityStatsQueryVariables>(
+    GetFacilityStatsDocument,
+    options
+  );
+}
+export function useGetFacilityStatsLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetFacilityStatsQuery,
+    GetFacilityStatsQueryVariables
+  >(GetFacilityStatsDocument, options);
+}
+export type GetFacilityStatsQueryHookResult = ReturnType<
+  typeof useGetFacilityStatsQuery
+>;
+export type GetFacilityStatsLazyQueryHookResult = ReturnType<
+  typeof useGetFacilityStatsLazyQuery
+>;
+export type GetFacilityStatsQueryResult = Apollo.QueryResult<
+  GetFacilityStatsQuery,
+  GetFacilityStatsQueryVariables
+>;
+export const DeleteFacilityDocument = gql`
+  mutation DeleteFacility($facilityId: ID!) {
+    markFacilityAsDeleted(facilityId: $facilityId, deleted: true)
+  }
+`;
+export type DeleteFacilityMutationFn = Apollo.MutationFunction<
+  DeleteFacilityMutation,
+  DeleteFacilityMutationVariables
+>;
+
+/**
+ * __useDeleteFacilityMutation__
+ *
+ * To run a mutation, you first call `useDeleteFacilityMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteFacilityMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteFacilityMutation, { data, loading, error }] = useDeleteFacilityMutation({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *   },
+ * });
+ */
+export function useDeleteFacilityMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    DeleteFacilityMutation,
+    DeleteFacilityMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    DeleteFacilityMutation,
+    DeleteFacilityMutationVariables
+  >(DeleteFacilityDocument, options);
+}
+export type DeleteFacilityMutationHookResult = ReturnType<
+  typeof useDeleteFacilityMutation
+>;
+export type DeleteFacilityMutationResult =
+  Apollo.MutationResult<DeleteFacilityMutation>;
+export type DeleteFacilityMutationOptions = Apollo.BaseMutationOptions<
+  DeleteFacilityMutation,
+  DeleteFacilityMutationVariables
+>;
+export const FindUserByEmailDocument = gql`
+  query findUserByEmail($email: String!) {
+    user(email: $email) {
+      id
+      firstName
+      middleName
+      lastName
+      roleDescription
+      role
+      permissions
+      email
+      status
+      organization {
+        testingFacility {
+          id
+          name
+        }
+      }
+      isDeleted
+      status
+    }
+  }
+`;
+
+/**
+ * __useFindUserByEmailQuery__
+ *
+ * To run a query within a React component, call `useFindUserByEmailQuery` and pass it any options that fit your needs.
+ * When your component renders, `useFindUserByEmailQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useFindUserByEmailQuery({
+ *   variables: {
+ *      email: // value for 'email'
+ *   },
+ * });
+ */
+export function useFindUserByEmailQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    FindUserByEmailQuery,
+    FindUserByEmailQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<FindUserByEmailQuery, FindUserByEmailQueryVariables>(
+    FindUserByEmailDocument,
+    options
+  );
+}
+export function useFindUserByEmailLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    FindUserByEmailQuery,
+    FindUserByEmailQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    FindUserByEmailQuery,
+    FindUserByEmailQueryVariables
+  >(FindUserByEmailDocument, options);
+}
+export type FindUserByEmailQueryHookResult = ReturnType<
+  typeof useFindUserByEmailQuery
+>;
+export type FindUserByEmailLazyQueryHookResult = ReturnType<
+  typeof useFindUserByEmailLazyQuery
+>;
+export type FindUserByEmailQueryResult = Apollo.QueryResult<
+  FindUserByEmailQuery,
+  FindUserByEmailQueryVariables
+>;
+export const UndeleteUserDocument = gql`
+  mutation undeleteUser($userId: ID!) {
+    setUserIsDeleted(id: $userId, deleted: false) {
+      id
+      email
+      isDeleted
+    }
+  }
+`;
+export type UndeleteUserMutationFn = Apollo.MutationFunction<
+  UndeleteUserMutation,
+  UndeleteUserMutationVariables
+>;
+
+/**
+ * __useUndeleteUserMutation__
+ *
+ * To run a mutation, you first call `useUndeleteUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUndeleteUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [undeleteUserMutation, { data, loading, error }] = useUndeleteUserMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useUndeleteUserMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UndeleteUserMutation,
+    UndeleteUserMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UndeleteUserMutation,
+    UndeleteUserMutationVariables
+  >(UndeleteUserDocument, options);
+}
+export type UndeleteUserMutationHookResult = ReturnType<
+  typeof useUndeleteUserMutation
+>;
+export type UndeleteUserMutationResult =
+  Apollo.MutationResult<UndeleteUserMutation>;
+export type UndeleteUserMutationOptions = Apollo.BaseMutationOptions<
+  UndeleteUserMutation,
+  UndeleteUserMutationVariables
+>;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {
     pendingOrganizations {
@@ -5084,6 +5710,7 @@ export type EditPendingOrganizationMutationOptions = Apollo.BaseMutationOptions<
 export const GetOrganizationsDocument = gql`
   query GetOrganizations($identityVerified: Boolean) {
     organizations(identityVerified: $identityVerified) {
+      internalId
       externalId
       name
     }
@@ -5206,6 +5833,320 @@ export type SetCurrentUserTenantDataAccessOpMutationOptions =
     SetCurrentUserTenantDataAccessOpMutation,
     SetCurrentUserTenantDataAccessOpMutationVariables
   >;
+export const GetOrganizationWithFacilitiesDocument = gql`
+  query GetOrganizationWithFacilities($id: ID!) {
+    organization(id: $id) {
+      externalId
+      name
+      facilities {
+        id
+        name
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetOrganizationWithFacilitiesQuery__
+ *
+ * To run a query within a React component, call `useGetOrganizationWithFacilitiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOrganizationWithFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOrganizationWithFacilitiesQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetOrganizationWithFacilitiesQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetOrganizationWithFacilitiesQuery,
+    GetOrganizationWithFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetOrganizationWithFacilitiesQuery,
+    GetOrganizationWithFacilitiesQueryVariables
+  >(GetOrganizationWithFacilitiesDocument, options);
+}
+export function useGetOrganizationWithFacilitiesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetOrganizationWithFacilitiesQuery,
+    GetOrganizationWithFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetOrganizationWithFacilitiesQuery,
+    GetOrganizationWithFacilitiesQueryVariables
+  >(GetOrganizationWithFacilitiesDocument, options);
+}
+export type GetOrganizationWithFacilitiesQueryHookResult = ReturnType<
+  typeof useGetOrganizationWithFacilitiesQuery
+>;
+export type GetOrganizationWithFacilitiesLazyQueryHookResult = ReturnType<
+  typeof useGetOrganizationWithFacilitiesLazyQuery
+>;
+export type GetOrganizationWithFacilitiesQueryResult = Apollo.QueryResult<
+  GetOrganizationWithFacilitiesQuery,
+  GetOrganizationWithFacilitiesQueryVariables
+>;
+export const GetPatientsByFacilityWithOrgDocument = gql`
+  query GetPatientsByFacilityWithOrg(
+    $facilityId: ID!
+    $pageNumber: Int!
+    $pageSize: Int!
+    $archivedStatus: ArchivedStatus = UNARCHIVED
+    $orgExternalId: String!
+  ) {
+    patients(
+      facilityId: $facilityId
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+      archivedStatus: $archivedStatus
+      orgExternalId: $orgExternalId
+    ) {
+      internalId
+      firstName
+      lastName
+      middleName
+      birthDate
+      isDeleted
+      facility {
+        id
+        name
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetPatientsByFacilityWithOrgQuery__
+ *
+ * To run a query within a React component, call `useGetPatientsByFacilityWithOrgQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPatientsByFacilityWithOrgQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPatientsByFacilityWithOrgQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *      archivedStatus: // value for 'archivedStatus'
+ *      orgExternalId: // value for 'orgExternalId'
+ *   },
+ * });
+ */
+export function useGetPatientsByFacilityWithOrgQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetPatientsByFacilityWithOrgQuery,
+    GetPatientsByFacilityWithOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetPatientsByFacilityWithOrgQuery,
+    GetPatientsByFacilityWithOrgQueryVariables
+  >(GetPatientsByFacilityWithOrgDocument, options);
+}
+export function useGetPatientsByFacilityWithOrgLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetPatientsByFacilityWithOrgQuery,
+    GetPatientsByFacilityWithOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetPatientsByFacilityWithOrgQuery,
+    GetPatientsByFacilityWithOrgQueryVariables
+  >(GetPatientsByFacilityWithOrgDocument, options);
+}
+export type GetPatientsByFacilityWithOrgQueryHookResult = ReturnType<
+  typeof useGetPatientsByFacilityWithOrgQuery
+>;
+export type GetPatientsByFacilityWithOrgLazyQueryHookResult = ReturnType<
+  typeof useGetPatientsByFacilityWithOrgLazyQuery
+>;
+export type GetPatientsByFacilityWithOrgQueryResult = Apollo.QueryResult<
+  GetPatientsByFacilityWithOrgQuery,
+  GetPatientsByFacilityWithOrgQueryVariables
+>;
+export const GetPatientsCountByFacilityWithOrgDocument = gql`
+  query GetPatientsCountByFacilityWithOrg(
+    $facilityId: ID!
+    $archivedStatus: ArchivedStatus = UNARCHIVED
+    $orgExternalId: String!
+  ) {
+    patientsCount(
+      facilityId: $facilityId
+      archivedStatus: $archivedStatus
+      orgExternalId: $orgExternalId
+    )
+  }
+`;
+
+/**
+ * __useGetPatientsCountByFacilityWithOrgQuery__
+ *
+ * To run a query within a React component, call `useGetPatientsCountByFacilityWithOrgQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPatientsCountByFacilityWithOrgQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPatientsCountByFacilityWithOrgQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      archivedStatus: // value for 'archivedStatus'
+ *      orgExternalId: // value for 'orgExternalId'
+ *   },
+ * });
+ */
+export function useGetPatientsCountByFacilityWithOrgQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetPatientsCountByFacilityWithOrgQuery,
+    GetPatientsCountByFacilityWithOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetPatientsCountByFacilityWithOrgQuery,
+    GetPatientsCountByFacilityWithOrgQueryVariables
+  >(GetPatientsCountByFacilityWithOrgDocument, options);
+}
+export function useGetPatientsCountByFacilityWithOrgLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetPatientsCountByFacilityWithOrgQuery,
+    GetPatientsCountByFacilityWithOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetPatientsCountByFacilityWithOrgQuery,
+    GetPatientsCountByFacilityWithOrgQueryVariables
+  >(GetPatientsCountByFacilityWithOrgDocument, options);
+}
+export type GetPatientsCountByFacilityWithOrgQueryHookResult = ReturnType<
+  typeof useGetPatientsCountByFacilityWithOrgQuery
+>;
+export type GetPatientsCountByFacilityWithOrgLazyQueryHookResult = ReturnType<
+  typeof useGetPatientsCountByFacilityWithOrgLazyQuery
+>;
+export type GetPatientsCountByFacilityWithOrgQueryResult = Apollo.QueryResult<
+  GetPatientsCountByFacilityWithOrgQuery,
+  GetPatientsCountByFacilityWithOrgQueryVariables
+>;
+export const UnarchivePatientDocument = gql`
+  mutation UnarchivePatient($id: ID!, $orgExternalId: String!) {
+    setPatientIsDeleted(
+      id: $id
+      deleted: false
+      orgExternalId: $orgExternalId
+    ) {
+      internalId
+    }
+  }
+`;
+export type UnarchivePatientMutationFn = Apollo.MutationFunction<
+  UnarchivePatientMutation,
+  UnarchivePatientMutationVariables
+>;
+
+/**
+ * __useUnarchivePatientMutation__
+ *
+ * To run a mutation, you first call `useUnarchivePatientMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnarchivePatientMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unarchivePatientMutation, { data, loading, error }] = useUnarchivePatientMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      orgExternalId: // value for 'orgExternalId'
+ *   },
+ * });
+ */
+export function useUnarchivePatientMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UnarchivePatientMutation,
+    UnarchivePatientMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UnarchivePatientMutation,
+    UnarchivePatientMutationVariables
+  >(UnarchivePatientDocument, options);
+}
+export type UnarchivePatientMutationHookResult = ReturnType<
+  typeof useUnarchivePatientMutation
+>;
+export type UnarchivePatientMutationResult =
+  Apollo.MutationResult<UnarchivePatientMutation>;
+export type UnarchivePatientMutationOptions = Apollo.BaseMutationOptions<
+  UnarchivePatientMutation,
+  UnarchivePatientMutationVariables
+>;
+export const SendSupportEscalationDocument = gql`
+  mutation SendSupportEscalation {
+    sendSupportEscalation
+  }
+`;
+export type SendSupportEscalationMutationFn = Apollo.MutationFunction<
+  SendSupportEscalationMutation,
+  SendSupportEscalationMutationVariables
+>;
+
+/**
+ * __useSendSupportEscalationMutation__
+ *
+ * To run a mutation, you first call `useSendSupportEscalationMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSendSupportEscalationMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [sendSupportEscalationMutation, { data, loading, error }] = useSendSupportEscalationMutation({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useSendSupportEscalationMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    SendSupportEscalationMutation,
+    SendSupportEscalationMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    SendSupportEscalationMutation,
+    SendSupportEscalationMutationVariables
+  >(SendSupportEscalationDocument, options);
+}
+export type SendSupportEscalationMutationHookResult = ReturnType<
+  typeof useSendSupportEscalationMutation
+>;
+export type SendSupportEscalationMutationResult =
+  Apollo.MutationResult<SendSupportEscalationMutation>;
+export type SendSupportEscalationMutationOptions = Apollo.BaseMutationOptions<
+  SendSupportEscalationMutation,
+  SendSupportEscalationMutationVariables
+>;
 export const GetPatientDocument = gql`
   query GetPatient($internalId: ID!) {
     patient(id: $internalId) {
@@ -6500,6 +7441,7 @@ export const GetFacilityResultsMultiplexWithCountDocument = gql`
         }
         facility {
           name
+          isDeleted
         }
       }
       totalElements

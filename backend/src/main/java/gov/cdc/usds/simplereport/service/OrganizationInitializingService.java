@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties.ConfigPatientRegistrationLink;
@@ -36,6 +35,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.ApiException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -223,7 +223,7 @@ public class OrganizationInitializingService {
     try {
       log.info("Creating organization {} in Okta", org.getOrganizationName());
       _oktaRepo.createOrganization(org);
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       log.info("Organization {} already exists in Okta", org.getOrganizationName());
     }
   }
@@ -232,7 +232,7 @@ public class OrganizationInitializingService {
     try {
       log.info("Creating facility={} in Okta", facility.getFacilityName());
       _oktaRepo.createFacility(facility);
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       log.info("Facility {} already exists in Okta", facility.getFacilityName());
     }
   }
@@ -245,7 +245,7 @@ public class OrganizationInitializingService {
     try {
       log.info("Creating user {} in Okta", user.getUsername());
       _oktaRepo.createUser(user, org, facilities, roles, true);
-    } catch (ResourceException e) {
+    } catch (ApiException e) {
       log.info("User {} already exists in Okta", user.getUsername());
     }
   }
@@ -286,12 +286,14 @@ public class OrganizationInitializingService {
       List<ConfigPatientRegistrationLink> patientRegistrationLinks,
       Map<String, Facility> facilitiesByName) {
     for (ConfigPatientRegistrationLink p : patientRegistrationLinks) {
-      String orgExternalId = p.getOrganizationExternalId();
-      String facilityName = p.getFacilityName();
-      if (null != orgExternalId) {
-        createPatientSelfRegistrationLinkWithOrg(p, orgExternalId);
-      } else if (null != p.getFacilityName()) {
-        createPatientSelfRegistrationLinkWithFacility(p, facilityName, facilitiesByName);
+      if (_prlRepository.findByPatientRegistrationLinkIgnoreCase(p.getLink()).isEmpty()) {
+        String orgExternalId = p.getOrganizationExternalId();
+        String facilityName = p.getFacilityName();
+        if (null != orgExternalId) {
+          createPatientSelfRegistrationLinkWithOrg(p, orgExternalId);
+        } else if (null != p.getFacilityName()) {
+          createPatientSelfRegistrationLinkWithFacility(p, facilityName, facilitiesByName);
+        }
       }
     }
   }

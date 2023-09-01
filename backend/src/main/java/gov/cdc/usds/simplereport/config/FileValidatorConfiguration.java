@@ -11,8 +11,10 @@ import org.springframework.context.annotation.Configuration;
 public class FileValidatorConfiguration {
   @Bean
   public FileValidator<TestResultRow> testResultRowFileValidator(
-      ResultsUploaderCachingService resultsUploaderCachingService) {
-    return new FileValidator<>(row -> new TestResultRow(row, resultsUploaderCachingService));
+      ResultsUploaderCachingService resultsUploaderCachingService,
+      FeatureFlagsConfig featureFlagsConfig) {
+    return new FileValidator<>(
+        row -> new TestResultRow(row, resultsUploaderCachingService, featureFlagsConfig));
   }
 
   @Bean

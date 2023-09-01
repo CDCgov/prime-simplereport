@@ -25,7 +25,6 @@ const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
           </ul>
           {isPatientApp ? (
             <Trans
-              t={t}
               parent="p"
               i18nKey="testResult.notes.positive.p2"
               components={[
@@ -40,7 +39,6 @@ const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
             />
           ) : (
             <Trans
-              t={t}
               parent="p"
               i18nKey="testResult.notes.positive.p2"
               components={[
@@ -64,7 +62,6 @@ const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
           </ul>
           <p>{t("testResult.notes.positive.p3")}</p>
           <Trans
-            t={t}
             parent="p"
             i18nKey="testResult.information"
             components={[
@@ -106,7 +103,6 @@ const CovidResultInfo = ({ result, isPatientApp, t }: CovidResultInfoProps) => {
             <li>{t("testResult.notes.negative.symptoms.li10")}</li>
           </ul>
           <Trans
-            t={t}
             parent="p"
             i18nKey="testResult.notes.negative.moreInformation"
             components={[

@@ -32,11 +32,13 @@ resource "azurerm_linux_web_app" "metabase" {
   virtual_network_subnet_id = var.webapp_subnet_id
 
   site_config {
-    always_on               = true
-    ftps_state              = "Disabled"
-    scm_minimum_tls_version = "1.2"
-    use_32_bit_worker       = false
-    vnet_route_all_enabled  = false
+    always_on                         = true
+    health_check_path                 = "/api/health"
+    health_check_eviction_time_in_min = 5
+    ftps_state                        = "Disabled"
+    scm_minimum_tls_version           = "1.2"
+    use_32_bit_worker                 = false
+    vnet_route_all_enabled            = false
 
     ip_restriction {
       virtual_network_subnet_id = var.lb_subnet_id

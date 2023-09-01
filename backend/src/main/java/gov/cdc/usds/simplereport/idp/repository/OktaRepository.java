@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import org.openapitools.client.model.UserStatus;
 
 /**
  * Created by jeremyzitomer-usds on 1/7/21
@@ -33,6 +33,13 @@ public interface OktaRepository {
 
   Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
+
+  List<String> updateUserPrivilegesAndGroupAccess(
+      String username,
+      Organization org,
+      Set<Facility> facilities,
+      OrganizationRole roles,
+      boolean assignedToAllFacilities);
 
   void resetUserPassword(String username);
 
@@ -65,4 +72,8 @@ public interface OktaRepository {
   void deleteFacility(Facility facility);
 
   Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
+
+  Integer getUsersInSingleFacility(Facility facility);
+
+  PartialOktaUser findUser(String username);
 }

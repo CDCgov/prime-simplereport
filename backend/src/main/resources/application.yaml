@@ -168,3 +168,7 @@ datahub:
   fhir-enabled: true
 features:
   hivEnabled: true
+  rsvEnabled: true
+slack:
+  hook:
+    token: ${SLACK_HOOK_TOKEN:foo}

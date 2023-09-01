@@ -37,7 +37,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
             class="prime-secondary-nav"
           >
             <div
-              aria-owns="user-tab-3a4a221d-a8ca-42b3-aa03-37b93266025b user-tab-1029653e-24d9-428e-83b0-468319948902 user-tab-60bb9e3a-fe8a-4b81-b894-b01649c95e70 user-tab-0d3fa224-3d56-4382-b89c-9d8e415e59b3 user-tab-17656bad-07b6-4fd4-bb9a-ccbc54e5ea0a"
+              aria-owns="user-tab-3a4a221d-a8ca-42b3-aa03-37b93266025b user-tab-1029653e-24d9-428e-83b0-468319948902 user-tab-17656bad-08b6-4fd4-bb9a-ccac54e5ea0a user-tab-60bb9e3a-fe8a-4b81-b894-b01649c95e70 user-tab-0d3fa224-3d56-4382-b89c-9d8e415e59b3 user-tab-17656bad-07b6-4fd4-bb9a-ccbc54e5ea0a"
               class="usa-sidenav"
               role="tablist"
             >
@@ -81,6 +81,32 @@ exports[`ManageUsersContainer loads the component and displays users successfull
                   <span
                     class="sidenav-user-status padding-left-0"
                   />
+                </button>
+              </div>
+              <div
+                class="usa-sidenav__item users-sidenav-item"
+              >
+                <button
+                  aria-label="Carter, Nicole Suspended"
+                  aria-selected="false"
+                  class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 padding-left-3"
+                  id="user-tab-17656bad-08b6-4fd4-bb9a-ccac54e5ea0a"
+                  role="tab"
+                  style="cursor: pointer;"
+                >
+                  <div
+                    class="sidenav-user-name"
+                  >
+                    Carter, Nicole Suspended
+                  </div>
+                  <svg>
+                    account-deactivated.svg
+                  </svg>
+                  <span
+                    class="sidenav-user-status"
+                  >
+                    Account deactivated
+                  </span>
                 </button>
               </div>
               <div
@@ -168,15 +194,12 @@ exports[`ManageUsersContainer loads the component and displays users successfull
               />
             </div>
           </div>
-          <div
-            class="user-header grid-row flex-row flex-align-center"
-          />
           <nav
             aria-label="User action navigation"
             class="prime-secondary-nav margin-top-4 padding-bottom-0"
           >
             <div
-              aria-owns="user-info-tab-id facility-access-tab-id"
+              aria-owns="user-information-tab-id facility-access-tab-id"
               class="usa-nav__secondary-links prime-nav usa-list"
               role="tablist"
             >
@@ -186,7 +209,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
                 <button
                   aria-selected="true"
                   class="usa-button--unstyled text-ink text-no-underline"
-                  id="user-info-tab-id"
+                  id="user-information-tab-id"
                   role="tab"
                 >
                   User information
@@ -207,7 +230,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
             </div>
           </nav>
           <div
-            aria-labelledby="user-info-tab-id"
+            aria-labelledby="user-information-tab-id"
             class="padding-left-1"
             role="tabpanel"
           >

@@ -166,6 +166,10 @@ simple-report-initialization:
       facility-name: Testing Site
     - link: dat-org
       organization-external-id: DAT_ORG
+    - link: upt0wn
+      facility-name: Uptown Clinic
+    - link: downTwn
+      facility-name: Downtown Clinic
 simple-report:
   demo-users:
     site-admin-emails:

@@ -44,7 +44,7 @@ import org.jetbrains.annotations.Nullable;
  * practice.
  */
 public class TestEventExport {
-  private static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
+  public static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
   public static final String USA = "USA";
   private String processingModeCode = "P";
   private final TestEvent testEvent;

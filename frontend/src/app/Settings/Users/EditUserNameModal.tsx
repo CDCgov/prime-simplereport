@@ -61,6 +61,7 @@ const EditUserNameModal: React.FC<EditUserNameModalProps> = ({
       formData.lastName,
       user.suffix || ""
     );
+    onClose();
   };
 
   /**

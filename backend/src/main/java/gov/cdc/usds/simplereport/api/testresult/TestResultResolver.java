@@ -71,14 +71,16 @@ public class TestResultResolver {
       @Argument String result,
       @Argument String role,
       @Argument Date startDate,
-      @Argument Date endDate) {
+      @Argument Date endDate,
+      @Argument UUID orgId) {
     return tos.getTestResultsCount(
         facilityId,
         patientId,
         Translators.parseTestResult(result),
         Translators.parsePersonRole(role, true),
         startDate,
-        endDate);
+        endDate,
+        orgId);
   }
 
   @MutationMapping

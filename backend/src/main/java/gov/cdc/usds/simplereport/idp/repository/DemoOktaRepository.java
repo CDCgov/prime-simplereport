@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import com.okta.sdk.resource.user.UserStatus;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -9,6 +8,7 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.context.annotation.Profile;
@@ -48,9 +49,12 @@ public class DemoOktaRepository implements OktaRepository {
   Map<String, Set<UUID>> orgFacilitiesMap;
   Set<String> inactiveUsernames;
   Set<String> allUsernames;
+  private final Set<String> adminGroupMemberSet;
 
   public DemoOktaRepository(
-      OrganizationExtractor extractor, CurrentTenantDataAccessContextHolder contextHolder) {
+      OrganizationExtractor extractor,
+      CurrentTenantDataAccessContextHolder contextHolder,
+      DemoUserConfiguration demoUserConfiguration) {
     this.usernameOrgRolesMap = new HashMap<>();
     this.orgUsernamesMap = new HashMap<>();
     this.orgFacilitiesMap = new HashMap<>();
@@ -59,6 +63,8 @@ public class DemoOktaRepository implements OktaRepository {
 
     this.organizationExtractor = extractor;
     this.tenantDataContextHolder = contextHolder;
+    this.adminGroupMemberSet =
+        demoUserConfiguration.getSiteAdminEmails().stream().collect(Collectors.toUnmodifiableSet());
 
     log.info("Done initializing Demo Okta repository.");
   }
@@ -178,6 +184,31 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(newRoleClaims);
   }
 
+  @Override
+  public List<String> updateUserPrivilegesAndGroupAccess(
+      String username,
+      Organization org,
+      Set<Facility> facilities,
+      OrganizationRole roles,
+      boolean allFacilitiesAccess) {
+
+    String oldOrgId = usernameOrgRolesMap.get(username).getOrganizationExternalId();
+    orgUsernamesMap.get(oldOrgId).remove(username);
+    orgUsernamesMap.get(org.getExternalId()).add(username);
+    OrganizationRoleClaims newRoleClaims =
+        new OrganizationRoleClaims(
+            org.getExternalId(),
+            facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet()),
+            Set.of(roles, OrganizationRole.getDefault()));
+
+    usernameOrgRolesMap.replace(username, newRoleClaims);
+
+    // Live Okta repository returns list of Group names, but our demo repo didn't implement
+    // group mappings and it didn't feel worth it to add that implementation since the return is
+    // used mostly for testing. Return the list of facility ID's in the new org instead
+    return orgFacilitiesMap.get(org.getExternalId()).stream().map(UUID::toString).toList();
+  }
+
   public void resetUserPassword(String username) {
     if (!usernameOrgRolesMap.containsKey(username)) {
       throw new IllegalGraphqlArgumentException(
@@ -202,7 +233,7 @@ public class DemoOktaRepository implements OktaRepository {
 
   public UserStatus getUserStatus(String username) {
     if (inactiveUsernames.contains(username)) {
-      return UserStatus.DEPROVISIONED;
+      return UserStatus.SUSPENDED;
     } else {
       return UserStatus.ACTIVE;
     }
@@ -344,11 +375,60 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
+  public PartialOktaUser findUser(String username) {
+    UserStatus status =
+        inactiveUsernames.contains(username) ? UserStatus.SUSPENDED : UserStatus.ACTIVE;
+    boolean isAdmin = adminGroupMemberSet.contains(username);
+
+    Optional<OrganizationRoleClaims> orgClaims;
+
+    try {
+      orgClaims = Optional.ofNullable(usernameOrgRolesMap.get(username));
+    } catch (ScopeNotActiveException e) {
+      // Tests are set up with a full SecurityContextHolder and should not rely on
+      // usernameOrgRolesMap as the source of truth.
+      if (!("UNITTEST".equals(environment)) && usernameOrgRolesMap.containsKey(username)) {
+        orgClaims = Optional.of(usernameOrgRolesMap.get(username));
+      } else {
+        Set<String> authorities =
+            SecurityContextHolder.getContext().getAuthentication().getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toSet());
+        orgClaims = getOrganizationRoleClaimsFromTenantDataAccess(authorities);
+      }
+    }
+
+    return PartialOktaUser.builder()
+        .isSiteAdmin(isAdmin)
+        .status(status)
+        .username(username)
+        .organizationRoleClaims(orgClaims)
+        .build();
+  }
+
   public void reset() {
     usernameOrgRolesMap.clear();
     orgUsernamesMap.clear();
     orgFacilitiesMap.clear();
     inactiveUsernames.clear();
     allUsernames.clear();
+  }
+
+  public Integer getUsersInSingleFacility(Facility facility) {
+    Integer accessCount = 0;
+
+    for (OrganizationRoleClaims existingClaims : usernameOrgRolesMap.values()) {
+      boolean hasAllFacilityAccess =
+          existingClaims.getGrantedRoles().stream()
+              .anyMatch(role -> OrganizationRole.ALL_FACILITIES.getName().equals(role.name()));
+      boolean hasSpecificFacilityAccess =
+          existingClaims.getFacilities().stream()
+              .anyMatch(facilityAccessId -> facility.getInternalId().equals(facilityAccessId));
+      if (!hasAllFacilityAccess && hasSpecificFacilityAccess) {
+        accessCount++;
+      }
+    }
+
+    return accessCount;
   }
 }

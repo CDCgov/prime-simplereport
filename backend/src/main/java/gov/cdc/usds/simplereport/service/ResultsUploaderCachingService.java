@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
 import static gov.cdc.usds.simplereport.config.CachingConfig.ADDRESS_TIMEZONE_LOOKUP_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET;
 import static gov.cdc.usds.simplereport.config.CachingConfig.DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP;
-import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_AND_SNOMED_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.SNOMED_TO_SPECIMEN_NAME_MAP;
+import static gov.cdc.usds.simplereport.config.CachingConfig.SPECIMEN_NAME_TO_SNOMED_MAP;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -11,7 +13,9 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import java.time.ZoneId;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -98,7 +102,7 @@ public class ResultsUploaderCachingService {
                           String model = deviceType.getModel();
                           String testPerformedCode = deviceTypeDisease.getTestPerformedLoincCode();
                           if (model != null && testPerformedCode != null) {
-                            resultMap.put(getMapKey(model, testPerformedCode), deviceType);
+                            resultMap.put(getKey(model, testPerformedCode), deviceType);
                           }
                         }));
 
@@ -113,7 +117,61 @@ public class ResultsUploaderCachingService {
     getModelAndTestPerformedCodeToDeviceMap();
   }
 
-  @Cacheable(SPECIMEN_NAME_AND_SNOMED_MAP)
+  @Cacheable(COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET)
+  public Set<String> getCovidEquipmentModelAndTestPerformedCodeSet() {
+    log.info("generating covidEquipmentModelAndTestPerformedCodeSet cache");
+
+    Set<String> resultSet = new HashSet<>();
+
+    deviceTypeRepository
+        .findAllRecords()
+        .forEach(
+            deviceType ->
+                deviceType
+                    .getSupportedDiseaseTestPerformed()
+                    .forEach(
+                        deviceTypeDisease -> {
+                          if (deviceTypeDisease
+                              .getSupportedDisease()
+                              .getName()
+                              .equals("COVID-19")) {
+                            String model = deviceType.getModel();
+                            String testPerformedCode =
+                                deviceTypeDisease.getTestPerformedLoincCode();
+                            if (model != null && testPerformedCode != null) {
+                              resultSet.add(getKey(model, testPerformedCode));
+                            }
+                          }
+                        }));
+
+    return resultSet;
+  }
+
+  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
+  @Caching(
+      evict = {
+        @CacheEvict(value = COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET, allEntries = true)
+      })
+  public void cacheCovidEquipmentModelAndTestPerformedCodeSet() {
+    log.info("clear and generate covidEquipmentModelAndTestPerformedCodeSet cache");
+    getCovidEquipmentModelAndTestPerformedCodeSet();
+  }
+
+  @Cacheable(SNOMED_TO_SPECIMEN_NAME_MAP)
+  public Map<String, String> getSNOMEDToSpecimenTypeNameMap() {
+    log.info("generating SNOMEDToSpecimenTypeNameMap cache");
+    return specimenTypeRepository.findAll().stream()
+        .collect(Collectors.toMap(SpecimenType::getTypeCode, SpecimenType::getName));
+  }
+
+  @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
+  @Caching(evict = {@CacheEvict(value = SNOMED_TO_SPECIMEN_NAME_MAP, allEntries = true)})
+  public void cacheSNOMEDToSpecimenTypeNameToMap() {
+    log.info("clear and generate SNOMEDToSpecimenTypeNameMap cache");
+    getSNOMEDToSpecimenTypeNameMap();
+  }
+
+  @Cacheable(SPECIMEN_NAME_TO_SNOMED_MAP)
   public Map<String, String> getSpecimenTypeNameToSNOMEDMap() {
     log.info("generating getSpecimenTypeNameToSNOMEDMap cache");
 
@@ -131,13 +189,13 @@ public class ResultsUploaderCachingService {
   }
 
   @Scheduled(fixedRate = 1, timeUnit = TimeUnit.HOURS)
-  @Caching(evict = {@CacheEvict(value = SPECIMEN_NAME_AND_SNOMED_MAP, allEntries = true)})
+  @Caching(evict = {@CacheEvict(value = SPECIMEN_NAME_TO_SNOMED_MAP, allEntries = true)})
   public void cacheSpecimenTypeNameToSNOMEDMap() {
     log.info("clear and generate specimenTypeNameToSNOMEDMap cache");
     getSpecimenTypeNameToSNOMEDMap();
   }
 
-  public static String getMapKey(String model, String testPerformedCode) {
+  public static String getKey(String model, String testPerformedCode) {
     return model.toLowerCase() + "|" + testPerformedCode.toLowerCase();
   }
 

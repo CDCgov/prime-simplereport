@@ -50,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -87,6 +88,8 @@ public class TestOrderService {
   private final TestResultsDeliveryService testResultsDeliveryService;
   private final DiseaseService _diseaseService;
 
+  private final ApplicationEventPublisher applicationEventPublisher;
+
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
 
@@ -103,7 +106,8 @@ public class TestOrderService {
       TestResult result,
       PersonRole role,
       Date startDate,
-      Date endDate) {
+      Date endDate,
+      UUID orgId) {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
@@ -120,12 +124,13 @@ public class TestOrderService {
                     root.get(BaseTestInfo_.facility).get(IdentifiedEntity_.internalId),
                     facilityId));
       } else {
+        final UUID finalOrgId = _organizationService.getPermissibleOrgId(orgId);
         p =
             cb.and(
                 p,
                 cb.equal(
-                    root.get(BaseTestInfo_.organization),
-                    _organizationService.getCurrentOrganization()));
+                    root.get(BaseTestInfo_.organization).get(IdentifiedEntity_.internalId),
+                    finalOrgId));
       }
       if (patientId != null) {
         p =
@@ -185,7 +190,7 @@ public class TestOrderService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return _testEventRepo.findAll(
-        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate),
+        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate, null),
         pageRequest);
   }
 
@@ -204,7 +209,8 @@ public class TestOrderService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return _testEventRepo.findAll(
-        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate), pageRequest);
+        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate, null),
+        pageRequest);
   }
 
   @Transactional(readOnly = true)
@@ -214,10 +220,12 @@ public class TestOrderService {
       TestResult result,
       PersonRole role,
       Date startDate,
-      Date endDate) {
+      Date endDate,
+      UUID orgId) {
     return (int)
         _testEventRepo.count(
-            buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate));
+            buildTestEventSearchFilter(
+                facilityId, patientId, result, role, startDate, endDate, orgId));
   }
 
   @Transactional(readOnly = true)
@@ -333,7 +341,6 @@ public class TestOrderService {
 
       order.setTestEventRef(savedEvent);
       savedOrder = _testOrderRepo.save(order);
-      reportTestEventToRS(savedEvent);
     } finally {
       unlockOrder(order.getInternalId());
     }
@@ -356,17 +363,9 @@ public class TestOrderService {
 
     boolean deliveryStatus =
         deliveryStatuses.isEmpty() || deliveryStatuses.stream().anyMatch(status -> status);
+
+    applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(savedOrder.getTestEvent()));
     return new AddTestResultResponse(savedOrder, deliveryStatus);
-  }
-
-  private void reportTestEventToRS(TestEvent savedEvent) {
-    if (savedEvent.hasCovidResult()) {
-      _testEventReportingService.report(savedEvent);
-    }
-
-    if (savedEvent.hasFluResult() && fhirReportingEnabled) {
-      _fhirQueueReportingService.report(savedEvent);
-    }
   }
 
   private Set<Result> editMultiplexResult(TestOrder order, List<MultiplexResultInput> newResults) {
@@ -552,16 +551,28 @@ public class TestOrderService {
         _testEventRepo.save(newRemoveEvent);
         newRemoveEvent = resultService.addResultsToTestEvent(newRemoveEvent, results);
 
-        reportTestEventToRS(newRemoveEvent);
-
         order.setReasonForCorrection(reasonForCorrection);
         order.setTestEventRef(newRemoveEvent);
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
         _testOrderRepo.save(order);
+
+        applicationEventPublisher.publishEvent(new ReportTestEventToRSEvent(newRemoveEvent));
+
         return newRemoveEvent;
       }
       default -> throw new IllegalGraphqlArgumentException("Invalid TestCorrectionStatus");
     }
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public void removeFromQueueByFacilityId(UUID facilityId) {
+    Facility facility =
+        _organizationService
+            .getFacilityById(facilityId)
+            .orElseThrow(() -> new IllegalGraphqlArgumentException("Facility not found."));
+    List<TestOrder> orders = _testOrderRepo.fetchQueueItemsByFacilityId(facility);
+    orders.stream().forEach(TestOrder::cancelOrder);
+    _testOrderRepo.saveAll(orders);
   }
 
   private void ensureCorrectionFlowBackwardCompatibility(TestEvent event) {

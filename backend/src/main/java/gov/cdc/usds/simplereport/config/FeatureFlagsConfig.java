@@ -19,6 +19,7 @@ public class FeatureFlagsConfig {
   private final FeatureFlagRepository _repo;
 
   @Getter private final FeatureFlagProperties featureFlagProperties;
+  private boolean rsvEnabled;
 
   @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
@@ -30,6 +31,7 @@ public class FeatureFlagsConfig {
     switch (flagName) {
       case "multiplexEnabled" -> featureFlagProperties.setMultiplexEnabled(flagValue);
       case "hivEnabled" -> featureFlagProperties.setHivEnabled(flagValue);
+      case "rsvEnabled" -> setRsvEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }

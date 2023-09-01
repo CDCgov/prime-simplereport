@@ -5,5 +5,6 @@ RUN unset HISTFILE
 RUN bash -ic 'unset HISTFILE'
 RUN bash -ic 'set +o history'
 RUN echo 'unset HISTFILE' >> /etc/profile.d/disable.history.sh
+RUN touch /tmp/healthy
 ENV PSQL_HISTORY=/export/.psql_history
 ENTRYPOINT ["tail", "-f", "/dev/null"]

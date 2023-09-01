@@ -96,7 +96,7 @@
           }
         ],
         "status":"final",
-        "effectiveDateTime": "2023-07-14T15:52:34+00:00",
+        "effectiveDateTime": "2023-07-14T15:45:34+00:00",
         "code":{
           "coding":[
             {
@@ -306,7 +306,11 @@
           {
             "value": "$SPECIMEN_IDENTIFIER"
           }
-        ]
+        ],
+        "receivedTime": "2023-07-14T15:45:34+00:00",
+        "collection": {
+          "collectedDateTime": "2023-07-14T15:45:34+00:00"
+        }
       }
     },
     {

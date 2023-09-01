@@ -149,23 +149,36 @@ const Header: React.FC<{}> = () => {
       key: "patient-nav-link",
     },
   ];
-  const mainNavList = (deviceType: string) =>
-    mainNavContent.map((item) => {
+  const mainNavList = (deviceType: "desktop" | "mobile") => {
+    let navList = mainNavContent
+      .map((item) => {
+        return (
+          item.displayPermissions && (
+            <li key={item.key} className="usa-nav__primary-item">
+              <LinkWithQuery
+                to={item.url}
+                onClick={() => setMenuVisible(false)}
+                className={item.className}
+                id={`${deviceType}-${item.key}`}
+              >
+                {item.displayText}
+              </LinkWithQuery>
+            </li>
+          )
+        );
+      })
+      .filter((item) => item);
+    if (deviceType === "mobile" && navList?.length > 0) {
       return (
-        <li key={item.key} className="usa-nav__primary-item">
-          {item.displayPermissions ? (
-            <LinkWithQuery
-              to={item.url}
-              onClick={() => setMenuVisible(false)}
-              className={item.className}
-              id={`${deviceType}-${item.key}`}
-            >
-              {item.displayText}
-            </LinkWithQuery>
-          ) : null}
-        </li>
+        <ul className="usa-nav__primary usa-accordion mobile-main-nav-container">
+          {navList}
+        </ul>
       );
-    });
+    } else if (deviceType === "desktop" && navList?.length > 0) {
+      return <ul className="usa-nav__primary usa-accordion">{navList}</ul>;
+    }
+  };
+
   const secondaryNavContent = [
     {
       url: "#",
@@ -331,9 +344,7 @@ const Header: React.FC<{}> = () => {
           >
             <FontAwesomeIcon icon={"window-close"} />
           </button>
-          <ul className="usa-nav__primary usa-accordion mobile-main-nav-container">
-            {mainNavList("mobile")}
-          </ul>
+          {mainNavList("mobile")}
           <ul className="usa-nav__primary usa-accordion mobile-secondary-nav-container">
             {secondaryNav("mobile")}
           </ul>
@@ -365,9 +376,7 @@ const Header: React.FC<{}> = () => {
         aria-label="Primary navigation"
         className="usa-nav prime-nav desktop-nav"
       >
-        <ul className="usa-nav__primary usa-accordion">
-          {mainNavList("desktop")}
-        </ul>
+        {mainNavList("desktop")}
         {facilities && facilities.length > 0 ? (
           <div className="prime-facility-select">
             <Dropdown

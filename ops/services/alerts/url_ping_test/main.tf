@@ -54,6 +54,7 @@ resource "azurerm_monitor_metric_alert" "webtest" {
   }
 
   action {
-    action_group_id = var.action_group_id
+    action_group_id        = var.action_group_id
+    custom_webhook_payload = var.wiki_docs_text
   }
 }

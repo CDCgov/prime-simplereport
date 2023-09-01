@@ -10,16 +10,21 @@ import org.springframework.context.annotation.Configuration;
 @EnableCaching
 public class CachingConfig {
 
+  public static final String COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET =
+      "covidEquipmentModelAndTestPerformedCodeSet";
   public static final String DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP =
       "deviceModelAndTestPerformedCodeMap";
-  public static final String SPECIMEN_NAME_AND_SNOMED_MAP = "specimenTypeNameSNOMEDMap";
+  public static final String SPECIMEN_NAME_TO_SNOMED_MAP = "specimenTypeNameSNOMEDMap";
+  public static final String SNOMED_TO_SPECIMEN_NAME_MAP = "SNOMEDToSpecimenTypeNameMap";
   public static final String ADDRESS_TIMEZONE_LOOKUP_MAP = "addressTimezoneLookupMap";
 
   @Bean
   public CacheManager cacheManager() {
     return new ConcurrentMapCacheManager(
+        COVID_EQUIPMENT_MODEL_AND_TEST_PERFORMED_CODE_SET,
         DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP,
-        SPECIMEN_NAME_AND_SNOMED_MAP,
+        SPECIMEN_NAME_TO_SNOMED_MAP,
+        SNOMED_TO_SPECIMEN_NAME_MAP,
         ADDRESS_TIMEZONE_LOOKUP_MAP);
   }
 }

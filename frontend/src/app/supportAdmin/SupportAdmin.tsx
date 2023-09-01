@@ -3,6 +3,21 @@ import { useFeature } from "flagged";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { useDocumentTitle } from "../utils/hooks";
 
+import {
+  addNewDevicePageTitle,
+  addOrgAdminPageTitle,
+  devicesColumnTitle,
+  editDevicePageTitle,
+  escalationPageTitle,
+  identityVerificationPageTitle,
+  manageUserPageTitle,
+  manageFacility,
+  orgAccessPageTitle,
+  orgFacilityColumnTitle,
+  usersAndPatientsColumnTitle,
+  unarchivePatientTitle,
+} from "./pageTitles";
+
 type CategoryMenuProps = {
   heading: string;
   children: React.ReactNode;
@@ -21,47 +36,66 @@ const CategoryMenu: React.FC<CategoryMenuProps> = ({
 const SupportAdmin = () => {
   useDocumentTitle("Support admin");
   const hivEnabled = useFeature("hivEnabled") as boolean;
-
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container">
             <div className="usa-card__header">
-              <div>
-                <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
-                  Support admin
-                </h1>
-              </div>
+              <h1 className="font-heading-lg margin-top-0 margin-bottom-0">
+                Support admin
+              </h1>
             </div>
             <div className="usa-card__body">
               <div className="grid-row grid-gap">
-                <CategoryMenu heading="Organization">
+                <CategoryMenu heading={orgFacilityColumnTitle}>
                   <li>
                     <LinkWithQuery to={`/admin/pending-organizations`}>
-                      Identity verification
+                      {identityVerificationPageTitle}
                     </LinkWithQuery>
                   </li>
                   <li>
                     <LinkWithQuery to="/admin/add-organization-admin">
-                      Add organization admin
+                      {addOrgAdminPageTitle}
                     </LinkWithQuery>
                   </li>
                   <li>
                     <LinkWithQuery to="/admin/tenant-data-access">
-                      Organization data
+                      {orgAccessPageTitle}
+                    </LinkWithQuery>
+                  </li>
+                  <li>
+                    <LinkWithQuery to="/admin/escalate-to-engineering">
+                      {escalationPageTitle}
+                    </LinkWithQuery>
+                  </li>
+                  <li>
+                    <LinkWithQuery to="/admin/manage-facility">
+                      {manageFacility}
                     </LinkWithQuery>
                   </li>
                 </CategoryMenu>
-                <CategoryMenu heading="Test Devices">
+                <CategoryMenu heading={devicesColumnTitle}>
                   <li>
                     <LinkWithQuery to="/admin/create-device-type">
-                      Add a new testing device
+                      {addNewDevicePageTitle}
                     </LinkWithQuery>
                   </li>
                   <li>
                     <LinkWithQuery to="/admin/manage-devices">
-                      Edit existing testing device
+                      {editDevicePageTitle}
+                    </LinkWithQuery>
+                  </li>
+                </CategoryMenu>
+                <CategoryMenu heading={usersAndPatientsColumnTitle}>
+                  <li>
+                    <LinkWithQuery to="/admin/manage-users">
+                      {manageUserPageTitle}
+                    </LinkWithQuery>
+                  </li>
+                  <li>
+                    <LinkWithQuery to="/admin/unarchive-patient">
+                      {unarchivePatientTitle}
                     </LinkWithQuery>
                   </li>
                 </CategoryMenu>

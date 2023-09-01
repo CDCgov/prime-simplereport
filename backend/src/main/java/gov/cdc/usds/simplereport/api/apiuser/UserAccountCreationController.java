@@ -2,14 +2,13 @@ package gov.cdc.usds.simplereport.api.apiuser;
 
 import static gov.cdc.usds.simplereport.config.WebConfiguration.USER_ACCOUNT_REQUEST;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidActivationLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAuthenticationFailureException;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateAccountRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.ActivateSecurityKeyRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.EnrollMfaRequest;
+import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndActivation;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.FactorAndQrCode;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetPasswordRequest;
 import gov.cdc.usds.simplereport.api.model.useraccountcreation.SetRecoveryQuestionRequest;
@@ -20,7 +19,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -231,13 +229,12 @@ public class UserAccountCreationController {
    *     their security key.
    */
   @PostMapping("/enroll-security-key-mfa")
-  public JsonNode enrollSecurityKeyMfa(@SessionAttribute String userId, HttpServletRequest request)
+  public FactorAndActivation enrollSecurityKeyMfa(
+      @SessionAttribute String userId, HttpServletRequest request)
       throws OktaAuthenticationFailureException {
-    JSONObject enrollResponse = _oktaAuth.enrollSecurityKey(userId);
-    request.getSession().setAttribute(FACTOR_ID_KEY, enrollResponse.getString(FACTOR_ID_KEY));
-    return JsonNodeFactory.instance
-        .objectNode()
-        .put("activation", enrollResponse.getJSONObject("activation").toString());
+    var enrollResponse = _oktaAuth.enrollSecurityKey(userId);
+    request.getSession().setAttribute(FACTOR_ID_KEY, enrollResponse.getFactorId());
+    return enrollResponse;
   }
 
   /**

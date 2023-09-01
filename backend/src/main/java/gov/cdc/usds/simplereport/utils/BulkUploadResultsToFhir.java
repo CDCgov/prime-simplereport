@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
+import gov.cdc.usds.simplereport.db.model.PersonUtils;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -219,8 +220,8 @@ public class BulkUploadResultsToFhir {
                 .dob(LocalDate.parse(row.getPatientDob().getValue(), DATE_TIME_FORMATTER))
                 .address(patientAddr)
                 .country(DEFAULT_COUNTRY)
-                .race(row.getPatientRace().getValue())
-                .ethnicity(row.getPatientEthnicity().getValue())
+                .race(getRaceLiteral(row.getPatientRace().getValue()))
+                .ethnicity(getEthnicityLiteral(row.getPatientEthnicity().getValue()))
                 .tribalAffiliations(new ArrayList<>())
                 .build());
 
@@ -282,7 +283,7 @@ public class BulkUploadResultsToFhir {
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
-    String testOrderLoinc = null;
+    String testOrderedCode = row.getTestOrderedCode().getValue();
 
     UUID deviceId = uuidGenerator.randomUUID();
     var testPerformedCode = row.getTestPerformedCode().getValue();
@@ -290,7 +291,7 @@ public class BulkUploadResultsToFhir {
     var matchingDevice =
         resultsUploaderCachingService
             .getModelAndTestPerformedCodeToDeviceMap()
-            .get(ResultsUploaderCachingService.getMapKey(modelName, testPerformedCode));
+            .get(ResultsUploaderCachingService.getKey(modelName, testPerformedCode));
 
     if (matchingDevice != null) {
       List<DeviceTypeDisease> deviceTypeDiseaseEntries =
@@ -317,7 +318,10 @@ public class BulkUploadResultsToFhir {
               .map(SupportedDisease::getName)
               .orElse(null);
 
-      testOrderLoinc = MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries);
+      testOrderedCode =
+          StringUtils.isEmpty(testOrderedCode)
+              ? MultiplexUtils.inferMultiplexTestOrderLoinc(deviceTypeDiseaseEntries)
+              : testOrderedCode;
     } else {
       log.info(
           "No device found for model ("
@@ -327,13 +331,22 @@ public class BulkUploadResultsToFhir {
               + ")");
     }
 
+    if (diseaseName == null) {
+      diseaseName = TestResultRow.diseaseSpecificLoincMap.get(testPerformedCode);
+    }
+
+    // code was not passed via api or inferred above: defaulting to the test performed code.
+    testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
+
     var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
 
+    String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
+    String specimenName = getSpecimenTypeName(specimenCode);
     var specimen =
         fhirConverter.convertToSpecimen(
             ConvertToSpecimenProps.builder()
-                .specimenCode(getSpecimenTypeSnomed(row.getSpecimenType().getValue()))
-                .specimenName(getDescriptionValue(row.getSpecimenType().getValue()))
+                .specimenCode(specimenCode)
+                .specimenName(specimenName)
                 .collectionCode(null)
                 .collectionName(null)
                 .id(uuidGenerator.randomUUID().toString())
@@ -355,7 +368,7 @@ public class BulkUploadResultsToFhir {
                     .id(uuidGenerator.randomUUID().toString())
                     .resultDescription(
                         Translators.convertConceptCodeToConceptName(
-                            getDescriptionValue(row.getTestResult().getValue())))
+                            getTestResultSnomed(row.getTestResult().getValue())))
                     .testkitNameId(testKitNameId)
                     .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
@@ -385,7 +398,7 @@ public class BulkUploadResultsToFhir {
     var serviceRequest =
         fhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,
-            testOrderLoinc,
+            testOrderedCode,
             uuidGenerator.randomUUID().toString(),
             orderTestDate);
 
@@ -415,6 +428,21 @@ public class BulkUploadResultsToFhir {
             .build());
   }
 
+  private String getEthnicityLiteral(String input) {
+    if (!input.matches(ALPHABET_REGEX)) {
+      List<String> ethnicityList = PersonUtils.ETHNICITY_MAP.get(input);
+      return ethnicityList != null ? ethnicityList.get(1) : input;
+    }
+    return input;
+  }
+
+  private String getRaceLiteral(String input) {
+    if (!input.matches(ALPHABET_REGEX)) {
+      return PersonUtils.raceMap.get(input);
+    }
+    return input;
+  }
+
   private String getTestResultSnomed(String input) {
     if (input.matches(ALPHABET_REGEX)) {
       return testResultToSnomedMap.get(input.toLowerCase());
@@ -433,11 +461,11 @@ public class BulkUploadResultsToFhir {
     return null;
   }
 
-  private String getDescriptionValue(String input) {
-    if (input.matches(ALPHABET_REGEX)) {
-      return input;
+  private String getSpecimenTypeName(String specimenSNOMED) {
+    if (specimenSNOMED != null) {
+      return resultsUploaderCachingService.getSNOMEDToSpecimenTypeNameMap().get(specimenSNOMED);
     }
-    return null; // vs empty string?
+    return null;
   }
 
   private DiagnosticReport.DiagnosticReportStatus mapTestResultStatusToFhirValue(String input) {

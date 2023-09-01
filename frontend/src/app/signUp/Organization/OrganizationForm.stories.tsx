@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import OrganizationForm from "./OrganizationForm";
 
@@ -8,7 +8,7 @@ export default {
   argTypes: {},
 } as Meta;
 
-const Template: Story = (args) => <OrganizationForm {...args} />;
+const Template: StoryFn = (args) => <OrganizationForm {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};

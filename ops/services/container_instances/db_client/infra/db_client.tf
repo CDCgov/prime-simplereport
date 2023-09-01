@@ -5,7 +5,7 @@ resource "azurerm_container_group" "db_client" {
   ip_address_type     = "Private"
   subnet_ids          = [var.subnet_id]
   os_type             = "Linux"
-  restart_policy      = "Always"
+  restart_policy      = "OnFailure"
 
   image_registry_credential {
     username = var.acr_username
@@ -15,7 +15,7 @@ resource "azurerm_container_group" "db_client" {
 
   container {
     name   = "${var.name}-${var.env}-db-client"
-    image  = "${var.acr_server}/api/simple-report-db-client:${var.acr_image_tag}"
+    image  = "${var.acr_server}/api/simple-report-db-client:1.0.0"
     cpu    = "1"
     memory = "1.5"
 
@@ -33,6 +33,17 @@ resource "azurerm_container_group" "db_client" {
       storage_account_name = var.storage_account_name
       storage_account_key  = var.storage_account_key
       share_name           = var.storage_share_name
+    }
+
+    readiness_probe {
+      exec                  = ["cat", "/tmp/healthy"]
+      initial_delay_seconds = 30
+    }
+
+    liveness_probe {
+      exec                  = ["cat", "/tmp/healthy"]
+      initial_delay_seconds = 30
+      period_seconds        = 10
     }
   }
 }

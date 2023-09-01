@@ -46,7 +46,7 @@ describe("Organization sign up",() => {
     cy.injectSRAxe();
     cy.checkAccessibility();
 
-    cy.contains("Identity verification").click();
+    cy.contains("Verify/edit organization identity").click();
     cy.get("[data-cy=pending-orgs-title]").should("be.visible");
 
     cy.contains("td", `${organization.name}`);
@@ -65,12 +65,13 @@ describe("Organization sign up",() => {
   it("spoofs into the org", () => {
     cy.visit("/admin");
 
-    cy.contains("Organization data").click();
+    cy.contains("Access organization account").click();
     cy.get("[data-testid='combo-box-input']").clear();
     cy.get("[data-testid='combo-box-input']").type(
       `${organization.name}{enter}`
     );
-    cy.get('input[name="justification"]').type("I am a test user").blur();
+    cy.get('input[name="justification"]').type("I am a test user");
+    cy.get('input[name="justification"]').blur();
 
     cy.injectSRAxe();
     cy.checkAccessibility();

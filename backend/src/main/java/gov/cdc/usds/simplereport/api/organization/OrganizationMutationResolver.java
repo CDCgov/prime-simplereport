@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationQueueService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.TestOrderService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -40,6 +41,7 @@ public class OrganizationMutationResolver {
   private final OrganizationQueueService organizationQueueService;
   private final AddressValidationService addressValidationService;
   private final ApiUserService apiUserService;
+  private final TestOrderService testOrderService;
 
   @MutationMapping
   public ApiFacility addFacility(@Argument AddFacilityInput facilityInfo) {
@@ -198,8 +200,12 @@ public class OrganizationMutationResolver {
   }
 
   /** Support-only mutation to mark a facility as deleted. This is a soft deletion only. */
+  @Transactional
   @MutationMapping
   public Facility markFacilityAsDeleted(@Argument UUID facilityId, @Argument boolean deleted) {
+    if (deleted) {
+      testOrderService.removeFromQueueByFacilityId(facilityId);
+    }
     return organizationService.markFacilityAsDeleted(facilityId, deleted);
   }
 }

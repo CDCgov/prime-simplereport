@@ -13,15 +13,19 @@ jobs:
   chromatic-deployment:
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Chromatic wants the history
-      - uses: actions/setup-node@v3.7.0
+
+      - uses: actions/setup-node@v3.8.1
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
+
       - name: Install dependencies
         run: yarn
         working-directory: frontend
+
       - name: Publish to Chromatic
         if: github.ref != 'refs/heads/main'
         uses: chromaui/action@v1
@@ -32,6 +36,7 @@ jobs:
           ignoreLastBuildOnBranch: "**"  # Better comparisons after rebasing
           exitZeroOnChanges: true
           exitOnceUploaded: true
+
       - name: Publish to Chromatic (auto-accept changes on merge main)
         if: github.ref == 'refs/heads/main'
         uses: chromaui/action@v1
@@ -43,3 +48,10 @@ jobs:
           exitZeroOnChanges: true
           exitOnceUploaded: true
           autoAcceptChanges: true  # handle squash-on-merge
+
+      - name: Artifact Chromatic logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: logs
+          path: frontend/*.log

@@ -23,7 +23,7 @@ Object {
                 <h1
                   class="font-heading-lg margin-top-0 margin-bottom-0"
                 >
-                  Device type
+                  Add new device
                 </h1>
                 <div
                   style="display: flex; justify-content: center; align-items: center;"
@@ -248,10 +248,12 @@ Object {
                         id="5"
                       >
                         <input
+                          aria-controls="multi-select-swabTypes-list"
                           aria-expanded="false"
                           aria-invalid="false"
                           aria-labelledby="label-for-5"
                           aria-owns="multi-select-swabTypes-list"
+                          aria-required="true"
                           autocapitalize="off"
                           autocomplete="off"
                           class="usa-combo-box__input"
@@ -540,7 +542,7 @@ Object {
               <h1
                 class="font-heading-lg margin-top-0 margin-bottom-0"
               >
-                Device type
+                Add new device
               </h1>
               <div
                 style="display: flex; justify-content: center; align-items: center;"
@@ -765,10 +767,12 @@ Object {
                       id="5"
                     >
                       <input
+                        aria-controls="multi-select-swabTypes-list"
                         aria-expanded="false"
                         aria-invalid="false"
                         aria-labelledby="label-for-5"
                         aria-owns="multi-select-swabTypes-list"
+                        aria-required="true"
                         autocapitalize="off"
                         autocomplete="off"
                         class="usa-combo-box__input"

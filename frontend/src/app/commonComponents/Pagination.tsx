@@ -6,6 +6,7 @@ import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import "./Pagination.scss";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { getNumberFromUrlPath } from "../utils/number";
 
 interface Props {
   baseRoute: string;
@@ -14,12 +15,13 @@ interface Props {
   currentPage: number;
   pageGroupSize?: number;
   className?: string;
+  onPaginationClick?: (pageNumber: number) => void;
 }
 
 // Rules:
 // * Always show first/last page (may be the same page!)
 // * Show current page and N pages on either side
-// * Use elipsis if gaps between group and first/last
+// * Use ellipsis if gaps between group and first/last
 //
 
 // Always make this odd, so current page is in the middle
@@ -32,6 +34,7 @@ const Pagination = ({
   totalEntries,
   pageGroupSize = defaultGroupSize,
   className,
+  onPaginationClick,
 }: Props) => {
   const totalPages = Math.ceil(totalEntries / entriesPerPage);
   const currentPage = Math.min(Math.max(+rawCurrentPage || 0, 1), totalPages);
@@ -55,15 +58,21 @@ const Pagination = ({
     active?: boolean;
     label?: string;
     children: React.ReactNode;
-  }) => (
-    <LinkWithQuery
-      to={`${baseRoute}/${props.to}`}
-      className={classnames(props.active && "is-active")}
-      aria-label={props.label}
-    >
-      {props.children}
-    </LinkWithQuery>
-  );
+  }) => {
+    let pageNumber = getNumberFromUrlPath(props.to);
+    return (
+      <LinkWithQuery
+        to={`${baseRoute}/${props.to}`}
+        className={classnames(props.active && "is-active")}
+        aria-label={props.label}
+        onClick={() =>
+          onPaginationClick && pageNumber ? onPaginationClick(pageNumber) : null
+        }
+      >
+        {props.children}
+      </LinkWithQuery>
+    );
+  };
 
   // Build list of pages, with 0 representing the ellipsis
   if (minGroupPage !== 1) {

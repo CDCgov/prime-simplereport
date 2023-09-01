@@ -56,8 +56,11 @@ describe("Patient self registration", () => {
     cy.get('input[name="city"]').type(patient.city);
     cy.get(".self-registration-button").first().click();
     cy.get(
-        '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
-    ).scrollIntoView().click();
+      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
+    ).scrollIntoView();
+    cy.get(
+      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
+    ).click();
 
     cy.checkAccessibility();
 

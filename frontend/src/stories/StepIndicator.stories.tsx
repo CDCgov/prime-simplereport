@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import StepIndicator from "../app/commonComponents/StepIndicator";
 
@@ -30,10 +30,10 @@ export default {
 
 type Props = React.ComponentProps<typeof StepIndicator>;
 
-const Template: Story<Props> = (args) => <StepIndicator {...args} />;
+const Template: StoryFn<Props> = (args) => <StepIndicator {...args} />;
 
-export const noLabels = Template.bind({});
-noLabels.args = {
+export const NoLabels = Template.bind({});
+NoLabels.args = {
   noLabels: true,
 };
 

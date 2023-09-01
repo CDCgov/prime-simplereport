@@ -64,9 +64,12 @@ class DeviceManagementTest extends BaseGraphqlTest {
   void getSpecimenTypes_adminUser_success() {
     useSuperUser();
     ArrayNode deviceRecords = (ArrayNode) runQuery("specimen-type-query").get("specimenTypes");
-    assertThat(deviceRecords.size()).isEqualTo(2);
+    assertThat(deviceRecords.size()).isEqualTo(5);
     assertThat(deviceRecords.get(0).get("name").asText()).isEqualTo("Swab of the Nose");
-    assertThat(deviceRecords.get(1).get("name").asText()).isEqualTo("Swab of the Ear");
+    assertThat(deviceRecords.get(1).get("name").asText()).isEqualTo("Whole blood");
+    assertThat(deviceRecords.get(2).get("name").asText()).isEqualTo("Venous blood specimen");
+    assertThat(deviceRecords.get(3).get("name").asText()).isEqualTo("Anterior nares swab");
+    assertThat(deviceRecords.get(4).get("name").asText()).isEqualTo("Swab of the Ear");
   }
 
   @Test

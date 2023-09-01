@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`SupportAdming loads menu categories 1`] = `
+exports[`SupportAdmin loads menu categories 1`] = `
 <div>
   <div
     class="prime-home flex-1"
@@ -17,13 +17,11 @@ exports[`SupportAdming loads menu categories 1`] = `
           <div
             class="usa-card__header"
           >
-            <div>
-              <h1
-                class="font-heading-lg margin-top-0 margin-bottom-0"
-              >
-                Support admin
-              </h1>
-            </div>
+            <h1
+              class="font-heading-lg margin-top-0 margin-bottom-0"
+            >
+              Support admin
+            </h1>
           </div>
           <div
             class="usa-card__body"
@@ -37,7 +35,7 @@ exports[`SupportAdming loads menu categories 1`] = `
                 <h2
                   class="font-heading-md margin-bottom-0 margin-top-2"
                 >
-                  Organization
+                  Organizations & facilities
                 </h2>
                 <ul
                   class="usa-list padding-left-2"
@@ -47,7 +45,7 @@ exports[`SupportAdming loads menu categories 1`] = `
                       class=""
                       href="/admin/pending-organizations"
                     >
-                      Identity verification
+                      Verify/edit organization identity
                     </a>
                   </li>
                   <li>
@@ -63,7 +61,23 @@ exports[`SupportAdming loads menu categories 1`] = `
                       class=""
                       href="/admin/tenant-data-access"
                     >
-                      Organization data
+                      Access organization account
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/escalate-to-engineering"
+                    >
+                      Escalate to engineering
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-facility"
+                    >
+                      Manage facility
                     </a>
                   </li>
                 </ul>
@@ -74,7 +88,7 @@ exports[`SupportAdming loads menu categories 1`] = `
                 <h2
                   class="font-heading-md margin-bottom-0 margin-top-2"
                 >
-                  Test Devices
+                  Devices
                 </h2>
                 <ul
                   class="usa-list padding-left-2"
@@ -84,7 +98,7 @@ exports[`SupportAdming loads menu categories 1`] = `
                       class=""
                       href="/admin/create-device-type"
                     >
-                      Add a new testing device
+                      Add new device
                     </a>
                   </li>
                   <li>
@@ -92,7 +106,36 @@ exports[`SupportAdming loads menu categories 1`] = `
                       class=""
                       href="/admin/manage-devices"
                     >
-                      Edit existing testing device
+                      Edit existing device
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div
+                class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+              >
+                <h2
+                  class="font-heading-md margin-bottom-0 margin-top-2"
+                >
+                  Users & patients
+                </h2>
+                <ul
+                  class="usa-list padding-left-2"
+                >
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-users"
+                    >
+                      Manage users
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/unarchive-patient"
+                    >
+                      Unarchive patient
                     </a>
                   </li>
                 </ul>
@@ -106,7 +149,7 @@ exports[`SupportAdming loads menu categories 1`] = `
 </div>
 `;
 
-exports[`SupportAdming loads menu categories including Beta 1`] = `
+exports[`SupportAdmin loads menu categories including Beta 1`] = `
 <div>
   <div
     class="prime-home flex-1"
@@ -123,13 +166,11 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
           <div
             class="usa-card__header"
           >
-            <div>
-              <h1
-                class="font-heading-lg margin-top-0 margin-bottom-0"
-              >
-                Support admin
-              </h1>
-            </div>
+            <h1
+              class="font-heading-lg margin-top-0 margin-bottom-0"
+            >
+              Support admin
+            </h1>
           </div>
           <div
             class="usa-card__body"
@@ -143,7 +184,7 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                 <h2
                   class="font-heading-md margin-bottom-0 margin-top-2"
                 >
-                  Organization
+                  Organizations & facilities
                 </h2>
                 <ul
                   class="usa-list padding-left-2"
@@ -153,7 +194,7 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                       class=""
                       href="/admin/pending-organizations"
                     >
-                      Identity verification
+                      Verify/edit organization identity
                     </a>
                   </li>
                   <li>
@@ -169,7 +210,23 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                       class=""
                       href="/admin/tenant-data-access"
                     >
-                      Organization data
+                      Access organization account
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/escalate-to-engineering"
+                    >
+                      Escalate to engineering
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-facility"
+                    >
+                      Manage facility
                     </a>
                   </li>
                 </ul>
@@ -180,7 +237,7 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                 <h2
                   class="font-heading-md margin-bottom-0 margin-top-2"
                 >
-                  Test Devices
+                  Devices
                 </h2>
                 <ul
                   class="usa-list padding-left-2"
@@ -190,7 +247,7 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                       class=""
                       href="/admin/create-device-type"
                     >
-                      Add a new testing device
+                      Add new device
                     </a>
                   </li>
                   <li>
@@ -198,7 +255,36 @@ exports[`SupportAdming loads menu categories including Beta 1`] = `
                       class=""
                       href="/admin/manage-devices"
                     >
-                      Edit existing testing device
+                      Edit existing device
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div
+                class="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1"
+              >
+                <h2
+                  class="font-heading-md margin-bottom-0 margin-top-2"
+                >
+                  Users & patients
+                </h2>
+                <ul
+                  class="usa-list padding-left-2"
+                >
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/manage-users"
+                    >
+                      Manage users
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      class=""
+                      href="/admin/unarchive-patient"
+                    >
+                      Unarchive patient
                     </a>
                   </li>
                 </ul>

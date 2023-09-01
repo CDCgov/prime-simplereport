@@ -1,0 +1,2803 @@
+{
+  "resourceType": "Bundle",
+  "identifier": {
+    "value": "42daf9c8-9deb-4636-a040-380bde2b44cd"
+  },
+  "type": "message",
+  "timestamp": "2023-05-24T19:33:06.472Z",
+  "entry": [
+    {
+      "fullUrl": "MessageHeader/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "MessageHeader",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0103",
+              "code": "P",
+              "display": "Production"
+            }
+          ]
+        },
+        "eventCoding": {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+          "code": "R01",
+          "display": "ORU/ACK - Unsolicited transmission of an observation message"
+        },
+        "destination": [
+          {
+            "name": "PRIME ReportStream",
+            "endpoint": "https://prime.cdc.gov/api/reports?option=SkipInvalidItems"
+          }
+        ],
+        "sender": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        },
+        "source": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id",
+              "valueString": "CommitID"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date",
+              "valueInstant": "2023-07-05T14:02:46Z"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
+              "valueReference": {
+                "reference": "Organization/07640c5d-87cd-488b-9343-a226c5166539"
+              }
+            }
+          ],
+          "software": "PRIME SimpleReport",
+          "version": "CommitID",
+          "endpoint": "https://simplereport.gov"
+        },
+        "focus": [
+          {
+            "reference": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          },
+          {
+            "reference": "DiagnosticReport/42daf9c8-9deb-4636-a040-380bde2b44cd"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Provenance",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "recorded": "2023-05-24T19:33:06.472Z",
+        "activity": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+              "code": "R01",
+              "display": "ORU/ACK - Unsolicited transmission of an observation message"
+            }
+          ]
+        },
+        "agent": [
+          {
+            "who": {
+              "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/42daf9c8-9deb-4636-a040-380bde2b44cd",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "42daf9c8-9deb-4636-a040-380bde2b44cd",
+        "identifier": [
+          {
+            "value": "42daf9c8-9deb-4636-a040-380bde2b44cd"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/1234"
+        },
+        "effectiveDateTime": "2023-07-10T08:51:00-04:00",
+        "issued": "2023-07-10T08:51:00-04:00",
+        "specimen": [
+          {
+            "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Patient/1234",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "1234",
+        "extension": [
+          {
+            "url": "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-Race",
+                  "code": "2106-3"
+                }
+              ],
+              "text": "white"
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0189",
+                  "code": "N",
+                  "display": "Not Hispanic or Latino"
+                }
+              ],
+              "text": "Not Hispanic or Latino"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "value": "1234"
+          }
+        ],
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "Jane"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 999 2800",
+            "use": "mobile"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1962-01-20",
+        "address": [
+          {
+            "line": [
+              "123 Main St"
+            ],
+            "city": "Birmingham",
+            "district": "Jefferson",
+            "state": "al",
+            "postalCode": "35226",
+            "country": "USA"
+          }
+        ],
+        "managingOrganization": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058442"
+          }
+        ],
+        "name": "My Urgent Care",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2000",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "400 Main Street"
+            ],
+            "city": "Birmingham",
+            "state": "al",
+            "postalCode": "35228",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Organization/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058442"
+          }
+        ],
+        "name": "My Care that is Urgent",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 555 2000",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "2 Second Street",
+              "Suite 2"
+            ],
+            "city": "Birmingham",
+            "state": "al",
+            "postalCode": "35228",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner/1013012657",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1013012657",
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1013012657"
+          }
+        ],
+        "name": [
+          {
+            "family": "Smith MD",
+            "given": [
+              "John"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2000",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "400 Main Street"
+            ],
+            "city": "Birmingham",
+            "state": "al",
+            "postalCode": "35228",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Specimen",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "value": "5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "445297001"
+            }
+          ],
+          "text": "Swab of the Nose"
+        },
+        "subject": {
+          "reference": "Patient/1234"
+        },
+        "receivedTime": "2023-07-10T08:51:00-04:00",
+        "collection": {
+          "collectedDateTime": "2023-07-10T08:51:00-04:00"
+        }
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "extension": [
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0119",
+                  "code": "RE"
+                }
+              ]
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime": "2023-07-10T08:51:00-04:00"
+          }
+        ],
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/1234"
+        },
+        "requester": {
+          "reference": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "supportingInfo": [
+          {
+            "reference": "Observation/087864a3-81d3-3d38-a4be-4bbb928f1f99"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Device",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "manufacturer": "Abbott",
+        "deviceName": [
+          {
+            "name": "ID NOW",
+            "type": "model-name"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "practitioner": {
+          "reference": "Practitioner/1013012657"
+        },
+        "organization": {
+          "reference": "Organization/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        }
+      }
+    },
+    {
+      "fullUrl": "Organization/07640c5d-87cd-488b-9343-a226c5166539",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "07640c5d-87cd-488b-9343-a226c5166539",
+        "name": "SimpleReport"
+      }
+    },
+    {
+      "fullUrl": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ],
+          "text": "COVID-19"
+        },
+        "subject": {
+          "reference": "Patient/1234"
+        },
+        "issued": "2023-07-10T12:51:00.000Z",
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260373001",
+              "display": "Detected"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "A",
+                "display": "Abnormal"
+              }
+            ]
+          }
+        ],
+        "method": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding": {
+                "code": "10811877011269"
+              }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "00811877010616"
+              }
+            }
+          ],
+          "coding": [
+            {
+              "display": "ID NOW"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "device": {
+          "reference": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/087864a3-81d3-3d38-a4be-4bbb928f1f99",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "087864a3-81d3-3d38-a4be-4bbb928f1f99",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95419-8",
+              "display": "Has symptoms related to condition of interest"
+            }
+          ],
+          "text": "Has symptoms related to condition of interest"
+        },
+        "subject": {
+          "reference": "Patient/1234"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
+              "code": "N",
+              "display": "No"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+{
+  "resourceType": "Bundle",
+  "identifier": {
+    "value": "05be96ef-949f-4f46-9c07-2675e8abf412"
+  },
+  "type": "message",
+  "timestamp": "2023-05-24T19:33:06.472Z",
+  "entry": [
+    {
+      "fullUrl": "MessageHeader/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "MessageHeader",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0103",
+              "code": "P",
+              "display": "Production"
+            }
+          ]
+        },
+        "eventCoding": {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+          "code": "R01",
+          "display": "ORU/ACK - Unsolicited transmission of an observation message"
+        },
+        "destination": [
+          {
+            "name": "PRIME ReportStream",
+            "endpoint": "https://prime.cdc.gov/api/reports?option=SkipInvalidItems"
+          }
+        ],
+        "sender": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        },
+        "source": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id",
+              "valueString": "CommitID"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date",
+              "valueInstant": "2023-07-05T14:02:46Z"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
+              "valueReference": {
+                "reference": "Organization/07640c5d-87cd-488b-9343-a226c5166539"
+              }
+            }
+          ],
+          "software": "PRIME SimpleReport",
+          "version": "CommitID",
+          "endpoint": "https://simplereport.gov"
+        },
+        "focus": [
+          {
+            "reference": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          },
+          {
+            "reference": "DiagnosticReport/05be96ef-949f-4f46-9c07-2675e8abf412"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Provenance",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "recorded": "2023-05-24T19:33:06.472Z",
+        "activity": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+              "code": "R01",
+              "display": "ORU/ACK - Unsolicited transmission of an observation message"
+            }
+          ]
+        },
+        "agent": [
+          {
+            "who": {
+              "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/05be96ef-949f-4f46-9c07-2675e8abf412",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "05be96ef-949f-4f46-9c07-2675e8abf412",
+        "identifier": [
+          {
+            "value": "05be96ef-949f-4f46-9c07-2675e8abf412"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/5678"
+        },
+        "effectiveDateTime": "2021-12-21T17:00:00-05:00",
+        "issued": "2021-12-21T17:00:00-05:00",
+        "specimen": [
+          {
+            "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Patient/5678",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "5678",
+        "extension": [
+          {
+            "url": "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-Race",
+                  "code": "2054-5"
+                }
+              ],
+              "text": "BLACK OR AFRICAN AMERICAN"
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0189",
+                  "code": "N",
+                  "display": "Not Hispanic or Latino"
+                }
+              ],
+              "text": "Not Hispanic or Latino"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "value": "5678"
+          }
+        ],
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "John"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 222 2000",
+            "use": "mobile"
+          },
+          {
+            "system": "email",
+            "value": "myemail@email.com",
+            "use": "home"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "2001-11-01",
+        "address": [
+          {
+            "line": [
+              "333 Elm St"
+            ],
+            "city": "Hoover",
+            "district": "Shelby",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ],
+        "managingOrganization": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058442"
+          }
+        ],
+        "name": "My Urgent Care",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2000",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "400 Main Street"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35228",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Organization/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058442"
+          }
+        ],
+        "name": "My Care that is Urgent",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 555 2000",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "2 Second Street",
+              "Suite 2"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35228",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner/1013012657",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1013012657",
+        "identifier": [
+          {
+            "system": "http://hl7.org/fhir/sid/us-npi",
+            "value": "1013012657"
+          }
+        ],
+        "name": [
+          {
+            "family": "Smith MD",
+            "given": [
+              "John"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2000",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "400 Main Street"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35228",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Specimen",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "value": "5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "697989009"
+            }
+          ],
+          "text": "Anterior nares swab"
+        },
+        "subject": {
+          "reference": "Patient/5678"
+        },
+        "receivedTime": "2021-12-21T17:00:00-05:00",
+        "collection": {
+          "collectedDateTime": "2021-12-21T17:00:00-05:00"
+        }
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "extension": [
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0119",
+                  "code": "RE"
+                }
+              ]
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime": "2021-12-21T17:00:00-05:00"
+          }
+        ],
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/5678"
+        },
+        "requester": {
+          "reference": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "supportingInfo": [
+          {
+            "reference": "Observation/f18ec91c-5c62-368e-a21d-1fba877391f2"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Device",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "manufacturer": "Abbott",
+        "deviceName": [
+          {
+            "name": "ID NOW",
+            "type": "model-name"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "practitioner": {
+          "reference": "Practitioner/1013012657"
+        },
+        "organization": {
+          "reference": "Organization/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        }
+      }
+    },
+    {
+      "fullUrl": "Organization/07640c5d-87cd-488b-9343-a226c5166539",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "07640c5d-87cd-488b-9343-a226c5166539",
+        "name": "SimpleReport"
+      }
+    },
+    {
+      "fullUrl": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ],
+          "text": "COVID-19"
+        },
+        "subject": {
+          "reference": "Patient/5678"
+        },
+        "issued": "2021-12-21T22:00:00.000Z",
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260415000",
+              "display": "Not detected"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "method": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding": {
+                "code": "10811877011269"
+              }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "00811877010616"
+              }
+            }
+          ],
+          "coding": [
+            {
+              "display": "ID NOW"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "device": {
+          "reference": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/f18ec91c-5c62-368e-a21d-1fba877391f2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "f18ec91c-5c62-368e-a21d-1fba877391f2",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95419-8",
+              "display": "Has symptoms related to condition of interest"
+            }
+          ],
+          "text": "Has symptoms related to condition of interest"
+        },
+        "subject": {
+          "reference": "Patient/5678"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
+              "code": "N",
+              "display": "No"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+{
+  "resourceType": "Bundle",
+  "identifier": {
+    "value": "b8af55d9-2032-457c-99c8-c6ae608f6131"
+  },
+  "type": "message",
+  "timestamp": "2023-05-24T19:33:06.472Z",
+  "entry": [
+    {
+      "fullUrl": "MessageHeader/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "MessageHeader",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0103",
+              "code": "P",
+              "display": "Production"
+            }
+          ]
+        },
+        "eventCoding": {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+          "code": "R01",
+          "display": "ORU/ACK - Unsolicited transmission of an observation message"
+        },
+        "destination": [
+          {
+            "name": "PRIME ReportStream",
+            "endpoint": "https://prime.cdc.gov/api/reports?option=SkipInvalidItems"
+          }
+        ],
+        "sender": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        },
+        "source": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id",
+              "valueString": "CommitID"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date",
+              "valueInstant": "2023-07-05T14:02:46Z"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
+              "valueReference": {
+                "reference": "Organization/07640c5d-87cd-488b-9343-a226c5166539"
+              }
+            }
+          ],
+          "software": "PRIME SimpleReport",
+          "version": "CommitID",
+          "endpoint": "https://simplereport.gov"
+        },
+        "focus": [
+          {
+            "reference": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          },
+          {
+            "reference": "DiagnosticReport/b8af55d9-2032-457c-99c8-c6ae608f6131"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Provenance",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "recorded": "2023-05-24T19:33:06.472Z",
+        "activity": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+              "code": "R01",
+              "display": "ORU/ACK - Unsolicited transmission of an observation message"
+            }
+          ]
+        },
+        "agent": [
+          {
+            "who": {
+              "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/b8af55d9-2032-457c-99c8-c6ae608f6131",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "b8af55d9-2032-457c-99c8-c6ae608f6131",
+        "identifier": [
+          {
+            "value": "b8af55d9-2032-457c-99c8-c6ae608f6131"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "status": "corrected",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/90123"
+        },
+        "effectiveDateTime": "2021-12-21T15:00:00-05:00",
+        "issued": "2021-12-21T15:00:00-05:00",
+        "specimen": [
+          {
+            "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Patient/90123",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "90123",
+        "extension": [
+          {
+            "url": "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                  "code": "UNK"
+                }
+              ],
+              "text": "unknown"
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0189",
+                  "code": "H",
+                  "display": "Hispanic or Latino"
+                }
+              ],
+              "text": "Hispanic or Latino"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "value": "90123"
+          }
+        ],
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "Bob"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 222 2200",
+            "use": "mobile"
+          }
+        ],
+        "gender": "male",
+        "birthDate": "1985-12-16",
+        "address": [
+          {
+            "line": [
+              "2700 Hwy 150"
+            ],
+            "city": "Hoover",
+            "district": "Jefferson",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ],
+        "managingOrganization": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058443"
+          }
+        ],
+        "name": "My Urgent Care-Hoover",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "800 Doctors Way"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Organization/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058443"
+          }
+        ],
+        "name": "My Ordering Facility",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 555 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "300 Nurse Ave"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner/1013012670",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1013012670",
+        "name": [
+          {
+            "family": "Jones MD",
+            "given": [
+              "Mary"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "800 Doctors Way"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Specimen",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "value": "5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "697989009"
+            }
+          ],
+          "text": "Anterior nares swab"
+        },
+        "subject": {
+          "reference": "Patient/90123"
+        },
+        "receivedTime": "2021-12-21T15:00:00-05:00",
+        "collection": {
+          "collectedDateTime": "2021-12-21T15:00:00-05:00"
+        }
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "extension": [
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0119",
+                  "code": "RE"
+                }
+              ]
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime": "2021-12-21T15:00:00-05:00"
+          }
+        ],
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/90123"
+        },
+        "requester": {
+          "reference": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "supportingInfo": [
+          {
+            "reference": "Observation/cd61a403-594e-3db4-a7e3-e5c3c2b142bf"
+          },
+          {
+            "reference": "Observation/680bbb1c-4431-38aa-b144-0c1b88a3fb70"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Device",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "manufacturer": "Abbott",
+        "deviceName": [
+          {
+            "name": "ID NOW",
+            "type": "model-name"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "practitioner": {
+          "reference": "Practitioner/1013012670"
+        },
+        "organization": {
+          "reference": "Organization/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        }
+      }
+    },
+    {
+      "fullUrl": "Organization/07640c5d-87cd-488b-9343-a226c5166539",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "07640c5d-87cd-488b-9343-a226c5166539",
+        "name": "SimpleReport"
+      }
+    },
+    {
+      "fullUrl": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "status": "corrected",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ],
+          "text": "COVID-19"
+        },
+        "subject": {
+          "reference": "Patient/90123"
+        },
+        "issued": "2021-12-21T20:00:00.000Z",
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "455371000124106",
+              "display": "Invalid result"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ],
+        "note": [
+          {
+            "text": "Corrected Result"
+          }
+        ],
+        "method": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding": {
+                "code": "10811877011269"
+              }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "00811877010616"
+              }
+            }
+          ],
+          "coding": [
+            {
+              "display": "ID NOW"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "device": {
+          "reference": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/cd61a403-594e-3db4-a7e3-e5c3c2b142bf",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "cd61a403-594e-3db4-a7e3-e5c3c2b142bf",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95419-8",
+              "display": "Has symptoms related to condition of interest"
+            }
+          ],
+          "text": "Has symptoms related to condition of interest"
+        },
+        "subject": {
+          "reference": "Patient/90123"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/ValueSet/v2-0136",
+              "code": "Y",
+              "display": "Yes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/680bbb1c-4431-38aa-b144-0c1b88a3fb70",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "680bbb1c-4431-38aa-b144-0c1b88a3fb70",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11368-8",
+              "display": "Illness or injury onset date and time"
+            }
+          ],
+          "text": "Illness or injury onset date and time"
+        },
+        "subject": {
+          "reference": "Patient/90123"
+        },
+        "valueDateTime": "2021-12-15"
+      }
+    }
+  ]
+}
+{
+  "resourceType": "Bundle",
+  "identifier": {
+    "value": "12200-A"
+  },
+  "type": "message",
+  "timestamp": "2023-05-24T19:33:06.472Z",
+  "entry": [
+    {
+      "fullUrl": "MessageHeader/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "MessageHeader",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0103",
+              "code": "P",
+              "display": "Production"
+            }
+          ]
+        },
+        "eventCoding": {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+          "code": "R01",
+          "display": "ORU/ACK - Unsolicited transmission of an observation message"
+        },
+        "destination": [
+          {
+            "name": "PRIME ReportStream",
+            "endpoint": "https://prime.cdc.gov/api/reports?option=SkipInvalidItems"
+          }
+        ],
+        "sender": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        },
+        "source": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id",
+              "valueString": "CommitID"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date",
+              "valueInstant": "2023-07-05T14:02:46Z"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
+              "valueReference": {
+                "reference": "Organization/07640c5d-87cd-488b-9343-a226c5166539"
+              }
+            }
+          ],
+          "software": "PRIME SimpleReport",
+          "version": "CommitID",
+          "endpoint": "https://simplereport.gov"
+        },
+        "focus": [
+          {
+            "reference": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          },
+          {
+            "reference": "DiagnosticReport/12200-A"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Provenance",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "recorded": "2023-05-24T19:33:06.472Z",
+        "activity": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+              "code": "R01",
+              "display": "ORU/ACK - Unsolicited transmission of an observation message"
+            }
+          ]
+        },
+        "agent": [
+          {
+            "who": {
+              "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/12200-A",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "12200-A",
+        "identifier": [
+          {
+            "value": "12200-A"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "effectiveDateTime": "2022-01-05T12:00:00-05:00",
+        "issued": "2022-01-05T12:00:00-05:00",
+        "specimen": [
+          {
+            "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Patient/P2300",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "P2300",
+        "extension": [
+          {
+            "url": "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-Race",
+                  "code": "2028-9"
+                }
+              ],
+              "text": "Asian"
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0189",
+                  "code": "N",
+                  "display": "Not Hispanic or Latino"
+                }
+              ],
+              "text": "Not Hispanic or Latino"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "value": "P2300"
+          }
+        ],
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "Rich"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 333 3300",
+            "use": "mobile"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1972-03-04",
+        "address": [
+          {
+            "line": [
+              "444 Hawkins Rd"
+            ],
+            "city": "Hoover",
+            "district": "Jefferson",
+            "state": "AL",
+            "postalCode": "35226",
+            "country": "USA"
+          }
+        ],
+        "managingOrganization": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058443"
+          }
+        ],
+        "name": "My Urgent Care-Hoover",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "800 Doctors Way"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Organization/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058443"
+          }
+        ],
+        "name": "My Ordering Facility",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 555 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "300 Nurse Ave"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner/1013012670",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1013012670",
+        "name": [
+          {
+            "family": "Jones MD",
+            "given": [
+              "Mary"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "800 Doctors Way"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Specimen",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "value": "5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "258580003"
+            }
+          ],
+          "text": "whole blood"
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "receivedTime": "2022-01-05T12:00:00-05:00",
+        "collection": {
+          "collectedDateTime": "2022-01-05T12:00:00-05:00"
+        }
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "extension": [
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0119",
+                  "code": "RE"
+                }
+              ]
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime": "2022-01-05T12:00:00-05:00"
+          }
+        ],
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "requester": {
+          "reference": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "supportingInfo": [
+          {
+            "reference": "Observation/0673e028-5a80-3adb-90b5-45977b2a19b3"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Device",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "manufacturer": "Abbott",
+        "deviceName": [
+          {
+            "name": "ID NOW",
+            "type": "model-name"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "practitioner": {
+          "reference": "Practitioner/1013012670"
+        },
+        "organization": {
+          "reference": "Organization/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        }
+      }
+    },
+    {
+      "fullUrl": "Organization/07640c5d-87cd-488b-9343-a226c5166539",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "07640c5d-87cd-488b-9343-a226c5166539",
+        "name": "SimpleReport"
+      }
+    },
+    {
+      "fullUrl": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ],
+          "text": "COVID-19"
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "issued": "2022-01-05T17:00:00.000Z",
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260373001",
+              "display": "Detected"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "A",
+                "display": "Abnormal"
+              }
+            ]
+          }
+        ],
+        "method": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding": {
+                "code": "10811877011269"
+              }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "00811877010616"
+              }
+            }
+          ],
+          "coding": [
+            {
+              "display": "ID NOW"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "device": {
+          "reference": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/0673e028-5a80-3adb-90b5-45977b2a19b3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "0673e028-5a80-3adb-90b5-45977b2a19b3",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95419-8",
+              "display": "Has symptoms related to condition of interest"
+            }
+          ],
+          "text": "Has symptoms related to condition of interest"
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+              "code": "UNK",
+              "display": "unknown"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
+{
+  "resourceType": "Bundle",
+  "identifier": {
+    "value": "12200-A"
+  },
+  "type": "message",
+  "timestamp": "2023-05-24T19:33:06.472Z",
+  "entry": [
+    {
+      "fullUrl": "MessageHeader/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "MessageHeader",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "meta": {
+          "tag": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0103",
+              "code": "P",
+              "display": "Production"
+            }
+          ]
+        },
+        "eventCoding": {
+          "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+          "code": "R01",
+          "display": "ORU/ACK - Unsolicited transmission of an observation message"
+        },
+        "destination": [
+          {
+            "name": "PRIME ReportStream",
+            "endpoint": "https://prime.cdc.gov/api/reports?option=SkipInvalidItems"
+          }
+        ],
+        "sender": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        },
+        "source": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-binary-id",
+              "valueString": "CommitID"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-install-date",
+              "valueInstant": "2023-07-05T14:02:46Z"
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/software-vendor-org",
+              "valueReference": {
+                "reference": "Organization/07640c5d-87cd-488b-9343-a226c5166539"
+              }
+            }
+          ],
+          "software": "PRIME SimpleReport",
+          "version": "CommitID",
+          "endpoint": "https://simplereport.gov"
+        },
+        "focus": [
+          {
+            "reference": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          },
+          {
+            "reference": "DiagnosticReport/12200-A"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Provenance/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Provenance",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "recorded": "2023-05-24T19:33:06.472Z",
+        "activity": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v2-0003",
+              "code": "R01",
+              "display": "ORU/ACK - Unsolicited transmission of an observation message"
+            }
+          ]
+        },
+        "agent": [
+          {
+            "who": {
+              "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/12200-A",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "12200-A",
+        "identifier": [
+          {
+            "value": "12200-A"
+          }
+        ],
+        "basedOn": [
+          {
+            "reference": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "effectiveDateTime": "2022-01-05T12:00:00-05:00",
+        "issued": "2022-01-05T12:00:00-05:00",
+        "specimen": [
+          {
+            "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "result": [
+          {
+            "reference": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Patient/P2300",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "P2300",
+        "extension": [
+          {
+            "url": "http://ibm.com/fhir/cdm/StructureDefinition/local-race-cd",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+                  "code": "2028-9"
+                }
+              ],
+              "text": "Asian"
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/ethnic-group",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0189",
+                  "code": "N",
+                  "display": "Not Hispanic or Latino"
+                }
+              ],
+              "text": "Not Hispanic or Latino"
+            }
+          }
+        ],
+        "identifier": [
+          {
+            "value": "P2300"
+          }
+        ],
+        "name": [
+          {
+            "family": "Doe",
+            "given": [
+              "Rich"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 333 3300",
+            "use": "mobile"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1972-03-04",
+        "address": [
+          {
+            "line": [
+              "444 Hawkins Rd"
+            ],
+            "city": "Hoover",
+            "district": "Jefferson",
+            "state": "AL",
+            "postalCode": "35226",
+            "country": "USA"
+          }
+        ],
+        "managingOrganization": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058443"
+          }
+        ],
+        "name": "My Urgent Care-Hoover",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "800 Doctors Way"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0301",
+                  "code": "CLIA"
+                }
+              ]
+            },
+            "value": "01D1058443"
+          }
+        ],
+        "name": "My Urgent Care-Hoover",
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "800 Doctors Way"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Practitioner/1013012670",
+      "resource": {
+        "resourceType": "Practitioner",
+        "id": "1013012670",
+        "name": [
+          {
+            "family": "Jones MD",
+            "given": [
+              "Mary"
+            ]
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "(205) 888 2300",
+            "use": "work"
+          }
+        ],
+        "address": [
+          {
+            "line": [
+              "800 Doctors Way"
+            ],
+            "city": "Birmingham",
+            "state": "AL",
+            "postalCode": "35244",
+            "country": "USA"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Specimen",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "identifier": [
+          {
+            "value": "5c5cc8fd-7001-4ac2-9340-541d065eca87"
+          }
+        ],
+        "type": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "258580003"
+            }
+          ],
+          "text": "Venous blood specimen"
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "receivedTime": "2022-01-05T12:00:00-05:00",
+        "collection": {
+          "collectedDateTime": "2022-01-05T12:00:00-05:00"
+        }
+      }
+    },
+    {
+      "fullUrl": "ServiceRequest/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "ServiceRequest",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "extension": [
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-control",
+            "valueCodeableConcept": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0119",
+                  "code": "RE"
+                }
+              ]
+            }
+          },
+          {
+            "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date",
+            "valueDateTime": "2022-01-05T12:00:00-05:00"
+          }
+        ],
+        "status": "completed",
+        "intent": "order",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "requester": {
+          "reference": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "supportingInfo": [
+          {
+            "reference": "Observation/0673e028-5a80-3adb-90b5-45977b2a19b3"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+      "resource": {
+        "resourceType": "Device",
+        "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "manufacturer": "Abbott",
+        "deviceName": [
+          {
+            "name": "ID NOW",
+            "type": "model-name"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "PractitionerRole/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "PractitionerRole",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "practitioner": {
+          "reference": "Practitioner/1013012670"
+        },
+        "organization": {
+          "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "Organization/07640c5d-87cd-488b-9343-a226c5166539",
+      "resource": {
+        "resourceType": "Organization",
+        "id": "07640c5d-87cd-488b-9343-a226c5166539",
+        "name": "SimpleReport"
+      }
+    },
+    {
+      "fullUrl": "Observation/5c5cc8fd-7001-4ac2-9340-541d065eca87",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "5c5cc8fd-7001-4ac2-9340-541d065eca87",
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "94534-5"
+            }
+          ],
+          "text": "COVID-19"
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "issued": "2022-01-05T17:00:00.000Z",
+        "performer": [
+          {
+            "reference": "${json-unit.regex}Organization/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+          }
+        ],
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "260373001",
+              "display": "Detected"
+            }
+          ]
+        },
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0078",
+                "code": "A",
+                "display": "Abnormal"
+              }
+            ]
+          }
+        ],
+        "method": {
+          "extension": [
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
+              "valueCoding": {
+                "code": "10811877011269"
+              }
+            },
+            {
+              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
+              "valueCoding": {
+                "code": "00811877010616"
+              }
+            }
+          ],
+          "coding": [
+            {
+              "display": "ID NOW"
+            }
+          ]
+        },
+        "specimen": {
+          "reference": "Specimen/5c5cc8fd-7001-4ac2-9340-541d065eca87"
+        },
+        "device": {
+          "reference": "${json-unit.regex}Device/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+        }
+      }
+    },
+    {
+      "fullUrl": "Observation/0673e028-5a80-3adb-90b5-45977b2a19b3",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "0673e028-5a80-3adb-90b5-45977b2a19b3",
+        "identifier": [
+          {
+            "use": "official",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "81959-9",
+                  "display": "Public health laboratory ask at order entry panel"
+                }
+              ]
+            }
+          }
+        ],
+        "status": "final",
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "95419-8",
+              "display": "Has symptoms related to condition of interest"
+            }
+          ],
+          "text": "Has symptoms related to condition of interest"
+        },
+        "subject": {
+          "reference": "Patient/P2300"
+        },
+        "valueCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+              "code": "UNK",
+              "display": "unknown"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

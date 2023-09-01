@@ -76,7 +76,12 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
           List<String> showArchivedResultIds = showArchivedResult.findValuesAsText("id");
           assertTrue(showArchivedResultIds.contains(validFacility.getInternalId().toString()));
           assertTrue(showArchivedResultIds.contains(archivedFacility.getInternalId().toString()));
-
+          showArchivedResult.forEach(
+              node -> {
+                if (node.findValue("name").asText().equals("archived facility")) {
+                  assertTrue(node.findValue("isDeleted").asBoolean());
+                }
+              });
           variables.put("showArchived", false);
           JsonNode noArchivedResult = runQuery("facilities-query", variables).get("facilities");
           List<String> noArchivedResultIds = noArchivedResult.findValuesAsText("id");
@@ -154,6 +159,25 @@ class OrganizationFacilityTest extends BaseGraphqlTest {
             .get("patientSelfRegistrationLink")
             .asText();
     assertEquals("inj3ct", facilityLink);
+  }
+
+  @Test
+  void getFacilityStats_success() {
+
+    TestUserIdentities.withUser(
+        TestUserIdentities.SITE_ADMIN_USER,
+        () -> {
+          useSuperUser();
+          Organization org = _orgService.getOrganizationWithExternalIdAsSiteAdmin("DIS_ORG");
+          Facility validFacility = _orgService.getFacilities(org).get(0);
+          Map<String, Object> variables = Map.of("facilityId", validFacility.getInternalId());
+
+          ObjectNode stats =
+              (ObjectNode) runQuery("facility-stats-query", variables).get("facilityStats");
+
+          assertEquals(1, stats.get("usersSingleAccessCount").asInt());
+          assertEquals(0, stats.get("patientsSingleAccessCount").asInt());
+        });
   }
 
   private HashMap<String, Object> getDeviceArgs() {

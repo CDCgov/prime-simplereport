@@ -1,3 +1,5 @@
+@use "../settings" as *;
+
 .usa-date-picker__calendar {
   @include u-border(1px);
   @include u-border("base-lighter");

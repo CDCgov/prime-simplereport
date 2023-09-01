@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { Meta, StoryFn } from "@storybook/react";
 import { ComponentProps } from "react";
 
 import { ManageSelfRegistrationLinks } from "./ManageSelfRegistrationLinks";
@@ -11,7 +11,7 @@ export default {
   },
 } as Meta;
 
-const Template: Story<ComponentProps<typeof ManageSelfRegistrationLinks>> = (
+const Template: StoryFn<ComponentProps<typeof ManageSelfRegistrationLinks>> = (
   args
 ) => <ManageSelfRegistrationLinks {...args} />;
 

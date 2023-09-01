@@ -146,6 +146,7 @@ Object {
                         aria-describedby="selectDevice--assistiveHint"
                         aria-expanded="false"
                         aria-owns="selectDevice--list"
+                        aria-required="true"
                         autocapitalize="off"
                         autocomplete="off"
                         class="usa-combo-box__input"
@@ -452,10 +453,12 @@ Object {
                         id="45"
                       >
                         <input
+                          aria-controls="multi-select-swabTypes-list"
                           aria-expanded="false"
                           aria-invalid="false"
                           aria-labelledby="label-for-45"
                           aria-owns="multi-select-swabTypes-list"
+                          aria-required="true"
                           autocapitalize="off"
                           autocomplete="off"
                           class="usa-combo-box__input"
@@ -910,6 +913,7 @@ Object {
                       aria-describedby="selectDevice--assistiveHint"
                       aria-expanded="false"
                       aria-owns="selectDevice--list"
+                      aria-required="true"
                       autocapitalize="off"
                       autocomplete="off"
                       class="usa-combo-box__input"
@@ -1216,10 +1220,12 @@ Object {
                       id="45"
                     >
                       <input
+                        aria-controls="multi-select-swabTypes-list"
                         aria-expanded="false"
                         aria-invalid="false"
                         aria-labelledby="label-for-45"
                         aria-owns="multi-select-swabTypes-list"
+                        aria-required="true"
                         autocapitalize="off"
                         autocomplete="off"
                         class="usa-combo-box__input"

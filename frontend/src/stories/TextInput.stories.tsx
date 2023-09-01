@@ -1,4 +1,4 @@
-import { Story, Meta } from "@storybook/react";
+import { StoryFn, Meta } from "@storybook/react";
 
 import { TextInput } from "../app/commonComponents/TextInput";
 
@@ -15,7 +15,7 @@ export default {
 
 type Props = React.ComponentProps<typeof TextInput>;
 
-const Template: Story<Props> = (args) => <TextInput {...args} />;
+const Template: StoryFn<Props> = (args) => <TextInput {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {};
