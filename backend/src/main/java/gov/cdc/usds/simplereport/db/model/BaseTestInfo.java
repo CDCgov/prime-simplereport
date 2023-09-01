@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
@@ -35,12 +34,6 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "specimen_type_id")
   private SpecimenType specimenType;
-
-  @Deprecated
-  @Column(nullable = true, columnDefinition = "TEST_RESULT")
-  @Type(PostgreSQLEnumType.class)
-  @Enumerated(EnumType.STRING)
-  private TestResult result;
 
   @Column private Date dateTestedBackdate;
 
