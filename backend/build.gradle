@@ -72,6 +72,9 @@ dependencies {
     implementation 'com.okta.spring:okta-spring-boot-starter:3.0.4'
     implementation 'com.okta.sdk:okta-sdk-api:12.0.2'
     runtimeOnly 'com.okta.sdk:okta-sdk-impl:12.0.2'
+    // Spring dependency management pulls 5.1.4, but okta 12.0.2 requires 5.2+ for the new
+    // This can be removed in the springboot 3 upgrade
+    implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 
     // SpringSession dependencies
     runtimeOnly 'org.springframework.session:spring-session-jdbc'
