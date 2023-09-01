@@ -76,6 +76,9 @@ describe("Conducting a COVID test", () => {
     // then it won't trigger a network call
     cy.wait("@GetFacilityQueue", {timeout: 20000});
 
+    // Wait for the FacilityQueue results to populate
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(100);
     cy.get(queueCard).within(() => {
       cy.contains('label', 'Negative (-)').click();
     });
