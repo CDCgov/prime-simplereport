@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useDocumentTitle } from "../../utils/hooks";
 import {
@@ -11,8 +11,8 @@ import {
   useSetUserIsDeletedMutation,
   useUpdateUserNameMutation,
   useUndeleteUserMutation,
+  User,
 } from "../../../generated/graphql";
-import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import { showSuccess } from "../../utils/srToast";
 import { isUserActive } from "../../Settings/Users/UserDetailUtils";
 import { displayFullName } from "../../utils";
@@ -20,6 +20,7 @@ import { OktaUserStatus } from "../../utils/user";
 import UserInfoTab from "../../Settings/Users/UserInfoTab";
 import UserHeading from "../../commonComponents/UserDetails/UserHeading";
 
+import UserAccessTab from "./UserAccessTab";
 import { UserSearch } from "./UserSearch";
 
 const userNotFoundError = (
@@ -44,13 +45,18 @@ const genericError = (
     Please try again or contact the SimpleReport team for help.
   </div>
 );
+
 export const AdminManageUser: React.FC = () => {
   useDocumentTitle("Manage Users");
-  const [searchEmail, setSearchEmail] = useState<string>("");
-  const [foundUser, setFoundUser] = useState<SettingsUser>();
+  //ToDo Remove this
+  const [searchEmail, setSearchEmail] = useState<string>("sarah@example.com");
+  useEffect(() => {
+    retrieveUser();
+  }, []);
+  const [foundUser, setFoundUser] = useState<User>();
   const [displayedError, setDisplayedError] = useState<JSX.Element>();
   const [navItemSelected, setNavItemSelected] = useState<
-    "User information" | "Organization access"
+    "User information" | "User access"
   >("User information");
   const [getUserByEmail] = useFindUserByEmailLazyQuery({
     fetchPolicy: "no-cache",
@@ -66,6 +72,9 @@ export const AdminManageUser: React.FC = () => {
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
   const [undeleteUser] = useUndeleteUserMutation();
 
+  /**
+   * Handlers
+   */
   const handleUpdate = async (func: () => Promise<void>) => {
     setIsUpdating(true);
     try {
@@ -97,7 +106,7 @@ export const AdminManageUser: React.FC = () => {
         middleName,
         lastName,
         suffix,
-      } as SettingsUser);
+      } as User);
       const fullName = displayFullName(firstName, "", lastName);
       showSuccess("", `User name changed to ${fullName}`);
     });
@@ -114,7 +123,7 @@ export const AdminManageUser: React.FC = () => {
       setFoundUser({
         ...foundUser,
         email: emailAddress,
-      } as SettingsUser);
+      } as User);
     });
   };
   const handleResetUserPassword = async (userId: string) => {
@@ -165,7 +174,7 @@ export const AdminManageUser: React.FC = () => {
         ...foundUser,
         isDeleted: true,
         status: OktaUserStatus.SUSPENDED,
-      } as SettingsUser);
+      } as User);
       showSuccess("", `User account removed for ${fullName}`);
     });
   };
@@ -184,7 +193,7 @@ export const AdminManageUser: React.FC = () => {
       setFoundUser({
         ...foundUser,
         status: OktaUserStatus.ACTIVE,
-      } as SettingsUser);
+      } as User);
       showSuccess("", `${fullName} has been reactivated.`);
     });
   };
@@ -239,7 +248,7 @@ export const AdminManageUser: React.FC = () => {
           setFoundUser(undefined);
         } else {
           setDisplayedError(undefined);
-          setFoundUser(data?.user as SettingsUser);
+          setFoundUser(data?.user as User);
         }
       }
     );
@@ -254,6 +263,15 @@ export const AdminManageUser: React.FC = () => {
     setFoundUser(undefined);
   };
 
+  /**
+   * Tab content
+   */
+
+  const tabs: (typeof navItemSelected)[] = ["User information", "User access"];
+
+  /**
+   * HTML
+   */
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -278,11 +296,7 @@ export const AdminManageUser: React.FC = () => {
             aria-live={"polite"}
           >
             <div className="usa-card__body">
-              <div
-                role="tabpanel"
-                aria-labelledby={"user-tab-" + foundUser?.id}
-                className="tablet:grid-col padding-left-3 user-detail-column"
-              >
+              <div className="tablet:grid-col padding-left-3 user-detail-column">
                 <UserHeading
                   user={foundUser}
                   isUpdating={isUpdating}
@@ -292,51 +306,31 @@ export const AdminManageUser: React.FC = () => {
                 />
                 <nav
                   className="prime-secondary-nav margin-top-4 padding-bottom-0"
-                  aria-label="User action navigation"
+                  aria-label="Manage user navigation"
                 >
                   <div
                     role="tablist"
                     aria-owns={`user-information-tab-id facility-access-tab-id`}
                     className="usa-nav__secondary-links prime-nav usa-list"
                   >
-                    <div
-                      className={`usa-nav__secondary-item ${
-                        navItemSelected === "User information"
-                          ? "usa-current"
-                          : ""
-                      }`}
-                    >
-                      <button
-                        id={`user-information-tab-id`}
-                        role="tab"
-                        className="usa-button--unstyled text-ink text-no-underline"
-                        onClick={() => setNavItemSelected("User information")}
-                        aria-selected={navItemSelected === "User information"}
+                    {tabs.map((tabLabel) => (
+                      <div
+                        key={tabLabel}
+                        className={`usa-nav__secondary-item ${
+                          navItemSelected === tabLabel ? "usa-current" : ""
+                        }`}
                       >
-                        User information
-                      </button>
-                    </div>
-                    <div
-                      className={`usa-nav__secondary-item ${
-                        navItemSelected === "Organization access"
-                          ? "usa-current"
-                          : ""
-                      }`}
-                    >
-                      <button
-                        id={`organization-access-tab-id`}
-                        role="tab"
-                        className="usa-button--unstyled text-ink text-no-underline"
-                        onClick={() =>
-                          setNavItemSelected("Organization access")
-                        }
-                        aria-selected={
-                          navItemSelected === "Organization access"
-                        }
-                      >
-                        Organization access
-                      </button>
-                    </div>
+                        <button
+                          id={`user-information-tab-id`}
+                          role="tab"
+                          className="usa-button--unstyled text-ink text-no-underline cursor-pointer"
+                          onClick={() => setNavItemSelected(tabLabel)}
+                          aria-selected={navItemSelected === tabLabel}
+                        >
+                          {tabLabel}
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </nav>
                 {navItemSelected === "User information" ? (
@@ -351,7 +345,7 @@ export const AdminManageUser: React.FC = () => {
                     onDeleteUser={handleDeleteUser}
                   />
                 ) : (
-                  <div></div>
+                  <UserAccessTab user={foundUser} isUpdating={false} />
                 )}
               </div>
             </div>

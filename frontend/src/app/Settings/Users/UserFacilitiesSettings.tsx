@@ -1,31 +1,32 @@
 import React from "react";
-import { FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
+import { UseFormRegister, UseFormSetValue } from "react-hook-form";
+import { FieldError } from "react-hook-form/dist/types/errors";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
-import Required from "../../commonComponents/Required";
 
 import { UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
-import { CreateUser } from "./CreateUserSchema";
 import { alphabeticalFacilitySort } from "./UserFacilitiesSettingsForm";
 
 interface UserFacilitiesSettingProps {
-  formValues: CreateUser;
+  roleSelected: string;
   allFacilities: UserFacilitySetting[];
-  register: UseFormRegister<CreateUser>;
-  errors: FieldErrors<CreateUser>;
-  setValue: UseFormSetValue<CreateUser>;
+  register: UseFormRegister<any>;
+  error?: FieldError; // ToDo change this to something more specific
+  setValue: UseFormSetValue<any>;
+  disabled?: boolean;
 }
 
 // This is the react-hook-form supported version of UserFacilitiesSettingsForm.
 const UserFacilitiesSettings: React.FC<UserFacilitiesSettingProps> = ({
-  formValues,
+  roleSelected,
   allFacilities,
   register,
-  errors,
+  error,
   setValue,
+  disabled,
 }) => {
-  const isAdmin = formValues.role === "ADMIN";
+  const isAdmin = roleSelected === "ADMIN";
   const facilityAccessDescription = isAdmin
     ? "Admins have access to all facilities"
     : "All users must have access to at least one facility";
@@ -63,23 +64,17 @@ const UserFacilitiesSettings: React.FC<UserFacilitiesSettingProps> = ({
   ];
 
   return (
-    <>
-      <h4 className="testing-facility-access-subheader margin-bottom-0">
-        <Required label={"Testing facility access"} />
-      </h4>
-      <p className="testing-facility-access-subtext">
-        {facilityAccessDescription}
-      </p>
-      <Checkboxes
-        boxes={boxes}
-        legend="Facilities"
-        legendSrOnly
-        name="facilities"
-        onChange={onChange}
-        validationStatus={errors?.facilityIds?.type ? "error" : undefined}
-        errorMessage={errors?.facilityIds?.message}
-      />
-    </>
+    <Checkboxes
+      boxes={boxes}
+      legend="Facilities access"
+      hintText={facilityAccessDescription}
+      name="facilities"
+      required
+      onChange={onChange}
+      validationStatus={error?.type ? "error" : undefined}
+      errorMessage={error?.message}
+      disabled={disabled}
+    />
   );
 };
 

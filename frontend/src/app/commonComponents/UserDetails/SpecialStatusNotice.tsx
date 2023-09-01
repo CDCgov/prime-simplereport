@@ -3,13 +3,14 @@ import React, { ReactNode, useState } from "react";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import { OktaUserStatus } from "../../utils/user";
 import Button from "../Button/Button";
+import { User } from "../../../generated/graphql";
 
 import ReactivateUserModal from "./ReactivateUserModal";
 import ResendActivationEmailModal from "./ResendActivationEmailModal";
 import UndeleteUserModal from "./UndeleteUserModal";
 
 export const SpecialStatusNotice: React.FC<{
-  user: SettingsUser;
+  user: SettingsUser | User;
   isUpdating: boolean;
   onResendUserActivationEmail: (userId: string) => void;
   onReactivateUser: (userId: string) => void;

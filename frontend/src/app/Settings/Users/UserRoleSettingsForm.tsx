@@ -12,7 +12,7 @@ interface RoleButton {
   labelDescription: string;
 }
 
-const ROLES: RoleButton[] = [
+export const ROLES: RoleButton[] = [
   {
     value: "ADMIN",
     label: "Admin",

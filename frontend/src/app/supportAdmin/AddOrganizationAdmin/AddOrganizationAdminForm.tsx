@@ -57,7 +57,7 @@ const AddOrganizationAdminForm = ({
     },
   });
   const formCurrentValues = watch();
-
+  console.log("form data:", formCurrentValues);
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
