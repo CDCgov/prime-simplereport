@@ -206,6 +206,7 @@ const DeviceForm = (props: Props) => {
                       <Required label={"Select device"} />
                     </label>
                     <ComboBox
+                      inputProps={{ "aria-required": "true" }}
                       className="usa-combo-box__full-width"
                       id="selectDevice"
                       name="selectDevice"
