@@ -31,7 +31,7 @@ public class DiseaseService {
     public static final String RSV_NAME = "RSV";
 
     private final SupportedDiseaseRepository _supportedDiseaseRepo;
-    
+
     public void initDiseases() {
         getKnownSupportedDiseasesMap();
     }
@@ -55,4 +55,19 @@ public class DiseaseService {
         return getDiseaseNameToSupportedDiseaseMap().get(name);
     }
 
+    public SupportedDisease covid() {
+        return getDiseaseByName("COVID-19");
+    }
+
+    public SupportedDisease fluA() {
+        return getDiseaseByName("Flu A");
+    }
+
+    public SupportedDisease fluB() {
+        return getDiseaseByName("Flu B");
+    }
+
+    public SupportedDisease rsv() {
+        return getDiseaseByName("RSV");
+    }
 }

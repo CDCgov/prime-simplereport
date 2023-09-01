@@ -355,11 +355,11 @@ public class DeviceTypeSyncService {
         String input = vendorAnalyte.toLowerCase();
 
         if (COVID_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
-            return Optional.of(diseaseService.getDiseaseByName("covid"));
+            return Optional.of(diseaseService.covid());
         } else if (FLU_A_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
-            return Optional.of(diseaseService.getDiseaseByName("fluA"));
+            return Optional.of(diseaseService.fluA());
         } else if (FLU_B_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
-            return Optional.of(diseaseService.getDiseaseByName("fluB"));
+            return Optional.of(diseaseService.fluB());
         } else {
             return Optional.empty();
         }
