@@ -12,7 +12,7 @@ interface UserFacilitiesSettingProps {
   roleSelected: string;
   allFacilities: UserFacilitySetting[];
   register: UseFormRegister<any>;
-  error?: FieldError; // ToDo change this to something more specific
+  error?: FieldError;
   setValue: UseFormSetValue<any>;
   disabled?: boolean;
 }
