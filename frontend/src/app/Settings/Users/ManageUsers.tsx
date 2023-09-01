@@ -123,13 +123,15 @@ const ManageUsers: React.FC<Props> = ({
   );
 
   const [queryUserWithPermissions] = useGetUserLazyQuery({
-    variables: { id: activeUser ? activeUser.id : loggedInUser.id },
+    variables: { id: activeUser?.id },
     fetchPolicy: "no-cache",
     onCompleted: (data) => updateUserWithPermissions(data.user),
   });
 
   useEffect(() => {
-    queryUserWithPermissions();
+    if (activeUser) {
+      queryUserWithPermissions();
+    }
   }, [activeUser, queryUserWithPermissions]);
 
   // only updates the local state
