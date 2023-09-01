@@ -8,6 +8,7 @@ export interface ModalProps {
   organization: PendingOrganization;
   handleClose: () => void;
   isUpdating: boolean;
+  isLoading: boolean;
 }
 
 export interface VerficationModalProps extends ModalProps {
@@ -21,8 +22,3 @@ export interface VerficationModalProps extends ModalProps {
 export interface DeletionModalProps extends ModalProps {
   handleDelete: (organization: PendingOrganization) => Promise<void>;
 }
-
-export type PendingOrganizationErrors = Record<
-  keyof PendingOrganizationFormValues,
-  string
->;

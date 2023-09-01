@@ -16,7 +16,7 @@ import {
   EditOrgMutationResponse,
 } from "./utils";
 import "./PendingOrganizationsList.scss";
-import ConfirmOrgVerificationModal from "./modals/ConfirmOrgVerificationModal";
+import PendingOrganizationDetailsModal from "./modals/PendingOrganizationDetailsModal";
 import ConfirmDeleteOrgModal from "./modals/ConfirmDeleteOrgModal";
 
 interface Props {
@@ -221,13 +221,14 @@ const PendingOrganizations = ({
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
             {orgToVerify ? (
-              <ConfirmOrgVerificationModal
+              <PendingOrganizationDetailsModal
                 organization={orgToVerify}
                 handleVerify={handleConfirmOrg}
                 handleUpdate={handleUpdateOrg}
                 handleClose={handleClose}
                 isUpdating={isUpdating}
                 isVerifying={verifyInProgress}
+                isLoading={loading}
               />
             ) : null}
             {orgToDelete ? (
@@ -236,6 +237,7 @@ const PendingOrganizations = ({
                 handleClose={handleClose}
                 handleDelete={handleDeletionOrg}
                 isUpdating={isUpdating}
+                isLoading={loading}
               />
             ) : null}
             <div className="usa-card__header">

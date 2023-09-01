@@ -9,8 +9,10 @@ import {
 import PendingOrganizations from "./PendingOrganizations";
 
 const PendingOrganizationsContainer = () => {
-  const [verifyIdentity] = useSetOrgIdentityVerifiedMutation();
-  const [deletePendingOrg] = useMarkPendingOrganizationAsDeletedMutation();
+  const [verifyIdentity, { loading: verifyIdentityLoading }] =
+    useSetOrgIdentityVerifiedMutation();
+  const [deletePendingOrg, { loading: deletePendingOrgLoading }] =
+    useMarkPendingOrganizationAsDeletedMutation();
 
   const { data, refetch, loading, error } = useGetPendingOrganizationsQuery();
   if (error) {
@@ -65,7 +67,7 @@ const PendingOrganizationsContainer = () => {
       organizations={data?.pendingOrganizations || []}
       submitIdentityVerified={submitIdentityVerified}
       submitDeletion={submitDeletion}
-      loading={loading}
+      loading={loading || deletePendingOrgLoading || verifyIdentityLoading}
       refetch={refetch}
     />
   );

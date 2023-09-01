@@ -11,6 +11,7 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
   handleClose,
   handleDelete,
   isUpdating,
+  isLoading,
 }) => {
   const adminName =
     organization.adminFirstName + " " + organization.adminLastName;
@@ -65,13 +66,14 @@ const ConfirmDeleteOrgModal: React.FC<DeletionModalProps> = ({
               onClick={handleClose}
               variant="unstyled"
               label="No, go back"
+              disabled={isUpdating || isLoading}
             />
             <Button
               className="margin-right-2"
               onClick={() => handleDelete(organization)}
               id="confirm-deletion-button"
               label={isUpdating ? "Deleting..." : "Delete"}
-              disabled={isUpdating}
+              disabled={isUpdating || isLoading}
             />
           </div>
         </div>
