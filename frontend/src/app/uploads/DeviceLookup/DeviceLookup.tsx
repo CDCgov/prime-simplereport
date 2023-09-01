@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./DeviceLookup.scss";
 import { uniq } from "lodash";
 
@@ -15,11 +9,11 @@ import {
   SEARCH_DEBOUNCE_TIME,
 } from "../../testQueue/constants";
 import { DeviceType } from "../../../generated/graphql";
-import { useOutsideClick } from "../../utils/hooks";
 import iconSprite from "../../../../node_modules/@uswds/uswds/dist/img/sprite.svg";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { SearchableDevice, searchFields } from "../../utils/device";
+import useComponentVisible from "../../commonComponents/ComponentVisible";
 
 import DeviceSearchResults from "./DeviceSearchResults";
 import DeviceDetails from "./DeviceDetails";
@@ -56,19 +50,17 @@ const DeviceLookup = (props: Props) => {
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
   const [selectedDevice, setSelectedDevice] = useState<DeviceType | null>(null);
-  const [showSuggestion, setShowSuggestion] = useState(true);
+  const {
+    ref: dropDownRef,
+    isComponentVisible: showSuggestion,
+    setIsComponentVisible: setShowSuggestion,
+  } = useComponentVisible(true);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
   const showDropdown = useMemo(
     () => allowQuery && showSuggestion,
     [allowQuery, showSuggestion]
   );
-  const dropDownRef = useRef(null);
-  const hideOnOutsideClick = useCallback(() => {
-    setShowSuggestion(false);
-  }, []);
-
-  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   const onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     // Search field is cleared out via cancel icon
@@ -88,7 +80,7 @@ const DeviceLookup = (props: Props) => {
   // Close dropdown menu when a device is selected
   useEffect(() => {
     setShowSuggestion(false);
-  }, [selectedDevice]);
+  }, [selectedDevice, setShowSuggestion]);
 
   return (
     <div className="device-lookup-container prime-container card-container">

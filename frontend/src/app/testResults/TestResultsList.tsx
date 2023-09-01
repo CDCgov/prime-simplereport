@@ -2,14 +2,7 @@ import qs from "querystring";
 
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
-import React, {
-  ChangeEventHandler,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { ChangeEventHandler, useEffect, useMemo, useState } from "react";
 import moment from "moment";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { Label } from "@trussworks/react-uswds";
@@ -17,7 +10,7 @@ import { Label } from "@trussworks/react-uswds";
 import { displayFullName, facilityDisplayName } from "../utils";
 import { isValidDate } from "../utils/date";
 import { getParameterFromUrl } from "../utils/url";
-import { useDocumentTitle, useOutsideClick } from "../utils/hooks";
+import { useDocumentTitle } from "../utils/hooks";
 import { useAppSelector } from "../store";
 import Pagination from "../commonComponents/Pagination";
 import {
@@ -51,6 +44,7 @@ import {
   useGetFacilityResultsMultiplexWithCountQuery,
 } from "../../generated/graphql";
 import { waitForElement } from "../utils/elements";
+import useComponentVisible from "../commonComponents/ComponentVisible";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultTextModal from "./TestResultTextModal";
@@ -185,17 +179,19 @@ export const DetachedTestResultsList = ({
   const [emailModalTestResultId, setEmailModalTestResultId] = useState<
     Maybe<string> | undefined
   >();
-  const [showSuggestion, setShowSuggestion] = useState(true);
   const [startDateError, setStartDateError] = useState<string | undefined>();
   const [endDateError, setEndDateError] = useState<string | undefined>();
   const [startDate, setStartDate] = useState<string | null>("0");
   const [endDate, setEndDate] = useState<string | null>("0");
-
+  const {
+    ref: dropDownRef,
+    isComponentVisible: showSuggestion,
+    setIsComponentVisible: setShowSuggestion,
+  } = useComponentVisible(true);
   const [queryString, debounced, setDebounced] = useDebounce("", {
     debounceTime: SEARCH_DEBOUNCE_TIME,
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
-
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const isOrgAdmin = hasPermission(
@@ -251,7 +247,7 @@ export const DetachedTestResultsList = ({
         setShowSuggestion(false);
       }
     }
-  }, [filterParams, data, setDebounced]);
+  }, [filterParams, data, setDebounced, setShowSuggestion]);
 
   useDebouncedEffect(
     () => {
@@ -290,16 +286,10 @@ export const DetachedTestResultsList = ({
     setShowSuggestion(false);
   };
 
-  const dropDownRef = useRef(null);
   const showDropdown = useMemo(
     () => allowQuery && showSuggestion,
     [allowQuery, showSuggestion]
   );
-  const hideOnOutsideClick = useCallback(() => {
-    setShowSuggestion(false);
-  }, []);
-
-  useOutsideClick(dropDownRef, hideOnOutsideClick);
 
   if (printModalId) {
     return (
