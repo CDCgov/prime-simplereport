@@ -105,9 +105,10 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({ user }) => {
   const [updateUserPrivilegesAndGroupAccess, { loading: updatingPrivileges }] =
     useUpdateUserPrivilegesAndGroupAccessMutation();
   const onSubmit = async (userAccessData: UserAccessFormData) => {
-    const allFacilityAccess = !!userAccessData.facilityIds.find(
-      (id) => id === "ALL_FACILITIES"
-    );
+    console.log(userAccessData);
+    const allFacilityAccess =
+      userAccessData.role === "ADMIN" ||
+      !!userAccessData.facilityIds.find((id) => id === "ALL_FACILITIES");
 
     await updateUserPrivilegesAndGroupAccess({
       variables: {
@@ -115,7 +116,7 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({ user }) => {
         role: userAccessData.role as MutationRole,
         orgExternalId: facilitiesResponse?.organization?.externalId || "",
         accessAllFacilities: allFacilityAccess,
-        facilities: userAccessData.facilityIds.filter(
+        facilities: userAccessData.facilityIds?.filter(
           (id) => id !== "ALL_FACILITIES"
         ),
       },
