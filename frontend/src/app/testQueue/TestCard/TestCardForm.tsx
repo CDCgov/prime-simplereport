@@ -1,20 +1,12 @@
 import moment from "moment";
 import { Alert, Button } from "@trussworks/react-uswds";
-import React, { useMemo, useReducer, useState } from "react";
+import React, { useMemo, useReducer } from "react";
 
 import TextInput from "../../commonComponents/TextInput";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
-import RadioGroup from "../../commonComponents/RadioGroup";
-import {
-  getPregnancyResponses,
-  globalSymptomDefinitions,
-  SymptomCode,
-} from "../../../patientApp/timeOfTest/constants";
-import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
-import Checkboxes from "../../commonComponents/Checkboxes";
 import { MULTIPLEX_DISEASES } from "../../testResults/constants";
 
 import {
@@ -24,6 +16,7 @@ import {
 } from "./TestCardFormReducer";
 import CovidResultInputGroup from "./CovidResultInputGroup";
 import MultiplexResultInputGroup from "./MultiplexResultInputGroup";
+import CovidAoEForm from "./AoE/CovidAoEForm";
 
 export interface TestFormProps {
   testOrder: QueriedTestOrder;
@@ -46,8 +39,6 @@ function alphabetizeByName(
   return 0;
 }
 
-const pregnancyResponses = getPregnancyResponses();
-
 const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
   const initialFormState: TestFormState = {
     dirty: false,
@@ -55,11 +46,10 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
     deviceId: testOrder.deviceType.internalId ?? "",
     specimenId: testOrder.specimenType.internalId ?? "",
     testResults: testOrder.results,
-    questions: { symptoms: {} },
+    covidAoeQuestions: { symptoms: {} },
     errors: { dateTested: "", deviceId: "", specimenId: "" },
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
-  const [hasAnySymptoms, setHasAnySymptoms] = useState<YesNoUnknown>();
 
   let deviceTypeOptions = useMemo(
     () =>
@@ -244,69 +234,19 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
           />
         )}
       </div>
-      <div className="grid-row">
-        <div className="grid-col-auto">
-          <RadioGroup
-            legend="Is the patient pregnant?"
-            name="pregnancy"
-            onChange={(pregnancyCode) =>
-              dispatch({
-                type: TestFormActionCase.UPDATE_PREGNANCY,
-                payload: pregnancyCode,
-              })
-            }
-            buttons={pregnancyResponses}
-            selectedRadio={state.questions.pregnancy}
-          />
-        </div>
-      </div>
-      <div className="grid-row">
-        <div className="grid-col-auto">
-          <YesNoRadioGroup
-            name={`has-any-symptoms-${testOrder.internalId}`}
-            legend="Is the patient currently experiencing any symptoms?"
-            value={hasAnySymptoms}
-            onChange={(e) => setHasAnySymptoms(e)}
-          />
-        </div>
-      </div>
-      {hasAnySymptoms === "YES" && (
-        <>
-          <div className="grid-row grid-gap">
-            <TextInput
-              id={`symptom-onset-date-${testOrder.patient.internalId}`}
-              data-testid="symptom-date"
-              name="symptom-date"
-              type="date"
-              label="When did the patient's symptoms start?"
-              aria-label="Symptom onset date"
-              min={formatDate(new Date("Jan 1, 2020"))}
-              max={formatDate(moment().toDate())}
-              value={formatDate(
-                moment(state.questions.symptomOnsetDate).toDate()
-              )}
-              onChange={(e) =>
-                dispatch({
-                  type: TestFormActionCase.UPDATE_SYMPTOM_ONSET_DATE,
-                  payload: e.target.value,
-                })
-              }
-            ></TextInput>
-          </div>
-          <div className="grid-row grid-gap">
-            <Checkboxes
-              boxes={globalSymptomDefinitions}
-              legend="Select any symptoms the patient is experiencing"
-              name={`symptoms-${testOrder.internalId}`}
-              onChange={(e) =>
-                dispatch({
-                  type: TestFormActionCase.TOGGLE_SYMPTOM,
-                  payload: e.target.value as SymptomCode,
-                })
-              }
-            />
-          </div>
-        </>
+      {deviceSupportsMultiplex ? (
+        <></>
+      ) : (
+        <CovidAoEForm
+          testOrder={testOrder}
+          responses={state.covidAoeQuestions}
+          onResponseChange={(responses) => {
+            dispatch({
+              type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
+              payload: responses,
+            });
+          }}
+        />
       )}
       <div className="grid-row margin-top-4">
         <div className="grid-col-auto">

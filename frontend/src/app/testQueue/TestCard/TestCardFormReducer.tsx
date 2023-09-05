@@ -1,9 +1,6 @@
 import moment from "moment/moment";
 
-import {
-  PregnancyCode,
-  SymptomCode,
-} from "../../../patientApp/timeOfTest/constants";
+import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
 import { DevicesMap } from "../QueueItem";
 
@@ -13,7 +10,7 @@ export interface TestFormState {
   deviceId: string;
   specimenId: string;
   testResults: MultiplexResultInput[];
-  questions: TestQuestionResponses;
+  covidAoeQuestions: CovidAoeQuestionResponses;
   errors: {
     dateTested: string;
     deviceId: string;
@@ -21,7 +18,7 @@ export interface TestFormState {
   };
 }
 
-export interface TestQuestionResponses {
+export interface CovidAoeQuestionResponses {
   pregnancy?: PregnancyCode;
   // SymptomInputs should probably be updated to use SymptomCode and SymptomName types
   symptoms: Record<string, boolean>;
@@ -34,10 +31,7 @@ export enum TestFormActionCase {
   UPDATE_DEVICE_ID = "UPDATE_DEVICE_ID",
   UPDATE_SPECIMEN_ID = "UPDATE_SPECIMEN_ID",
   UPDATE_TEST_RESULT = "UPDATE_TEST_RESULT",
-  UPDATE_PREGNANCY = "UPDATE_PREGNANCY",
-  TOGGLE_SYMPTOM = "TOGGLE_SYMPTOM",
-  UPDATE_SYMPTOMS = "UPDATE_SYMPTOMS",
-  UPDATE_SYMPTOM_ONSET_DATE = "UPDATE_SYMPTOM_ONSET_DATE",
+  UPDATE_COVID_AOE_RESPONSES = "UPDATE_COVID_AOE_RESPONSES",
 }
 
 export type TestFormAction =
@@ -52,13 +46,10 @@ export type TestFormAction =
       type: TestFormActionCase.UPDATE_TEST_RESULT;
       payload: MultiplexResultInput[];
     }
-  | { type: TestFormActionCase.UPDATE_PREGNANCY; payload: PregnancyCode }
-  | { type: TestFormActionCase.TOGGLE_SYMPTOM; payload: SymptomCode }
   | {
-      type: TestFormActionCase.UPDATE_SYMPTOMS;
-      payload: Record<SymptomCode, boolean>;
-    }
-  | { type: TestFormActionCase.UPDATE_SYMPTOM_ONSET_DATE; payload: string };
+      type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES;
+      payload: CovidAoeQuestionResponses;
+    };
 
 export const testCardFormReducer = (
   prevState: TestFormState,
@@ -117,40 +108,17 @@ export const testCardFormReducer = (
       };
     }
     case TestFormActionCase.UPDATE_TEST_RESULT: {
-      console.log(prevState, payload);
       return {
         ...prevState,
         testResults: payload,
         dirty: true,
       };
     }
-    case TestFormActionCase.UPDATE_PREGNANCY: {
+    case TestFormActionCase.UPDATE_COVID_AOE_RESPONSES: {
       return {
         ...prevState,
-        questions: {
-          ...prevState.questions,
-          pregnancy: payload,
-        },
-      };
-    }
-    case TestFormActionCase.TOGGLE_SYMPTOM: {
-      return {
-        ...prevState,
-        questions: {
-          ...prevState.questions,
-          symptoms: {
-            ...prevState.questions.symptoms,
-          },
-        },
-      };
-    }
-    case TestFormActionCase.UPDATE_SYMPTOM_ONSET_DATE: {
-      return {
-        ...prevState,
-        questions: {
-          ...prevState.questions,
-          symptomOnsetDate: moment(payload).toISOString(),
-        },
+        dirty: true,
+        covidAoeQuestions: payload,
       };
     }
   }
