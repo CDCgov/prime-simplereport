@@ -76,19 +76,17 @@ const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
               <span className="usa-sr-only">Error: </span> {error?.message}
             </span>
           )}
-          {
-            <ComboBox
-              key={renderVersion.current}
-              options={orgOptions}
-              id={comboBoxId}
-              defaultValue={value}
-              name={name}
-              onChange={onChange}
-              ref={ref}
-              assistiveHint={describeText(error?.message)}
-              disabled={loadingOrgs}
-            />
-          }
+          <ComboBox
+            key={renderVersion.current}
+            options={orgOptions}
+            id={comboBoxId}
+            defaultValue={value}
+            name={name}
+            onChange={onChange}
+            ref={ref}
+            assistiveHint={describeText(error?.message)}
+            disabled={loadingOrgs}
+          />
         </div>
       )}
       name="organizationId"

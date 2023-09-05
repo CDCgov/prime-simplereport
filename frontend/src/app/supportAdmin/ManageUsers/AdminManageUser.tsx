@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 
 import { useDocumentTitle } from "../../utils/hooks";
 import {
@@ -12,6 +13,9 @@ import {
   useUpdateUserNameMutation,
   useUndeleteUserMutation,
   User,
+  useUpdateUserPrivilegesAndGroupAccessMutation,
+  Role as MutationRole,
+  useGetFacilitiesByOrgIdLazyQuery,
 } from "../../../generated/graphql";
 import { showSuccess } from "../../utils/srToast";
 import { isUserActive } from "../../Settings/Users/UserDetailUtils";
@@ -19,9 +23,16 @@ import { displayFullName } from "../../utils";
 import { OktaUserStatus } from "../../utils/user";
 import UserInfoTab from "../../Settings/Users/UserInfoTab";
 import UserHeading from "../../commonComponents/UserDetails/UserHeading";
+import { UserFacilitySetting } from "../../Settings/Users/ManageUsersContainer";
 
 import UserAccessTab from "./UserAccessTab";
 import { UserSearch } from "./UserSearch";
+
+export interface UserAccessFormData {
+  organizationId: string;
+  role: string;
+  facilityIds: string[];
+}
 
 const userNotFoundError = (
   <div className={"padding-x-3 padding-bottom-205"}>
@@ -73,7 +84,7 @@ export const AdminManageUser: React.FC = () => {
   const [undeleteUser] = useUndeleteUserMutation();
 
   /**
-   * Handlers
+   * User information handlers
    */
   const handleUpdate = async (func: () => Promise<void>) => {
     setIsUpdating(true);
@@ -248,6 +259,14 @@ export const AdminManageUser: React.FC = () => {
           setFoundUser(undefined);
         } else {
           setDisplayedError(undefined);
+          reset({
+            role: data?.user?.role || "USER",
+            organizationId: data?.user?.organization?.id,
+            facilityIds:
+              data?.user?.organization?.testingFacility.map(
+                (facility) => facility.id
+              ) || [],
+          });
           setFoundUser(data?.user as User);
         }
       }
@@ -261,6 +280,90 @@ export const AdminManageUser: React.FC = () => {
     setSearchEmail("");
     setDisplayedError(undefined);
     setFoundUser(undefined);
+  };
+  /**
+   * User access form setup
+   */
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isDirty },
+    register,
+    reset,
+    setValue,
+    getValues,
+  } = useForm<UserAccessFormData>();
+
+  const formValues = useWatch({
+    control,
+  });
+
+  /**
+   * Fetch facilities
+   */
+  const [
+    queryGetFacilitiesByOrgId,
+    { data: facilitiesResponse, loading: loadingFacilities },
+  ] = useGetFacilitiesByOrgIdLazyQuery();
+
+  useEffect(() => {
+    if (formValues.organizationId) {
+      queryGetFacilitiesByOrgId({
+        fetchPolicy: "no-cache",
+        variables: {
+          orgId: formValues.organizationId,
+        },
+      });
+
+      if (formValues.organizationId !== foundUser?.organization?.id) {
+        setValue("facilityIds", []);
+      }
+    }
+  }, [
+    queryGetFacilitiesByOrgId,
+    formValues.organizationId,
+    setValue,
+    foundUser?.organization?.id,
+  ]);
+
+  const facilityList = formValues.organizationId
+    ? facilitiesResponse?.organization?.facilities.map(
+        (facility) =>
+          ({ id: facility.id, name: facility.name } as UserFacilitySetting)
+      )
+    : [];
+
+  /**
+   * User access submit updates
+   */
+  const [updateUserPrivilegesAndGroupAccess, { loading: updatingPrivileges }] =
+    useUpdateUserPrivilegesAndGroupAccessMutation();
+  const onSubmit = async (userAccessData: UserAccessFormData) => {
+    console.log("submitting data:", userAccessData);
+    const allFacilityAccess =
+      userAccessData.role === "ADMIN" ||
+      !!userAccessData.facilityIds.find((id) => id === "ALL_FACILITIES");
+
+    await updateUserPrivilegesAndGroupAccess({
+      variables: {
+        username: foundUser?.email || "",
+        role: userAccessData.role as MutationRole,
+        orgExternalId: facilitiesResponse?.organization?.externalId || "",
+        accessAllFacilities: allFacilityAccess,
+        facilities: allFacilityAccess
+          ? []
+          : userAccessData.facilityIds?.filter((id) => id !== "ALL_FACILITIES"),
+      },
+    });
+
+    const fullName = displayFullName(
+      foundUser?.firstName,
+      foundUser?.middleName,
+      foundUser?.lastName
+    );
+
+    showSuccess("", `Access updated for ${fullName}`);
+    await retrieveUser();
   };
 
   /**
@@ -345,7 +448,19 @@ export const AdminManageUser: React.FC = () => {
                     onDeleteUser={handleDeleteUser}
                   />
                 ) : (
-                  <UserAccessTab user={foundUser} isUpdating={false} />
+                  <UserAccessTab
+                    user={foundUser}
+                    onSubmit={handleSubmit(onSubmit)}
+                    getValues={getValues}
+                    control={control}
+                    errors={errors}
+                    facilityList={facilityList || []}
+                    isDirty={isDirty}
+                    isLoadingFacilities={loadingFacilities}
+                    isSubmitting={updatingPrivileges}
+                    register={register}
+                    setValue={setValue}
+                  />
                 )}
               </div>
             </div>

@@ -165,7 +165,7 @@ const CreateUserForm: React.FC<CreateUserFormProps> = ({
       </div>
       <UserFacilitiesSettings
         roleSelected={formCurrentValues.role}
-        allFacilities={facilities}
+        facilityList={facilities}
         register={register}
         error={errors.facilityIds as FieldError}
         setValue={setValue}
