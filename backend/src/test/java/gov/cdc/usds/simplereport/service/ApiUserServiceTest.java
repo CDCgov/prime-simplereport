@@ -486,7 +486,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     AccessDeniedException caught =
         assertThrows(
             AccessDeniedException.class, () -> _service.getUserByLoginEmail("example@email.com"));
-    assertEquals("Access is denied", caught.getMessage());
+    assertEquals("Access Denied", caught.getMessage());
   }
 
   @Test
