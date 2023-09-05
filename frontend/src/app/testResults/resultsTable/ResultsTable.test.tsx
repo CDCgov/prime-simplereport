@@ -5,6 +5,7 @@ import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
 import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
 import { TestResult } from "../../../generated/graphql";
+import { toLowerCaseHyphenate } from "../../utils/text";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
@@ -17,7 +18,7 @@ describe("Method generateTableHeaders", () => {
     </table>
   );
   it("checks basic headers", () => {
-    render(table(generateTableHeaders(false, false)));
+    render(table(generateTableHeaders(false)));
     expect(
       screen.getByRole("columnheader", {
         name: new RegExp(`${PATIENT_TERM_CAP}`, "i"),
@@ -27,7 +28,10 @@ describe("Method generateTableHeaders", () => {
       screen.getByRole("columnheader", { name: /Test date/i })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("columnheader", { name: /COVID-19/i })
+      screen.getByRole("columnheader", { name: /Condition/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("columnheader", { name: /Result/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: /Test device/i })
@@ -36,35 +40,22 @@ describe("Method generateTableHeaders", () => {
       screen.getByRole("columnheader", { name: /Actions/i })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("columnheader", { name: /flu a/i })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: /flu b/i })
-    ).not.toBeInTheDocument();
-    expect(
       screen.queryByRole("columnheader", { name: /facility b/i })
     ).not.toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: /submitted by/i })
     ).toBeInTheDocument();
   });
-  it("checks multiplex headers", () => {
-    render(table(generateTableHeaders(true, false)));
-    expect(
-      screen.getByRole("columnheader", { name: /flu a/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu b/i })
-    ).toBeInTheDocument();
-  });
+
   it("checks facility header", () => {
-    render(table(generateTableHeaders(false, true)));
+    render(table(generateTableHeaders(true)));
     expect(
       screen.getByRole("columnheader", { name: /facility/i })
     ).toBeInTheDocument();
   });
+
   it("checks submitted by header hides", () => {
-    render(table(generateTableHeaders(true, true)));
+    render(table(generateTableHeaders(true)));
     expect(
       screen.queryByRole("columnheader", {
         name: /Submitted by/i,
@@ -132,14 +123,49 @@ describe("Component ResultsTable", () => {
       />
     );
 
-    TEST_RESULTS_MULTIPLEX_CONTENT.forEach((result) => {
-      expect(
-        screen.getByTestId(`test-result-${result.internalId}`)
-      ).toBeInTheDocument();
-    });
-    expect(screen.getByText("COVID-19")).toBeInTheDocument();
-    expect(screen.getByText("Flu A")).toBeInTheDocument();
-    expect(screen.getByText("Flu B")).toBeInTheDocument();
+    // 5 rows -> 9 rows
+
+    for (const result of TEST_RESULTS_MULTIPLEX_CONTENT) {
+      const resultId = result.internalId;
+
+      for (const multiplexResult of result.results as MultiplexResults) {
+        const testId = `test-result-${resultId}-${toLowerCaseHyphenate(
+          multiplexResult.disease.name
+        )}`;
+        expect(screen.getByTestId(testId)).toBeInTheDocument();
+      }
+    }
+
+    // TODO: all expected elements are present, but is it exhaustive?
+    // Test to check the # of rows
+    expect(screen.getByTestId("filtered-results").children.length).toBe(9);
+  });
+
+  it("renders multiplex results in correct order", () => {
+    render(
+      <ResultsTable
+        results={TEST_RESULTS_MULTIPLEX_CONTENT}
+        setPrintModalId={setPrintModalIdFn}
+        setMarkCorrectionId={setMarkCorrectionIdFn}
+        setDetailsModalId={setDetailsModalIdFn}
+        setTextModalId={setTextModalIdFn}
+        setEmailModalTestResultId={setEmailModalTestResultIdFn}
+        hasMultiplexResults={true}
+        hasFacility={false}
+      />
+    );
+
+    const multiplexResultsForTest =
+      screen.getByTestId("filtered-results").children;
+
+    // Get all results for most recent multiplex test
+    const covidResult = multiplexResultsForTest.item(6);
+    const fluAResult = multiplexResultsForTest.item(7);
+    const fluBResult = multiplexResultsForTest.item(8);
+
+    expect(covidResult).toHaveTextContent("COVID-19");
+    expect(fluAResult).toHaveTextContent("Flu A");
+    expect(fluBResult).toHaveTextContent("Flu B");
   });
 
   it("renders multiple results for the same patient with different aria labels", () => {

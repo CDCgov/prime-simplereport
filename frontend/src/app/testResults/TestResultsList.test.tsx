@@ -213,15 +213,9 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-5 of 5"));
+    expect(await screen.findByText("Showing 1-9 of 9"));
     expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu a/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu b/i })
+      screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: /facility/i })
@@ -231,7 +225,7 @@ describe("TestResultsList", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("Should display submitted by column when there are not multiplex results", async () => {
+  it("Should display submitted by column when there are not multiplex results (all facilities)", async () => {
     const search = {
       facility: "1",
       filterFacilityId: "all",
@@ -253,14 +247,8 @@ describe("TestResultsList", () => {
 
     expect(await screen.findByText("Showing 1-2 of 2"));
     expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
+      screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: /flu a/i })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: /flu b/i })
-    ).not.toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: /facility/i })
     ).toBeInTheDocument();
@@ -287,16 +275,10 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-5 of 5"));
+    expect(await screen.findByText("Showing 1-9 of 9"));
 
     expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu a/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu b/i })
+      screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("columnheader", { name: /facility/i })
