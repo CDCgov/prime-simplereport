@@ -10,7 +10,7 @@ import Button from "../../commonComponents/Button/Button";
 import { TestTimerWidget, useTestTimer } from "../TestTimer";
 import { RootState } from "../../store";
 
-import TestForm from "./TestForm";
+import TestCardForm from "./TestCardForm";
 import "./TestCard.scss";
 
 export interface TestCardProps {
@@ -32,9 +32,9 @@ export const TestCard = ({
   const organization = useSelector<RootState, Organization>(
     (state: any) => state.organization as Organization
   );
-  // const [cardBorder]
 
   const [isOpen, setIsOpen] = useState(false);
+  const [isCollapsible, setIsCollapsible] = useState(true);
 
   const timerContext = {
     organizationName: organization.name,
@@ -51,15 +51,18 @@ export const TestCard = ({
 
   const patientDateOfBirth = moment(testOrder.patient.birthDate);
 
+  const toggleOpen = () => setIsOpen((prevState) => !prevState);
+
   return (
     <Card className={"list-style-none"}>
-      <CardHeader>
+      <CardHeader className={"padding-2"}>
         <div className="grid-container">
           <div className="grid-row grid-gap flex-align-center">
-            <div className="grid-col-auto">
+            <div className="grid-col-auto margin-top-05">
               <Button
                 variant="unstyled"
-                onClick={() => setIsOpen((prevState) => !prevState)}
+                onClick={toggleOpen}
+                disabled={!isCollapsible}
               >
                 {isOpen ? (
                   <Icon.ExpandMore size={3} focusable={true} />
@@ -109,41 +112,15 @@ export const TestCard = ({
           </div>
         </div>
       </CardHeader>
-      {isOpen && (
-        <CardBody>
-          <div className="grid-container">
-            {/*<div className="grid-row grid-gap flex-align-center">*/}
-
-            {/*  <div className="grid-col-auto">Test information</div>*/}
-            {/*</div>*/}
-            {/*<Accordion*/}
-            {/*  // bordered={true}*/}
-            {/*  items={[*/}
-            {/*    {*/}
-            {/*      expanded: false,*/}
-            {/*      headingLevel: "h4",*/}
-            {/*      id: "",*/}
-            {/*      title: "Test information",*/}
-            {/*      content: (*/}
-            {/*        <TestForm*/}
-            {/*          testOrder={testOrder}*/}
-            {/*          facility={facility}*/}
-            {/*          devicesMap={devicesMap}*/}
-            {/*        />*/}
-            {/*      ),*/}
-            {/*    },*/}
-            {/*  ]}*/}
-            {/*></Accordion>*/}
-            <div className="margin-top-2">
-              <TestForm
-                testOrder={testOrder}
-                devicesMap={devicesMap}
-                facility={facility}
-              ></TestForm>
-            </div>
-          </div>
-        </CardBody>
-      )}
+      <CardBody className={isOpen ? "" : "display-none"}>
+        <div className="grid-container">
+          <TestCardForm
+            testOrder={testOrder}
+            devicesMap={devicesMap}
+            facility={facility}
+          ></TestCardForm>
+        </div>
+      </CardBody>
     </Card>
   );
 };
