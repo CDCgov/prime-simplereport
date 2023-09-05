@@ -1,11 +1,12 @@
 import { loginHooks, testNumber } from "../support/e2e";
-import { addMockFacility, whoAmI } from "../utils/testing-data-utils";
+import { addMockFacility, whoAmI, getOrganizationById } from "../utils/testing-data-utils";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
 loginHooks();
 describe("Support admin: manage facility", () => {
   let organizationId = "";
+  let organizationName = "";
   let facilityId = "";
   let facilityCreated = {
     id: "",
@@ -20,7 +21,12 @@ describe("Support admin: manage facility", () => {
     whoAmI().then((res) => {
       organizationId = res.body.data.whoami.organization.id;
       facilityId = res.body.data.whoami.organization.facilities[0].id;
+
+      getOrganizationById(organizationId).then((res) => {
+        organizationName = res.body.data.organization.name;
+      });
     });
+
   });
 
   beforeEach(() => {
@@ -42,23 +48,11 @@ describe("Support admin: manage facility", () => {
     cy.wait("@GetAllOrganizations");
 
     // selects org combo box
-    cy.get("[data-testid=\"org-selection-container\"] " +
-      "> [data-testid=\"combo-box\"] ")
-      .within(() => {
-        // within the org selection box
-        cy.get("[data-testid=\"combo-box-input\"]").click();
-        cy.get(`[data-testid=\"combo-box-option-${organizationId}\"]`).click();
-      });
+    cy.get("input[role=\"combobox\"]").first().type(`${organizationName}{enter}`);
 
     // selects facility combo box
     cy.wait("@GetFacilitiesByOrgId");
-    cy.get("[data-testid=\"facility-selection-container\"] " +
-      "> [data-testid=\"combo-box\"]")
-      .within(() => {
-        // within the org selection box
-        cy.get("[data-testid=\"combo-box-input\"]").click();
-        cy.get(`[data-testid=\"combo-box-option-${facilityCreated.id}\"]`).click();
-      });
+    cy.get("input[role=\"combobox\"]").last().type(`${facilityCreated.name}{enter}`);
 
     // clicks search button
     cy.get("button").contains("Search").click();
