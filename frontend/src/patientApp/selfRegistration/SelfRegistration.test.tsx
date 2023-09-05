@@ -4,6 +4,7 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -14,8 +15,6 @@ import * as AppInsightsMock from "../../app/TelemetryService";
 import "../../i18n";
 
 import { SelfRegistration } from "./SelfRegistration";
-
-import { within } from "@storybook/testing-library";
 
 const VALID_LINK = "foo-facility";
 
