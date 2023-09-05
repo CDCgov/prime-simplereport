@@ -7,7 +7,6 @@ import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
-import { GetFacilityQueueQuery } from "../../../generated/graphql";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import {
   getPregnancyResponses,
@@ -19,9 +18,9 @@ import Checkboxes from "../../commonComponents/Checkboxes";
 import { MULTIPLEX_DISEASES } from "../../testResults/constants";
 
 import {
-  TestCardFormAction,
-  testCardFormReducer,
+  TestFormActionCase,
   TestFormState,
+  testCardFormReducer,
 } from "./TestCardFormReducer";
 import CovidResultInputGroup from "./CovidResultInputGroup";
 import MultiplexResultInputGroup from "./MultiplexResultInputGroup";
@@ -32,11 +31,24 @@ export interface TestFormProps {
   facility: QueriedFacility;
 }
 
-export type QueriedSupportedDiseaseTestPerformed = NonNullable<
-  NonNullable<GetFacilityQueueQuery["facility"]>["deviceTypes"][number]
->["supportedDiseaseTestPerformed"][number];
+function alphabetizeByName(
+  a: DeviceType | SpecimenType,
+  b: DeviceType | SpecimenType
+): number {
+  if (a.name < b.name) {
+    return -1;
+  }
 
-const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
+  if (a.name > b.name) {
+    return 1;
+  }
+
+  return 0;
+}
+
+const pregnancyResponses = getPregnancyResponses();
+
+const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
   const initialFormState: TestFormState = {
     dirty: false,
     dateTested: testOrder.dateTested,
@@ -48,21 +60,6 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
   const [hasAnySymptoms, setHasAnySymptoms] = useState<YesNoUnknown>();
-
-  function alphabetizeByName(
-    a: DeviceType | SpecimenType,
-    b: DeviceType | SpecimenType
-  ): number {
-    if (a.name < b.name) {
-      return -1;
-    }
-
-    if (a.name > b.name) {
-      return 1;
-    }
-
-    return 0;
-  }
 
   let deviceTypeOptions = useMemo(
     () =>
@@ -102,8 +99,6 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
     specimenTypeOptions = [{ label: "", value: "" }, ...specimenTypeOptions];
   }
 
-  const pregnancyResponses = useMemo(() => getPregnancyResponses(), []);
-
   const deviceSupportsMultiplex = useMemo(() => {
     if (devicesMap.has(state.deviceId)) {
       return (
@@ -123,11 +118,17 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
 
   return (
     <>
-      <div className="grid-row grid-gap">
-        <Alert type="warning" headingLevel="h4" slim>
-          "Alert warning"
-        </Alert>
-      </div>
+      {isBeforeDateWarningThreshold && (
+        <div className="grid-row grid-gap">
+          <div className="grid-col-auto">
+            <Alert type="warning" headingLevel="h4" slim>
+              <strong>Check test date:</strong> The date you selected is more
+              than six months ago. Please make sure it's correct before
+              submitting.
+            </Alert>
+          </div>
+        </div>
+      )}
       <div className="grid-row grid-gap">
         <div className="grid-col-auto">
           <TextInput
@@ -142,7 +143,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             value={formatDate(moment(state.dateTested).toDate())}
             onChange={(e) =>
               dispatch({
-                type: TestCardFormAction.UPDATE_DATE_TESTED,
+                type: TestFormActionCase.UPDATE_DATE_TESTED,
                 payload: e.target.value,
               })
             }
@@ -161,7 +162,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             value={moment(state.dateTested).format("HH:mm")}
             onChange={(e) =>
               dispatch({
-                type: TestCardFormAction.UPDATE_TIME_TESTED,
+                type: TestFormActionCase.UPDATE_TIME_TESTED,
                 payload: e.target.value,
               })
             }
@@ -186,7 +187,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             selectedValue={state.deviceId}
             onChange={(e) =>
               dispatch({
-                type: TestCardFormAction.UPDATE_DEVICE_ID,
+                type: TestFormActionCase.UPDATE_DEVICE_ID,
                 payload: { deviceId: e.target.value, devicesMap },
               })
             }
@@ -204,7 +205,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             selectedValue={state.specimenId}
             onChange={(e) =>
               dispatch({
-                type: TestCardFormAction.UPDATE_SPECIMEN_ID,
+                type: TestFormActionCase.UPDATE_SPECIMEN_ID,
                 payload: e.target.value,
               })
             }
@@ -225,7 +226,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             devicesMap={devicesMap}
             onChange={(results) =>
               dispatch({
-                type: TestCardFormAction.UPDATE_TEST_RESULT,
+                type: TestFormActionCase.UPDATE_TEST_RESULT,
                 payload: results,
               })
             }
@@ -236,7 +237,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             testResults={state.testResults}
             onChange={(results) =>
               dispatch({
-                type: TestCardFormAction.UPDATE_TEST_RESULT,
+                type: TestFormActionCase.UPDATE_TEST_RESULT,
                 payload: results,
               })
             }
@@ -250,7 +251,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             name="pregnancy"
             onChange={(pregnancyCode) =>
               dispatch({
-                type: TestCardFormAction.UPDATE_PREGNANCY,
+                type: TestFormActionCase.UPDATE_PREGNANCY,
                 payload: pregnancyCode,
               })
             }
@@ -286,7 +287,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
               )}
               onChange={(e) =>
                 dispatch({
-                  type: TestCardFormAction.UPDATE_SYMPTOM_ONSET_DATE,
+                  type: TestFormActionCase.UPDATE_SYMPTOM_ONSET_DATE,
                   payload: e.target.value,
                 })
               }
@@ -299,7 +300,7 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
               name={`symptoms-${testOrder.internalId}`}
               onChange={(e) =>
                 dispatch({
-                  type: TestCardFormAction.TOGGLE_SYMPTOM,
+                  type: TestFormActionCase.TOGGLE_SYMPTOM,
                   payload: e.target.value as SymptomCode,
                 })
               }
@@ -316,4 +317,4 @@ const TestForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
   );
 };
 
-export default TestForm;
+export default TestCardForm;

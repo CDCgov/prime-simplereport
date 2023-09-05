@@ -28,7 +28,7 @@ export interface TestQuestionResponses {
   symptomOnsetDate?: string;
 }
 
-export enum TestCardFormAction {
+export enum TestFormActionCase {
   UPDATE_DATE_TESTED = "UPDATE_DATE_TESTED",
   UPDATE_TIME_TESTED = "UPDATE_TIME_TESTED",
   UPDATE_DEVICE_ID = "UPDATE_DEVICE_ID",
@@ -40,32 +40,32 @@ export enum TestCardFormAction {
   UPDATE_SYMPTOM_ONSET_DATE = "UPDATE_SYMPTOM_ONSET_DATE",
 }
 
-export type TestQueueFormAction =
-  | { type: TestCardFormAction.UPDATE_DATE_TESTED; payload: string }
-  | { type: TestCardFormAction.UPDATE_TIME_TESTED; payload: string }
+export type TestFormAction =
+  | { type: TestFormActionCase.UPDATE_DATE_TESTED; payload: string }
+  | { type: TestFormActionCase.UPDATE_TIME_TESTED; payload: string }
   | {
-      type: TestCardFormAction.UPDATE_DEVICE_ID;
+      type: TestFormActionCase.UPDATE_DEVICE_ID;
       payload: { deviceId: string; devicesMap: DevicesMap };
     }
-  | { type: TestCardFormAction.UPDATE_SPECIMEN_ID; payload: string }
+  | { type: TestFormActionCase.UPDATE_SPECIMEN_ID; payload: string }
   | {
-      type: TestCardFormAction.UPDATE_TEST_RESULT;
+      type: TestFormActionCase.UPDATE_TEST_RESULT;
       payload: MultiplexResultInput[];
     }
-  | { type: TestCardFormAction.UPDATE_PREGNANCY; payload: PregnancyCode }
-  | { type: TestCardFormAction.TOGGLE_SYMPTOM; payload: SymptomCode }
+  | { type: TestFormActionCase.UPDATE_PREGNANCY; payload: PregnancyCode }
+  | { type: TestFormActionCase.TOGGLE_SYMPTOM; payload: SymptomCode }
   | {
-      type: TestCardFormAction.UPDATE_SYMPTOMS;
+      type: TestFormActionCase.UPDATE_SYMPTOMS;
       payload: Record<SymptomCode, boolean>;
     }
-  | { type: TestCardFormAction.UPDATE_SYMPTOM_ONSET_DATE; payload: string };
+  | { type: TestFormActionCase.UPDATE_SYMPTOM_ONSET_DATE; payload: string };
 
 export const testCardFormReducer = (
   prevState: TestFormState,
-  { type, payload }: TestQueueFormAction
+  { type, payload }: TestFormAction
 ): TestFormState => {
   switch (type) {
-    case TestCardFormAction.UPDATE_DATE_TESTED: {
+    case TestFormActionCase.UPDATE_DATE_TESTED: {
       // the date string returned from the server is only precise to seconds; moment's
       // toISOString method returns millisecond precision. as a result, an onChange event
       // was being fired when this component initialized, sending an EditQueueItem to
@@ -85,7 +85,7 @@ export const testCardFormReducer = (
       }
       break;
     }
-    case TestCardFormAction.UPDATE_TIME_TESTED: {
+    case TestFormActionCase.UPDATE_TIME_TESTED: {
       if (payload) {
         const [hours, minutes] = payload.split(":");
         const newDate = moment(prevState.dateTested)
@@ -99,7 +99,7 @@ export const testCardFormReducer = (
       }
       break;
     }
-    case TestCardFormAction.UPDATE_DEVICE_ID: {
+    case TestFormActionCase.UPDATE_DEVICE_ID: {
       return {
         ...prevState,
         deviceId: payload.deviceId,
@@ -109,14 +109,14 @@ export const testCardFormReducer = (
         dirty: true,
       };
     }
-    case TestCardFormAction.UPDATE_SPECIMEN_ID: {
+    case TestFormActionCase.UPDATE_SPECIMEN_ID: {
       return {
         ...prevState,
         specimenId: payload,
         dirty: true,
       };
     }
-    case TestCardFormAction.UPDATE_TEST_RESULT: {
+    case TestFormActionCase.UPDATE_TEST_RESULT: {
       console.log(prevState, payload);
       return {
         ...prevState,
@@ -124,7 +124,7 @@ export const testCardFormReducer = (
         dirty: true,
       };
     }
-    case TestCardFormAction.UPDATE_PREGNANCY: {
+    case TestFormActionCase.UPDATE_PREGNANCY: {
       return {
         ...prevState,
         questions: {
@@ -133,7 +133,7 @@ export const testCardFormReducer = (
         },
       };
     }
-    case TestCardFormAction.TOGGLE_SYMPTOM: {
+    case TestFormActionCase.TOGGLE_SYMPTOM: {
       return {
         ...prevState,
         questions: {
@@ -144,7 +144,7 @@ export const testCardFormReducer = (
         },
       };
     }
-    case TestCardFormAction.UPDATE_SYMPTOM_ONSET_DATE: {
+    case TestFormActionCase.UPDATE_SYMPTOM_ONSET_DATE: {
       return {
         ...prevState,
         questions: {
