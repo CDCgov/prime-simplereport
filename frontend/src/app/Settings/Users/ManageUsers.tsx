@@ -180,7 +180,6 @@ const ManageUsers: React.FC<Props> = ({
       },
     })
       .then(async () => {
-        await getUsers();
         updateIsUserEdited(false);
         const fullName = displayFullName(
           userWithPermissions?.firstName,
@@ -222,7 +221,6 @@ const ManageUsers: React.FC<Props> = ({
 
       const fullName = displayFullName(firstName, "", lastName);
 
-      await getUsers();
       updateActiveUser({
         ...newUserInvite,
         id: addedUser,
@@ -260,6 +258,7 @@ const ManageUsers: React.FC<Props> = ({
       const fullName = displayFullName(firstName, "", lastName);
       showSuccess("", `User name changed to ${fullName}`);
       await refetchUser();
+      users = (await getUsers()).data.usersWithStatus ?? [];
     } catch (e: any) {
       setError(e);
     }
@@ -275,7 +274,6 @@ const ManageUsers: React.FC<Props> = ({
       });
       showSuccess("", `User email address changed to ${emailAddress}`);
       await refetchUser();
-      await getUsers();
     } catch (e: any) {}
   };
 
@@ -332,7 +330,6 @@ const ManageUsers: React.FC<Props> = ({
       const nextUser: LimitedUser =
         sortedUsers[0].id === userId ? sortedUsers[1] : sortedUsers[0];
 
-      await getUsers();
       updateActiveUser(nextUser);
       showSuccess("", `User account removed for ${fullName}`);
     } catch (e: any) {
