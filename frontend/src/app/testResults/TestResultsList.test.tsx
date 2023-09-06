@@ -193,7 +193,7 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
   });
 
-  it("Should not display submitted by column when multiplex and facility columns show", async () => {
+  it("Should not display submitted by column when all facilities filter applied", async () => {
     const search = {
       facility: "1",
       filterFacilityId: "all",
@@ -225,38 +225,7 @@ describe("TestResultsList", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("Should display submitted by column when there are not multiplex results (all facilities)", async () => {
-    const search = {
-      facility: "1",
-      filterFacilityId: "all",
-    };
-
-    render(
-      <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
-      >
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
-    );
-
-    expect(await screen.findByText("Showing 1-2 of 2"));
-    expect(
-      screen.getByRole("columnheader", { name: /condition/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /facility/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /submitted by/i })
-    ).toBeInTheDocument();
-  });
-  it("Should display submitted by column when there are multiplex results but displays only one facility", async () => {
+  it("Should display submitted by column when single-facility filter applied", async () => {
     const search = {
       facility: "1",
     };
