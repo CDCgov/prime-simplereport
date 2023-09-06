@@ -261,6 +261,7 @@ const ManageUsers: React.FC<Props> = ({
       showSuccess("", `User name changed to ${fullName}`);
       updateLocalUserState("firstName", firstName);
       updateLocalUserState("lastName", lastName);
+      await getUsers();
     } catch (e: any) {
       setError(e);
     }
