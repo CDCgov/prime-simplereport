@@ -257,7 +257,7 @@ const ManageUsers: React.FC<Props> = ({
       });
       const fullName = displayFullName(firstName, "", lastName);
       showSuccess("", `User name changed to ${fullName}`);
-      await refetchUser();
+      refetchUser();
       users = (await getUsers()).data.usersWithStatus ?? [];
     } catch (e: any) {
       setError(e);
