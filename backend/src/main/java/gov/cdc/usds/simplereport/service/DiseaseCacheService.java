@@ -4,18 +4,14 @@ import static gov.cdc.usds.simplereport.config.CachingConfig.SUPPORTED_DISEASE_I
 
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
-
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.transaction.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,12 +20,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class DiseaseCacheService {
 
-    private final SupportedDiseaseRepository _supportedDiseaseRepo;
+  private final SupportedDiseaseRepository _supportedDiseaseRepo;
 
-    @Cacheable(SUPPORTED_DISEASE_ID_MAP)
-    public Map<UUID, SupportedDisease> getKnownSupportedDiseasesMap() {
-        log.info("generating " + SUPPORTED_DISEASE_ID_MAP + " cache");
-        return _supportedDiseaseRepo.findAll().stream()
-                .collect(Collectors.toMap(SupportedDisease::getInternalId, Function.identity()));
-    }
+  @Cacheable(SUPPORTED_DISEASE_ID_MAP)
+  public Map<UUID, SupportedDisease> getKnownSupportedDiseasesMap() {
+    log.info("generating " + SUPPORTED_DISEASE_ID_MAP + " cache");
+    return _supportedDiseaseRepo.findAll().stream()
+        .collect(Collectors.toMap(SupportedDisease::getInternalId, Function.identity()));
+  }
 }
