@@ -31,15 +31,14 @@ const ManageDevices: React.FC<Props> = ({
     }))
   );
 
-  const getFilteredDevices = (
-    deviceIds: string[]
-  ): FacilityFormDeviceType[] => {
-    return (deviceTypes ?? []).filter((d) => deviceIds.includes(d.internalId));
+  const getUnselectedDevices = (): FacilityFormDeviceType[] => {
+    return deviceTypes.filter(
+      (device) => !formCurrentValues.devices.includes(device.internalId)
+    );
   };
 
   const searchDevicesByInput = (inputValue: string) => {
-    const deviceIds = deviceTypeOptions.map((d) => d.value);
-    return searchFacilityFormDevices(getFilteredDevices(deviceIds), inputValue);
+    return searchFacilityFormDevices(getUnselectedDevices(), inputValue);
   };
 
   return (
