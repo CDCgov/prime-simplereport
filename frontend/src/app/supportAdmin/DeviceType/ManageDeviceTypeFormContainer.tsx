@@ -73,10 +73,12 @@ const ManageDeviceTypeFormContainer = () => {
     );
 
     const supportedDiseaseOptions = Array.from(
-      supportedDiseaseResults.supportedDiseases.map((disease) => ({
-        label: disease.name,
-        value: disease.internalId,
-      }))
+      supportedDiseaseResults.supportedDiseases
+        .map((disease) => ({
+          label: disease.name,
+          value: disease.internalId,
+        }))
+        .filter((d) => d.label !== "RSV")
     );
 
     const devices = Array.from(
