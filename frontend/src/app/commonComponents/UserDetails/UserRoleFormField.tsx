@@ -1,20 +1,23 @@
 import React from "react";
-import { UseFormRegisterReturn } from "react-hook-form";
+import { UseFormRegisterReturn, useWatch } from "react-hook-form";
 
 import RadioGroup from "../RadioGroup";
 import { ROLES } from "../../Settings/Users/UserRoleSettingsForm";
 
 interface UserRoleFormFieldProps {
-  value: string;
+  control: any;
   registrationProps: UseFormRegisterReturn<any>;
   error: any;
+  disabled: boolean;
 }
 
 const UserRoleFormField: React.FC<UserRoleFormFieldProps> = ({
-  value,
+  control,
   error,
+  disabled,
   registrationProps,
 }) => {
+  const selectedRole = useWatch({ control, name: "role" });
   return (
     <div className={"usa-form-group"}>
       <RadioGroup
@@ -25,11 +28,12 @@ const UserRoleFormField: React.FC<UserRoleFormFieldProps> = ({
           "Admins have full access to use and change settings on SimpleReport. Standard and testing-only users have limited access for specific tasks, as described below."
         }
         buttons={ROLES}
-        selectedRadio={value}
+        selectedRadio={selectedRole}
         validationStatus={error ? "error" : undefined}
         errorMessage={error?.message}
         registrationProps={registrationProps}
         required
+        disabled={disabled}
       />
     </div>
   );

@@ -42,3 +42,7 @@ mutation updateUserPrivilegesAndGroupAccess($username: String!, $orgExternalId: 
         id
     }
 }
+
+query getTestResultCountByOrg($orgId: ID!){
+    testResultsCount(orgId: $orgId)
+}

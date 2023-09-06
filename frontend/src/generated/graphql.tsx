@@ -1815,6 +1815,15 @@ export type UpdateUserPrivilegesAndGroupAccessMutation = {
   updateUserPrivilegesAndGroupAccess: { __typename?: "User"; id: string };
 };
 
+export type GetTestResultCountByOrgQueryVariables = Exact<{
+  orgId: Scalars["ID"];
+}>;
+
+export type GetTestResultCountByOrgQuery = {
+  __typename?: "Query";
+  testResultsCount?: number | null;
+};
+
 export type GetPendingOrganizationsQueryVariables = Exact<{
   [key: string]: never;
 }>;
@@ -5557,6 +5566,62 @@ export type UpdateUserPrivilegesAndGroupAccessMutationOptions =
     UpdateUserPrivilegesAndGroupAccessMutation,
     UpdateUserPrivilegesAndGroupAccessMutationVariables
   >;
+export const GetTestResultCountByOrgDocument = gql`
+  query getTestResultCountByOrg($orgId: ID!) {
+    testResultsCount(orgId: $orgId)
+  }
+`;
+
+/**
+ * __useGetTestResultCountByOrgQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultCountByOrgQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultCountByOrgQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultCountByOrgQuery({
+ *   variables: {
+ *      orgId: // value for 'orgId'
+ *   },
+ * });
+ */
+export function useGetTestResultCountByOrgQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultCountByOrgQuery,
+    GetTestResultCountByOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultCountByOrgQuery,
+    GetTestResultCountByOrgQueryVariables
+  >(GetTestResultCountByOrgDocument, options);
+}
+export function useGetTestResultCountByOrgLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultCountByOrgQuery,
+    GetTestResultCountByOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultCountByOrgQuery,
+    GetTestResultCountByOrgQueryVariables
+  >(GetTestResultCountByOrgDocument, options);
+}
+export type GetTestResultCountByOrgQueryHookResult = ReturnType<
+  typeof useGetTestResultCountByOrgQuery
+>;
+export type GetTestResultCountByOrgLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultCountByOrgLazyQuery
+>;
+export type GetTestResultCountByOrgQueryResult = Apollo.QueryResult<
+  GetTestResultCountByOrgQuery,
+  GetTestResultCountByOrgQueryVariables
+>;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {
     pendingOrganizations {

@@ -8,10 +8,12 @@ import { useGetAllOrganizationsQuery } from "../../../generated/graphql";
 
 interface OrganizationSelectFormFieldProps {
   control?: Control<any>;
+  disabled?: boolean;
 }
 
 const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
   control,
+  disabled,
 }) => {
   /**
    * Fetch organizations (on initial load)
@@ -85,7 +87,7 @@ const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
             onChange={onChange}
             ref={ref}
             assistiveHint={describeText(error?.message)}
-            disabled={loadingOrgs}
+            disabled={loadingOrgs || disabled}
           />
         </div>
       )}

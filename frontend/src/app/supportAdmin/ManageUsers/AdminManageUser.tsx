@@ -83,6 +83,12 @@ export const AdminManageUser: React.FC = () => {
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
   const [undeleteUser] = useUndeleteUserMutation();
 
+  const userFullName = displayFullName(
+    foundUser?.firstName,
+    foundUser?.middleName,
+    foundUser?.lastName
+  );
+
   /**
    * User information handlers
    */
@@ -144,12 +150,8 @@ export const AdminManageUser: React.FC = () => {
           id: userId,
         },
       });
-      const fullName = displayFullName(
-        foundUser?.firstName,
-        foundUser?.middleName,
-        foundUser?.lastName
-      );
-      showSuccess("", `Password reset for ${fullName}`);
+
+      showSuccess("", `Password reset for ${userFullName}`);
     });
   };
   const handleResetUserMfa = async (userId: string) => {
@@ -159,12 +161,8 @@ export const AdminManageUser: React.FC = () => {
           id: userId,
         },
       });
-      const fullName = displayFullName(
-        foundUser?.firstName,
-        foundUser?.middleName,
-        foundUser?.lastName
-      );
-      showSuccess("", `MFA reset for ${fullName}`);
+
+      showSuccess("", `MFA reset for ${userFullName}`);
     });
   };
   const handleDeleteUser = async (userId: string) => {
@@ -175,18 +173,13 @@ export const AdminManageUser: React.FC = () => {
           deleted: true,
         },
       });
-      const fullName = displayFullName(
-        foundUser?.firstName,
-        foundUser?.middleName,
-        foundUser?.lastName
-      );
 
       setFoundUser({
         ...foundUser,
         isDeleted: true,
         status: OktaUserStatus.SUSPENDED,
       } as User);
-      showSuccess("", `User account removed for ${fullName}`);
+      showSuccess("", `User account removed for ${userFullName}`);
     });
   };
   const handleReactivateUser = async (userId: string) => {
@@ -196,16 +189,12 @@ export const AdminManageUser: React.FC = () => {
           id: userId,
         },
       });
-      const fullName = displayFullName(
-        foundUser?.firstName,
-        foundUser?.middleName,
-        foundUser?.lastName
-      );
+
       setFoundUser({
         ...foundUser,
         status: OktaUserStatus.ACTIVE,
       } as User);
-      showSuccess("", `${fullName} has been reactivated.`);
+      showSuccess("", `${userFullName} has been reactivated.`);
     });
   };
   const handleResendUserActivationEmail = async (userId: string) => {
@@ -215,12 +204,8 @@ export const AdminManageUser: React.FC = () => {
           id: userId,
         },
       });
-      const fullName = displayFullName(
-        foundUser?.firstName,
-        foundUser?.middleName,
-        foundUser?.lastName
-      );
-      showSuccess("", `${fullName} has been sent a new invitation.`);
+
+      showSuccess("", `${userFullName} has been sent a new invitation.`);
     });
   };
 
@@ -232,13 +217,7 @@ export const AdminManageUser: React.FC = () => {
 
       await retrieveUser();
 
-      const fullName = displayFullName(
-        foundUser?.firstName,
-        foundUser?.middleName,
-        foundUser?.lastName
-      );
-
-      showSuccess("", `User account undeleted for ${fullName}`);
+      showSuccess("", `User account undeleted for ${userFullName}`);
     });
   };
 
@@ -281,6 +260,7 @@ export const AdminManageUser: React.FC = () => {
     setDisplayedError(undefined);
     setFoundUser(undefined);
   };
+
   /**
    * User access form setup
    */
@@ -291,11 +271,15 @@ export const AdminManageUser: React.FC = () => {
     register,
     reset,
     setValue,
-    getValues,
   } = useForm<UserAccessFormData>();
 
   const formValues = useWatch({
     control,
+    defaultValue: {
+      organizationId: "",
+      role: "USER",
+      facilityIds: [],
+    },
   });
 
   /**
@@ -334,12 +318,12 @@ export const AdminManageUser: React.FC = () => {
     : [];
 
   /**
-   * User access submit updates
+   * Submit access updates
    */
-  const [updateUserPrivilegesAndGroupAccess, { loading: updatingPrivileges }] =
+  const [updateUserPrivilegesAndGroupAccess, { loading: isUpdatingAccess }] =
     useUpdateUserPrivilegesAndGroupAccessMutation();
-  const onSubmit = async (userAccessData: UserAccessFormData) => {
-    console.log("submitting data:", userAccessData);
+
+  const updateUserPrivileges = async (userAccessData: UserAccessFormData) => {
     const allFacilityAccess =
       userAccessData.role === "ADMIN" ||
       !!userAccessData.facilityIds.find((id) => id === "ALL_FACILITIES");
@@ -356,13 +340,7 @@ export const AdminManageUser: React.FC = () => {
       },
     });
 
-    const fullName = displayFullName(
-      foundUser?.firstName,
-      foundUser?.middleName,
-      foundUser?.lastName
-    );
-
-    showSuccess("", `Access updated for ${fullName}`);
+    showSuccess("", `Access updated for ${userFullName}`);
     await retrieveUser();
   };
 
@@ -450,16 +428,17 @@ export const AdminManageUser: React.FC = () => {
                 ) : (
                   <UserAccessTab
                     user={foundUser}
-                    onSubmit={handleSubmit(onSubmit)}
-                    getValues={getValues}
+                    onSubmit={updateUserPrivileges}
+                    handleSubmit={handleSubmit}
+                    formValues={formValues as UserAccessFormData}
                     control={control}
                     errors={errors}
-                    facilityList={facilityList || []}
                     isDirty={isDirty}
-                    isLoadingFacilities={loadingFacilities}
-                    isSubmitting={updatingPrivileges}
                     register={register}
                     setValue={setValue}
+                    facilityList={facilityList || []}
+                    isLoadingFacilities={loadingFacilities}
+                    isSubmitting={isUpdatingAccess}
                   />
                 )}
               </div>
