@@ -1,11 +1,11 @@
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import React, { Ref } from "react";
-import { ComboBox, ComboBoxRef, Label } from "@trussworks/react-uswds";
+import { ComboBoxRef } from "@trussworks/react-uswds";
 
+import ComboBox from "../../commonComponents/ComboBox";
 import Button from "../../commonComponents/Button/Button";
 import SupportHomeLink from "../SupportHomeLink";
 import { Option } from "../../commonComponents/Dropdown";
-import Required from "../../commonComponents/Required";
 
 import { ManageFacilityState } from "./ManageFacility";
 
@@ -68,9 +68,6 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
             data-testid={"org-selection-container"}
             className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em"
           >
-            <Label htmlFor="manage-facility-org-select">
-              Organization <Required />
-            </Label>
             <ComboBox
               name={"Organization"}
               id={"manage-facility-org-select"}
@@ -80,16 +77,13 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
               }}
               disabled={loading}
               ref={orgRef}
+              required
             />
           </div>
           <div
             data-testid={"facility-selection-container"}
             className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em"
           >
-            <Label htmlFor="manage-facility-facility-select">
-              Testing facility <Required />
-            </Label>
-
             <ComboBox
               name={"Facility"}
               id={"manage-facility-facility-select"}
@@ -97,6 +91,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
               onChange={(val) => onSelectFacility(val)}
               disabled={loading}
               ref={facilityRef}
+              required
             />
           </div>
           <div className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 ">
