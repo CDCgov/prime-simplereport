@@ -140,6 +140,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
               >
                 <fieldset
                   class="usa-fieldset prime-radios"
+                  data-testid="facilitySector"
                   id="facilitySector"
                 >
                   <legend
