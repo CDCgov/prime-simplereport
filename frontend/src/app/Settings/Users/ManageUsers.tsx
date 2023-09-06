@@ -122,7 +122,7 @@ const ManageUsers: React.FC<Props> = ({
     sortedUsers?.[0]
   );
 
-  useGetUserQuery({
+  const { refetch: refetchUser } = useGetUserQuery({
     variables: { id: activeUser?.id },
     fetchPolicy: "no-cache",
     skip: !activeUser?.id,
@@ -259,9 +259,7 @@ const ManageUsers: React.FC<Props> = ({
       });
       const fullName = displayFullName(firstName, "", lastName);
       showSuccess("", `User name changed to ${fullName}`);
-      updateLocalUserState("firstName", firstName);
-      updateLocalUserState("lastName", lastName);
-      await getUsers();
+      await refetchUser();
     } catch (e: any) {
       setError(e);
     }
@@ -276,7 +274,7 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
       showSuccess("", `User email address changed to ${emailAddress}`);
-      updateLocalUserState("email", emailAddress);
+      await refetchUser();
       await getUsers();
     } catch (e: any) {}
   };
