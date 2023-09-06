@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '3.0.8'
+    id 'org.springframework.boot' version '3.1.3'
     id 'org.liquibase.gradle' version '2.0.4'
     id 'io.spring.dependency-management' version '1.1.0'
     id 'java'
@@ -16,6 +16,7 @@ sourceCompatibility = '17'
 
 ext {
     set('springCloudVersion', "2022.0.3")
+    set('hibernate.version', '6.1.7.Final')
 }
 repositories {
     mavenCentral()
@@ -36,6 +37,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-graphql'
     testImplementation 'org.springframework:spring-webflux'
     testImplementation 'org.springframework.graphql:spring-graphql-test'
+    // graphql-java-extended-validation schema directives
+    implementation 'com.graphql-java:graphql-java-extended-validation:20.0'
+    // graphql-java-extended-scalars
+    implementation 'com.graphql-java:graphql-java-extended-scalars:20.0'
 
     //Feign HTTP Client
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
@@ -54,7 +59,7 @@ dependencies {
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.5.0'
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.5.2'
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
 
@@ -65,7 +70,7 @@ dependencies {
     // UI layer dependencies
     implementation 'org.json:json:20230618'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6:2.15.2' // Remove pin when upgrading to spring 3.1 +
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-hibernate6'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
@@ -95,10 +100,6 @@ dependencies {
     implementation 'org.hibernate.orm:hibernate-jpamodelgen'
     annotationProcessor 'org.hibernate.orm:hibernate-jpamodelgen'
 
-    // graphql-java-extended-validation schema directives
-    implementation 'com.graphql-java:graphql-java-extended-validation:19.1'
-    // graphql-java-extended-scalars
-    implementation 'com.graphql-java:graphql-java-extended-scalars:19.1'
 
     implementation 'com.azure:azure-storage-queue:12.17.1'
 
