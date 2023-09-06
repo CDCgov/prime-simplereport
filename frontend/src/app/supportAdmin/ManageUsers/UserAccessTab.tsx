@@ -99,6 +99,7 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({
   const [showModal, setShowModal] = useState(false);
   const closeModal = () => setShowModal(false);
 
+  console.log(data?.testResultsCount);
   const confirmationModal = (
     <Modal
       onClose={closeModal}
@@ -116,7 +117,8 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({
       <p className="margin-top-3">
         This update will move <span className="text-bold">{fullName}</span> to a
         different organization. The user will lose access to{" "}
-        <span className="text-bold">{data?.testResultsCount}</span> test results
+        <span className="text-bold">{data?.testResultsCount}</span> test{" "}
+        {data?.testResultsCount === 1 ? "result " : "results "}
         reported under it.
       </p>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
