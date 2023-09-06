@@ -85,7 +85,7 @@ const FacilitySelectFilter: React.FC<FacilitySelectFilterProps> = ({
             className="desktop:grid-col-4 tablet:grid-col-4 mobile:grid-col-1 margin-top-1em"
           >
             <ComboBox
-              name={"Facility"}
+              name={"Testing facility"}
               id={"manage-facility-facility-select"}
               options={facilityOptions}
               onChange={(val) => onSelectFacility(val)}
