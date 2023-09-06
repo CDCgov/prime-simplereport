@@ -22,6 +22,6 @@
     },
     "dependencies": {
         "axe-core": "^4.7.2",
-        "cypress-axe": "^1.0.0"
+        "cypress-axe": "^1.5.0"
     }
 }
