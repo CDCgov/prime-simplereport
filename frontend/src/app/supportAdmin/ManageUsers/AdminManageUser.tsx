@@ -27,11 +27,11 @@ import UserInfoTab from "../../Settings/Users/UserInfoTab";
 import UserHeading from "../../commonComponents/UserDetails/UserHeading";
 import { UserFacilitySetting } from "../../Settings/Users/ManageUsersContainer";
 
-import UserAccessTab from "./UserAccessTab";
+import OrgAccessTab from "./OrgAccessTab";
 import { UserSearch } from "./UserSearch";
 import UnsavedChangesModal from "./UnsaveChangesModal";
 
-export interface UserAccessFormData {
+export interface OrgAccessFormData {
   organizationId: string;
   role: string;
   facilityIds: string[];
@@ -77,7 +77,7 @@ export const AdminManageUser: React.FC = () => {
   const [{ searchEmail, foundUser, displayedError }, setSearchState] =
     useState<UserSearchState>(initialState);
   const [navItemSelected, setNavItemSelected] = useState<
-    "User information" | "User access"
+    "User information" | "Organization access"
   >("User information");
   const [getUserByEmail] = useFindUserByEmailLazyQuery({
     fetchPolicy: "no-cache",
@@ -299,6 +299,7 @@ export const AdminManageUser: React.FC = () => {
   };
   const handleClearFilter = () => {
     setSearchState(initialState);
+    reset();
   };
 
   const handleSearch = () => {
@@ -306,7 +307,7 @@ export const AdminManageUser: React.FC = () => {
   };
 
   /**
-   * User access form setup
+   * Organization access form setup
    */
   const {
     control,
@@ -315,7 +316,7 @@ export const AdminManageUser: React.FC = () => {
     register,
     reset,
     setValue,
-  } = useForm<UserAccessFormData>();
+  } = useForm<OrgAccessFormData>();
 
   const formValues = useWatch({
     control,
@@ -367,20 +368,22 @@ export const AdminManageUser: React.FC = () => {
   const [updateUserPrivilegesAndGroupAccess, { loading: isUpdatingAccess }] =
     useUpdateUserPrivilegesAndGroupAccessMutation();
 
-  const updateUserPrivileges = async (userAccessData: UserAccessFormData) => {
+  const updateUserPrivileges = async (orgAccessFormData: OrgAccessFormData) => {
     const allFacilityAccess =
-      userAccessData.role === "ADMIN" ||
-      !!userAccessData.facilityIds.find((id) => id === "ALL_FACILITIES");
+      orgAccessFormData.role === "ADMIN" ||
+      !!orgAccessFormData.facilityIds.find((id) => id === "ALL_FACILITIES");
 
     await updateUserPrivilegesAndGroupAccess({
       variables: {
         username: foundUser?.email || "",
-        role: userAccessData.role as MutationRole,
+        role: orgAccessFormData.role as MutationRole,
         orgExternalId: facilitiesResponse?.organization?.externalId || "",
         accessAllFacilities: allFacilityAccess,
         facilities: allFacilityAccess
           ? []
-          : userAccessData.facilityIds?.filter((id) => id !== "ALL_FACILITIES"),
+          : orgAccessFormData.facilityIds?.filter(
+              (id) => id !== "ALL_FACILITIES"
+            ),
       },
     });
 
@@ -408,7 +411,10 @@ export const AdminManageUser: React.FC = () => {
   /**
    * Tab content
    */
-  const tabs: (typeof navItemSelected)[] = ["User information", "User access"];
+  const tabs: (typeof navItemSelected)[] = [
+    "User information",
+    "Organization access",
+  ];
 
   /**
    * HTML
@@ -460,7 +466,7 @@ export const AdminManageUser: React.FC = () => {
                 >
                   <div
                     role="tablist"
-                    aria-owns="userinformation-tab useraccess-tab"
+                    aria-owns="userinformation-tab orgaccess-tab"
                     className="usa-nav__secondary-links prime-nav usa-list"
                   >
                     {tabs.map((tabLabel) => (
@@ -497,11 +503,11 @@ export const AdminManageUser: React.FC = () => {
                     onDeleteUser={handleDeleteUser}
                   />
                 ) : (
-                  <UserAccessTab
+                  <OrgAccessTab
                     user={foundUser}
                     onSubmit={updateUserPrivileges}
                     handleSubmit={handleSubmit}
-                    formValues={formValues as UserAccessFormData}
+                    formValues={formValues as OrgAccessFormData}
                     control={control}
                     errors={errors}
                     isDirty={isDirty}
@@ -515,7 +521,7 @@ export const AdminManageUser: React.FC = () => {
               </div>
               <Prompt
                 when={isDirty}
-                message="You have unsaved changes if the user access tab. Do you want to leave the page?"
+                message="You have unsaved changes if the organization access tab. Do you want to leave the page?"
               />
               <UnsavedChangesModal
                 closeModal={() => setShowUnsavedWarning(false)}

@@ -14,14 +14,14 @@ import UserRoleFormField from "../../commonComponents/UserDetails/UserRoleFormFi
 import Modal from "../../commonComponents/Modal";
 import { displayFullName } from "../../utils";
 
-import { UserAccessFormData } from "./AdminManageUser";
+import { OrgAccessFormData } from "./AdminManageUser";
 
 export interface UserAccessTabProps {
   user: User;
-  onSubmit: (data: UserAccessFormData) => Promise<void>;
-  handleSubmit: UseFormHandleSubmit<UserAccessFormData>;
-  setValue: UseFormSetValue<UserAccessFormData>;
-  formValues: UserAccessFormData;
+  onSubmit: (data: OrgAccessFormData) => Promise<void>;
+  handleSubmit: UseFormHandleSubmit<OrgAccessFormData>;
+  setValue: UseFormSetValue<OrgAccessFormData>;
+  formValues: OrgAccessFormData;
   control: any;
   register: any;
   errors: any;
@@ -32,7 +32,7 @@ export interface UserAccessTabProps {
 }
 
 // ToDo check why the update method fails when sent individual facilities
-const UserAccessTab: React.FC<UserAccessTabProps> = ({
+const OrgAccessTab: React.FC<UserAccessTabProps> = ({
   user,
   facilityList,
   setValue,
@@ -59,11 +59,11 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({
   /**
    * Confirm and Submit
    */
-  const dataRef = useRef<UserAccessFormData | undefined>();
+  const dataRef = useRef<OrgAccessFormData | undefined>();
 
   const [getTestResultCount, { data }] = useGetTestResultCountByOrgLazyQuery();
 
-  const handleConfirmationAndSubmit = async (formData: UserAccessFormData) => {
+  const handleConfirmationAndSubmit = async (formData: OrgAccessFormData) => {
     if (hasOrgChange) {
       const count =
         (await getTestResultCount({
@@ -86,7 +86,7 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({
   const handleSubmitFromModal = async () => {
     closeModal();
     if (dataRef.current) {
-      await onSubmit(dataRef.current as UserAccessFormData);
+      await onSubmit(dataRef.current as OrgAccessFormData);
       dataRef.current = undefined;
     }
   };
@@ -180,4 +180,4 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({
   );
 };
 
-export default UserAccessTab;
+export default OrgAccessTab;
