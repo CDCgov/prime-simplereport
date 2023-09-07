@@ -1,6 +1,6 @@
 import moment from "moment";
 import { Alert, Button } from "@trussworks/react-uswds";
-import React, { useMemo, useReducer } from "react";
+import React, { useEffect, useMemo, useReducer, useState } from "react";
 
 import TextInput from "../../commonComponents/TextInput";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
@@ -8,6 +8,11 @@ import { formatDate } from "../../utils/date";
 import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
 import Dropdown from "../../commonComponents/Dropdown";
 import { MULTIPLEX_DISEASES } from "../../testResults/constants";
+import {
+  MultiplexResultInput,
+  useEditQueueItemMutation,
+} from "../../../generated/graphql";
+import { updateTimer } from "../TestTimer";
 
 import {
   TestFormActionCase,
@@ -22,6 +27,14 @@ export interface TestFormProps {
   testOrder: QueriedTestOrder;
   devicesMap: DevicesMap;
   facility: QueriedFacility;
+}
+
+interface UpdateQueueItemProps {
+  deviceId?: string;
+  specimenTypeId?: string;
+  testLength?: number;
+  results?: MultiplexResultInput[];
+  dateTested: string | null;
 }
 
 function alphabetizeByName(
@@ -39,6 +52,34 @@ function alphabetizeByName(
   return 0;
 }
 
+const doesDeviceSupportMultiplex = (
+  deviceId: string,
+  devicesMap: DevicesMap
+) => {
+  if (devicesMap.has(deviceId)) {
+    return (
+      devicesMap
+        .get(deviceId)!
+        .supportedDiseaseTestPerformed.filter(
+          (disease) =>
+            disease.supportedDisease.name !== MULTIPLEX_DISEASES.COVID_19
+        ).length > 0
+    );
+  }
+  return false;
+};
+
+export type SaveState = "idle" | "editing" | "saving" | "error";
+
+export const convertFromMultiplexResponse = (
+  responseResult: QueriedTestOrder["results"]
+): MultiplexResultInput[] => {
+  return responseResult.map((result) => ({
+    diseaseName: result.disease?.name,
+    testResult: result.testResult,
+  }));
+};
+
 const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
   const initialFormState: TestFormState = {
     dirty: false,
@@ -46,10 +87,14 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
     deviceId: testOrder.deviceType.internalId ?? "",
     specimenId: testOrder.specimenType.internalId ?? "",
     testResults: testOrder.results,
-    covidAoeQuestions: { symptoms: {} },
+    covidAoeQuestions: {},
     errors: { dateTested: "", deviceId: "", specimenId: "" },
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
+  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [editQueueItem] = useEditQueueItemMutation();
+
+  const DEBOUNCE_TIME = 300;
 
   let deviceTypeOptions = useMemo(
     () =>
@@ -90,24 +135,83 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
   }
 
   const deviceSupportsMultiplex = useMemo(() => {
-    if (devicesMap.has(state.deviceId)) {
-      return (
-        devicesMap
-          .get(state.deviceId)!
-          .supportedDiseaseTestPerformed.filter(
-            (disease) =>
-              disease.supportedDisease.name !== MULTIPLEX_DISEASES.COVID_19
-          ).length > 0
-      );
-    }
-    return false;
+    return doesDeviceSupportMultiplex(state.deviceId, devicesMap);
   }, [devicesMap, state.deviceId]);
 
   const isBeforeDateWarningThreshold =
     moment(state.dateTested) < moment().subtract(6, "months");
 
+  const updateQueueItem = (props: UpdateQueueItemProps) => {
+    return editQueueItem({
+      variables: {
+        id: testOrder.internalId,
+        deviceTypeId: props.deviceId,
+        results: props.results,
+        dateTested: props.dateTested,
+        specimenTypeId: props.specimenTypeId,
+      },
+    })
+      .then((response) => {
+        if (!response.data) throw Error("updateQueueItem null response");
+
+        // potentially update the other fields returned from editQueueItem?
+        const newDeviceId = response?.data?.editQueueItem?.deviceType;
+        if (newDeviceId && newDeviceId.internalId !== state.deviceId) {
+          dispatch({
+            type: TestFormActionCase.UPDATE_DEVICE_ID,
+            payload: { deviceId: newDeviceId.internalId, devicesMap },
+          });
+          updateTimer(testOrder.internalId, newDeviceId.testLength);
+        }
+      })
+      .catch((e) => console.error("temp dev test, will be caught by apollo"));
+  };
+
+  useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    if (state.dirty) {
+      dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
+      setSaveState("editing");
+      debounceTimer = setTimeout(async () => {
+        await updateQueueItem({
+          deviceId: state.deviceId,
+          dateTested: state.dateTested,
+          specimenTypeId: state.specimenId,
+          results: doesDeviceSupportMultiplex(state.deviceId, devicesMap)
+            ? state.testResults
+            : state.testResults.filter(
+                (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
+              ),
+        });
+        setSaveState("idle");
+      }, DEBOUNCE_TIME);
+    }
+    return () => {
+      clearTimeout(debounceTimer);
+      setSaveState("idle");
+    };
+    // eslint-disable-next-line
+  }, [state.deviceId, state.specimenId, state.dateTested, state.testResults]);
+
+  useEffect(() => {
+    if (state.dirty) {
+      // don't update if not done saving changes
+      return;
+    }
+    dispatch({
+      type: TestFormActionCase.UPDATE_WITH_CHANGES_FROM_SERVER,
+      payload: testOrder,
+    });
+    // eslint-disable-next-line
+  }, [testOrder]);
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("submit", state);
+  };
+
   return (
-    <>
+    <form onSubmit={onSubmit}>
       {isBeforeDateWarningThreshold && (
         <div className="grid-row grid-gap">
           <div className="grid-col-auto">
@@ -234,26 +338,22 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
           />
         )}
       </div>
-      {deviceSupportsMultiplex ? (
-        <></>
-      ) : (
-        <CovidAoEForm
-          testOrder={testOrder}
-          responses={state.covidAoeQuestions}
-          onResponseChange={(responses) => {
-            dispatch({
-              type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
-              payload: responses,
-            });
-          }}
-        />
-      )}
+      <CovidAoEForm
+        testOrder={testOrder}
+        responses={state.covidAoeQuestions}
+        onResponseChange={(responses) => {
+          dispatch({
+            type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
+            payload: responses,
+          });
+        }}
+      />
       <div className="grid-row margin-top-4">
         <div className="grid-col-auto">
           <Button type={"submit"}>Submit results</Button>
         </div>
       </div>
-    </>
+    </form>
   );
 };
 
