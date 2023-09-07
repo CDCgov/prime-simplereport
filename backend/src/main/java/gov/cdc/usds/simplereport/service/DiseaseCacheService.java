@@ -31,5 +31,7 @@ public class DiseaseCacheService {
   }
 
   @CacheEvict(value = SUPPORTED_DISEASE_ID_MAP, allEntries = true)
-  public void evictAllCacheValues() {}
+  public void evictAllCacheValues() {
+    log.info("clearing " + SUPPORTED_DISEASE_ID_MAP + " cache");
+  }
 }
