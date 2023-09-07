@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parseGenderIdentity;
+import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
@@ -50,38 +51,38 @@ public class PatientSelfRegistrationController {
     _currentPatientContextHolder.setIsPatientSelfRegistrationRequest(true);
 
     PatientSelfRegistrationLink registrationLink =
-        _patientRegLinkService.getPatientRegistrationLink(parseString(body.getRegistrationLink()));
+        _patientRegLinkService.getPatientRegistrationLink(parseString(body.registrationLink()));
 
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
-        body.getPhoneNumbers() != null
-            ? body.getPhoneNumbers()
-            : List.of(new PhoneNumberInput(null, parsePhoneNumber(body.getTelephone())));
+        body.phoneNumbers() != null
+            ? body.phoneNumbers()
+            : List.of(new PhoneNumberInput(null, parsePhoneNumber(body.telephone())));
 
-    var backwardsCompatibleEmails = new PatientEmailsHolder(body.getEmail(), body.getEmails());
+    var backwardsCompatibleEmails = new PatientEmailsHolder(body.email(), body.emails());
 
     Person p =
         _personService.addPatient(
             registrationLink,
-            parseString(body.getLookupId()),
-            parseString(body.getFirstName()),
-            parseString(body.getMiddleName()),
-            parseString(body.getLastName()),
-            parseString(body.getSuffix()),
-            body.getBirthDate(),
-            body.getAddress(),
-            body.getCountry(),
+            parseString(body.lookupId()),
+            parseString(body.firstName()),
+            parseString(body.middleName()),
+            parseString(body.lastName()),
+            parseString(body.suffix()),
+            body.birthDate(),
+            body.address(),
+            body.country(),
             parsePhoneNumbers(backwardsCompatiblePhoneNumbers),
-            body.getRole(),
+            parsePersonRole(body.role(), false),
             parseEmails(backwardsCompatibleEmails.getFullList()),
-            parseRace(body.getRace()),
-            parseEthnicity(body.getEthnicity()),
-            parseTribalAffiliation(body.getTribalAffiliation()),
-            parseGender(body.getGender()),
-            parseGenderIdentity(body.getGenderIdentity()),
-            body.getResidentCongregateSetting(),
-            body.getEmployedInHealthcare(),
-            parseString(body.getPreferredLanguage()),
-            body.getTestResultDelivery());
+            parseRace(body.race()),
+            parseEthnicity(body.ethnicity()),
+            parseTribalAffiliation(body.tribalAffiliation()),
+            parseGender(body.gender()),
+            parseGenderIdentity(body.genderIdentity()),
+            body.residentCongregateSetting(),
+            body.employedInHealthcare(),
+            parseString(body.preferredLanguage()),
+            body.testResultDelivery());
 
     log.info(
         "Patient={} self-registered from link={}", p.getInternalId(), registrationLink.getLink());
@@ -96,9 +97,9 @@ public class PatientSelfRegistrationController {
         _patientRegLinkService.getPatientRegistrationLink(patientRegistrationLink);
 
     return _personService.isDuplicatePatient(
-        body.getFirstName(),
-        body.getLastName(),
-        body.getBirthDate(),
+        body.firstName(),
+        body.lastName(),
+        body.birthDate(),
         link.getOrganization(),
         Optional.ofNullable(link.getFacility()));
   }
