@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 import gov.cdc.usds.simplereport.config.CachingConfig;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
   @Autowired @SpyBean SupportedDiseaseRepository repo;
 
   @Test
-  void retrievesCachedDisease() {
+  void getCachedDisease_doesntHitRepo() {
     SupportedDisease testCacheDisease = repo.findByName(COVID19_NAME).orElse(null);
 
     // result should only hit the cached ID <> Disease hashmap
@@ -31,29 +32,38 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
     assertEquals(testCacheDisease, cachedDisease);
 
     // should get called once on initDiseases but not after in subsequent getCachedDiseases
-    verify(repo, times(0)).findAll();
+    verify(repo, times(1)).findAll();
   }
 
   @Test
-  void retrievesCovid_successful() {
+  void getCovid_successful() {
     assertNotNull(_service.covid());
     assertEquals("COVID-19", _service.covid().getName());
   }
 
   @Test
-  void retrievesFluA_successful() {
+  void getFluA_successful() {
     assertNotNull(_service.fluA());
     assertEquals("Flu A", _service.fluA().getName());
   }
 
   @Test
-  void retrievesFluB_successful() {
+  void getFluB_successful() {
     assertNotNull(_service.fluB());
     assertEquals("Flu B", _service.fluB().getName());
   }
 
   @Test
-  void retrievesSupportedDiseasesMap_successful() {
+  void getByName_successful() {
+    SupportedDisease covidByName = _service.getDiseaseByName(COVID19_NAME);
+    SupportedDisease covidFromRepo = repo.findByName(COVID19_NAME).orElse(null);
+
+    assertNotNull(covidByName);
+    assertEquals(covidByName, covidFromRepo);
+  }
+
+  @Test
+  void getSupportedDiseasesMap_successful() {
     Map<UUID, SupportedDisease> supportedDiseasesMap = _service.getKnownSupportedDiseasesMap();
 
     assertThat(supportedDiseasesMap)
@@ -63,5 +73,18 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
         .containsEntry(_service.fluA().getInternalId(), _service.fluA())
         .containsEntry(_service.fluB().getInternalId(), _service.fluB())
         .containsEntry(_service.rsv().getInternalId(), _service.rsv());
+  }
+
+  @Test
+  void getSupportedDiseasesList_successful() {
+    List<SupportedDisease> supportedDiseasesList = _service.getSupportedDiseaseList();
+
+    assertThat(supportedDiseasesList)
+        .isNotNull()
+        .hasSize(4)
+        .contains(_service.covid())
+        .contains(_service.fluA())
+        .contains(_service.fluB())
+        .contains(_service.rsv());
   }
 }

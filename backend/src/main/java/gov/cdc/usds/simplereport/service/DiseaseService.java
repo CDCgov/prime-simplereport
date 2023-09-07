@@ -33,7 +33,7 @@ public class DiseaseService {
     getKnownSupportedDiseasesMap();
   }
 
-  public List<SupportedDisease> fetchSupportedDiseases() {
+  public List<SupportedDisease> getSupportedDiseaseList() {
     return getDiseaseNameToSupportedDiseaseMap().values().stream().toList();
   }
 
