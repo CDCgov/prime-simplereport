@@ -607,6 +607,8 @@ interface PersonUpdate extends Address {
   preferredLanguage: Language | null;
   notes: string | null;
   testResultDelivery: TestResultDeliveryPreference | null;
+  unknownPhoneNumber: boolean;
+  unknownAddress: boolean;
 }
 
 interface Person extends PersonUpdate {

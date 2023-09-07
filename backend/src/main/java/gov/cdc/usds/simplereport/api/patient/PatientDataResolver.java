@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -77,7 +78,15 @@ public class PatientDataResolver implements PersonNameResolver<Person>, Internal
   @SchemaMapping(typeName = "Patient", field = "phoneNumbers")
   public CompletableFuture<List<PhoneNumber>> getPhoneNumbers(
       Person person, DataLoader<UUID, List<PhoneNumber>> patientPhoneNumbersLoader) {
-    return patientPhoneNumbersLoader.load(person.getInternalId());
+    return patientPhoneNumbersLoader
+        .load(person.getInternalId())
+        .thenApply(
+            phoneNumbers -> {
+              if (phoneNumbers == null) {
+                return Collections.emptyList();
+              }
+              return phoneNumbers;
+            });
   }
 
   @SchemaMapping(typeName = "Patient", field = "telephone")
@@ -85,7 +94,7 @@ public class PatientDataResolver implements PersonNameResolver<Person>, Internal
       Person person, DataLoader<UUID, PhoneNumber> patientPrimaryPhoneNumberLoader) {
     return patientPrimaryPhoneNumberLoader
         .load(person.getInternalId())
-        .thenApply(PhoneNumber::getNumber);
+        .thenApply(phoneNumber -> phoneNumber == null ? "" : phoneNumber.getNumber());
   }
 
   @SchemaMapping(typeName = "Patient", field = "facility")

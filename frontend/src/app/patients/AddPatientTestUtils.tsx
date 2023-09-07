@@ -109,6 +109,8 @@ const addPatientRequestParams = {
   facilityId: mockFacilityID,
   preferredLanguage: null,
   testResultDelivery: "SMS",
+  unknownAddress: false,
+  unknownPhoneNumber: false,
 };
 
 const addPatientRequestNoDelivery = {
