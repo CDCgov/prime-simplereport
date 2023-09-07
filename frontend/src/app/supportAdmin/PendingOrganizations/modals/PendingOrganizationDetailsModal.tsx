@@ -1,131 +1,120 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React, { useState } from "react";
-import Modal from "react-modal";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import Modal from "../../../commonComponents/Modal";
 import { PendingOrganization } from "../../../../generated/graphql";
 import Button from "../../../commonComponents/Button/Button";
 import TextInput from "../../../commonComponents/TextInput";
 import { emailRegex } from "../../../utils/email";
 import { phoneNumberIsValid } from "../../../patients/personSchema";
 
-import { VerficationModalProps } from "./modal_utils";
-import VerifyPendingOrganizationConfirmationModal from "./VerifyPendingOrganizationConfirmationModal";
+import { PendingOrganizationDetailsModalProps } from "./modal_utils";
 
+type FieldNames = [
+  "name",
+  "adminFirstName",
+  "adminLastName",
+  "adminPhone",
+  "adminEmail"
+];
 const getEditBtnLabel = (isUpdating: boolean) => {
   return isUpdating ? "Updating..." : "Edit only";
-};
-
-const getVerifyBtnLabel = (isVerifying: boolean) => {
-  return isVerifying ? "Verifying..." : "Verify";
 };
 
 const isError = (formError: string | undefined) => {
   return formError ? "error" : undefined;
 };
 
-const PendingOrganizationDetailsModal: React.FC<VerficationModalProps> = ({
+const PendingOrganizationDetailsModal: React.FC<
+  PendingOrganizationDetailsModalProps
+> = ({
   organization,
-  handleUpdate,
-  handleClose,
-  handleVerify,
+  onUpdate,
+  onClose,
   isUpdating,
-  isVerifying,
   isLoading,
+  isOpen,
+  onVerifyOrgClick,
 }) => {
-  const [verifyConfirmation, setVerifyConfirmation] = useState(false);
+  const defaultValues = {
+    name: organization?.name,
+    adminFirstName: organization?.adminFirstName,
+    adminLastName: organization?.adminLastName,
+    adminEmail: organization?.adminEmail,
+    adminPhone: organization?.adminPhone,
+  };
 
   const {
+    reset,
     register,
     formState: { errors },
     watch,
     trigger,
     getValues,
+    getFieldState,
     handleSubmit,
   } = useForm<PendingOrganization>({
-    defaultValues: {
-      name: organization.name,
-      adminFirstName: organization.adminFirstName,
-      adminLastName: organization.adminLastName,
-      adminEmail: organization.adminEmail,
-      adminPhone: organization.adminPhone,
-    },
+    defaultValues,
   });
+
+  useEffect(() => {
+    if (organization) {
+      reset(defaultValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [organization]);
+
   const formCurrentValues = watch();
+  const fieldNames: FieldNames = [
+    "name",
+    "adminFirstName",
+    "adminLastName",
+    "adminPhone",
+    "adminEmail",
+  ];
 
   const isValidForm = async () => {
-    return await trigger(
-      ["name", "adminFirstName", "adminLastName", "adminPhone", "adminEmail"],
-      { shouldFocus: true }
-    );
+    return await trigger(fieldNames, { shouldFocus: true });
   };
 
   const onSave = async () => {
     if (await isValidForm()) {
       const pendingOrgFormData = getValues();
-      await handleUpdate(pendingOrgFormData);
+      await onUpdate(pendingOrgFormData);
     }
   };
 
   const onVerify = async () => {
+    let dirtyFields: any[] = [];
     if (await isValidForm()) {
-      setVerifyConfirmation(true);
+      const pendingOrgFormData = getValues();
+      fieldNames.forEach((fn) => {
+        dirtyFields.push(getFieldState(fn).isDirty);
+      });
+      let needsUpdate = dirtyFields.includes(true);
+      onVerifyOrgClick(needsUpdate, pendingOrgFormData);
     }
   };
 
-  const isBtnDisabled = () => {
-    return isVerifying || isUpdating || isLoading;
-  };
+  const isBtnDisabled = isUpdating || isLoading;
 
-  const handleVerifyConfirm = async () => {
-    const pendingOrgFormData = getValues();
-    await handleVerify(pendingOrgFormData);
-  };
-
-  return verifyConfirmation ? (
-    <VerifyPendingOrganizationConfirmationModal
-      setVerifyConfirmation={setVerifyConfirmation}
-      onVerifyConfirm={handleVerifyConfirm}
-      onClose={handleClose}
-      organization={formCurrentValues}
-      isLoading={isLoading}
-    />
-  ) : (
+  return (
     <Modal
-      isOpen={true}
-      style={{
-        content: {
-          maxHeight: "90vh",
-          width: "40em",
-          position: "initial",
-        },
-      }}
-      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      contentLabel="Unsaved changes to current organization"
-      ariaHideApp={process.env.NODE_ENV !== "test"}
-      onRequestClose={handleClose}
+      showModal={isOpen}
+      contentLabel="Organization details"
+      title="Organization details"
+      onClose={onClose}
     >
+      <Modal.Header
+        styleClassNames={"font-heading-lg margin-top-0 margin-bottom-205"}
+      >
+        Organization details
+      </Modal.Header>
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
       <form
         className="border-0 card-container"
         onSubmit={handleSubmit(() => {})}
       >
-        <div className="display-flex flex-justify">
-          <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-            Organization details
-          </h1>
-          <button
-            onClick={handleClose}
-            className="close-button"
-            data-testid="close-modal"
-            aria-label="Close"
-          >
-            <span className="fa-layers">
-              <FontAwesomeIcon icon={"circle"} size="2x" inverse />
-              <FontAwesomeIcon icon={"times-circle"} size="2x" />
-            </span>
-          </button>
-        </div>
-        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
         <TextInput
           label="Organization name"
           name="name"
@@ -190,31 +179,31 @@ const PendingOrganizationDetailsModal: React.FC<VerficationModalProps> = ({
             },
           })}
         />
-        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-          <div className="display-flex flex-justify-end">
-            <Button
-              className="margin-right-2"
-              onClick={handleClose}
-              variant="unstyled"
-              label="Cancel"
-            />
-            <Button
-              className="margin-right-2"
-              variant="outline"
-              onClick={onSave}
-              label={getEditBtnLabel(isUpdating)}
-              disabled={isBtnDisabled()}
-            />
-            <Button
-              className="margin-right-205"
-              id="verify-button"
-              onClick={onVerify}
-              label={getVerifyBtnLabel(isVerifying)}
-              disabled={isBtnDisabled()}
-            />
-          </div>
-        </div>
       </form>
+      <Modal.Footer
+        styleClassNames={"display-flex flex-justify-end margin-top-205"}
+      >
+        <Button
+          className="margin-right-205"
+          onClick={onClose}
+          variant="unstyled"
+          label="Cancel"
+        />
+        <Button
+          className="margin-right-205"
+          variant="outline"
+          onClick={onSave}
+          label={getEditBtnLabel(isUpdating)}
+          disabled={isBtnDisabled}
+        />
+        <Button
+          className="margin-right-0"
+          id="verify-button"
+          onClick={onVerify}
+          label={"Verify"}
+          disabled={isBtnDisabled}
+        />
+      </Modal.Footer>
     </Modal>
   );
 };

@@ -67,7 +67,9 @@ const PendingOrganizationsContainer = () => {
       organizations={data?.pendingOrganizations || []}
       submitIdentityVerified={submitIdentityVerified}
       submitDeletion={submitDeletion}
-      loading={loading || deletePendingOrgLoading || verifyIdentityLoading}
+      loading={loading}
+      deletePendingOrgLoading={deletePendingOrgLoading}
+      verifyIdentityLoading={verifyIdentityLoading}
       refetch={refetch}
     />
   );

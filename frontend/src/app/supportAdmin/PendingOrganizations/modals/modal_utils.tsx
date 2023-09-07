@@ -5,20 +5,28 @@ import {
 import { PendingOrganization } from "../../../../generated/graphql";
 
 export interface ModalProps {
-  organization: PendingOrganization;
-  handleClose: () => void;
-  isUpdating: boolean;
+  organization: PendingOrganization | null;
+  onClose: () => void;
   isLoading: boolean;
+  isOpen: boolean;
 }
 
-export interface VerficationModalProps extends ModalProps {
-  handleUpdate: (
+export interface PendingOrganizationDetailsModalProps extends ModalProps {
+  onVerifyOrgClick: (needsUpdate: boolean, org: PendingOrganization) => void;
+  onUpdate: (
     organization: PendingOrganizationFormValues
   ) => Promise<EditOrgMutationResponse>;
-  handleVerify: (organization: PendingOrganizationFormValues) => Promise<void>;
-  isVerifying: boolean;
+  isUpdating: boolean;
 }
 
-export interface DeletionModalProps extends ModalProps {
+export interface VerifyConfirmationModalProps extends ModalProps {
+  onVerifyConfirm: () => void;
+  onGoBackClick: () => void;
+  isVerifying: boolean;
+  isUpdating: boolean;
+}
+
+export interface ConfirmDeleteOrgModalProps extends ModalProps {
   handleDelete: (organization: PendingOrganization) => Promise<void>;
+  isDeleting: boolean;
 }

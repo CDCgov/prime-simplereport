@@ -263,8 +263,8 @@ describe("PendingOrganizationsContainer", () => {
         expect(
           screen.getByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
-        await act(
-          async () => await userEvent.click(screen.getByTestId("close-modal"))
+        await act(async () =>
+          screen.getByAltText("Close").closest("button")?.click()
         );
         expect(
           screen.getByText("Space Camp", { exact: false })
@@ -535,8 +535,8 @@ describe("PendingOrganizationsContainer", () => {
       expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
       fireEvent.click(await screen.findByText("Delete", { exact: true }));
 
-      await waitForElementToBeRemoved(() =>
-        screen.queryByText("Loading Organizations...")
+      await waitFor(() =>
+        expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
       );
 
       await waitFor(() =>
