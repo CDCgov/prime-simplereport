@@ -53,6 +53,7 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   country: "USA",
   preferredLanguage: null,
   testResultDelivery: null,
+  unknownPhoneNumber: undefined,
 };
 
 export const PATIENT_EXISTS = gql`

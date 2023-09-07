@@ -17,6 +17,8 @@ function ManagePhoneNumbersContainer() {
       updatePhoneNumbers={updatePhoneNumbers}
       updateTestResultDelivery={jest.fn()}
       phoneNumberValidator={useRef(null)}
+      unknownPhoneNumber={false}
+      setUnknownPhoneNumber={jest.fn()}
     />
   );
 }

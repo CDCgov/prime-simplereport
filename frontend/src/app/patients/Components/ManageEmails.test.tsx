@@ -42,6 +42,7 @@ const patient = {
   testResultDelivery: null,
   preferredLanguage: null,
   tribalAffiliation: null,
+  unknownPhoneNumber: false,
 };
 
 function ManageEmailsContainer() {

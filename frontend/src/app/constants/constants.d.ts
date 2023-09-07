@@ -606,6 +606,7 @@ interface PersonUpdate extends Address {
   emails: string[];
   preferredLanguage: Language | null;
   testResultDelivery: TestResultDeliveryPreference | null;
+  unknownPhoneNumber: boolean | undefined;
 }
 
 interface Person extends PersonUpdate {

@@ -79,6 +79,8 @@ const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [startTest, setStartTest] = useState(false);
   const [patient, setPatient] = useState(props.patient);
+  const [unknownPhoneNumber, setUnknownPhoneNumber] = useState(false);
+
   // Default country to USA if it's not set
   if (patient.country === null) {
     setPatient({ ...patient, country: "USA" });
@@ -163,6 +165,12 @@ const PersonForm = (props: Props) => {
     });
   }, [errors, schema, patient, getValidationError]);
 
+  useEffect(() => {
+    if (patient.unknownPhoneNumber) {
+      setUnknownPhoneNumber(patient.unknownPhoneNumber);
+    }
+  }, [patient.unknownPhoneNumber]);
+
   const onPersonChange =
     <K extends keyof PersonFormData>(field: K) =>
     (value: PersonFormData[K]) => {
@@ -188,6 +196,11 @@ const PersonForm = (props: Props) => {
       setFormChanged(true);
       setPatient({ ...patient, [field]: value });
     };
+
+  const onUpdateUnknownNumber = (unknownPhoneNumber: boolean) => {
+    setUnknownPhoneNumber(unknownPhoneNumber);
+    onPersonChange("unknownPhoneNumber")(unknownPhoneNumber);
+  };
 
   /**
    * This function checks the current validation status of an input
@@ -468,13 +481,19 @@ const PersonForm = (props: Props) => {
         <p className="usa-hint maxw-prose">
           {t("patient.form.contact.helpText")}
         </p>
+        {/*todo: styling */}
+        <h4>Phone</h4>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}
           updatePhoneNumbers={onPersonChange("phoneNumbers")}
           updateTestResultDelivery={onPersonChange("testResultDelivery")}
           phoneNumberValidator={phoneNumberValidator}
+          unknownPhoneNumber={unknownPhoneNumber}
+          setUnknownPhoneNumber={onUpdateUnknownNumber}
         />
+        {/*todo: styling */}
+        <h4>Email</h4>
         <div className="usa-form">
           <ManageEmails
             emails={patient.emails}
@@ -505,6 +524,8 @@ const PersonForm = (props: Props) => {
             />
           )}
         </div>
+        {/*todo: styling */}
+        <h4>Address</h4>
         <div className="usa-form">
           <Select
             label={t("patient.form.contact.country")}

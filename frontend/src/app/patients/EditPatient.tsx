@@ -300,6 +300,7 @@ const EditPatient = (props: Props) => {
                     ? null
                     : data.patient.facility?.id,
                 city: data.patient.city === null ? "" : data.patient.city,
+                unknownPhoneNumber: data.patient.phoneNumbers.length === 0,
               }}
               patientId={props.patientId}
               savePerson={savePerson}

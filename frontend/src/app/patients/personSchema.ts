@@ -111,7 +111,7 @@ function isPartiallyBlankPhoneNumber(phoneNumber: any) {
 }
 export function areValidPhoneNumbers(phoneNumbers: any) {
   // At least one phone number is required
-  if (!phoneNumbers || phoneNumbers.length === 0) {
+  if (!phoneNumbers) {
     return false;
   }
   return phoneNumbers.every((phoneNumber: any, idx: number) => {
@@ -217,7 +217,10 @@ const getPhoneNumberSchema = (t: TFunction) => {
       t("patient.form.errors.phoneNumbersType") || "",
       hasPhoneType
     )
-    .required();
+    .when("unknownPhoneNumber", {
+      is: false,
+      then: yup.array().min(1, t("patient.form.errors.phoneNumbers") || ""),
+    });
 };
 
 const getRequiredAddressSchema = (t: TFunction, key: string) => {
@@ -230,6 +233,7 @@ const getRequiredAddressSchema = (t: TFunction, key: string) => {
 const updateFieldSchemata: (
   t: TFunction
 ) => Record<keyof PersonUpdate, yup.AnySchema> = (t) => ({
+  unknownPhoneNumber: yup.boolean().optional(),
   lookupId: yup.string().nullable(),
   role: yup
     .mixed()
