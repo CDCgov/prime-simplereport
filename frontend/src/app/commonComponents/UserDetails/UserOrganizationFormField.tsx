@@ -1,5 +1,5 @@
 import { ComboBox, ComboBoxOption } from "@trussworks/react-uswds";
-import { Control, Controller } from "react-hook-form";
+import { Control, useController } from "react-hook-form";
 import React, { useRef } from "react";
 import classnames from "classnames";
 
@@ -36,65 +36,58 @@ const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
   /**
    * Form integration
    */
-  /*const {
+  const {
     field: { onChange, value, name, ref },
     fieldState: { error },
   } = useController({
     name: "organizationId",
     control,
     rules: { required: "Organization is required" },
-  });*/
+  });
   const describeText = (error: string | undefined) =>
     error ? `Error: ${error}` : undefined;
   const label = "Organization access";
   const comboBoxId = "org-dropdown-select";
 
+  /**
+   * HTML
+   */
   return (
-    <Controller
-      render={({
-        field: { onChange, value, name, ref },
-        fieldState: { error },
-      }) => (
-        <div
-          className={classnames(
-            "usa-form-group",
-            "margin-bottom-5",
-            error && "usa-form-group--error"
-          )}
-        >
-          <label
-            className={classnames(
-              "usa-label",
-              "text-bold",
-              "font-heading-md",
-              error && "usa-label--error"
-            )}
-            htmlFor={comboBoxId}
-          >
-            <Required label={label} />
-          </label>
-          {error && (
-            <span className={"usa-error-message"} role={"alert"}>
-              <span className="usa-sr-only">Error: </span> {error?.message}
-            </span>
-          )}
-          <ComboBox
-            key={renderVersion.current}
-            options={orgOptions}
-            id={comboBoxId}
-            defaultValue={value}
-            name={name}
-            onChange={onChange}
-            ref={ref}
-            assistiveHint={describeText(error?.message)}
-            disabled={loadingOrgs || disabled}
-          />
-        </div>
+    <div
+      className={classnames(
+        "usa-form-group",
+        "margin-bottom-5",
+        error && "usa-form-group--error"
       )}
-      name="organizationId"
-      control={control}
-      rules={{ required: "Organization is missing" }}
-    />
+    >
+      <label
+        className={classnames(
+          "usa-label",
+          "text-bold",
+          "font-heading-md",
+          error && "usa-label--error"
+        )}
+        htmlFor={comboBoxId}
+      >
+        <Required label={label} />
+      </label>
+      {error && (
+        <span className={"usa-error-message"} role={"alert"}>
+          <span className="usa-sr-only">Error: </span> {error?.message}
+        </span>
+      )}
+      <ComboBox
+        key={renderVersion.current}
+        options={orgOptions}
+        id={comboBoxId}
+        defaultValue={value}
+        name={name}
+        onChange={onChange}
+        ref={ref}
+        assistiveHint={describeText(error?.message)}
+        disabled={loadingOrgs || disabled}
+      />
+    </div>
   );
 };
 

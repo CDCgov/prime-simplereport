@@ -460,7 +460,7 @@ export const AdminManageUser: React.FC = () => {
                 >
                   <div
                     role="tablist"
-                    aria-owns="Userinformation Useraccess"
+                    aria-owns="userinformation-tab useraccess-tab"
                     className="usa-nav__secondary-links prime-nav usa-list"
                   >
                     {tabs.map((tabLabel) => (
@@ -471,7 +471,9 @@ export const AdminManageUser: React.FC = () => {
                         }`}
                       >
                         <button
-                          id={tabLabel.replaceAll(" ", "")}
+                          id={`${tabLabel
+                            .toLowerCase()
+                            .replaceAll(" ", "")}-tab`}
                           role="tab"
                           className="usa-button--unstyled text-ink text-no-underline cursor-pointer"
                           onClick={() => setNavItemSelected(tabLabel)}

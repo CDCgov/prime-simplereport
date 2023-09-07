@@ -143,7 +143,7 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({
   return (
     <div
       role="tabpanel"
-      aria-labelledby={"organization-access-tab-id"}
+      aria-labelledby={"useraccess-tab"}
       className="padding-left-1"
     >
       <form

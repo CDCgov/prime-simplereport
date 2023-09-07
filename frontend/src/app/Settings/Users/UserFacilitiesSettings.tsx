@@ -6,7 +6,6 @@ import Checkboxes from "../../commonComponents/Checkboxes";
 import { Facility } from "../../../generated/graphql";
 
 import { alphabeticalFacilitySort } from "./UserFacilitiesSettingsForm";
-import "./ManageUsers.scss";
 
 interface UserFacilitiesSettingProps {
   roleSelected: string;
@@ -37,8 +36,7 @@ const UserFacilitiesSettings: React.FC<UserFacilitiesSettingProps> = ({
       name: `Access all facilities (${facilityList?.length || 0})`,
       id: "ALL_FACILITIES",
     },
-    ...facilityList?.sort(alphabeticalFacilitySort),
-  ];
+  ].concat(facilityList?.sort(alphabeticalFacilitySort) || []);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, checked } = e.target;

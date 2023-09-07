@@ -51,7 +51,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
     <>
       <div
         role="tabpanel"
-        aria-labelledby={"user-information-tab-id"}
+        aria-labelledby={"userinformation-tab"}
         className="padding-left-1"
       >
         <h3 className="basic-info-header">Basic information</h3>
