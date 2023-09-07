@@ -51,14 +51,17 @@ const UserFacilitiesSettings: React.FC<UserFacilitiesSettingProps> = ({
     return isAdmin || selectedOptions.length > 0;
   };
 
+  const formRegistrationProps =
+    register("facilityIds", {
+      validate: validateAtLeastOneCheck,
+      onChange,
+    }) || {};
+
   let boxes = [
     ...allFacilities?.map((facility) => ({
       value: facility.id,
       label: facility.name,
-      ...register("facilityIds", {
-        validate: validateAtLeastOneCheck,
-        onChange,
-      }),
+      ...formRegistrationProps,
     })),
   ];
 
