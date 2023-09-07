@@ -31,7 +31,6 @@ export interface UserAccessTabProps {
   facilityList: Pick<Facility, "id" | "name">[];
 }
 
-// ToDo check why the update method fails when sent individual facilities
 const OrgAccessTab: React.FC<UserAccessTabProps> = ({
   user,
   facilityList,
