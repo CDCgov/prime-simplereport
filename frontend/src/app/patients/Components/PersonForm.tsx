@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
-import { ComboBox, Label, Textarea } from "@trussworks/react-uswds";
+import { Checkbox, ComboBox, Label, Textarea } from "@trussworks/react-uswds";
 
 import {
   canadianProvinceCodes,
@@ -79,6 +79,9 @@ const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [startTest, setStartTest] = useState(false);
   const [patient, setPatient] = useState(props.patient);
+  const [unknownPhoneNumber, setUnknownPhoneNumber] = useState(false);
+  const [unknownAddress, setUnknownAddress] = useState(false);
+
   // Default country to USA if it's not set
   if (patient.country === null) {
     setPatient({ ...patient, country: "USA" });
@@ -163,10 +166,42 @@ const PersonForm = (props: Props) => {
     });
   }, [errors, schema, patient, getValidationError]);
 
+  useEffect(() => {
+    if (patient.unknownPhoneNumber) {
+      setUnknownPhoneNumber(patient.unknownPhoneNumber);
+    }
+  }, [patient.unknownPhoneNumber]);
+
+  useEffect(() => {
+    if (patient.unknownAddress) {
+      setUnknownAddress(patient.unknownAddress);
+    }
+  }, [patient.unknownAddress]);
+
   const onPersonChange =
     <K extends keyof PersonFormData>(field: K) =>
     (value: PersonFormData[K]) => {
       if (value === patient[field]) {
+        return;
+      }
+      if (field === "unknownAddress") {
+        setFormChanged(true);
+
+        //if unknown address set to a valid default; else an empty string
+        const state = value ? "NA" : "";
+        const zip = value ? "00000" : "";
+        const street = value ? "** Unknown / Not Given **" : "";
+
+        setPatient({
+          ...patient,
+          [field]: value,
+          state: state,
+          zipCode: zip,
+          street: street,
+          streetTwo: "",
+          city: "",
+          county: "",
+        });
         return;
       }
       // If a patient has an international address, use special values for state and zip code
@@ -188,6 +223,16 @@ const PersonForm = (props: Props) => {
       setFormChanged(true);
       setPatient({ ...patient, [field]: value });
     };
+
+  const onUpdateUnknownNumber = (unknownPhoneNumber: boolean) => {
+    setUnknownPhoneNumber(unknownPhoneNumber);
+    onPersonChange("unknownPhoneNumber")(unknownPhoneNumber);
+  };
+
+  const onUpdateUnknownAddress = (unknownAddress: boolean) => {
+    setUnknownAddress(unknownAddress);
+    onPersonChange("unknownAddress")(unknownAddress);
+  };
 
   /**
    * This function checks the current validation status of an input
@@ -325,7 +370,8 @@ const PersonForm = (props: Props) => {
     if (
       JSON.stringify(getAddress(patient)) ===
         JSON.stringify(getAddress(props.patient)) ||
-      patient.country !== "USA"
+      patient.country !== "USA" ||
+      unknownAddress
     ) {
       onSave(undefined, shouldStartTest);
     } else {
@@ -468,13 +514,17 @@ const PersonForm = (props: Props) => {
         <p className="usa-hint maxw-prose">
           {t("patient.form.contact.helpText")}
         </p>
+        <h4>{t("patient.form.contact.phoneHeading")}</h4>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}
           updatePhoneNumbers={onPersonChange("phoneNumbers")}
           updateTestResultDelivery={onPersonChange("testResultDelivery")}
           phoneNumberValidator={phoneNumberValidator}
+          unknownPhoneNumber={unknownPhoneNumber}
+          setUnknownPhoneNumber={onUpdateUnknownNumber}
         />
+        <h4>{t("patient.form.contact.emailHeading")}</h4>
         <div className="usa-form">
           <ManageEmails
             emails={patient.emails}
@@ -505,112 +555,126 @@ const PersonForm = (props: Props) => {
             />
           )}
         </div>
-        <div className="usa-form">
-          <Select
-            label={t("patient.form.contact.country")}
-            name="country"
-            value={patient.country || "USA"}
-            options={countryOptions}
-            onChange={onPersonChange("country")}
-            onBlur={() => {
-              onBlurField("country");
-            }}
-            validationStatus={validationStatus("country")}
-            errorMessage={errors.country}
-            required
-          />
-        </div>
-        <div className="usa-form">
-          <Input
-            {...commonInputProps}
-            field="street"
-            label={t("patient.form.contact.street1")}
-            required
-          />
-        </div>
-        <div className="usa-form">
-          <Input
-            {...commonInputProps}
-            field="streetTwo"
-            label={t("patient.form.contact.street2")}
-          />
-        </div>
-        <div className="usa-form">
-          <Input
-            {...commonInputProps}
-            field="city"
-            label={t("patient.form.contact.city")}
-            required
-          />
-          {view !== PersonFormView.SELF_REGISTRATION && (
-            <Input
-              {...commonInputProps}
-              field="county"
-              label={t("patient.form.contact.county")}
-            />
-          )}
-          {patient.country === "USA" ? (
-            <div className="grid-row grid-gap">
-              <div className="mobile-lg:grid-col-6">
-                <Select
-                  label={t("patient.form.contact.state")}
-                  name="state"
-                  value={patient.state || ""}
-                  options={stateCodes.map((c) => ({ label: c, value: c }))}
-                  defaultOption={t("common.defaultDropdownOption")}
-                  defaultSelect
-                  onChange={onPersonChange("state")}
-                  onBlur={() => {
-                    onBlurField("state");
-                  }}
-                  validationStatus={validationStatus("state")}
-                  errorMessage={errors.state}
-                  required
-                />
-              </div>
-              <div className="mobile-lg:grid-col-6">
+        <h4>{t("patient.form.contact.addressHeading")}</h4>
+        <Checkbox
+          id={"unknownAddress"}
+          name={"unknownAddress"}
+          label={t("patient.form.contact.unknownAddress")}
+          checked={unknownAddress}
+          onChange={(e) => {
+            onUpdateUnknownAddress(e.target.checked);
+          }}
+        />
+        {!unknownAddress && (
+          <div>
+            <div className="usa-form">
+              <Select
+                label={t("patient.form.contact.country")}
+                name="country"
+                value={patient.country || "USA"}
+                options={countryOptions}
+                onChange={onPersonChange("country")}
+                onBlur={() => {
+                  onBlurField("country");
+                }}
+                validationStatus={validationStatus("country")}
+                errorMessage={errors.country}
+                required
+              />
+            </div>
+            <div className="usa-form">
+              <Input
+                {...commonInputProps}
+                field="street"
+                label={t("patient.form.contact.street1")}
+                required
+              />
+            </div>
+            <div className="usa-form">
+              <Input
+                {...commonInputProps}
+                field="streetTwo"
+                label={t("patient.form.contact.street2")}
+              />
+            </div>
+            <div className="usa-form">
+              <Input
+                {...commonInputProps}
+                field="city"
+                label={t("patient.form.contact.city")}
+                required
+              />
+              {view !== PersonFormView.SELF_REGISTRATION && (
                 <Input
                   {...commonInputProps}
-                  field="zipCode"
-                  label={t("patient.form.contact.zip")}
-                  required
+                  field="county"
+                  label={t("patient.form.contact.county")}
                 />
-              </div>
+              )}
+              {patient.country === "USA" ? (
+                <div className="grid-row grid-gap">
+                  <div className="mobile-lg:grid-col-6">
+                    <Select
+                      label={t("patient.form.contact.state")}
+                      name="state"
+                      value={patient.state || ""}
+                      options={stateCodes.map((c) => ({ label: c, value: c }))}
+                      defaultOption={t("common.defaultDropdownOption")}
+                      defaultSelect
+                      onChange={onPersonChange("state")}
+                      onBlur={() => {
+                        onBlurField("state");
+                      }}
+                      validationStatus={validationStatus("state")}
+                      errorMessage={errors.state}
+                      required
+                    />
+                  </div>
+                  <div className="mobile-lg:grid-col-6">
+                    <Input
+                      {...commonInputProps}
+                      field="zipCode"
+                      label={t("patient.form.contact.zip")}
+                      required
+                    />
+                  </div>
+                </div>
+              ) : null}
+              {patient.country === "CAN" ? (
+                <div className="grid-row grid-gap">
+                  <div className="mobile-lg:grid-col-6">
+                    <Select
+                      label={t("patient.form.contact.state")}
+                      name="state"
+                      value={patient.state || ""}
+                      options={canadianProvinceCodes.map((c) => ({
+                        label: c,
+                        value: c,
+                      }))}
+                      defaultOption={t("common.defaultDropdownOption")}
+                      defaultSelect
+                      onChange={onPersonChange("state")}
+                      onBlur={() => {
+                        onBlurField("state");
+                      }}
+                      validationStatus={validationStatus("state")}
+                      errorMessage={errors.state}
+                      required
+                    />
+                  </div>
+                  <div className="mobile-lg:grid-col-6">
+                    <Input
+                      {...commonInputProps}
+                      field="zipCode"
+                      label={t("patient.form.contact.zip")}
+                      required
+                    />
+                  </div>
+                </div>
+              ) : null}
             </div>
-          ) : null}
-          {patient.country === "CAN" ? (
-            <div className="grid-row grid-gap">
-              <div className="mobile-lg:grid-col-6">
-                <Select
-                  label={t("patient.form.contact.state")}
-                  name="state"
-                  value={patient.state || ""}
-                  options={canadianProvinceCodes.map((c) => ({
-                    label: c,
-                    value: c,
-                  }))}
-                  defaultOption={t("common.defaultDropdownOption")}
-                  defaultSelect
-                  onChange={onPersonChange("state")}
-                  onBlur={() => {
-                    onBlurField("state");
-                  }}
-                  validationStatus={validationStatus("state")}
-                  errorMessage={errors.state}
-                  required
-                />
-              </div>
-              <div className="mobile-lg:grid-col-6">
-                <Input
-                  {...commonInputProps}
-                  field="zipCode"
-                  label={t("patient.form.contact.zip")}
-                  required
-                />
-              </div>
-            </div>
-          ) : null}
-        </div>
+          </div>
+        )}
         <div className="usa-form" style={{ maxWidth: "30rem" }}>
           <div className="usa-form-group">
             <Label htmlFor="patient-notes-textarea">

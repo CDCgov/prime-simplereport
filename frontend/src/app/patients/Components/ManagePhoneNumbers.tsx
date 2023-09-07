@@ -1,6 +1,7 @@
 import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTranslation } from "react-i18next";
+import { Checkbox } from "@trussworks/react-uswds";
 
 import Button from "../../commonComponents/Button/Button";
 import Input from "../../commonComponents/Input";
@@ -21,6 +22,8 @@ interface Props {
     testResultDelivery: TestResultDeliveryPreference
   ) => void;
   phoneNumberValidator: React.MutableRefObject<Function | null>;
+  unknownPhoneNumber?: boolean;
+  setUnknownPhoneNumber: (unknownPhoneNumber: boolean) => void;
 }
 
 const ManagePhoneNumbers: React.FC<Props> = ({
@@ -29,6 +32,8 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   updatePhoneNumbers,
   updateTestResultDelivery,
   phoneNumberValidator,
+  unknownPhoneNumber,
+  setUnknownPhoneNumber,
 }) => {
   const [errors, setErrors] = useState<PhoneNumberErrors[]>([]);
 
@@ -84,10 +89,12 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   const validateField = useCallback(
     async (idx: number, field: keyof PhoneNumber) => {
       try {
-        await phoneNumberUpdateSchema.validateAt(
-          field,
-          phoneNumbersOrDefault[idx]
-        );
+        if (!unknownPhoneNumber) {
+          await phoneNumberUpdateSchema.validateAt(
+            field,
+            phoneNumbersOrDefault[idx]
+          );
+        }
         clearError(idx, field);
       } catch (e: any) {
         setErrors((existingErrors) => {
@@ -120,6 +127,13 @@ const ManagePhoneNumbers: React.FC<Props> = ({
   useEffect(() => {
     phoneNumberValidator.current = validatePhoneNumbers;
   }, [phoneNumberValidator, validatePhoneNumbers]);
+
+  useEffect(() => {
+    if (unknownPhoneNumber) {
+      updatePhoneNumbers([]);
+      clearError(0, "type", "number");
+    }
+  }, [unknownPhoneNumber]);
 
   // Make sure all existing errors are up-to-date (including translations)
   useEffect(() => {
@@ -262,32 +276,45 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   return (
     <div className="usa-form">
-      {generatePhoneNumberRows()}
-      <Button
-        className="margin-top-2"
-        onClick={onAddPhoneNumber}
-        variant="unstyled"
-        label={t("patient.form.contact.addNumber")}
-        icon="plus"
-        id={"add-phone-number-btn"}
+      <Checkbox
+        id={"unknownPhoneNumber"}
+        name={"unknownPhoneNumber"}
+        label={t("patient.form.contact.unknownPhoneNumber")}
+        checked={unknownPhoneNumber}
+        onChange={(e) => {
+          setUnknownPhoneNumber(e.target.checked);
+        }}
       />
-      {phoneNumbers.some((pn) => pn.type === "MOBILE") && (
-        <RadioGroup
-          legend={t("patient.form.testResultDelivery.text")}
-          name="testResultDeliveryText"
-          buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS}
-          onChange={(newPreference) => {
-            updateTestResultDelivery(
-              toggleDeliveryPreferenceSms(
-                testResultDelivery as TestResultDeliveryPreference,
-                newPreference
-              )
-            );
-          }}
-          selectedRadio={getSelectedDeliveryPreferencesSms(
-            testResultDelivery as TestResultDeliveryPreference
+      {!unknownPhoneNumber && (
+        <div>
+          {generatePhoneNumberRows()}
+          <Button
+            className="margin-top-2"
+            onClick={onAddPhoneNumber}
+            variant="unstyled"
+            label={t("patient.form.contact.addNumber")}
+            icon="plus"
+            id={"add-phone-number-btn"}
+          />
+          {phoneNumbers.some((pn) => pn.type === "MOBILE") && (
+            <RadioGroup
+              legend={t("patient.form.testResultDelivery.text")}
+              name="testResultDeliveryText"
+              buttons={TEST_RESULT_DELIVERY_PREFERENCE_VALUES_SMS}
+              onChange={(newPreference) => {
+                updateTestResultDelivery(
+                  toggleDeliveryPreferenceSms(
+                    testResultDelivery as TestResultDeliveryPreference,
+                    newPreference
+                  )
+                );
+              }}
+              selectedRadio={getSelectedDeliveryPreferencesSms(
+                testResultDelivery as TestResultDeliveryPreference
+              )}
+            />
           )}
-        />
+        </div>
       )}
     </div>
   );

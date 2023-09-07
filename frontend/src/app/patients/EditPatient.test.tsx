@@ -133,6 +133,8 @@ describe("EditPatient", () => {
             tribalAffiliation: undefined,
             preferredLanguage: null,
             facilityId: null,
+            unknownPhoneNumber: false,
+            unknownAddress: false,
             notes: "Red tent",
           },
         },

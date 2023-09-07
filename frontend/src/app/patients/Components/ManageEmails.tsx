@@ -134,7 +134,7 @@ const ManageEmails: React.FC<Props> = ({
             <TextInput
               name={`email-${idx}`}
               idString={`email-${idx}`}
-              className="flex-fill emailFormElement"
+              className="flex-fill emailFormElement, margin-top-0"
               value={emailsOrDefault[idx] || ""}
               errorMessage={errors[idx]}
               label={

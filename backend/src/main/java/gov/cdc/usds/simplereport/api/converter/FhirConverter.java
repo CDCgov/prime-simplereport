@@ -41,6 +41,7 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.TRIBAL_AFFIL
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.UNIVERSAL_ID_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.YESNO_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.model.TestEventExport.FALLBACK_DEFAULT_TEST_MINUTES;
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
 
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -444,16 +445,35 @@ public class FhirConverter {
     return org;
   }
 
-  public Patient convertToPatient(Person person) {
+  public StreetAddress getPatientAddress(Person person, Facility facility) {
+    var personAddress = person.getAddress();
+    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(person.getStreet()) && facility != null) {
+      var facilityAddress = facility.getAddress();
+      personAddress.setCity(facilityAddress.getCity());
+      personAddress.setState(facilityAddress.getState());
+      personAddress.setPostalCode(facilityAddress.getPostalCode());
+      personAddress.setCounty(facilityAddress.getCounty());
+    }
+    return personAddress;
+  }
+
+  public List<PhoneNumber> getPatientPhoneNumbers(Person person, Facility facility) {
+    if (person.getPhoneNumbers() == null || person.getPhoneNumbers().isEmpty()) {
+      return List.of(new PhoneNumber(PhoneType.LANDLINE, facility.getTelephone()));
+    }
+    return person.getPhoneNumbers();
+  }
+
+  public Patient convertToPatient(Person person, Facility facility) {
     return convertToPatient(
         ConvertToPatientProps.builder()
             .id(person.getInternalId().toString())
             .name(person.getNameInfo())
-            .phoneNumbers(person.getPhoneNumbers())
+            .phoneNumbers(getPatientPhoneNumbers(person, facility))
             .emails(person.getEmails())
             .gender(person.getGender())
             .dob(person.getBirthDate())
-            .address(person.getAddress())
+            .address(getPatientAddress(person, facility))
             .country(person.getCountry())
             .race(person.getRace())
             .ethnicity(person.getEthnicity())
@@ -980,7 +1000,7 @@ public class FhirConverter {
 
     return createFhirBundle(
         CreateFhirBundleProps.builder()
-            .patient(convertToPatient(testEvent.getPatient()))
+            .patient(convertToPatient(testEvent.getPatient(), testEvent.getFacility()))
             .testingLab(convertToOrganization(testEvent.getFacility()))
             .orderingFacility(null)
             .practitioner(convertToPractitioner(testEvent.getProviderData()))

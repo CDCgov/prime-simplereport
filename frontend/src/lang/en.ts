@@ -144,6 +144,11 @@ export const en = {
         },
         contact: {
           heading: "Contact information",
+          phoneHeading: "Phone",
+          unknownPhoneNumber: "Phone number unknown",
+          emailHeading: "Email",
+          addressHeading: "Address",
+          unknownAddress: "Address unknown or patient unhoused",
           helpText:
             "You're responsible for entering correct contact information, following applicable federal and state laws.",
           primaryPhoneNumber: "Primary phone number",

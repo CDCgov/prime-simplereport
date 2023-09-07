@@ -53,6 +53,8 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   country: "USA",
   preferredLanguage: null,
   testResultDelivery: null,
+  unknownPhoneNumber: undefined,
+  unknownAddress: undefined,
   notes: null,
 };
 
