@@ -389,12 +389,6 @@ export const AdminManageUser: React.FC = () => {
   };
 
   /**
-   * Tab content
-   */
-
-  const tabs: (typeof navItemSelected)[] = ["User information", "User access"];
-
-  /**
    * Unsaved changes (prompt and in-progress modal)
    */
   const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
@@ -410,6 +404,11 @@ export const AdminManageUser: React.FC = () => {
       operationMethod();
     }
   };
+
+  /**
+   * Tab content
+   */
+  const tabs: (typeof navItemSelected)[] = ["User information", "User access"];
 
   /**
    * HTML
@@ -461,7 +460,7 @@ export const AdminManageUser: React.FC = () => {
                 >
                   <div
                     role="tablist"
-                    aria-owns={`user-information-tab-id facility-access-tab-id`}
+                    aria-owns="Userinformation Useraccess"
                     className="usa-nav__secondary-links prime-nav usa-list"
                   >
                     {tabs.map((tabLabel) => (
@@ -472,7 +471,7 @@ export const AdminManageUser: React.FC = () => {
                         }`}
                       >
                         <button
-                          id={`user-information-tab-id`}
+                          id={tabLabel.replaceAll(" ", "")}
                           role="tab"
                           className="usa-button--unstyled text-ink text-no-underline cursor-pointer"
                           onClick={() => setNavItemSelected(tabLabel)}
