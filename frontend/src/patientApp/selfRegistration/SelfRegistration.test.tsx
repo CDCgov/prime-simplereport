@@ -4,6 +4,7 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -100,7 +101,12 @@ describe("SelfRegistration", () => {
     });
     screen.getAllByLabelText("No").forEach(fireEvent.click);
     fireEvent.click(screen.getByLabelText("Mobile"));
-    fireEvent.click(screen.getByLabelText("Female"));
+    fireEvent.click(
+      within(screen.getByTestId("gender")).getByLabelText("Female")
+    );
+    fireEvent.click(
+      within(screen.getByTestId("genderIdentity")).getByLabelText("Female")
+    );
     fireEvent.click(screen.getByText("Native Hawaiian/other Pacific Islander"));
     fireEvent.click(screen.getByText("Submit"));
     await screen.findByText("Address validation");

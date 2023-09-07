@@ -339,6 +339,7 @@ exports[`QueueItem matches snapshot 1`] = `
             >
               <fieldset
                 class="usa-fieldset prime-radios"
+                data-testid="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
                 id="covid-test-result-1b02363b-ce71-4f30-a2d6-d82b56a91b39"
               >
                 <legend
