@@ -109,7 +109,6 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
         Organization update
       </Modal.Header>
       <div className="border-top border-base-lighter margin-x-neg-205"></div>
-
       <p className="margin-top-3">
         This update will move <span className="text-bold">{fullName}</span> to a
         different organization. The user will lose access to{" "}

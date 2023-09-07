@@ -57,13 +57,11 @@ const UserFacilitiesSettings: React.FC<UserFacilitiesSettingProps> = ({
       onChange,
     }) || {};
 
-  let boxes = [
-    ...allFacilities?.map((facility) => ({
-      value: facility.id,
-      label: facility.name,
-      ...formRegistrationProps,
-    })),
-  ];
+  let boxes = allFacilities?.map((facility) => ({
+    value: facility.id,
+    label: facility.name,
+    ...formRegistrationProps,
+  }));
 
   return (
     <Checkboxes
