@@ -34,7 +34,6 @@ export const TestCard = ({
   );
 
   const [isOpen, setIsOpen] = useState(false);
-  const [isCollapsible, setIsCollapsible] = useState(true);
 
   const timerContext = {
     organizationName: organization.name,
@@ -59,11 +58,7 @@ export const TestCard = ({
         <div className="grid-container">
           <div className="grid-row grid-gap flex-align-center">
             <div className="grid-col-auto margin-top-05">
-              <Button
-                variant="unstyled"
-                onClick={toggleOpen}
-                disabled={!isCollapsible}
-              >
+              <Button variant="unstyled" onClick={toggleOpen}>
                 {isOpen ? (
                   <Icon.ExpandMore size={3} focusable={true} />
                 ) : (
