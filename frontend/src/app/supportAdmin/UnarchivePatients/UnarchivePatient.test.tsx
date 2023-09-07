@@ -580,10 +580,14 @@ describe("Unarchive patient", () => {
         </MockedProvider>
       </Provider>
     );
-    await waitForElementToBeRemoved(() => screen.queryByText(/Loading/i));
+    await waitFor(() =>
+      expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
+    );
     await searchByOrgAndFacility();
     await act(async () => screen.getByText("2").closest("a")?.click());
-    await waitForElementToBeRemoved(() => screen.queryByText(/Loading/i));
+    await waitFor(() =>
+      expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
+    );
     await act(async () => screen.getAllByText("Unarchive")[0].click());
     expect(screen.getByRole("dialog")).toHaveTextContent(
       /Are you sure you want to unarchive Gutmann, Rod\?/
