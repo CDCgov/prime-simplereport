@@ -10,7 +10,6 @@ import {
   getPregnancyResponses,
   globalSymptomDefinitions,
   PregnancyCode,
-  SymptomCode,
 } from "../../../../patientApp/timeOfTest/constants";
 import { QueriedTestOrder } from "../../QueueItem";
 import { CovidAoeQuestionResponses } from "../TestCardFormReducer";
@@ -23,12 +22,36 @@ export interface CovidAoEFormProps {
 
 const pregnancyResponses = getPregnancyResponses();
 
+const parseSymptoms = (symptomsJsonString: string | null | undefined) => {
+  const symptoms: Record<string, boolean> = {};
+  if (symptomsJsonString) {
+    const parsedSymptoms: { [key: string]: string | boolean } =
+      JSON.parse(symptomsJsonString);
+
+    globalSymptomDefinitions.forEach((opt) => {
+      const val = opt.value;
+      if (typeof parsedSymptoms[val] === "string") {
+        symptoms[val] = parsedSymptoms[val] === "true";
+      } else {
+        symptoms[val] = parsedSymptoms[val] as boolean;
+      }
+    });
+  } else {
+    globalSymptomDefinitions.forEach((opt) => {
+      symptoms[opt.value] = false;
+    });
+  }
+  return symptoms;
+};
+
 const CovidAoEForm = ({
   testOrder,
   responses,
   onResponseChange,
 }: CovidAoEFormProps) => {
   const [hasAnySymptoms, setHasAnySymptoms] = useState<YesNoUnknown>();
+
+  const symptoms: Record<string, boolean> = parseSymptoms(responses.symptoms);
 
   const onPregnancyChange = (pregnancyCode: PregnancyCode) => {
     onResponseChange({ ...responses, pregnancy: pregnancyCode });
@@ -41,12 +64,16 @@ const CovidAoEForm = ({
     });
   };
 
-  const onSymptomsChange = (symptom: string) => {
-    let updateSymptoms = { ...responses.symptoms };
-    updateSymptoms[symptom] = !updateSymptoms[symptom];
+  const onSymptomsChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    currentSymptoms: Record<string, boolean>
+  ) => {
     onResponseChange({
       ...responses,
-      symptoms: updateSymptoms,
+      symptoms: JSON.stringify({
+        ...currentSymptoms,
+        [event.target.value]: event.target.checked,
+      }),
     });
   };
 
@@ -91,10 +118,14 @@ const CovidAoEForm = ({
           </div>
           <div className="grid-row grid-gap">
             <Checkboxes
-              boxes={globalSymptomDefinitions}
+              boxes={globalSymptomDefinitions.map(({ label, value }) => ({
+                label,
+                value,
+                checked: symptoms[value],
+              }))}
               legend="Select any symptoms the patient is experiencing"
               name={`symptoms-${testOrder.internalId}`}
-              onChange={(e) => onSymptomsChange(e.target.value as SymptomCode)}
+              onChange={(e) => onSymptomsChange(e, symptoms)}
             />
           </div>
         </>

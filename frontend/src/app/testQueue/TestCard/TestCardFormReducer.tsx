@@ -2,10 +2,12 @@ import moment from "moment/moment";
 
 import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
-import { DevicesMap } from "../QueueItem";
+import { DevicesMap, QueriedTestOrder } from "../QueueItem";
+
+import { convertFromMultiplexResponse } from "./TestCardForm";
 
 export interface TestFormState {
-  dateTested?: string;
+  dateTested: string;
   dirty: boolean;
   deviceId: string;
   specimenId: string;
@@ -20,8 +22,7 @@ export interface TestFormState {
 
 export interface CovidAoeQuestionResponses {
   pregnancy?: PregnancyCode;
-  // SymptomInputs should probably be updated to use SymptomCode and SymptomName types
-  symptoms: Record<string, boolean>;
+  symptoms?: string | null;
   symptomOnsetDate?: string;
 }
 
@@ -32,6 +33,8 @@ export enum TestFormActionCase {
   UPDATE_SPECIMEN_ID = "UPDATE_SPECIMEN_ID",
   UPDATE_TEST_RESULT = "UPDATE_TEST_RESULT",
   UPDATE_COVID_AOE_RESPONSES = "UPDATE_COVID_AOE_RESPONSES",
+  UPDATE_DIRTY_STATE = "UPDATE_DIRTY_STATE",
+  UPDATE_WITH_CHANGES_FROM_SERVER = "UPDATE_WITH_CHANGES_FROM_SERVER",
 }
 
 export type TestFormAction =
@@ -49,6 +52,14 @@ export type TestFormAction =
   | {
       type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES;
       payload: CovidAoeQuestionResponses;
+    }
+  | {
+      type: TestFormActionCase.UPDATE_DIRTY_STATE;
+      payload: boolean;
+    }
+  | {
+      type: TestFormActionCase.UPDATE_WITH_CHANGES_FROM_SERVER;
+      payload: QueriedTestOrder;
     };
 
 export const testCardFormReducer = (
@@ -119,6 +130,28 @@ export const testCardFormReducer = (
         ...prevState,
         dirty: true,
         covidAoeQuestions: payload,
+      };
+    }
+    case TestFormActionCase.UPDATE_DIRTY_STATE: {
+      return {
+        ...prevState,
+        dirty: false,
+      };
+    }
+    case TestFormActionCase.UPDATE_WITH_CHANGES_FROM_SERVER: {
+      return {
+        ...prevState,
+        dirty: false,
+        deviceId: payload.deviceType.internalId,
+        specimenId: payload.specimenType.internalId,
+        dateTested: payload.dateTested,
+        testResults: convertFromMultiplexResponse(payload.results),
+        covidAoeQuestions: {
+          ...prevState.covidAoeQuestions,
+          symptoms: payload.symptoms,
+          symptomOnsetDate: payload.symptomOnset,
+          pregnancy: payload.pregnancy as PregnancyCode,
+        },
       };
     }
   }
