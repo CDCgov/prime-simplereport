@@ -365,30 +365,32 @@ export const AdminManageUser: React.FC = () => {
   /**
    * Submit access updates
    */
-  const [updateUserPrivilegesAndGroupAccess, { loading: isUpdatingAccess }] =
+  const [updateUserPrivilegesAndGroupAccess] =
     useUpdateUserPrivilegesAndGroupAccessMutation();
 
   const updateUserPrivileges = async (orgAccessFormData: OrgAccessFormData) => {
-    const allFacilityAccess =
-      orgAccessFormData.role === "ADMIN" ||
-      !!orgAccessFormData.facilityIds.find((id) => id === "ALL_FACILITIES");
+    await handleUpdate(async () => {
+      const allFacilityAccess =
+        orgAccessFormData.role === "ADMIN" ||
+        !!orgAccessFormData.facilityIds.find((id) => id === "ALL_FACILITIES");
 
-    await updateUserPrivilegesAndGroupAccess({
-      variables: {
-        username: foundUser?.email || "",
-        role: orgAccessFormData.role as MutationRole,
-        orgExternalId: facilitiesResponse?.organization?.externalId || "",
-        accessAllFacilities: allFacilityAccess,
-        facilities: allFacilityAccess
-          ? []
-          : orgAccessFormData.facilityIds?.filter(
-              (id) => id !== "ALL_FACILITIES"
-            ),
-      },
+      await updateUserPrivilegesAndGroupAccess({
+        variables: {
+          username: foundUser?.email || "",
+          role: orgAccessFormData.role as MutationRole,
+          orgExternalId: facilitiesResponse?.organization?.externalId || "",
+          accessAllFacilities: allFacilityAccess,
+          facilities: allFacilityAccess
+            ? []
+            : orgAccessFormData.facilityIds?.filter(
+                (id) => id !== "ALL_FACILITIES"
+              ),
+        },
+      });
+
+      showSuccess("", `Access updated for ${userFullName}`);
+      await retrieveUser();
     });
-
-    showSuccess("", `Access updated for ${userFullName}`);
-    await retrieveUser();
   };
 
   /**
@@ -515,13 +517,13 @@ export const AdminManageUser: React.FC = () => {
                     setValue={setValue}
                     facilityList={facilityList || []}
                     isLoadingFacilities={loadingFacilities}
-                    isSubmitting={isUpdatingAccess}
+                    isSubmitting={isUpdating}
                   />
                 )}
               </div>
               <Prompt
                 when={isDirty}
-                message="You have unsaved changes if the organization access tab. Do you want to leave the page?"
+                message="You have unsaved changes in the organization access tab. Do you want to leave the page?"
               />
               <UnsavedChangesModal
                 closeModal={() => setShowUnsavedWarning(false)}

@@ -213,7 +213,7 @@ exports[`Admin manage users Undelete user 1`] = `
                   class="prime-secondary-nav margin-top-4 padding-bottom-0"
                 >
                   <div
-                    aria-owns="Userinformation Useraccess"
+                    aria-owns="userinformation-tab orgaccess-tab"
                     class="usa-nav__secondary-links prime-nav usa-list"
                     role="tablist"
                   >
@@ -223,7 +223,7 @@ exports[`Admin manage users Undelete user 1`] = `
                       <button
                         aria-selected="true"
                         class="usa-button--unstyled text-ink text-no-underline cursor-pointer"
-                        id="Userinformation"
+                        id="userinformation-tab"
                         role="tab"
                       >
                         User information
@@ -235,16 +235,16 @@ exports[`Admin manage users Undelete user 1`] = `
                       <button
                         aria-selected="false"
                         class="usa-button--unstyled text-ink text-no-underline cursor-pointer"
-                        id="Useraccess"
+                        id="organizationaccess-tab"
                         role="tab"
                       >
-                        User access
+                        Organization access
                       </button>
                     </div>
                   </div>
                 </nav>
                 <div
-                  aria-labelledby="user-information-tab-id"
+                  aria-labelledby="userinformation-tab"
                   class="padding-left-1"
                   role="tabpanel"
                 >
@@ -596,7 +596,7 @@ exports[`Admin manage users Undelete user 2`] = `
                   class="prime-secondary-nav margin-top-4 padding-bottom-0"
                 >
                   <div
-                    aria-owns="Userinformation Useraccess"
+                    aria-owns="userinformation-tab orgaccess-tab"
                     class="usa-nav__secondary-links prime-nav usa-list"
                     role="tablist"
                   >
@@ -606,7 +606,7 @@ exports[`Admin manage users Undelete user 2`] = `
                       <button
                         aria-selected="true"
                         class="usa-button--unstyled text-ink text-no-underline cursor-pointer"
-                        id="Userinformation"
+                        id="userinformation-tab"
                         role="tab"
                       >
                         User information
@@ -618,16 +618,16 @@ exports[`Admin manage users Undelete user 2`] = `
                       <button
                         aria-selected="false"
                         class="usa-button--unstyled text-ink text-no-underline cursor-pointer"
-                        id="Useraccess"
+                        id="organizationaccess-tab"
                         role="tab"
                       >
-                        User access
+                        Organization access
                       </button>
                     </div>
                   </div>
                 </nav>
                 <div
-                  aria-labelledby="user-information-tab-id"
+                  aria-labelledby="userinformation-tab"
                   class="padding-left-1"
                   role="tabpanel"
                 >
@@ -1481,7 +1481,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                   class="prime-secondary-nav margin-top-4 padding-bottom-0"
                 >
                   <div
-                    aria-owns="Userinformation Useraccess"
+                    aria-owns="userinformation-tab orgaccess-tab"
                     class="usa-nav__secondary-links prime-nav usa-list"
                     role="tablist"
                   >
@@ -1491,7 +1491,7 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                       <button
                         aria-selected="true"
                         class="usa-button--unstyled text-ink text-no-underline cursor-pointer"
-                        id="Userinformation"
+                        id="userinformation-tab"
                         role="tab"
                       >
                         User information
@@ -1503,16 +1503,16 @@ exports[`Admin manage users search results matches snapshot 1`] = `
                       <button
                         aria-selected="false"
                         class="usa-button--unstyled text-ink text-no-underline cursor-pointer"
-                        id="Useraccess"
+                        id="organizationaccess-tab"
                         role="tab"
                       >
-                        User access
+                        Organization access
                       </button>
                     </div>
                   </div>
                 </nav>
                 <div
-                  aria-labelledby="user-information-tab-id"
+                  aria-labelledby="userinformation-tab"
                   class="padding-left-1"
                   role="tabpanel"
                 >
