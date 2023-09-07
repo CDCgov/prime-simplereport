@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -28,4 +29,7 @@ public class DiseaseCacheService {
     return _supportedDiseaseRepo.findAll().stream()
         .collect(Collectors.toMap(SupportedDisease::getInternalId, Function.identity()));
   }
+
+  @CacheEvict(value = SUPPORTED_DISEASE_ID_MAP, allEntries = true)
+  public void evictAllCacheValues() {}
 }

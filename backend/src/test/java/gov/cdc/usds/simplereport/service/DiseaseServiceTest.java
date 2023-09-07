@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.service.DiseaseService.COVID19_NAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -25,14 +26,18 @@ class DiseaseServiceTest extends BaseServiceTest<DiseaseService> {
 
   @Test
   void getCachedDisease_doesntHitRepo() {
+    // clear possible invocations to the repo from application setup steps
+    // and concern ourselves only with within-test calls to the db
+    reset(repo);
+
     SupportedDisease testCacheDisease = repo.findByName(COVID19_NAME).orElse(null);
 
     // result should only hit the cached ID <> Disease hashmap
     SupportedDisease cachedDisease = _service.getDiseaseByName(COVID19_NAME);
     assertEquals(testCacheDisease, cachedDisease);
 
-    // should get called once on initDiseases but not after in subsequent getCachedDiseases
-    verify(repo, times(1)).findAll();
+    // disease should be cached and therefore repo shouldn't be called
+    verify(repo, times(0)).findAll();
   }
 
   @Test
