@@ -589,6 +589,9 @@ describe("Unarchive patient", () => {
       /Are you sure you want to unarchive Gutmann, Rod\?/
     );
     await act(async () => screen.getByText("Yes, I'm sure").click());
+    await waitFor(() =>
+      expect(screen.queryByText("Loading...")).not.toBeInTheDocument()
+    );
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(screen.queryByText("2")).not.toBeInTheDocument();
     expect(screen.queryByText("Next")).not.toBeInTheDocument();
