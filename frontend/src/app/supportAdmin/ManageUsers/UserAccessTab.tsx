@@ -31,9 +31,7 @@ export interface UserAccessTabProps {
   facilityList: Pick<Facility, "id" | "name">[];
 }
 
-// ToDo Set the prompt warning of moving away from the component in manage user component
 // ToDo check why the update method fails when sent individual facilities
-
 const UserAccessTab: React.FC<UserAccessTabProps> = ({
   user,
   facilityList,
@@ -99,7 +97,6 @@ const UserAccessTab: React.FC<UserAccessTabProps> = ({
   const [showModal, setShowModal] = useState(false);
   const closeModal = () => setShowModal(false);
 
-  console.log(data?.testResultsCount);
   const confirmationModal = (
     <Modal
       onClose={closeModal}

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import classNames from "classnames";
 
 import { useDocumentTitle } from "../../utils/hooks";
 import {
@@ -17,6 +18,7 @@ import {
   Role as MutationRole,
   useGetFacilitiesByOrgIdLazyQuery,
 } from "../../../generated/graphql";
+import Prompt from "../../utils/Prompt";
 import { showSuccess } from "../../utils/srToast";
 import { isUserActive } from "../../Settings/Users/UserDetailUtils";
 import { displayFullName } from "../../utils";
@@ -27,12 +29,25 @@ import { UserFacilitySetting } from "../../Settings/Users/ManageUsersContainer";
 
 import UserAccessTab from "./UserAccessTab";
 import { UserSearch } from "./UserSearch";
+import UnsavedChangesModal from "./UnsaveChangesModal";
 
 export interface UserAccessFormData {
   organizationId: string;
   role: string;
   facilityIds: string[];
 }
+
+export interface UserSearchState {
+  searchEmail: string;
+  foundUser: User | undefined;
+  displayedError: JSX.Element | undefined;
+}
+
+export const initialState: UserSearchState = {
+  searchEmail: "",
+  foundUser: undefined,
+  displayedError: undefined,
+};
 
 const userNotFoundError = (
   <div className={"padding-x-3 padding-bottom-205"}>
@@ -59,13 +74,8 @@ const genericError = (
 
 export const AdminManageUser: React.FC = () => {
   useDocumentTitle("Manage Users");
-  //ToDo Remove this
-  const [searchEmail, setSearchEmail] = useState<string>("ruby@example.com");
-  useEffect(() => {
-    retrieveUser();
-  }, []);
-  const [foundUser, setFoundUser] = useState<User>();
-  const [displayedError, setDisplayedError] = useState<JSX.Element>();
+  const [{ searchEmail, foundUser, displayedError }, setSearchState] =
+    useState<UserSearchState>(initialState);
   const [navItemSelected, setNavItemSelected] = useState<
     "User information" | "User access"
   >("User information");
@@ -117,13 +127,18 @@ export const AdminManageUser: React.FC = () => {
           suffix: suffix,
         },
       });
-      setFoundUser({
-        ...foundUser,
-        firstName,
-        middleName,
-        lastName,
-        suffix,
-      } as User);
+
+      setSearchState((prevState) => ({
+        ...prevState,
+        foundUser: {
+          ...prevState.foundUser,
+          firstName,
+          middleName,
+          lastName,
+          suffix,
+        } as User,
+      }));
+
       const fullName = displayFullName(firstName, "", lastName);
       showSuccess("", `User name changed to ${fullName}`);
     });
@@ -137,10 +152,13 @@ export const AdminManageUser: React.FC = () => {
         },
       });
       showSuccess("", `User email address changed to ${emailAddress}`);
-      setFoundUser({
-        ...foundUser,
-        email: emailAddress,
-      } as User);
+      setSearchState((prevState) => ({
+        ...prevState,
+        foundUser: {
+          ...prevState.foundUser,
+          email: emailAddress,
+        } as User,
+      }));
     });
   };
   const handleResetUserPassword = async (userId: string) => {
@@ -174,11 +192,15 @@ export const AdminManageUser: React.FC = () => {
         },
       });
 
-      setFoundUser({
-        ...foundUser,
-        isDeleted: true,
-        status: OktaUserStatus.SUSPENDED,
-      } as User);
+      setSearchState((prevState) => ({
+        ...prevState,
+        foundUser: {
+          ...prevState.foundUser,
+          isDeleted: true,
+          status: OktaUserStatus.SUSPENDED,
+        } as User,
+      }));
+
       showSuccess("", `User account removed for ${userFullName}`);
     });
   };
@@ -190,10 +212,14 @@ export const AdminManageUser: React.FC = () => {
         },
       });
 
-      setFoundUser({
-        ...foundUser,
-        status: OktaUserStatus.ACTIVE,
-      } as User);
+      setSearchState((prevState) => ({
+        ...prevState,
+        foundUser: {
+          ...prevState.foundUser,
+          status: OktaUserStatus.ACTIVE,
+        } as User,
+      }));
+
       showSuccess("", `${userFullName} has been reactivated.`);
     });
   };
@@ -225,19 +251,27 @@ export const AdminManageUser: React.FC = () => {
     return getUserByEmail({ variables: { email: searchEmail.trim() } }).then(
       ({ data, error }) => {
         if (!data?.user && !error) {
-          setDisplayedError(userNotFoundError);
-          setFoundUser(undefined);
+          setSearchState((prevState) => ({
+            ...prevState,
+            displayedError: userNotFoundError,
+            foundUser: undefined,
+          }));
         } else if (
           error?.message ===
           "header: Error finding user email; body: Please escalate this issue to the SimpleReport team."
         ) {
-          setDisplayedError(userIdentityError);
-          setFoundUser(undefined);
+          setSearchState((prevState) => ({
+            ...prevState,
+            displayedError: userIdentityError,
+            foundUser: undefined,
+          }));
         } else if (error) {
-          setDisplayedError(genericError);
-          setFoundUser(undefined);
+          setSearchState((prevState) => ({
+            ...prevState,
+            displayedError: genericError,
+            foundUser: undefined,
+          }));
         } else {
-          setDisplayedError(undefined);
           reset({
             role: data?.user?.role || "USER",
             organizationId: data?.user?.organization?.id,
@@ -246,19 +280,29 @@ export const AdminManageUser: React.FC = () => {
                 (facility) => facility.id
               ) || [],
           });
-          setFoundUser(data?.user as User);
+
+          setSearchState((prevState) => ({
+            ...prevState,
+            displayedError: undefined,
+            foundUser: data?.user as User,
+          }));
         }
       }
     );
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchEmail(e.target.value);
+    setSearchState((prevState) => ({
+      ...prevState,
+      searchEmail: e.target.value,
+    }));
   };
   const handleClearFilter = () => {
-    setSearchEmail("");
-    setDisplayedError(undefined);
-    setFoundUser(undefined);
+    setSearchState(initialState);
+  };
+
+  const handleSearch = () => {
+    retrieveUser();
   };
 
   /**
@@ -351,29 +395,55 @@ export const AdminManageUser: React.FC = () => {
   const tabs: (typeof navItemSelected)[] = ["User information", "User access"];
 
   /**
+   * Unsaved changes (prompt and in-progress modal)
+   */
+  const [showUnsavedWarning, setShowUnsavedWarning] = useState(false);
+  const operationType = useRef<"CLEAR" | "SEARCH">("CLEAR");
+  const handleWithInProgressCheck = (
+    operation: typeof operationType.current,
+    operationMethod: Function
+  ) => {
+    if (isDirty) {
+      operationType.current = operation;
+      setShowUnsavedWarning(true);
+    } else {
+      operationMethod();
+    }
+  };
+
+  /**
    * HTML
    */
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
         <UserSearch
-          onClearFilter={handleClearFilter}
+          onClearFilter={() =>
+            handleWithInProgressCheck("CLEAR", handleClearFilter)
+          }
           onSearchClick={(e) => {
             e.preventDefault();
-            retrieveUser();
+            handleWithInProgressCheck("SEARCH", handleSearch);
           }}
           onInputChange={handleInputChange}
           searchEmail={searchEmail}
           disableClearFilters={!searchEmail && !foundUser && !displayedError}
         />
         {displayedError && (
-          <div className="prime-container card-container" aria-live={"polite"}>
+          <div
+            className={classNames("prime-container", "card-container")}
+            aria-live={"polite"}
+          >
             {displayedError}
           </div>
         )}
         {foundUser && (
           <div
-            className="prime-container card-container manage-users-card"
+            className={classNames(
+              "prime-container",
+              "card-container",
+              "manage-users-card"
+            )}
             aria-live={"polite"}
           >
             <div className="usa-card__body">
@@ -442,6 +512,20 @@ export const AdminManageUser: React.FC = () => {
                   />
                 )}
               </div>
+              <Prompt
+                when={isDirty}
+                message="You have unsaved changes if the user access tab. Do you want to leave the page?"
+              />
+              <UnsavedChangesModal
+                closeModal={() => setShowUnsavedWarning(false)}
+                isShowing={showUnsavedWarning}
+                onContinue={() => {
+                  setShowUnsavedWarning(false);
+                  operationType.current === "CLEAR"
+                    ? handleClearFilter()
+                    : handleSearch();
+                }}
+              />
             </div>
           </div>
         )}

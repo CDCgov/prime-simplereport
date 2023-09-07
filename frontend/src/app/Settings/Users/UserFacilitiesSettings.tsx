@@ -3,14 +3,14 @@ import { UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { FieldError } from "react-hook-form/dist/types/errors";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
+import { Facility } from "../../../generated/graphql";
 
-import { UserFacilitySetting } from "./ManageUsersContainer";
-import "./ManageUsers.scss";
 import { alphabeticalFacilitySort } from "./UserFacilitiesSettingsForm";
+import "./ManageUsers.scss";
 
 interface UserFacilitiesSettingProps {
   roleSelected: string;
-  facilityList: UserFacilitySetting[];
+  facilityList: Pick<Facility, "id" | "name">[];
   register: UseFormRegister<any>;
   error?: FieldError;
   setValue: UseFormSetValue<any>;
