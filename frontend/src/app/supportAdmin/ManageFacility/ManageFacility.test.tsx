@@ -14,7 +14,7 @@ import ManageFacility from "./ManageFacility";
 import {
   getFacilityComboBoxElements,
   getOrgComboBoxElements,
-} from "./FacilitySelectFilter.test";
+} from "./testSelectUtils";
 
 describe("ManageFacility", () => {
   const renderWithMocks = () =>
