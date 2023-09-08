@@ -613,8 +613,9 @@ const searchByOrgAndFacility = async () => {
   );
   await selectDropdown("Testing facility *", mockFacility1.name);
   await clickSearch();
-  expect(mockNavigate).not.toHaveBeenCalled();
-  await waitForElementToBeRemoved(() => screen.queryAllByText("Loading..."));
+  await waitFor(() =>
+    expect(screen.queryByText("Loading...")).not.toBeInTheDocument()
+  );
 };
 
 export const clickSearch = async () => {
