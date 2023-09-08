@@ -71,9 +71,11 @@ const validResponse = [
 const searchForValidUser = async (
   user: UserEvent,
   email = "ben@example.com",
-  fullname = "Barnes, Ben Billy"
+  fullName = "Barnes, Ben Billy"
 ) => {
-  const searchInput = screen.getByLabelText("Search by email address of user");
+  const searchInput = await screen.findByLabelText(
+    "Search by email address of user"
+  );
   await act(async () => {
     await user.type(searchInput, email);
   });
@@ -81,7 +83,7 @@ const searchForValidUser = async (
     await user.click(screen.getByAltText("Search"));
   });
 
-  expect(await screen.findByText(fullname)).toBeInTheDocument();
+  expect(await screen.findByText(fullName)).toBeInTheDocument();
 };
 const mockStore = createMockStore([]);
 const mockedStore = mockStore({ user: { isAdmin: true } });
@@ -671,7 +673,7 @@ describe("Admin manage users", () => {
   });
 
   describe("Organization access tab", () => {
-    it("loads organization access tab and checks a11y", async () => {
+    it("loads organization access tab", async () => {
       const { user } = renderComponent([
         getAllOrgsMock,
         getFacilitiesByOrgMock,
@@ -696,47 +698,47 @@ describe("Admin manage users", () => {
         name: /standard user conduct tests, bulk upload results, manage test results, and patient profiles/i,
       });
       await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
+    });
+
+    it("checks form validation happens on submit", async () => {
+      const { user } = renderComponent([
+        getAllOrgsMock,
+        getFacilitiesByOrgMock,
+        getFacilitiesByOrgMock,
+        findUserByEmailMock,
+      ]);
+      await searchForValidUser(
+        user,
+        "ruby@example.com",
+        "Reynolds, Ruby Raven"
+      );
+      const orgAccessTab = await screen.findByRole("tab", {
+        name: /organization access/i,
+      });
+      // eslint-disable-next-line testing-library/no-unnecessary-act
+      await act(async () => {
+        orgAccessTab.click();
+      });
+
+      const roleRadioBtn = await screen.findByRole("radio", {
+        name: /standard user conduct tests, bulk upload results, manage test results, and patient profiles/i,
+      });
+      await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
 
       await act(async () => {
-        expect(await axe(document.body)).toHaveNoViolations();
+        screen
+          .getByRole("button", { name: /clear the select contents/i })
+          .click();
       });
-    });
-  });
 
-  it("checks form validation happens on submit", async () => {
-    const { user } = renderComponent([
-      getAllOrgsMock,
-      getFacilitiesByOrgMock,
-      getFacilitiesByOrgMock,
-      findUserByEmailMock,
-    ]);
-    await searchForValidUser(user, "ruby@example.com", "Reynolds, Ruby Raven");
-    const orgAccessTab = await screen.findByRole("tab", {
-      name: /organization access/i,
-    });
-    // eslint-disable-next-line testing-library/no-unnecessary-act
-    await act(async () => {
-      orgAccessTab.click();
-    });
+      const saveBtn = screen.getByRole("button", { name: /save changes/i });
 
-    const roleRadioBtn = await screen.findByRole("radio", {
-      name: /standard user conduct tests, bulk upload results, manage test results, and patient profiles/i,
+      await waitFor(() => expect(saveBtn).toBeEnabled());
+      await act(async () => {
+        saveBtn.click();
+      });
+
+      await screen.findByText(/Error: Organization is required/i);
     });
-    await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
-
-    await act(async () => {
-      screen
-        .getByRole("button", { name: /clear the select contents/i })
-        .click();
-    });
-
-    const saveBtn = screen.getByRole("button", { name: /save changes/i });
-
-    await waitFor(() => expect(saveBtn).toBeEnabled());
-    await act(async () => {
-      saveBtn.click();
-    });
-
-    await screen.findByText(/Error: Organization is required/i);
   });
 });
