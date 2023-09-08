@@ -1,4 +1,4 @@
-import { PATIENT_TERM_PLURAL } from "../../config/constants";
+import { PATIENT_TERM, PATIENT_TERM_PLURAL } from "../../config/constants";
 
 // js file so imports to cypress work
 export const addNewDevicePageTitle = "Add new device";
@@ -15,3 +15,4 @@ export const devicesColumnTitle = "Devices";
 export const usersAndPatientsColumnTitle = `Users & ${PATIENT_TERM_PLURAL}`;
 
 export const manageFacility = "Manage facility";
+export const unarchivePatientTitle = `Unarchive ${PATIENT_TERM}`;

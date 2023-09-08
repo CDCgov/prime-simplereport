@@ -219,6 +219,7 @@ export type Mutation = {
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
+  updateUserPrivilegesAndGroupAccess: User;
 };
 
 export type MutationAddFacilityArgs = {
@@ -237,6 +238,7 @@ export type MutationAddPatientArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
@@ -456,6 +458,7 @@ export type MutationUpdatePatientArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
@@ -510,6 +513,14 @@ export type MutationUpdateUserPrivilegesArgs = {
   role: Role;
 };
 
+export type MutationUpdateUserPrivilegesAndGroupAccessArgs = {
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
+  facilities?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
+  orgExternalId: Scalars["String"];
+  role: Role;
+  username: Scalars["String"];
+};
+
 export type NameInfo = {
   __typename?: "NameInfo";
   firstName?: Maybe<Scalars["String"]>;
@@ -562,6 +573,7 @@ export type Patient = {
   facility?: Maybe<Facility>;
   firstName?: Maybe<Scalars["String"]>;
   gender?: Maybe<Scalars["String"]>;
+  genderIdentity?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   /** @deprecated alias for 'id' */
   internalId: Scalars["ID"];
@@ -1122,6 +1134,12 @@ export type GetFacilitiesQuery = {
     __typename?: "DeviceType";
     internalId: string;
     name: string;
+    model: string;
+    manufacturer: string;
+    supportedDiseaseTestPerformed: Array<{
+      __typename?: "SupportedDiseaseTestPerformed";
+      supportedDisease: { __typename?: "SupportedDisease"; name: string };
+    }>;
   }>;
 };
 
@@ -1498,6 +1516,7 @@ export type GetPatientDetailsQuery = {
     ethnicity?: string | null;
     tribalAffiliation?: Array<string | null> | null;
     gender?: string | null;
+    genderIdentity?: string | null;
     residentCongregateSetting?: boolean | null;
     employedInHealthcare?: boolean | null;
     preferredLanguage?: string | null;
@@ -1536,6 +1555,7 @@ export type UpdatePatientMutationVariables = Exact<{
   ethnicity?: InputMaybe<Scalars["String"]>;
   tribalAffiliation?: InputMaybe<Scalars["String"]>;
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
   employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
@@ -1768,6 +1788,20 @@ export type FindUserByEmailQuery = {
   } | null;
 };
 
+export type UndeleteUserMutationVariables = Exact<{
+  userId: Scalars["ID"];
+}>;
+
+export type UndeleteUserMutation = {
+  __typename?: "Mutation";
+  setUserIsDeleted?: {
+    __typename?: "User";
+    id: string;
+    email: string;
+    isDeleted?: boolean | null;
+  } | null;
+};
+
 export type GetPendingOrganizationsQueryVariables = Exact<{
   [key: string]: never;
 }>;
@@ -1828,6 +1862,7 @@ export type GetOrganizationsQuery = {
   __typename?: "Query";
   organizations: Array<{
     __typename?: "Organization";
+    internalId: string;
     externalId: string;
     name: string;
   }>;
@@ -1852,6 +1887,63 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
       externalId: string;
     } | null;
   } | null;
+};
+
+export type GetOrganizationWithFacilitiesQueryVariables = Exact<{
+  id: Scalars["ID"];
+}>;
+
+export type GetOrganizationWithFacilitiesQuery = {
+  __typename?: "Query";
+  organization?: {
+    __typename?: "Organization";
+    externalId: string;
+    name: string;
+    facilities: Array<{ __typename?: "Facility"; id: string; name: string }>;
+  } | null;
+};
+
+export type GetPatientsByFacilityWithOrgQueryVariables = Exact<{
+  facilityId: Scalars["ID"];
+  pageNumber: Scalars["Int"];
+  pageSize: Scalars["Int"];
+  archivedStatus?: InputMaybe<ArchivedStatus>;
+  orgExternalId: Scalars["String"];
+}>;
+
+export type GetPatientsByFacilityWithOrgQuery = {
+  __typename?: "Query";
+  patients?: Array<{
+    __typename?: "Patient";
+    internalId: string;
+    firstName?: string | null;
+    lastName?: string | null;
+    middleName?: string | null;
+    birthDate?: any | null;
+    isDeleted?: boolean | null;
+    facility?: { __typename?: "Facility"; id: string; name: string } | null;
+  } | null> | null;
+};
+
+export type GetPatientsCountByFacilityWithOrgQueryVariables = Exact<{
+  facilityId: Scalars["ID"];
+  archivedStatus?: InputMaybe<ArchivedStatus>;
+  orgExternalId: Scalars["String"];
+}>;
+
+export type GetPatientsCountByFacilityWithOrgQuery = {
+  __typename?: "Query";
+  patientsCount?: number | null;
+};
+
+export type UnarchivePatientMutationVariables = Exact<{
+  id: Scalars["ID"];
+  orgExternalId: Scalars["String"];
+}>;
+
+export type UnarchivePatientMutation = {
+  __typename?: "Mutation";
+  setPatientIsDeleted?: { __typename?: "Patient"; internalId: string } | null;
 };
 
 export type SendSupportEscalationMutationVariables = Exact<{
@@ -2723,6 +2815,13 @@ export const GetFacilitiesDocument = gql`
     deviceTypes {
       internalId
       name
+      model
+      manufacturer
+      supportedDiseaseTestPerformed {
+        supportedDisease {
+          name
+        }
+      }
     }
   }
 `;
@@ -4267,6 +4366,7 @@ export const GetPatientDetailsDocument = gql`
       ethnicity
       tribalAffiliation
       gender
+      genderIdentity
       residentCongregateSetting
       employedInHealthcare
       preferredLanguage
@@ -4352,6 +4452,7 @@ export const UpdatePatientDocument = gql`
     $ethnicity: String
     $tribalAffiliation: String
     $gender: String
+    $genderIdentity: String
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
@@ -4380,6 +4481,7 @@ export const UpdatePatientDocument = gql`
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
       gender: $gender
+      genderIdentity: $genderIdentity
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
@@ -4429,6 +4531,7 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      ethnicity: // value for 'ethnicity'
  *      tribalAffiliation: // value for 'tribalAffiliation'
  *      gender: // value for 'gender'
+ *      genderIdentity: // value for 'genderIdentity'
  *      residentCongregateSetting: // value for 'residentCongregateSetting'
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'
@@ -5322,6 +5425,58 @@ export type FindUserByEmailQueryResult = Apollo.QueryResult<
   FindUserByEmailQuery,
   FindUserByEmailQueryVariables
 >;
+export const UndeleteUserDocument = gql`
+  mutation undeleteUser($userId: ID!) {
+    setUserIsDeleted(id: $userId, deleted: false) {
+      id
+      email
+      isDeleted
+    }
+  }
+`;
+export type UndeleteUserMutationFn = Apollo.MutationFunction<
+  UndeleteUserMutation,
+  UndeleteUserMutationVariables
+>;
+
+/**
+ * __useUndeleteUserMutation__
+ *
+ * To run a mutation, you first call `useUndeleteUserMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUndeleteUserMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [undeleteUserMutation, { data, loading, error }] = useUndeleteUserMutation({
+ *   variables: {
+ *      userId: // value for 'userId'
+ *   },
+ * });
+ */
+export function useUndeleteUserMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UndeleteUserMutation,
+    UndeleteUserMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UndeleteUserMutation,
+    UndeleteUserMutationVariables
+  >(UndeleteUserDocument, options);
+}
+export type UndeleteUserMutationHookResult = ReturnType<
+  typeof useUndeleteUserMutation
+>;
+export type UndeleteUserMutationResult =
+  Apollo.MutationResult<UndeleteUserMutation>;
+export type UndeleteUserMutationOptions = Apollo.BaseMutationOptions<
+  UndeleteUserMutation,
+  UndeleteUserMutationVariables
+>;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {
     pendingOrganizations {
@@ -5564,6 +5719,7 @@ export type EditPendingOrganizationMutationOptions = Apollo.BaseMutationOptions<
 export const GetOrganizationsDocument = gql`
   query GetOrganizations($identityVerified: Boolean) {
     organizations(identityVerified: $identityVerified) {
+      internalId
       externalId
       name
     }
@@ -5686,6 +5842,273 @@ export type SetCurrentUserTenantDataAccessOpMutationOptions =
     SetCurrentUserTenantDataAccessOpMutation,
     SetCurrentUserTenantDataAccessOpMutationVariables
   >;
+export const GetOrganizationWithFacilitiesDocument = gql`
+  query GetOrganizationWithFacilities($id: ID!) {
+    organization(id: $id) {
+      externalId
+      name
+      facilities {
+        id
+        name
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetOrganizationWithFacilitiesQuery__
+ *
+ * To run a query within a React component, call `useGetOrganizationWithFacilitiesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetOrganizationWithFacilitiesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetOrganizationWithFacilitiesQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useGetOrganizationWithFacilitiesQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetOrganizationWithFacilitiesQuery,
+    GetOrganizationWithFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetOrganizationWithFacilitiesQuery,
+    GetOrganizationWithFacilitiesQueryVariables
+  >(GetOrganizationWithFacilitiesDocument, options);
+}
+export function useGetOrganizationWithFacilitiesLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetOrganizationWithFacilitiesQuery,
+    GetOrganizationWithFacilitiesQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetOrganizationWithFacilitiesQuery,
+    GetOrganizationWithFacilitiesQueryVariables
+  >(GetOrganizationWithFacilitiesDocument, options);
+}
+export type GetOrganizationWithFacilitiesQueryHookResult = ReturnType<
+  typeof useGetOrganizationWithFacilitiesQuery
+>;
+export type GetOrganizationWithFacilitiesLazyQueryHookResult = ReturnType<
+  typeof useGetOrganizationWithFacilitiesLazyQuery
+>;
+export type GetOrganizationWithFacilitiesQueryResult = Apollo.QueryResult<
+  GetOrganizationWithFacilitiesQuery,
+  GetOrganizationWithFacilitiesQueryVariables
+>;
+export const GetPatientsByFacilityWithOrgDocument = gql`
+  query GetPatientsByFacilityWithOrg(
+    $facilityId: ID!
+    $pageNumber: Int!
+    $pageSize: Int!
+    $archivedStatus: ArchivedStatus = UNARCHIVED
+    $orgExternalId: String!
+  ) {
+    patients(
+      facilityId: $facilityId
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+      archivedStatus: $archivedStatus
+      orgExternalId: $orgExternalId
+    ) {
+      internalId
+      firstName
+      lastName
+      middleName
+      birthDate
+      isDeleted
+      facility {
+        id
+        name
+      }
+    }
+  }
+`;
+
+/**
+ * __useGetPatientsByFacilityWithOrgQuery__
+ *
+ * To run a query within a React component, call `useGetPatientsByFacilityWithOrgQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPatientsByFacilityWithOrgQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPatientsByFacilityWithOrgQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      pageNumber: // value for 'pageNumber'
+ *      pageSize: // value for 'pageSize'
+ *      archivedStatus: // value for 'archivedStatus'
+ *      orgExternalId: // value for 'orgExternalId'
+ *   },
+ * });
+ */
+export function useGetPatientsByFacilityWithOrgQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetPatientsByFacilityWithOrgQuery,
+    GetPatientsByFacilityWithOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetPatientsByFacilityWithOrgQuery,
+    GetPatientsByFacilityWithOrgQueryVariables
+  >(GetPatientsByFacilityWithOrgDocument, options);
+}
+export function useGetPatientsByFacilityWithOrgLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetPatientsByFacilityWithOrgQuery,
+    GetPatientsByFacilityWithOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetPatientsByFacilityWithOrgQuery,
+    GetPatientsByFacilityWithOrgQueryVariables
+  >(GetPatientsByFacilityWithOrgDocument, options);
+}
+export type GetPatientsByFacilityWithOrgQueryHookResult = ReturnType<
+  typeof useGetPatientsByFacilityWithOrgQuery
+>;
+export type GetPatientsByFacilityWithOrgLazyQueryHookResult = ReturnType<
+  typeof useGetPatientsByFacilityWithOrgLazyQuery
+>;
+export type GetPatientsByFacilityWithOrgQueryResult = Apollo.QueryResult<
+  GetPatientsByFacilityWithOrgQuery,
+  GetPatientsByFacilityWithOrgQueryVariables
+>;
+export const GetPatientsCountByFacilityWithOrgDocument = gql`
+  query GetPatientsCountByFacilityWithOrg(
+    $facilityId: ID!
+    $archivedStatus: ArchivedStatus = UNARCHIVED
+    $orgExternalId: String!
+  ) {
+    patientsCount(
+      facilityId: $facilityId
+      archivedStatus: $archivedStatus
+      orgExternalId: $orgExternalId
+    )
+  }
+`;
+
+/**
+ * __useGetPatientsCountByFacilityWithOrgQuery__
+ *
+ * To run a query within a React component, call `useGetPatientsCountByFacilityWithOrgQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetPatientsCountByFacilityWithOrgQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetPatientsCountByFacilityWithOrgQuery({
+ *   variables: {
+ *      facilityId: // value for 'facilityId'
+ *      archivedStatus: // value for 'archivedStatus'
+ *      orgExternalId: // value for 'orgExternalId'
+ *   },
+ * });
+ */
+export function useGetPatientsCountByFacilityWithOrgQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetPatientsCountByFacilityWithOrgQuery,
+    GetPatientsCountByFacilityWithOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetPatientsCountByFacilityWithOrgQuery,
+    GetPatientsCountByFacilityWithOrgQueryVariables
+  >(GetPatientsCountByFacilityWithOrgDocument, options);
+}
+export function useGetPatientsCountByFacilityWithOrgLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetPatientsCountByFacilityWithOrgQuery,
+    GetPatientsCountByFacilityWithOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetPatientsCountByFacilityWithOrgQuery,
+    GetPatientsCountByFacilityWithOrgQueryVariables
+  >(GetPatientsCountByFacilityWithOrgDocument, options);
+}
+export type GetPatientsCountByFacilityWithOrgQueryHookResult = ReturnType<
+  typeof useGetPatientsCountByFacilityWithOrgQuery
+>;
+export type GetPatientsCountByFacilityWithOrgLazyQueryHookResult = ReturnType<
+  typeof useGetPatientsCountByFacilityWithOrgLazyQuery
+>;
+export type GetPatientsCountByFacilityWithOrgQueryResult = Apollo.QueryResult<
+  GetPatientsCountByFacilityWithOrgQuery,
+  GetPatientsCountByFacilityWithOrgQueryVariables
+>;
+export const UnarchivePatientDocument = gql`
+  mutation UnarchivePatient($id: ID!, $orgExternalId: String!) {
+    setPatientIsDeleted(
+      id: $id
+      deleted: false
+      orgExternalId: $orgExternalId
+    ) {
+      internalId
+    }
+  }
+`;
+export type UnarchivePatientMutationFn = Apollo.MutationFunction<
+  UnarchivePatientMutation,
+  UnarchivePatientMutationVariables
+>;
+
+/**
+ * __useUnarchivePatientMutation__
+ *
+ * To run a mutation, you first call `useUnarchivePatientMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUnarchivePatientMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [unarchivePatientMutation, { data, loading, error }] = useUnarchivePatientMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      orgExternalId: // value for 'orgExternalId'
+ *   },
+ * });
+ */
+export function useUnarchivePatientMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UnarchivePatientMutation,
+    UnarchivePatientMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UnarchivePatientMutation,
+    UnarchivePatientMutationVariables
+  >(UnarchivePatientDocument, options);
+}
+export type UnarchivePatientMutationHookResult = ReturnType<
+  typeof useUnarchivePatientMutation
+>;
+export type UnarchivePatientMutationResult =
+  Apollo.MutationResult<UnarchivePatientMutation>;
+export type UnarchivePatientMutationOptions = Apollo.BaseMutationOptions<
+  UnarchivePatientMutation,
+  UnarchivePatientMutationVariables
+>;
 export const SendSupportEscalationDocument = gql`
   mutation SendSupportEscalation {
     sendSupportEscalation

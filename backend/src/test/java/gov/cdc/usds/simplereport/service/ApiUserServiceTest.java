@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException.PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -16,9 +17,12 @@ import gov.cdc.usds.simplereport.api.model.errors.ConflictingUserException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.OktaAccountUserException;
+import gov.cdc.usds.simplereport.api.model.errors.PrivilegeUpdateFacilityAccessException;
 import gov.cdc.usds.simplereport.api.model.errors.RestrictedAccessUserException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedFacilityException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.IdentifiedEntity;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -485,6 +489,80 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
         assertThrows(
             AccessDeniedException.class, () -> _service.getUserByLoginEmail("example@email.com"));
     assertEquals("Access is denied", caught.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void updateUserPrivilegesAndGroupAccess_assignToAllFacilities_success() {
+    initSampleData();
+    final String email = "allfacilities@example.com";
+    Organization orgToTestMovementTo = _dataFactory.saveValidOrganization();
+    String orgToMoveExternalId = orgToTestMovementTo.getExternalId();
+
+    _service.updateUserPrivilegesAndGroupAccess(
+        email, orgToMoveExternalId, true, List.of(), OrganizationRole.ADMIN);
+    verify(_oktaRepo, times(1))
+        .updateUserPrivilegesAndGroupAccess(
+            email, orgToTestMovementTo, Set.of(), OrganizationRole.ADMIN, true);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void
+      updateUserPrivilegesAndGroupAccess_assignToAllFalseWithoutFacilities_throwsPrivilegeUpdateFacilityAccessException() {
+    initSampleData();
+    final String email = "allfacilities@example.com";
+    Organization orgToTestMovementTo = _dataFactory.saveValidOrganization();
+    String moveOrgExternalId = orgToTestMovementTo.getExternalId();
+    List<UUID> emptyList = List.of();
+    PrivilegeUpdateFacilityAccessException caught =
+        assertThrows(
+            PrivilegeUpdateFacilityAccessException.class,
+            () ->
+                _service.updateUserPrivilegesAndGroupAccess(
+                    email, moveOrgExternalId, false, emptyList, OrganizationRole.USER));
+    assertEquals(PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR, caught.getMessage());
+
+    PrivilegeUpdateFacilityAccessException caught2 =
+        assertThrows(
+            PrivilegeUpdateFacilityAccessException.class,
+            () ->
+                _service.updateUserPrivilegesAndGroupAccess(
+                    email, moveOrgExternalId, false, OrganizationRole.USER));
+    assertEquals(PRIVILEGE_UPDATE_FACILITY_ACCESS_ERROR, caught2.getMessage());
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void updateUserPrivilegesAndGroupAccess_facilityToMoveNotFoundInOrg_throwsException() {
+    initSampleData();
+    final String email = "allfacilities@example.com";
+    Organization orgToTestMovementTo = _dataFactory.saveValidOrganization();
+    String moveOrgExternalId = orgToTestMovementTo.getExternalId();
+
+    Organization differentOrg =
+        _dataFactory.saveOrganization("other org", "k12", "OTHER_ORG", true);
+    Facility facilityThatShouldThrowError = _dataFactory.createValidFacility(differentOrg);
+    List<UUID> facilityListThatShouldThrowId =
+        List.of(facilityThatShouldThrowError.getInternalId());
+
+    UnidentifiedFacilityException caught =
+        assertThrows(
+            UnidentifiedFacilityException.class,
+            () ->
+                _service.updateUserPrivilegesAndGroupAccess(
+                    email,
+                    moveOrgExternalId,
+                    false,
+                    facilityListThatShouldThrowId,
+                    OrganizationRole.USER));
+    String expectedError =
+        "Facilities with id(s) "
+            + facilityListThatShouldThrowId
+            + " for org "
+            + moveOrgExternalId
+            + " weren't found. Check those facility id(s) exist in the specified organization";
+    assertEquals(expectedError, caught.getMessage());
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {

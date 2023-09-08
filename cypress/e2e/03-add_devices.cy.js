@@ -1,6 +1,10 @@
-import { generateCovidOnlyDevice, generateMultiplexDevice, loginHooks } from "../support/e2e";
-import {graphqlURL} from "../utils/request-utils";
-import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
+import {
+  generateCovidOnlyDevice,
+  generateMultiplexDevice,
+  loginHooks,
+} from "../support/e2e";
+import { graphqlURL } from "../utils/request-utils";
+import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 const covidOnlyDevice = generateCovidOnlyDevice();
 const multiplexDevice = generateMultiplexDevice();
 
@@ -16,7 +20,7 @@ describe("Adding covid only and multiplex devices", () => {
   context("Add devices", () => {
     beforeEach(() => {
       cy.intercept("POST", graphqlURL, (req) => {
-        aliasGraphqlOperations(req)
+        aliasGraphqlOperations(req);
       });
     });
 
@@ -52,14 +56,32 @@ describe("Adding covid only and multiplex devices", () => {
       cy.injectSRAxe();
       cy.checkAccessibility();
       cy.get('input[name="model"]').should("have.value", multiplexDevice.model);
-      cy.get('input[name="manufacturer"]').should("have.value", multiplexDevice.manufacturer);
+      cy.get('input[name="manufacturer"]').should(
+        "have.value",
+        multiplexDevice.manufacturer
+      );
       cy.get(".pill").should("have.length", 1);
-      cy.get('select[name="supportedDiseases.0.supportedDisease"').find(":selected").should("have.text", "COVID-19")
-      cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').should("have.value","123-456")
-      cy.get('select[name="supportedDiseases.1.supportedDisease"').find(":selected").should("have.text", "Flu A")
-      cy.get('input[name="supportedDiseases.1.testPerformedLoincCode"]').should("have.value","456-789")
-      cy.get('select[name="supportedDiseases.2.supportedDisease"').find(":selected").should("have.text", "Flu B")
-      cy.get('input[name="supportedDiseases.2.testPerformedLoincCode"]').should("have.value","789-123")
+      cy.get('select[name="supportedDiseases.0.supportedDisease"')
+        .find(":selected")
+        .should("have.text", "COVID-19");
+      cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').should(
+        "have.value",
+        "123-456"
+      );
+      cy.get('select[name="supportedDiseases.1.supportedDisease"')
+        .find(":selected")
+        .should("have.text", "Flu A");
+      cy.get('input[name="supportedDiseases.1.testPerformedLoincCode"]').should(
+        "have.value",
+        "456-789"
+      );
+      cy.get('select[name="supportedDiseases.2.supportedDisease"')
+        .find(":selected")
+        .should("have.text", "Flu B");
+      cy.get('input[name="supportedDiseases.2.testPerformedLoincCode"]').should(
+        "have.value",
+        "789-123"
+      );
     });
   });
 
@@ -69,10 +91,10 @@ describe("Adding covid only and multiplex devices", () => {
         operationName: "WhoAmI",
         variables: {},
         query:
-            "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
+          "query WhoAmI {\n  whoami {\n organization {\n    facilities {\n      id\n      name\n      __typename\n    }\n    __typename\n  }\n} \n}",
       }).then((res) => {
         facility = res.body.data.whoami.organization.facilities[0];
-      })
+      });
       cy.intercept("POST", graphqlURL, (req) => {
         aliasGraphqlOperations(req);
       });
@@ -85,9 +107,13 @@ describe("Adding covid only and multiplex devices", () => {
       cy.injectSRAxe();
       cy.checkAccessibility();
       cy.get('input[role="combobox"]').first().type(covidOnlyDevice.name);
-      cy.get('li[id="multi-select-deviceTypes-list--option-0"]').click();
+      cy.get(
+        `button[aria-label="Select ${covidOnlyDevice.manufacturer} ${covidOnlyDevice.model}"]`
+      ).click();
       cy.get('input[role="combobox"]').first().type(multiplexDevice.name);
-      cy.get('li[id="multi-select-deviceTypes-list--option-0"]').click();
+      cy.get(
+        `button[aria-label="Select ${multiplexDevice.manufacturer} ${multiplexDevice.model}"]`
+      ).click();
       cy.contains("Save changes").click();
       cy.get(".modal__content")
         .find("fieldset")
@@ -98,6 +124,6 @@ describe("Adding covid only and multiplex devices", () => {
       cy.wait("@UpdateFacility");
       cy.get(".Toastify").contains("Updated Facility");
       cy.wait("@GetManagedFacilities"); // waits until it goes back to manage facilities page
-    })
-  })
+    });
+  });
 });

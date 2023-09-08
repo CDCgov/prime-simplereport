@@ -5000,3 +5000,45 @@ databaseChangeLog:
               - column:
                   name: result
                   type: ${database.defaultSchemaName}.TEST_RESULT
+  - changeSet:
+      id: add-missing-header-to-test_result_upload_error
+      author: boban@skylight.digital
+      comment: add MISSING_HEADER to test_result_upload_error
+      changes:
+        - sql:
+            sql: |
+              ALTER TYPE ${database.defaultSchemaName}.TEST_RESULT_UPLOAD_ERROR ADD VALUE 'MISSING_HEADER';
+      rollback: ""
+  - changeSet:
+      id: add-gender_identity-to-person-table
+      author: zedd@skylight.digital
+      comment: Add gender_identity and person table
+      changes:
+        - tagDatabase:
+            tag: add-gender_identity-to-person-table
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: gender_identity
+                  type: text
+                  remarks: represents the persons gender identity
+  - changeSet:
+      id: add-rsv-to-supported-disease-table
+      author: bob@skylight.digital
+      comment: Add RSV to the supported_disease table.
+      changes:
+        - tagDatabase:
+            tag: add-rsv-to-supported-disease-table
+        - sql:
+            comment: Add RSV to the supported disease table
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'RSV', 'LP14244-5')
+      rollback:
+        - sql:
+            sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'RSV';

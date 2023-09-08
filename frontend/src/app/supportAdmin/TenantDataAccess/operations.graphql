@@ -1,5 +1,6 @@
 query GetOrganizations($identityVerified: Boolean) {
     organizations(identityVerified: $identityVerified) {
+        internalId
         externalId
         name
     }

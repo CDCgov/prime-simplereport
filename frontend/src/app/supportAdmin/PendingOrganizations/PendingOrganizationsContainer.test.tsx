@@ -255,180 +255,166 @@ describe("PendingOrganizationsContainer", () => {
           async () =>
             await userEvent.click(screen.getAllByText("Edit/Verify")[1])
         );
-      });
-      it("populates modal", async () => {
         expect(
           screen.getByText("Organization details", { exact: true })
         ).toBeInTheDocument();
+      });
+      it("populates modal", async () => {
         expect(
           screen.getByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
-        await act(
-          async () => await userEvent.click(screen.getByTestId("close-modal"))
+        await act(async () =>
+          screen.getByAltText("Close").closest("button")?.click()
         );
         expect(
           screen.getByText("Space Camp", { exact: false })
         ).toBeInTheDocument();
       });
-      describe("submitting an edit", () => {
-        it("displays an error when org name is empty", async () => {
-          await act(
-            async () =>
-              await userEvent.clear(
-                screen.getByLabelText("Organization name", { exact: false })
-              )
-          );
-          await act(
-            async () =>
-              await userEvent.click(
-                screen.getByLabelText("Administrator email", { exact: false })
-              )
-          );
-          expect(
-            await screen.findByText("Organization name is required", {
+      it("displays an error when email is invalid", async () => {
+        await act(
+          async () =>
+            await userEvent.clear(
+              screen.getByLabelText("Administrator email", { exact: false })
+            )
+        );
+        await act(
+          async () =>
+            await userEvent.type(
+              screen.getByLabelText("Administrator email", { exact: false }),
+              "foo"
+            )
+        );
+        await clickEditOnlyBtn();
+        expect(
+          await screen.findByText(
+            "Administrator email is incorrectly formatted",
+            {
               exact: false,
-            })
-          ).toBeInTheDocument();
-        });
-        it("displays an error when email is invalid", async () => {
-          await act(
-            async () =>
-              await userEvent.clear(
-                screen.getByLabelText("Administrator email", { exact: false })
-              )
-          );
-          await act(
-            async () =>
-              await userEvent.type(
-                screen.getByLabelText("Administrator email", { exact: false }),
-                "foo"
-              )
-          );
-          await act(
-            async () =>
-              await userEvent.click(
-                screen.getByLabelText("Organization name", { exact: false })
-              )
-          );
+            }
+          )
+        ).toBeInTheDocument();
+      });
+      it("displays an error when phone is invalid", async () => {
+        await act(
+          async () =>
+            await userEvent.clear(screen.getByLabelText(/Administrator phone/i))
+        );
+        await act(
+          async () =>
+            await userEvent.type(
+              screen.getByLabelText(/Administrator phone/i),
+              "foo"
+            )
+        );
+        await clickEditOnlyBtn();
+        expect(
+          await screen.findByText("Administrator phone number is invalid", {
+            exact: false,
+          })
+        ).toBeInTheDocument();
+      });
+      it("displays an error when required values are empty", async () => {
+        const inputLabels = [
+          "Organization name",
+          "Administrator first name",
+          "Administrator last name",
+          "Administrator email",
+          "Administrator phone",
+        ];
+        await act(async () =>
+          inputLabels.map(async (label) => {
+            await userEvent.clear(
+              screen.getByLabelText(label, { exact: false })
+            );
+          })
+        );
+        await clickEditOnlyBtn();
+        expect(screen.getAllByRole("alert")?.length).toEqual(5);
+
+        inputLabels.map((label) =>
           expect(
-            await screen.findByText("A valid email address is required", {
-              exact: false,
-            })
-          ).toBeInTheDocument();
-        });
-        it("displays an error when phone is invalid", async () => {
-          await act(
-            async () =>
-              await userEvent.clear(
-                screen.getByLabelText(/Administrator phone/i)
-              )
-          );
-          await act(
-            async () =>
-              await userEvent.type(
-                screen.getByLabelText(/Administrator phone/i),
-                "foo"
-              )
-          );
-          await act(
-            async () =>
-              await userEvent.click(screen.getByLabelText(/Organization name/i))
-          );
-          expect(
-            await screen.findByText("A valid phone number is required", {
-              exact: false,
-            })
-          ).toBeInTheDocument();
-        });
-        it("saves information on change", async () => {
-          await act(
-            async () =>
-              await userEvent.clear(screen.getByLabelText(/Organization name/i))
-          );
-          await act(
-            async () =>
-              await userEvent.type(
-                screen.getByLabelText(/Organization name/i),
-                "DC Space Camp"
-              )
-          );
-          expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
-            "DC Space Camp"
-          );
-          await act(
-            async () => await userEvent.click(screen.getByText(/Edit only/i))
-          );
-          await waitFor(() =>
-            expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
+            screen.getByText(`${label} is required`, { exact: false })
+          ).toBeInTheDocument()
+        );
+      });
+      it("saves information on change", async () => {
+        await act(
+          async () =>
+            await userEvent.clear(screen.getByLabelText(/Organization name/i))
+        );
+        await act(
+          async () =>
+            await userEvent.type(
+              screen.getByLabelText(/Organization name/i),
               "DC Space Camp"
             )
-          );
-          await waitForElementToBeRemoved(
-            screen.queryByText(/Organization details/i)
-          );
+        );
+        expect(screen.getByLabelText(/Organization name/i)).toHaveValue(
+          "DC Space Camp"
+        );
+        await clickEditOnlyBtn();
 
-          expect(await screen.findByText("DC Space Camp")).toBeInTheDocument();
-        });
+        expect(await screen.findByText("DC Space Camp")).toBeInTheDocument();
       });
     });
   });
 
   describe("marking an organization as verified", () => {
-    describe("submitting the form", () => {
-      beforeEach(async () => {
-        render(
-          <Page>
-            <MockedProvider
-              mocks={[
-                organizationsQuery(
-                  "Space Camp",
-                  "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-                ),
-                verificationMutation,
-                submittedOrganizationQuery,
-              ]}
-            >
-              <PendingOrganizationsContainer />
-            </MockedProvider>
-          </Page>
-        );
-      });
-      it("Space Camp submitted", async () => {
-        expect(await screen.findByText("Space Camp")).toBeInTheDocument();
-        await act(
-          async () =>
-            await userEvent.click(
-              Array.from(await screen.findAllByText("Edit/Verify"))[1]
-            )
-        );
+    beforeEach(async () => {
+      render(
+        <Page>
+          <MockedProvider
+            mocks={[
+              organizationsQuery(
+                "Space Camp",
+                "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+              ),
+              verificationMutation,
+              submittedOrganizationQuery,
+            ]}
+          >
+            <PendingOrganizationsContainer />
+          </MockedProvider>
+        </Page>
+      );
+    });
+    it("returns to org details when verification canceled", async () => {
+      await navigateToVerificationModal();
+      await act(
+        async () => await userEvent.click(screen.getByText("No, go back"))
+      );
 
-        await act(
-          async () => await userEvent.click(screen.getByText("Verify"))
-        );
-
+      await waitFor(() =>
         expect(
-          await screen.findByLabelText(/verify organization/i)
-        ).toBeInTheDocument();
+          screen.queryByLabelText(/verify organization/i)
+        ).not.toBeInTheDocument()
+      );
 
-        await act(
-          async () => await userEvent.click(screen.getByText("Yes, I'm sure"))
-        );
+      expect(
+        await screen.findByText("Organization details")
+      ).toBeInTheDocument();
+    });
 
-        await waitFor(() =>
-          expect(
-            screen.queryByLabelText(/verify organization/i)
-          ).not.toBeInTheDocument()
-        );
+    it("verifies Space Camp org when verification confirmed", async () => {
+      await navigateToVerificationModal();
+      await act(
+        async () => await userEvent.click(screen.getByText("Yes, I'm sure"))
+      );
 
-        expect(await screen.findByText("A Real Hospital")).toBeInTheDocument();
-        await waitFor(() =>
-          expect(
-            screen.queryByText(
-              "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
-            )
-          ).not.toBeInTheDocument()
-        );
-      });
+      await waitFor(() =>
+        expect(
+          screen.queryByLabelText(/verify organization/i)
+        ).not.toBeInTheDocument()
+      );
+
+      expect(await screen.findByText("A Real Hospital")).toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          screen.queryByText(
+            "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0"
+          )
+        ).not.toBeInTheDocument()
+      );
     });
   });
   describe("submitting the form with edits without saving", () => {
@@ -549,8 +535,8 @@ describe("PendingOrganizationsContainer", () => {
       expect(await screen.findByText("Delete", { exact: true })).toBeEnabled();
       fireEvent.click(await screen.findByText("Delete", { exact: true }));
 
-      await waitForElementToBeRemoved(() =>
-        screen.queryByText("DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0")
+      await waitFor(() =>
+        expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
       );
 
       await waitFor(() =>
@@ -563,3 +549,23 @@ describe("PendingOrganizationsContainer", () => {
     });
   });
 });
+
+const navigateToVerificationModal = async () => {
+  expect(await screen.findByText("Space Camp")).toBeInTheDocument();
+  await act(
+    async () =>
+      await userEvent.click(
+        Array.from(await screen.findAllByText("Edit/Verify"))[1]
+      )
+  );
+
+  await act(async () => await userEvent.click(screen.getByText("Verify")));
+
+  expect(
+    await screen.findByLabelText(/verify organization/i)
+  ).toBeInTheDocument();
+};
+
+const clickEditOnlyBtn = async () => {
+  await act(async () => await userEvent.click(screen.getByText(/Edit only/i)));
+};

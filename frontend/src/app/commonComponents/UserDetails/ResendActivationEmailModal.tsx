@@ -2,26 +2,27 @@ import React from "react";
 import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from "../../commonComponents/Button/Button";
+import Button from "../Button/Button";
 import { displayFullName } from "../../utils";
-
-import { SettingsUser } from "./ManageUsersContainer";
-import "./ManageUsers.scss";
+import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
+import "../../Settings/Users/ManageUsers.scss";
 
 interface Props {
   onClose: () => void;
   onResendActivationEmail: (userId: string) => void;
   user: SettingsUser;
+  isOpen: boolean;
 }
 
 const ResendActivationEmailModal: React.FC<Props> = ({
   onClose,
   onResendActivationEmail,
   user,
+  isOpen,
 }) => {
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       style={{
         content: {
           maxHeight: "90vh",
@@ -30,7 +31,7 @@ const ResendActivationEmailModal: React.FC<Props> = ({
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      contentLabel="Unsaved changes to current user"
+      contentLabel="Confirm sending of reactivation email"
       ariaHideApp={process.env.NODE_ENV !== "test"}
       onRequestClose={onClose}
     >

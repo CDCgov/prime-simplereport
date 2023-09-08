@@ -13,10 +13,11 @@ import * as clia from "../../utils/clia";
 import * as state from "../../utils/state";
 import * as smartyStreets from "../../utils/smartyStreets";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
+import mockSupportedDiseaseTestPerformedCovid from "../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
+import "../../../i18n";
+import { DeviceType } from "../../../generated/graphql";
 
 import FacilityForm from "./FacilityForm";
-
-import "../../../i18n";
 
 let saveFacility: jest.Mock;
 
@@ -24,10 +25,20 @@ const devices: DeviceType[] = [
   {
     internalId: "device-1",
     name: "Device 1",
+    model: "Device 1",
+    manufacturer: "Manufacturer 1",
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+    swabTypes: [],
+    testLength: 10,
   },
   {
     internalId: "device-2",
     name: "Device 2",
+    model: "Device 2",
+    manufacturer: "Manufacturer 2",
+    supportedDiseaseTestPerformed: mockSupportedDiseaseTestPerformedCovid,
+    swabTypes: [],
+    testLength: 10,
   },
 ];
 
@@ -757,12 +768,15 @@ describe("FacilityForm", () => {
       });
 
       // Select Device
-      const deviceInput = screen.getByTestId("multi-select-toggle");
-      const deviceList = screen.getByTestId("multi-select-option-list");
+      const deviceInput = screen.getByLabelText(
+        "Search for a device to add it"
+      );
       await act(async () => await userEvent.click(deviceInput));
       await act(
         async () =>
-          await userEvent.click(within(deviceList).getByText("Device 1"))
+          await userEvent.click(
+            screen.getByLabelText("Select Manufacturer 1 Device 1")
+          )
       );
 
       // Expect no errors

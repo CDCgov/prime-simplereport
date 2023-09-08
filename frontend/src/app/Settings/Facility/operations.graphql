@@ -48,6 +48,13 @@ query GetFacilities {
   deviceTypes {
     internalId
     name
+    model
+    manufacturer
+    supportedDiseaseTestPerformed {
+      supportedDisease {
+        name
+      }
+    }
   }
 }
 

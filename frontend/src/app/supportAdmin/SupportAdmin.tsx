@@ -15,6 +15,7 @@ import {
   orgAccessPageTitle,
   orgFacilityColumnTitle,
   usersAndPatientsColumnTitle,
+  unarchivePatientTitle,
 } from "./pageTitles";
 
 type CategoryMenuProps = {
@@ -90,6 +91,11 @@ const SupportAdmin = () => {
                   <li>
                     <LinkWithQuery to="/admin/manage-users">
                       {manageUserPageTitle}
+                    </LinkWithQuery>
+                  </li>
+                  <li>
+                    <LinkWithQuery to="/admin/unarchive-patient">
+                      {unarchivePatientTitle}
                     </LinkWithQuery>
                   </li>
                 </CategoryMenu>

@@ -10,16 +10,15 @@ import {
   useResetUserPasswordMutation,
   useSetUserIsDeletedMutation,
   useUpdateUserNameMutation,
+  useUndeleteUserMutation,
 } from "../../../generated/graphql";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import { showSuccess } from "../../utils/srToast";
-import {
-  isUserActive,
-  UserHeading,
-} from "../../Settings/Users/UserDetailUtils";
+import { isUserActive } from "../../Settings/Users/UserDetailUtils";
 import { displayFullName } from "../../utils";
 import { OktaUserStatus } from "../../utils/user";
 import UserInfoTab from "../../Settings/Users/UserInfoTab";
+import UserHeading from "../../commonComponents/UserDetails/UserHeading";
 
 import { UserSearch } from "./UserSearch";
 
@@ -65,6 +64,7 @@ export const AdminManageUser: React.FC = () => {
   const [reactivateUserAndResetPassword] =
     useReactivateUserAndResetPasswordMutation();
   const [resendUserActivationEmail] = useResendActivationEmailMutation();
+  const [undeleteUser] = useUndeleteUserMutation();
 
   const handleUpdate = async (func: () => Promise<void>) => {
     setIsUpdating(true);
@@ -203,9 +203,27 @@ export const AdminManageUser: React.FC = () => {
       showSuccess("", `${fullName} has been sent a new invitation.`);
     });
   };
-  const handleSearchClear = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    getUserByEmail({ variables: { email: searchEmail } }).then(
+
+  const handleUndeleteUser = async () => {
+    await handleUpdate(async () => {
+      await undeleteUser({
+        variables: { userId: foundUser?.id as string },
+      });
+
+      await retrieveUser();
+
+      const fullName = displayFullName(
+        foundUser?.firstName,
+        foundUser?.middleName,
+        foundUser?.lastName
+      );
+
+      showSuccess("", `User account undeleted for ${fullName}`);
+    });
+  };
+
+  const retrieveUser = async () => {
+    return getUserByEmail({ variables: { email: searchEmail.trim() } }).then(
       ({ data, error }) => {
         if (!data?.user && !error) {
           setDisplayedError(userNotFoundError);
@@ -241,7 +259,10 @@ export const AdminManageUser: React.FC = () => {
       <div className="grid-container">
         <UserSearch
           onClearFilter={handleClearFilter}
-          onSearchClick={handleSearchClear}
+          onSearchClick={(e) => {
+            e.preventDefault();
+            retrieveUser();
+          }}
           onInputChange={handleInputChange}
           searchEmail={searchEmail}
           disableClearFilters={!searchEmail && !foundUser && !displayedError}
@@ -265,10 +286,9 @@ export const AdminManageUser: React.FC = () => {
                 <UserHeading
                   user={foundUser}
                   isUpdating={isUpdating}
-                  handleResendUserActivationEmail={
-                    handleResendUserActivationEmail
-                  }
-                  handleReactivateUser={handleReactivateUser}
+                  onResendUserActivationEmail={handleResendUserActivationEmail}
+                  onReactivateUser={handleReactivateUser}
+                  onUndeleteUser={handleUndeleteUser}
                 />
                 <nav
                   className="prime-secondary-nav margin-top-4 padding-bottom-0"

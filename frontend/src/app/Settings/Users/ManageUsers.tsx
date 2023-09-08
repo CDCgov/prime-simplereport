@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ApolloQueryResult } from "@apollo/client";
 
 import Button from "../../commonComponents/Button/Button";
@@ -7,13 +7,14 @@ import { showSuccess } from "../../utils/srToast";
 import reload from "../../utils/reload";
 import {
   GetUsersAndStatusQuery,
-  useGetUserLazyQuery,
+  useGetUserQuery,
   UserPermission,
 } from "../../../generated/graphql";
+import UserHeading from "../../commonComponents/UserDetails/UserHeading";
 
 import CreateUserModal from "./CreateUserModal";
 import UsersSideNav from "./UsersSideNav";
-import { isUserActive, isUserSelf, UserHeading } from "./UserDetailUtils";
+import { isUserActive, isUserSelf } from "./UserDetailUtils";
 import {
   LimitedUser,
   SettingsUser,
@@ -121,15 +122,12 @@ const ManageUsers: React.FC<Props> = ({
     sortedUsers?.[0]
   );
 
-  const [queryUserWithPermissions] = useGetUserLazyQuery({
-    variables: { id: activeUser ? activeUser.id : loggedInUser.id },
+  const { refetch: refetchUser } = useGetUserQuery({
+    variables: { id: activeUser?.id },
     fetchPolicy: "no-cache",
+    skip: !activeUser?.id,
     onCompleted: (data) => updateUserWithPermissions(data.user),
   });
-
-  useEffect(() => {
-    queryUserWithPermissions();
-  }, [activeUser, queryUserWithPermissions]);
 
   // only updates the local state
   const updateLocalUserState: UpdateUser = (key, value) => {
@@ -182,7 +180,6 @@ const ManageUsers: React.FC<Props> = ({
       },
     })
       .then(async () => {
-        await getUsers();
         updateIsUserEdited(false);
         const fullName = displayFullName(
           userWithPermissions?.firstName,
@@ -261,7 +258,8 @@ const ManageUsers: React.FC<Props> = ({
       });
       const fullName = displayFullName(firstName, "", lastName);
       showSuccess("", `User name changed to ${fullName}`);
-      await queryUserWithPermissions();
+      refetchUser();
+      await getUsers();
     } catch (e: any) {
       setError(e);
     }
@@ -276,8 +274,7 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
       showSuccess("", `User email address changed to ${emailAddress}`);
-      await queryUserWithPermissions();
-      await getUsers();
+      await refetchUser();
     } catch (e: any) {}
   };
 
@@ -332,9 +329,7 @@ const ManageUsers: React.FC<Props> = ({
       );
 
       const nextUser: LimitedUser =
-        sortedUsers[0].id === userId && sortedUsers.length > 1
-          ? sortedUsers[1]
-          : sortedUsers[0];
+        sortedUsers[0].id === userId ? sortedUsers[1] : sortedUsers[0];
 
       await getUsers();
       updateActiveUser(nextUser);
@@ -427,10 +422,9 @@ const ManageUsers: React.FC<Props> = ({
                 user={user}
                 isUserSelf={isUserSelf(user, loggedInUser)}
                 isUpdating={isUpdating}
-                handleResendUserActivationEmail={
-                  handleResendUserActivationEmail
-                }
-                handleReactivateUser={handleReactivateUser}
+                onResendUserActivationEmail={handleResendUserActivationEmail}
+                onReactivateUser={handleReactivateUser}
+                onUndeleteUser={() => {}}
               />
               <nav
                 className="prime-secondary-nav margin-top-4 padding-bottom-0"

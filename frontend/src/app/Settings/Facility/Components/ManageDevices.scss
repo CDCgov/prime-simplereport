@@ -1,0 +1,29 @@
+.device-settings {
+  .results-dropdown {
+    top: 2.5em;
+    max-height: 12.1em;
+    min-width: 100%;
+    overflow-y: auto;
+    scrollbar-gutter: stable;
+  }
+
+  .results-dropdown__body {
+    padding: 0 0.5rem;
+
+    .usa-table {
+      table-layout: fixed;
+    }
+
+    .usa-table--borderless {
+      th {
+        position: sticky;
+        top: 0;
+        background: white;
+      }
+    }
+
+    .usa-button {
+      margin: 0.5em 0;
+    }
+  }
+}

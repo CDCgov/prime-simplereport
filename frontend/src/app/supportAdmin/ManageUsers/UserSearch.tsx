@@ -53,7 +53,7 @@ export const UserSearch: React.FC<UserSearchProps> = ({
               queryString={searchEmail}
               placeholder={"email@example.com"}
               label={"Search by email address of user"}
-              disabled={!searchEmail}
+              disabled={!searchEmail || searchEmail.trim() === ""}
             />
           </div>
         </div>

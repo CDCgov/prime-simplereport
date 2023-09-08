@@ -9,6 +9,7 @@ import ResetUserPasswordModal from "./ResetUserPasswordModal";
 import ResetUserMfaModal from "./ResetUserMfaModal";
 import EditUserNameModal from "./EditUserNameModal";
 import EditUserEmailModal from "./EditUserEmailModal";
+import "./UserInfoTab.scss";
 
 interface UserInfoTabProps {
   user: SettingsUser;
@@ -142,7 +143,9 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
           <div
             className={classnames(
               "user-header grid-row flex-row flex-align-center",
-              { "disabled-dark": isUserSelf }
+              {
+                "disabled-dark": isUserSelf,
+              }
             )}
           >
             <div>

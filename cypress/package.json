@@ -5,8 +5,8 @@
     "devDependencies": {
         "@faker-js/faker": "^8.0.2",
         "cypress": "^11.0.0",
-        "cypress-localstorage-commands": "^2.2.3",
-        "eslint": "^8.47.0",
+        "cypress-localstorage-commands": "^2.2.4",
+        "eslint": "^8.48.0",
         "eslint-plugin-cypress": "^2.14.0",
         "dayjs": "^1.11.9",
         "otplib": "^12.0.1"
@@ -22,6 +22,6 @@
     },
     "dependencies": {
         "axe-core": "^4.7.2",
-        "cypress-axe": "^1.0.0"
+        "cypress-axe": "^1.5.0"
     }
 }

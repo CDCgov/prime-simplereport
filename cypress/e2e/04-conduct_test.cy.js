@@ -76,8 +76,13 @@ describe("Conducting a COVID test", () => {
     // then it won't trigger a network call
     cy.wait("@GetFacilityQueue", {timeout: 20000});
 
+    // Wait for the FacilityQueue results to populate
+    // To be resolved in #6079
+    // https://github.com/CDCgov/prime-simplereport/pull/6464#discussion_r1313361521
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(100);
     cy.get(queueCard).within(() => {
-      cy.get('[data-cy="radio-group-option-NEGATIVE"]').click()
+      cy.contains('label', 'Negative (-)').click();
     });
 
     cy.wait("@EditQueueItem");

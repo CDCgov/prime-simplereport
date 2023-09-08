@@ -111,7 +111,7 @@ describe('Save and start covid test',()=>{
       cy.get('input[name="zipCode"]').type(patient.zip);
       cy.get('input[name="race"][value="other"]+label').click();
       cy.get('input[name="ethnicity"][value="refused"]+label').click();
-      cy.get('input[value="male"]+label').click();
+      cy.get('input[name="gender"][value="male"]+label').click();
       cy.get(".prime-save-patient-changes-start-test").first().click();
       cy.get(
         '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
