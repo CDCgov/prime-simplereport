@@ -432,10 +432,10 @@ export const DetachedTestResultsList = ({
       <div className="prime-container card-container sr-test-results-list">
         <div className="sticky-heading">
           <div className="usa-card__header">
-            <div className="display-flex flex-align-baseline">
-              <h1 className="font-sans-lg margin-top-0">Test results</h1>
+            <div className="display-flex flex-align-center">
+              <h1 className="font-sans-lg margin-y-0">Test results</h1>
               {!loading && (
-                <span className="sr-showing-results-on-page">
+                <span className="sr-showing-results-on-page margin-left-4">
                   {getResultCountText(totalEntries, pageNumber, entriesPerPage)}
                 </span>
               )}
