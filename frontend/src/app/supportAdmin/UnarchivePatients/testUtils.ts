@@ -76,10 +76,3 @@ export const mockOrg2: UnarchivePatientOrganization = {
   name: "Universe Org",
   facilities: [],
 };
-
-export const selectDropdown = async (label: string, value: string) => {
-  await act(
-    async () =>
-      await userEvent.selectOptions(screen.getByLabelText(label), value)
-  );
-};
