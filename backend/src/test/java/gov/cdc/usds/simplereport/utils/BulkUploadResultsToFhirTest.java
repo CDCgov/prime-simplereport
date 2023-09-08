@@ -424,7 +424,14 @@ public class BulkUploadResultsToFhirTest {
     var endTime = System.currentTimeMillis();
     var elapsedTime = endTime - startTime;
 
-    assertTrue(elapsedTime < 20000, "Bundle processing took more than 20 seconds for 5000 rows");
+    // The processing is threaded so the elapsed time is closely tied to available CPU cores. GitHub
+    // action runners
+    // will require more time because they have less cores than our dev or prod machines.
+    assertTrue(
+        elapsedTime < 30000,
+        "Bundle processing took more than 30 seconds for 5000 rows. It took "
+            + elapsedTime
+            + " milliseconds.");
   }
 
   @Test
