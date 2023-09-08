@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useRef, useState } from "react";
+import { ComboBoxRef } from "@trussworks/react-uswds";
 
 import { Option } from "../../commonComponents/Dropdown";
 import {
@@ -27,14 +28,14 @@ type Facility = {
 };
 
 export interface ManageFacilityState {
-  orgId: string;
-  facilityId: string;
+  orgId: string | undefined;
+  facilityId: string | undefined;
   facility: Facility | undefined;
 }
 
 export const initialState: ManageFacilityState = {
-  orgId: "",
-  facilityId: "",
+  facilityId: undefined,
+  orgId: undefined,
   facility: undefined,
 };
 
@@ -42,12 +43,22 @@ const ManageFacility = () => {
   useDocumentTitle(manageFacility);
   const [localState, updateLocalState] =
     useState<ManageFacilityState>(initialState);
+  const orgSelectionRef = useRef<ComboBoxRef>(null);
+  const facilitySelectionRef = useRef<ComboBoxRef>(null);
 
   /**
    * Fetch organizations (on initial load)
    */
   const { data: orgResponse, loading: loadingOrgs } =
-    useGetAllOrganizationsQuery();
+    useGetAllOrganizationsQuery({
+      onCompleted: () => {
+        // for some reason, our combination of Truss + Apollo requires us clear
+        // a non-existent ref so that the options to the org combobox loads
+        // on first try. If we exclude this line, the fetched data doesn't load
+        // on initial render. ¯\_(ツ)_/¯
+        orgSelectionRef.current?.clearSelection();
+      },
+    });
 
   const orgOptions: Option[] =
     orgResponse?.organizations?.map((org) => ({
@@ -64,7 +75,8 @@ const ManageFacility = () => {
   ] = useGetFacilitiesByOrgIdLazyQuery();
 
   const facilitiesOptions: Option[] =
-    localState.orgId === "" || !facilitiesResponse?.organization?.facilities
+    localState.orgId === undefined ||
+    !facilitiesResponse?.organization?.facilities
       ? []
       : facilitiesResponse?.organization?.facilities.map((facility) => ({
           value: facility.id,
@@ -79,52 +91,60 @@ const ManageFacility = () => {
   /**
    * Facility select filter handlers
    */
-  function handleSelectOrganization(e: React.ChangeEvent<HTMLSelectElement>) {
-    const selectedOrg = e.target.value;
-    if (selectedOrg !== "") {
+  function handleSelectOrganization(selectedOrg: string | undefined) {
+    if (selectedOrg) {
       queryGetFacilitiesByOrgId({
         variables: { orgId: selectedOrg },
         fetchPolicy: "no-cache",
-      }).then();
+      }).then(() => facilitySelectionRef.current?.clearSelection());
+
+      updateLocalState({
+        facility: undefined,
+        facilityId: undefined,
+        orgId: selectedOrg,
+      });
+    } else {
+      orgSelectionRef.current?.clearSelection();
+      facilitySelectionRef.current?.clearSelection();
+
+      updateLocalState({
+        facility: undefined,
+        facilityId: undefined,
+        orgId: undefined,
+      });
     }
-
-    updateLocalState((prevState) => ({
-      ...prevState,
-      orgId: selectedOrg,
-      facilityId: "",
-    }));
   }
-  async function handleSelectFacility(e: React.ChangeEvent<HTMLSelectElement>) {
-    const facilityId = e.target.value;
 
+  async function handleSelectFacility(selectedFacility: string | undefined) {
     updateLocalState((prevState) => ({
       ...prevState,
-      facilityId: facilityId,
+      facilityId: selectedFacility,
     }));
   }
 
   async function handleSearch() {
     const facilityId = localState.facilityId;
 
-    if (facilityId === "") {
+    if (facilityId === undefined) {
       updateLocalState((prevState) => ({
         ...prevState,
         facility: undefined,
       }));
     } else {
+      const localSelectedFacilityId = localState.facilityId as string;
       const selectedFacility =
         facilitiesResponse?.organization?.facilities?.filter(
-          (f) => f.id === facilityId
+          (f) => f.id === localSelectedFacilityId
         )?.[0];
 
       const facilityStats = await queryGetFacilityStats({
         fetchPolicy: "no-cache",
-        variables: { facilityId },
+        variables: { facilityId: localSelectedFacilityId },
       }).then((response) => response.data?.facilityStats);
 
       updateLocalState((prevState) => ({
-        orgId: prevState.orgId,
-        facilityId: facilityId,
+        ...prevState,
+        selectedFacilityId: localSelectedFacilityId,
         facility: {
           city: selectedFacility?.city || "",
           state: selectedFacility?.state || "",
@@ -141,7 +161,8 @@ const ManageFacility = () => {
   }
 
   function handleClearFilter() {
-    updateLocalState(initialState);
+    orgSelectionRef.current?.clearSelection();
+    facilitySelectionRef.current?.clearSelection();
   }
 
   /**
@@ -149,15 +170,17 @@ const ManageFacility = () => {
    */
   const [deleteFacilityMutation] = useDeleteFacilityMutation();
   function handleDeleteFacility() {
-    deleteFacilityMutation({
-      variables: { facilityId: localState.facilityId },
-    }).then(() => {
-      showSuccess(
-        "",
-        `Facility ${localState.facility?.name} successfully deleted`
-      );
-      handleClearFilter();
-    });
+    if (localState.facilityId) {
+      deleteFacilityMutation({
+        variables: { facilityId: localState.facilityId },
+      }).then(() => {
+        showSuccess(
+          "",
+          `Facility ${localState.facility?.name} successfully deleted`
+        );
+        handleClearFilter();
+      });
+    }
   }
 
   /**
@@ -171,6 +194,8 @@ const ManageFacility = () => {
           onClearFilter={handleClearFilter}
           onSelectOrg={handleSelectOrganization}
           onSearch={handleSearch}
+          facilityRef={facilitySelectionRef}
+          orgRef={orgSelectionRef}
           facilityOptions={facilitiesOptions}
           organizationOptions={orgOptions}
           manageFacilityState={localState}

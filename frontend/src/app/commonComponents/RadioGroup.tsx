@@ -72,6 +72,7 @@ const RadioGroup = <T extends string>({
     <fieldset
       className={classnames("usa-fieldset prime-radios", className)}
       id={name}
+      data-testid={name}
     >
       {legend && (
         <legend

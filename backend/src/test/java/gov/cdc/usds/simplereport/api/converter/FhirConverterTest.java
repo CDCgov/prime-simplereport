@@ -1489,6 +1489,7 @@ class FhirConverterTest {
             "not hispanic",
             Collections.emptyList(),
             "male",
+            "male",
             false,
             false,
             "",

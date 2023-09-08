@@ -221,10 +221,7 @@ const MultiplexResultInputForm: React.FC<Props> = ({
     <form className="usa-form maxw-none multiplex-result-form">
       <div className="grid-row grid-gap-2">
         {!isFluOnly && (
-          <div
-            className="grid-col-4"
-            data-testid={`covid-test-result-${queueItemId}`}
-          >
+          <div className="grid-col-4">
             <h2 className="prime-radio__title">COVID-19</h2>
             <RadioGroup
               legend="COVID-19 result"

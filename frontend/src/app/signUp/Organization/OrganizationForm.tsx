@@ -123,15 +123,7 @@ const OrganizationForm = () => {
       focusOnFirstInputWithError();
       focusOnce.current = false;
     }
-  }, [
-    errors.name,
-    errors.state,
-    errors.type,
-    errors.firstName,
-    errors.lastName,
-    errors.email,
-    errors.workPhoneNumber,
-  ]);
+  }, [errors]);
 
   const validateSupportedJurisdiction = async () => {
     if (organization.state && !liveJurisdictions.includes(organization.state)) {

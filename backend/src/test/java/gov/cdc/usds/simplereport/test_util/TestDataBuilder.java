@@ -108,6 +108,7 @@ public class TestDataBuilder {
         "ethnicity",
         List.of(),
         "female",
+        "female",
         false,
         false,
         "eng",

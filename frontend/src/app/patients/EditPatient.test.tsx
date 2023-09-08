@@ -102,6 +102,7 @@ describe("EditPatient", () => {
               race: "white",
               ethnicity: "hispanic",
               gender: "male",
+              genderIdentity: "male",
               residentCongregateSetting: true,
               employedInHealthcare: true,
               facility: null,
@@ -137,6 +138,7 @@ describe("EditPatient", () => {
             race: "white",
             ethnicity: "hispanic",
             gender: "male",
+            genderIdentity: "male",
             residentCongregateSetting: true,
             employedInHealthcare: true,
             facility: null,
@@ -285,6 +287,7 @@ describe("EditPatient", () => {
                 race: null,
                 ethnicity: null,
                 gender: null,
+                genderIdentity: null,
                 residentCongregateSetting: true,
                 employedInHealthcare: true,
                 facility: null,
@@ -397,6 +400,7 @@ describe("EditPatient", () => {
                 race: null,
                 ethnicity: null,
                 gender: null,
+                genderIdentity: null,
                 residentCongregateSetting: true,
                 employedInHealthcare: true,
                 facility: null,
@@ -495,6 +499,7 @@ describe("EditPatient", () => {
             race: "refused",
             ethnicity: "refused",
             gender: "refused",
+            genderIdentity: "refused",
             residentCongregateSetting: null,
             employedInHealthcare: null,
             facility: null,
@@ -526,18 +531,19 @@ describe("EditPatient", () => {
     });
 
     it("shows prefer not to answer options", () => {
-      ["Race", "Are you Hispanic or Latino?", "Sex assigned at birth"].forEach(
-        (legend) => {
-          const fieldset = screen.getByText(legend).closest("fieldset");
-          if (fieldset === null) {
-            throw Error(`Unable to corresponding fieldset for ${legend}`);
-          }
-          const option = within(fieldset).getByLabelText(
-            "Prefer not to answer"
-          );
-          expect(option).toBeChecked();
+      [
+        "Race",
+        "Are you Hispanic or Latino?",
+        "Sex assigned at birth",
+        "What's your gender identity?",
+      ].forEach((legend) => {
+        const fieldset = screen.getByText(legend).closest("fieldset");
+        if (fieldset === null) {
+          throw Error(`Unable to corresponding fieldset for ${legend}`);
         }
-      );
+        const option = within(fieldset).getByLabelText("Prefer not to answer");
+        expect(option).toBeChecked();
+      });
     });
     it("shows not sure answers", () => {
       ["group or shared housing facility", "health care"].forEach((legend) => {
@@ -659,6 +665,9 @@ describe("EditPatient", () => {
           </Provider>
         </MemoryRouter>
       );
+      expect(
+        await screen.findByText("Franecki, Eugenia", { exact: false })
+      ).toBeInTheDocument();
       expect(
         await screen.findByText("Franecki, Eugenia", { exact: false })
       ).toBeInTheDocument();

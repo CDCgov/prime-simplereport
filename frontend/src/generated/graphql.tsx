@@ -238,6 +238,7 @@ export type MutationAddPatientArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
@@ -457,6 +458,7 @@ export type MutationUpdatePatientArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
@@ -571,6 +573,7 @@ export type Patient = {
   facility?: Maybe<Facility>;
   firstName?: Maybe<Scalars["String"]>;
   gender?: Maybe<Scalars["String"]>;
+  genderIdentity?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   /** @deprecated alias for 'id' */
   internalId: Scalars["ID"];
@@ -1513,6 +1516,7 @@ export type GetPatientDetailsQuery = {
     ethnicity?: string | null;
     tribalAffiliation?: Array<string | null> | null;
     gender?: string | null;
+    genderIdentity?: string | null;
     residentCongregateSetting?: boolean | null;
     employedInHealthcare?: boolean | null;
     preferredLanguage?: string | null;
@@ -1551,6 +1555,7 @@ export type UpdatePatientMutationVariables = Exact<{
   ethnicity?: InputMaybe<Scalars["String"]>;
   tribalAffiliation?: InputMaybe<Scalars["String"]>;
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
   employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
@@ -4361,6 +4366,7 @@ export const GetPatientDetailsDocument = gql`
       ethnicity
       tribalAffiliation
       gender
+      genderIdentity
       residentCongregateSetting
       employedInHealthcare
       preferredLanguage
@@ -4446,6 +4452,7 @@ export const UpdatePatientDocument = gql`
     $ethnicity: String
     $tribalAffiliation: String
     $gender: String
+    $genderIdentity: String
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
@@ -4474,6 +4481,7 @@ export const UpdatePatientDocument = gql`
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
       gender: $gender
+      genderIdentity: $genderIdentity
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
@@ -4523,6 +4531,7 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      ethnicity: // value for 'ethnicity'
  *      tribalAffiliation: // value for 'tribalAffiliation'
  *      gender: // value for 'gender'
+ *      genderIdentity: // value for 'genderIdentity'
  *      residentCongregateSetting: // value for 'residentCongregateSetting'
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'

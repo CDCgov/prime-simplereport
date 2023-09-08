@@ -35,6 +35,7 @@ const patient = {
   race: null,
   ethnicity: null,
   gender: null,
+  genderIdentity: null,
   residentCongregateSetting: null,
   employedInHealthcare: null,
   facility: null,
