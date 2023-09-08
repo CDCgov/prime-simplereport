@@ -1,16 +1,10 @@
-import {
-  render,
-  screen,
-  within,
-  waitFor,
-  fireEvent,
-  act,
-} from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import * as smartyStreets from "../utils/smartyStreets";
 import SRToastContainer from "../commonComponents/SRToastContainer";
@@ -42,29 +36,32 @@ const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
 );
 
 const fillOutForm = (
+  user: UserEvent,
   inputs: { [label: string]: string },
   dropdowns: { [label: string]: string },
   inputGroups: {
     [legend: string]: { label: string; value: string; exact?: boolean };
   }
 ) => {
-  Object.entries(inputs).forEach(([label, value]) => {
-    fireEvent.change(
+  Object.entries(inputs).forEach(async ([label, value]) => {
+    await user.type(
       screen.getByLabelText(label, {
         exact: false,
       }),
-      { target: { value: value } }
+      value
     );
   });
-  Object.entries(dropdowns).forEach(([label, value]) => {
-    fireEvent.change(
+
+  Object.entries(dropdowns).forEach(async ([label, value]) => {
+    await user.selectOptions(
       screen.getByLabelText(label, {
         exact: false,
       }),
-      { target: { value: [value] } }
+      value
     );
   });
-  Object.entries(inputGroups).forEach(([legend, { label, exact }]) => {
+
+  Object.entries(inputGroups).forEach(async ([legend, { label, exact }]) => {
     const fieldset = screen
       .getByText(legend, {
         exact: true,
@@ -73,7 +70,7 @@ const fillOutForm = (
     if (fieldset === null) {
       throw Error(`Unable to corresponding fieldset for ${legend}`);
     }
-    fireEvent.click(
+    await user.click(
       within(fieldset).getByLabelText(label, {
         exact: exact || false,
       })
@@ -157,57 +154,6 @@ describe("AddPatient", () => {
     let zipCodeSpy: jest.SpyInstance;
 
     beforeEach(async () => {
-      const mocks = [
-        {
-          request: {
-            query: ADD_PATIENT,
-            variables: addPatientRequestParams,
-          },
-          result: {
-            data: {
-              addPatient: {
-                internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
-                facility: {
-                  id: "facility-id-001",
-                },
-              },
-            },
-          },
-        },
-        {
-          request: {
-            query: ADD_PATIENT,
-            variables: addPatientRequestNoDelivery,
-          },
-          result: {
-            data: {
-              addPatient: {
-                internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
-                facility: {
-                  id: "facility-id-001",
-                },
-              },
-            },
-          },
-        },
-        {
-          request: {
-            query: ADD_PATIENT,
-            variables: addPatientRequestNoAddressValidation,
-          },
-          result: {
-            data: {
-              addPatient: {
-                internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
-                facility: {
-                  id: "facility-id-001",
-                },
-              },
-            },
-          },
-        },
-      ];
-
       jest.spyOn(smartyStreets, "getBestSuggestion").mockImplementation();
       jest
         .spyOn(smartyStreets, "suggestionIsCloseEnough")
@@ -216,18 +162,69 @@ describe("AddPatient", () => {
       zipCodeSpy = jest
         .spyOn(smartyStreets, "isValidZipCodeForState")
         .mockReturnValue(true);
+    });
+    const mocks = [
+      {
+        request: {
+          query: ADD_PATIENT,
+          variables: addPatientRequestParams,
+        },
+        result: {
+          data: {
+            addPatient: {
+              internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              facility: {
+                id: "facility-id-001",
+              },
+            },
+          },
+        },
+      },
+      {
+        request: {
+          query: ADD_PATIENT,
+          variables: addPatientRequestNoDelivery,
+        },
+        result: {
+          data: {
+            addPatient: {
+              internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              facility: {
+                id: "facility-id-001",
+              },
+            },
+          },
+        },
+      },
+      {
+        request: {
+          query: ADD_PATIENT,
+          variables: addPatientRequestNoAddressValidation,
+        },
+        result: {
+          data: {
+            addPatient: {
+              internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+              facility: {
+                id: "facility-id-001",
+              },
+            },
+          },
+        },
+      },
+    ];
+    const Queue = () => {
+      const location = useLocation() as LocationOptions;
 
-      const Queue = () => {
-        const location = useLocation() as LocationOptions;
-
-        return (
-          <p>
-            Testing Queue! {location.search} {location.state.patientId}
-          </p>
-        );
-      };
-
-      render(
+      return (
+        <p>
+          Testing Queue! {location.search} {location.state.patientId}
+        </p>
+      );
+    };
+    const renderComponent = () => ({
+      user: userEvent.setup(),
+      render: render(
         <>
           <Provider store={store}>
             <MockedProvider mocks={mocks} addTypename={false}>
@@ -240,9 +237,11 @@ describe("AddPatient", () => {
           </Provider>
           <SRToastContainer />
         </>
-      );
+      ),
     });
+
     it("shows the form title", async () => {
+      renderComponent();
       expect(
         (
           await screen.findAllByText(`Add new ${PATIENT_TERM}`, {
@@ -254,34 +253,30 @@ describe("AddPatient", () => {
 
     describe("Choosing a country", () => {
       it("should show the state and zip code inputs for USA", async () => {
-        await act(
-          async () =>
-            await userEvent.selectOptions(
-              screen.getByLabelText("Country", { exact: false }),
-              "USA"
-            )
+        const { user } = renderComponent();
+
+        await user.selectOptions(
+          screen.getByLabelText("Country", { exact: false }),
+          "USA"
         );
         expect(await screen.findByText("State")).toBeInTheDocument();
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
       it("should show the state and zip code inputs for Canada", async () => {
-        await act(
-          async () =>
-            await userEvent.selectOptions(
-              screen.getByLabelText("Country", { exact: false }),
-              "CAN"
-            )
+        const { user } = renderComponent();
+        await user.selectOptions(
+          screen.getByLabelText("Country", { exact: false }),
+          "CAN"
         );
         expect(await screen.findByText("State")).toBeInTheDocument();
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
       it("should show different states for Canada", async () => {
-        await act(
-          async () =>
-            await userEvent.selectOptions(
-              screen.getByLabelText("Country", { exact: false }),
-              "CAN"
-            )
+        const { user } = renderComponent();
+
+        await user.selectOptions(
+          screen.getByLabelText("Country", { exact: false }),
+          "CAN"
         );
 
         let stateInput: HTMLSelectElement;
@@ -289,16 +284,15 @@ describe("AddPatient", () => {
           exact: false,
         }) as HTMLSelectElement;
 
-        await act(async () => await userEvent.selectOptions(stateInput, "QC"));
+        await user.selectOptions(stateInput, "QC");
         expect(stateInput.value).toBe("QC");
       });
       it("should hide the state and zip code inputs for non-US countries", async () => {
-        await act(
-          async () =>
-            await userEvent.selectOptions(
-              screen.getByLabelText("Country", { exact: false }),
-              "MEX"
-            )
+        const { user } = renderComponent();
+
+        await user.selectOptions(
+          screen.getByLabelText("Country", { exact: false }),
+          "MEX"
         );
         expect(screen.queryByText("State")).not.toBeInTheDocument();
         expect(screen.queryByText("ZIP code")).not.toBeInTheDocument();
@@ -307,7 +301,9 @@ describe("AddPatient", () => {
 
     describe("All required fields entered and submitting address verification", () => {
       it("redirects to the person tab", async () => {
+        const { user } = renderComponent();
         fillOutForm(
+          user,
           {
             "First Name": "Alice",
             "Last Name": "Hamilton",
@@ -353,42 +349,29 @@ describe("AddPatient", () => {
             },
           }
         );
-        await act(
-          async () =>
-            await userEvent.click(
-              screen.queryAllByText("Save Changes", {
-                exact: false,
-              })[0]
-            )
-        );
-        expect(
-          await screen.findByText("Address validation", {
-            exact: false,
-          })
-        ).toBeInTheDocument();
+        await user.click(screen.queryAllByText(/Save Changes/i)[0]);
+
+        await screen.findByText(/Address validation/i);
         const modal = screen.getByRole("dialog");
 
-        await act(
-          async () =>
-            await userEvent.click(
-              within(modal).getByLabelText("Use address as entered", {
-                exact: false,
-              })
-            )
+        await user.click(
+          within(modal).getByLabelText("Use address as entered", {
+            exact: false,
+          })
         );
-        await act(
-          async () =>
-            await userEvent.click(
-              within(modal).getByText("Save changes", {
-                exact: false,
-              })
-            )
+
+        await user.click(
+          within(modal).getByText("Save changes", {
+            exact: false,
+          })
         );
         expect(await screen.findByText("Patients!")).toBeInTheDocument();
       });
       it("surfaces an error if invalid zip code for state", async () => {
+        const { user } = renderComponent();
         zipCodeSpy.mockReturnValue(false);
         fillOutForm(
+          user,
           {
             "First Name": "Alice",
             "Last Name": "Hamilton",
@@ -428,22 +411,17 @@ describe("AddPatient", () => {
             },
           }
         );
-        await act(
-          async () =>
-            await userEvent.click(
-              screen.queryAllByText("Save Changes", {
-                exact: false,
-              })[0]
-            )
-        );
-        expect(
-          await screen.findByText("Invalid ZIP code for this state", {
+        await user.click(
+          screen.queryAllByText("Save Changes", {
             exact: false,
-          })
-        ).toBeInTheDocument();
+          })[0]
+        );
+        await screen.findByText(/Invalid ZIP code for this state/i);
       });
       it("requires race field to be populated", async () => {
+        const { user } = renderComponent();
         fillOutForm(
+          user,
           {
             "First Name": "Alice",
             "Last Name": "Hamilton",
@@ -474,13 +452,11 @@ describe("AddPatient", () => {
             },
           }
         );
-        await act(
-          async () =>
-            await userEvent.click(
-              screen.queryAllByText("Save Changes", {
-                exact: false,
-              })[0]
-            )
+
+        await user.click(
+          screen.queryAllByText("Save Changes", {
+            exact: false,
+          })[0]
         );
 
         await waitFor(() =>
@@ -490,6 +466,7 @@ describe("AddPatient", () => {
     });
 
     describe("facility select input", () => {
+      const { user } = renderComponent();
       let facilityInput: HTMLSelectElement;
       beforeEach(() => {
         facilityInput = screen.getByLabelText("Facility", {
@@ -503,30 +480,24 @@ describe("AddPatient", () => {
         expect(facilityInput.value).toBe("");
       });
       it("updates its selection on change", async () => {
-        await act(
-          async () =>
-            await userEvent.selectOptions(facilityInput, [mockFacilityID])
-        );
+        await user.selectOptions(facilityInput, [mockFacilityID]);
         expect(facilityInput.value).toBe(mockFacilityID);
       });
     });
 
     describe("With student ID", () => {
       it("allows student ID to be entered", async () => {
-        await act(
-          async () =>
-            await userEvent.selectOptions(
-              screen.getByLabelText("Role"),
-              "STUDENT"
-            )
-        );
+        const { user } = renderComponent();
+        await user.selectOptions(screen.getByLabelText("Role"), "STUDENT");
         expect(await screen.findByText("Student ID")).toBeInTheDocument();
       });
     });
 
     describe("saving changes and starting a test", () => {
       it("redirects to the queue after address validation", async () => {
+        const { user } = renderComponent();
         fillOutForm(
+          user,
           {
             "First Name": "Alice",
             "Last Name": "Hamilton",
@@ -576,13 +547,10 @@ describe("AddPatient", () => {
           .spyOn(smartyStreets, "suggestionIsCloseEnough")
           .mockReturnValue(true);
 
-        await act(
-          async () =>
-            await userEvent.click(
-              screen.queryAllByText("Save and start test", {
-                exact: false,
-              })[0]
-            )
+        await user.click(
+          screen.queryAllByText("Save and start test", {
+            exact: false,
+          })[0]
         );
 
         await new Promise((resolve) => setTimeout(resolve, 0));
@@ -593,13 +561,13 @@ describe("AddPatient", () => {
           })
         ).not.toBeInTheDocument();
 
-        expect(
-          await screen.findByText("Testing Queue!", { exact: false })
-        ).toBeInTheDocument();
+        await screen.findByText(/Testing Queue!/i);
       });
 
       it("redirects to the queue with a patient id and selected facility id", async () => {
+        const { user } = renderComponent();
         fillOutForm(
+          user,
           {
             "First Name": "Alice",
             "Last Name": "Hamilton",
@@ -644,13 +612,10 @@ describe("AddPatient", () => {
             },
           }
         );
-        await act(
-          async () =>
-            await userEvent.click(
-              screen.queryAllByText("Save and start test", {
-                exact: false,
-              })[0]
-            )
+        await user.click(
+          screen.queryAllByText("Save and start test", {
+            exact: false,
+          })[0]
         );
         expect(
           await screen.findByText("Address validation", {
@@ -660,21 +625,15 @@ describe("AddPatient", () => {
 
         const modal = screen.getByRole("dialog");
 
-        await act(
-          async () =>
-            await userEvent.click(
-              within(modal).getByLabelText("Use address as entered", {
-                exact: false,
-              })
-            )
+        await user.click(
+          within(modal).getByLabelText("Use address as entered", {
+            exact: false,
+          })
         );
-        await act(
-          async () =>
-            await userEvent.click(
-              within(modal).getByText("Save changes", {
-                exact: false,
-              })
-            )
+        await user.click(
+          within(modal).getByText("Save changes", {
+            exact: false,
+          })
         );
 
         expect(
@@ -729,8 +688,10 @@ describe("AddPatient", () => {
           </MockedProvider>
         </Provider>
       );
+      const user = userEvent.setup();
 
       fillOutForm(
+        user,
         {
           "First Name": "Alice",
           "Last Name": "Hamilton",
@@ -740,14 +701,11 @@ describe("AddPatient", () => {
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      await act(
-        async () =>
-          await userEvent.type(
-            screen.getByLabelText("Date of birth", { exact: false }),
-            "1970-09-22"
-          )
+      await user.type(
+        screen.getByLabelText("Date of birth", { exact: false }),
+        "1970-09-22"
       );
-      await act(async () => await userEvent.tab());
+      await user.tab();
 
       await waitFor(() => {
         expect(patientExistsMock).toHaveBeenCalledTimes(1);
@@ -790,8 +748,9 @@ describe("AddPatient", () => {
           </MockedProvider>
         </Provider>
       );
-
+      const user = userEvent.setup();
       fillOutForm(
+        user,
         {
           "First Name": "Alice",
           "Last Name": "Hamilton",
@@ -801,14 +760,11 @@ describe("AddPatient", () => {
       );
 
       // The duplicate patient check is triggered on-blur from one of the identifying data fields
-      await act(
-        async () =>
-          await userEvent.type(
-            screen.getByLabelText("Date of birth", { exact: false }),
-            "1970-09-22"
-          )
+      await user.type(
+        screen.getByLabelText("Date of birth", { exact: false }),
+        "1970-09-22"
       );
-      await act(async () => await userEvent.tab());
+      await user.tab();
 
       expect(
         await screen.findByText("This patient is already registered", {
