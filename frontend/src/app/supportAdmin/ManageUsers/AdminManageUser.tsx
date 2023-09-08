@@ -517,7 +517,7 @@ export const AdminManageUser: React.FC = () => {
                     setValue={setValue}
                     facilityList={facilityList || []}
                     isLoadingFacilities={loadingFacilities}
-                    isSubmitting={isUpdating}
+                    isUpdating={isUpdating}
                   />
                 )}
               </div>

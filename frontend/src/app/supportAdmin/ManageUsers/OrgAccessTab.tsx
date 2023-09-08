@@ -27,7 +27,7 @@ export interface UserAccessTabProps {
   errors: any;
   isDirty: boolean;
   isLoadingFacilities: boolean;
-  isSubmitting: boolean;
+  isUpdating: boolean;
   facilityList: Pick<Facility, "id" | "name">[];
 }
 
@@ -43,7 +43,7 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
   errors,
   isDirty,
   isLoadingFacilities,
-  isSubmitting,
+  isUpdating,
 }) => {
   const selectedRole = formValues.role;
 
@@ -148,12 +148,12 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
         onSubmit={handleSubmit(handleConfirmationAndSubmit)}
         className="usa-form usa-form--large manage-user-form__site-admin"
       >
-        <UserOrganizationFormField control={control} disabled={isSubmitting} />
+        <UserOrganizationFormField control={control} disabled={isUpdating} />
         <UserRoleFormField
           control={control}
           registrationProps={register("role", { required: "Role is required" })}
           error={errors.role}
-          disabled={isSubmitting}
+          disabled={isUpdating}
         />
         <UserFacilitiesSettings
           roleSelected={selectedRole}
@@ -162,7 +162,7 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
           error={errors.facilityIds as FieldError}
           setValue={setValue}
           disabled={
-            isSubmitting || isLoadingFacilities || selectedRole === "ADMIN"
+            isUpdating || isLoadingFacilities || selectedRole === "ADMIN"
           }
         />
         <Button
@@ -170,7 +170,7 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
           variant="outline"
           type="submit"
           label={"Save changes"}
-          disabled={!isDirty || isSubmitting}
+          disabled={!isDirty || isUpdating}
         />
         {confirmationModal}
       </form>
