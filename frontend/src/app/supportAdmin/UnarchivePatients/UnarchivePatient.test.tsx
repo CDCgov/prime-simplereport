@@ -26,50 +26,14 @@ import {
 } from "../../../generated/graphql";
 import * as srToast from "../../utils/srToast";
 
-import UnarchivePatient, {
-  UnarchivePatientFacility,
-  UnarchivePatientOrganization,
-  UnarchivePatientPatient,
-} from "./UnarchivePatient";
-
-export const mockFacility1: UnarchivePatientFacility = {
-  id: "bc0536e-4564-4291-bbf3-0e7b0731f9e8",
-  name: "Mars Facility",
-};
-export const mockFacility2: UnarchivePatientFacility = {
-  id: "d70bb3b3-96bd-40d1-a3ce-b266a7edb91d",
-  name: "Jupiter Facility",
-};
-export const mockPatient1: UnarchivePatientPatient = {
-  birthDate: "1927-05-19",
-  firstName: "Rod",
-  internalId: "60b79a6b-5547-4d54-9cdd-e99ffef59bfc",
-  isDeleted: true,
-  lastName: "Gutmann",
-  middleName: "",
-  facility: null,
-};
-export const mockPatient2: UnarchivePatientPatient = {
-  birthDate: "1973-11-20",
-  firstName: "Mia",
-  internalId: "b0612367-1c82-46ad-88db-2985ac6b81ab",
-  isDeleted: true,
-  lastName: "Mode",
-  middleName: "",
-  facility: mockFacility1,
-};
-export const mockOrg1: UnarchivePatientOrganization = {
-  internalId: "f34183c4-b4c5-449f-98b0-2e02abb7aae0",
-  externalId: "DC-Space-Camp-f34183c4-b4c5-449f-98b0-2e02abb7aae0",
-  name: "Space Org",
-  facilities: [mockFacility1, mockFacility2],
-};
-export const mockOrg2: UnarchivePatientOrganization = {
-  internalId: "h3781038-b4c5-449f-98b0-2e02abb7aae0",
-  externalId: "DC-Universe-Org-h3781038-b4c5-449f-98b0-2e02abb7aae0",
-  name: "Universe Org",
-  facilities: [],
-};
+import UnarchivePatient from "./UnarchivePatient";
+import {
+  mockOrg2,
+  mockOrg1,
+  mockFacility1,
+  mockPatient1,
+  mockPatient2,
+} from "./testUtils";
 
 const createMockPatients = (patientNum: number) => {
   let mockPatients = [];
@@ -90,67 +54,6 @@ const createMockPatients = (patientNum: number) => {
   return mockPatients;
 };
 
-const mocksWithPatients = [
-  {
-    request: {
-      query: GetOrganizationsDocument,
-      variables: {
-        identityVerified: true,
-      },
-    },
-    result: {
-      data: {
-        organizations: [mockOrg2, mockOrg1],
-      },
-    },
-  },
-  {
-    request: {
-      query: GetOrganizationWithFacilitiesDocument,
-      variables: {
-        id: mockOrg1.internalId,
-      },
-    },
-    result: {
-      data: {
-        organization: mockOrg1,
-      },
-    },
-  },
-  {
-    request: {
-      query: GetPatientsByFacilityWithOrgDocument,
-      variables: {
-        facilityId: mockFacility1.id,
-        pageNumber: 0,
-        pageSize: 20,
-        archivedStatus: ArchivedStatus.Archived,
-        orgExternalId: mockOrg1.externalId,
-      },
-    },
-    result: {
-      data: {
-        patients: [mockPatient1, mockPatient2],
-      },
-    },
-  },
-  {
-    request: {
-      query: GetPatientsCountByFacilityWithOrgDocument,
-      variables: {
-        facilityId: mockFacility1.id,
-        archivedStatus: ArchivedStatus.Archived,
-        orgExternalId: mockOrg1.externalId,
-      },
-    },
-    result: {
-      data: {
-        patientsCount: 2,
-      },
-    },
-  },
-];
-
 const axe = configureAxe({
   rules: {
     // disable landmark rules when testing isolated components.
@@ -169,40 +72,12 @@ jest.mock("react-router-dom", () => {
     useLocation: () => mockLocation,
   };
 });
-let mocks: MockedProviderProps["mocks"];
+
 describe("Unarchive patient", () => {
   const mockStore = createMockStore([]);
   const mockedStore = mockStore({ facilities: [] });
-  it("displays search and instructions", async () => {
-    mocks = [
-      {
-        request: {
-          query: GetOrganizationsDocument,
-          variables: {
-            identityVerified: true,
-          },
-        },
-        result: {
-          data: {
-            organizations: [mockOrg2, mockOrg1],
-          },
-        },
-      },
-      {
-        request: {
-          query: GetOrganizationWithFacilitiesDocument,
-          variables: {
-            id: mockOrg2.internalId,
-          },
-        },
-        result: {
-          data: {
-            organization: mockOrg2,
-          },
-        },
-      },
-    ];
 
+  function renderWithMocks(mocks: MockedProviderProps["mocks"]) {
     render(
       <Provider store={mockedStore}>
         <MockedProvider mocks={mocks} addTypename={false}>
@@ -212,6 +87,11 @@ describe("Unarchive patient", () => {
         </MockedProvider>
       </Provider>
     );
+  }
+
+  it("displays search and instructions", async () => {
+    renderWithMocks(defaultMocks);
+
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
@@ -238,38 +118,8 @@ describe("Unarchive patient", () => {
   });
   it("shows an error", async () => {
     let alertSpy = jest.spyOn(srToast, "showError");
-    mocks = [
-      {
-        request: {
-          query: GetOrganizationsDocument,
-          variables: {
-            identityVerified: true,
-          },
-        },
-        result: {
-          errors: [
-            new GraphQLError(
-              "A wild error appeared",
-              null,
-              null,
-              null,
-              null,
-              null,
-              { code: "ERROR_CODE" }
-            ),
-          ],
-        },
-      },
-    ];
-    render(
-      <Provider store={mockedStore}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MemoryRouter>
-            <UnarchivePatient />
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
-    );
+    renderWithMocks(errorMocks);
+
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
@@ -279,19 +129,12 @@ describe("Unarchive patient", () => {
     );
   });
   it("displays patients table on valid search", async () => {
-    render(
-      <Provider store={mockedStore}>
-        <MockedProvider mocks={mocksWithPatients} addTypename={false}>
-          <MemoryRouter>
-            <UnarchivePatient />
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
-    );
+    renderWithMocks(mocksWithPatients);
+
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
-    await expect(screen.getByText("Clear filters")).toBeDisabled();
+    expect(screen.getByText("Clear filters")).toBeDisabled();
     await searchByOrgAndFacility();
     checkPatientResultRows();
     expect(await axe(document.body)).toHaveNoViolations();
@@ -324,90 +167,9 @@ describe("Unarchive patient", () => {
     alertErrorSpy = jest.spyOn(srToast, "showError");
     alertSuccessSpy = jest.spyOn(srToast, "showSuccess");
 
-    let additionalMocks = [
-      {
-        request: {
-          query: UnarchivePatientDocument,
-          variables: {
-            id: mockPatient1.internalId,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          errors: [
-            new GraphQLError(
-              "A wild error appeared",
-              null,
-              null,
-              null,
-              null,
-              null,
-              { code: "ERROR_CODE" }
-            ),
-          ],
-        },
-      },
-      {
-        request: {
-          query: GetPatientsByFacilityWithOrgDocument,
-          variables: {
-            facilityId: mockFacility1.id,
-            pageNumber: 0,
-            pageSize: 20,
-            archivedStatus: ArchivedStatus.Archived,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            patients: [mockPatient1, mockPatient2],
-          },
-        },
-      },
-      {
-        request: {
-          query: GetPatientsCountByFacilityWithOrgDocument,
-          variables: {
-            facilityId: mockFacility1.id,
-            archivedStatus: ArchivedStatus.Archived,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            patientsCount: 2,
-          },
-        },
-      },
-      {
-        request: {
-          query: UnarchivePatientDocument,
-          variables: {
-            id: mockPatient2.internalId,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            setPatientIsDeleted: {
-              internalId: mockPatient2.internalId,
-            },
-          },
-        },
-      },
-    ];
+    const mocks = [...mocksWithPatients, ...additionalMocks];
+    renderWithMocks(mocks);
 
-    mocks = [...mocksWithPatients, ...additionalMocks];
-
-    render(
-      <Provider store={mockedStore}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MemoryRouter>
-            <UnarchivePatient />
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
-    );
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
@@ -444,142 +206,8 @@ describe("Unarchive patient", () => {
   });
 
   it("navigates to previous page when archiving last patient on page", async () => {
-    let mockPatientGroup = createMockPatients(20);
-    mocks = [
-      {
-        request: {
-          query: GetOrganizationsDocument,
-          variables: {
-            identityVerified: true,
-          },
-        },
-        result: {
-          data: {
-            organizations: [mockOrg2, mockOrg1],
-          },
-        },
-      },
-      {
-        request: {
-          query: GetOrganizationWithFacilitiesDocument,
-          variables: {
-            id: mockOrg1.internalId,
-          },
-        },
-        result: {
-          data: {
-            organization: mockOrg1,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetPatientsByFacilityWithOrgDocument,
-          variables: {
-            facilityId: mockFacility1.id,
-            pageNumber: 0,
-            pageSize: 20,
-            archivedStatus: ArchivedStatus.Archived,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            patients: mockPatientGroup,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetPatientsCountByFacilityWithOrgDocument,
-          variables: {
-            facilityId: mockFacility1.id,
-            archivedStatus: ArchivedStatus.Archived,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            patientsCount: 21,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetPatientsByFacilityWithOrgDocument,
-          variables: {
-            facilityId: mockFacility1.id,
-            pageNumber: 1,
-            pageSize: 20,
-            archivedStatus: ArchivedStatus.Archived,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            patients: [mockPatient1],
-          },
-        },
-      },
-      {
-        request: {
-          query: UnarchivePatientDocument,
-          variables: {
-            id: mockPatient1.internalId,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            setPatientIsDeleted: {
-              internalId: mockPatient1.internalId,
-            },
-          },
-        },
-      },
-      {
-        request: {
-          query: GetPatientsCountByFacilityWithOrgDocument,
-          variables: {
-            facilityId: mockFacility1.id,
-            archivedStatus: ArchivedStatus.Archived,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            patientsCount: 20,
-          },
-        },
-      },
-      {
-        request: {
-          query: GetPatientsByFacilityWithOrgDocument,
-          variables: {
-            facilityId: mockFacility1.id,
-            pageNumber: 0,
-            pageSize: 20,
-            archivedStatus: ArchivedStatus.Archived,
-            orgExternalId: mockOrg1.externalId,
-          },
-        },
-        result: {
-          data: {
-            patients: mockPatientGroup,
-          },
-        },
-      },
-    ];
+    renderWithMocks(mocksWithExtraPatients);
 
-    render(
-      <Provider store={mockedStore}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MemoryRouter>
-            <UnarchivePatient />
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
-    );
     await waitFor(() =>
       expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
     );
@@ -643,3 +271,317 @@ export const checkPatientResultRows = () => {
     }
   });
 };
+const defaultMocks = [
+  {
+    request: {
+      query: GetOrganizationsDocument,
+      variables: {
+        identityVerified: true,
+      },
+    },
+    result: {
+      data: {
+        organizations: [mockOrg2, mockOrg1],
+      },
+    },
+  },
+  {
+    request: {
+      query: GetOrganizationWithFacilitiesDocument,
+      variables: {
+        id: mockOrg2.internalId,
+      },
+    },
+    result: {
+      data: {
+        organization: mockOrg2,
+      },
+    },
+  },
+];
+
+const mocksWithPatients = [
+  {
+    request: {
+      query: GetOrganizationsDocument,
+      variables: {
+        identityVerified: true,
+      },
+    },
+    result: {
+      data: {
+        organizations: [mockOrg2, mockOrg1],
+      },
+    },
+  },
+  {
+    request: {
+      query: GetOrganizationWithFacilitiesDocument,
+      variables: {
+        id: mockOrg1.internalId,
+      },
+    },
+    result: {
+      data: {
+        organization: mockOrg1,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetPatientsByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        pageNumber: 0,
+        pageSize: 20,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patients: [mockPatient1, mockPatient2],
+      },
+    },
+  },
+  {
+    request: {
+      query: GetPatientsCountByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patientsCount: 2,
+      },
+    },
+  },
+];
+
+const errorMocks = [
+  {
+    request: {
+      query: GetOrganizationsDocument,
+      variables: {
+        identityVerified: true,
+      },
+    },
+    result: {
+      errors: [
+        new GraphQLError(
+          "A wild error appeared",
+          null,
+          null,
+          null,
+          null,
+          null,
+          { code: "ERROR_CODE" }
+        ),
+      ],
+    },
+  },
+];
+
+const additionalMocks = [
+  {
+    request: {
+      query: UnarchivePatientDocument,
+      variables: {
+        id: mockPatient1.internalId,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      errors: [
+        new GraphQLError(
+          "A wild error appeared",
+          null,
+          null,
+          null,
+          null,
+          null,
+          { code: "ERROR_CODE" }
+        ),
+      ],
+    },
+  },
+  {
+    request: {
+      query: GetPatientsByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        pageNumber: 0,
+        pageSize: 20,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patients: [mockPatient1, mockPatient2],
+      },
+    },
+  },
+  {
+    request: {
+      query: GetPatientsCountByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patientsCount: 2,
+      },
+    },
+  },
+  {
+    request: {
+      query: UnarchivePatientDocument,
+      variables: {
+        id: mockPatient2.internalId,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        setPatientIsDeleted: {
+          internalId: mockPatient2.internalId,
+        },
+      },
+    },
+  },
+];
+
+const mockPatientGroup = createMockPatients(20);
+
+const mocksWithExtraPatients = [
+  {
+    request: {
+      query: GetOrganizationsDocument,
+      variables: {
+        identityVerified: true,
+      },
+    },
+    result: {
+      data: {
+        organizations: [mockOrg2, mockOrg1],
+      },
+    },
+  },
+  {
+    request: {
+      query: GetOrganizationWithFacilitiesDocument,
+      variables: {
+        id: mockOrg1.internalId,
+      },
+    },
+    result: {
+      data: {
+        organization: mockOrg1,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetPatientsByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        pageNumber: 0,
+        pageSize: 20,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patients: mockPatientGroup,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetPatientsCountByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patientsCount: 21,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetPatientsByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        pageNumber: 1,
+        pageSize: 20,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patients: [mockPatient1],
+      },
+    },
+  },
+  {
+    request: {
+      query: UnarchivePatientDocument,
+      variables: {
+        id: mockPatient1.internalId,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        setPatientIsDeleted: {
+          internalId: mockPatient1.internalId,
+        },
+      },
+    },
+  },
+  {
+    request: {
+      query: GetPatientsCountByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patientsCount: 20,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetPatientsByFacilityWithOrgDocument,
+      variables: {
+        facilityId: mockFacility1.id,
+        pageNumber: 0,
+        pageSize: 20,
+        archivedStatus: ArchivedStatus.Archived,
+        orgExternalId: mockOrg1.externalId,
+      },
+    },
+    result: {
+      data: {
+        patients: mockPatientGroup,
+      },
+    },
+  },
+];

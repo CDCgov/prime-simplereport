@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import { ComboBoxRef } from "@trussworks/react-uswds";
@@ -8,26 +8,11 @@ import { Option } from "../../commonComponents/Dropdown";
 
 import FacilitySelectFilter from "./FacilitySelectFilter";
 import { initialState, ManageFacilityState } from "./ManageFacility";
+import {
+  getFacilityComboBoxElements,
+  getOrgComboBoxElements,
+} from "./testSelectUtils";
 
-export const getOrgComboBoxElements = () => {
-  const orgSelectionDiv = screen.getByTestId("org-selection-container");
-  const orgComboBoxInput = screen.getByLabelText(/organization/i);
-  const orgComboBoxList = within(orgSelectionDiv).getByTestId(
-    "combo-box-option-list"
-  );
-  return [orgComboBoxInput, orgComboBoxList] as const;
-};
-
-export const getFacilityComboBoxElements = () => {
-  const facilitySelectionDiv = screen.getByTestId(
-    "facility-selection-container"
-  );
-  const facilityComboBoxInput = screen.getByLabelText(/testing facility/i);
-  const facilityComboBoxList = within(facilitySelectionDiv).getByTestId(
-    "combo-box-option-list"
-  );
-  return [facilityComboBoxInput, facilityComboBoxList] as const;
-};
 describe("FacilitySelectFilter", () => {
   const handleClearFilter = jest.fn();
   const handleSelectOrg = jest.fn();

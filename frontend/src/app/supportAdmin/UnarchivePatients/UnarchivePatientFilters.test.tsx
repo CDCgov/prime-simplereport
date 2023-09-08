@@ -16,7 +16,7 @@ import {
   mockPatient1,
   mockPatient2,
   selectDropdown,
-} from "./UnarchivePatient.test";
+} from "./testUtils";
 
 const mockOrgOptions: Option<string>[] = [
   {

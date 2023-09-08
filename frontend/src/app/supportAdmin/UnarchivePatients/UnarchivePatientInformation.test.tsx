@@ -11,7 +11,7 @@ import {
   mockOrg1,
   mockPatient1,
   mockPatient2,
-} from "./UnarchivePatient.test";
+} from "./testUtils";
 
 const mockNavigate = jest.fn();
 const mockLocation = jest.fn();
