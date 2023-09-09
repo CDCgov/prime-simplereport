@@ -58,7 +58,7 @@ describe("Adding covid only and multiplex devices", () => {
       cy.get('input[name="model"]').should("have.value", multiplexDevice.model);
       cy.get('input[name="manufacturer"]').should(
         "have.value",
-        multiplexDevice.manufacturer
+        multiplexDevice.manufacturer,
       );
       cy.get(".pill").should("have.length", 1);
       cy.get('select[name="supportedDiseases.0.supportedDisease"')
@@ -66,21 +66,21 @@ describe("Adding covid only and multiplex devices", () => {
         .should("have.text", "COVID-19");
       cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').should(
         "have.value",
-        "123-456"
+        "123-456",
       );
       cy.get('select[name="supportedDiseases.1.supportedDisease"')
         .find(":selected")
         .should("have.text", "Flu A");
       cy.get('input[name="supportedDiseases.1.testPerformedLoincCode"]').should(
         "have.value",
-        "456-789"
+        "456-789",
       );
       cy.get('select[name="supportedDiseases.2.supportedDisease"')
         .find(":selected")
         .should("have.text", "Flu B");
       cy.get('input[name="supportedDiseases.2.testPerformedLoincCode"]').should(
         "have.value",
-        "789-123"
+        "789-123",
       );
     });
   });
@@ -108,11 +108,11 @@ describe("Adding covid only and multiplex devices", () => {
       cy.checkAccessibility();
       cy.get('input[role="combobox"]').first().type(covidOnlyDevice.name);
       cy.get(
-        `button[aria-label="Select ${covidOnlyDevice.manufacturer} ${covidOnlyDevice.model}"]`
+        `button[aria-label="Select ${covidOnlyDevice.manufacturer} ${covidOnlyDevice.model}"]`,
       ).click();
       cy.get('input[role="combobox"]').first().type(multiplexDevice.name);
       cy.get(
-        `button[aria-label="Select ${multiplexDevice.manufacturer} ${multiplexDevice.model}"]`
+        `button[aria-label="Select ${multiplexDevice.manufacturer} ${multiplexDevice.model}"]`,
       ).click();
       cy.contains("Save changes").click();
       cy.get(".modal__content")
