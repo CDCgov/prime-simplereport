@@ -21,7 +21,7 @@
         "lint:write": "eslint --fix ."
     },
     "dependencies": {
-        "axe-core": "^4.7.2",
+        "axe-core": "^4.8.1",
         "cypress-axe": "^1.5.0"
     }
 }
