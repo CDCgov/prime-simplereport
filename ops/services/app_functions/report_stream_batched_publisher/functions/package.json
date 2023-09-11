@@ -22,7 +22,7 @@
     "@azure/functions": "^3.5.1",
     "@azure/storage-queue": "^12.6.0",
     "applicationinsights": "^2.7.0",
-    "csv-stringify": "^6.4.0",
+    "csv-stringify": "^6.4.2",
     "jsonwebtoken": "^9.0.1",
     "node-fetch": "^2.7.0"
   },
