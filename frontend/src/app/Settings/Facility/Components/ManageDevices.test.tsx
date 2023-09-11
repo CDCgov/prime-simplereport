@@ -14,33 +14,7 @@ import { DeviceType } from "../../../../generated/graphql";
 
 import ManageDevices from "./ManageDevices";
 
-const validFacility: FacilityFormData = {
-  facility: {
-    name: "Foo Facility",
-    cliaNumber: "12D4567890",
-    phone: "(202) 395-3080",
-    street: "736 Jackson Pl NW",
-    zipCode: "20503",
-    state: "AZ",
-    email: null,
-    streetTwo: null,
-    city: null,
-  },
-  orderingProvider: {
-    firstName: "Frank",
-    lastName: "Grimes",
-    NPI: "1231231231",
-    street: null,
-    zipCode: null,
-    state: "",
-    middleName: null,
-    suffix: null,
-    phone: "2031232381",
-    streetTwo: null,
-    city: null,
-  },
-  devices: [],
-};
+let validFacility: FacilityFormData;
 
 const deviceA = {
   internalId: "device-a",
@@ -69,8 +43,38 @@ const deviceC = {
   swabTypes: [],
   testLength: 10,
 };
-
+const onChangeSpy = jest.fn();
 const devices: DeviceType[] = [deviceC, deviceB, deviceA];
+
+beforeEach(() => {
+  validFacility = {
+    facility: {
+      name: "Foo Facility",
+      cliaNumber: "12D4567890",
+      phone: "(202) 395-3080",
+      street: "736 Jackson Pl NW",
+      zipCode: "20503",
+      state: "AZ",
+      email: null,
+      streetTwo: null,
+      city: null,
+    },
+    orderingProvider: {
+      firstName: "Frank",
+      lastName: "Grimes",
+      NPI: "1231231231",
+      street: null,
+      zipCode: null,
+      state: "",
+      middleName: null,
+      suffix: null,
+      phone: "2031232381",
+      streetTwo: null,
+      city: null,
+    },
+    devices: [],
+  };
+});
 
 function ManageDevicesContainer(props: { facility: FacilityFormData }) {
   return (
@@ -79,7 +83,7 @@ function ManageDevicesContainer(props: { facility: FacilityFormData }) {
       errors={{}}
       newOrg={false}
       formCurrentValues={props.facility}
-      onChange={() => {}}
+      onChange={onChangeSpy}
       registrationProps={{ setFocus: () => {} }}
     />
   );
@@ -130,5 +134,23 @@ describe("ManageDevices", () => {
         within(pillContainer).queryByText("Device A")
       ).not.toBeInTheDocument()
     );
+  });
+
+  it("removes selected items from dropdown list", async () => {
+    render(<ManageDevicesContainer facility={validFacility} />);
+    const deviceInput = screen.getByLabelText("Search for a device to add it");
+
+    await act(async () => await userEvent.click(deviceInput));
+    await act(
+      async () =>
+        await userEvent.click(
+          screen.getByLabelText("Select Manufacturer C Device C")
+        )
+    );
+    const pillContainer = screen.getByTestId("pill-container");
+    within(pillContainer).getByText("Device C");
+
+    await act(async () => await userEvent.click(deviceInput));
+    expect(onChangeSpy).toBeCalledWith(["device-c"]);
   });
 });
