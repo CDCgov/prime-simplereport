@@ -6,6 +6,7 @@ on:
       platforms:
         description: "Platforms to build the image for"
         required: true
+        # "['linux/amd64', 'linux/arm64']"
         default: "['linux/amd64', 'linux/arm64']"
       force_build:
         description: "Force push the image to the registry"
@@ -28,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) || "['linux/amd64']" }}
+        platform: ${{ fromJson(inputs.platforms) }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Backend Image
