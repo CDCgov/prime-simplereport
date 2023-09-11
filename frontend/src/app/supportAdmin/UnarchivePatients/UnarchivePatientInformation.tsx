@@ -34,6 +34,8 @@ const UnarchivePatientInformation = ({
     unarchivePatientState.patientsCount === undefined;
 
   const patientRows = () => {
+    console.log(unarchivePatientState.patients);
+
     if (displayPagination()) {
       return unarchivePatientState.patients?.map(
         (patient: UnarchivePatientPatient) => {
@@ -74,7 +76,8 @@ const UnarchivePatientInformation = ({
   const setInstructions = () => {
     if (
       unarchivePatientState.orgId !== undefined &&
-      unarchivePatientState.facilities.length === 0
+      unarchivePatientState.facilities.length === 0 &&
+      !loading
     ) {
       return "This organization has no facilities. Select a different organization.";
     } else {

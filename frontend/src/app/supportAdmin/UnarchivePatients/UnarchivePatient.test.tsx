@@ -174,6 +174,7 @@ describe("Unarchive patient", () => {
       screen.queryByText("Loading Organizations …")
     );
     await searchByOrgAndFacility();
+
     await act(async () => screen.getAllByText("Unarchive")[0].click());
     expect(screen.getByRole("dialog")).toHaveTextContent(
       /Are you sure you want to unarchive Gutmann, Rod\?/
@@ -241,7 +242,9 @@ const searchByOrgAndFacility = async () => {
   );
   await clickSearch();
   expect(mockNavigate).not.toHaveBeenCalled();
-  await waitForElementToBeRemoved(() => screen.queryAllByText("Loading..."));
+  await waitFor(async () => {
+    expect(screen.getByText(/Archived patients for/i)).toBeInTheDocument();
+  });
 };
 
 const defaultMocks = [
