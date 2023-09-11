@@ -24,7 +24,35 @@ on:
 
 jobs:
 
+  backend_changes:
+    with:
+      what_to_check: backend
+    uses: ./.github/workflows/checkForChanges.yml
+
+  cypress_changes:
+    with:
+      what_to_check: cypress
+    uses: ./.github/workflows/checkForChanges.yml
+
+  database_changes:
+    with:
+      what_to_check: backend/db-setup
+    uses: ./.github/workflows/checkForChanges.yml
+
+  frontend_changes:
+    with:
+      what_to_check: frontend
+    uses: ./.github/workflows/checkForChanges.yml
+
+  nginx_changes:
+    with:
+      what_to_check: nginx
+    uses: ./.github/workflows/checkForChanges.yml
+
   build_backend_image:
+    if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    needs:
+      - backend_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -47,6 +75,9 @@ jobs:
           platform: ${{ matrix.platform }}
   
   build_cypress_image:
+    if: needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    needs:
+      - cypress_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -69,6 +100,9 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_database_image:
+    if: needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    needs:
+      - database_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -90,6 +124,9 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_frontend_image:
+    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    needs:
+      - frontend_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -112,6 +149,9 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_frontend_lighthouse_image:
+    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    needs:
+      - frontend_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -140,6 +180,9 @@ jobs:
             "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
 
   build_nginx_image:
+    if: needs.nginx_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    needs:
+      - nginx_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -162,7 +205,11 @@ jobs:
 
   e2e_local:
     needs:
-      - build_docker_images
+      - build_backend_image
+      - build_cypress_image
+      - build_database_image
+      - build_frontend_image
+      - build_nginx_image
     uses: ./.github/workflows/e2eLocal.yml
     secrets:
       CYPRESS_OKTA_USERNAME: ${{ secrets.CYPRESS_OKTA_USERNAME }}
@@ -172,34 +219,37 @@ jobs:
       SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
       SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
     with:
-      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
-      DOCKER_CYPRESS_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
-      DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
-      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
+      DOCKER_CYPRESS_IMAGE_VERSION: ${{ needs.build_cypress_image.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+      DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_frontend_image.outputs.version }}
+      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
   lighthouse:
     needs:
-      - build_docker_images
+      - build_backend_image
+      - build_database_image
+      - build_frontend_lighthouse_image
+      - build_nginx_image
     uses: ./.github/workflows/lighthouse.yml
     with:
-      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
-      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
-      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
+      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
   tests:
     needs:
-      - build_docker_images
+      - build_database_image
     uses: ./.github/workflows/test.yml
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_TEST_ACCOUNT_SID }}
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TEST_AUTH_TOKEN }}
     with:
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
 
   liquibase_action_checks:
     needs:
-      - build_docker_images
+      - build_database_image
     uses: ./.github/workflows/testDBActions.yml
     with:
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
