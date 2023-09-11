@@ -21,41 +21,17 @@ on:
         required: false
         default: false
         type: boolean
+    outputs:
+      version:
+        description: Version of the image that was built
+        value: ${{ build_backend_image.outputs.version }}
   push:
     branches:
       - main
 
 jobs:
 
-  backend_changes:
-    with:
-      what_to_check: backend
-    uses: ./.github/workflows/checkForChanges.yml
-
-  cypress_changes:
-    with:
-      what_to_check: cypress
-    uses: ./.github/workflows/checkForChanges.yml
-
-  database_changes:
-    with:
-      what_to_check: backend/db-setup
-    uses: ./.github/workflows/checkForChanges.yml
-
-  frontend_changes:
-    with:
-      what_to_check: frontend
-    uses: ./.github/workflows/checkForChanges.yml
-
-  nginx_changes:
-    with:
-      what_to_check: nginx
-    uses: ./.github/workflows/checkForChanges.yml
-
   build_backend_image:
-    if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
-    needs:
-      - backend_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -78,9 +54,6 @@ jobs:
           platform: ${{ matrix.platform }}
   
   build_cypress_image:
-    if: needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
-    needs:
-      - cypress_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -103,9 +76,6 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_database_image:
-    if: needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
-    needs:
-      - database_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -127,9 +97,6 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_frontend_image:
-    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
-    needs:
-      - frontend_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -152,9 +119,6 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_frontend_lighthouse_image:
-    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
-    needs:
-      - frontend_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -183,9 +147,6 @@ jobs:
             "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
 
   build_nginx_image:
-    if: needs.nginx_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
-    needs:
-      - nginx_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

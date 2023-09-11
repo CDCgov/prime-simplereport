@@ -2,6 +2,15 @@ name: Testing Workflow
 
 on:
   workflow_dispatch:
+    inputs:
+      platforms:
+        description: "Platforms to build the image for"
+        required: true
+        default: "['linux/amd64', 'linux/arm64']"
+      force_build:
+        description: "Force push the image to the registry"
+        required: true
+        default: true
   pull_request:
     branches:
       - "**"
@@ -14,8 +23,141 @@ on:
 
 jobs:
 
-  build_docker_images:
-    uses: ./.github/workflows/buildDockerImages.yml
+  build_backend_image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(inputs.platforms) || "['linux/amd64']" }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Backend Image
+        uses: ./.github/actions/build-docker-image
+        with:
+          context: ./
+          file: ./backend/Dockerfile
+          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
+          acr_registry: ${{ secrets.ACR_REPO_URL }}
+          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
+          gh_registry: ghcr.io
+          gh_username: ${{ github.actor }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          image_name: backend
+          platform: ${{ matrix.platform }}
+  
+  build_cypress_image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(inputs.platforms) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Cypress Image
+        uses: ./.github/actions/build-docker-image
+        with:
+          context: ./
+          file: ./cypress/Dockerfile
+          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
+          acr_registry: ${{ secrets.ACR_REPO_URL }}
+          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
+          gh_registry: ghcr.io
+          gh_username: ${{ github.actor }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          image_name: cypress
+          platform: ${{ matrix.platform }}
+
+  build_database_image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(inputs.platforms) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Database Image
+        uses: ./.github/actions/build-docker-image
+        with:
+          context: ./backend/db-setup
+          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
+          acr_registry: ${{ secrets.ACR_REPO_URL }}
+          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
+          gh_registry: ghcr.io
+          gh_username: ${{ github.actor }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          image_name: database
+          platform: ${{ matrix.platform }}
+
+  build_frontend_image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(inputs.platforms) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Frontend Image
+        uses: ./.github/actions/build-docker-image
+        with:
+          context: ./
+          file: ./frontend/Dockerfile
+          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
+          acr_registry: ${{ secrets.ACR_REPO_URL }}
+          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
+          gh_registry: ghcr.io
+          gh_username: ${{ github.actor }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          image_name: frontend
+          platform: ${{ matrix.platform }}
+
+  build_frontend_lighthouse_image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(inputs.platforms) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Frontend Lighthouse Image
+        uses: ./.github/actions/build-docker-image
+        with:
+          context: ./
+          file: ./frontend/Dockerfile
+          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
+          acr_registry: ${{ secrets.ACR_REPO_URL }}
+          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
+          gh_registry: ghcr.io
+          gh_username: ${{ github.actor }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          image_name: frontend-lighthouse
+          platform: ${{ matrix.platform }}
+          build_args: |
+            "REACT_APP_BASE_URL=https://localhost.simplereport.gov"
+            "REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api"
+            "PUBLIC_URL=/app/"
+            "REACT_APP_OKTA_ENABLED=false"
+            "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
+
+  build_nginx_image:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: ${{ fromJson(inputs.platforms) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Nginx Image
+        uses: ./.github/actions/build-docker-image
+        with:
+          context: ./nginx
+          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
+          acr_registry: ${{ secrets.ACR_REPO_URL }}
+          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
+          gh_registry: ghcr.io
+          gh_username: ${{ github.actor }}
+          gh_token: ${{ secrets.GITHUB_TOKEN }}
+          image_name: nginx
+          platform: ${{ matrix.platform }}
 
   e2e_local:
     needs:
@@ -29,20 +171,20 @@ jobs:
       SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
       SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
     with:
-      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
-      DOCKER_CYPRESS_IMAGE_VERSION: ${{ needs.build_cypress_image.outputs.version }}
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
-      DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_frontend_image.outputs.version }}
-      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
+      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_CYPRESS_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
   lighthouse:
     needs:
       - build_docker_images
     uses: ./.github/workflows/lighthouse.yml
     with:
-      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_backend_image.outputs.version }}
-      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
-      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
+      DOCKER_BACKEND_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
+      DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
   tests:
     needs:
       - build_docker_images
@@ -52,11 +194,11 @@ jobs:
       TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_TEST_ACCOUNT_SID }}
       TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_TEST_AUTH_TOKEN }}
     with:
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
 
   liquibase_action_checks:
     needs:
       - build_docker_images
     uses: ./.github/workflows/testDBActions.yml
     with:
-      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
+      DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_docker_images.outputs.version }}
