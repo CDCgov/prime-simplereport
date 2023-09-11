@@ -4,12 +4,11 @@ on:
   workflow_dispatch:
     inputs:
       platforms:
-        description: "Platforms to build the image for"
+        description: "Platforms to build the image for, e.g. ['linux/amd64', 'linux/arm64']"
         required: true
-        # "['linux/amd64', 'linux/arm64']"
-        default: "['linux/amd64', 'linux/arm64']"
+        default: "['linux/amd64']"
       force_build:
-        description: "Force push the image to the registry"
+        description: "Force build the docker iamges"
         required: true
         default: true
   pull_request:
@@ -57,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) }}
+        platform: ${{ fromJson(inputs.platforms) || ['linux/amd64'] }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Backend Image
@@ -82,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) }}
+        platform: ${{ fromJson(inputs.platforms) || ['linux/amd64'] }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Cypress Image
@@ -107,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) }}
+        platform: ${{ fromJson(inputs.platforms) || ['linux/amd64'] }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Database Image
@@ -131,7 +130,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) }}
+        platform: ${{ fromJson(inputs.platforms) || ['linux/amd64'] }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Frontend Image
@@ -156,7 +155,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) }}
+        platform: ${{ fromJson(inputs.platforms) || ['linux/amd64'] }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Frontend Lighthouse Image
@@ -187,7 +186,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) }}
+        platform: ${{ fromJson(inputs.platforms) || ['linux/amd64'] }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Nginx Image
