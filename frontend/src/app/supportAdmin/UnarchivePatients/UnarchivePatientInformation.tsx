@@ -34,8 +34,6 @@ const UnarchivePatientInformation = ({
     unarchivePatientState.patientsCount === undefined;
 
   const patientRows = () => {
-    console.log(unarchivePatientState.patients);
-
     if (displayPagination()) {
       return unarchivePatientState.patients?.map(
         (patient: UnarchivePatientPatient) => {
