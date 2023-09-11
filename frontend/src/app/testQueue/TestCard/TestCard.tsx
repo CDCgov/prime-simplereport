@@ -11,18 +11,21 @@ import { TestTimerWidget, useTestTimer } from "../TestTimer";
 import { RootState } from "../../store";
 
 import TestCardForm from "./TestCardForm";
+
 import "./TestCard.scss";
 
 export interface TestCardProps {
   testOrder: QueriedTestOrder;
   facility: QueriedFacility;
   devicesMap: DevicesMap;
+  refetchQueue: () => void;
 }
 
 export const TestCard = ({
   testOrder,
   facility,
   devicesMap,
+  refetchQueue,
 }: TestCardProps) => {
   const navigate = useNavigate();
   const timer = useTestTimer(
@@ -113,6 +116,7 @@ export const TestCard = ({
             testOrder={testOrder}
             devicesMap={devicesMap}
             facility={facility}
+            refetchQueue={refetchQueue}
           ></TestCardForm>
         </div>
       </CardBody>

@@ -13,11 +13,6 @@ export interface TestFormState {
   specimenId: string;
   testResults: MultiplexResultInput[];
   covidAoeQuestions: CovidAoeQuestionResponses;
-  errors: {
-    dateTested: string;
-    deviceId: string;
-    specimenId: string;
-  };
 }
 
 export interface CovidAoeQuestionResponses {

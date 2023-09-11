@@ -1,6 +1,7 @@
 import moment from "moment";
 import { Alert, Button } from "@trussworks/react-uswds";
 import React, { useEffect, useMemo, useReducer, useState } from "react";
+import { FetchResult } from "@apollo/client";
 
 import TextInput from "../../commonComponents/TextInput";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
@@ -10,9 +11,15 @@ import Dropdown from "../../commonComponents/Dropdown";
 import { MULTIPLEX_DISEASES } from "../../testResults/constants";
 import {
   MultiplexResultInput,
+  SubmitQueueItemMutation,
   useEditQueueItemMutation,
+  useSubmitQueueItemMutation,
 } from "../../../generated/graphql";
-import { updateTimer } from "../TestTimer";
+import { removeTimer, updateTimer } from "../TestTimer";
+import { getAppInsights } from "../../TelemetryService";
+import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "../constants";
+import { showError, showSuccess } from "../../utils/srToast";
+import { displayFullName } from "../../utils";
 
 import {
   TestFormActionCase,
@@ -27,6 +34,7 @@ export interface TestFormProps {
   testOrder: QueriedTestOrder;
   devicesMap: DevicesMap;
   facility: QueriedFacility;
+  refetchQueue: () => void;
 }
 
 interface UpdateQueueItemProps {
@@ -80,7 +88,12 @@ export const convertFromMultiplexResponse = (
   }));
 };
 
-const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
+const TestCardForm = ({
+  testOrder,
+  devicesMap,
+  facility,
+  refetchQueue,
+}: TestFormProps) => {
   const initialFormState: TestFormState = {
     dirty: false,
     dateTested: testOrder.dateTested,
@@ -88,11 +101,27 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
     specimenId: testOrder.specimenType.internalId ?? "",
     testResults: testOrder.results,
     covidAoeQuestions: {},
-    errors: { dateTested: "", deviceId: "", specimenId: "" },
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [editQueueItem] = useEditQueueItemMutation();
+  const [submitTestResult, { loading }] = useSubmitQueueItemMutation();
+  const appInsights = getAppInsights();
+  const trackRemovePatientFromQueue = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Remove Patient From Queue" });
+    }
+  };
+  const trackSubmitTestResult = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Submit Test Result" });
+    }
+  };
+  const trackUpdateAoEResponse = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Update AoE Response" });
+    }
+  };
 
   const DEBOUNCE_TIME = 300;
 
@@ -138,6 +167,29 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
     return doesDeviceSupportMultiplex(state.deviceId, devicesMap);
   }, [devicesMap, state.deviceId]);
 
+  const validateDateTested = () => {
+    const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
+    if (!state.dateTested) {
+      return "";
+    }
+    const dateTested = new Date(state.dateTested); // local time, may be an invalid date
+    // if it is an invalid date
+    if (isNaN(dateTested.getTime())) {
+      return "Test date is invalid. Please enter using the format MM/DD/YYYY.";
+    }
+    if (state.dateTested && dateTested < EARLIEST_TEST_DATE) {
+      return `Test date must be after ${moment(EARLIEST_TEST_DATE).format(
+        "MM/DD/YYYY"
+      )}.`;
+    }
+    if (state.dateTested && dateTested > new Date()) {
+      return "Test date can't be in the future.";
+    }
+    return "";
+  };
+
+  const dateTestedErrorMessage = validateDateTested();
+
   const isBeforeDateWarningThreshold =
     moment(state.dateTested) < moment().subtract(6, "months");
 
@@ -167,6 +219,7 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
       .catch((e) => console.error("temp dev test, will be caught by apollo"));
   };
 
+  // when user makes changes, send update to backend
   useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (state.dirty) {
@@ -193,11 +246,10 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
     // eslint-disable-next-line
   }, [state.deviceId, state.specimenId, state.dateTested, state.testResults]);
 
+  // when backend sends update on test order, update the form state
   useEffect(() => {
-    if (state.dirty) {
-      // don't update if not done saving changes
-      return;
-    }
+    // don't update if not done saving changes
+    if (state.dirty) return;
     dispatch({
       type: TestFormActionCase.UPDATE_WITH_CHANGES_FROM_SERVER,
       payload: testOrder,
@@ -205,9 +257,62 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
     // eslint-disable-next-line
   }, [testOrder]);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("submit", state);
+    if (state.dateTested && validateDateTested().length === 0) {
+      showError(dateTestedErrorMessage, "Invalid test date");
+      return;
+    }
+    // check force submit and confirmation type logic
+
+    setSaveState("saving");
+    if (appInsights) {
+      trackSubmitTestResult();
+    }
+    try {
+      const result = await submitTestResult({
+        variables: {
+          patientId: testOrder.patient?.internalId,
+          deviceTypeId: state.deviceId,
+          specimenTypeId: state.specimenId,
+          dateTested: state.dateTested,
+          results: doesDeviceSupportMultiplex(state.deviceId, devicesMap)
+            ? state.testResults
+            : state.testResults.filter(
+                (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
+              ),
+        },
+      });
+      notifyUserOnResponse(result);
+      refetchQueue();
+      removeTimer(testOrder.internalId);
+    } catch (error: any) {
+      setSaveState("error");
+    }
+  };
+
+  const notifyUserOnResponse = (
+    response: FetchResult<SubmitQueueItemMutation>
+  ) => {
+    let { title, body } = {
+      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
+        testOrder.patient
+      ),
+    };
+
+    const patientFullName = displayFullName(
+      testOrder.patient.firstName,
+      testOrder.patient.middleName,
+      testOrder.patient.lastName
+    );
+
+    if (response?.data?.submitQueueItem?.deliverySuccess === false) {
+      let deliveryFailureTitle = `Unable to text result to ${patientFullName}`;
+      let deliveryFailureMsg =
+        "The phone number provided may not be valid or may not be able to accept text messages";
+      showError(deliveryFailureMsg, deliveryFailureTitle);
+    }
+    showSuccess(body, title);
   };
 
   return (
@@ -242,6 +347,8 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
               })
             }
             disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
+            validationStatus={dateTestedErrorMessage ? "error" : undefined}
+            errorMessage={dateTestedErrorMessage}
           ></TextInput>
         </div>
         <div className="grid-col-auto display-flex">
@@ -287,8 +394,8 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             }
             className="card-dropdown"
             data-testid="device-type-dropdown"
-            errorMessage={state.errors.deviceId}
-            validationStatus={state.errors.deviceId ? "error" : "success"}
+            errorMessage={deviceTypeIsInvalid ? "Invalid device type" : ""}
+            validationStatus={deviceTypeIsInvalid ? "error" : undefined}
           />
         </div>
         <div className="grid-col-auto">
@@ -306,8 +413,8 @@ const TestCardForm = ({ testOrder, devicesMap, facility }: TestFormProps) => {
             className="card-dropdown"
             data-testid="specimen-type-dropdown"
             disabled={specimenTypeOptions.length === 0}
-            errorMessage={state.errors.specimenId}
-            validationStatus={state.errors.specimenId ? "error" : "success"}
+            errorMessage={specimenTypeIsInvalid ? "Invalid specimen type" : ""}
+            validationStatus={specimenTypeIsInvalid ? "error" : undefined}
           />
         </div>
       </div>
