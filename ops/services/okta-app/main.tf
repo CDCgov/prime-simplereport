@@ -24,27 +24,24 @@ resource "okta_app_oauth" "app" {
   hide_web                  = false
   login_mode                = "SPEC"
 
-  skip_users  = true
-  skip_groups = true
-
   lifecycle {
-    ignore_changes = [
-      groups
-    ]
+    ignore_changes = [redirect_uris]
   }
 }
 
 // Create the custom app mappings
 
 resource "okta_app_group_assignment" "users" {
-  count    = length(var.user_groups)
-  app_id   = okta_app_oauth.app.id
-  group_id = element(var.user_groups, count.index)
+  count             = length(var.user_groups)
+  app_id            = okta_app_oauth.app.id
+  group_id          = element(var.user_groups, count.index)
+  retain_assignment = true
 }
 
 resource "okta_app_group_assignment" "prime_users" {
-  app_id   = okta_app_oauth.app.id
-  group_id = data.okta_group.cdc_users.id
+  app_id            = okta_app_oauth.app.id
+  group_id          = data.okta_group.cdc_users.id
+  retain_assignment = true
 }
 
 resource "okta_group" "simplereport_admins" {
