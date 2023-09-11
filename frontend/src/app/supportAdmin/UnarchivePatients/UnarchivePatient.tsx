@@ -105,11 +105,10 @@ const UnarchivePatient = () => {
     variables: { identityVerified: true },
   });
 
-  const [queryGetOrgWithFacilities] = useGetOrganizationWithFacilitiesLazyQuery(
-    {
+  const [queryGetOrgWithFacilities, { loading: loadingOrgWithFacilities }] =
+    useGetOrganizationWithFacilitiesLazyQuery({
       fetchPolicy: "no-cache",
-    }
-  );
+    });
 
   const [queryGetPatientsByFacilityWithOrg, { loading: loadingPatients }] =
     useGetPatientsByFacilityWithOrgLazyQuery({
@@ -179,7 +178,7 @@ const UnarchivePatient = () => {
       let { data: facilitiesRes } = await queryGetOrgWithFacilities({
         variables: { id: selectedOrgInternalId },
       }).then((data) => {
-        // facilityRef.current?.clearSelection();
+        facilityRef.current?.clearSelection();
         return data;
       });
 
@@ -312,6 +311,9 @@ const UnarchivePatient = () => {
       value: facility.id,
       label: facility.name,
     })) ?? [];
+
+  const queryLoading =
+    loadingPatients || loadingPatientsCount || loadingOrgWithFacilities;
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
@@ -322,20 +324,16 @@ const UnarchivePatient = () => {
           onSelectFacility={handleSelectFacility}
           onSearch={handleSearch}
           onClearFilter={handleClearFilter}
-          loading={loadingPatients || loadingPatientsCount}
+          loading={queryLoading}
           disableClearFilters={localState.orgId === undefined}
-          disableSearch={
-            loadingPatients ||
-            loadingPatientsCount ||
-            localState.facilityId === undefined
-          }
+          disableSearch={queryLoading || localState.facilityId === undefined}
           orgRef={orgRef}
           facilityRef={facilityRef}
         />
         <UnarchivePatientInformation
           unarchivePatientState={localState}
           currentPage={currentPage}
-          loading={loadingPatients || loadingPatientsCount}
+          loading={queryLoading}
           handlePaginationClick={handlePaginationClick}
           onUnarchivePatient={handleUnarchivePatient}
         />
