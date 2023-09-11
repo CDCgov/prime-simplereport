@@ -4,9 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       platforms:
-        description: "Build additional platforms (linux/arm64). linux/amd64 always gets built."
+        description: "Build additional architecture (linux/arm64)."
         required: false
-        default: ""
       force_build:
         description: "Force build the docker iamges"
         required: true
@@ -59,9 +58,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['linux/amd64']
+        platform: 
+          - linux/amd64
         include:
-          - platform: inputs.platforms
+          - platform: ${{ inputs.platform }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Backend Image
@@ -86,9 +86,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['linux/amd64']
+        platform: 
+          - linux/amd64
         include:
-          - platform: inputs.platforms
+          - platform: ${{ inputs.platform }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Cypress Image
@@ -113,9 +114,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['linux/amd64']
+        platform: 
+          - linux/amd64
         include:
-          - platform: inputs.platforms
+          - platform: ${{ inputs.platform }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Database Image
@@ -139,9 +141,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['linux/amd64']
+        platform: 
+          - linux/amd64
         include:
-          - platform: inputs.platforms
+          - platform: ${{ inputs.platform }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Frontend Image
@@ -166,9 +169,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['linux/amd64']
+        platform: 
+          - linux/amd64
         include:
-          - platform: inputs.platforms
+          - platform: ${{ inputs.platform }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Frontend Lighthouse Image
@@ -199,9 +203,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ['linux/amd64']
+        platform: 
+          - linux/amd64
         include:
-          - platform: inputs.platforms
+          - platform: ${{ inputs.platform }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Nginx Image
