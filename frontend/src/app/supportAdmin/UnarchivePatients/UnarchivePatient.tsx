@@ -179,7 +179,7 @@ const UnarchivePatient = () => {
       let { data: facilitiesRes } = await queryGetOrgWithFacilities({
         variables: { id: selectedOrgInternalId },
       }).then((data) => {
-        facilityRef.current?.clearSelection();
+        // facilityRef.current?.clearSelection();
         return data;
       });
 

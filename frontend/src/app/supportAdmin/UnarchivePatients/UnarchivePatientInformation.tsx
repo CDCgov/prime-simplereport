@@ -74,8 +74,8 @@ const UnarchivePatientInformation = ({
   const setInstructions = () => {
     if (
       unarchivePatientState.orgId !== undefined &&
-      unarchivePatientState.facilities.length === 0 &&
-      !loading
+      unarchivePatientState.facilityId !== undefined &&
+      unarchivePatientState.facilities.length === 0
     ) {
       return "This organization has no facilities. Select a different organization.";
     } else {

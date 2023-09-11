@@ -97,7 +97,6 @@ describe("unarchive patient filters", () => {
     await act(
       async () => await user.selectOptions(orgComboBoxList, mockOrg1.name)
     );
-    // expect(onSelectOrg).toHaveBeenCalledTimes(1); <--- figure on trigger on render issue???
     expect(onSelectOrg).toHaveBeenCalledWith(mockOrg1.internalId);
 
     const [, facilityComboBoxList] = getFacilityComboBoxElements();
