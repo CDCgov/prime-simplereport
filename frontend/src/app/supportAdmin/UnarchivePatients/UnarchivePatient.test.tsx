@@ -70,9 +70,8 @@ const mockNavigate = jest.fn();
 const mockLocation = jest.fn();
 
 jest.mock("react-router-dom", () => {
-  const original = jest.requireActual("react-router-dom");
   return {
-    ...original,
+    ...jest.requireActual("react-router-dom"),
     useNavigate: () => mockNavigate,
     useLocation: () => mockLocation,
   };
