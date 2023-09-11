@@ -16,6 +16,7 @@ sourceCompatibility = '17'
 
 ext {
     set('springCloudVersion', "2021.0.3")
+    set('oktaVersion', "13.0.2")
 }
 repositories {
     mavenCentral()
@@ -73,8 +74,8 @@ dependencies {
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.1.7'
-    implementation 'com.okta.sdk:okta-sdk-api:13.0.2'
-    runtimeOnly 'com.okta.sdk:okta-sdk-impl:12.0.2'
+    implementation "com.okta.sdk:okta-sdk-api:${oktaVersion}"
+    runtimeOnly "com.okta.sdk:okta-sdk-impl:${oktaVersion}"
     // Spring dependency management pulls 5.1.4, but okta 12.0.2 requires 5.2+ for the new
     // This can be removed in the springboot 3 upgrade
     implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
