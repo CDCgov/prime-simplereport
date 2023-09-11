@@ -10,7 +10,7 @@ module.exports = {
     openMode: 1,
   },
   e2e: {
-    supportFile: 'cypress/support/e2e.js',
+    supportFile: "cypress/support/e2e.js",
     setupNodeEvents(on, config) {
       on("task", {
         // These tasks set and read state to be passed between specs
@@ -70,11 +70,11 @@ module.exports = {
         },
         getMultiplexDeviceName() {
           return global.multiplexDeviceName;
-        }
-      })
+        },
+      });
       on("before:browser:launch", (browser = {}, launchOptions = {}) => {
         launchOptions.args = launchOptions.args.filter(
-          (item) => item !== "--disable-dev-shm-usage"
+          (item) => item !== "--disable-dev-shm-usage",
         );
         if (browser.name === "chrome" && browser.isHeadless) {
           launchOptions.args.push("--window-size=1200,800");
@@ -94,6 +94,6 @@ module.exports = {
         return launchOptions;
       });
     },
-    baseUrl: 'http://localhost.simplereport.gov',
+    baseUrl: "http://localhost.simplereport.gov",
   },
-}
+};

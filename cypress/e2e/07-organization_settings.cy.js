@@ -1,11 +1,11 @@
-import {loginHooks} from "../support/e2e";
-import {graphqlURL} from "../utils/request-utils";
-import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
+import { loginHooks } from "../support/e2e";
+import { graphqlURL } from "../utils/request-utils";
+import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
 describe("Updating organization settings", () => {
   loginHooks();
   beforeEach(() => {
-    cy.intercept('POST', graphqlURL, (req) => {
+    cy.intercept("POST", graphqlURL, (req) => {
       aliasGraphqlOperations(req);
     });
   });
@@ -20,7 +20,9 @@ describe("Updating organization settings", () => {
     cy.checkAccessibility();
   });
   it("attempts an empty selection for organization type", () => {
-    cy.get('select[name="type"]').find('option:selected').should('have.text','Camp');
+    cy.get('select[name="type"]')
+      .find("option:selected")
+      .should("have.text", "Camp");
     cy.get('select[name="type"]').select("- Select -");
     cy.contains("Save settings").should("be.enabled").click();
   });
@@ -30,7 +32,7 @@ describe("Updating organization settings", () => {
   it("attempts a valid selection for organization type", () => {
     cy.get('select[name="type"]').select("Nursing home");
     cy.contains("Save settings").should("be.enabled").click();
-    cy.wait("@AdminSetOrganization")
+    cy.wait("@AdminSetOrganization");
   });
   it("displays a success toast", () => {
     cy.get(".Toastify").contains("Updated organization");

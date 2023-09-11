@@ -1,5 +1,9 @@
 import { loginHooks, testNumber } from "../support/e2e";
-import { addMockFacility, whoAmI, getOrganizationById } from "../utils/testing-data-utils";
+import {
+  addMockFacility,
+  whoAmI,
+  getOrganizationById,
+} from "../utils/testing-data-utils";
 import { graphqlURL } from "../utils/request-utils";
 import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
@@ -10,11 +14,11 @@ describe("Support admin: manage facility", () => {
   let facilityId = "";
   let facilityCreated = {
     id: "",
-    name: `RainbowCenter-${testNumber()}`
+    name: `RainbowCenter-${testNumber()}`,
   };
 
   before(() => {
-    addMockFacility(facilityCreated.name).then(response => {
+    addMockFacility(facilityCreated.name).then((response) => {
       facilityCreated.id = response.body.data.addFacility.id;
     });
 
@@ -26,7 +30,6 @@ describe("Support admin: manage facility", () => {
         organizationName = res.body.data.organization.name;
       });
     });
-
   });
 
   beforeEach(() => {
@@ -48,11 +51,13 @@ describe("Support admin: manage facility", () => {
     cy.wait("@GetAllOrganizations");
 
     // selects org combo box
-    cy.get("input[role=\"combobox\"]").first().type(`${organizationName}{enter}`);
+    cy.get('input[role="combobox"]').first().type(`${organizationName}{enter}`);
 
     // selects facility combo box
     cy.wait("@GetFacilitiesByOrgId");
-    cy.get("input[role=\"combobox\"]").last().type(`${facilityCreated.name}{enter}`);
+    cy.get('input[role="combobox"]')
+      .last()
+      .type(`${facilityCreated.name}{enter}`);
 
     // clicks search button
     cy.get("button").contains("Search").click();
@@ -75,6 +80,8 @@ describe("Support admin: manage facility", () => {
   it("Deletes a facility", () => {
     cy.get("button").contains("Delete facility").click();
     cy.get("button").contains("Yes, delete facility").click();
-    cy.get(".Toastify").contains(`Facility ${facilityCreated.name} successfully deleted`);
+    cy.get(".Toastify").contains(
+      `Facility ${facilityCreated.name} successfully deleted`,
+    );
   });
 });
