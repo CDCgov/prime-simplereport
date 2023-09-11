@@ -16,6 +16,7 @@ export interface Option {
 interface Props {
   options: Option[];
   label?: string | React.ReactNode;
+  ariaLabel?: string;
   name?: string;
   onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   selectedValue: string;
@@ -36,6 +37,7 @@ type SelectProps = JSX.IntrinsicElements["select"];
 const Dropdown: React.FC<Props & SelectProps> = ({
   options,
   label,
+  ariaLabel,
   name,
   onChange,
   disabled,
@@ -91,6 +93,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             )}
             name={name}
             id={id}
+            aria-label={ariaLabel}
             aria-required={required || "false"}
             onChange={onChange}
             value={selectedValue || defaultOption || ""}

@@ -4,12 +4,14 @@ const ChangeUser = () => {
   }
 
   const getLink = (email: string, name: string) => (
-    <a
-      className="ghost-user-link"
-      href={`/#access_token=SR-DEMO-LOGIN%20${email}`}
-    >
-      Login as {name}
-    </a>
+    <li>
+      <a
+        className="ghost-user-link"
+        href={`/#access_token=SR-DEMO-LOGIN%20${email}`}
+      >
+        Login as {name}
+      </a>
+    </li>
   );
 
   return (
