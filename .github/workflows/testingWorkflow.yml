@@ -56,7 +56,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) || "['linux/amd64']" }}
+        platform: ${{ fromJson(inputs.platforms) || '[linux/amd64]' }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Backend Image
@@ -81,7 +81,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) || "['linux/amd64']" }}
+        platform: ${{ fromJson(inputs.platforms) || '[linux/amd64]' }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Cypress Image
@@ -106,7 +106,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) || "['linux/amd64']" }}
+        platform: ${{ fromJson(inputs.platforms) || '[linux/amd64]' }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Database Image
@@ -130,7 +130,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) || "['linux/amd64']" }}
+        platform: ${{ fromJson(inputs.platforms) || '[linux/amd64]' }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Frontend Image
@@ -155,7 +155,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) || "['linux/amd64']" }}
+        platform: ${{ fromJson(inputs.platforms) || '[linux/amd64]' }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Frontend Lighthouse Image
@@ -186,7 +186,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: ${{ fromJson(inputs.platforms) || "['linux/amd64']" }}
+        platform: ${{ fromJson(inputs.platforms) || '[linux/amd64]' }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Nginx Image
