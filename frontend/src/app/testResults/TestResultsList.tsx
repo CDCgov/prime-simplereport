@@ -54,6 +54,7 @@ import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 import ResultsTable, {
   generateTableHeaders,
+  getEnrichedMultiplexResultsFromTestEvent,
 } from "./resultsTable/ResultsTable";
 
 export const ALL_FACILITIES_ID = "all";
@@ -567,9 +568,7 @@ export const DetachedTestResultsList = ({
             className="usa-table usa-table--borderless width-full"
             aria-hidden="true"
           >
-            <thead>
-              {generateTableHeaders(hasMultiplexResults, displayFacilityColumn)}
-            </thead>
+            <thead>{generateTableHeaders(displayFacilityColumn)}</thead>
           </table>
         </div>
         <div title="filtered-result">
@@ -688,7 +687,10 @@ const TestResultsList = () => {
   if (results.error) {
     throw results.error;
   }
-  const totalEntries = results.data?.testResultsPage?.totalElements || 0;
+  const totalEntries =
+    getEnrichedMultiplexResultsFromTestEvent(
+      results.data?.testResultsPage?.content as TestResult[]
+    ).length || 0;
 
   return (
     <DetachedTestResultsList
