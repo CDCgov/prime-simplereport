@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       platforms:
-        description: "Build additional architecture (linux/arm64)."
+        description: "Build additional architecture (linux/arm64). linux/amd64 is built by default."
         required: false
       force_build:
         description: "Force build the docker iamges"
@@ -58,8 +58,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: 
-          - linux/amd64
         include:
           - platform: ${{ inputs.platform }}
     steps:
@@ -86,8 +84,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: 
-          - linux/amd64
         include:
           - platform: ${{ inputs.platform }}
     steps:
@@ -114,8 +110,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: 
-          - linux/amd64
         include:
           - platform: ${{ inputs.platform }}
     steps:
@@ -141,8 +135,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: 
-          - linux/amd64
         include:
           - platform: ${{ inputs.platform }}
     steps:
@@ -169,8 +161,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: 
-          - linux/amd64
         include:
           - platform: ${{ inputs.platform }}
     steps:
@@ -203,8 +193,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: 
-          - linux/amd64
         include:
           - platform: ${{ inputs.platform }}
     steps:
