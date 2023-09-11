@@ -2,14 +2,14 @@ const {
   loginHooks,
   generateFacility,
   generateOrganization,
-  generateUser
-} = require("../support/e2e")
+  generateUser,
+} = require("../support/e2e");
 
 const facility = generateFacility();
 const organization = generateOrganization();
 const user = generateUser();
 
-describe("Organization sign up",() => {
+describe("Organization sign up", () => {
   loginHooks();
   it("navigates to the sign up form", () => {
     cy.visit("/sign-up");
@@ -68,7 +68,7 @@ describe("Organization sign up",() => {
     cy.contains("Access organization account").click();
     cy.get("[data-testid='combo-box-input']").clear();
     cy.get("[data-testid='combo-box-input']").type(
-      `${organization.name}{enter}`
+      `${organization.name}{enter}`,
     );
     cy.get('input[name="justification"]').type("I am a test user");
     cy.get('input[name="justification"]').blur();
@@ -109,7 +109,7 @@ describe("Organization sign up",() => {
     cy.get('input[name="orderingProvider.phone"]').last().type("5308675309");
     cy.contains("Save changes").last().click();
     cy.get(
-      '.modal__container input[name="addressSelect-facility"][value="userAddress"]+label'
+      '.modal__container input[name="addressSelect-facility"][value="userAddress"]+label',
     ).click();
 
     cy.checkAccessibility();
