@@ -30,7 +30,7 @@ function filterRsvFromSingleDevice(device: FacilityFormDeviceType) {
 
   // no supportedDiseaseTestPerformed defined due to any casting, return empty array
   if (supportedDiseaseArray === undefined) return [];
-  
+
   const supportedDiseases = supportedDiseaseArray.map(
     (sd) => sd.supportedDisease.name
   );
