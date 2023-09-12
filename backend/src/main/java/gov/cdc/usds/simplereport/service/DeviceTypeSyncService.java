@@ -121,6 +121,8 @@ public class DeviceTypeSyncService {
       new HashSet<>(Arrays.asList("flu a", "influenza a", "flua", "infa result"));
   private static final Set<String> FLU_B_VENDOR_ANALYTE_NAMES =
       new HashSet<>(Arrays.asList("flu b", "influenza b", "flub", "infb result"));
+  private static final Set<String> RSV_VENDOR_ANALYTE_NAMES =
+      new HashSet<>(Arrays.asList("rsv", "respiratory syncytial virus"));
   public static final int DEFAULT_TEST_LENGTH = 15;
 
   private final DeviceTypeRepository deviceTypeRepository;
@@ -360,6 +362,8 @@ public class DeviceTypeSyncService {
       return Optional.of(diseaseService.fluA());
     } else if (FLU_B_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
       return Optional.of(diseaseService.fluB());
+    } else if (RSV_VENDOR_ANALYTE_NAMES.stream().anyMatch(input::contains)) {
+      return Optional.of(diseaseService.rsv());
     } else {
       return Optional.empty();
     }
