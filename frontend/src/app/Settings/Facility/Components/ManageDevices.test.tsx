@@ -16,7 +16,7 @@ import ManageDevices from "./ManageDevices";
 
 let validFacility: FacilityFormData;
 
-const deviceA = {
+export const deviceA = {
   internalId: "device-a",
   name: "Device A",
   model: "Device A",
@@ -25,7 +25,7 @@ const deviceA = {
   swabTypes: [],
   testLength: 10,
 };
-const deviceB = {
+export const deviceB = {
   internalId: "device-b",
   name: "Device B",
   model: "Device B",
@@ -34,7 +34,7 @@ const deviceB = {
   swabTypes: [],
   testLength: 10,
 };
-const deviceC = {
+export const deviceC = {
   internalId: "device-c",
   name: "Device C",
   model: "Device C",
@@ -43,6 +43,7 @@ const deviceC = {
   swabTypes: [],
   testLength: 10,
 };
+
 const onChangeSpy = jest.fn();
 const devices: DeviceType[] = [deviceC, deviceB, deviceA];
 
@@ -84,7 +85,9 @@ function ManageDevicesContainer(props: { facility: FacilityFormData }) {
       newOrg={false}
       formCurrentValues={props.facility}
       onChange={onChangeSpy}
-      registrationProps={{ setFocus: () => {} }}
+      registrationProps={{
+        setFocus: () => {},
+      }}
     />
   );
 }
