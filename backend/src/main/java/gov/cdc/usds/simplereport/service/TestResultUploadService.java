@@ -342,7 +342,6 @@ public class TestResultUploadService {
     queryParams.put(
         "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
     queryParams.put("client_assertion", createDataHubSenderToken(signingKey));
-
     return _client.fetchAccessToken(queryParams);
   }
 
