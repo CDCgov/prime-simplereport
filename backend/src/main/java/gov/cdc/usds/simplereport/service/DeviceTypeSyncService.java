@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -205,54 +206,7 @@ public class DeviceTypeSyncService {
 
           DeviceType deviceToSync =
               foundDevice.orElseGet(
-                  () -> {
-                    // Have we seen this device before? Gets its specimens
-                    if (!specimenIdsByDevice.containsKey(deviceIdentifier)) {
-                      specimenIdsByDevice.put(
-                          deviceIdentifier, getSpecimenTypeIdsFromDescription(device));
-                    }
-
-                    var specimensForDevice = specimenIdsByDevice.get(deviceIdentifier);
-                    var supportedDisease =
-                        getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
-
-                    if (supportedDisease.isEmpty()) {
-                      // Skip this device
-                      log.info(
-                          "Device {} does not contain required disease data", device.getModel());
-                      return null;
-                    }
-
-                    // Device name should be the same as the model name, unless a device with that
-                    // name already exists. If so, prepend with the manufacturer name before
-                    // creation
-                    var existingDeviceWithName =
-                        deviceTypeRepository.findDeviceTypeByName(device.getModel());
-                    var deviceName =
-                        existingDeviceWithName == null
-                            ? device.getModel()
-                            : String.join(" ", device.getManufacturer(), device.getModel());
-
-                    var createdDeviceType =
-                        CreateDeviceType.builder()
-                            .name(deviceName)
-                            .manufacturer(device.getManufacturer())
-                            .model(device.getModel())
-                            .testLength(DEFAULT_TEST_LENGTH)
-                            .swabTypes(specimensForDevice)
-                            .supportedDiseaseTestPerformed(
-                                List.of(
-                                    SupportedDiseaseTestPerformedInput.builder()
-                                        .supportedDisease(supportedDisease.get().getInternalId())
-                                        .testPerformedLoincCode(device.getTestPerformedLoincCode())
-                                        .testOrderedLoincCode(device.getTestOrderedLoincCode())
-                                        .testkitNameId(device.getTestKitNameId())
-                                        .equipmentUid(device.getEquipmentUid())
-                                        .build()))
-                            .build();
-                    log.info("Device created {}", createdDeviceType);
-                    return deviceTypeService.createDeviceType(createdDeviceType);
-                  });
+                  () -> createDevice(device, specimenIdsByDevice, deviceIdentifier));
 
           if (!devicesToSync.containsKey(deviceToSync)) {
             devicesToSync.put(deviceToSync, new ArrayList<>());
@@ -302,6 +256,55 @@ public class DeviceTypeSyncService {
     if (dryRun) {
       throw new DryRunException("Dry run, rolling back");
     }
+  }
+
+  @Nullable
+  private DeviceType createDevice(
+      LIVDResponse device,
+      HashMap<String, List<UUID>> specimenIdsByDevice,
+      String deviceIdentifier) {
+    // Have we seen this device before? Gets its specimens
+    if (!specimenIdsByDevice.containsKey(deviceIdentifier)) {
+      specimenIdsByDevice.put(deviceIdentifier, getSpecimenTypeIdsFromDescription(device));
+    }
+
+    var specimensForDevice = specimenIdsByDevice.get(deviceIdentifier);
+    var supportedDisease = getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
+
+    if (supportedDisease.isEmpty()) {
+      // Skip this device
+      log.info("Device {} does not contain required disease data", device.getModel());
+      return null;
+    }
+
+    // Device name should be the same as the model name, unless a device with that
+    // name already exists. If so, prepend with the manufacturer name before
+    // creation
+    var existingDeviceWithName = deviceTypeRepository.findDeviceTypeByName(device.getModel());
+    var deviceName =
+        existingDeviceWithName == null
+            ? device.getModel()
+            : String.join(" ", device.getManufacturer(), device.getModel());
+
+    var createdDeviceType =
+        CreateDeviceType.builder()
+            .name(deviceName)
+            .manufacturer(device.getManufacturer())
+            .model(device.getModel())
+            .testLength(DEFAULT_TEST_LENGTH)
+            .swabTypes(specimensForDevice)
+            .supportedDiseaseTestPerformed(
+                List.of(
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(supportedDisease.get().getInternalId())
+                        .testPerformedLoincCode(device.getTestPerformedLoincCode())
+                        .testOrderedLoincCode(device.getTestOrderedLoincCode())
+                        .testkitNameId(device.getTestKitNameId())
+                        .equipmentUid(device.getEquipmentUid())
+                        .build()))
+            .build();
+    log.info("Device created {}", createdDeviceType);
+    return deviceTypeService.createDeviceType(createdDeviceType);
   }
 
   private void syncDevice(
