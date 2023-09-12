@@ -20,26 +20,28 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class FeatureFlagsConfig {
-  @Getter(AccessLevel.NONE)
-  @Setter(AccessLevel.NONE)
-  private final FeatureFlagRepository _repo;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private final FeatureFlagRepository _repo;
 
-  private boolean multiplexEnabled;
-  private boolean hivEnabled;
-  private boolean rsvEnabled;
+    private boolean multiplexEnabled;
+    private boolean hivEnabled;
+    private boolean rsvEnabled;
+    private boolean singleEntryRsvEnabled;
 
-  @Scheduled(fixedRateString = "60000") // 1 min
-  private void loadFeatureFlagsFromDB() {
-    Iterable<FeatureFlag> flags = _repo.findAll();
-    flags.forEach(flag -> flagMapping(flag.getName(), flag.getValue()));
-  }
-
-  private void flagMapping(String flagName, Boolean flagValue) {
-    switch (flagName) {
-      case "multiplexEnabled" -> setMultiplexEnabled(flagValue);
-      case "hivEnabled" -> setHivEnabled(flagValue);
-      case "rsvEnabled" -> setRsvEnabled(flagValue);
-      default -> log.info("no mapping for " + flagName);
+    @Scheduled(fixedRateString = "60000") // 1 min
+    private void loadFeatureFlagsFromDB() {
+        Iterable<FeatureFlag> flags = _repo.findAll();
+        flags.forEach(flag -> flagMapping(flag.getName(), flag.getValue()));
     }
-  }
+
+    private void flagMapping(String flagName, Boolean flagValue) {
+        switch (flagName) {
+            case "multiplexEnabled" -> setMultiplexEnabled(flagValue);
+            case "hivEnabled" -> setHivEnabled(flagValue);
+            case "rsvEnabled" -> setRsvEnabled(flagValue);
+            case "singleEntryRsvEnabled" -> setSingleEntryRsvEnabled(flagValue);
+            default -> log.info("no mapping for " + flagName);
+        }
+    }
 }

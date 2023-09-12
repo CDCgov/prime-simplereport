@@ -7,6 +7,8 @@ import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSe
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
 
+import { useFeature } from "flagged";
+
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
   errors: any;
@@ -24,6 +26,8 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
+  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
+
   const deviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
       label: device.model,

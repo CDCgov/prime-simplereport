@@ -25,3 +25,4 @@ twilio:
 features:
   hivEnabled: false
   rsvEnabled: false
+  singleEntryRsvEnabled: false
