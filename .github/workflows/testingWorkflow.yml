@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
     inputs:
       platforms:
-        description: "Build additional architecture (linux/arm64). linux/amd64 is built by default."
+        description: "Build additional architectures (linux/arm64). linux/amd64 is built by default."
         required: false
       force_build:
-        description: "Force build the docker iamges"
+        description: "Force build the docker images"
         required: true
         default: true
   pull_request:
@@ -20,38 +20,37 @@ on:
     branches:
       - main
 
-env:
-  DEFAULT_PLATFORMS: "['linux/amd64']"
-
 jobs:
 
+# Check for changes in the backend, cypress, database, frontend, and nginx directories
   backend_changes:
     with:
-      what_to_check: backend
+      what_to_check: ./backend
     uses: ./.github/workflows/checkForChanges.yml
 
   cypress_changes:
     with:
-      what_to_check: cypress
+      what_to_check: ./cypress
     uses: ./.github/workflows/checkForChanges.yml
 
   database_changes:
     with:
-      what_to_check: backend/db-setup
+      what_to_check: ./backend/db-setup
     uses: ./.github/workflows/checkForChanges.yml
 
   frontend_changes:
     with:
-      what_to_check: frontend
+      what_to_check: ./frontend
     uses: ./.github/workflows/checkForChanges.yml
 
   nginx_changes:
     with:
-      what_to_check: nginx
+      what_to_check: ./nginx
     uses: ./.github/workflows/checkForChanges.yml
 
+# Build Docker Images for the backend, cypress, database, frontend, and nginx
   build_backend_image:
-    if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - backend_changes
     runs-on: ubuntu-latest
@@ -60,9 +59,12 @@ jobs:
       matrix:
         include:
           - platform: ${{ inputs.platform }}
+    outputs:
+      version: ${{ steps.set_backend_version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Backend Image
+        id: set_backend_version
         uses: ./.github/actions/build-docker-image
         with:
           context: ./
@@ -77,7 +79,7 @@ jobs:
           platform: ${{ matrix.platform }}
   
   build_cypress_image:
-    if: needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    if: needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - cypress_changes
     runs-on: ubuntu-latest
@@ -86,9 +88,12 @@ jobs:
       matrix:
         include:
           - platform: ${{ inputs.platform }}
+    outputs:
+      version: ${{ steps.set_cypress_version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Cypress Image
+        id: set_cypress_version
         uses: ./.github/actions/build-docker-image
         with:
           context: ./
@@ -103,7 +108,7 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_database_image:
-    if: needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    if: needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - database_changes
     runs-on: ubuntu-latest
@@ -112,9 +117,12 @@ jobs:
       matrix:
         include:
           - platform: ${{ inputs.platform }}
+    outputs:
+      version: ${{ steps.set_database_version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Database Image
+        id: set_database_version
         uses: ./.github/actions/build-docker-image
         with:
           context: ./backend/db-setup
@@ -128,7 +136,7 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_frontend_image:
-    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - frontend_changes
     runs-on: ubuntu-latest
@@ -137,9 +145,12 @@ jobs:
       matrix:
         include:
           - platform: ${{ inputs.platform }}
+    outputs:
+      version: ${{ steps.set_frontend_version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Frontend Image
+        id: set_frontend_version
         uses: ./.github/actions/build-docker-image
         with:
           context: ./
@@ -154,7 +165,7 @@ jobs:
           platform: ${{ matrix.platform }}
 
   build_frontend_lighthouse_image:
-    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - frontend_changes
     runs-on: ubuntu-latest
@@ -163,9 +174,12 @@ jobs:
       matrix:
         include:
           - platform: ${{ inputs.platform }}
+    outputs:
+      version: ${{ steps.set_frontend_lighthouse_version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Frontend Lighthouse Image
+        id: set_frontend_lighthouse_version
         uses: ./.github/actions/build-docker-image
         with:
           context: ./
@@ -186,7 +200,7 @@ jobs:
             "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
 
   build_nginx_image:
-    if: needs.nginx_changes.outputs.has_changes == 'true' || inputs.force_build == true || github.ref == 'refs/heads/main'
+    if: needs.nginx_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - nginx_changes
     runs-on: ubuntu-latest
@@ -195,9 +209,12 @@ jobs:
       matrix:
         include:
           - platform: ${{ inputs.platform }}
+    outputs:
+      version: ${{ steps.set_nginx_version.outputs.version }}
     steps:
       - uses: actions/checkout@v3
       - name: Build Nginx Image
+        id: set_nginx_version
         uses: ./.github/actions/build-docker-image
         with:
           context: ./nginx
@@ -210,7 +227,15 @@ jobs:
           image_name: nginx
           platform: ${{ matrix.platform }}
 
+# Automated tests
   e2e_local:
+    if: |
+      always() &&
+      (needs.build_backend_image.result == 'success' || needs.build_backend_image.result == 'skipped') &&
+      (needs.build_cypress_image.result == 'success' || needs.build_cypress_image.result == 'skipped') &&
+      (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped') &&
+      (needs.build_frontend_image.result == 'success' || needs.build_frontend_image.result == 'skipped') &&
+      (needs.build_nginx_image.result == 'success' || needs.build_nginx_image.result == 'skipped')
     needs:
       - build_backend_image
       - build_cypress_image
@@ -231,7 +256,14 @@ jobs:
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_FRONTEND_IMAGE_VERSION: ${{ needs.build_frontend_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
+
   lighthouse:
+    if: |
+      always() &&
+      (needs.build_backend_image.result == 'success' || needs.build_backend_image.result == 'skipped') &&
+      (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped') &&
+      (needs.build_frontend_lighthouse_image.result == 'success' || needs.build_frontend_lighthouse_image.result == 'skipped') &&
+      (needs.build_nginx_image.result == 'success' || needs.build_nginx_image.result == 'skipped')
     needs:
       - build_backend_image
       - build_database_image
@@ -243,7 +275,11 @@ jobs:
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
       DOCKER_FRONTEND_LIGHTHOUSE_IMAGE_VERSION: ${{ needs.build_frontend_lighthouse_image.outputs.version }}
       DOCKER_NGINX_IMAGE_VERSION: ${{ needs.build_nginx_image.outputs.version }}
+
   tests:
+    if: |
+      always() &&
+      (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped')
     needs:
       - build_database_image
     uses: ./.github/workflows/test.yml
@@ -255,6 +291,9 @@ jobs:
       DOCKER_DATABASE_IMAGE_VERSION: ${{ needs.build_database_image.outputs.version }}
 
   liquibase_action_checks:
+    if: |
+      always() &&
+      (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped')
     needs:
       - build_database_image
     uses: ./.github/workflows/testDBActions.yml
