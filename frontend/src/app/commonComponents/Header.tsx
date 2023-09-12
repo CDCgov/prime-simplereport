@@ -230,7 +230,6 @@ const Header: React.FC<{}> = () => {
       <li className="usa-sidenav__item role-tag">
         {formatRole(user.roleDescription)}
       </li>
-      <hr />
       <li className="usa-sidenav__item navlink__support">
         <div className="header-link-icon sparkle-icon-mask"></div>
         <a
@@ -281,6 +280,13 @@ const Header: React.FC<{}> = () => {
             className={item.className}
             data-testid={`${deviceType}-${item.dataTestId}`}
             id={`${deviceType}-${item.dataTestId}`}
+            role={item.hasSubmenu ? "button" : "link"}
+            aria-expanded={item.hasSubmenu ? staffDetailsVisible : undefined}
+            aria-controls={
+              item.hasSubmenu
+                ? `${deviceType}-${item.dataTestId}-submenu`
+                : undefined
+            }
           >
             {deviceType === "desktop" ? item.icon : item.mobileDisplayText}
           </LinkWithQuery>
@@ -288,8 +294,9 @@ const Header: React.FC<{}> = () => {
           staffDetailsVisible &&
           deviceType === "desktop" ? (
             <div
+              id={`${deviceType}-${item.dataTestId}-submenu`}
               ref={staffDefailsRef}
-              aria-label="Primary navigation"
+              aria-label="Account navigation"
               className={classNames("prime-staff-infobox", {
                 "is-prime-staff-infobox-visible": staffDetailsVisible,
               })}
@@ -326,7 +333,7 @@ const Header: React.FC<{}> = () => {
         </button>
 
         <nav
-          aria-label="Primary navigation"
+          aria-label="Primary mobile navigation"
           className={classNames(
             "usa-nav",
             "prime-nav",
@@ -350,13 +357,12 @@ const Header: React.FC<{}> = () => {
           </ul>
           <div className="usa-nav__primary mobile-sublist-container">
             {secondaryNavSublist("mobile")}
-            <hr />
-
             <label id="mobile-facility-label" className="usa-label ">
               Facility
             </label>
             <div className="prime-facility-select facility-select-mobile-container">
               <Dropdown
+                ariaLabel="Select testing facility"
                 selectedValue={facility.id}
                 onChange={onFacilitySelect}
                 className={"mobile-facility-select"}
@@ -373,14 +379,14 @@ const Header: React.FC<{}> = () => {
       </div>
 
       <nav
-        aria-label="Primary navigation"
+        aria-label="Primary desktop navigation"
         className="usa-nav prime-nav desktop-nav"
       >
         {mainNavList("desktop")}
         {facilities && facilities.length > 0 ? (
           <div className="prime-facility-select">
             <Dropdown
-              aria-label={"Select facility"}
+              ariaLabel="Select testing facility"
               selectedValue={facility.id}
               onChange={onFacilitySelect}
               options={facilities.map(({ name, id }) => ({
