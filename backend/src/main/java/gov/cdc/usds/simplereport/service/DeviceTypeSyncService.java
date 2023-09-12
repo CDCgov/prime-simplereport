@@ -298,34 +298,38 @@ public class DeviceTypeSyncService {
         });
 
     devicesToSync.forEach(
-        (device, testsPerformed) -> {
-          if (device == null) {
-            return;
-          }
+        (device, testsPerformed) -> syncDevice(device, testsPerformed, specimenIdsByDevice));
+    if (dryRun) {
+      throw new DryRunException("Dry run, rolling back");
+    }
+  }
 
-          UpdateDeviceType input =
-              UpdateDeviceType.builder()
-                  // Update does not alter the device name
-                  .internalId(device.getInternalId())
-                  .manufacturer(device.getManufacturer())
-                  .model(device.getModel())
-                  .supportedDiseaseTestPerformed(testsPerformed)
-                  .swabTypes(
-                      specimenIdsByDevice.get(device.getModel() + "|" + device.getManufacturer()))
-                  .build();
+  private void syncDevice(
+      DeviceType device,
+      ArrayList<SupportedDiseaseTestPerformedInput> testsPerformed,
+      HashMap<String, List<UUID>> specimenIdsByDevice) {
+    if (device == null) {
+      return;
+    }
 
-          if (hasUpdates(input, device)) {
-            try {
-              deviceTypeService.updateDeviceType(input);
-              log.info("Updating device {}", input);
-            } catch (IllegalGraphqlArgumentException ignored) {
-              log.info("No updates for device {}, skipping sync", device.getName());
-            }
-          }
-          if (dryRun) {
-            throw new DryRunException("Dry run, rolling back");
-          }
-        });
+    UpdateDeviceType input =
+        UpdateDeviceType.builder()
+            // Update does not alter the device name
+            .internalId(device.getInternalId())
+            .manufacturer(device.getManufacturer())
+            .model(device.getModel())
+            .supportedDiseaseTestPerformed(testsPerformed)
+            .swabTypes(specimenIdsByDevice.get(device.getModel() + "|" + device.getManufacturer()))
+            .build();
+
+    if (hasUpdates(input, device)) {
+      try {
+        deviceTypeService.updateDeviceType(input);
+        log.info("Updating device {}", input);
+      } catch (IllegalGraphqlArgumentException ignored) {
+        log.info("No updates for device {}, skipping sync", device.getName());
+      }
+    }
   }
 
   private Optional<SpecimenType> parseVendorSpecimenDescription(String specimenDescription) {
