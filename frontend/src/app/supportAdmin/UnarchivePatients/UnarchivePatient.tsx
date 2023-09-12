@@ -237,6 +237,7 @@ const UnarchivePatient = () => {
       currentPage = 1;
       await fetchAndSetPatientsCount(orgExternalId);
       await fetchAndSetPatients(orgExternalId, currentPage);
+
       // reset url to clear page number from pagination
       navigate(`${localState.pageUrl}${searchParams}`);
     }

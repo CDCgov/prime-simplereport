@@ -240,10 +240,11 @@ const searchByOrgAndFacility = async () => {
     mockFacility1.name
   );
   await clickSearch();
-  expect(mockNavigate).not.toHaveBeenCalled();
   await waitFor(async () => {
     expect(screen.getByText(/Archived patients for/i)).toBeInTheDocument();
   });
+
+  expect(mockNavigate).toHaveBeenCalled();
 };
 
 const defaultMocks = [
