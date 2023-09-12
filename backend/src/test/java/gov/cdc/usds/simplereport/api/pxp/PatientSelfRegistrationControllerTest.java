@@ -139,7 +139,8 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
             "state": "CA",
             "county": "San Diego",
             "zipCode": "92037"
-          }
+          },
+          "notes": "Mercenary of the void"
         }
         """
             .replace("$link", _facilityRegistrationLink.getLink());
@@ -185,7 +186,8 @@ class PatientSelfRegistrationControllerTest extends BaseFullStackTest {
             eq(true),
             eq(true),
             any(),
-            any());
+            any(),
+            eq("Mercenary of the void"));
   }
 
   @Test

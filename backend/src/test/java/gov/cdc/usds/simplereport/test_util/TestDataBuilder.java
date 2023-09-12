@@ -112,7 +112,8 @@ public class TestDataBuilder {
         false,
         false,
         "eng",
-        null);
+        null,
+        "Nebula-navigating outlaw");
   }
 
   public static DeviceTypeDisease createDeviceTypeDisease(SupportedDisease supportedDisease) {

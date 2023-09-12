@@ -343,7 +343,8 @@ public class PersonService {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery) {
+      TestResultDeliveryPreference testResultDelivery,
+      String notes) {
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -365,7 +366,8 @@ public class PersonService {
             residentCongregateSetting,
             employedInHealthcare,
             preferredLanguage,
-            testResultDelivery);
+            testResultDelivery,
+            notes);
     updatePersonFacility(newPatient, facilityId);
     Person savedPerson = _repo.save(newPatient);
     updatePhoneNumbers(newPatient, phoneNumbers);
@@ -394,7 +396,8 @@ public class PersonService {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery) {
+      TestResultDeliveryPreference testResultDelivery,
+      String notes) {
     Person newPatient =
         new Person(
             link.getOrganization(),
@@ -416,7 +419,8 @@ public class PersonService {
             residentCongregateSetting,
             employedInHealthcare,
             preferredLanguage,
-            testResultDelivery);
+            testResultDelivery,
+            notes);
     newPatient.setFacility(link.getFacility());
     Person savedPerson = _repo.save(newPatient);
     updatePhoneNumbers(newPatient, phoneNumbers);

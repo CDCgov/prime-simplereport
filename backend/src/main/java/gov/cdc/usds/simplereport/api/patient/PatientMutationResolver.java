@@ -63,7 +63,8 @@ public class PatientMutationResolver {
       @Argument Boolean residentCongregateSetting,
       @Argument Boolean employedInHealthcare,
       @Argument String preferredLanguage,
-      @Argument TestResultDeliveryPreference testResultDelivery) {
+      @Argument TestResultDeliveryPreference testResultDelivery,
+      @Argument String notes) {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
@@ -98,7 +99,8 @@ public class PatientMutationResolver {
         residentCongregateSetting,
         employedInHealthcare,
         parseString(preferredLanguage),
-        testResultDelivery);
+        testResultDelivery,
+        notes);
   }
 
   @MutationMapping

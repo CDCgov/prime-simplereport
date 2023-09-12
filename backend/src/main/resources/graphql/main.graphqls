@@ -242,6 +242,8 @@ type Patient
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   preferredLanguage: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  notes: String
+  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
 
 # TestResult and TestOrder should have the same properties
@@ -552,6 +554,7 @@ type Mutation {
     employedInHealthcare: Boolean
     preferredLanguage: String
     testResultDelivery: TestResultDeliveryPreference
+    notes: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
     facilityId: ID @Size(min: 36, max: 36)
@@ -588,6 +591,7 @@ type Mutation {
     employedInHealthcare: Boolean
     preferredLanguage: String
     testResultDelivery: TestResultDeliveryPreference
+    notes: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(
     id: ID!

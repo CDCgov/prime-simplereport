@@ -132,7 +132,8 @@ class PersonSerializationTest extends BaseNonSpringBootTestConfiguration {
             true,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            "A space cowboy with a silver tongue talked his way out of trouble, again. He was a master of persuasion, and he could talk his way into or out of anything.");
     PhoneNumber pn = new PhoneNumber(PhoneType.LANDLINE, "5555555555");
     p.setPrimaryPhone(pn);
     return p;

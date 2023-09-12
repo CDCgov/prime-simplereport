@@ -1493,7 +1493,8 @@ class FhirConverterTest {
             false,
             false,
             "",
-            null);
+            null,
+            "Adventurer of the cosmos");
     var testOrder = new TestOrder(person, facility);
     var answers =
         new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));
