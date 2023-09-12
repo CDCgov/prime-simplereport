@@ -1,4 +1,5 @@
 import React from "react";
+import { useFeature } from "flagged";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
@@ -6,8 +7,6 @@ import "./ManageDevices.scss";
 import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
-
-import { useFeature } from "flagged";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
@@ -31,7 +30,7 @@ function filterRsvFromSingleDevice(device: FacilityFormDeviceType) {
 
   // no supportedDiseaseTestPerformed defined due to any casting, return empty array
   if (supportedDiseaseArray === undefined) return [];
-  
+
   const supportedDiseases = supportedDiseaseArray.map(
     (sd) => sd.supportedDisease.name
   );
