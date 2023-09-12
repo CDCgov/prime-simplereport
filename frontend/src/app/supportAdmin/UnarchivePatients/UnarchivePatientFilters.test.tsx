@@ -2,8 +2,13 @@ import React from "react";
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import { ComboBoxRef } from "@trussworks/react-uswds";
 
 import { Option } from "../../commonComponents/Select";
+import {
+  getFacilityComboBoxElements,
+  getOrgComboBoxElements,
+} from "../ManageFacility/testSelectUtils";
 
 import { UnarchivePatientState } from "./UnarchivePatient";
 import UnarchivePatientFilters from "./UnarchivePatientFilters";
@@ -15,7 +20,6 @@ import {
   mockOrg2,
   mockPatient1,
   mockPatient2,
-  selectDropdown,
 } from "./testUtils";
 
 const mockOrgOptions: Option<string>[] = [
@@ -28,11 +32,42 @@ const mockOrgOptions: Option<string>[] = [
     value: mockOrg2.internalId,
   },
 ];
+
 describe("unarchive patient filters", () => {
   let onSelectOrg: jest.Mock;
   let onSelectFacility: jest.Mock;
   let onSearch: jest.Mock;
   let onClearFilter: jest.Mock;
+
+  const renderWithMocks = (
+    unarchivePatientState: UnarchivePatientState,
+    loading = false
+  ) => {
+    const orgRef = React.createRef<ComboBoxRef>();
+    const facilityRef = React.createRef<ComboBoxRef>();
+    render(
+      <MemoryRouter>
+        <UnarchivePatientFilters
+          orgOptions={mockOrgOptions}
+          facilityOptions={
+            unarchivePatientState.facilities.map((facility) => ({
+              value: facility.id,
+              label: facility.name,
+            })) ?? []
+          }
+          onSelectOrg={onSelectOrg}
+          onSelectFacility={onSelectFacility}
+          onSearch={onSearch}
+          onClearFilter={onClearFilter}
+          loading={loading}
+          disableClearFilters={false}
+          disableSearch={loading}
+          orgRef={orgRef}
+          facilityRef={facilityRef}
+        />
+      </MemoryRouter>
+    );
+  };
 
   beforeEach(() => {
     onSelectOrg = jest.fn();
@@ -41,36 +76,8 @@ describe("unarchive patient filters", () => {
     onClearFilter = jest.fn();
   });
 
-  it("displays an error message for empty search fields", async () => {
-    let unarchivePatientState: UnarchivePatientState = {
-      pageUrl: "/admin/unarchive-patient",
-      entriesPerPage: 20,
-      orgId: "",
-      facilityId: "",
-      patientsCount: 2,
-      patients: undefined,
-      facilities: [mockFacility1, mockFacility2],
-      patient: undefined,
-    };
-    render(
-      <MemoryRouter>
-        <UnarchivePatientFilters
-          orgOptions={mockOrgOptions}
-          onSelectOrg={onSelectOrg}
-          onSelectFacility={onSelectFacility}
-          onSearch={onSearch}
-          onClearFilter={onClearFilter}
-          loading={false}
-          unarchivePatientState={unarchivePatientState}
-        />
-      </MemoryRouter>
-    );
-    await clickSearch();
-    expect(screen.getByText("Organization is required")).toBeInTheDocument();
-    expect(
-      screen.getByText("Testing facility is required")
-    ).toBeInTheDocument();
-  });
+  const user = userEvent.setup();
+
   it("displays no errors and calls event handlers when search fields are completed", async () => {
     let unarchivePatientState: UnarchivePatientState = {
       pageUrl: "/admin/unarchive-patient",
@@ -82,34 +89,28 @@ describe("unarchive patient filters", () => {
       facilities: [mockFacility1, mockFacility2],
       patient: undefined,
     };
-    render(
-      <MemoryRouter>
-        <UnarchivePatientFilters
-          orgOptions={mockOrgOptions}
-          onSelectOrg={onSelectOrg}
-          onSelectFacility={onSelectFacility}
-          onSearch={onSearch}
-          onClearFilter={onClearFilter}
-          loading={false}
-          unarchivePatientState={unarchivePatientState}
-        />
-      </MemoryRouter>
+    renderWithMocks(unarchivePatientState);
+
+    const [, orgComboBoxList] = getOrgComboBoxElements();
+    expect(orgComboBoxList).toBeEnabled();
+
+    await act(
+      async () => await user.selectOptions(orgComboBoxList, mockOrg1.name)
     );
-    await selectDropdown("Organization *", mockOrg1.name);
-    expect(onSelectOrg).toHaveBeenCalledTimes(1);
     expect(onSelectOrg).toHaveBeenCalledWith(mockOrg1.internalId);
-    await selectDropdown("Testing facility *", mockFacility1.name);
-    expect(onSelectFacility).toHaveBeenCalledTimes(1);
+
+    const [, facilityComboBoxList] = getFacilityComboBoxElements();
+    expect(facilityComboBoxList).toBeEnabled();
+
+    await act(
+      async () =>
+        await user.selectOptions(facilityComboBoxList, mockFacility1.name)
+    );
     expect(onSelectFacility).toHaveBeenCalledWith(mockFacility1.id);
+
     expect(screen.getByText("Clear filters")).toBeEnabled();
     await clickSearch();
-    expect(
-      screen.queryByText("Organization is required")
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByText("Testing facility is required")
-    ).not.toBeInTheDocument();
-    expect(onSearch).toHaveBeenCalledTimes(1);
+
     await act(
       async () => await userEvent.click(screen.getByText("Clear filters"))
     );
@@ -126,21 +127,13 @@ describe("unarchive patient filters", () => {
       facilities: [mockFacility1, mockFacility2],
       patient: undefined,
     };
-    render(
-      <MemoryRouter>
-        <UnarchivePatientFilters
-          orgOptions={mockOrgOptions}
-          onSelectOrg={onSelectOrg}
-          onSelectFacility={onSelectFacility}
-          onSearch={onSearch}
-          onClearFilter={onClearFilter}
-          loading={true}
-          unarchivePatientState={unarchivePatientState}
-        />
-      </MemoryRouter>
-    );
-    expect(screen.getByLabelText("Organization *")).toBeDisabled();
-    expect(screen.getByLabelText("Testing facility *")).toBeDisabled();
+    renderWithMocks(unarchivePatientState, true);
+
+    const [orgComboInput] = getOrgComboBoxElements();
+    const [facilityComboInput] = getFacilityComboBoxElements();
+
+    expect(orgComboInput).toBeDisabled();
+    expect(facilityComboInput).toBeDisabled();
     expect(screen.getByText("Search")).toBeDisabled();
   });
 });

@@ -38,8 +38,8 @@ describe("unarchive patient information", () => {
     let unarchivePatientState: UnarchivePatientState = {
       pageUrl: "/admin/unarchive-patient",
       entriesPerPage: 20,
-      orgId: "",
-      facilityId: "",
+      orgId: undefined,
+      facilityId: undefined,
       patientsCount: undefined,
       patients: undefined,
       facilities: [],

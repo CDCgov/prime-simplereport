@@ -1,11 +1,9 @@
-import React from "react";
 import {
   act,
   render,
   screen,
   waitFor,
   waitForElementToBeRemoved,
-  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
@@ -25,14 +23,21 @@ import {
   UnarchivePatientDocument,
 } from "../../../generated/graphql";
 import * as srToast from "../../utils/srToast";
+import {
+  getFacilityComboBoxElements,
+  getOrgComboBoxElements,
+} from "../ManageFacility/testSelectUtils";
 
 import UnarchivePatient from "./UnarchivePatient";
 import {
-  mockOrg2,
-  mockOrg1,
+  checkPatientResultRows,
+  clickSearch,
   mockFacility1,
+  mockOrg1,
+  mockOrg2,
   mockPatient1,
   mockPatient2,
+  selectComboBoxOption,
 } from "./testUtils";
 
 const createMockPatients = (patientNum: number) => {
@@ -65,30 +70,29 @@ const mockNavigate = jest.fn();
 const mockLocation = jest.fn();
 
 jest.mock("react-router-dom", () => {
-  const original = jest.requireActual("react-router-dom");
   return {
-    ...original,
+    ...jest.requireActual("react-router-dom"),
     useNavigate: () => mockNavigate,
     useLocation: () => mockLocation,
   };
 });
 
+const mockStore = createMockStore([]);
+const mockedStore = mockStore({ facilities: [] });
+
+function renderWithMocks(mocks: MockedProviderProps["mocks"]) {
+  render(
+    <Provider store={mockedStore}>
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <MemoryRouter>
+          <UnarchivePatient />
+        </MemoryRouter>
+      </MockedProvider>
+    </Provider>
+  );
+}
+
 describe("Unarchive patient", () => {
-  const mockStore = createMockStore([]);
-  const mockedStore = mockStore({ facilities: [] });
-
-  function renderWithMocks(mocks: MockedProviderProps["mocks"]) {
-    render(
-      <Provider store={mockedStore}>
-        <MockedProvider mocks={mocks} addTypename={false}>
-          <MemoryRouter>
-            <UnarchivePatient />
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
-    );
-  }
-
   it("displays search and instructions", async () => {
     renderWithMocks(defaultMocks);
 
@@ -103,10 +107,10 @@ describe("Unarchive patient", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText("Organization *")).toBeInTheDocument();
     expect(screen.getByLabelText("Testing facility *")).toBeInTheDocument();
-    expect(screen.getByText("Search")).toBeEnabled();
     expect(await axe(document.body)).toHaveNoViolations();
+
     // selecting an org with no facilities
-    await selectDropdown("Organization *", mockOrg2.name);
+    await selectComboBoxOption("org-selection-container", mockOrg2.name);
     await waitFor(() =>
       expect(screen.getByText("Clear filters")).toBeEnabled()
     );
@@ -130,7 +134,6 @@ describe("Unarchive patient", () => {
   });
   it("displays patients table on valid search", async () => {
     renderWithMocks(mocksWithPatients);
-
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
@@ -141,26 +144,22 @@ describe("Unarchive patient", () => {
     await act(
       async () => await userEvent.click(screen.getByText("Clear filters"))
     );
-    expect(screen.getByLabelText("Testing facility *")).toHaveDisplayValue(
-      "- Select -"
-    );
-    expect(screen.getByLabelText("Organization *")).toHaveDisplayValue(
-      "- Select -"
-    );
+    const [facilityInput] = getFacilityComboBoxElements();
+    const [orgInput] = getOrgComboBoxElements();
+
+    expect(orgInput).toHaveValue("");
+    expect(facilityInput).toHaveValue("");
+
     expect(
       screen.getByText(
         "Filter by organization and testing facility to display archived patients."
       )
     ).toBeInTheDocument();
+    expect(screen.getByText("Search")).toBeDisabled();
+
     // show form errors
-    await clickSearch();
-    expect(screen.getByText("Organization is required")).toBeInTheDocument();
-    expect(
-      screen.getByText("Testing facility is required")
-    ).toBeInTheDocument();
     expect(await axe(document.body)).toHaveNoViolations();
   });
-
   it("displays unarchive patient modal and unarchives patient", async () => {
     let alertErrorSpy: jest.SpyInstance;
     let alertSuccessSpy: jest.SpyInstance;
@@ -174,6 +173,7 @@ describe("Unarchive patient", () => {
       screen.queryByText("Loading Organizations …")
     );
     await searchByOrgAndFacility();
+
     await act(async () => screen.getAllByText("Unarchive")[0].click());
     expect(screen.getByRole("dialog")).toHaveTextContent(
       /Are you sure you want to unarchive Gutmann, Rod\?/
@@ -204,7 +204,6 @@ describe("Unarchive patient", () => {
 
     expect(await axe(document.body)).toHaveNoViolations();
   });
-
   it("navigates to previous page when archiving last patient on page", async () => {
     renderWithMocks(mocksWithExtraPatients);
 
@@ -233,44 +232,21 @@ describe("Unarchive patient", () => {
 });
 
 const searchByOrgAndFacility = async () => {
-  await selectDropdown("Organization *", mockOrg1.name);
-  await waitFor(async () =>
-    expect(screen.getByLabelText("Testing facility *")).toHaveTextContent(
-      "Mars Facility"
-    )
+  await selectComboBoxOption("org-selection-container", mockOrg1.name);
+  const [facilityInput] = getFacilityComboBoxElements();
+  await waitFor(async () => expect(facilityInput).toBeEnabled());
+  await selectComboBoxOption(
+    "facility-selection-container",
+    mockFacility1.name
   );
-  await selectDropdown("Testing facility *", mockFacility1.name);
   await clickSearch();
-  await waitFor(() =>
-    expect(screen.queryByText("Loading...")).not.toBeInTheDocument()
-  );
-};
-
-export const clickSearch = async () => {
-  await act(async () => await userEvent.click(screen.getByText("Search")));
-};
-
-export const selectDropdown = async (label: string, value: string) => {
-  await act(
-    async () =>
-      await userEvent.selectOptions(screen.getByLabelText(label), value)
-  );
-};
-
-export const checkPatientResultRows = () => {
-  let resultsRow = screen.getAllByTestId("sr-archived-patient-row");
-  resultsRow.forEach((row, index) => {
-    if (index === 0) {
-      expect(within(row).getByText("Gutmann, Rod")).toBeInTheDocument();
-      expect(within(row).getByText("05/19/1927")).toBeInTheDocument();
-      expect(within(row).getByText("All facilities")).toBeInTheDocument();
-    } else if (index === 1) {
-      expect(within(row).getByText("Mode, Mia")).toBeInTheDocument();
-      expect(within(row).getByText("11/20/1973")).toBeInTheDocument();
-      expect(within(row).getByText("Mars Facility")).toBeInTheDocument();
-    }
+  await waitFor(async () => {
+    expect(screen.getByText(/Archived patients for/i)).toBeInTheDocument();
   });
+
+  expect(mockNavigate).toHaveBeenCalled();
 };
+
 const defaultMocks = [
   {
     request: {
