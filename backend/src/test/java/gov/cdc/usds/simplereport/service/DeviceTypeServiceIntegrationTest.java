@@ -5,11 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
+import gov.cdc.usds.simplereport.api.model.errors.DryRunException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -115,7 +117,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     List<LIVDResponse> devices = List.of(newDevice);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    _service.syncDevices();
+    _service.syncDevices(false);
     var updatedDevice =
         deviceTypeRepo.findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
             newDevice.getManufacturer(), newDevice.getModel());
@@ -148,7 +150,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     List<LIVDResponse> devices = List.of(newDevice);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    _service.syncDevices();
+    _service.syncDevices(false);
     var createdDevice =
         deviceTypeRepo.findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
             newDevice.getManufacturer(), newDevice.getModel());
@@ -189,7 +191,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
 
-    _service.syncDevices();
+    _service.syncDevices(false);
 
     // Brand-new specimen type from response added to DB
     var newSpecimenType = specimenTypeRepository.findByTypeCodeAndIsDeletedFalse("999999999");
@@ -240,7 +242,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     List<LIVDResponse> devices = List.of(device);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    _service.syncDevices();
+    _service.syncDevices(false);
     var updatedDevice = deviceTypeRepo.findDeviceTypeByName(devA.getName());
 
     // Device was not updated
@@ -264,7 +266,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     List<LIVDResponse> devices = List.of(device);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    assertDoesNotThrow(() -> _service.syncDevices());
+    assertDoesNotThrow(() -> _service.syncDevices(false));
 
     var createdDevice = deviceTypeRepo.findDeviceTypeByName("Some model");
     assertNull(createdDevice);
@@ -288,7 +290,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     List<LIVDResponse> devices = List.of(device);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    _service.syncDevices();
+    _service.syncDevices(false);
 
     var createdDevice = deviceTypeRepo.findDeviceTypeByName("Shiny New Manufacturer Device A");
     assertNotNull(createdDevice);
@@ -311,9 +313,35 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     List<LIVDResponse> devices = List.of(device);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
-    _service.syncDevices();
+    _service.syncDevices(false);
 
     var createdDevice = deviceTypeRepo.findDeviceTypeByName("BioCode CoV-2 Flu Plus Assay");
     assertNull(createdDevice);
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void syncDevices_skipsForDryRuns() {
+    LIVDResponse newDevice =
+        new LIVDResponse(
+            "Dry Run Device Manufacturer",
+            "Dry Run Device Model",
+            List.of("not to be added (123456789^To Be Added^SCT)\r"),
+            "COVID-19",
+            "8888888",
+            "0123456",
+            "Dry Run TestKit",
+            "Dry Run Equip");
+
+    List<LIVDResponse> devices = List.of(newDevice);
+
+    when(dataHubClient.getLIVDTable()).thenReturn(devices);
+    assertThrows(DryRunException.class, () -> _service.syncDevices(true));
+    var createdDevice =
+        deviceTypeRepo.findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
+            newDevice.getManufacturer(), newDevice.getModel());
+    var createdSpecimen = specimenTypeRepository.findByTypeCodeAndIsDeletedFalse("123456789");
+    assertTrue(createdDevice.isEmpty());
+    assertTrue(createdSpecimen.isEmpty());
   }
 }

@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.CreateSpecimenType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
+import gov.cdc.usds.simplereport.api.model.errors.DryRunException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -168,7 +169,7 @@ public class DeviceTypeSyncService {
 
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public void syncDevices() {
+  public void syncDevices(boolean dryRun) {
     List<LIVDResponse> devices = client.getLIVDTable();
 
     var devicesToSync = new HashMap<DeviceType, ArrayList<SupportedDiseaseTestPerformedInput>>();
@@ -230,30 +231,25 @@ public class DeviceTypeSyncService {
                             ? device.getModel()
                             : String.join(" ", device.getManufacturer(), device.getModel());
 
-                    DeviceType newlyCreatedDeviceType =
-                        deviceTypeService.createDeviceType(
-                            CreateDeviceType.builder()
-                                .name(deviceName)
-                                .manufacturer(device.getManufacturer())
-                                .model(device.getModel())
-                                .testLength(DEFAULT_TEST_LENGTH)
-                                .swabTypes(specimensForDevice)
-                                .supportedDiseaseTestPerformed(
-                                    List.of(
-                                        SupportedDiseaseTestPerformedInput.builder()
-                                            .supportedDisease(
-                                                supportedDisease.get().getInternalId())
-                                            .testPerformedLoincCode(
-                                                device.getTestPerformedLoincCode())
-                                            .testOrderedLoincCode(device.getTestOrderedLoincCode())
-                                            .testkitNameId(device.getTestKitNameId())
-                                            .equipmentUid(device.getEquipmentUid())
-                                            .build()))
-                                .build());
-
-                    log.info("Device {} created", newlyCreatedDeviceType.getName());
-
-                    return newlyCreatedDeviceType;
+                    var createdDeviceType =
+                        CreateDeviceType.builder()
+                            .name(deviceName)
+                            .manufacturer(device.getManufacturer())
+                            .model(device.getModel())
+                            .testLength(DEFAULT_TEST_LENGTH)
+                            .swabTypes(specimensForDevice)
+                            .supportedDiseaseTestPerformed(
+                                List.of(
+                                    SupportedDiseaseTestPerformedInput.builder()
+                                        .supportedDisease(supportedDisease.get().getInternalId())
+                                        .testPerformedLoincCode(device.getTestPerformedLoincCode())
+                                        .testOrderedLoincCode(device.getTestOrderedLoincCode())
+                                        .testkitNameId(device.getTestKitNameId())
+                                        .equipmentUid(device.getEquipmentUid())
+                                        .build()))
+                            .build();
+                    log.info("Device created {}", createdDeviceType);
+                    return deviceTypeService.createDeviceType(createdDeviceType);
                   });
 
           if (!devicesToSync.containsKey(deviceToSync)) {
@@ -319,9 +315,13 @@ public class DeviceTypeSyncService {
           if (hasUpdates(input, device)) {
             try {
               deviceTypeService.updateDeviceType(input);
+              log.info("Updating device {}", input);
             } catch (IllegalGraphqlArgumentException ignored) {
               log.info("No updates for device {}, skipping sync", device.getName());
             }
+          }
+          if (dryRun) {
+            throw new DryRunException("Dry run, rolling back");
           }
         });
   }
@@ -337,12 +337,14 @@ public class DeviceTypeSyncService {
 
     return Optional.of(
         specimenType.orElseGet(
-            () ->
-                specimenTypeService.createSpecimenType(
-                    CreateSpecimenType.builder()
-                        .name(extractSpecimenTypeName(specimenDescription))
-                        .typeCode(specimenCode)
-                        .build())));
+            () -> {
+              log.info("Creating specimen {}, {}", specimenDescription, specimenCode);
+              return specimenTypeService.createSpecimenType(
+                  CreateSpecimenType.builder()
+                      .name(extractSpecimenTypeName(specimenDescription))
+                      .typeCode(specimenCode)
+                      .build());
+            }));
   }
 
   private Optional<SupportedDisease> getSupportedDiseaseFromVendorAnalyte(String vendorAnalyte) {
