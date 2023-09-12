@@ -18,6 +18,41 @@ interface Props {
   onChange: (selectedItems: string[]) => void;
 }
 
+type SupportedDisease = {
+  supportedDisease: {
+    name: string;
+    __typename: "SupportedDisease";
+  };
+};
+
+function filterRsvFromSingleDevice(device: FacilityFormDeviceType) {
+  const supportedDiseaseArray =
+    device.supportedDiseaseTestPerformed as SupportedDisease[];
+  const supportedDiseases = supportedDiseaseArray.map(
+    (sd) => sd.supportedDisease.name
+  );
+  if (supportedDiseases.length === 1 && supportedDiseases[0] === "RSV") {
+    return [];
+  }
+  if (supportedDiseases.includes("RSV")) {
+    return supportedDiseaseArray.filter(
+      (d) => d.supportedDisease.name !== "RSV"
+    );
+  }
+  return supportedDiseaseArray;
+}
+
+export function filterRsvFromAllDevices(deviceTypes: FacilityFormDeviceType[]) {
+  deviceTypes.map((d) => {
+    d.supportedDiseaseTestPerformed = filterRsvFromSingleDevice(d);
+    return d;
+  });
+  deviceTypes = deviceTypes.filter(
+    (d) => d.supportedDiseaseTestPerformed.length > 0
+  );
+  return deviceTypes;
+}
+
 const ManageDevices: React.FC<Props> = ({
   deviceTypes,
   errors,
@@ -27,6 +62,9 @@ const ManageDevices: React.FC<Props> = ({
   registrationProps,
 }) => {
   const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
+  if (!singleEntryRsvEnabled) {
+    deviceTypes = filterRsvFromAllDevices(deviceTypes);
+  }
 
   const deviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
