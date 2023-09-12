@@ -212,22 +212,7 @@ public class DeviceTypeSyncService {
             devicesToSync.put(deviceToSync, new ArrayList<>());
           }
 
-          if (!specimenIdsByDevice.containsKey(deviceIdentifier)) {
-            Set<UUID> allSpecimenTypes =
-                deviceToSync.getSwabTypes().stream()
-                    .map(SpecimenType::getInternalId)
-                    .collect(Collectors.toSet());
-
-            var incomingSpecimenTypes = getSpecimenTypeIdsFromDescription(device);
-
-            if (!incomingSpecimenTypes.isEmpty()) {
-              allSpecimenTypes.addAll(incomingSpecimenTypes);
-            }
-
-            List<UUID> specimenTypesToAdd = new ArrayList<>(allSpecimenTypes);
-
-            specimenIdsByDevice.put(deviceIdentifier, specimenTypesToAdd);
-          }
+          addToSpecimenIdsByDevice(device, specimenIdsByDevice, deviceIdentifier, deviceToSync);
 
           var supportedDisease =
               getSupportedDiseaseFromVendorAnalyte(device.getVendorAnalyteName());
@@ -255,6 +240,29 @@ public class DeviceTypeSyncService {
         (device, testsPerformed) -> syncDevice(device, testsPerformed, specimenIdsByDevice));
     if (dryRun) {
       throw new DryRunException("Dry run, rolling back");
+    }
+  }
+
+  private void addToSpecimenIdsByDevice(
+      LIVDResponse device,
+      HashMap<String, List<UUID>> specimenIdsByDevice,
+      String deviceIdentifier,
+      DeviceType deviceToSync) {
+    if (!specimenIdsByDevice.containsKey(deviceIdentifier)) {
+      Set<UUID> allSpecimenTypes =
+          deviceToSync.getSwabTypes().stream()
+              .map(SpecimenType::getInternalId)
+              .collect(Collectors.toSet());
+
+      var incomingSpecimenTypes = getSpecimenTypeIdsFromDescription(device);
+
+      if (!incomingSpecimenTypes.isEmpty()) {
+        allSpecimenTypes.addAll(incomingSpecimenTypes);
+      }
+
+      List<UUID> specimenTypesToAdd = new ArrayList<>(allSpecimenTypes);
+
+      specimenIdsByDevice.put(deviceIdentifier, specimenTypesToAdd);
     }
   }
 
