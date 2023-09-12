@@ -1,9 +1,13 @@
 import mockSupportedDiseaseTestPerformedCovid, {
   mockSupportedDiseaseTestPerformedRSV,
-} from "../../../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
+} from "../supportAdmin/DeviceType/mocks/mockSupportedDiseaseTestPerformedCovid";
+import {
+  deviceA,
+  deviceB,
+  deviceC,
+} from "../Settings/Facility/Components/ManageDevices.test";
 
-import { deviceA, deviceB, deviceC } from "./ManageDevices.test";
-import { filterRsvFromAllDevices } from "./ManageDevices";
+import { filterRsvFromAllDevices } from "./rsvHelper";
 
 const deviceD = {
   internalId: "device-d",
