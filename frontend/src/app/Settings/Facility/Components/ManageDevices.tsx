@@ -46,14 +46,14 @@ function filterRsvFromSingleDevice(device: FacilityFormDeviceType) {
 }
 
 export function filterRsvFromAllDevices(deviceTypes: FacilityFormDeviceType[]) {
-  deviceTypes.map((d) => {
+  let filteredDevices = deviceTypes.map((d) => {
     d.supportedDiseaseTestPerformed = filterRsvFromSingleDevice(d);
     return d;
   });
-  deviceTypes = deviceTypes.filter(
+  filteredDevices = filteredDevices.filter(
     (d) => d.supportedDiseaseTestPerformed.length > 0
   );
-  return deviceTypes;
+  return filteredDevices;
 }
 
 const ManageDevices: React.FC<Props> = ({
