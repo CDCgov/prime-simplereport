@@ -31,7 +31,10 @@ import {
 } from "../testResults/TestResultCorrectionModal";
 import MultiplexResultInputForm from "../testResults/MultiplexResultInputForm";
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
-import { filterRsvFromAllDevices } from "../utils/rsvHelper";
+import {
+  DeviceWithoutModelOrManufacturer,
+  filterRsvFromAllDevices,
+} from "../utils/rsvHelper";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -752,9 +755,9 @@ const QueueItem = ({
   };
 
   function getDeviceTypeOptions() {
-    let deviceTypes = facility!.deviceTypes;
+    let deviceTypes = facility!
+      .deviceTypes as DeviceWithoutModelOrManufacturer[];
     if (!singleEntryRsvEnabled) {
-      // @ts-ignore
       deviceTypes = filterRsvFromAllDevices(deviceTypes);
     }
     let deviceTypeOptions = [...deviceTypes]

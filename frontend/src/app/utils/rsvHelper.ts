@@ -4,7 +4,14 @@ type SupportedDisease = {
     __typename: "SupportedDisease";
   };
 };
-function filterRsvFromSingleDevice(device: FacilityFormDeviceType) {
+export type DeviceWithoutModelOrManufacturer = Omit<
+  FacilityFormDeviceType,
+  "model" | "manufacturer"
+>;
+
+function filterRsvFromSingleDevice(
+  device: DeviceWithoutModelOrManufacturer | FacilityFormDeviceType
+) {
   const supportedDiseaseArray =
     device.supportedDiseaseTestPerformed as SupportedDisease[];
 
@@ -22,7 +29,11 @@ function filterRsvFromSingleDevice(device: FacilityFormDeviceType) {
   return supportedDiseaseArray;
 }
 
-export function filterRsvFromAllDevices(deviceTypes: FacilityFormDeviceType[]) {
+type DeviceType = DeviceWithoutModelOrManufacturer | FacilityFormDeviceType;
+
+export function filterRsvFromAllDevices<AmbiguousDeviceType extends DeviceType>(
+  deviceTypes: AmbiguousDeviceType[]
+) {
   let filteredDevices = deviceTypes.map((d) => {
     d.supportedDiseaseTestPerformed = filterRsvFromSingleDevice(d);
     return d;
