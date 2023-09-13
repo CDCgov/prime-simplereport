@@ -755,8 +755,9 @@ const QueueItem = ({
   };
 
   function getDeviceTypeOptions() {
-    let deviceTypes = facility!
-      .deviceTypes as DeviceWithoutModelOrManufacturer[];
+    let deviceTypes = [
+      ...facility!.deviceTypes,
+    ] as DeviceWithoutModelOrManufacturer[];
     if (!singleEntryRsvEnabled) {
       deviceTypes = filterRsvFromAllDevices(deviceTypes);
     }
