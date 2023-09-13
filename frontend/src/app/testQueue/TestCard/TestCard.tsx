@@ -56,7 +56,7 @@ export const TestCard = ({
   const toggleOpen = () => setIsOpen((prevState) => !prevState);
 
   return (
-    <Card className={"list-style-none"}>
+    <Card className={"list-style-none margin-bottom-1em test-card-container"}>
       <CardHeader className={"padding-2"}>
         <div className="grid-container">
           <div className="grid-row grid-gap flex-align-center">
@@ -91,11 +91,12 @@ export const TestCard = ({
               </span>
             </div>
             <div className="grid-col"></div>
-            <div className="grid-col-auto">
+            <div className="grid-col-auto padding-x-0 timer-col">
               <TestTimerWidget timer={timer} context={timerContext} />
             </div>
-            <div className="grid-col-auto">
+            <div className="grid-col-auto padding-x-0 close-button-col">
               <Button
+                className={"close-button"}
                 variant="unstyled"
                 onClick={() => {
                   navigate({
@@ -110,7 +111,7 @@ export const TestCard = ({
           </div>
         </div>
       </CardHeader>
-      <CardBody className={isOpen ? "" : "display-none"}>
+      <CardBody className={isOpen ? "test-card-body" : "display-none"}>
         <div className="grid-container">
           <TestCardForm
             testOrder={testOrder}

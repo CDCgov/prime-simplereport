@@ -1,3 +1,28 @@
+@use "../../../scss/settings" as settings;
+
 .list-style-none {
   list-style: none;
+}
+
+.close-button {
+  color: settings.$theme-color-prime-gray-darkest;
+}
+
+.close-button-col {
+  position: relative;
+  bottom: 0.5rem;
+  left: 1rem;
+}
+
+.timer-col {
+  position: relative;
+  left: 0.5rem;
+}
+
+.test-card-body {
+  border-top: 2px solid #dfe1e2;
+}
+
+.test-card-container {
+  max-width: 64rem;
 }
