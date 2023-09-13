@@ -378,7 +378,7 @@ const TestCardForm = ({
             label={
               <>
                 <TextWithTooltip
-                  text="Test Device"
+                  text="Test device"
                   tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
                   position="right"
                 />
