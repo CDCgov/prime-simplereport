@@ -31,6 +31,8 @@ const Template: StoryFn<TestCardProps> = (args: TestCardProps) => (
   <Provider store={store}>
     <MemoryRouter>
       <TestCard {...args} />
+      <TestCard {...args} />
+      <TestCard {...args} />
     </MemoryRouter>
   </Provider>
 );
