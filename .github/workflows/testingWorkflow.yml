@@ -207,8 +207,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - platform: ${{ inputs.platform }}
+        platform: ${{ inputs.platform }}
     outputs:
       version: ${{ steps.set_nginx_version.outputs.version }}
     steps:
