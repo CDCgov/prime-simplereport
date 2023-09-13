@@ -7,9 +7,7 @@ import "./ManageDevices.scss";
 import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
-import {
-  filterRsvFromAllDevices,
-} from "../../../utils/rsvHelper";
+import { filterRsvFromAllDevices } from "../../../utils/rsvHelper";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
