@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_WORKFLOW_PAT }}
           ref: ${{ github.head_ref }}
           fetch-depth: 0 # Disable shallow clones: we need to be able to push
       - name: Set up JDK ${{env.JAVA_VERSION}}
