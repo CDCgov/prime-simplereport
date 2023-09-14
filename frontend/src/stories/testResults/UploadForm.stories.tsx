@@ -6,7 +6,7 @@ import { store } from "../../app/store";
 import { StoryGraphQLProvider } from "../storyMocks";
 import UploadForm from "../../app/testResults/uploads/UploadForm";
 
-type Props = {};
+type Props = React.ComponentProps<typeof UploadForm>;
 
 export default {
   title: "App/Test results/Upload CSV",
