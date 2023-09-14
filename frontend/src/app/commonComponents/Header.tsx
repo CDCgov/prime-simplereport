@@ -101,12 +101,10 @@ const Header: React.FC<{}> = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("id_token");
     // Determine which Okta domain to use for logout
-    const oktaDomain =
-      process.env.NODE_ENV !== "development" ? "okta" : "oktapreview";
+    const oktaDomain = process.env.REACT_APP_OKTA_URL;
     window.location.replace(
-      "https://hhs-prime." +
-        encodeURIComponent(oktaDomain) +
-        ".com/oauth2/default/v1/logout" +
+      oktaDomain +
+        "/oauth2/default/v1/logout" +
         `?id_token_hint=${encodeURIComponent(id_token || "")}` +
         `&post_logout_redirect_uri=${encodeURIComponent(
           process.env.REACT_APP_BASE_URL || ""
