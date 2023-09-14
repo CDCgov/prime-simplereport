@@ -163,7 +163,7 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
   }
 }
 
-const Uploads = () => {
+const UploadForm = () => {
   useDocumentTitle("Upload spreadsheet");
 
   const appInsights = getAppInsights();
@@ -533,4 +533,4 @@ const Uploads = () => {
   );
 };
 
-export default Uploads;
+export default UploadForm;

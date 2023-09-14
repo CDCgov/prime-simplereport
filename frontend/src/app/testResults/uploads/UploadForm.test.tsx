@@ -12,12 +12,12 @@ import { getAppInsights } from "../../TelemetryService";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 
-import Uploads, {
+import UploadForm, {
   EnhancedFeedbackMessage,
   getErrorMessage,
   getGuidance,
   groupErrors,
-} from "./Uploads";
+} from "./UploadForm";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -44,7 +44,7 @@ const TestContainer = () => (
   <Provider store={store}>
     <MemoryRouter>
       <SRToastContainer />
-      <Uploads />
+      <UploadForm />
     </MemoryRouter>
   </Provider>
 );
