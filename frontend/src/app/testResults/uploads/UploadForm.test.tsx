@@ -47,6 +47,7 @@ const TestContainer = () => (
       <UploadForm
         uploadResults={FileUploadService.uploadResults}
         uploadType={"Disease Specific"}
+        spreadsheetTemplateLocation={""}
       />
     </MemoryRouter>
   </Provider>
@@ -211,6 +212,7 @@ describe("Uploads", () => {
             org: "Test Org",
             "report ID": "fake-report-id",
             user: "testuser@test.org",
+            uploadType: "Disease Specific",
           },
         });
       });
@@ -258,6 +260,7 @@ describe("Uploads", () => {
         properties: {
           org: "Test Org",
           user: "testuser@test.org",
+          uploadType: "Disease Specific",
         },
       });
     });
@@ -313,6 +316,7 @@ describe("Uploads", () => {
           ],
           org: "Test Org",
           user: "testuser@test.org",
+          uploadType: "Disease Specific",
         },
       });
     });

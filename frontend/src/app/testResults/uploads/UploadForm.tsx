@@ -166,12 +166,14 @@ interface UploadFormProps {
   uploadResults: (file: File) => Promise<Response>;
   alert?: JSX.Element;
   uploadType: "Agnostic" | "Disease Specific";
+  spreadsheetTemplateLocation: string;
 }
 
 const UploadForm: React.FC<UploadFormProps> = ({
   alert,
   uploadResults,
   uploadType,
+  spreadsheetTemplateLocation,
 }) => {
   useDocumentTitle("Upload spreadsheet");
 
@@ -387,7 +389,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
                 <p className="usa-process-list__heading">
                   Download the{" "}
                   <a
-                    href="/assets/resources/test_results_example_10-3-2022.csv"
+                    href={spreadsheetTemplateLocation}
                     onClick={() => {
                       appInsights?.trackEvent({
                         name: "Download spreadsheet template",
