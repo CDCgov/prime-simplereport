@@ -37,7 +37,7 @@ const AgnosticUploadContainer = () => {
       alert={alert}
       uploadType={"Agnostic"}
       spreadsheetTemplateLocation={""}
-      uploadResults={(file) => {
+      uploadResults={(_file) => {
         return Promise.resolve(new Response());
       }}
     />
