@@ -32,7 +32,7 @@ public interface DataHubClient {
             @RequestBody() String fhirNDJson, @RequestHeader(value = "Authorization") String authHeader);
 
     @PostMapping(value = "/api/token", headers = "Content-Type: " + TOKEN_HEADER_TYPE)
-    TokenResponse fetchAccessToken(@RequestBody() Map<String, String> parameters);
+    TokenResponse fetchAccessToken(@RequestBody() String parameterBody);
 
     @GetMapping(value = "/api/waters/report/{id}/history", consumes = "application/text")
     UploadResponse getSubmission(

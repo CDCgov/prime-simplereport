@@ -58,6 +58,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -338,16 +339,26 @@ public class TestResultUploadService {
     }
 
     public TokenResponse getRSAuthToken() {
-        Map<String, String> queryParams = new LinkedHashMap<>();
-        queryParams.put("scope", scope);
-        queryParams.put("grant_type", "client_credentials");
-        queryParams.put(
-                "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-        queryParams.put("client_assertion", createDataHubSenderToken(signingKey));
 
-        log.info("rs generation params: " + queryParams.toString());
+        String scopeParam = "scope=" + scope;
+        String grantTypeParam = "grant_type=client_credentials";
+        String clientAssertionTypeParam = "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+        String clientAssertionParam = "client_assertion=" + createDataHubSenderToken(signingKey);
+        String AMPERSAND_DELIM_CHAR = "&";
 
-        return _client.fetchAccessToken(queryParams);
+        StringBuilder requestBuilder = new StringBuilder();
+
+        String requestBody = requestBuilder
+                .append(scopeParam)
+                .append(AMPERSAND_DELIM_CHAR)
+                .append(grantTypeParam)
+                .append(AMPERSAND_DELIM_CHAR)
+                .append(clientAssertionTypeParam)
+                .append(AMPERSAND_DELIM_CHAR)
+                .append(clientAssertionParam)
+                .toString();
+
+        return _client.fetchAccessToken(requestBody);
     }
 
     private Future<UploadResponse> submitResultsAsFhir(
@@ -369,8 +380,10 @@ public class TestResultUploadService {
 
                             UploadResponse response;
                             try {
+                                TokenResponse tokenRes = getRSAuthToken();
+                                String token = tokenRes.getAccessToken();
                                 response =
-                                        _client.uploadFhir(ndJson.toString().trim(), getRSAuthToken().getAccessToken());
+                                        _client.uploadFhir(ndJson.toString().trim(), token);
                             } catch (FeignException e) {
                                 log.info("RS Fhir API Error " + e.status() + " Response: " + e.contentUTF8());
                                 response = parseFeignException(e);
