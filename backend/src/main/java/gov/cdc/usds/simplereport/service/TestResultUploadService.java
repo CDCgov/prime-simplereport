@@ -378,9 +378,9 @@ public class TestResultUploadService {
 
               UploadResponse response;
               try {
-                TokenResponse tokenRes = getRSAuthToken();
-                String token = tokenRes.getAccessToken();
-                response = _client.uploadFhir(ndJson.toString().trim(), token);
+
+                response =
+                    _client.uploadFhir(ndJson.toString().trim(), getRSAuthToken().getAccessToken());
               } catch (FeignException e) {
                 log.info("RS Fhir API Error " + e.status() + " Response: " + e.contentUTF8());
                 response = parseFeignException(e);
