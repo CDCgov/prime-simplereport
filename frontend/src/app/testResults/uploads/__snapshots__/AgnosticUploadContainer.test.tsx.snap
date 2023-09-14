@@ -72,8 +72,9 @@ exports[`Agnostic specific upload container test passes axe tests 1`] = `
                   Visit the
                    
                   <a
-                    class=""
-                    href="/results/upload/submit/guide"
+                    aria-current="page"
+                    class="active"
+                    href="/"
                   >
                     <strong>
                       spreadsheet upload guide

@@ -47,6 +47,7 @@ const DiseaseSpecificUploadContainer = () => {
       spreadsheetTemplateLocation={
         "/assets/resources/test_results_example_10-3-2022.csv"
       }
+      uploadGuideLocation={"/results/upload/submit/guide"}
     />
   );
 };

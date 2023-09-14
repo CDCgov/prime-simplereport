@@ -167,6 +167,7 @@ interface UploadFormProps {
   alert?: JSX.Element;
   uploadType: "Agnostic" | "Disease Specific";
   spreadsheetTemplateLocation: string;
+  uploadGuideLocation?: string;
 }
 
 const UploadForm: React.FC<UploadFormProps> = ({
@@ -174,6 +175,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
   uploadResults,
   uploadType,
   spreadsheetTemplateLocation,
+  uploadGuideLocation,
 }) => {
   useDocumentTitle("Upload spreadsheet");
 
@@ -380,7 +382,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
               <li className="usa-process-list__item margin-bottom-1em">
                 <p className="usa-process-list__heading">
                   Visit the{" "}
-                  <LinkWithQuery to="/results/upload/submit/guide">
+                  <LinkWithQuery to={uploadGuideLocation ?? ""}>
                     <strong>spreadsheet upload guide</strong>
                   </LinkWithQuery>
                 </p>
