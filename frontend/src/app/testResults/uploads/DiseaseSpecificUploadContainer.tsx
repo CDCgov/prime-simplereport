@@ -40,7 +40,11 @@ const DiseaseSpecificUploadContainer = () => {
     </div>
   );
   return (
-    <UploadForm alert={alert} uploadResults={FileUploadService.uploadResults} />
+    <UploadForm
+      alert={alert}
+      uploadResults={FileUploadService.uploadResults}
+      uploadType={"Disease Specific"}
+    />
   );
 };
 export default DiseaseSpecificUploadContainer;

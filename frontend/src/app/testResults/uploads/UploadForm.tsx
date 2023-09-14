@@ -165,9 +165,14 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
 interface UploadFormProps {
   uploadResults: (file: File) => Promise<Response>;
   alert?: JSX.Element;
+  uploadType: "Agnostic" | "Disease Specific";
 }
 
-const UploadForm: React.FC<UploadFormProps> = ({ alert, uploadResults }) => {
+const UploadForm: React.FC<UploadFormProps> = ({
+  alert,
+  uploadResults,
+  uploadType,
+}) => {
   useDocumentTitle("Upload spreadsheet");
 
   const appInsights = getAppInsights();
@@ -312,6 +317,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ alert, uploadResults }) => {
           properties: {
             org: orgName,
             user: user?.email,
+            uploadType: uploadType,
           },
         });
       } else {
@@ -326,6 +332,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ alert, uploadResults }) => {
               "report ID": response.reportId,
               org: orgName,
               user: user?.email,
+              uploadType: uploadType,
             },
           });
         }
@@ -346,6 +353,7 @@ const UploadForm: React.FC<UploadFormProps> = ({ alert, uploadResults }) => {
               errors: response.errors,
               org: orgName,
               user: user?.email,
+              uploadType: uploadType,
             },
           });
         }
@@ -383,6 +391,9 @@ const UploadForm: React.FC<UploadFormProps> = ({ alert, uploadResults }) => {
                     onClick={() => {
                       appInsights?.trackEvent({
                         name: "Download spreadsheet template",
+                        properties: {
+                          uploadType: uploadType,
+                        },
                       });
                     }}
                   >

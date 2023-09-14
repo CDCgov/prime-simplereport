@@ -44,7 +44,10 @@ const TestContainer = () => (
   <Provider store={store}>
     <MemoryRouter>
       <SRToastContainer />
-      <UploadForm uploadResults={FileUploadService.uploadResults} />
+      <UploadForm
+        uploadResults={FileUploadService.uploadResults}
+        uploadType={"Disease Specific"}
+      />
     </MemoryRouter>
   </Provider>
 );
