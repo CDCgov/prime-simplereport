@@ -30,13 +30,13 @@ import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
-import UploadForm from "./testResults/uploads/UploadForm";
 import Schema from "./testResults/uploads/CsvSchemaDocumentation";
 import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
 import UploadPatients from "./patients/UploadPatients";
+import DiseaseSpecificUploadContainer from "./testResults/uploads/DiseaseSpecificUploadContainer";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -244,7 +244,7 @@ const ReportingApp = () => {
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper>
-                        <UploadForm />
+                        <DiseaseSpecificUploadContainer />
                       </ResultsNavWrapper>
                     }
                   />
