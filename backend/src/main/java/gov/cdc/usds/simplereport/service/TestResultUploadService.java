@@ -341,18 +341,18 @@ public class TestResultUploadService {
     String clientAssertionTypeParam =
         "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
     String clientAssertionParam = "client_assertion=" + createDataHubSenderToken(signingKey);
-    String AMPERSAND_DELIM_CHAR = "&";
+    String ampersandDelimChar = "&";
 
     StringBuilder requestBuilder = new StringBuilder();
 
     String requestBody =
         requestBuilder
             .append(scopeParam)
-            .append(AMPERSAND_DELIM_CHAR)
+            .append(ampersandDelimChar)
             .append(grantTypeParam)
-            .append(AMPERSAND_DELIM_CHAR)
+            .append(ampersandDelimChar)
             .append(clientAssertionTypeParam)
-            .append(AMPERSAND_DELIM_CHAR)
+            .append(ampersandDelimChar)
             .append(clientAssertionParam)
             .toString();
 
