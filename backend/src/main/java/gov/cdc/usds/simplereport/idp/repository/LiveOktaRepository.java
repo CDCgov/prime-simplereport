@@ -363,6 +363,7 @@ public class LiveOktaRepository implements OktaRepository {
 
     orgsToAddUserToMap.forEach(
         (name, group) -> groupApi.assignUserToGroup(group.getId(), oktaUserToMove.getId()));
+    userApi.revokeUserSessions(oktaUserToMove.getId(), true);
     return orgsToAddUserToMap.keySet().stream().toList();
   }
 
