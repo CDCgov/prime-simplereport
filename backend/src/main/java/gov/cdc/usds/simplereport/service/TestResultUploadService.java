@@ -378,7 +378,6 @@ public class TestResultUploadService {
 
               UploadResponse response;
               try {
-
                 response =
                     _client.uploadFhir(ndJson.toString().trim(), getRSAuthToken().getAccessToken());
               } catch (FeignException e) {

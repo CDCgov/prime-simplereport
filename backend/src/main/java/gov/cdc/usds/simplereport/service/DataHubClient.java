@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,7 @@ public interface DataHubClient {
   UploadResponse uploadFhir(
       @RequestBody() String fhirNDJson, @RequestHeader(value = "Authorization") String authHeader);
 
-  @PostMapping(value = "/api/token", headers = "Content-Type: " + TOKEN_HEADER_TYPE)
+  @PostMapping(value = "/api/token", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
   TokenResponse fetchAccessToken(@RequestBody() String parameterBody);
 
   @GetMapping(value = "/api/waters/report/{id}/history", consumes = "application/text")
