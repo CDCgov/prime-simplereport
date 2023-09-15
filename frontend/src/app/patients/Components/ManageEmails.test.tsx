@@ -43,6 +43,7 @@ const patient = {
   preferredLanguage: null,
   tribalAffiliation: null,
   unknownPhoneNumber: false,
+  unknownAddress: false,
 };
 
 function ManageEmailsContainer() {

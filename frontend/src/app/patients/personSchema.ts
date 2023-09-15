@@ -224,16 +224,20 @@ const getPhoneNumberSchema = (t: TFunction) => {
 };
 
 const getRequiredAddressSchema = (t: TFunction, key: string) => {
-  return yup
-    .string()
-    .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
-    .required(t(key) || "");
+  return yup.string().when("unknownAddress", {
+    is: false,
+    then: yup
+      .string()
+      .max(MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
+      .required(t(key) || ""),
+  });
 };
 
 const updateFieldSchemata: (
   t: TFunction
 ) => Record<keyof PersonUpdate, yup.AnySchema> = (t) => ({
   unknownPhoneNumber: yup.boolean().optional(),
+  unknownAddress: yup.boolean().optional(),
   lookupId: yup.string().nullable(),
   role: yup
     .mixed()

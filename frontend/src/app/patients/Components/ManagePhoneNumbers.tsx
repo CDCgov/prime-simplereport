@@ -132,9 +132,6 @@ const ManagePhoneNumbers: React.FC<Props> = ({
     if (unknownPhoneNumber) {
       updatePhoneNumbers([]);
       clearError(0, "type", "number");
-    } else {
-      validateField(0, "type").then();
-      validateField(0, "number").then();
     }
   }, [unknownPhoneNumber]);
 
