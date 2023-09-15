@@ -1,5 +1,5 @@
 import moment from "moment";
-import { Alert, Button } from "@trussworks/react-uswds";
+import { Alert, Button, FormGroup } from "@trussworks/react-uswds";
 import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { FetchResult } from "@apollo/client";
 
@@ -428,31 +428,33 @@ const TestCardForm = ({
         </div>
       </div>
       <div className="grid-row grid-gap">
-        {deviceSupportsMultiplex ? (
-          <MultiplexResultInputGroup
-            queueItemId={testOrder.internalId}
-            testResults={state.testResults}
-            deviceId={state.deviceId}
-            devicesMap={devicesMap}
-            onChange={(results) =>
-              dispatch({
-                type: TestFormActionCase.UPDATE_TEST_RESULT,
-                payload: results,
-              })
-            }
-          ></MultiplexResultInputGroup>
-        ) : (
-          <CovidResultInputGroup
-            queueItemId={testOrder.internalId}
-            testResults={state.testResults}
-            onChange={(results) =>
-              dispatch({
-                type: TestFormActionCase.UPDATE_TEST_RESULT,
-                payload: results,
-              })
-            }
-          />
-        )}
+        <FormGroup>
+          {deviceSupportsMultiplex ? (
+            <MultiplexResultInputGroup
+              queueItemId={testOrder.internalId}
+              testResults={state.testResults}
+              deviceId={state.deviceId}
+              devicesMap={devicesMap}
+              onChange={(results) =>
+                dispatch({
+                  type: TestFormActionCase.UPDATE_TEST_RESULT,
+                  payload: results,
+                })
+              }
+            ></MultiplexResultInputGroup>
+          ) : (
+            <CovidResultInputGroup
+              queueItemId={testOrder.internalId}
+              testResults={state.testResults}
+              onChange={(results) =>
+                dispatch({
+                  type: TestFormActionCase.UPDATE_TEST_RESULT,
+                  payload: results,
+                })
+              }
+            />
+          )}
+        </FormGroup>
       </div>
       <CovidAoEForm
         testOrder={testOrder}

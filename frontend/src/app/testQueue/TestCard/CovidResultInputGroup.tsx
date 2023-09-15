@@ -56,34 +56,30 @@ const CovidResultInputGroup: React.FC<Props> = ({
   };
 
   return (
-    <form className="usa-form maxw-none">
-      <h3 className="prime-radio__title">COVID-19 results</h3>
-      <RadioGroup
-        legend="Test result"
-        legendSrOnly
-        onChange={(value) => {
-          convertAndSendResults(value as TestResult);
-        }}
-        buttons={[
-          {
-            value: COVID_RESULTS.POSITIVE,
-            label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
-          },
-          {
-            value: COVID_RESULTS.NEGATIVE,
-            label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
-          },
-          {
-            value: COVID_RESULTS.INCONCLUSIVE,
-            label: `${TEST_RESULT_DESCRIPTIONS.UNDETERMINED}`,
-          },
-        ]}
-        name={`covid-test-result-${queueItemId}`}
-        selectedRadio={resultCovidFormat}
-        wrapperClassName="prime-radio__group"
-        disabled={isSubmitDisabled}
-      />
-    </form>
+    <RadioGroup
+      legend="COVID-19 result"
+      onChange={(value) => {
+        convertAndSendResults(value as TestResult);
+      }}
+      buttons={[
+        {
+          value: COVID_RESULTS.POSITIVE,
+          label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
+        },
+        {
+          value: COVID_RESULTS.NEGATIVE,
+          label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
+        },
+        {
+          value: COVID_RESULTS.INCONCLUSIVE,
+          label: `${TEST_RESULT_DESCRIPTIONS.UNDETERMINED}`,
+        },
+      ]}
+      name={`covid-test-result-${queueItemId}`}
+      selectedRadio={resultCovidFormat}
+      wrapperClassName="prime-radio__group"
+      disabled={isSubmitDisabled}
+    />
   );
 };
 
