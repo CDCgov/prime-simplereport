@@ -20,6 +20,7 @@ import { getAppInsights } from "../../TelemetryService";
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "../constants";
 import { showError, showSuccess } from "../../utils/srToast";
 import { displayFullName } from "../../utils";
+import "./TestCardForm.scss";
 
 import {
   TestFormActionCase,
@@ -103,6 +104,7 @@ const TestCardForm = ({
     covidAoeQuestions: {},
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
+  const [dateTestedTouched, setDateTestedTouched] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [editQueueItem] = useEditQueueItemMutation();
   const [submitTestResult, { loading }] = useSubmitQueueItemMutation();
@@ -340,6 +342,7 @@ const TestCardForm = ({
             min={formatDate(new Date("Jan 1, 2020"))}
             max={formatDate(moment().toDate())}
             value={formatDate(moment(state.dateTested).toDate())}
+            onBlur={(e) => setDateTestedTouched(true)}
             onChange={(e) =>
               dispatch({
                 type: TestFormActionCase.UPDATE_DATE_TESTED,
@@ -347,13 +350,15 @@ const TestCardForm = ({
               })
             }
             disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
-            validationStatus={dateTestedErrorMessage ? "error" : undefined}
-            errorMessage={dateTestedErrorMessage}
+            validationStatus={
+              dateTestedTouched && dateTestedErrorMessage ? "error" : undefined
+            }
+            errorMessage={dateTestedTouched && dateTestedErrorMessage}
           ></TextInput>
         </div>
-        <div className="grid-col-auto display-flex">
+        <div className="grid-col-auto display-flex no-left-form-group-border">
           <TextInput
-            className="flex-align-self-end"
+            className="flex-align-self-end no-left-border"
             id={`test-time-id`}
             name="test-time"
             type="time"
@@ -366,6 +371,10 @@ const TestCardForm = ({
                 type: TestFormActionCase.UPDATE_TIME_TESTED,
                 payload: e.target.value,
               })
+            }
+            onBlur={(e) => setDateTestedTouched(true)}
+            validationStatus={
+              dateTestedTouched && dateTestedErrorMessage ? "error" : undefined
             }
             disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
           ></TextInput>
