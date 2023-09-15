@@ -256,17 +256,15 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
   };
 
   return (
-    <form className="usa-form maxw-none multiplex-result-form">
-      <div className="grid-row grid-gap-2">
+    <>
+      <div className="grid-row grid-gap">
         {!isFluOnly && (
           <div
-            className="grid-col-4"
+            className="grid-col-auto"
             data-testid={`covid-test-result-${queueItemId}`}
           >
-            <h2 className="prime-radio__title">COVID-19</h2>
             <RadioGroup
               legend="COVID-19 result"
-              legendSrOnly
               onChange={(value) => {
                 setMultiplexResultInput("covid", value);
               }}
@@ -287,13 +285,11 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
           </div>
         )}
         <div
-          className="grid-col-4"
+          className="grid-col-auto"
           data-testid={`flu-a-test-result-${queueItemId}`}
         >
-          <h2 className="prime-radio__title">Flu A</h2>
           <RadioGroup
             legend="Flu A result"
-            legendSrOnly
             onChange={(value) => {
               setMultiplexResultInput("fluA", value);
             }}
@@ -313,13 +309,11 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
           />
         </div>
         <div
-          className="grid-col-4"
+          className="grid-col-auto"
           data-testid={`flu-b-test-result-${queueItemId}`}
         >
-          <h2 className="prime-radio__title">Flu B</h2>
           <RadioGroup
             legend="Flu B result"
-            legendSrOnly
             onChange={(value) => {
               setMultiplexResultInput("fluB", value);
             }}
@@ -368,7 +362,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
           />
         </div>
       </div>
-    </form>
+    </>
   );
 };
 
