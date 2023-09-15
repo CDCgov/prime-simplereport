@@ -1134,7 +1134,7 @@ class LiveOktaRepositoryTest {
         _repo.updateUserPrivilegesAndGroupAccess(
             "siteadmin@example.com", mockOrgToMoveTo, Set.of(), OrganizationRole.ADMIN, false);
     verify(groupApi, times(1)).unassignUserFromGroup("mockInitialGroupId", "userId");
-    verify(userApi).revokeUserSessions("", true);
+    verify(userApi).revokeUserSessions("userId", true);
     assertThat(assignedGroupIds)
         .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:" + roleToTest)
         .contains("SR-UNITTEST-TENANT:FOLLOWUP_GROUPS:NO_ACCESS");
