@@ -1,6 +1,6 @@
 import { ComboBox, ComboBoxOption } from "@trussworks/react-uswds";
 import { Control, useController } from "react-hook-form";
-import React, { useRef } from "react";
+import React from "react";
 import classnames from "classnames";
 
 import Required from "../Required";
@@ -15,24 +15,6 @@ const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
   control,
   disabled,
 }) => {
-  /**
-   * Fetch organizations (on initial load)
-   */
-  const renderVersion = useRef(Date.now().toString(10));
-
-  const { data: orgResponse, loading: loadingOrgs } =
-    useGetAllOrganizationsQuery({
-      onCompleted: () => {
-        renderVersion.current = Date.now().toString(10);
-      },
-    });
-
-  const orgOptions: ComboBoxOption[] =
-    orgResponse?.organizations?.map((org) => ({
-      value: org.id,
-      label: org.name,
-    })) ?? [];
-
   /**
    * Form integration
    */
@@ -49,6 +31,17 @@ const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
   const label = "Organization access";
   const comboBoxId = "org-dropdown-select";
 
+  /**
+   * Fetch organizations (on initial load)
+   */
+  const { data: orgResponse, loading: loadingOrgs } =
+    useGetAllOrganizationsQuery();
+
+  const orgOptions: ComboBoxOption[] =
+    orgResponse?.organizations?.map((org) => ({
+      value: org.id,
+      label: org.name,
+    })) ?? [];
   /**
    * HTML
    */
@@ -76,17 +69,26 @@ const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
           <span className="usa-sr-only">Error: </span> {error?.message}
         </span>
       )}
-      <ComboBox
-        key={renderVersion.current}
-        options={orgOptions}
-        id={comboBoxId}
-        defaultValue={value}
-        name={name}
-        onChange={onChange}
-        ref={ref}
-        assistiveHint={describeText(error?.message)}
-        disabled={loadingOrgs || disabled}
-      />
+      {loadingOrgs ? (
+        <div
+          className={
+            "padding-1 full-width text-italic usa-hint border border-gray-10"
+          }
+        >
+          loading...
+        </div>
+      ) : (
+        <ComboBox
+          options={orgOptions}
+          id={comboBoxId}
+          defaultValue={value}
+          name={name}
+          onChange={onChange}
+          ref={ref}
+          assistiveHint={describeText(error?.message)}
+          disabled={loadingOrgs || disabled}
+        />
+      )}
     </div>
   );
 };

@@ -31,7 +31,9 @@ import { AdminManageUser } from "./AdminManageUser";
 import {
   findUserByEmailMock,
   getAllOrgsMock,
-  getFacilitiesByOrgMock,
+  getFacilitiesByDatOrgMock,
+  getFacilitiesByDisOrgMock,
+  getTestResultCountByOrgMock,
 } from "./operationMocks";
 
 jest.mock("uuid", () => ({
@@ -676,8 +678,8 @@ describe("Admin manage users", () => {
     it("loads organization access tab", async () => {
       const { user } = renderComponent([
         getAllOrgsMock,
-        getFacilitiesByOrgMock,
-        getFacilitiesByOrgMock,
+        getFacilitiesByDisOrgMock,
+        getFacilitiesByDisOrgMock,
         findUserByEmailMock,
       ]);
       await searchForValidUser(
@@ -703,8 +705,8 @@ describe("Admin manage users", () => {
     it("checks form validation happens on submit", async () => {
       const { user } = renderComponent([
         getAllOrgsMock,
-        getFacilitiesByOrgMock,
-        getFacilitiesByOrgMock,
+        getFacilitiesByDisOrgMock,
+        getFacilitiesByDisOrgMock,
         findUserByEmailMock,
       ]);
       await searchForValidUser(
@@ -740,5 +742,60 @@ describe("Admin manage users", () => {
 
       await screen.findByText(/Error: Organization is required/i);
     });
+  });
+
+  it("shows warning modal if org updates that will make user lose access to data are submitted", async () => {
+    const { user } = renderComponent([
+      findUserByEmailMock,
+      getAllOrgsMock,
+      getFacilitiesByDisOrgMock,
+      getFacilitiesByDisOrgMock,
+      getFacilitiesByDatOrgMock,
+      getTestResultCountByOrgMock,
+    ]);
+
+    await searchForValidUser(user, "ruby@example.com", "Reynolds, Ruby Raven");
+
+    const orgAccessTab = await screen.findByRole("tab", {
+      name: /organization access/i,
+    });
+
+    await act(async () => {
+      orgAccessTab.click();
+    });
+
+    // change organization
+    const orgComboBoxInput = await screen.findByTestId("combo-box-input");
+    await act(async () => {
+      await user.clear(orgComboBoxInput);
+    });
+    await act(async () => {
+      await user.type(orgComboBoxInput, "Dat Organization");
+    });
+    await act(async () => {
+      await user.type(orgComboBoxInput, "{enter}");
+    });
+
+    // select facility
+    const downtownCheckbox = await screen.findByLabelText(/Downtown Clinic/i);
+    await act(async () => {
+      await user.click(downtownCheckbox);
+    });
+
+    // submit changes
+    const saveChangesBtn = screen.getByRole("button", {
+      name: /save changes/i,
+    });
+    await act(async () => {
+      await user.click(saveChangesBtn);
+    });
+
+    // verify warning modal shows
+    await screen.findByText(/organization update/i);
+    expect(
+      screen.getByText(
+        /this update will move to a different organization\. the user will lose access to test result reported under it\./i
+      )
+    ).toBeInTheDocument();
   });
 });

@@ -2,6 +2,7 @@ import {
   FindUserByEmailDocument,
   GetAllOrganizationsDocument,
   GetFacilitiesByOrgIdDocument,
+  GetTestResultCountByOrgDocument,
 } from "../../../generated/graphql";
 
 export const getAllOrgsMock = {
@@ -26,7 +27,7 @@ export const getAllOrgsMock = {
   },
 };
 
-export const getFacilitiesByOrgMock = {
+export const getFacilitiesByDisOrgMock = {
   request: {
     query: GetFacilitiesByOrgIdDocument,
     variables: {
@@ -98,6 +99,52 @@ export const findUserByEmailMock = {
         },
         isDeleted: false,
         __typename: "User",
+      },
+    },
+  },
+};
+
+export const getTestResultCountByOrgMock = {
+  request: {
+    query: GetTestResultCountByOrgDocument,
+    variables: { orgId: "85988325-e5f1-4921-b8e7-4de3a1a8ead6" },
+  },
+  result: { data: { testResultsCount: 1 } },
+};
+
+export const getFacilitiesByDatOrgMock = {
+  request: {
+    query: GetFacilitiesByOrgIdDocument,
+    variables: {
+      orgId: "6291c4db-8d4b-4db1-8604-c6c32cc5f2aa",
+    },
+  },
+  result: {
+    data: {
+      organization: {
+        id: "6291c4db-8d4b-4db1-8604-c6c32cc5f2aa",
+        externalId: "DAT_ORG",
+        name: "Dat Organization",
+        type: "urgent_care",
+        facilities: [
+          {
+            name: "Downtown Clinic",
+            id: "886ebc8a-16cd-4c27-90d2-648b9357e393",
+            city: "New York",
+            state: "NY",
+            zipCode: "10010",
+            __typename: "Facility",
+          },
+          {
+            name: "Uptown Clinic",
+            id: "108f5100-ed7a-477d-b31d-51a0b560ba8c",
+            city: "New York",
+            state: "NY",
+            zipCode: "10128",
+            __typename: "Facility",
+          },
+        ],
+        __typename: "Organization",
       },
     },
   },
