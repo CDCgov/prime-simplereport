@@ -1,4 +1,3 @@
-import qs from "querystring";
 
 import {
   render,
@@ -640,16 +639,16 @@ describe("EditPatient", () => {
       ).toBeInTheDocument();
     });
     it("renders EditPatient with valid params", async () => {
-      const search = {
+      const search = new URLSearchParams({
         facility: mockFacilityID,
         fromQueue: "true",
-      };
+      });
       render(
         <MemoryRouter
           initialEntries={[
             {
               pathname: `/patient/${mockPatientID}`,
-              search: qs.stringify(search),
+              search: search.toString(),
             },
           ]}
         >
