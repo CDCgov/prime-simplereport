@@ -21,8 +21,8 @@
   "dependencies": {
     "@azure/functions": "^3.5.1",
     "@azure/storage-queue": "^12.6.0",
-    "applicationinsights": "^2.7.0",
-    "csv-stringify": "^6.4.0",
+    "applicationinsights": "^2.7.3",
+    "csv-stringify": "^6.4.2",
     "jsonwebtoken": "^9.0.1",
     "node-fetch": "^2.7.0"
   },
@@ -41,7 +41,7 @@
     "prettier": "3.0.3",
     "rimraf": "^3.0.0",
     "ts-jest": "^28.0.8",
-    "typescript": "^4.7.4"
+    "typescript": "^5.2.2"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",

@@ -19,9 +19,9 @@ jobs:
       run:
         working-directory: ./backend
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
       - name: Login to ACR
         run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
       - name: Build and push Docker images
@@ -39,7 +39,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
       OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -63,12 +63,12 @@ jobs:
   build_frontend:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3.8.1
         with:
           node-version: ${{env.NODE_VERSION}}
       - name: Use cache for node_modules
-        uses: actions/cache@v3.3.1
+        uses: actions/cache@v3.3.2
         with:
           path: |
             ./frontend/node_modules
@@ -99,7 +99,7 @@ jobs:
       url: https://test.simplereport.gov
     needs: [prerelease_backend]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
@@ -117,7 +117,7 @@ jobs:
     if: failure()
     needs: [deploy]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Send alert to Slack
         uses: ./.github/actions/slack-message
         with:

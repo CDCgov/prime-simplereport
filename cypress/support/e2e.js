@@ -15,9 +15,9 @@
 
 // Import commands.js using ES2015 syntax:
 import "./commands";
-import 'cypress-axe';
+import "cypress-axe";
 
-const { faker } = require('@faker-js/faker');
+const { faker } = require("@faker-js/faker");
 const dayjs = require("dayjs");
 
 export const testNumber = () => {
@@ -34,7 +34,9 @@ export const generatePatient = () => {
   patient.firstName = faker.name.firstName();
   patient.lastName = faker.name.lastName();
   patient.fullName = `${patient.lastName}, ${patient.firstName}`;
-  patient.dob = dayjs(faker.date.between({ from: "1920-01-01", to: "2002-12-31" }));
+  patient.dob = dayjs(
+    faker.date.between({ from: "1920-01-01", to: "2002-12-31" }),
+  );
   patient.dobForInput = patient.dob.format(getDobFormat());
   patient.dobForPatientLink = patient.dob.format("MM/DD/YYYY");
   patient.phone = "(800) 232-4636";
@@ -65,16 +67,16 @@ export const generateMultiplexDevice = () => {
   multiplexDevice.manufacturer = `${testNumber()}-${faker.company.name()}`;
   multiplexDevice.isMultiplex = true;
   return multiplexDevice;
-}
+};
 
 export const generateCovidOnlyDevice = () => {
   const covidOnlyDevice = {};
   covidOnlyDevice.name = `covid-${testNumber()}-${faker.company.name()}-device`;
   covidOnlyDevice.model = `covid-${testNumber()}-${faker.company.name()}-model`;
   covidOnlyDevice.manufacturer = `${testNumber()}-${faker.company.name()}`;
-  covidOnlyDevice.isMultiplex = false
+  covidOnlyDevice.isMultiplex = false;
   return covidOnlyDevice;
-}
+};
 
 export const generateUser = () => {
   const user = {};

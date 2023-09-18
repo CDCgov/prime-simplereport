@@ -1,5 +1,3 @@
-import qs from "querystring";
-
 import { MockedProvider } from "@apollo/client/testing";
 import {
   act,
@@ -104,20 +102,18 @@ describe("TestResultsList", () => {
     expect(container).toMatchSnapshot();
   });
   it("should be able to load filter params from url", async () => {
-    const search = {
+    const search = new URLSearchParams({
       patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
       startDate: "2021-03-18T00:00:00.000Z",
       endDate: "2021-03-19T23:59:59.999Z",
       result: "NEGATIVE",
       role: "STAFF",
       facility: "1",
-    };
+    });
 
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
+        initialEntries={[{ pathname: "/results/1", search: search.toString() }]}
       >
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
@@ -167,16 +163,14 @@ describe("TestResultsList", () => {
   });
 
   it("should display facility column when all facilities are selected in the filter", async () => {
-    const search = {
+    const search = new URLSearchParams({
       facility: "1",
       filterFacilityId: "all",
-    };
+    });
 
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
+        initialEntries={[{ pathname: "/results/1", search: search.toString() }]}
       >
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
@@ -193,17 +187,15 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
   });
 
-  it("Should not display submitted by column when multiplex and facility columns show", async () => {
-    const search = {
+  it("Should not display submitted by column when all facilities filter applied", async () => {
+    const search = new URLSearchParams({
       facility: "1",
       filterFacilityId: "all",
-    };
+    });
 
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
+        initialEntries={[{ pathname: "/results/1", search: search.toString() }]}
       >
         <Provider store={store}>
           <MockedProvider mocks={mocksWithMultiplex}>
@@ -213,15 +205,9 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-5 of 5"));
+    expect(await screen.findByText("Showing 1-9 of 9"));
     expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu a/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu b/i })
+      screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: /facility/i })
@@ -231,53 +217,14 @@ describe("TestResultsList", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("Should display submitted by column when there are not multiplex results", async () => {
-    const search = {
+  it("Should display submitted by column when single-facility filter applied", async () => {
+    const search = new URLSearchParams({
       facility: "1",
-      filterFacilityId: "all",
-    };
+    });
 
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
-      >
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
-    );
-
-    expect(await screen.findByText("Showing 1-2 of 2"));
-    expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: /flu a/i })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: /flu b/i })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /facility/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /submitted by/i })
-    ).toBeInTheDocument();
-  });
-  it("Should display submitted by column when there are multiplex results but displays only one facility", async () => {
-    const search = {
-      facility: "1",
-    };
-
-    render(
-      <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
+        initialEntries={[{ pathname: "/results/1", search: search.toString() }]}
       >
         <Provider store={store}>
           <MockedProvider mocks={mocksWithMultiplex}>
@@ -287,16 +234,10 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-5 of 5"));
+    expect(await screen.findByText("Showing 1-9 of 9"));
 
     expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu a/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu b/i })
+      screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("columnheader", { name: /facility/i })
