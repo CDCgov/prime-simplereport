@@ -28,13 +28,13 @@ jobs:
       - uses: ./.github/actions/build-frontend
         name: Build front-end application
         with:
+          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client_tarball: ./client.tgz
           deploy_env: ${{env.DEPLOY_ENV}}
           smarty_streets_key: ${{ secrets.SMARTY_STREETS_KEY }}
-          client_tarball: ./client.tgz
           okta_enabled: true
           okta_url: https://hhs-prime.oktapreview.com
           okta_client_id: 0oa5uvg0531PLkxNP1d7
-          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
   prerelease_backend:
     runs-on: ubuntu-latest
     needs: [build_frontend, build_docker]
@@ -63,13 +63,15 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: dev6
-      url: https://${{env.DEPLOY_ENV}}.simplereport.gov
+      name: ${{ env.DEPLOY_ENV }}
+      url: https://${{ env.DEPLOY_ENV }}.simplereport.gov
     needs: [prerelease_backend]
     steps:
       - uses: actions/checkout@v4
       - name: Promote and deploy
         uses: ./.github/actions/deploy-application
         with:
+          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
           client_tarball: client.tgz
           deploy_env: ${{ env.DEPLOY_ENV }}
+

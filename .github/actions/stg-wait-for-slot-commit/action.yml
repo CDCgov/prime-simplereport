@@ -9,5 +9,6 @@ runs:
   using: composite
   steps:
     - name: Wait for correct commit to be deployed in staging slot
+      working-directory: ./ops
       shell: bash
       run: make wait-for-${{ inputs.deploy_env }}-slot-commit

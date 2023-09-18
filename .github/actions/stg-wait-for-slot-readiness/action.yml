@@ -9,5 +9,6 @@ runs:
   using: composite
   steps:
     - name: Wait for staging deploy to be ready
+      working-directory: ./ops
       shell: bash
       run: make wait-for-${{ inputs.deploy_env }}-slot-readiness

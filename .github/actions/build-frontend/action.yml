@@ -33,13 +33,13 @@ runs:
   steps:
     - uses: actions/setup-node@v3.8.1
       with:
-        node-version: ${{env.NODE_VERSION}}
+        node-version: ${{ env.NODE_VERSION }}
     - name: Use cache for node_modules
       uses: actions/cache@v3.3.2
       with:
         path: |
           ./frontend/node_modules
-        key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+        key: npm-${{ env.NODE_VERSION }}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
     - uses: azure/login@v1
       with:
         creds: ${{ inputs.azure_creds }}
@@ -55,26 +55,26 @@ runs:
       working-directory: ./frontend
       run: |
           echo "::group::Set build variables"
-          ENVLVL=${{inputs.deploy_env}}
+          ENVLVL=${{ inputs.deploy_env }}
           ENVLVL=${ENVLVL//[[:digit:]]/}
           echo "Environment level: $ENVLVL"
           az config set extension.use_dynamic_install=yes_without_prompt
           INSIGHTS_CONNECTION_STRING=$(
             az monitor app-insights component show \
               -g prime-simple-report-$ENVLVL \
-              -a prime-simple-report-${{inputs.deploy_env}}-insights \
+              -a prime-simple-report-${{ inputs.deploy_env }}-insights \
             | jq -r '.connectionString')
           echo "REACT_APP_APPLICATIONINSIGHTS_CONNECTION_STRING=${INSIGHTS_CONNECTION_STRING}" > .env.production.local
           if [[ -n "${{ inputs.base_domain_name }}" ]]
-            then echo "REACT_APP_BASE_URL=https://${{inputs.base_domain_name}}" >> .env.production.local
+            then echo "REACT_APP_BASE_URL=https://${{ inputs.base_domain_name }}" >> .env.production.local
           fi
           if [[ "true" == "${{ inputs.is_training_site }}" ]]
             then echo "REACT_APP_IS_TRAINING_SITE=true" >> .env.production.local
           fi
           if [[ "true" == "${{ inputs.okta_enabled }}" ]]; then 
             echo "REACT_APP_OKTA_ENABLED=true" >> .env.production.local
-            echo "REACT_APP_OKTA_URL=${{inputs.okta_url}}" >> .env.production.local
-            echo "REACT_APP_OKTA_CLIENT_ID=${{inputs.okta_client_id}}" >> .env.production.local
+            echo "REACT_APP_OKTA_URL=${{ inputs.okta_url }}" >> .env.production.local
+            echo "REACT_APP_OKTA_CLIENT_ID=${{ inputs.okta_client_id }}" >> .env.production.local
           fi
           echo "::endgroup::"
     - name: Build deployable application
@@ -91,7 +91,7 @@ runs:
       shell: bash
       run: |
         echo "::group::Create application archive"
-        tar -C ./frontend/build -czf ${{inputs.client_tarball}} .
+        tar -C ./frontend/build -czf ${{ inputs.client_tarball }} .
         echo "::endgroup::"
     - name: Save compiled frontend application
       uses: actions/upload-artifact@v3
