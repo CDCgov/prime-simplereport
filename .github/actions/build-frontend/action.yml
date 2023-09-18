@@ -25,9 +25,24 @@ inputs:
   okta-client-id:
     description: The Okta client ID for this environment.
     required: false
+  azure_creds:
+    description: The Azure credentials for this environment.
+    required: true
 runs:
   using: composite
   steps:
+    - uses: actions/setup-node@v3.8.1
+      with:
+        node-version: ${{env.NODE_VERSION}}
+    - name: Use cache for node_modules
+      uses: actions/cache@v3.3.2
+      with:
+        path: |
+          ./frontend/node_modules
+        key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+    - uses: azure/login@v1
+      with:
+        creds: ${{ inputs.azure_creds }}
     - name: Install dependencies
       working-directory: ./frontend
       shell: bash
@@ -78,3 +93,10 @@ runs:
         echo "::group::Create application archive"
         tar -C ./frontend/build -czf ${{inputs.client-tarball}} .
         echo "::endgroup::"
+    - name: Save compiled frontend application
+      uses: actions/upload-artifact@v3
+      if: success()
+      with:
+        name: frontend-tarball
+        path: client.tgz
+        retention-days: 1
