@@ -467,6 +467,13 @@ public class TestResultUploadService {
         UUID.randomUUID(), UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public TestResultUpload processConditionAgnosticResultCSV(InputStream csvStream) {
+    FeedbackMessage[] empty = {};
+    return new TestResultUpload(
+        UUID.randomUUID(), UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
+  }
+
   @Getter
   @Builder
   public static class FutureResult<V, E> {
