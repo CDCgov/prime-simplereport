@@ -1,5 +1,11 @@
 import moment from "moment";
-import { Alert, Button, FormGroup } from "@trussworks/react-uswds";
+import {
+  Alert,
+  Button,
+  Checkbox,
+  FormGroup,
+  Label,
+} from "@trussworks/react-uswds";
 import React, { useEffect, useMemo, useReducer, useState } from "react";
 import { FetchResult } from "@apollo/client";
 
@@ -23,13 +29,23 @@ import { displayFullName } from "../../utils";
 import "./TestCardForm.scss";
 
 import {
+  TestCorrectionReason,
+  TestCorrectionReasons,
+} from "../../testResults/TestResultCorrectionModal";
+
+import {
   TestFormActionCase,
   TestFormState,
   testCardFormReducer,
 } from "./TestCardFormReducer";
 import CovidResultInputGroup from "./CovidResultInputGroup";
-import MultiplexResultInputGroup from "./MultiplexResultInputGroup";
+import MultiplexResultInputGroup, {
+  convertFromMultiplexResultInputs,
+  validateMultiplexResultState,
+} from "./MultiplexResultInputGroup";
 import CovidAoEForm from "./AoE/CovidAoEForm";
+import { SaveStatus } from "./TestCard";
+import { TestCardSubmitLoader } from "./TestCardSubmitLoader";
 
 export interface TestFormProps {
   testOrder: QueriedTestOrder;
@@ -78,8 +94,6 @@ const doesDeviceSupportMultiplex = (
   return false;
 };
 
-export type SaveState = "idle" | "editing" | "saving" | "error";
-
 export const convertFromMultiplexResponse = (
   responseResult: QueriedTestOrder["results"]
 ): MultiplexResultInput[] => {
@@ -105,9 +119,11 @@ const TestCardForm = ({
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
   const [dateTestedTouched, setDateTestedTouched] = useState(false);
-  const [saveState, setSaveState] = useState<SaveState>("idle");
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [testResultsError, setTestResultsError] = useState("");
   const [editQueueItem] = useEditQueueItemMutation();
   const [submitTestResult, { loading }] = useSubmitQueueItemMutation();
+  const [useCurrentTime, setUseCurrentTime] = useState(false);
   const appInsights = getAppInsights();
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
@@ -190,10 +206,7 @@ const TestCardForm = ({
     return "";
   };
 
-  const dateTestedErrorMessage = validateDateTested();
-
-  const isBeforeDateWarningThreshold =
-    moment(state.dateTested) < moment().subtract(6, "months");
+  let dateTestedErrorMessage = validateDateTested();
 
   const updateQueueItem = (props: UpdateQueueItemProps) => {
     return editQueueItem({
@@ -226,7 +239,7 @@ const TestCardForm = ({
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (state.dirty) {
       dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
-      setSaveState("editing");
+      setSaveStatus("editing");
       debounceTimer = setTimeout(async () => {
         await updateQueueItem({
           deviceId: state.deviceId,
@@ -238,12 +251,12 @@ const TestCardForm = ({
                 (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
               ),
         });
-        setSaveState("idle");
+        setSaveStatus("idle");
       }, DEBOUNCE_TIME);
     }
     return () => {
       clearTimeout(debounceTimer);
-      setSaveState("idle");
+      setSaveStatus("idle");
     };
     // eslint-disable-next-line
   }, [state.deviceId, state.specimenId, state.dateTested, state.testResults]);
@@ -259,15 +272,41 @@ const TestCardForm = ({
     // eslint-disable-next-line
   }, [testOrder]);
 
+  const validateForm = () => {
+    dateTestedErrorMessage = validateDateTested();
+    setTestResultsError("");
+    if (state.dateTested && dateTestedErrorMessage.length === 0) {
+      showError(dateTestedErrorMessage, "Invalid test date");
+      return false;
+    }
+    if (deviceSupportsMultiplex) {
+      const multiplexResults = convertFromMultiplexResultInputs(
+        state.testResults
+      );
+      const isMultiplexValid = validateMultiplexResultState(
+        multiplexResults,
+        state.deviceId,
+        devicesMap
+      );
+      if (!isMultiplexValid) {
+        // TODO: provide better error message based on device rules
+        const multiplexErrorMessage = "Multiplex result is not valid";
+        setTestResultsError(multiplexErrorMessage);
+        showError(multiplexErrorMessage, "Invalid test results");
+        return false;
+      }
+    }
+    return true;
+  };
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (state.dateTested && validateDateTested().length === 0) {
-      showError(dateTestedErrorMessage, "Invalid test date");
+    if (!validateForm()) {
       return;
     }
     // check force submit and confirmation type logic
 
-    setSaveState("saving");
+    setSaveStatus("saving");
     if (appInsights) {
       trackSubmitTestResult();
     }
@@ -289,7 +328,7 @@ const TestCardForm = ({
       refetchQueue();
       removeTimer(testOrder.internalId);
     } catch (error: any) {
-      setSaveState("error");
+      setSaveStatus("error");
     }
   };
 
@@ -317,161 +356,234 @@ const TestCardForm = ({
     showSuccess(body, title);
   };
 
+  const onUseCurrentDateTime = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUseCurrentTime(event.target.checked);
+    dispatch({
+      type: TestFormActionCase.UPDATE_DATE_TESTED,
+      payload: event.target.checked ? "" : moment().toISOString(),
+    });
+  };
+
+  const patientFullName = displayFullName(
+    testOrder.patient.firstName,
+    testOrder.patient.middleName,
+    testOrder.patient.lastName
+  );
+
+  const isCorrection = testOrder.correctionStatus === "CORRECTED";
+  const reasonForCorrection =
+    testOrder.reasonForCorrection as TestCorrectionReason;
+
+  const correctionWarningAlert = (
+    <Alert type="warning" headingLevel="h4">
+      <strong>Correction: </strong>
+      {reasonForCorrection in TestCorrectionReasons
+        ? TestCorrectionReasons[reasonForCorrection]
+        : reasonForCorrection}
+    </Alert>
+  );
+
+  const showDateMonthsAgoWarning =
+    moment(state.dateTested) < moment().subtract(6, "months") &&
+    dateTestedErrorMessage.length === 0;
+  const dateMonthsAgoWarningAlert = (
+    <Alert type="warning" headingLevel="h4" slim>
+      <strong>Check test date:</strong> The date you selected is more than six
+      months ago. Please make sure it's correct before submitting.
+    </Alert>
+  );
+
+  const errorSummaryAlert = (
+    <Alert
+      type={"error"}
+      headingLevel={"h4"}
+      heading={"Please correct the following errors:"}
+    >
+      <div>{dateTestedErrorMessage}</div>
+      <div>{testResultsError}</div>
+    </Alert>
+  );
+
   return (
-    <form onSubmit={onSubmit}>
-      {isBeforeDateWarningThreshold && (
-        <div className="grid-row grid-gap">
-          <div className="grid-col-auto">
-            <Alert type="warning" headingLevel="h4" slim>
-              <strong>Check test date:</strong> The date you selected is more
-              than six months ago. Please make sure it's correct before
-              submitting.
-            </Alert>
-          </div>
-        </div>
-      )}
-      <div className="grid-row grid-gap">
-        <div className="grid-col-auto">
-          <TextInput
-            id={`test-date-${testOrder.patient.internalId}`}
-            data-testid="test-date"
-            name="test-date"
-            type="date"
-            label="Test date and time"
-            aria-label="Test date"
-            min={formatDate(new Date("Jan 1, 2020"))}
-            max={formatDate(moment().toDate())}
-            value={formatDate(moment(state.dateTested).toDate())}
-            onBlur={(e) => setDateTestedTouched(true)}
-            onChange={(e) =>
-              dispatch({
-                type: TestFormActionCase.UPDATE_DATE_TESTED,
-                payload: e.target.value,
-              })
-            }
-            disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
-            validationStatus={
-              dateTestedTouched && dateTestedErrorMessage ? "error" : undefined
-            }
-            errorMessage={dateTestedTouched && dateTestedErrorMessage}
-          ></TextInput>
-        </div>
-        <div className="grid-col-auto display-flex no-left-form-group-border">
-          <TextInput
-            className="flex-align-self-end no-left-border"
-            id={`test-time-id`}
-            name="test-time"
-            type="time"
-            aria-label="Test time"
-            data-testid="test-time"
-            step="60"
-            value={moment(state.dateTested).format("HH:mm")}
-            onChange={(e) =>
-              dispatch({
-                type: TestFormActionCase.UPDATE_TIME_TESTED,
-                payload: e.target.value,
-              })
-            }
-            onBlur={(e) => setDateTestedTouched(true)}
-            validationStatus={
-              dateTestedTouched && dateTestedErrorMessage ? "error" : undefined
-            }
-            disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
-          ></TextInput>
-        </div>
-      </div>
-      <div className="grid-row grid-gap margin-top-2">
-        <div className="grid-col-auto">
-          <Dropdown
-            options={deviceTypeOptions}
-            label={
-              <>
-                <TextWithTooltip
-                  text="Test device"
-                  tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
-                  position="right"
-                />
-              </>
-            }
-            name="testDevice"
-            selectedValue={state.deviceId}
-            onChange={(e) =>
-              dispatch({
-                type: TestFormActionCase.UPDATE_DEVICE_ID,
-                payload: { deviceId: e.target.value, devicesMap },
-              })
-            }
-            className="card-dropdown"
-            data-testid="device-type-dropdown"
-            errorMessage={deviceTypeIsInvalid ? "Invalid device type" : ""}
-            validationStatus={deviceTypeIsInvalid ? "error" : undefined}
-          />
-        </div>
-        <div className="grid-col-auto">
-          <Dropdown
-            options={specimenTypeOptions}
-            label="Specimen type"
-            name="specimenType"
-            selectedValue={state.specimenId}
-            onChange={(e) =>
-              dispatch({
-                type: TestFormActionCase.UPDATE_SPECIMEN_ID,
-                payload: e.target.value,
-              })
-            }
-            className="card-dropdown"
-            data-testid="specimen-type-dropdown"
-            disabled={specimenTypeOptions.length === 0}
-            errorMessage={specimenTypeIsInvalid ? "Invalid specimen type" : ""}
-            validationStatus={specimenTypeIsInvalid ? "error" : undefined}
-          />
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <FormGroup>
-          {deviceSupportsMultiplex ? (
-            <MultiplexResultInputGroup
-              queueItemId={testOrder.internalId}
-              testResults={state.testResults}
-              deviceId={state.deviceId}
-              devicesMap={devicesMap}
-              onChange={(results) =>
-                dispatch({
-                  type: TestFormActionCase.UPDATE_TEST_RESULT,
-                  payload: results,
-                })
-              }
-            ></MultiplexResultInputGroup>
-          ) : (
-            <CovidResultInputGroup
-              queueItemId={testOrder.internalId}
-              testResults={state.testResults}
-              onChange={(results) =>
-                dispatch({
-                  type: TestFormActionCase.UPDATE_TEST_RESULT,
-                  payload: results,
-                })
-              }
-            />
-          )}
-        </FormGroup>
-      </div>
-      <CovidAoEForm
-        testOrder={testOrder}
-        responses={state.covidAoeQuestions}
-        onResponseChange={(responses) => {
-          dispatch({
-            type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
-            payload: responses,
-          });
-        }}
+    <>
+      <TestCardSubmitLoader
+        show={saveStatus === "saving"}
+        name={patientFullName}
       />
-      <div className="grid-row margin-top-4">
-        <div className="grid-col-auto">
-          <Button type={"submit"}>Submit results</Button>
-        </div>
+      <div className="grid-container">
+        <form onSubmit={onSubmit}>
+          {isCorrection && correctionWarningAlert}
+          {showDateMonthsAgoWarning && dateMonthsAgoWarningAlert}
+          {dateTestedErrorMessage && testResultsError && errorSummaryAlert}
+          {!useCurrentTime && (
+            <div className="grid-row grid-gap">
+              <div className="grid-col-auto">
+                <TextInput
+                  id={`test-date-${testOrder.patient.internalId}`}
+                  data-testid="test-date"
+                  name="test-date"
+                  type="date"
+                  label="Test date and time"
+                  aria-label="Test date"
+                  min={formatDate(new Date("Jan 1, 2020"))}
+                  max={formatDate(moment().toDate())}
+                  value={formatDate(moment(state.dateTested).toDate())}
+                  onBlur={(e) => setDateTestedTouched(true)}
+                  onChange={(e) =>
+                    dispatch({
+                      type: TestFormActionCase.UPDATE_DATE_TESTED,
+                      payload: e.target.value,
+                    })
+                  }
+                  disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
+                  validationStatus={
+                    dateTestedTouched && dateTestedErrorMessage
+                      ? "error"
+                      : undefined
+                  }
+                  errorMessage={dateTestedTouched && dateTestedErrorMessage}
+                ></TextInput>
+              </div>
+              <div className="grid-col-auto display-flex">
+                <TextInput
+                  className="flex-align-self-end no-left-border"
+                  id={`test-time-${testOrder.patient.internalId}`}
+                  name="test-time"
+                  type="time"
+                  aria-label="Test time"
+                  data-testid="test-time"
+                  step="60"
+                  value={moment(state.dateTested).format("HH:mm")}
+                  onChange={(e) =>
+                    dispatch({
+                      type: TestFormActionCase.UPDATE_TIME_TESTED,
+                      payload: e.target.value,
+                    })
+                  }
+                  onBlur={(e) => setDateTestedTouched(true)}
+                  validationStatus={
+                    dateTestedTouched && dateTestedErrorMessage
+                      ? "error"
+                      : undefined
+                  }
+                  disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
+                ></TextInput>
+              </div>
+            </div>
+          )}
+          <div className="grid-row-grid-gap">
+            <div className="grid-col-auto">
+              {useCurrentTime && (
+                <Label className={"margin-top-3"} htmlFor={"current-date-time"}>
+                  Test date and time
+                </Label>
+              )}
+              <Checkbox
+                id={`current-date-time-${testOrder.patient.internalId}`}
+                name={"current-date-time"}
+                label={"Current date and time"}
+                onChange={onUseCurrentDateTime}
+              ></Checkbox>
+            </div>
+          </div>
+          <div className="grid-row grid-gap margin-top-2">
+            <div className="grid-col-auto">
+              <Dropdown
+                options={deviceTypeOptions}
+                label={
+                  <>
+                    <TextWithTooltip
+                      text="Test device"
+                      tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                      position="right"
+                    />
+                  </>
+                }
+                name="testDevice"
+                selectedValue={state.deviceId}
+                onChange={(e) =>
+                  dispatch({
+                    type: TestFormActionCase.UPDATE_DEVICE_ID,
+                    payload: { deviceId: e.target.value, devicesMap },
+                  })
+                }
+                className="card-dropdown"
+                data-testid="device-type-dropdown"
+                errorMessage={deviceTypeIsInvalid ? "Invalid device type" : ""}
+                validationStatus={deviceTypeIsInvalid ? "error" : undefined}
+              />
+            </div>
+            <div className="grid-col-auto">
+              <Dropdown
+                options={specimenTypeOptions}
+                label="Specimen type"
+                name="specimenType"
+                selectedValue={state.specimenId}
+                onChange={(e) =>
+                  dispatch({
+                    type: TestFormActionCase.UPDATE_SPECIMEN_ID,
+                    payload: e.target.value,
+                  })
+                }
+                className="card-dropdown"
+                data-testid="specimen-type-dropdown"
+                disabled={specimenTypeOptions.length === 0}
+                errorMessage={
+                  specimenTypeIsInvalid ? "Invalid specimen type" : ""
+                }
+                validationStatus={specimenTypeIsInvalid ? "error" : undefined}
+              />
+            </div>
+          </div>
+          <div className="grid-row grid-gap">
+            <FormGroup>
+              {deviceSupportsMultiplex ? (
+                <MultiplexResultInputGroup
+                  queueItemId={testOrder.internalId}
+                  testResults={state.testResults}
+                  deviceId={state.deviceId}
+                  devicesMap={devicesMap}
+                  onChange={(results) =>
+                    dispatch({
+                      type: TestFormActionCase.UPDATE_TEST_RESULT,
+                      payload: results,
+                    })
+                  }
+                ></MultiplexResultInputGroup>
+              ) : (
+                <CovidResultInputGroup
+                  queueItemId={testOrder.internalId}
+                  testResults={state.testResults}
+                  onChange={(results) =>
+                    dispatch({
+                      type: TestFormActionCase.UPDATE_TEST_RESULT,
+                      payload: results,
+                    })
+                  }
+                />
+              )}
+            </FormGroup>
+          </div>
+          <div className="grid-row grid-gap">
+            <CovidAoEForm
+              testOrder={testOrder}
+              responses={state.covidAoeQuestions}
+              onResponseChange={(responses) => {
+                dispatch({
+                  type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
+                  payload: responses,
+                });
+              }}
+            />
+          </div>
+          <div className="grid-row margin-top-4">
+            <div className="grid-col-auto">
+              <Button type={"submit"}>Submit results</Button>
+            </div>
+          </div>
+        </form>
       </div>
-    </form>
+    </>
   );
 };
 
