@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
@@ -30,21 +32,10 @@ class PersonSerializationTest extends BaseNonSpringBootTestConfiguration {
 
   @Autowired private JacksonTester<Person> _tester;
 
-  @Test
-  void deserialize_stringRace_raceFound() throws IOException {
-    ObjectContent<Person> ob = _tester.read("/deserialization/race-scalar.json");
-    assertAlexanderHamilton(ob);
-  }
-
-  @Test
-  void deserialize_arrayRace_raceFound() throws IOException {
-    ObjectContent<Person> ob = _tester.read("/deserialization/race-array.json");
-    assertAlexanderHamilton(ob);
-  }
-
-  @Test
-  void deserialize_withFacility_raceFoundNoFacility() throws IOException {
-    ObjectContent<Person> ob = _tester.read("/deserialization/with-facility.json");
+  @ParameterizedTest
+  @ValueSource(strings = {"race-scalar.json", "race-array.json", "with-facility.json"})
+  void deserialize_stringRace_raceFound(String filename) throws IOException {
+    ObjectContent<Person> ob = _tester.read("/deserialization/" + filename);
     assertAlexanderHamilton(ob);
   }
 
