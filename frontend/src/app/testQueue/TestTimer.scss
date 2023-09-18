@@ -28,6 +28,7 @@
 }
 
 .timer-overtime {
-  color: gray;
+  color: settings.$color-white-transparent-50;
   font-style: italic;
+  min-width: 6rem;
 }

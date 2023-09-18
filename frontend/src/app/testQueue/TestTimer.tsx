@@ -4,8 +4,6 @@ import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import "./TestTimer.scss";
-import { Button } from "@trussworks/react-uswds";
-
 import { getAppInsights } from "../../app/TelemetryService";
 
 const alarmModule = require("./test-timer.mp3");
@@ -238,22 +236,15 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
 
   if (!running) {
     return (
-      <Button
-        type={"button"}
-        className={"timer-button timer-reset"}
+      <button
+        className="timer-button timer-reset"
         onClick={() => start(trackTimerStart)}
-        aria-label="Start timer"
         data-testid="timer"
+        aria-label="Start timer"
       >
-        <FontAwesomeIcon
-          className="padding-x-1"
-          alt-text="stopwatch"
-          icon={faStopwatch as IconProp}
-        />
-        <span className="padding-right-1" role="timer">
-          Start timer
-        </span>{" "}
-      </Button>
+        <FontAwesomeIcon alt-text="stopwatch" icon={faStopwatch as IconProp} />
+        <span role="timer">{mmss(countdown)}</span>{" "}
+      </button>
     );
   }
   if (countdown >= 0) {
@@ -264,8 +255,8 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         data-testid="timer"
         aria-label="Reset timer"
       >
-        <span role="timer">{mmss(countdown)}</span>{" "}
         <FontAwesomeIcon alt-text="reset" icon={faRedo as IconProp} />
+        <span role="timer">{mmss(countdown)}</span>{" "}
       </button>
     );
   }
@@ -285,7 +276,7 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         aria-label="Reset timer"
       >
         <span className="result-ready">RESULT READY</span>{" "}
-        <span className="timer-overtime" role="timer">
+        <span className="timer-overtime margin-x-1" role="timer">
           {mmss(elapsed)} elapsed{" "}
         </span>{" "}
         <FontAwesomeIcon icon={faRedo as IconProp} />
