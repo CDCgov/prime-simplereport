@@ -26,10 +26,10 @@ interface MultiplexResultState {
   fluB: TestResult;
 }
 
-const convertFromMultiplexResultInputs = (
+export const convertFromMultiplexResultInputs = (
   diseaseResults: MultiplexResultInput[]
 ): MultiplexResultState => {
-  const multiplexResult: MultiplexResultState = {
+  return {
     covid:
       (findResultByDiseaseName(
         diseaseResults ?? [],
@@ -46,8 +46,6 @@ const convertFromMultiplexResultInputs = (
         MULTIPLEX_DISEASES.FLU_B
       ) as TestResult) ?? TEST_RESULTS.UNKNOWN,
   };
-
-  return multiplexResult;
 };
 
 const convertFromMultiplexResult = (
@@ -119,6 +117,66 @@ const doesDeviceSupportMultiplexAndCovidOnlyResult = (
   return false;
 };
 
+export const validateMultiplexResultState = (
+  resultsMultiplexFormat: MultiplexResultState,
+  deviceId: string,
+  devicesMap: DevicesMap
+) => {
+  const deviceSupportsCovidOnlyResult =
+    doesDeviceSupportMultiplexAndCovidOnlyResult(deviceId, devicesMap);
+  const isFluOnly = isDeviceFluOnly(deviceId, devicesMap);
+
+  let allResultsAreInconclusive =
+    resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED &&
+    resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED &&
+    resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
+
+  let anyResultIsInconclusive =
+    resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED ||
+    resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
+    resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
+
+  let allResultsAreEqual =
+    resultsMultiplexFormat.covid === resultsMultiplexFormat.fluA &&
+    resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
+
+  if (isFluOnly) {
+    allResultsAreEqual =
+      resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
+    allResultsAreInconclusive =
+      resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED &&
+      resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED;
+    anyResultIsInconclusive =
+      resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
+      resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
+  }
+
+  const covidIsFilled =
+    resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
+    resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE;
+
+  const fluAIsFilled =
+    resultsMultiplexFormat.fluA === TEST_RESULTS.POSITIVE ||
+    resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE;
+
+  const fluBIsFilled =
+    resultsMultiplexFormat.fluB === TEST_RESULTS.POSITIVE ||
+    resultsMultiplexFormat.fluB === TEST_RESULTS.NEGATIVE;
+
+  if (anyResultIsInconclusive && !allResultsAreEqual) {
+    return false;
+  }
+  return (
+    allResultsAreInconclusive ||
+    (deviceSupportsCovidOnlyResult &&
+      covidIsFilled &&
+      !fluAIsFilled &&
+      !fluBIsFilled) ||
+    (isFluOnly && fluAIsFilled && fluBIsFilled) ||
+    (covidIsFilled && fluAIsFilled && fluBIsFilled)
+  );
+};
+
 /**
  * COMPONENT
  */
@@ -141,17 +199,15 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
   const isMobile = screen.width <= 600;
   const resultsMultiplexFormat: MultiplexResultState =
     convertFromMultiplexResultInputs(testResults);
-  let inconclusiveCheck =
+  let allResultsInconclusive =
     resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED &&
     resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED &&
     resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
 
-  const deviceSupportsCovidOnlyResult =
-    doesDeviceSupportMultiplexAndCovidOnlyResult(deviceId, devicesMap);
   const isFluOnly = isDeviceFluOnly(deviceId, devicesMap);
 
   if (isFluOnly) {
-    inconclusiveCheck =
+    allResultsInconclusive =
       resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED &&
       resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED;
   }
@@ -164,7 +220,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
     value: TestResult
   ) => {
     let newResults: MultiplexResultState = resultsMultiplexFormat;
-    if (inconclusiveCheck) {
+    if (allResultsInconclusive) {
       newResults = {
         covid: TEST_RESULTS.UNKNOWN,
         fluA: TEST_RESULTS.UNKNOWN,
@@ -211,49 +267,6 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
   /**
    * Form Validation
    * */
-  const validateForm = () => {
-    let anyResultIsInconclusive =
-      resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED ||
-      resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
-      resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
-
-    let allResultsAreEqual =
-      resultsMultiplexFormat.covid === resultsMultiplexFormat.fluA &&
-      resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
-
-    if (isFluOnly) {
-      allResultsAreEqual =
-        resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
-      anyResultIsInconclusive =
-        resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
-        resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
-    }
-
-    const covidIsFilled =
-      resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
-      resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE;
-
-    const fluAIsFilled =
-      resultsMultiplexFormat.fluA === TEST_RESULTS.POSITIVE ||
-      resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE;
-
-    const fluBIsFilled =
-      resultsMultiplexFormat.fluB === TEST_RESULTS.POSITIVE ||
-      resultsMultiplexFormat.fluB === TEST_RESULTS.NEGATIVE;
-
-    if (anyResultIsInconclusive && !allResultsAreEqual) {
-      return false;
-    }
-    return (
-      inconclusiveCheck ||
-      (deviceSupportsCovidOnlyResult &&
-        covidIsFilled &&
-        !fluAIsFilled &&
-        !fluBIsFilled) ||
-      (isFluOnly && fluAIsFilled && fluBIsFilled) ||
-      (covidIsFilled && fluAIsFilled && fluBIsFilled)
-    );
-  };
 
   return (
     <>
@@ -344,7 +357,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
               {
                 value: "inconclusive",
                 label: "Mark test as inconclusive",
-                checked: inconclusiveCheck,
+                checked: allResultsInconclusive,
               },
             ]}
           />
