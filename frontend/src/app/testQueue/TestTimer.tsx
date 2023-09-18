@@ -4,7 +4,7 @@ import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import "./TestTimer.scss";
-import { getAppInsights } from "../../app/TelemetryService";
+import { getAppInsights } from "../TelemetryService";
 
 const alarmModule = require("./test-timer.mp3");
 
