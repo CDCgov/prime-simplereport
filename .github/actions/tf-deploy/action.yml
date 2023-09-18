@@ -21,7 +21,7 @@ runs:
     - name: Build ReportStream function app
       uses: ./.github/actions/build-reportstream-functions
       with:
-        deploy-env: ${{inputs.deploy_env}}
+        deploy-env: ${{ inputs.deploy_env }}
     - name: Terraform Init
       shell: bash
       run: make init-${{ inputs.deploy_env }}
