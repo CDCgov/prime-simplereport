@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -1134,7 +1135,8 @@ class FhirConverterTest {
             "94533-7",
             "id-123",
             ZonedDateTime.ofInstant(
-                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID));
+                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID),
+            "very important comment");
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
     assertThat(actual.getCode().getCoding()).hasSize(1);
@@ -1149,16 +1151,20 @@ class FhirConverterTest {
                         .getValue())
                 .getValue())
         .isEqualTo("2023-06-22T10:35:00.00Z");
+    assertThat(actual.getNote().get(0).getText()).isEqualTo("very important comment");
+    assertThat(actual.getNote().get(0).getExtension().get(0).getUrl())
+        .isEqualTo(NOTE_TYPE_EXTENSION_URL);
   }
 
   @Test
   void convertToServiceRequest_Strings_null() {
     var actual =
         fhirConverter.convertToServiceRequest(
-            null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
+            null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID), null);
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
+    assertThat(actual.getNote()).isEmpty();
   }
 
   @Test
