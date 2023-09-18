@@ -193,7 +193,7 @@ describe("TestResultsList", () => {
     ).toBeInTheDocument();
   });
 
-  it("Should not display submitted by column when multiplex and facility columns show", async () => {
+  it("Should not display submitted by column when all facilities filter applied", async () => {
     const search = {
       facility: "1",
       filterFacilityId: "all",
@@ -213,15 +213,9 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-5 of 5"));
+    expect(await screen.findByText("Showing 1-9 of 9"));
     expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu a/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu b/i })
+      screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("columnheader", { name: /facility/i })
@@ -231,44 +225,7 @@ describe("TestResultsList", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("Should display submitted by column when there are not multiplex results", async () => {
-    const search = {
-      facility: "1",
-      filterFacilityId: "all",
-    };
-
-    render(
-      <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
-      >
-        <Provider store={store}>
-          <MockedProvider mocks={mocks}>
-            <TestResultsList />
-          </MockedProvider>
-        </Provider>
-      </MemoryRouter>
-    );
-
-    expect(await screen.findByText("Showing 1-2 of 2"));
-    expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: /flu a/i })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: /flu b/i })
-    ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /facility/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /submitted by/i })
-    ).toBeInTheDocument();
-  });
-  it("Should display submitted by column when there are multiplex results but displays only one facility", async () => {
+  it("Should display submitted by column when single-facility filter applied", async () => {
     const search = {
       facility: "1",
     };
@@ -287,16 +244,10 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-5 of 5"));
+    expect(await screen.findByText("Showing 1-9 of 9"));
 
     expect(
-      screen.getByRole("columnheader", { name: /covid-19/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu a/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("columnheader", { name: /flu b/i })
+      screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
     expect(
       screen.queryByRole("columnheader", { name: /facility/i })

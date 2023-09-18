@@ -13,9 +13,46 @@ import { byDateTested } from "../TestResultsList";
 import { MULTIPLEX_DISEASES } from "../constants";
 import { toLowerCaseHyphenate } from "../../utils/text";
 import { TestResult, PhoneNumber, Maybe } from "../../../generated/graphql";
-import { getResultObjByDiseaseName } from "../../utils/testResults";
 
 export const TEST_RESULT_ARIA_TIME_FORMAT = "MMMM Do YYYY, h:mm:ss a";
+
+const testResultOrdering = [
+  MULTIPLEX_DISEASES.COVID_19,
+  MULTIPLEX_DISEASES.FLU_A,
+  MULTIPLEX_DISEASES.FLU_B,
+];
+
+const sortTestResults = (results: MultiplexResults) => {
+  return [...results].sort(
+    (a, b) =>
+      testResultOrdering.indexOf(a.disease.name) -
+      testResultOrdering.indexOf(b.disease.name)
+  );
+};
+
+export const getEnrichedMultiplexResultsFromTestEvent = (
+  results: TestResult[]
+): EnrichedMultiplexResult[] => {
+  const enrichedMultiplexResults: EnrichedMultiplexResult[] = [];
+
+  if (!results || !Array.isArray(results)) {
+    return enrichedMultiplexResults;
+  }
+
+  for (const result of results) {
+    for (const r of sortTestResults(result.results as MultiplexResults)) {
+      const enrichedMultiplexResult = {
+        ...result,
+        ...r,
+      };
+
+      enrichedMultiplexResults.push(enrichedMultiplexResult);
+    }
+  }
+
+  return enrichedMultiplexResults;
+};
+
 export function formatTestResultAriaLabel(result: TestResult) {
   const patientFullName = displayFullName(
     result.patient?.firstName,
@@ -30,10 +67,7 @@ export function formatTestResultAriaLabel(result: TestResult) {
   return `Click for more detailed results information for ${patientFullName} conducted on ${displayPatientDate}`;
 }
 
-export const generateTableHeaders = (
-  hasMultiplexResults: boolean,
-  hasFacility: boolean
-) => (
+export const generateTableHeaders = (hasFacility: boolean) => (
   <tr>
     <th scope="col" className="patient-name-cell">
       {PATIENT_TERM_CAP}
@@ -41,23 +75,16 @@ export const generateTableHeaders = (
     <th scope="col" className="test-date-cell">
       Test date
     </th>
-    <th scope="col" className="test-result-cell">
-      COVID-19
+    <th scope="col" className="test-condition-cell">
+      Condition
     </th>
-    {hasMultiplexResults ? (
-      <>
-        <th scope="col" className="test-result-cell">
-          Flu A
-        </th>
-        <th scope="col" className="test-result-cell">
-          Flu B
-        </th>
-      </>
-    ) : null}
+    <th scope="col" className="test-result-cell">
+      Result
+    </th>
     <th scope="col" className="test-device-cell">
       Test device
     </th>
-    {hasMultiplexResults && hasFacility ? null : (
+    {hasFacility ? null : (
       <th scope="col" className="submitted-by-cell">
         Submitted by
       </th>
@@ -140,102 +167,92 @@ const generateResultRows = (
     );
   }
 
-  // `sort` mutates the array, so make a copy
-  return [...testResults].sort(byDateTested).map((r: TestResult) => {
-    const testResultOrder = [MULTIPLEX_DISEASES.COVID_19];
-    if (hasMultiplexResults) {
-      testResultOrder.push(MULTIPLEX_DISEASES.FLU_A, MULTIPLEX_DISEASES.FLU_B);
-    }
-    const removed = r.correctionStatus === "REMOVED";
-    const actionItems = createActionItemList(
-      setPrintModalId,
-      r,
-      setEmailModalTestResultId,
-      setTextModalId,
-      removed,
-      setMarkCorrectionId,
-      setDetailsModalId
-    );
-    const getResultCell = (disease: string) => {
-      let result = getResultObjByDiseaseName(
-        r.results as MultiplexResults,
-        disease
+  const sortedResults = [...testResults].sort(byDateTested);
+
+  return getEnrichedMultiplexResultsFromTestEvent(sortedResults).map(
+    (r: EnrichedMultiplexResult) => {
+      const removed = r.correctionStatus === "REMOVED";
+      let diseaseIdName = toLowerCaseHyphenate(r.disease.name);
+      const actionItems = createActionItemList(
+        setPrintModalId,
+        r,
+        setEmailModalTestResultId,
+        setTextModalId,
+        removed,
+        setMarkCorrectionId,
+        setDetailsModalId
       );
-      return result ? TEST_RESULT_DESCRIPTIONS[result.testResult] : "N/A";
-    };
-    const getResultCellHTML = () => {
-      return testResultOrder.map((disease) => {
-        let diseaseIdName = toLowerCaseHyphenate(disease);
+      const getResultCellHTML = () => {
         return (
           <td
             key={`${r.internalId}-${diseaseIdName}`}
             className="test-result-cell"
             data-testid={`${diseaseIdName}-result`}
           >
-            {getResultCell(disease)}
+            {r.testResult ? TEST_RESULT_DESCRIPTIONS[r.testResult] : "N/A"}
           </td>
         );
-      });
-    };
-    return (
-      <tr
-        key={r.internalId}
-        title={removed ? "Marked as error" : ""}
-        className={classnames(
-          "sr-test-result-row",
-          removed && "sr-test-result-row--removed"
-        )}
-        data-testid={`test-result-${r.internalId}`}
-        data-patient-link={
-          r.patientLink
-            ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
-            : null
-        }
-      >
-        <td className="patient-name-cell">
-          <Button
-            variant="unstyled"
-            ariaLabel={formatTestResultAriaLabel(r)}
-            label={displayFullName(
-              r.patient?.firstName,
-              r.patient?.middleName,
-              r.patient?.lastName
-            )}
-            onClick={() => setDetailsModalId(r.internalId)}
-            className="sr-link__primary"
-          />
-          <span className="display-block text-base font-ui-2xs">
-            DOB: {formatDateWithTimeOption(r.patient?.birthDate)}
-          </span>
-        </td>
-        <td className="test-date-cell">
-          {formatDateWithTimeOption(r.dateTested, true)}
-        </td>
-        {getResultCellHTML()}
-        <td className="test-device-cell">{r.deviceType?.name}</td>
-        {hasMultiplexResults && hasFacility ? null : (
-          <td className="submitted-by-cell">
-            {displayFullName(
-              r.createdBy?.nameInfo?.firstName,
-              null,
-              r.createdBy?.nameInfo?.lastName
-            )}
+      };
+      return (
+        <tr
+          key={`${r.internalId}-${diseaseIdName}`}
+          title={removed ? "Marked as error" : ""}
+          className={classnames(
+            "sr-test-result-row",
+            removed && "sr-test-result-row--removed"
+          )}
+          data-testid={`test-result-${r.internalId}-${diseaseIdName}`}
+          data-patient-link={
+            r.patientLink
+              ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
+              : null
+          }
+        >
+          <td className="patient-name-cell">
+            <Button
+              variant="unstyled"
+              ariaLabel={formatTestResultAriaLabel(r)}
+              label={displayFullName(
+                r.patient?.firstName,
+                r.patient?.middleName,
+                r.patient?.lastName
+              )}
+              onClick={() => setDetailsModalId(r.internalId)}
+              className="sr-link__primary"
+            />
+            <span className="display-block text-base font-ui-2xs">
+              DOB: {formatDateWithTimeOption(r.patient?.birthDate)}
+            </span>
           </td>
-        )}
-        {hasFacility && (
-          <td className="test-facility-cell">
-            {facilityDisplayName(
-              r.facility?.name as string,
-              r.facility?.isDeleted as boolean
-            )}
+          <td className="test-date-cell">
+            {formatDateWithTimeOption(r.dateTested, true)}
           </td>
-        )}
-        <td className="actions-cell">
-          <ActionsMenu items={actionItems} id={r.internalId as string} />
-        </td>
-      </tr>
-    );
-  });
+          <td className="test-condition-cell">{r.disease.name}</td>
+          {getResultCellHTML()}
+          <td className="test-device-cell">{r.deviceType?.name}</td>
+          {!hasFacility ? (
+            <td className="submitted-by-cell">
+              {displayFullName(
+                r.createdBy?.nameInfo?.firstName,
+                null,
+                r.createdBy?.nameInfo?.lastName
+              )}
+            </td>
+          ) : (
+            <td className="test-facility-cell">
+              {facilityDisplayName(
+                r.facility?.name as string,
+                r.facility?.isDeleted as boolean
+              )}
+            </td>
+          )}
+          <td className="actions-cell">
+            <ActionsMenu items={actionItems} id={r.internalId as string} />
+          </td>
+        </tr>
+      );
+    }
+  );
 };
 
 interface ResultsTableListProps {
@@ -264,9 +281,9 @@ const ResultsTable = ({
   return (
     <table className="usa-table usa-table--borderless width-full">
       <thead className="sr-element__sr-only">
-        {generateTableHeaders(hasMultiplexResults, hasFacility)}
+        {generateTableHeaders(hasFacility)}
       </thead>
-      <tbody>
+      <tbody data-testid={"filtered-results"}>
         {generateResultRows(
           results,
           setPrintModalId,

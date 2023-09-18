@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
+import { useFeature } from "flagged";
 
 import {
   DeviceType,
@@ -19,6 +20,7 @@ import DeviceForm from "./DeviceForm";
 
 const ManageDeviceTypeFormContainer = () => {
   useDocumentTitle(editDevicePageTitle);
+  const rsvEnabled = useFeature("rsvEnabled");
 
   const [submitted, setSubmitted] = useState(false);
   const [activeFacility] = useSelectedFacility();
@@ -72,12 +74,16 @@ const ManageDeviceTypeFormContainer = () => {
       }))
     );
 
-    const supportedDiseaseOptions = Array.from(
-      supportedDiseaseResults.supportedDiseases.map((disease) => ({
+    const supportedDiseaseData = supportedDiseaseResults.supportedDiseases.map(
+      (disease) => ({
         label: disease.name,
         value: disease.internalId,
-      }))
+      })
     );
+
+    const supportedDiseaseOptions = rsvEnabled
+      ? supportedDiseaseData
+      : supportedDiseaseData.filter((d) => d.label !== "RSV");
 
     const devices = Array.from(
       deviceTypeResults.deviceTypes.map(

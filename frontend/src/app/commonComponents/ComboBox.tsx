@@ -26,7 +26,9 @@ const ComboBox: React.FC<ComboBoxProps> = forwardRef(function (
         onChange={onChange}
         disabled={disabled}
         ref={ref}
-        inputProps={{ "aria-required": required }}
+        inputProps={{
+          "aria-required": required,
+        }}
       />
     </>
   );

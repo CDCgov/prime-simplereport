@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
+import gov.cdc.usds.simplereport.service.DiseaseCacheService;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
@@ -46,20 +47,20 @@ import org.springframework.security.test.context.support.WithMockUser;
  *
  * <h2>Purpose of this configuration</h2>
  *
- * The aim of this class is to provide a single importable configuration that allows all slice tests
- * (e.g. {@link DataJpaTest} or our slightly wonky service-layer tests) to run, without wiring up
- * the full application context.
+ * <p>The aim of this class is to provide a single importable configuration that allows all slice
+ * tests (e.g. {@link DataJpaTest} or our slightly wonky service-layer tests) to run, without wiring
+ * up the full application context.
  *
  * <h2>How to use it</h2>
  *
- * If you are creating a new test that does not test the full stack (that is, it is not making mock
- * HTTP calls) and does not extend {@link BaseServiceTest} or {@link BaseRepositoryTest} (which,
- * honestly, it probably should), then you can set up your test context by annotating your test
- * class with {@code @Import(SliceTestConfiguration.class)}.
+ * <p>If you are creating a new test that does not test the full stack (that is, it is not making
+ * mock HTTP calls) and does not extend {@link BaseServiceTest} or {@link BaseRepositoryTest}
+ * (which, honestly, it probably should), then you can set up your test context by annotating your
+ * test class with {@code @Import(SliceTestConfiguration.class)}.
  *
  * <h2>How it works</h2>
  *
- * This class does three things:
+ * <p>This class does three things:
  *
  * <ol>
  *   <li>It sets up (most of) the same bound configuration properties that the main context has, so
@@ -75,7 +76,7 @@ import org.springframework.security.test.context.support.WithMockUser;
  *       allow service tests to specify users using reasonably standard Spring testing patterns.
  * </ol>
  *
- * This class also contains a set of shortcut annotations that can be applied to tests or test
+ * <p>This class also contains a set of shortcut annotations that can be applied to tests or test
  * classes to get a reasonable user of a particular type into the SecurityContext for testing
  * purposes. They should be used for any test that requires an authenticated user and does not
  * require changing users mid-test.
@@ -88,6 +89,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationService.class,
   ApiUserService.class,
   DiseaseService.class,
+  DiseaseCacheService.class,
   ResultService.class,
   OrganizationInitializingService.class,
   CurrentPatientContextHolder.class,

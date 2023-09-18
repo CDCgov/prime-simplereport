@@ -21,6 +21,7 @@ interface UnarchivePatientInformationProps {
   handlePaginationClick: (pageNumber: number) => void;
   onUnarchivePatient: (patient: UnarchivePatientPatient) => void;
 }
+
 const UnarchivePatientInformation = ({
   unarchivePatientState,
   currentPage,
@@ -72,7 +73,7 @@ const UnarchivePatientInformation = ({
   };
   const setInstructions = () => {
     if (
-      unarchivePatientState.orgId !== "" &&
+      unarchivePatientState.orgId !== undefined &&
       unarchivePatientState.facilities.length === 0
     ) {
       return "This organization has no facilities. Select a different organization.";

@@ -9,7 +9,6 @@ describe("Patient self registration", () => {
     cy.contains("Patient self-registration").click();
     cy.contains("Patients can now register themselves online");
 
-
     // Test a11y on the Patient self registration page
     cy.injectSRAxe();
     cy.checkAccessibility();
@@ -50,24 +49,23 @@ describe("Patient self registration", () => {
     cy.get(".self-registration-button").first().click();
     cy.get(".prime-formgroup").contains("Last name is missing");
     cy.get(".prime-formgroup").contains("City is missing");
-
   });
   it("fills out the remaining fields and submits", () => {
     cy.get('input[name="lastName"]').type(patient.lastName);
     cy.get('input[name="city"]').type(patient.city);
     cy.get(".self-registration-button").first().click();
     cy.get(
-      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
+      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label',
     ).scrollIntoView();
     cy.get(
-      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
+      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label',
     ).click();
 
     cy.checkAccessibility();
 
     cy.get(".modal__container #save-confirmed-address").click();
     cy.get("#self-reg-confirmation").contains(
-      "thanks for completing your patient profile"
+      "thanks for completing your patient profile",
     );
 
     cy.checkAccessibility(); // Confirmation page
