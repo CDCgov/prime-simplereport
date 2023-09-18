@@ -1811,6 +1811,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  // TODO: update this one
   void getTestEventsResults_filtering() {
     List<TestEvent> testEvents = makedata();
     List<TestEvent> positives =
