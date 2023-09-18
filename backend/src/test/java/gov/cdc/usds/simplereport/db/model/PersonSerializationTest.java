@@ -14,9 +14,12 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
@@ -32,11 +35,19 @@ class PersonSerializationTest extends BaseNonSpringBootTestConfiguration {
 
   @Autowired private JacksonTester<Person> _tester;
 
-  @ParameterizedTest
-  @ValueSource(strings = {"race-scalar.json", "race-array.json", "with-facility.json"})
-  void deserialize_stringRace_raceFound(String filename) throws IOException {
-    ObjectContent<Person> ob = _tester.read("/deserialization/" + filename);
+  @ParameterizedTest(name = "deserialize {0}")
+  @MethodSource("namedArguments")
+  void deserialize_raceFound(String filePath) throws IOException {
+    ObjectContent<Person> ob = _tester.read(filePath);
     assertAlexanderHamilton(ob);
+  }
+
+  static Stream<Arguments> namedArguments() {
+    return Stream.of(
+        Arguments.of(Named.of("string race and race found", "/deserialization/race-scalar.json")),
+        Arguments.of(Named.of("array race and race found", "/deserialization/race-array.json")),
+        Arguments.of(
+            Named.of("race found and no facility", "/deserialization/with-facility.json")));
   }
 
   @Test
