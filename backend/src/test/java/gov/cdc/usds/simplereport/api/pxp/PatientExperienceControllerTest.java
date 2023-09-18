@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api.pxp;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.startsWith;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -411,7 +410,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     mockMvc.perform(builder).andExpect(status().isOk());
     List<TimeOfConsent> tocList = tocService.getTimeOfConsent(patientLink);
     assertNotNull(tocList);
-    assertNotEquals(tocList.size(), 0);
+    assertThat(tocList).isNotEmpty();
   }
 
   @Test

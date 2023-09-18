@@ -165,14 +165,14 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
 
     assertThat(sentMail.get(0).getFrom().getEmail()).isEqualTo("me@example.com");
     assertThat(sentMail.get(0).getFrom().getName()).isEqualTo("My Display Name");
-    assertEquals(personalization0.getTos().get(0).getEmail(), "test@foo.com");
+    assertEquals("test@foo.com", personalization0.getTos().get(0).getEmail());
 
     // Second email
     Personalization personalization1 = sentMail.get(1).getPersonalization().get(0);
 
     assertThat(sentMail.get(1).getFrom().getEmail()).isEqualTo("me@example.com");
     assertThat(sentMail.get(1).getFrom().getName()).isEqualTo("My Display Name");
-    assertEquals(personalization1.getTos().get(0).getEmail(), "foo@bar.org");
+    assertEquals("foo@bar.org", personalization1.getTos().get(0).getEmail());
   }
 
   @Test
