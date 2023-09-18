@@ -14,6 +14,8 @@ import TestCardForm from "./TestCardForm";
 
 import "./TestCard.scss";
 
+export type SaveStatus = "idle" | "editing" | "saving" | "error";
+
 export interface TestCardProps {
   testOrder: QueriedTestOrder;
   facility: QueriedFacility;
@@ -28,15 +30,12 @@ export const TestCard = ({
   refetchQueue,
 }: TestCardProps) => {
   const navigate = useNavigate();
-  const timer = useTestTimer(
-    testOrder.internalId,
-    testOrder.deviceType.testLength
-  );
+  const timer = useTestTimer(testOrder.internalId, 0.5);
   const organization = useSelector<RootState, Organization>(
     (state: any) => state.organization as Organization
   );
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   const timerContext = {
     organizationName: organization.name,
@@ -57,70 +56,72 @@ export const TestCard = ({
 
   return (
     <Card className={"list-style-none margin-bottom-1em test-card-container"}>
-      <CardHeader className={"padding-2"}>
-        <div className="grid-container">
-          <div className="grid-row grid-gap flex-align-center">
-            <div className="grid-col-auto margin-top-05">
-              <Button variant="unstyled" onClick={toggleOpen}>
-                {isOpen ? (
-                  <Icon.ExpandMore size={3} focusable={true} />
-                ) : (
-                  <Icon.ExpandLess size={3} focusable={true} />
-                )}
-              </Button>
-            </div>
-            <div className="grid-col-auto">
-              <Button
-                variant="unstyled"
-                className="card-name"
-                onClick={() => {
-                  navigate({
-                    pathname: `/patient/${testOrder.patient.internalId}`,
-                    search: `?facility=${facility!.id}&fromQueue=true`,
-                  });
-                }}
-              >
-                <span className={"font-sans-lg"}>
-                  <strong>{patientFullName}</strong>
-                </span>
-              </Button>
-            </div>
-            <div className="grid-col-auto">
-              <span className={"font-sans-sm text-base"}>
-                DOB: {patientDateOfBirth.format("MM/DD/YYYY")}
+      <CardHeader
+        className={`padding-2 ${
+          isOpen ? "test-card-header-bottom-border" : ""
+        }`}
+      >
+        <div className="grid-row grid-gap flex-align-center">
+          <div className="grid-col-auto margin-top-05">
+            <Button variant="unstyled" onClick={toggleOpen}>
+              {isOpen ? (
+                <Icon.ExpandLess size={3} focusable={true} />
+              ) : (
+                <Icon.ExpandMore size={3} focusable={true} />
+              )}
+            </Button>
+          </div>
+          <div className="grid-col-auto padding-left-0">
+            <Button
+              variant="unstyled"
+              className="card-name"
+              onClick={() => {
+                navigate({
+                  pathname: `/patient/${testOrder.patient.internalId}`,
+                  search: `?facility=${facility!.id}&fromQueue=true`,
+                });
+              }}
+            >
+              <span className={"font-sans-lg"}>
+                <strong>{patientFullName}</strong>
               </span>
-            </div>
-            <div className="grid-col"></div>
-            <div className="grid-col-auto padding-x-0 timer-col">
-              <TestTimerWidget timer={timer} context={timerContext} />
-            </div>
-            <div className="grid-col-auto padding-x-0 close-button-col">
-              <Button
-                className={"close-button"}
-                variant="unstyled"
-                onClick={() => {
-                  navigate({
-                    pathname: `/patient/${testOrder.patient.internalId}`,
-                    search: `?facility=${facility!.id}&fromQueue=true`,
-                  });
-                }}
-              >
-                <Icon.Close size={3} focusable={true} />
-              </Button>
-            </div>
+            </Button>
+          </div>
+          <div className="grid-col-auto">
+            <span className={"font-sans-sm text-base"}>
+              DOB: {patientDateOfBirth.format("MM/DD/YYYY")}
+            </span>
+          </div>
+          <div className="grid-col"></div>
+          <div className="grid-col-auto padding-x-0">
+            <TestTimerWidget timer={timer} context={timerContext} />
+          </div>
+          <div className="grid-col-auto">
+            <Button
+              className={"close-button"}
+              variant="unstyled"
+              onClick={() => {
+                navigate({
+                  pathname: `/patient/${testOrder.patient.internalId}`,
+                  search: `?facility=${facility!.id}&fromQueue=true`,
+                });
+              }}
+            >
+              <Icon.Close size={3} focusable={true} />
+            </Button>
           </div>
         </div>
       </CardHeader>
-      <CardBody className={isOpen ? "test-card-body" : "display-none"}>
-        <div className="grid-container">
+      <div className="position-relative">
+        <CardBody className={isOpen ? "" : "display-none"}>
           <TestCardForm
             testOrder={testOrder}
             devicesMap={devicesMap}
             facility={facility}
             refetchQueue={refetchQueue}
           ></TestCardForm>
-        </div>
-      </CardBody>
+        </CardBody>
+      </div>
     </Card>
   );
 };

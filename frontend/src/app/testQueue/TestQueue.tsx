@@ -15,8 +15,9 @@ import {
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
-import QueueItem, { DevicesMap } from "./QueueItem";
+import { DevicesMap } from "./QueueItem";
 import "./TestQueue.scss";
+import { TestCard } from "./TestCard/TestCard";
 
 const pollInterval = 10_000;
 
@@ -153,14 +154,20 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             onExiting={onExiting}
             timeout={transitionDuration}
           >
-            <QueueItem
-              refetchQueue={refetch}
-              queueItem={queueItem}
-              startTestPatientId={startTestPatientId}
-              setStartTestPatientId={setStartTestPatientId}
-              facility={facility}
+            {/*<QueueItem*/}
+            {/*  refetchQueue={refetch}*/}
+            {/*  queueItem={queueItem}*/}
+            {/*  startTestPatientId={startTestPatientId}*/}
+            {/*  setStartTestPatientId={setStartTestPatientId}*/}
+            {/*  facility={facility}*/}
+            {/*  devicesMap={devicesMap}*/}
+            {/*/>*/}
+            <TestCard
+              testOrder={queueItem}
               devicesMap={devicesMap}
-            />
+              facility={facility}
+              refetchQueue={refetch}
+            ></TestCard>
           </CSSTransition>
         );
       });

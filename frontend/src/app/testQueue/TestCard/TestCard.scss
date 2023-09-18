@@ -8,21 +8,15 @@
   color: settings.$theme-color-prime-gray-darkest;
 }
 
-.close-button-col {
-  position: relative;
-  bottom: 0.5rem;
-  left: 1rem;
-}
-
-.timer-col {
-  position: relative;
-  left: 0.5rem;
-}
-
-.test-card-body {
-  border-top: 2px solid #dfe1e2;
+.test-card-header-bottom-border {
+  border-bottom: 2px solid #dfe1e2;
 }
 
 .test-card-container {
   max-width: 64rem;
+}
+
+.usa-card__container {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
