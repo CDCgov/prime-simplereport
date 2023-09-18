@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
     url = "${datahub.url}",
     configuration = DataHubClientConfiguration.class)
 public interface DataHubClient {
-  String TOKEN_HEADER_TYPE = "application/x-www-form-urlencoded";
-
   @PostMapping(value = "/api/reports?processing=async", consumes = "text/csv")
   UploadResponse uploadCSV(@Param("file") byte[] file);
 
