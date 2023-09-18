@@ -1,5 +1,3 @@
-import qs from "querystring";
-
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 import React, { ChangeEventHandler, useEffect, useMemo, useState } from "react";
@@ -642,13 +640,18 @@ const TestResultsList = () => {
   };
 
   const filter = (params: FilterParams) => {
+    const searchParams = {
+      facility: activeFacilityId,
+      ...filterParams,
+      ...params,
+    };
+    const nonNullSearchParams = Object.fromEntries(
+      Object.entries(searchParams).filter(([_, v]) => v !== null)
+    ) as Record<string, string>;
+
     navigate({
       pathname: "/results/1",
-      search: qs.stringify({
-        facility: activeFacilityId,
-        ...filterParams,
-        ...params,
-      }),
+      search: new URLSearchParams(nonNullSearchParams).toString(),
     });
   };
 
@@ -659,7 +662,7 @@ const TestResultsList = () => {
   const clearFilterParams = () =>
     navigate({
       pathname: "/results/1",
-      search: qs.stringify({ facility: activeFacilityId }),
+      search: new URLSearchParams({ facility: activeFacilityId }).toString(),
     });
 
   const entriesPerPage = 20;
