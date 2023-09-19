@@ -9,11 +9,13 @@ import { useGetAllOrganizationsQuery } from "../../../generated/graphql";
 interface OrganizationSelectFormFieldProps {
   control?: Control<any>;
   disabled?: boolean;
+  isLoadingUser: boolean;
 }
 
 const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
   control,
   disabled,
+  isLoadingUser,
 }) => {
   /**
    * Form integration
@@ -69,7 +71,7 @@ const UserOrganizationFormField: React.FC<OrganizationSelectFormFieldProps> = ({
           <span className="usa-sr-only">Error: </span> {error?.message}
         </span>
       )}
-      {loadingOrgs ? (
+      {loadingOrgs || isLoadingUser ? (
         <div
           className={
             "padding-1 full-width text-italic usa-hint border border-gray-10"

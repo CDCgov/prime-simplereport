@@ -1,8 +1,7 @@
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
-import { useForm } from "react-hook-form";
-import { FieldError } from "react-hook-form/dist/types/errors";
+import { useForm, FieldError } from "react-hook-form";
 
 import Button from "../../commonComponents/Button/Button";
 import Dropdown from "../../commonComponents/Dropdown";

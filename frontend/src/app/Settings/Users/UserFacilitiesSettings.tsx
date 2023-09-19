@@ -1,6 +1,5 @@
 import React from "react";
-import { UseFormRegister, UseFormSetValue } from "react-hook-form";
-import { FieldError } from "react-hook-form/dist/types/errors";
+import { UseFormRegister, UseFormSetValue, FieldError } from "react-hook-form";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
 import { Facility } from "../../../generated/graphql";

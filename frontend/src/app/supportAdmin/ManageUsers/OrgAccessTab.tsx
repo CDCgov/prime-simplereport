@@ -1,6 +1,13 @@
-import React, { useRef, useState } from "react";
-import { FieldError } from "react-hook-form/dist/types/errors";
-import { UseFormHandleSubmit, UseFormSetValue } from "react-hook-form";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  UseFormHandleSubmit,
+  UseFormSetValue,
+  FieldError,
+  Control,
+  UseFormTrigger,
+  FieldErrors,
+  UseFormRegister,
+} from "react-hook-form";
 
 import Button from "../../commonComponents/Button/Button";
 import UserFacilitiesSettings from "../../Settings/Users/UserFacilitiesSettings";
@@ -19,32 +26,41 @@ import { OrgAccessFormData } from "./AdminManageUser";
 export interface UserAccessTabProps {
   user: User;
   onSubmit: (data: OrgAccessFormData) => Promise<void>;
-  handleSubmit: UseFormHandleSubmit<OrgAccessFormData>;
-  setValue: UseFormSetValue<OrgAccessFormData>;
-  formValues: OrgAccessFormData;
-  control: any;
-  register: any;
-  errors: any;
-  isDirty: boolean;
+  isLoadingUser: boolean;
   isLoadingFacilities: boolean;
-  isUpdating: boolean;
+  disabled: boolean;
   facilityList: Pick<Facility, "id" | "name">[];
+  formProps: {
+    handleSubmit: UseFormHandleSubmit<OrgAccessFormData>;
+    setValue: UseFormSetValue<OrgAccessFormData>;
+    formValues: OrgAccessFormData;
+    control: Control<OrgAccessFormData>;
+    trigger: UseFormTrigger<OrgAccessFormData>;
+    register: UseFormRegister<OrgAccessFormData>;
+    errors: FieldErrors<OrgAccessFormData>;
+    isDirty: boolean;
+  };
 }
 
 const OrgAccessTab: React.FC<UserAccessTabProps> = ({
   user,
   facilityList,
-  setValue,
   onSubmit,
-  handleSubmit,
-  control,
-  formValues,
-  register,
-  errors,
-  isDirty,
+  formProps,
+  isLoadingUser,
   isLoadingFacilities,
-  isUpdating,
+  disabled,
 }) => {
+  const {
+    handleSubmit,
+    setValue,
+    formValues,
+    control,
+    trigger,
+    register,
+    errors,
+    isDirty,
+  } = formProps;
   const selectedRole = formValues.role;
 
   const fullName = displayFullName(
@@ -136,6 +152,13 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
   );
 
   /**
+   * Run validation on facilities when role is changed
+   */
+  useEffect(() => {
+    trigger("facilityIds");
+  }, [formValues.role, trigger]);
+
+  /**
    * HTML
    */
   return (
@@ -148,12 +171,16 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
         onSubmit={handleSubmit(handleConfirmationAndSubmit)}
         className="usa-form usa-form--large manage-user-form__site-admin"
       >
-        <UserOrganizationFormField control={control} disabled={isUpdating} />
+        <UserOrganizationFormField
+          control={control}
+          disabled={disabled}
+          isLoadingUser={isLoadingUser}
+        />
         <UserRoleFormField
           control={control}
           registrationProps={register("role", { required: "Role is required" })}
           error={errors.role}
-          disabled={isUpdating}
+          disabled={disabled}
         />
         <UserFacilitiesSettings
           roleSelected={selectedRole}
@@ -161,16 +188,14 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
           register={register}
           error={errors.facilityIds as FieldError}
           setValue={setValue}
-          disabled={
-            isUpdating || isLoadingFacilities || selectedRole === "ADMIN"
-          }
+          disabled={disabled || isLoadingFacilities || selectedRole === "ADMIN"}
         />
         <Button
           className={"margin-y-4"}
           variant="outline"
           type="submit"
           label={"Save changes"}
-          disabled={!isDirty || isUpdating}
+          disabled={!isDirty || disabled}
         />
         {confirmationModal}
       </form>

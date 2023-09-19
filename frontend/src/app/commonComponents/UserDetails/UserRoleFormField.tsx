@@ -1,13 +1,18 @@
 import React from "react";
-import { UseFormRegisterReturn, useWatch } from "react-hook-form";
+import {
+  FieldError,
+  UseFormRegisterReturn,
+  useWatch,
+  Control,
+} from "react-hook-form";
 
 import RadioGroup from "../RadioGroup";
 import { ROLES } from "../../Settings/Users/UserRoleSettingsForm";
 
 interface UserRoleFormFieldProps {
-  control: any;
+  control: Control<any>;
   registrationProps: UseFormRegisterReturn<any>;
-  error: any;
+  error?: FieldError;
   disabled: boolean;
 }
 

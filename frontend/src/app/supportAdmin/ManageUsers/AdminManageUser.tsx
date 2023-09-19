@@ -79,9 +79,10 @@ export const AdminManageUser: React.FC = () => {
   const [navItemSelected, setNavItemSelected] = useState<
     "User information" | "Organization access"
   >("User information");
-  const [getUserByEmail] = useFindUserByEmailLazyQuery({
-    fetchPolicy: "no-cache",
-  });
+  const [getUserByEmail, { loading: loadingUser }] =
+    useFindUserByEmailLazyQuery({
+      fetchPolicy: "no-cache",
+    });
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateUserName] = useUpdateUserNameMutation();
   const [updateUserEmail] = useEditUserEmailMutation();
@@ -151,9 +152,11 @@ export const AdminManageUser: React.FC = () => {
           email: emailAddress,
         },
       });
+
       showSuccess("", `User email address changed to ${emailAddress}`);
       setSearchState((prevState) => ({
         ...prevState,
+        searchEmail: emailAddress,
         foundUser: {
           ...prevState.foundUser,
           email: emailAddress,
@@ -241,14 +244,14 @@ export const AdminManageUser: React.FC = () => {
         variables: { userId: foundUser?.id as string },
       });
 
-      await retrieveUser();
+      await retrieveUser(searchEmail);
 
       showSuccess("", `User account undeleted for ${userFullName}`);
     });
   };
 
-  const retrieveUser = async () => {
-    return getUserByEmail({ variables: { email: searchEmail.trim() } }).then(
+  const retrieveUser = async (username: string) => {
+    return getUserByEmail({ variables: { email: username } }).then(
       ({ data, error }) => {
         if (!data?.user && !error) {
           setSearchState((prevState) => ({
@@ -294,7 +297,7 @@ export const AdminManageUser: React.FC = () => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchState((prevState) => ({
       ...prevState,
-      searchEmail: e.target.value,
+      searchEmail: e.target.value?.trim(),
     }));
   };
   const handleClearFilter = () => {
@@ -303,7 +306,7 @@ export const AdminManageUser: React.FC = () => {
   };
 
   const handleSearch = () => {
-    retrieveUser();
+    retrieveUser(searchEmail);
   };
 
   /**
@@ -314,6 +317,7 @@ export const AdminManageUser: React.FC = () => {
     handleSubmit,
     formState: { errors, isDirty },
     register,
+    trigger,
     reset,
     setValue,
   } = useForm<OrgAccessFormData>();
@@ -347,6 +351,8 @@ export const AdminManageUser: React.FC = () => {
       if (formValues.organizationId !== foundUser?.organization?.id) {
         setValue("facilityIds", []);
       }
+    } else {
+      setValue("facilityIds", []);
     }
   }, [
     queryGetFacilitiesByOrgId,
@@ -389,7 +395,7 @@ export const AdminManageUser: React.FC = () => {
       });
 
       showSuccess("", `Access updated for ${userFullName}`);
-      await retrieveUser();
+      await retrieveUser(searchEmail);
     });
   };
 
@@ -508,16 +514,20 @@ export const AdminManageUser: React.FC = () => {
                   <OrgAccessTab
                     user={foundUser}
                     onSubmit={updateUserPrivileges}
-                    handleSubmit={handleSubmit}
-                    formValues={formValues as OrgAccessFormData}
-                    control={control}
-                    errors={errors}
-                    isDirty={isDirty}
-                    register={register}
-                    setValue={setValue}
                     facilityList={facilityList || []}
+                    isLoadingUser={loadingUser}
                     isLoadingFacilities={loadingFacilities}
-                    isUpdating={isUpdating}
+                    disabled={isUpdating || !isUserActive(foundUser)}
+                    formProps={{
+                      handleSubmit,
+                      formValues: formValues as OrgAccessFormData,
+                      control,
+                      errors,
+                      isDirty,
+                      register,
+                      trigger,
+                      setValue,
+                    }}
                   />
                 )}
               </div>
