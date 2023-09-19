@@ -49,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 
 @Service
-@Transactional(readOnly = false)
+@Transactional
 @Slf4j
 public class ApiUserService {
 
