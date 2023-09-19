@@ -280,7 +280,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       <Checkbox
         id={"unknownPhoneNumber"}
         name={"unknownPhoneNumber"}
-        label={"Phone number unknown"}
+        label={t("patient.form.contact.unknownPhoneNumber")}
         checked={unknownPhoneNumber}
         onChange={(e) => {
           setUnknownPhoneNumber(e.target.checked);

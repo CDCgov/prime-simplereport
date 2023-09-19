@@ -198,6 +198,9 @@ const PersonForm = (props: Props) => {
           state: state,
           zipCode: zip,
           street: street,
+          streetTwo: "",
+          city: "",
+          county: "",
         });
         return;
       }
@@ -511,8 +514,7 @@ const PersonForm = (props: Props) => {
         <p className="usa-hint maxw-prose">
           {t("patient.form.contact.helpText")}
         </p>
-        {/*todo: styling */}
-        <h4>Phone</h4>
+        <h4>{t("patient.form.contact.phoneHeading")}</h4>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}
@@ -522,8 +524,7 @@ const PersonForm = (props: Props) => {
           unknownPhoneNumber={unknownPhoneNumber}
           setUnknownPhoneNumber={onUpdateUnknownNumber}
         />
-        {/*todo: styling */}
-        <h4>Email</h4>
+        <h4>{t("patient.form.contact.emailHeading")}</h4>
         <div className="usa-form">
           <ManageEmails
             emails={patient.emails}
@@ -554,12 +555,11 @@ const PersonForm = (props: Props) => {
             />
           )}
         </div>
-        {/*todo: styling */}
-        <h4>Address</h4>
-        <Checkbox //todo
+        <h4>{t("patient.form.contact.addressHeading")}</h4>
+        <Checkbox
           id={"unknownAddress"}
           name={"unknownAddress"}
-          label={"Address unknown or patient unhoused"} //todo use translation
+          label={t("patient.form.contact.unknownAddress")}
           checked={unknownAddress}
           onChange={(e) => {
             onUpdateUnknownAddress(e.target.checked);

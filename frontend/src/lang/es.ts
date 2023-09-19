@@ -151,6 +151,12 @@ export const es: LanguageConfig = {
         },
         contact: {
           heading: "Información de contacto",
+          phoneHeading: "Teléfono",
+          unknownPhoneNumber: "Se desconoce el número de teléfono",
+          emailHeading: "Correo electrónico",
+          addressHeading: "Dirección",
+          unknownAddress:
+            "Se desconoce la dirección o el/la paciente no tiene hogar",
           helpText:
             "Usted es responsable de ingresar la información de contacto correcta, siguiendo las leyes federales y estatales aplicables.",
           primaryPhoneNumber: "Número de teléfono principal",
