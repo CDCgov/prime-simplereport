@@ -469,6 +469,10 @@ public class TestResultUploadService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public TestResultUpload processConditionAgnosticResultCSV(InputStream csvStream) {
+    UUID orgInternalId = _orgService.getCurrentOrganization().getInternalId();
+    List<String> convertedFhirBundles =
+        fhirConverter.convertToFhirBundles(csvStream, orgInternalId);
+
     FeedbackMessage[] empty = {};
     return new TestResultUpload(
         UUID.randomUUID(), UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
