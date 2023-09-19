@@ -230,7 +230,6 @@ jobs:
 # Automated tests
   e2e_local:
     if: |
-      always() &&
       (needs.build_backend_image.result == 'success' || needs.build_backend_image.result == 'skipped') &&
       (needs.build_cypress_image.result == 'success' || needs.build_cypress_image.result == 'skipped') &&
       (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped') &&
@@ -259,7 +258,6 @@ jobs:
 
   lighthouse:
     if: |
-      always() &&
       (needs.build_backend_image.result == 'success' || needs.build_backend_image.result == 'skipped') &&
       (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped') &&
       (needs.build_frontend_lighthouse_image.result == 'success' || needs.build_frontend_lighthouse_image.result == 'skipped') &&
@@ -278,7 +276,6 @@ jobs:
 
   tests:
     if: |
-      always() &&
       (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped')
     needs:
       - build_database_image
@@ -292,7 +289,6 @@ jobs:
 
   liquibase_action_checks:
     if: |
-      always() &&
       (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped')
     needs:
       - build_database_image
