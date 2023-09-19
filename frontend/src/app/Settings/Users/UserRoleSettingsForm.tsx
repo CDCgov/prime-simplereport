@@ -28,7 +28,7 @@ export const ROLES: RoleButton[] = [
   {
     value: "ENTRY_ONLY",
     label: "Testing only",
-    labelDescription: "Conduct tests ",
+    labelDescription: "Conduct tests",
   },
 ];
 
