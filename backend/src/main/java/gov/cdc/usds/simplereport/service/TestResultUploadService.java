@@ -43,7 +43,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -336,14 +335,28 @@ public class TestResultUploadService {
   }
 
   public TokenResponse getRSAuthToken() {
-    Map<String, String> queryParams = new LinkedHashMap<>();
-    queryParams.put("scope", scope);
-    queryParams.put("grant_type", "client_credentials");
-    queryParams.put(
-        "client_assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer");
-    queryParams.put("client_assertion", createDataHubSenderToken(signingKey));
 
-    return _client.fetchAccessToken(queryParams);
+    String scopeParam = "scope=" + scope;
+    String grantTypeParam = "grant_type=client_credentials";
+    String clientAssertionTypeParam =
+        "client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer";
+    String clientAssertionParam = "client_assertion=" + createDataHubSenderToken(signingKey);
+    String ampersandDelimChar = "&";
+
+    StringBuilder requestBuilder = new StringBuilder();
+
+    String requestBody =
+        requestBuilder
+            .append(scopeParam)
+            .append(ampersandDelimChar)
+            .append(grantTypeParam)
+            .append(ampersandDelimChar)
+            .append(clientAssertionTypeParam)
+            .append(ampersandDelimChar)
+            .append(clientAssertionParam)
+            .toString();
+
+    return _client.fetchAccessToken(requestBody);
   }
 
   private Future<UploadResponse> submitResultsAsFhir(

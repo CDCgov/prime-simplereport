@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service.model;
 
+import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -14,7 +15,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.openapitools.client.model.UserStatus;
 
 public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, PersonEntity {
 
