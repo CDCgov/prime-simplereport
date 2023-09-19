@@ -3,6 +3,9 @@ run-name: Deploy to ${{ inputs.deploy_env }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
+    matrix:
+      fail-fast: false
+      deploy_env: [dev6, dev7]
     inputs:
       deploy_env:
         description: 'The environment to deploy to'
@@ -20,7 +23,7 @@ on:
           - pentest
 
 env:
-  DEPLOY_ENV: dev
+  DEPLOY_ENV: ${{ matrix.deploy_env }}
   NODE_VERSION: 18
 concurrency:
   group: ${{ inputs.deploy_env }}-deploy
