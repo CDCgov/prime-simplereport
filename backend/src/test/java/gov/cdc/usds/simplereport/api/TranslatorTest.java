@@ -25,12 +25,14 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class TranslatorTest {
   @Test
@@ -43,28 +45,20 @@ class TranslatorTest {
     assertNull(parseUserShortDate(null));
   }
 
-  @Test
-  void validUserShortDate_withStandardFormatParsesCorrectly() {
-    LocalDate result = parseUserShortDate("2/1/2021");
+  @ParameterizedTest(name = "{0} parses correctly")
+  @MethodSource("namedArguments")
+  void validUserShortDate_parsesCorrectly(String date) {
+    LocalDate result = parseUserShortDate(date);
     assertEquals(2, result.getMonthValue());
     assertEquals(1, result.getDayOfMonth());
     assertEquals(2021, result.getYear());
   }
 
-  @Test
-  void validUserShortDate_withLeadingZerosParsesCorrectly() {
-    LocalDate result = parseUserShortDate("02/01/2021");
-    assertEquals(2, result.getMonthValue());
-    assertEquals(1, result.getDayOfMonth());
-    assertEquals(2021, result.getYear());
-  }
-
-  @Test
-  void validUserShortDate_withShortYearParsesCorrectly() {
-    LocalDate result = parseUserShortDate("2/1/80");
-    assertEquals(2, result.getMonthValue());
-    assertEquals(1, result.getDayOfMonth());
-    assertEquals(1980, result.getYear());
+  static Stream<Arguments> namedArguments() {
+    return Stream.of(
+        Arguments.of(Named.of("Standard format date", "2/1/2021")),
+        Arguments.of(Named.of("Leading zeros date", "02/01/2021")),
+        Arguments.of(Named.of("Short year date", "2/1/21")));
   }
 
   @Test

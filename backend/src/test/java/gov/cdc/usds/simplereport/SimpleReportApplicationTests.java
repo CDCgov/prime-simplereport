@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 @SpringBootTest(
     webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = {"hibernate.query.interceptor.error-level=EXCEPTION"})
-public class SimpleReportApplicationTests {
+class SimpleReportApplicationTests {
 
   @Autowired private SimpleReportApplication application;
 
