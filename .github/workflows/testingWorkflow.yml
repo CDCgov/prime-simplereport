@@ -230,7 +230,7 @@ jobs:
 # Automated tests
   e2e_local:
     if: |
-      !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+      always() && !failure() && !cancelled()
     needs:
       - build_backend_image
       - build_cypress_image
@@ -254,11 +254,7 @@ jobs:
 
   lighthouse:
     if: |
-      !cancelled() && success() &&
-      (needs.build_backend_image.result == 'success' || needs.build_backend_image.result == 'skipped') &&
-      (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped') &&
-      (needs.build_frontend_lighthouse_image.result == 'success' || needs.build_frontend_lighthouse_image.result == 'skipped') &&
-      (needs.build_nginx_image.result == 'success' || needs.build_nginx_image.result == 'skipped')
+      always() && !failure() && !cancelled()
     needs:
       - build_backend_image
       - build_database_image
@@ -286,8 +282,7 @@ jobs:
 
   liquibase_action_checks:
     if: |
-      !cancelled() && success() &&
-      (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped')
+      always() && !failure() && !cancelled()
     needs:
       - build_database_image
     uses: ./.github/workflows/testDBActions.yml
