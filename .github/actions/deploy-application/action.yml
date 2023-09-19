@@ -26,14 +26,14 @@ runs:
       run: |
         echo "::group::Unpack client"
         mkdir client-build;
-        tar -C client-build -zxvf ${{inputs.client_tarball}}
+        tar -C client-build -zxvf ${{ inputs.client_tarball }}
         echo "::endgroup::"
     - name: Promote API to production and verify that it is ready
       shell: bash
       working-directory: ./ops
       run: |
         echo "::group::Promote API and verify readiness"
-        make promote-${{ env.DEPLOY_ENV }} check-${{ env.DEPLOY_ENV }}-readiness
+        make promote-${{ inputs.deploy_env }} check-${{ inputs.deploy_env }}-readiness
         echo "::endgroup::"
     - name: Check for production app readiness
       shell: bash

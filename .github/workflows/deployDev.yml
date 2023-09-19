@@ -20,10 +20,9 @@ on:
           - pentest
 
 env:
-  DEPLOY_ENV: dev
   NODE_VERSION: 18
 concurrency:
-  group: ${{ inputs.deploy_env }}-deploy
+  group: ${{ github.event.inputs.deploy_env }}-deploy
   cancel-in-progress: false
 
 jobs:
