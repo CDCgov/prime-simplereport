@@ -393,6 +393,8 @@ const TestCardForm = ({
     </Alert>
   );
 
+  const showErrorSummary =
+    dateTestedErrorMessage.length > 0 || testResultsError.length > 0;
   const errorSummaryAlert = (
     <Alert type={"error"} headingLevel={"h4"} className="margin-top-2">
       <div>
@@ -413,7 +415,7 @@ const TestCardForm = ({
         <form onSubmit={onSubmit}>
           {isCorrection && correctionWarningAlert}
           {showDateMonthsAgoWarning && dateMonthsAgoWarningAlert}
-          {dateTestedErrorMessage && testResultsError && errorSummaryAlert}
+          {showErrorSummary && errorSummaryAlert}
           {!useCurrentTime && (
             <div className="grid-row grid-gap">
               <div className="grid-col-auto">
