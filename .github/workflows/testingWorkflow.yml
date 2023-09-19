@@ -230,12 +230,7 @@ jobs:
 # Automated tests
   e2e_local:
     if: |
-      !cancelled() && success() &&
-      (needs.build_backend_image.result == 'success' || needs.build_backend_image.result == 'skipped') &&
-      (needs.build_cypress_image.result == 'success' || needs.build_cypress_image.result == 'skipped') &&
-      (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped') &&
-      (needs.build_frontend_image.result == 'success' || needs.build_frontend_image.result == 'skipped') &&
-      (needs.build_nginx_image.result == 'success' || needs.build_nginx_image.result == 'skipped')
+      !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
     needs:
       - build_backend_image
       - build_cypress_image
