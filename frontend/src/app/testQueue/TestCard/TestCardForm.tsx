@@ -400,8 +400,10 @@ const TestCardForm = ({
       <div>
         <strong>Please correct the following errors:</strong>
       </div>
-      <div>{dateTestedErrorMessage}</div>
-      <div>{testResultsError}</div>
+      <ul className={"margin-y-0"}>
+        {dateTestedErrorMessage && <li>{dateTestedErrorMessage}</li>}
+        {testResultsError && <li>{testResultsError}</li>}
+      </ul>
     </Alert>
   );
 
