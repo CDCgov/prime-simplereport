@@ -517,7 +517,7 @@ export const AdminManageUser: React.FC = () => {
                     facilityList={facilityList || []}
                     isLoadingUser={loadingUser}
                     isLoadingFacilities={loadingFacilities}
-                    disabled={isUpdating || !isUserActive(foundUser)}
+                    disabled={isUpdating || !!foundUser?.isDeleted}
                     formProps={{
                       handleSubmit,
                       formValues: formValues as OrgAccessFormData,
