@@ -5,12 +5,9 @@ on:
     workflows: ["Deploy Stg"]
     types:
       - completed
-    matrix:
-      fail-fast: false
-      deploy_env: [prod, demo, training]
 
 env:
-  DEPLOY_ENV: ${{ matrix.deploy_env }}
+  DEPLOY_ENV: prod
   NODE_VERSION: 18
 concurrency:
   group: prod-deploy
