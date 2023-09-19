@@ -2,11 +2,17 @@ import moment from "moment";
 import {
   Alert,
   Button,
+  ButtonGroup,
   Checkbox,
   FormGroup,
   Label,
+  Modal,
+  ModalFooter,
+  ModalHeading,
+  ModalRef,
+  ModalToggleButton,
 } from "@trussworks/react-uswds";
-import React, { useEffect, useMemo, useReducer, useState } from "react";
+import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
 import { FetchResult } from "@apollo/client";
 
 import TextInput from "../../commonComponents/TextInput";
@@ -125,6 +131,8 @@ const TestCardForm = ({
   const [submitTestResult, { loading }] = useSubmitQueueItemMutation();
   const [useCurrentTime, setUseCurrentTime] = useState(false);
   const appInsights = getAppInsights();
+  const submitModalRef = useRef<ModalRef>(null);
+
   const trackRemovePatientFromQueue = () => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Remove Patient From Queue" });
@@ -299,12 +307,18 @@ const TestCardForm = ({
     return true;
   };
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitForm = async (forceSubmit: boolean = false) => {
     if (!validateForm()) {
       return;
     }
     // check force submit and confirmation type logic
+    // TODO: determine whether AOE form is valid
+    const areAoEAnswersComplete = false;
+
+    if (!forceSubmit && !areAoEAnswersComplete) {
+      submitModalRef.current?.toggleModal();
+      return;
+    }
 
     setSaveStatus("saving");
     if (appInsights) {
@@ -413,8 +427,37 @@ const TestCardForm = ({
         show={saveStatus === "saving"}
         name={patientFullName}
       />
+      <Modal
+        ref={submitModalRef}
+        aria-labelledby={"submit-modal-heading"}
+        id="submit-modal"
+      >
+        <ModalHeading id="submit-modal-heading">
+          The test questionnaire for {patientFullName} has not been completed.
+        </ModalHeading>
+        <p>Do you want to submit results anyway?</p>
+        <ModalFooter id={"submit-modal-footer"}>
+          <ButtonGroup>
+            <ModalToggleButton
+              modalRef={submitModalRef}
+              closer
+              onClick={(e) => submitForm(true)}
+            >
+              Submit anyway.
+            </ModalToggleButton>
+            <ModalToggleButton modalRef={submitModalRef} unstyled closer>
+              No, go back.
+            </ModalToggleButton>
+          </ButtonGroup>
+        </ModalFooter>
+      </Modal>
       <div className="grid-container">
-        <form onSubmit={onSubmit}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            submitForm();
+          }}
+        >
           {isCorrection && correctionWarningAlert}
           {showDateMonthsAgoWarning && dateMonthsAgoWarningAlert}
           {showErrorSummary && errorSummaryAlert}
@@ -474,7 +517,7 @@ const TestCardForm = ({
               </div>
             </div>
           )}
-          <div className="grid-row-grid-gap">
+          <div className="grid-row grid-gap">
             <div className="grid-col-auto">
               {useCurrentTime && (
                 <Label className={"margin-top-3"} htmlFor={"current-date-time"}>
