@@ -243,7 +243,9 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         aria-label="Start timer"
       >
         <FontAwesomeIcon alt-text="stopwatch" icon={faStopwatch as IconProp} />
-        <span role="timer">{mmss(countdown)}</span>{" "}
+        <span className={"margin-left-1"} role="timer">
+          Start timer
+        </span>{" "}
       </button>
     );
   }

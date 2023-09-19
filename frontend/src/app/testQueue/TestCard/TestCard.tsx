@@ -30,7 +30,10 @@ export const TestCard = ({
   refetchQueue,
 }: TestCardProps) => {
   const navigate = useNavigate();
-  const timer = useTestTimer(testOrder.internalId, 0.5);
+  const timer = useTestTimer(
+    testOrder.internalId,
+    testOrder.deviceType.testLength
+  );
   const organization = useSelector<RootState, Organization>(
     (state: any) => state.organization as Organization
   );
@@ -96,9 +99,9 @@ export const TestCard = ({
           <div className="grid-col-auto padding-x-0">
             <TestTimerWidget timer={timer} context={timerContext} />
           </div>
-          <div className="grid-col-auto">
+          <div className="grid-col-auto close-button-col">
             <Button
-              className={"close-button"}
+              className={"card-close-button"}
               variant="unstyled"
               onClick={() => {
                 navigate({
@@ -113,7 +116,7 @@ export const TestCard = ({
         </div>
       </CardHeader>
       <div className="position-relative">
-        <CardBody className={isOpen ? "" : "display-none"}>
+        <CardBody className={isOpen ? "padding-top-0" : "display-none"}>
           <TestCardForm
             testOrder={testOrder}
             devicesMap={devicesMap}
