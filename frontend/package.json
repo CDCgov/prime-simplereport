@@ -239,7 +239,8 @@
     "node-fetch": "^2.6.12",
     "react-scripts/**/nth-check": "^2.1.1",
     "undici": "5.22.1",
-    "webpack@>5.0.0": "5.76.0"
+    "webpack@>5.0.0": "5.76.0",
+    "@testing-library/dom": "^9.3.0"
   },
   "msw": {
     "workerDirectory": "/storybook_public"
