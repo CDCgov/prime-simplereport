@@ -67,7 +67,7 @@ public class AddressValidationService {
     return lookup.getResult();
   }
 
-  public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
+  public StreetAddress getValidatedAddress(Lookup lookup) {
     var results = getLookupResults(lookup);
 
     if (results.isEmpty()) {
@@ -102,7 +102,7 @@ public class AddressValidationService {
       String postalCode,
       String fieldName) {
     Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
-    return getValidatedAddress(lookup, fieldName);
+    return getValidatedAddress(lookup);
   }
 
   public TimezoneInfo getTimezoneInfoByLookup(Lookup lookup) {
