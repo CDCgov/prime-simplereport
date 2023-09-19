@@ -516,7 +516,8 @@ public class PersonService {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery) {
+      TestResultDeliveryPreference testResultDelivery,
+      String notes) {
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -537,7 +538,8 @@ public class PersonService {
         residentCongregateSetting,
         employedInHealthcare,
         preferredLanguage,
-        testResultDelivery);
+        testResultDelivery,
+        notes);
 
     if (!emails.isEmpty()) {
       patientToUpdate.setPrimaryEmail(emails.get(0));

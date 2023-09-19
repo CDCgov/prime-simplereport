@@ -271,7 +271,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDeliveryPreference) {
+      TestResultDeliveryPreference testResultDeliveryPreference,
+      String notes) {
     this.lookupId = lookupId;
     this.nameInfo.setFirstName(firstName);
     this.nameInfo.setMiddleName(middleName);
@@ -293,6 +294,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     if (testResultDeliveryPreference != null) {
       this.testResultDeliveryPreference = testResultDeliveryPreference;
     }
+    this.notes = notes;
   }
 
   public void setFacility(Facility f) {
