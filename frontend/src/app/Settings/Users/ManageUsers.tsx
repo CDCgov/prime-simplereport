@@ -126,6 +126,7 @@ const ManageUsers: React.FC<Props> = ({
     variables: { id: activeUser?.id },
     fetchPolicy: "no-cache",
     skip: !activeUser?.id,
+    notifyOnNetworkStatusChange: true,
     onCompleted: (data) => updateUserWithPermissions(data.user),
   });
 
