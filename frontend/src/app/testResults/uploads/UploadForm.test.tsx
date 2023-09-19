@@ -48,6 +48,7 @@ const TestContainer = () => (
         uploadResults={FileUploadService.uploadResults}
         uploadType={"Disease Specific"}
         spreadsheetTemplateLocation={""}
+        uploadGuideLocation={""}
       />
     </MemoryRouter>
   </Provider>
