@@ -98,8 +98,7 @@ public class PatientBulkUploadServiceAsync {
                 extractedData.getStreet2().getValue(),
                 extractedData.getCity().getValue(),
                 extractedData.getState().getValue(),
-                extractedData.getZipCode().getValue(),
-                null);
+                extractedData.getZipCode().getValue());
 
         String country =
             extractedData.getCountry().getValue() == null
