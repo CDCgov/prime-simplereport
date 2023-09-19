@@ -1,16 +1,36 @@
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "@trussworks/react-uswds";
-import React from "react";
-import "./TextWithTooltip.scss";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
+
+import "./TextWithTooltip.scss";
 
 type CustomButtonProps = React.PropsWithChildren<{
   className?: string;
   children: React.ReactNode;
+  text?: string;
+  hideText?: boolean;
 }> &
   JSX.IntrinsicElements["button"] &
   React.RefAttributes<HTMLButtonElement>;
+
+const CustomButtonForwardRef: React.ForwardRefRenderFunction<
+  HTMLButtonElement,
+  CustomButtonProps
+> = (
+  { className, children, hideText, text, ...tooltipProps }: CustomButtonProps,
+  ref
+) => (
+  <button
+    className={`usa-button usa-button--unstyled ${className}`}
+    ref={ref}
+    aria-label={hideText ? `${text} tooltip` : ""}
+    {...tooltipProps}
+  >
+    {children}
+  </button>
+);
 
 interface Props {
   tooltip: string;
@@ -27,23 +47,10 @@ export const TextWithTooltip = ({
   hideText,
   className,
 }: Props) => {
-  const CustomButton: React.ForwardRefExoticComponent<CustomButtonProps> =
-    React.forwardRef(
-      ({ className, children, ...tooltipProps }: CustomButtonProps, ref) => (
-        <button
-          className={`usa-button usa-button--unstyled ${className}`}
-          ref={ref}
-          aria-label={hideText ? `${text} tooltip` : ""}
-          {...tooltipProps}
-        >
-          {children}
-        </button>
-      )
-    );
   function preventPageReload(e: React.MouseEvent) {
     e.preventDefault();
   }
-  CustomButton.displayName = "custom button";
+  const CustomButton = React.forwardRef(CustomButtonForwardRef);
 
   return (
     <Tooltip<CustomButtonProps>
@@ -51,6 +58,8 @@ export const TextWithTooltip = ({
       asCustom={CustomButton}
       position={position || "top"}
       className={className}
+      text={text}
+      hideText={hideText}
       wrapperclasses="usa-text-with-tooltip"
       onClick={preventPageReload}
     >

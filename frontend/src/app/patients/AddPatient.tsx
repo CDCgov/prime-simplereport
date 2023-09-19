@@ -133,7 +133,6 @@ export const ADD_PATIENT = gql`
     }
   }
 `;
-
 type AddPatientParams = Nullable<Omit<PersonFormData, "lookupId">>;
 
 interface AddPatientResponse {
@@ -315,6 +314,15 @@ const AddPatient = () => {
     </>
   );
 
+  const getFooter: (
+    onSave: (startTest?: boolean) => void,
+    formChanged: boolean
+  ) => React.ReactNode = (onSave, formChanged) => (
+    <div className="prime-edit-patient-heading">
+      {getSaveButtons(formChanged, onSave, "lower")}
+    </div>
+  );
+
   function getHeader() {
     return (
       _: any,
@@ -354,11 +362,7 @@ const AddPatient = () => {
           onBlur={onBlur}
           getHeader={getHeader()}
           headerClassName={"padding-bottom-0"}
-          getFooter={(onSave, formChanged) => (
-            <div className="prime-edit-patient-heading">
-              {getSaveButtons(formChanged, onSave, "lower")}
-            </div>
-          )}
+          getFooter={getFooter}
         />
       </div>
     </div>
