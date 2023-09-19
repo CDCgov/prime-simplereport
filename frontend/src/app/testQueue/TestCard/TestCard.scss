@@ -4,8 +4,19 @@
   list-style: none;
 }
 
-.close-button {
-  color: settings.$theme-color-prime-gray-darkest;
+.card-close-button {
+  color: settings.$theme-color-prime-gray-darkest !important;
+}
+
+.close-button-col {
+  position: relative;
+  bottom: 0.5rem;
+  left: 0.25rem;
+}
+
+.timer-col {
+  position: relative;
+  right: 1rem;
 }
 
 .test-card-header-bottom-border {
