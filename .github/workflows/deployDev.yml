@@ -21,6 +21,7 @@ on:
 
 env:
   NODE_VERSION: 18
+
 concurrency:
   group: ${{ github.event.inputs.deploy_env }}-deploy
   cancel-in-progress: false
@@ -36,6 +37,7 @@ jobs:
           acr_registry: ${{ secrets.ACR_REPO_URL }}
           acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
           acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
+
   build_frontend:
     runs-on: ubuntu-latest
     steps:
@@ -50,6 +52,7 @@ jobs:
           okta_enabled: true
           okta_url: https://hhs-prime.oktapreview.com
           okta_client_id: ${{ vars.OKTA_CLIENT_ID }}
+
   prerelease_backend:
     runs-on: ubuntu-latest
     needs: [build_frontend, build_docker]
@@ -75,6 +78,7 @@ jobs:
         timeout-minutes: 1
         with:
           deploy_env: ${{ inputs.deploy_env }}
+
   deploy:
     runs-on: ubuntu-latest
     environment:

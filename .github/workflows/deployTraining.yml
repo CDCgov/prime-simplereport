@@ -9,6 +9,7 @@ on:
 env:
   DEPLOY_ENV: training
   NODE_VERSION: 18
+
 concurrency:
   group: training-deploy
   cancel-in-progress: false
@@ -24,6 +25,7 @@ jobs:
           acr_registry: ${{ secrets.ACR_REPO_URL }}
           acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
           acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
+
   build_frontend:
     runs-on: ubuntu-latest
     steps:
@@ -36,6 +38,7 @@ jobs:
           deploy_env: ${{env.DEPLOY_ENV}}
           smarty_streets_key: ${{ secrets.SMARTY_STREETS_KEY }}
           okta_enabled: false
+
   prerelease_backend:
     runs-on: ubuntu-latest
     needs: [build_frontend, build_docker]
@@ -61,6 +64,7 @@ jobs:
         timeout-minutes: 1
         with:
           deploy_env: ${{ env.DEPLOY_ENV }}
+
   deploy:
     runs-on: ubuntu-latest
     environment:
