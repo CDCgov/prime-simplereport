@@ -250,7 +250,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
                 <button
                   className="usa-button--unstyled padding-105 height-5 cursor-pointer"
                   onClick={() => onPhoneNumberRemove(idx)}
-                  aria-label={`Delete additional phone number ${phoneNumber?.number?.trim()}`}
+                  aria-label={`Delete additional phone number ${phoneNumber.number.trim()}`}
                 >
                   <FontAwesomeIcon icon={"trash"} className={"text-error"} />
                 </button>
@@ -276,7 +276,6 @@ const ManagePhoneNumbers: React.FC<Props> = ({
 
   return (
     <div className="usa-form">
-      {/*todo update label to use translation*/}
       <Checkbox
         id={"unknownPhoneNumber"}
         name={"unknownPhoneNumber"}
