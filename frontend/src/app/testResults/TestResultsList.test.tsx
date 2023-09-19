@@ -1,5 +1,3 @@
-import qs from "querystring";
-
 import { MockedProvider } from "@apollo/client/testing";
 import {
   act,
@@ -104,20 +102,18 @@ describe("TestResultsList", () => {
     expect(container).toMatchSnapshot();
   });
   it("should be able to load filter params from url", async () => {
-    const search = {
+    const search = new URLSearchParams({
       patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
       startDate: "2021-03-18T00:00:00.000Z",
       endDate: "2021-03-19T23:59:59.999Z",
       result: "NEGATIVE",
       role: "STAFF",
       facility: "1",
-    };
+    });
 
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
+        initialEntries={[{ pathname: "/results/1", search: search.toString() }]}
       >
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
@@ -167,16 +163,14 @@ describe("TestResultsList", () => {
   });
 
   it("should display facility column when all facilities are selected in the filter", async () => {
-    const search = {
+    const search = new URLSearchParams({
       facility: "1",
       filterFacilityId: "all",
-    };
+    });
 
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
+        initialEntries={[{ pathname: "/results/1", search: search.toString() }]}
       >
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
@@ -194,16 +188,14 @@ describe("TestResultsList", () => {
   });
 
   it("Should not display submitted by column when all facilities filter applied", async () => {
-    const search = {
+    const search = new URLSearchParams({
       facility: "1",
       filterFacilityId: "all",
-    };
+    });
 
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
+        initialEntries={[{ pathname: "/results/1", search: search.toString() }]}
       >
         <Provider store={store}>
           <MockedProvider mocks={mocksWithMultiplex}>
@@ -226,15 +218,13 @@ describe("TestResultsList", () => {
   });
 
   it("Should display submitted by column when single-facility filter applied", async () => {
-    const search = {
+    const search = new URLSearchParams({
       facility: "1",
-    };
+    });
 
     render(
       <MemoryRouter
-        initialEntries={[
-          { pathname: "/results/1", search: qs.stringify(search) },
-        ]}
+        initialEntries={[{ pathname: "/results/1", search: search.toString() }]}
       >
         <Provider store={store}>
           <MockedProvider mocks={mocksWithMultiplex}>
