@@ -295,6 +295,7 @@ const updateFieldSchemata: (
       [...Object.values(TestResultDeliveryPreferences), "", null],
       t("patient.form.errors.testResultDelivery") || ""
     ),
+  notes: yup.string().nullable(),
 });
 
 const updatePhoneNumberSchemata: (
