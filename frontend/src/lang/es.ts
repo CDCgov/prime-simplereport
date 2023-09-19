@@ -200,6 +200,11 @@ export const es: LanguageConfig = {
           },
           healthcareWorker: "¿Es usted un trabajador de la salud?",
         },
+        notes: {
+          heading: "Notas",
+          helpText:
+            "Agregar detalles sobre la ubicación de el/la paciente o información de contacto alternativa.",
+        },
         errors: {
           unsaved:
             "“¡Sus cambios aún no están guardados! Haga clic en OK para descartar cambios, Cancelar para continuar con la edición.",
