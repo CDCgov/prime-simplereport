@@ -23,7 +23,7 @@ on:
           - pentest
 
 env:
-  DEPLOY_ENV: ${{ matrix.deploy_env }}
+  # DEPLOY_ENV: ${{ matrix.deploy_env }}
   NODE_VERSION: 18
 concurrency:
   group: ${{ inputs.deploy_env }}-deploy
@@ -49,7 +49,7 @@ jobs:
         with:
           azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
           client_tarball: ./client.tgz
-          deploy_env: ${{ inputs.deploy_env }}
+          deploy_env: ${{ matrix.deploy_env }}
           smarty_streets_key: ${{ secrets.SMARTY_STREETS_KEY }}
           okta_enabled: true
           okta_url: https://hhs-prime.oktapreview.com
@@ -63,7 +63,7 @@ jobs:
         name: Deploy with Terraform
         with:
           azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
-          deploy_env: ${{ inputs.deploy_env }}
+          deploy_env: ${{ matrix.deploy_env }}
           terraform_arm_client_id: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
           terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
           terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
@@ -73,17 +73,17 @@ jobs:
         name: Wait for correct commit to be deployed in staging slot
         timeout-minutes: 5
         with:
-          deploy_env: ${{ inputs.deploy_env }}
+          deploy_env: ${{ matrix.deploy_env }}
       - uses: ./.github/actions/stg-wait-for-slot-readiness
         name: Wait for staging deploy to be ready
         timeout-minutes: 1
         with:
-          deploy_env: ${{ inputs.deploy_env }}
+          deploy_env: ${{ matrix.deploy_env }}
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ inputs.deploy_env }}
-      url: https://${{ inputs.deploy_env }}.simplereport.gov
+      name: ${{ matrix.deploy_env }}
+      url: https://${{ matrix.deploy_env }}.simplereport.gov
     needs: [prerelease_backend]
     steps:
       - uses: actions/checkout@v4
@@ -92,4 +92,4 @@ jobs:
         with:
           azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
           client_tarball: client.tgz
-          deploy_env: ${{ inputs.deploy_env }}
+          deploy_env: ${{ matrix.deploy_env }}
