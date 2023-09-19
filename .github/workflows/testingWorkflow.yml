@@ -273,8 +273,7 @@ jobs:
 
   tests:
     if: |
-      !cancelled() && success() &&
-      (needs.build_database_image.result == 'success' || needs.build_database_image.result == 'skipped')
+      always() && !failure() && !cancelled()
     needs:
       - build_database_image
     uses: ./.github/workflows/test.yml
