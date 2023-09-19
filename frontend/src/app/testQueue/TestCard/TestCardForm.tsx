@@ -375,7 +375,7 @@ const TestCardForm = ({
     testOrder.reasonForCorrection as TestCorrectionReason;
 
   const correctionWarningAlert = (
-    <Alert type="warning" headingLevel="h4">
+    <Alert type="warning" headingLevel="h4" className="margin-top-2">
       <strong>Correction: </strong>
       {reasonForCorrection in TestCorrectionReasons
         ? TestCorrectionReasons[reasonForCorrection]
@@ -387,18 +387,17 @@ const TestCardForm = ({
     moment(state.dateTested) < moment().subtract(6, "months") &&
     dateTestedErrorMessage.length === 0;
   const dateMonthsAgoWarningAlert = (
-    <Alert type="warning" headingLevel="h4" slim>
+    <Alert type="warning" headingLevel="h4" className="margin-top-2">
       <strong>Check test date:</strong> The date you selected is more than six
       months ago. Please make sure it's correct before submitting.
     </Alert>
   );
 
   const errorSummaryAlert = (
-    <Alert
-      type={"error"}
-      headingLevel={"h4"}
-      heading={"Please correct the following errors:"}
-    >
+    <Alert type={"error"} headingLevel={"h4"} className="margin-top-2">
+      <div>
+        <strong>Please correct the following errors:</strong>
+      </div>
       <div>{dateTestedErrorMessage}</div>
       <div>{testResultsError}</div>
     </Alert>
