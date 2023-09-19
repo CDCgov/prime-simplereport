@@ -164,7 +164,7 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
 
 interface UploadFormProps {
   uploadResults: (file: File) => Promise<Response>;
-  alert?: JSX.Element;
+  alert?: React.JSX.Element;
   uploadType: "Agnostic" | "Disease Specific";
   spreadsheetTemplateLocation: string;
   uploadGuideLocation?: string;
@@ -177,7 +177,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
   spreadsheetTemplateLocation,
   uploadGuideLocation,
 }) => {
-  useDocumentTitle("Upload spreadsheet");
+  useDocumentTitle(`Upload ${uploadType.toLowerCase()} spreadsheet`);
 
   const appInsights = getAppInsights();
   const orgName = useSelector<RootState, string>(
