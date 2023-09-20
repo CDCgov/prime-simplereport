@@ -3,7 +3,6 @@ import {
   render,
   screen,
   waitFor,
-  waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
 import { Provider } from "react-redux";
@@ -562,10 +561,12 @@ describe("TestResultsList", () => {
         }
       );
       await user.click(downloadButton2);
-      await waitForElementToBeRemoved(() =>
-        screen.queryByText("Download results without any search filters", {
-          exact: false,
-        })
+      await waitFor(() =>
+        expect(
+          screen.queryByText("Download results without any search filters", {
+            exact: false,
+          })
+        ).not.toBeInTheDocument()
       );
     });
 

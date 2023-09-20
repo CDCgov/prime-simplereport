@@ -16,9 +16,6 @@ import AddToQueueSearch, {
 } from "./AddToQueueSearch";
 import { QueueProps } from "./SearchResults";
 
-let refetchQueueMock;
-let setStartTestPatientIdMock;
-
 jest.mock("../../TelemetryService", () => ({
   getAppInsights: jest.fn(),
 }));
