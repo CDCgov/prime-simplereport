@@ -58,6 +58,14 @@ export const globalSymptomDefinitions = symptomOrder.map((value) => ({
   label: symptomsMap[value],
 }));
 
+export const getSymptomsAllFalse = () => {
+  const symptomMap: { [key: string]: boolean } = {};
+  symptomOrder.forEach((symptomCode) => {
+    symptomMap[symptomCode] = false;
+  });
+  return symptomMap;
+};
+
 type PregnancyResponses = {
   label: PregnancyDescription;
   value: PregnancyCode;

@@ -3,7 +3,7 @@ import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
 import { useFeature } from "flagged";
 
-import { showError } from "../utils/srToast";
+import { showAlertNotification, showError } from "../utils/srToast";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import { appPermissions, hasPermission } from "../permissions";
 import { useAppSelector } from "../store";
@@ -11,7 +11,12 @@ import { PATIENT_TERM } from "../../config/constants";
 import {
   useGetFacilityQueueQuery,
   GetFacilityQueueQuery,
+  useAddPatientToQueueMutation,
+  useGetPatientQuery,
 } from "../../generated/graphql";
+import { Patient } from "../patients/ManagePatients";
+import { getSymptomsAllFalse } from "../../patientApp/timeOfTest/constants";
+import { getAppInsights } from "../TelemetryService";
 
 import AddToQueueSearch, {
   StartTestProps,
@@ -19,6 +24,7 @@ import AddToQueueSearch, {
 import QueueItem, { DevicesMap } from "./QueueItem";
 import "./TestQueue.scss";
 import { TestCard } from "./TestCard/TestCard";
+import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 
 const pollInterval = 10_000;
 
@@ -76,11 +82,19 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const testCardRefactorEnabled = useFeature(
     "testCardRefactorEnabled"
   ) as boolean;
+  const appInsights = getAppInsights();
+  const [addPatientToQueueMutation] = useAddPatientToQueueMutation();
 
   const location = useLocation();
   const [startTestPatientId, setStartTestPatientId] = useState<string | null>(
     null
   );
+  const patientIdParam = (location.state as StartTestProps)?.patientId;
+  const getPatientQueryResult = useGetPatientQuery({
+    variables: { internalId: patientIdParam },
+    skip: !patientIdParam,
+  });
+
   const canUseCsvUploader = hasPermission(
     useAppSelector((state) => state.user.permissions),
     appPermissions.results.canView
@@ -92,12 +106,19 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
 
   useEffect(() => {
-    const locationState = (location.state as StartTestProps) || {};
-    const { patientId: patientIdParam } = locationState;
-    if (patientIdParam) {
-      setStartTestPatientId(patientIdParam);
-    }
-  }, [location.state]);
+    (async () => {
+      if (patientIdParam && data?.queue && getPatientQueryResult.data) {
+        const doesPatientExistInQueue = data.queue.some(
+          (testOrder) => testOrder?.patient.internalId === patientIdParam
+        );
+        if (!doesPatientExistInQueue) {
+          const patient = getPatientQueryResult.data.patient as Patient;
+          await addToQueueWithoutAoe(patient);
+        }
+      }
+    })();
+    // eslint-disable-next-line
+  }, [location.state, data, patientIdParam, getPatientQueryResult.data]);
 
   useEffect(() => {
     // Start polling on creation, stop on component teardown
@@ -133,6 +154,34 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
       "This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device."
     );
   }
+
+  const addToQueueWithoutAoe = async (patient: Patient) => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Add Patient To Queue" });
+    }
+    try {
+      await addPatientToQueueMutation({
+        variables: {
+          facilityId: facility.id,
+          patientId: patient.internalId,
+          symptoms: JSON.stringify(getSymptomsAllFalse()),
+          pregnancy: null,
+          symptomOnset: null,
+          noSymptoms: null,
+        },
+      });
+      const { type, title, body } = {
+        ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
+          patient
+        ),
+      };
+      showAlertNotification(type, title, body);
+      refetch();
+      setStartTestPatientId(patient.internalId);
+    } catch (err: any) {
+      throw err;
+    }
+  };
 
   let shouldRenderQueue =
     data &&
@@ -218,6 +267,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             startTestPatientId={startTestPatientId}
             setStartTestPatientId={setStartTestPatientId}
             canAddPatient={canAddPatient}
+            addToQueueWithoutAoe={addToQueueWithoutAoe}
           />
         </div>
         {createQueueItems(data.queue)}
