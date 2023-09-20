@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
+import { useFeature } from "flagged";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
@@ -30,13 +31,14 @@ import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
-import Uploads from "./testResults/uploads/Uploads";
 import Schema from "./testResults/uploads/CsvSchemaDocumentation";
 import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
 import UploadPatients from "./patients/UploadPatients";
+import DiseaseSpecificUploadContainer from "./testResults/uploads/DiseaseSpecificUploadContainer";
+import AgnosticUploadContainer from "./testResults/uploads/AgnosticUploadContainer";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -80,6 +82,7 @@ const checkOktaLoginStatus = (
 };
 
 const ReportingApp = () => {
+  const rsvEnabled = useFeature("rsvEnabled");
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -244,12 +247,28 @@ const ReportingApp = () => {
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper>
-                        <Uploads />
+                        <DiseaseSpecificUploadContainer />
                       </ResultsNavWrapper>
                     }
                   />
                 }
               />
+              {rsvEnabled && (
+                <Route
+                  path="results/agnostic/upload/submit"
+                  element={
+                    <ProtectedRoute
+                      requiredPermissions={canViewResults}
+                      userPermissions={data.whoami.permissions}
+                      element={
+                        <ResultsNavWrapper>
+                          <AgnosticUploadContainer />
+                        </ResultsNavWrapper>
+                      }
+                    />
+                  }
+                />
+              )}
               <Route
                 path="results/upload/submit/guide"
                 element={

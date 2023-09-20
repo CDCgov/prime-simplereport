@@ -69,8 +69,8 @@ public abstract class BaseAuthenticatedFullStackTest extends BaseFullStackTest {
   public void baseAuthenticatedFullStackTestSetup() {
     truncateDb();
     oktaRepository.reset();
-    when(addressValidationService.getValidatedAddress(any(), any())).thenReturn(getAddress());
-    when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
+    when(addressValidationService.getValidatedAddress(any())).thenReturn(getAddress());
+    when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any()))
         .thenReturn(getAddress());
     TestUserIdentities.withStandardUser(organizationInitializingService::initAll);
     useOrgUser();
