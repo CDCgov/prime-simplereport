@@ -213,6 +213,7 @@ describe("TestResultCorrectionModal", () => {
         expect(markAsCorrectMockDidComplete).toBe(true);
       });
 
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       // need to advance timers so the timeout executes before assertion
       await waitFor(() => {
         expect(mockedNavigate).toHaveBeenCalledWith(
