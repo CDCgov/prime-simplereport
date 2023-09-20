@@ -1,7 +1,5 @@
 import { MockedProvider } from "@apollo/client/testing";
 import {
-  act,
-  fireEvent,
   render,
   screen,
   waitFor,
@@ -12,6 +10,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
 import userEvent from "@testing-library/user-event";
+import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import {
   GetAllFacilitiesDocument,
@@ -248,8 +247,9 @@ describe("TestResultsList", () => {
   });
 
   describe("with mocks", () => {
-    beforeEach(() => {
-      render(
+    const renderWithUser = () => ({
+      user: userEvent.setup(),
+      ...render(
         <WithRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks}>
@@ -257,26 +257,25 @@ describe("TestResultsList", () => {
             </MockedProvider>
           </Provider>
         </WithRouter>
-      );
+      ),
     });
 
     it("should call appropriate gql endpoints for pagination", async () => {
+      renderWithUser();
       expect(await screen.findByText("Test Results", { exact: false }));
       expect(await screen.findByText("Cragell, Barb Whitaker"));
     });
     it("should be able to filter by patient", async () => {
+      const { user } = renderWithUser();
       await screen.findByText("Test Results", { exact: false });
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       expect(await screen.findByText("Search by name")).toBeInTheDocument();
-      await act(
-        async () =>
-          await userEvent.type(screen.getByRole("searchbox"), "Cragell")
-      );
+      await user.type(screen.getByRole("searchbox"), "Cragell");
       expect(await screen.findByText("Filter")).toBeInTheDocument();
-      await act(async () => await userEvent.click(screen.getByText("Filter")));
+      await user.click(screen.getByText("Filter"));
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
@@ -286,6 +285,7 @@ describe("TestResultsList", () => {
       );
     });
     it("should be able to filter by result value", async () => {
+      const { user } = renderWithUser();
       expect(
         await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -296,18 +296,16 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByRole("option", { name: "Negative" })
       ).toBeInTheDocument();
-      await act(
-        async () =>
-          await userEvent.selectOptions(screen.getByLabelText("Test result"), [
-            "NEGATIVE",
-          ])
-      );
+      await user.selectOptions(screen.getByLabelText("Test result"), [
+        "NEGATIVE",
+      ]);
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
       expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
     });
     it("should be able to filter by role", async () => {
+      const { user } = renderWithUser();
       expect(
         await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -318,18 +316,14 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByRole("option", { name: "Resident" })
       ).toBeInTheDocument();
-      await act(
-        async () =>
-          await userEvent.selectOptions(screen.getByLabelText("Role"), [
-            "RESIDENT",
-          ])
-      );
+      await user.selectOptions(screen.getByLabelText("Role"), ["RESIDENT"]);
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
       expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
     });
     it("should be able to filter by facility", async () => {
+      const { user } = renderWithUser();
       expect(
         await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -340,13 +334,9 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByRole("option", { name: "Facility 2" })
       ).toBeInTheDocument();
-      await act(
-        async () =>
-          await userEvent.selectOptions(
-            screen.getByLabelText("Testing facility"),
-            ["2"]
-          )
-      );
+      await user.selectOptions(screen.getByLabelText("Testing facility"), [
+        "2",
+      ]);
       expect(await screen.findByText("Clarkson, Lewis"));
       expect(
         screen.queryByText("Cragell, Barb Whitaker")
@@ -354,6 +344,7 @@ describe("TestResultsList", () => {
       expect(screen.queryByText("Colleer, Barde X")).not.toBeInTheDocument();
     });
     it("should be able to filter by all facilities", async () => {
+      const { user } = renderWithUser();
       expect(
         await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -364,12 +355,9 @@ describe("TestResultsList", () => {
       expect(
         await screen.findByRole("option", { name: "All facilities" })
       ).toBeInTheDocument();
-      await act(
-        async () =>
-          await userEvent.selectOptions(
-            screen.getByLabelText("Testing facility"),
-            ALL_FACILITIES_ID
-          )
+      await user.selectOptions(
+        screen.getByLabelText("Testing facility"),
+        ALL_FACILITIES_ID
       );
       expect(await screen.findByText("Clarkson, Lewis"));
       expect(
@@ -378,6 +366,7 @@ describe("TestResultsList", () => {
     });
 
     it("should be able to filter by date", async () => {
+      const { user } = renderWithUser();
       expect(await screen.findByText("Test Results", { exact: false }));
       expect(await screen.findByText("Cragell, Barb Whitaker"));
       expect(await screen.findByText("Colleer, Barde X"));
@@ -385,11 +374,12 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Date range (start)"));
       expect(await screen.findByText("Date range (end)"));
 
-      fireEvent.change(screen.getByLabelText(/date range \(start\)/i), {
-        target: { value: "2021-03-18" },
-      });
+      await user.type(
+        screen.getByLabelText(/date range \(start\)/i),
+        "2021-03-18"
+      );
 
-      await act(async () => await userEvent.tab());
+      await user.tab();
       screen.getByText("Colleer, Barde X");
       screen.getByText("Gerard, Sam G");
       await waitFor(() =>
@@ -397,11 +387,12 @@ describe("TestResultsList", () => {
           screen.queryByText("Cragell, Barb Whitaker")
         ).not.toBeInTheDocument()
       );
-      fireEvent.change(screen.getByLabelText(/date range \(end\)/i), {
-        target: { value: "2021-03-18" },
-      });
+      await user.type(
+        screen.getByLabelText(/date range \(end\)/i),
+        "2021-03-18"
+      );
 
-      await act(async () => await userEvent.tab());
+      await user.tab();
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
       await waitFor(() =>
         expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument()
@@ -413,13 +404,14 @@ describe("TestResultsList", () => {
       );
     });
     it("should be able to clear patient filter", async () => {
+      const { user } = renderWithUser();
       await screen.findByText("Test Results", { exact: false });
 
       // Apply filter
       expect(await screen.findByText("Search by name")).toBeInTheDocument();
-      fireEvent.change(
+      await user.type(
         screen.getByRole("searchbox", { name: /search by name/i }),
-        { target: { value: "Cragell" } }
+        "Cragell"
       );
 
       await waitFor(() =>
@@ -427,15 +419,11 @@ describe("TestResultsList", () => {
       );
 
       expect(await screen.getAllByText(/Filter/i)[0]);
-      await act(
-        async () => await userEvent.click(screen.getAllByText(/Filter/i)[0])
-      );
+      await user.click(screen.getAllByText(/Filter/i)[0]);
 
       // Clear filter
       expect(await screen.findByText("Clear filters")).toBeInTheDocument();
-      await act(
-        async () => await userEvent.click(screen.getByText("Clear filters"))
-      );
+      await user.click(screen.getByText("Clear filters"));
 
       // All results, filter no longer applied
       expect(
@@ -451,10 +439,12 @@ describe("TestResultsList", () => {
     });
 
     it("should be able to clear date filters", async () => {
+      const { user } = renderWithUser();
       // Apply filter
-      fireEvent.change(screen.getByLabelText(/date range \(start\)/i), {
-        target: { value: "2021-03-18" },
-      });
+      await user.type(
+        screen.getByLabelText(/date range \(start\)/i),
+        "2021-03-18"
+      );
 
       // Filter applied
       expect(await screen.findByText("Colleer, Barde X")).toBeInTheDocument();
@@ -470,9 +460,7 @@ describe("TestResultsList", () => {
       );
       // Clear filter
       expect(await screen.findByText("Clear filters")).toBeInTheDocument();
-      await act(
-        async () => await userEvent.click(screen.getByText("Clear filters"))
-      );
+      await user.click(screen.getByText("Clear filters"));
 
       // Filter no longer applied
       await waitFor(() => {
@@ -484,11 +472,12 @@ describe("TestResultsList", () => {
     });
 
     it("opens the test detail modal from the patient's name", async () => {
+      const { user } = renderWithUser();
       expect(
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
       const patientNameLink = await screen.findByText("Cragell, Barb Whitaker");
-      await act(async () => await userEvent.click(patientNameLink));
+      await user.click(patientNameLink);
       screen.getByText("Result details");
       screen.getByText("Test information");
       expect(
@@ -497,6 +486,7 @@ describe("TestResultsList", () => {
     });
 
     it("opens the test detail modal from the actions menu", async () => {
+      const { user } = renderWithUser();
       expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
       expect(
         await screen.findByText("Test Results", { exact: false })
@@ -504,14 +494,15 @@ describe("TestResultsList", () => {
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
       )[1];
-      await act(async () => await userEvent.click(moreActions));
+      await user.click(moreActions);
       const viewDetails = await screen.findByText("View details");
-      await act(async () => await userEvent.click(viewDetails));
+      await user.click(viewDetails);
       screen.getByText("Result details");
       screen.getByText("Test information");
     });
 
     it("opens the email test results modal", async () => {
+      const { user } = renderWithUser();
       expect(await screen.findByText("Showing 1-3 of 3"));
       expect(
         screen.getByText("Test Results", { exact: false })
@@ -519,13 +510,14 @@ describe("TestResultsList", () => {
       const moreActions = within(screen.getByRole("table")).getAllByRole(
         "button"
       )[1];
-      await act(async () => await userEvent.click(moreActions));
+      await user.click(moreActions);
       const emailResult = screen.getByText("Email result");
-      await act(async () => await userEvent.click(emailResult));
+      await user.click(emailResult);
       await screen.findByText("Email result?");
     });
 
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
+      const { user } = renderWithUser();
       expect(await screen.findByText("Showing 1-3 of 3"));
       expect(
         screen.getByText("Test Results", { exact: false })
@@ -533,7 +525,7 @@ describe("TestResultsList", () => {
       const downloadButton = screen.getByText("Download results", {
         exact: false,
       });
-      await act(async () => await userEvent.click(downloadButton));
+      await user.click(downloadButton);
       expect(
         screen.getByText("Download results without any search filters", {
           exact: false,
@@ -545,6 +537,7 @@ describe("TestResultsList", () => {
     });
 
     it("closes the download test results modal after downloading", async () => {
+      const { user } = renderWithUser();
       // source of "navigation not implemented" error
       expect(await screen.findByText("Showing 1-3 of 3"));
       expect(
@@ -553,7 +546,7 @@ describe("TestResultsList", () => {
       const downloadButton = screen.getByText("Download results", {
         exact: false,
       });
-      await act(async () => await userEvent.click(downloadButton));
+      await user.click(downloadButton);
       expect(
         screen.getByText("Download results without any search filters", {
           exact: false,
@@ -568,12 +561,7 @@ describe("TestResultsList", () => {
           name: "Download results",
         }
       );
-      await act(async () => await userEvent.click(downloadButton2));
-      expect(
-        screen.getByText("Loading...", {
-          exact: false,
-        })
-      ).toBeInTheDocument();
+      await user.click(downloadButton2);
       await waitForElementToBeRemoved(() =>
         screen.queryByText("Download results without any search filters", {
           exact: false,
@@ -582,21 +570,20 @@ describe("TestResultsList", () => {
     });
 
     it("opens the download test results modal after applying filters and shows how many rows the csv will have", async () => {
+      const { user } = renderWithUser();
       expect(await screen.findByText("Showing 1-3 of 3"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
-      await act(
-        async () =>
-          await userEvent.selectOptions(screen.getByLabelText("Test result"), [
-            "NEGATIVE",
-          ])
-      );
+
+      await user.selectOptions(screen.getByLabelText("Test result"), [
+        "NEGATIVE",
+      ]);
       expect(await screen.findByText("Showing 1-2 of 2"));
       const downloadButton = screen.getByText("Download results", {
         exact: false,
       });
-      await act(async () => await userEvent.click(downloadButton));
+      await user.click(downloadButton);
       expect(
         await screen.findByText(
           "Download results with current search filters applied",
@@ -612,6 +599,7 @@ describe("TestResultsList", () => {
 
     describe("patient has no email", () => {
       it("doesnt show the button to print results", async () => {
+        const { user } = renderWithUser();
         expect(await screen.findByText("Showing 1-3 of 3"));
         expect(
           screen.getByText("Test Results", { exact: false })
@@ -619,7 +607,7 @@ describe("TestResultsList", () => {
         const moreActions = within(screen.getByRole("table")).getAllByRole(
           "button"
         )[0];
-        await act(async () => await userEvent.click(moreActions));
+        await user.click(moreActions);
         expect(screen.queryByText("Email result")).not.toBeInTheDocument();
       });
     });
@@ -638,64 +626,57 @@ describe("TestResultsList", () => {
     });
 
     it("should not display Flu result columns if all rows with multiplex results are filtered", async () => {
+      renderWithUser();
       // facility 1 has no multiplex results
       expect(await screen.findByText("Gerard, Sam G"));
       expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
     });
 
     it("should show multiplex results", async () => {
+      const { user } = renderWithUser();
       expect(
         await screen.findByRole("option", { name: "Facility 1" })
       ).toBeInTheDocument();
-      await act(
-        async () =>
-          await userEvent.selectOptions(
-            screen.getByLabelText("Testing facility"),
-            ["3"]
-          )
-      );
+
+      await user.selectOptions(screen.getByLabelText("Testing facility"), [
+        "3",
+      ]);
       expect((await screen.findAllByText("Flu A"))[0]);
     });
 
     describe("return focus after modal close", () => {
       // source of the React key prop warning
-      const clickActionMenu = async () => {
+      const clickActionMenu = async (user: UserEvent) => {
         expect(await screen.findByText("Showing 1-3 of 3"));
         const actionMenuButton =
           document.querySelectorAll(".rc-menu-button")[0];
 
-        await act(
-          async () => await userEvent.click(actionMenuButton as HTMLElement)
-        );
+        await user.click(actionMenuButton as HTMLElement);
       };
+
       it.each([
         ["Print result", "Close"],
         ["Text result", "Cancel"],
         ["Email result", "Cancel"],
         ["Correct result", "No, go back"],
       ])("should set focus on %p", async (menuButtonText, closeButtonText) => {
-        await clickActionMenu();
-        await act(
-          async () => await userEvent.click(screen.getByText(menuButtonText))
-        );
+        const { user } = renderWithUser();
+        await clickActionMenu(user);
+        await user.click(screen.getByText(menuButtonText));
         await screen.findAllByText(closeButtonText);
-        await act(
-          async () =>
-            await userEvent.click(screen.getAllByText(closeButtonText)[0])
-        );
+
+        await user.click(screen.getAllByText(closeButtonText)[0]);
         await waitFor(() =>
           expect(screen.getByText(menuButtonText)).toHaveFocus()
         );
       });
+
       it("should set focus on the view details button", async () => {
-        await clickActionMenu();
-        await act(
-          async () => await userEvent.click(screen.getByText("View details"))
-        );
+        const { user } = renderWithUser();
+        await clickActionMenu(user);
+        await user.click(screen.getByText("View details"));
         await screen.findByAltText("Close");
-        await act(
-          async () => await userEvent.click(screen.getByAltText("Close"))
-        );
+        await user.click(screen.getByAltText("Close"));
         await waitFor(() =>
           expect(screen.getByText("View details")).toHaveFocus()
         );
@@ -780,8 +761,9 @@ describe("TestResultsList", () => {
   });
 
   describe("end date error", () => {
-    beforeEach(() => {
-      render(
+    const renderWithUser = () => ({
+      user: userEvent.setup(),
+      ...render(
         <WithRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks}>
@@ -789,42 +771,35 @@ describe("TestResultsList", () => {
             </MockedProvider>
           </Provider>
         </WithRouter>
-      );
+      ),
     });
+
     const setDateRange = async (
+      user: UserEvent,
       startDate = "2021-03-17",
       endDate = "2021-03-18"
     ) => {
-      await act(
-        async () =>
-          await userEvent.type(
-            screen.getByLabelText(/date range \(start\)/i),
-            startDate
-          )
+      await user.type(
+        screen.getByLabelText(/date range \(start\)/i),
+        startDate
       );
 
-      await act(
-        async () =>
-          await userEvent.type(
-            screen.getByLabelText(/date range \(start\)/i),
-            endDate
-          )
-      );
+      await user.type(screen.getByLabelText(/date range \(start\)/i), endDate);
     };
     it("should display error if end date is before the start date", async () => {
-      await setDateRange("2021-03-18", "2021-03-17");
+      const { user } = renderWithUser();
+      await setDateRange(user, "2021-03-18", "2021-03-17");
       await waitFor(() =>
         expect(screen.queryByText(/End date cannot be before start date/i))
       );
     });
     it("should display clear error message when clear filters button is pressed", async () => {
-      await setDateRange("2021-03-18", "2021-03-17");
+      const { user } = renderWithUser();
+      await setDateRange(user, "2021-03-18", "2021-03-17");
       await waitFor(() =>
         expect(screen.queryByText(/End date cannot be before start date/i))
       );
-      await act(
-        async () => await userEvent.click(screen.getByText("Clear filters"))
-      );
+      await user.click(screen.getByText("Clear filters"));
       expect(
         screen.queryByText("End date cannot be before start date", {
           exact: false,
