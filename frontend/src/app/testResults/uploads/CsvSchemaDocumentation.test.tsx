@@ -172,6 +172,7 @@ describe("CsvSchemaDocumentation tests", () => {
           </Routes>
         </MemoryRouter>
       );
+      const user = userEvent.setup();
 
       const templateLink1 = screen.getByRole("link", {
         name: "SimpleReport spreadsheet template with example data [CSV download]",
@@ -179,8 +180,8 @@ describe("CsvSchemaDocumentation tests", () => {
       const templateLink2 = screen.getByRole("link", {
         name: "spreadsheet template",
       });
-      await userEvent.click(templateLink1);
-      await userEvent.click(templateLink2);
+      await user.click(templateLink1);
+      await user.click(templateLink2);
 
       expect(mockTrackEvent).toHaveBeenCalledTimes(2);
       expect(mockTrackEvent).toHaveBeenNthCalledWith(1, {

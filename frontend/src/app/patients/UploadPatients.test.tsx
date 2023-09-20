@@ -375,7 +375,7 @@ describe("Upload Patient", () => {
     ).toBeInTheDocument();
     expect(await screen.findByText("bad zipcode")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByLabelText("close"));
+    await user.click(screen.getByLabelText("close"));
     expect(
       screen.queryByText("Error: File not accepted")
     ).not.toBeInTheDocument();
@@ -386,7 +386,7 @@ describe("Upload Patient", () => {
     jest
       .spyOn(FileUploadService, "uploadPatients")
       .mockImplementation(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 500));
         return Promise.resolve(new Response());
       });
 
@@ -396,6 +396,7 @@ describe("Upload Patient", () => {
       await screen.findByText("Uploading patient information...")
     ).toBeInTheDocument();
   });
+
   it("should show error if empty file is provided", async () => {
     const { user } = renderUploadPatients();
 
@@ -435,6 +436,7 @@ describe("Upload Patient", () => {
       "true"
     );
   });
+
   describe("handle file change", () => {
     it("should do nothing if no file was added", async () => {
       const { user } = renderUploadPatients();
@@ -457,7 +459,7 @@ describe("Upload Patient", () => {
       const { user } = renderUploadPatients();
 
       const input = screen.getByTestId("upload-patients-file-input");
-      await userEvent.upload(input, file("someText"));
+      await user.upload(input, file("someText"));
       expect(
         screen.getByText("Drag file here or choose from folder to change file")
       ).toBeInTheDocument();

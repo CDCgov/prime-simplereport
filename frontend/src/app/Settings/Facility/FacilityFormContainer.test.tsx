@@ -1,5 +1,4 @@
 import {
-  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -249,8 +248,9 @@ jest.mock("../../TelemetryService", () => ({
 
 describe("FacilityFormContainer", () => {
   const trackEventMock = jest.fn();
-  const renderWithMocks = (url: string) =>
-    render(
+  const renderWithUser = (url: string) => ({
+    user: userEvent.setup(),
+    ...render(
       <>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
@@ -270,23 +270,19 @@ describe("FacilityFormContainer", () => {
         </Provider>
         <SRToastContainer />
       </>
-    );
+    ),
+  });
 
   describe("Update facility", () => {
-    beforeEach(() => {
-      renderWithMocks(`/facility/${mockFacility.id}`);
-    });
-
     afterEach(() => {
       (getAppInsights as jest.Mock).mockReset();
     });
 
     it("redirects on successful facility update", async () => {
+      const { user } = renderWithUser(`/facility/${mockFacility.id}`);
       await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-      await act(
-        async () =>
-          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
-      );
+
+      await user.click(screen.getByRole("button", { name: /submit/i }));
       expect(await screen.findByText("Redirected")).toBeInTheDocument();
     });
 
@@ -294,26 +290,20 @@ describe("FacilityFormContainer", () => {
       (getAppInsights as jest.Mock).mockImplementation(() => ({
         trackEvent: trackEventMock,
       }));
+      const { user } = renderWithUser(`/facility/${mockFacility.id}`);
       await waitForElementToBeRemoved(() => screen.queryByText("Loading..."));
-      await act(
-        async () =>
-          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
-      );
+
+      await user.click(screen.getByRole("button", { name: /submit/i }));
       expect(trackEventMock).toBeCalledWith({ name: "Save Settings" });
     });
   });
 
   describe("Add facility", function () {
-    beforeEach(() => {
-      renderWithMocks("/add-facility/");
-    });
-
     it("creates a new facility", async () => {
+      const { user } = renderWithUser("/add-facility/");
       expect(await screen.findByRole("button", { name: /submit/i }));
-      await act(
-        async () =>
-          await userEvent.click(screen.getByRole("button", { name: /submit/i }))
-      );
+
+      await user.click(screen.getByRole("button", { name: /submit/i }));
       expect(await screen.findByText("Redirected")).toBeInTheDocument();
     });
   });
