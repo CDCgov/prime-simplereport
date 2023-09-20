@@ -1,5 +1,5 @@
 import moment from "moment/moment";
-import React, { useState } from "react";
+import React from "react";
 
 import RadioGroup from "../../../commonComponents/RadioGroup";
 import YesNoRadioGroup from "../../../commonComponents/YesNoRadioGroup";
@@ -49,12 +49,17 @@ const CovidAoEForm = ({
   responses,
   onResponseChange,
 }: CovidAoEFormProps) => {
-  const [hasAnySymptoms, setHasAnySymptoms] = useState<YesNoUnknown>();
-
   const symptoms: Record<string, boolean> = parseSymptoms(responses.symptoms);
 
   const onPregnancyChange = (pregnancyCode: PregnancyCode) => {
     onResponseChange({ ...responses, pregnancy: pregnancyCode });
+  };
+
+  const onHasAnySymptomsChange = (hasAnySymptoms: YesNo) => {
+    onResponseChange({
+      ...responses,
+      noSymptoms: hasAnySymptoms === "NO",
+    });
   };
 
   const onSymptomOnsetDateChange = (symptomOnsetDate: string) => {
@@ -77,9 +82,19 @@ const CovidAoEForm = ({
     });
   };
 
+  // backend currently stores this in "noSymptoms"
+  // so we need to convert to YesNo or undefined
+  let hasSymptoms: YesNo | undefined = undefined;
+  if (responses.noSymptoms) {
+    hasSymptoms = "NO";
+  }
+  if (responses.noSymptoms === false) {
+    hasSymptoms = "YES";
+  }
+
   return (
     <>
-      <div className="grid-col-auto">
+      <div className="grid-col-auto" id="covid-aoe-form">
         <div className="grid-row">
           <div className="grid-col-auto">
             <RadioGroup
@@ -96,12 +111,12 @@ const CovidAoEForm = ({
             <YesNoRadioGroup
               name={`has-any-symptoms-${testOrder.internalId}`}
               legend="Is the patient currently experiencing any symptoms?"
-              value={hasAnySymptoms}
-              onChange={(e) => setHasAnySymptoms(e)}
+              value={hasSymptoms}
+              onChange={onHasAnySymptomsChange}
             />
           </div>
         </div>
-        {hasAnySymptoms === "YES" && (
+        {hasSymptoms === "YES" && (
           <>
             <div className="grid-row grid-gap">
               <TextInput
