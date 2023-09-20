@@ -25,6 +25,7 @@ twilio:
 features:
   hivEnabled: false
   rsvEnabled: false
+  testCardRefactorEnabled: false
   singleEntryRsvEnabled: false
   agnosticEnabled: false
   testCardRefactorEnabled: false
