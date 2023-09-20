@@ -4,32 +4,24 @@ import { useTranslatedConstants } from "../constants";
 
 import RadioGroup from "./RadioGroup";
 
-export const boolToYesNoUnknown = (
+export const boolToYesNo = (
   value: boolean | null | undefined
-): YesNoUnknown | undefined => {
+): YesNo | undefined => {
   if (value) {
     return "YES";
   }
   if (value === false) {
     return "NO";
   }
-  if (value === null) {
-    return "UNKNOWN";
-  }
   return undefined;
 };
 
-export const yesNoUnknownToBool = (
-  value: YesNoUnknown
-): boolean | null | undefined => {
+export const yesNoToBool = (value: YesNo): boolean | undefined => {
   if (value === "YES") {
     return true;
   }
   if (value === "NO") {
     return false;
-  }
-  if (value === "UNKNOWN") {
-    return null;
   }
   return undefined;
 };
@@ -37,8 +29,8 @@ export const yesNoUnknownToBool = (
 interface Props {
   name: string;
   legend: React.ReactNode;
-  value: YesNoUnknown | undefined;
-  onChange: (value: YesNoUnknown) => void;
+  value: YesNo | undefined;
+  onChange: (value: YesNo) => void;
   hintText?: string;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   validationStatus?: "error" | "success";

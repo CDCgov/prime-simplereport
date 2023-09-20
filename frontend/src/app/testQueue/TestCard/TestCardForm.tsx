@@ -38,6 +38,7 @@ import {
   TestCorrectionReason,
   TestCorrectionReasons,
 } from "../../testResults/TestResultCorrectionModal";
+import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
 
 import {
   TestFormActionCase,
@@ -109,6 +110,35 @@ export const convertFromMultiplexResponse = (
   }));
 };
 
+/**
+ * Add more options as other disease AOEs are needed
+ */
+enum AOEFormOptions {
+  COVID = "COVID",
+}
+
+const areAOEAnswersComplete = (
+  formState: TestFormState,
+  whichAOE: AOEFormOptions
+) => {
+  if (whichAOE === AOEFormOptions.COVID) {
+    const isPregnancyAnswered = !!formState.covidAoeQuestions.pregnancy;
+    const isHasAnySymptomsAnswered = !!formState.covidAoeQuestions.noSymptoms;
+    if (formState.covidAoeQuestions.noSymptoms === false) {
+      const areSymptomsFilledIn = !!formState.covidAoeQuestions.symptoms;
+      const isSymptomOnsetDateAnswered =
+        !!formState.covidAoeQuestions.symptomOnsetDate;
+      return (
+        isPregnancyAnswered &&
+        isHasAnySymptomsAnswered &&
+        areSymptomsFilledIn &&
+        isSymptomOnsetDateAnswered
+      );
+    }
+    return isPregnancyAnswered && isHasAnySymptomsAnswered;
+  }
+};
+
 const TestCardForm = ({
   testOrder,
   devicesMap,
@@ -121,7 +151,12 @@ const TestCardForm = ({
     deviceId: testOrder.deviceType.internalId ?? "",
     specimenId: testOrder.specimenType.internalId ?? "",
     testResults: testOrder.results,
-    covidAoeQuestions: {},
+    covidAoeQuestions: {
+      pregnancy: testOrder.pregnancy as PregnancyCode,
+      noSymptoms: testOrder.noSymptoms,
+      symptomOnsetDate: testOrder.symptomOnset,
+      symptoms: testOrder.symptoms,
+    },
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
   const [dateTestedTouched, setDateTestedTouched] = useState(false);
@@ -129,7 +164,7 @@ const TestCardForm = ({
   const [testResultsError, setTestResultsError] = useState("");
   const [editQueueItem] = useEditQueueItemMutation();
   const [submitTestResult, { loading }] = useSubmitQueueItemMutation();
-  const [useCurrentTime, setUseCurrentTime] = useState(false);
+  const [useCurrentTime, setUseCurrentTime] = useState(true);
   const appInsights = getAppInsights();
   const submitModalRef = useRef<ModalRef>(null);
 
@@ -192,6 +227,8 @@ const TestCardForm = ({
   const deviceSupportsMultiplex = useMemo(() => {
     return doesDeviceSupportMultiplex(state.deviceId, devicesMap);
   }, [devicesMap, state.deviceId]);
+
+  const whichAOEForm = AOEFormOptions.COVID;
 
   const validateDateTested = () => {
     const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
@@ -283,7 +320,7 @@ const TestCardForm = ({
   const validateForm = () => {
     dateTestedErrorMessage = validateDateTested();
     setTestResultsError("");
-    if (state.dateTested && dateTestedErrorMessage.length === 0) {
+    if (state.dateTested && dateTestedErrorMessage.length > 0) {
       showError(dateTestedErrorMessage, "Invalid test date");
       return false;
     }
@@ -311,11 +348,8 @@ const TestCardForm = ({
     if (!validateForm()) {
       return;
     }
-    // check force submit and confirmation type logic
-    // TODO: determine whether AOE form is valid
-    const areAoEAnswersComplete = false;
 
-    if (!forceSubmit && !areAoEAnswersComplete) {
+    if (!forceSubmit && !areAOEAnswersComplete(state, whichAOEForm)) {
       submitModalRef.current?.toggleModal();
       return;
     }
@@ -528,6 +562,7 @@ const TestCardForm = ({
                 id={`current-date-time-${testOrder.patient.internalId}`}
                 name={"current-date-time"}
                 label={"Current date and time"}
+                checked={useCurrentTime}
                 onChange={onUseCurrentDateTime}
               ></Checkbox>
             </div>
@@ -611,16 +646,18 @@ const TestCardForm = ({
             </FormGroup>
           </div>
           <div className="grid-row grid-gap">
-            <CovidAoEForm
-              testOrder={testOrder}
-              responses={state.covidAoeQuestions}
-              onResponseChange={(responses) => {
-                dispatch({
-                  type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
-                  payload: responses,
-                });
-              }}
-            />
+            {whichAOEForm === AOEFormOptions.COVID && (
+              <CovidAoEForm
+                testOrder={testOrder}
+                responses={state.covidAoeQuestions}
+                onResponseChange={(responses) => {
+                  dispatch({
+                    type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
+                    payload: responses,
+                  });
+                }}
+              />
+            )}
           </div>
           <div className="grid-row margin-top-4">
             <div className="grid-col-auto">
