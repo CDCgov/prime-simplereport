@@ -1,5 +1,5 @@
 import React from "react";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
@@ -135,15 +135,11 @@ jest.mock("./SearchResults", () => {
 describe("AddToSearchQueue - add to queue", () => {
   const trackEventMock = jest.fn();
 
-  beforeEach(async () => {
-    refetchQueueMock = jest.fn();
-    setStartTestPatientIdMock = jest.fn();
-
-    (getAppInsights as jest.Mock).mockImplementation(() => ({
-      trackEvent: trackEventMock,
-    }));
-
-    render(
+  const refetchQueueMock = jest.fn();
+  const setStartTestPatientIdMock = jest.fn();
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
           <AddToQueueSearch
@@ -156,7 +152,13 @@ describe("AddToSearchQueue - add to queue", () => {
           />
         </MockedProvider>
       </MemoryRouter>
-    );
+    ),
+  });
+
+  beforeEach(async () => {
+    (getAppInsights as jest.Mock).mockImplementation(() => ({
+      trackEvent: trackEventMock,
+    }));
   });
 
   afterEach(() => {
@@ -168,15 +170,12 @@ describe("AddToSearchQueue - add to queue", () => {
       srToast,
       "showAlertNotification"
     );
+    const { user } = renderWithUser();
 
-    await act(
-      async () => await userEvent.type(screen.getByRole("searchbox"), "bar")
-    );
-    await act(
-      async () =>
-        await userEvent.click(
-          screen.getByRole("button", { name: /begin test \(mock button\)/i })
-        )
+    await user.type(screen.getByRole("searchbox"), "bar");
+
+    await user.click(
+      screen.getByRole("button", { name: /begin test \(mock button\)/i })
     );
 
     expect(queryPatientMockIsDone).toBe(true);
@@ -191,14 +190,11 @@ describe("AddToSearchQueue - add to queue", () => {
   });
 
   it("tracks custom telemetry event", async () => {
-    await act(
-      async () => await userEvent.type(screen.getByRole("searchbox"), "bar")
-    );
-    await act(
-      async () =>
-        await userEvent.click(
-          screen.getByRole("button", { name: /begin test \(mock button\)/i })
-        )
+    const { user } = renderWithUser();
+    await user.type(screen.getByRole("searchbox"), "bar");
+
+    await user.click(
+      screen.getByRole("button", { name: /begin test \(mock button\)/i })
     );
 
     expect(trackEventMock).toBeCalledWith({ name: "Add Patient To Queue" });
