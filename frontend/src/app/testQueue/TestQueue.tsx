@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import { useLocation } from "react-router-dom";
+import { useFeature } from "flagged";
 
 import { showError } from "../utils/srToast";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
@@ -15,7 +16,7 @@ import {
 import AddToQueueSearch, {
   StartTestProps,
 } from "./addToQueue/AddToQueueSearch";
-import { DevicesMap } from "./QueueItem";
+import QueueItem, { DevicesMap } from "./QueueItem";
 import "./TestQueue.scss";
 import { TestCard } from "./TestCard/TestCard";
 
@@ -72,6 +73,9 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         facilityId: activeFacilityId,
       },
     });
+  const testCardRefactorEnabled = useFeature(
+    "testCardRefactorEnabled"
+  ) as boolean;
 
   const location = useLocation();
   const [startTestPatientId, setStartTestPatientId] = useState<string | null>(
@@ -154,20 +158,23 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             onExiting={onExiting}
             timeout={transitionDuration}
           >
-            {/*<QueueItem*/}
-            {/*  refetchQueue={refetch}*/}
-            {/*  queueItem={queueItem}*/}
-            {/*  startTestPatientId={startTestPatientId}*/}
-            {/*  setStartTestPatientId={setStartTestPatientId}*/}
-            {/*  facility={facility}*/}
-            {/*  devicesMap={devicesMap}*/}
-            {/*/>*/}
-            <TestCard
-              testOrder={queueItem}
-              devicesMap={devicesMap}
-              facility={facility}
-              refetchQueue={refetch}
-            ></TestCard>
+            {testCardRefactorEnabled ? (
+              <TestCard
+                testOrder={queueItem}
+                devicesMap={devicesMap}
+                facility={facility}
+                refetchQueue={refetch}
+              ></TestCard>
+            ) : (
+              <QueueItem
+                refetchQueue={refetch}
+                queueItem={queueItem}
+                startTestPatientId={startTestPatientId}
+                setStartTestPatientId={setStartTestPatientId}
+                facility={facility}
+                devicesMap={devicesMap}
+              />
+            )}
           </CSSTransition>
         );
       });
