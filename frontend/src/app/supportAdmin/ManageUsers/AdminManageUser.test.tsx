@@ -68,7 +68,7 @@ const mockedStore = mockStore({ user: { isAdmin: true } });
 
 const renderComponent = (mocks?: any[]) => ({
   user: userEvent.setup(),
-  render: render(
+  ...render(
     <Provider store={mockedStore}>
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>

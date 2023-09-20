@@ -121,8 +121,9 @@ const addPatientRequestNoAddressValidation = {
 
 describe("AddPatient", () => {
   describe("No facility selected", () => {
-    beforeEach(() => {
-      render(
+    const renderWithUser = () => ({
+      user: userEvent.setup(),
+      ...render(
         <Provider store={store}>
           <MockedProvider mocks={[]} addTypename={false}>
             <MemoryRouter>
@@ -132,9 +133,11 @@ describe("AddPatient", () => {
             </MemoryRouter>
           </MockedProvider>
         </Provider>
-      );
+      ),
     });
+
     it("does not show the form title", () => {
+      renderWithUser();
       expect(
         screen.queryByText(`Add new ${PATIENT_TERM}`, {
           exact: false,
@@ -142,6 +145,7 @@ describe("AddPatient", () => {
       ).not.toBeInTheDocument();
     });
     it("shows a 'No facility selected' message", async () => {
+      renderWithUser();
       expect(
         screen.getByText("No facility selected", {
           exact: false,
@@ -222,9 +226,9 @@ describe("AddPatient", () => {
         </p>
       );
     };
-    const renderComponent = () => ({
+    const renderWithUser = () => ({
       user: userEvent.setup(),
-      render: render(
+      ...render(
         <>
           <Provider store={store}>
             <MockedProvider mocks={mocks} addTypename={false}>
@@ -241,7 +245,7 @@ describe("AddPatient", () => {
     });
 
     it("shows the form title", async () => {
-      renderComponent();
+      renderWithUser();
       expect(
         (
           await screen.findAllByText(`Add new ${PATIENT_TERM}`, {
@@ -253,7 +257,7 @@ describe("AddPatient", () => {
 
     describe("Choosing a country", () => {
       it("should show the state and zip code inputs for USA", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
 
         await user.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
@@ -263,7 +267,7 @@ describe("AddPatient", () => {
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
       it("should show the state and zip code inputs for Canada", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
         await user.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
           "CAN"
@@ -272,7 +276,7 @@ describe("AddPatient", () => {
         expect(await screen.findByText("ZIP code")).toBeInTheDocument();
       });
       it("should show different states for Canada", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
 
         await user.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
@@ -288,7 +292,7 @@ describe("AddPatient", () => {
         expect(stateInput.value).toBe("QC");
       });
       it("should hide the state and zip code inputs for non-US countries", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
 
         await user.selectOptions(
           screen.getByLabelText("Country", { exact: false }),
@@ -301,7 +305,7 @@ describe("AddPatient", () => {
 
     describe("All required fields entered and submitting address verification", () => {
       it("redirects to the person tab", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
         fillOutForm(
           user,
           {
@@ -368,7 +372,7 @@ describe("AddPatient", () => {
         expect(await screen.findByText("Patients!")).toBeInTheDocument();
       });
       it("surfaces an error if invalid zip code for state", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
         zipCodeSpy.mockReturnValue(false);
         fillOutForm(
           user,
@@ -419,7 +423,7 @@ describe("AddPatient", () => {
         await screen.findByText(/Invalid ZIP code for this state/i);
       });
       it("requires race field to be populated", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
         fillOutForm(
           user,
           {
@@ -466,7 +470,7 @@ describe("AddPatient", () => {
     });
 
     describe("facility select input", () => {
-      const { user } = renderComponent();
+      const { user } = renderWithUser();
       let facilityInput: HTMLSelectElement;
       beforeEach(() => {
         facilityInput = screen.getByLabelText("Facility", {
@@ -487,7 +491,7 @@ describe("AddPatient", () => {
 
     describe("With student ID", () => {
       it("allows student ID to be entered", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
         await user.selectOptions(screen.getByLabelText("Role"), "STUDENT");
         expect(await screen.findByText("Student ID")).toBeInTheDocument();
       });
@@ -495,7 +499,7 @@ describe("AddPatient", () => {
 
     describe("saving changes and starting a test", () => {
       it("redirects to the queue after address validation", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
         fillOutForm(
           user,
           {
@@ -565,7 +569,7 @@ describe("AddPatient", () => {
       });
 
       it("redirects to the queue with a patient id and selected facility id", async () => {
-        const { user } = renderComponent();
+        const { user } = renderWithUser();
         fillOutForm(
           user,
           {
@@ -654,6 +658,19 @@ describe("AddPatient", () => {
   });
 
   describe("when attempting to create an existing patient ", () => {
+    const renderWithUser = (mocks: any[]) => ({
+      user: userEvent.setup(),
+      ...render(
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <RouterWithFacility>
+              <Route element={<AddPatient />} path={"/add-patient/"} />
+              <Route path={"/patients"} element={<p>Patients!</p>} />
+            </RouterWithFacility>
+          </MockedProvider>
+        </Provider>
+      ),
+    });
     it("does not open modal if no patient with matching data exists", async () => {
       let patientExistsMock = jest.fn();
       const mocks = [
@@ -678,17 +695,7 @@ describe("AddPatient", () => {
         },
       ];
 
-      render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <RouterWithFacility>
-              <Route element={<AddPatient />} path={"/add-patient/"} />
-              <Route path={"/patients"} element={<p>Patients!</p>} />
-            </RouterWithFacility>
-          </MockedProvider>
-        </Provider>
-      );
-      const user = userEvent.setup();
+      const { user } = renderWithUser(mocks);
 
       fillOutForm(
         user,
@@ -738,17 +745,8 @@ describe("AddPatient", () => {
         },
       ];
 
-      render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <RouterWithFacility>
-              <Route element={<AddPatient />} path={"/add-patient/"} />
-              <Route path={"/patients"} element={<p>Patients!</p>} />
-            </RouterWithFacility>
-          </MockedProvider>
-        </Provider>
-      );
-      const user = userEvent.setup();
+      const { user } = renderWithUser(mocks);
+
       fillOutForm(
         user,
         {

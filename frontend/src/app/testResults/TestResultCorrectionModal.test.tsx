@@ -3,11 +3,12 @@ import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import "./TestResultCorrectionModal.scss";
 import userEvent from "@testing-library/user-event";
 import configureStore from "redux-mock-store";
 import { MockedResponse } from "@apollo/client/testing/core";
+import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import {
   TestCorrectionReasons,
@@ -65,8 +66,9 @@ const renderModal = (
   isFacilityDeleted: boolean,
   mocks: ReadonlyArray<MockedResponse>,
   initialEntries?: any[] | undefined
-) => {
-  render(
+) => ({
+  user: userEvent.setup(),
+  ...render(
     <Provider store={store}>
       <MockedProvider mocks={mocks} addTypename={false}>
         <MemoryRouter initialEntries={initialEntries}>
@@ -79,8 +81,8 @@ const renderModal = (
         </MemoryRouter>
       </MockedProvider>
     </Provider>
-  );
-};
+  ),
+});
 
 describe("TestResultCorrectionModal", () => {
   let component: any;
@@ -154,11 +156,9 @@ describe("TestResultCorrectionModal", () => {
     it.each([true, false])(
       "sends a GraphQL request to perform the removal",
       async (isFacilityDeleted) => {
-        renderModal(isFacilityDeleted, mocks);
-        await act(
-          async () =>
-            await userEvent.click(await screen.findByText("Yes, I'm sure"))
-        );
+        const { user } = renderModal(isFacilityDeleted, mocks);
+
+        await user.click(await screen.findByText("Yes, I'm sure"));
 
         await waitFor(() => {
           expect(markAsErrorMockDidComplete).toBe(true);
@@ -195,40 +195,43 @@ describe("TestResultCorrectionModal", () => {
     });
 
     it("sends a GraphQL request on submit to initiate correction", async () => {
-      renderModal(false, mocks, [`/results/1?facility=${mockFacilityID}`]);
+      const { user } = renderModal(false, mocks, [
+        `/results/1?facility=${mockFacilityID}`,
+      ]);
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      await act(
-        async () =>
-          await userEvent.selectOptions(
-            dropdown,
-            TestCorrectionReasons.INCORRECT_RESULT
-          )
+      await user.selectOptions(
+        dropdown,
+        TestCorrectionReasons.INCORRECT_RESULT
       );
+      await waitFor(() => expect(dropdown).toHaveValue("INCORRECT_RESULT"));
 
       const submitButton = await screen.findByText("Yes, I'm sure");
-      await act(async () => await userEvent.click(submitButton));
+      await user.click(submitButton);
       await waitFor(() => {
         expect(markAsCorrectMockDidComplete).toBe(true);
       });
+
+      // need to advance timers so the timeout executes before assertion
       await waitFor(() => {
         expect(mockedNavigate).toHaveBeenCalledWith(
           `/queue?facility=${mockFacilityID}`
         );
       });
     });
+
     it("prevents submission when facility is deleted", async () => {
-      renderModal(true, mocks, [`/results/1?facility=${mockFacilityID}`]);
+      const { user } = renderModal(true, mocks, [
+        `/results/1?facility=${mockFacilityID}`,
+      ]);
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      await act(
-        async () =>
-          await userEvent.selectOptions(
-            dropdown,
-            TestCorrectionReasons.INCORRECT_RESULT
-          )
+
+      await user.selectOptions(
+        dropdown,
+        TestCorrectionReasons.INCORRECT_RESULT
       );
 
       expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
@@ -279,14 +282,12 @@ describe("TestResultCorrectionModal", () => {
         },
       },
     ];
-    const selectOther = async () => {
+    const selectOther = async (user: UserEvent) => {
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      await act(
-        async () =>
-          await userEvent.selectOptions(dropdown, TestCorrectionReasons.OTHER)
-      );
+
+      await user.selectOptions(dropdown, TestCorrectionReasons.OTHER);
 
       expect(
         await screen.findByText("Additional information", { exact: false })
@@ -298,8 +299,8 @@ describe("TestResultCorrectionModal", () => {
     });
 
     it("renders sub-form", async () => {
-      renderModal(false, mocks);
-      await selectOther();
+      const { user } = renderModal(false, mocks);
+      await selectOther(user);
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
@@ -321,43 +322,41 @@ describe("TestResultCorrectionModal", () => {
     });
 
     it("prevents submission if additional details not populated", async () => {
-      renderModal(false, mocks);
-      await selectOther();
+      const { user } = renderModal(false, mocks);
+      await selectOther(user);
       const correctionActionOption = screen.getByLabelText(
         TestCorrectionActions.CORRECT_RESULT
       );
-      await act(async () => await userEvent.click(correctionActionOption));
+      await user.click(correctionActionOption);
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
     });
 
     it("prevents submission if additional details does not meet minimum character requirement", async () => {
-      renderModal(false, mocks);
-      await selectOther();
+      const { user } = renderModal(false, mocks);
+      await selectOther(user);
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
-      await act(async () => await userEvent.type(additionalDetails, "no"));
+      await user.type(additionalDetails, "no");
 
       const correctionActionOption = screen.getByLabelText(
         TestCorrectionActions.CORRECT_RESULT
       );
-      await act(async () => await userEvent.click(correctionActionOption));
+      await user.click(correctionActionOption);
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
     });
 
     it("prevents submission if correction action not selected", async () => {
-      renderModal(false, mocks);
-      await selectOther();
+      const { user } = renderModal(false, mocks);
+      await selectOther(user);
       const additionalDetails = await screen.findByTestId(
         "additionalInformation"
       );
-      await act(
-        async () => await userEvent.type(additionalDetails, "Some good reason")
-      );
+      await user.type(additionalDetails, "Some good reason");
 
       const submitButton = await screen.findByText("Yes, I'm sure");
       expect(submitButton).toBeDisabled();
@@ -367,23 +366,21 @@ describe("TestResultCorrectionModal", () => {
       it.each([true, false])(
         "mark as error sends GraphQL request to remove test",
         async (isFacilityDeleted) => {
-          renderModal(isFacilityDeleted, mocks);
-          await selectOther();
+          const { user } = renderModal(isFacilityDeleted, mocks);
+          await selectOther(user);
           const additionalDetails = await screen.findByTestId(
             "additionalInformation"
           );
-          await act(
-            async () =>
-              await userEvent.type(additionalDetails, "Some good reason")
-          );
+
+          await user.type(additionalDetails, "Some good reason");
           const correctionActionOption = screen.getByLabelText(
             TestCorrectionActions.MARK_AS_ERROR,
             { exact: false }
           );
-          await act(async () => await userEvent.click(correctionActionOption));
+          await user.click(correctionActionOption);
 
           const submitButton = await screen.findByText("Yes, I'm sure");
-          await act(async () => await userEvent.click(submitButton));
+          await user.click(submitButton);
           await waitFor(() => {
             expect(markAsErrorMockDidComplete).toBe(true);
           });
@@ -391,44 +388,40 @@ describe("TestResultCorrectionModal", () => {
       );
 
       it("mark as incorrect results sends GraphQL request to correct test", async () => {
-        renderModal(false, mocks);
-        await selectOther();
+        const { user } = renderModal(false, mocks);
+        await selectOther(user);
         const additionalDetails = await screen.findByTestId(
           "additionalInformation"
         );
-        await act(
-          async () =>
-            await userEvent.type(additionalDetails, "Some good reason")
-        );
+
+        await user.type(additionalDetails, "Some good reason");
 
         const correctionActionOption = screen.getAllByLabelText(
           TestCorrectionActions.CORRECT_RESULT,
           { exact: false }
         )[0];
 
-        await act(async () => await userEvent.click(correctionActionOption));
+        await user.click(correctionActionOption);
         const submitButton = await screen.findByText("Yes, I'm sure");
-        await act(async () => await userEvent.click(submitButton));
+        await user.click(submitButton);
         await waitFor(() => expect(markAsCorrectionMockDidComplete).toBe(true));
       });
 
       it("mark as incorrect results is blocked when facility is deleted", async () => {
-        renderModal(true, mocks);
-        await selectOther();
+        const { user } = renderModal(true, mocks);
+        await selectOther(user);
         const additionalDetails = await screen.findByTestId(
           "additionalInformation"
         );
-        await act(
-          async () =>
-            await userEvent.type(additionalDetails, "Some good reason")
-        );
+
+        await user.type(additionalDetails, "Some good reason");
 
         const correctionActionOption = screen.getAllByLabelText(
           TestCorrectionActions.CORRECT_RESULT,
           { exact: false }
         )[0];
 
-        await act(async () => await userEvent.click(correctionActionOption));
+        await user.click(correctionActionOption);
         expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
         expect(
           screen.getByText("Can't update test result for deleted facility")
@@ -463,34 +456,30 @@ describe("TestResultCorrectionModal", () => {
       markAsCorrectMockDidComplete = false;
     });
     it("sends a GraphQL request to edit results", async () => {
-      renderModal(false, mocks);
+      const { user } = renderModal(false, mocks);
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      await act(
-        async () =>
-          await userEvent.selectOptions(
-            dropdown,
-            TestCorrectionReasons.INCORRECT_TEST_DATE
-          )
+
+      await user.selectOptions(
+        dropdown,
+        TestCorrectionReasons.INCORRECT_TEST_DATE
       );
       const submitButton = await screen.findByText("Yes, I'm sure");
-      await act(async () => await userEvent.click(submitButton));
+      await user.click(submitButton);
       await waitFor(() => {
         expect(markAsCorrectMockDidComplete).toBe(true);
       });
     });
     it("should block submission for incorrect test date when facility is deleted", async () => {
-      renderModal(true, mocks);
+      const { user } = renderModal(true, mocks);
       const dropdown = await screen.findByLabelText(
         "Please select a reason for correcting this test result."
       );
-      await act(
-        async () =>
-          await userEvent.selectOptions(
-            dropdown,
-            TestCorrectionReasons.INCORRECT_TEST_DATE
-          )
+
+      await user.selectOptions(
+        dropdown,
+        TestCorrectionReasons.INCORRECT_TEST_DATE
       );
 
       expect(await screen.findByText("Yes, I'm sure")).toBeDisabled();
