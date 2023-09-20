@@ -84,8 +84,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             address.getStreetTwo(),
             address.getCity(),
             address.getState(),
-            address.getPostalCode(),
-            "facility"))
+            address.getPostalCode()))
         .thenReturn(address);
 
     // WHEN
@@ -147,8 +146,7 @@ class OrganizationMutationResolverTest extends BaseServiceTest<PersonService> {
             address.getStreetTwo(),
             address.getCity(),
             address.getState(),
-            address.getPostalCode(),
-            "facility"))
+            address.getPostalCode()))
         .thenReturn(address);
 
     // WHEN
