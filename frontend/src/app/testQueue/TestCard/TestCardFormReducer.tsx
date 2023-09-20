@@ -17,6 +17,7 @@ export interface TestFormState {
 
 export interface CovidAoeQuestionResponses {
   pregnancy?: PregnancyCode;
+  noSymptoms?: boolean | null;
   symptoms?: string | null;
   symptomOnsetDate?: string;
 }
@@ -143,6 +144,7 @@ export const testCardFormReducer = (
         testResults: convertFromMultiplexResponse(payload.results),
         covidAoeQuestions: {
           ...prevState.covidAoeQuestions,
+          noSymptoms: payload.noSymptoms,
           symptoms: payload.symptoms,
           symptomOnsetDate: payload.symptomOnset,
           pregnancy: payload.pregnancy as PregnancyCode,
