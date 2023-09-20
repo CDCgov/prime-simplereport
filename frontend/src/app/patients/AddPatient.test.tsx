@@ -35,7 +35,7 @@ const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
   </MemoryRouter>
 );
 
-const fillOutForm = (
+const fillOutForm = async (
   user: UserEvent,
   inputs: { [label: string]: string },
   dropdowns: { [label: string]: string },
@@ -43,25 +43,32 @@ const fillOutForm = (
     [legend: string]: { label: string; value: string; exact?: boolean };
   }
 ) => {
-  Object.entries(inputs).forEach(async ([label, value]) => {
+  const inputElements = Object.entries(inputs);
+
+  for (let i = 0; i < inputElements.length; i++) {
     await user.type(
-      screen.getByLabelText(label, {
+      screen.getByLabelText(inputElements[i][0], {
         exact: false,
       }),
-      value
+      inputElements[i][1]
     );
-  });
+  }
 
-  Object.entries(dropdowns).forEach(async ([label, value]) => {
+  const dropDownElements = Object.entries(dropdowns);
+
+  for (let i = 0; i < dropDownElements.length; i++) {
     await user.selectOptions(
-      screen.getByLabelText(label, {
+      screen.getByLabelText(dropDownElements[i][0], {
         exact: false,
       }),
-      value
+      dropDownElements[i][1]
     );
-  });
+  }
 
-  Object.entries(inputGroups).forEach(async ([legend, { label, exact }]) => {
+  const inputGroupsElements = Object.entries(inputGroups);
+
+  for (let i = 0; i < inputGroupsElements.length; i++) {
+    const [legend, { label, exact }] = inputGroupsElements[i];
     const fieldset = screen
       .getByText(legend, {
         exact: true,
@@ -75,7 +82,7 @@ const fillOutForm = (
         exact: exact || false,
       })
     );
-  });
+  }
 };
 
 const addPatientRequestParams = {
@@ -306,7 +313,8 @@ describe("AddPatient", () => {
     describe("All required fields entered and submitting address verification", () => {
       it("redirects to the person tab", async () => {
         const { user } = renderWithUser();
-        fillOutForm(
+
+        await fillOutForm(
           user,
           {
             "First Name": "Alice",
@@ -353,6 +361,7 @@ describe("AddPatient", () => {
             },
           }
         );
+
         await user.click(screen.queryAllByText(/Save Changes/i)[0]);
 
         await screen.findByText(/Address validation/i);
@@ -374,7 +383,7 @@ describe("AddPatient", () => {
       it("surfaces an error if invalid zip code for state", async () => {
         const { user } = renderWithUser();
         zipCodeSpy.mockReturnValue(false);
-        fillOutForm(
+        await fillOutForm(
           user,
           {
             "First Name": "Alice",
@@ -424,7 +433,7 @@ describe("AddPatient", () => {
       });
       it("requires race field to be populated", async () => {
         const { user } = renderWithUser();
-        fillOutForm(
+        await fillOutForm(
           user,
           {
             "First Name": "Alice",
@@ -500,7 +509,7 @@ describe("AddPatient", () => {
     describe("saving changes and starting a test", () => {
       it("redirects to the queue after address validation", async () => {
         const { user } = renderWithUser();
-        fillOutForm(
+        await fillOutForm(
           user,
           {
             "First Name": "Alice",
@@ -557,7 +566,7 @@ describe("AddPatient", () => {
           })[0]
         );
 
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        //await new Promise((resolve) => setTimeout(resolve, 0));
 
         expect(
           screen.queryByText("Address validation", {
@@ -570,7 +579,7 @@ describe("AddPatient", () => {
 
       it("redirects to the queue with a patient id and selected facility id", async () => {
         const { user } = renderWithUser();
-        fillOutForm(
+        await fillOutForm(
           user,
           {
             "First Name": "Alice",
@@ -697,7 +706,7 @@ describe("AddPatient", () => {
 
       const { user } = renderWithUser(mocks);
 
-      fillOutForm(
+      await fillOutForm(
         user,
         {
           "First Name": "Alice",
@@ -747,7 +756,7 @@ describe("AddPatient", () => {
 
       const { user } = renderWithUser(mocks);
 
-      fillOutForm(
+      await fillOutForm(
         user,
         {
           "First Name": "Alice",
