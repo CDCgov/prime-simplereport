@@ -82,7 +82,7 @@ const checkOktaLoginStatus = (
 };
 
 const ReportingApp = () => {
-  const rsvEnabled = useFeature("rsvEnabled");
+  const agnosticEnabled = useFeature("agnosticEnabled");
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -253,21 +253,23 @@ const ReportingApp = () => {
                   />
                 }
               />
-              {rsvEnabled && (
-                <Route
-                  path="results/agnostic/upload/submit"
-                  element={
-                    <ProtectedRoute
-                      requiredPermissions={canViewResults}
-                      userPermissions={data.whoami.permissions}
-                      element={
-                        <ResultsNavWrapper>
-                          <AgnosticUploadContainer />
-                        </ResultsNavWrapper>
-                      }
-                    />
-                  }
-                />
+              {agnosticEnabled && (
+                <>
+                  <Route
+                    path="results/agnostic/upload/submit"
+                    element={
+                      <ProtectedRoute
+                        requiredPermissions={canViewResults}
+                        userPermissions={data.whoami.permissions}
+                        element={
+                          <ResultsNavWrapper>
+                            <AgnosticUploadContainer />
+                          </ResultsNavWrapper>
+                        }
+                      />
+                    }
+                  />
+                </>
               )}
               <Route
                 path="results/upload/submit/guide"
