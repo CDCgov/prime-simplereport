@@ -6592,8 +6592,6 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
 </div>
 `;
 
-exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 2`] = `Promise {}`;
-
 exports[`CsvSchemaDocumentation tests CsvSchemaDocumentationItem renders a schema item 1`] = `
 <div>
   <h5
