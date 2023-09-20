@@ -48,6 +48,7 @@ interface Props {
   startTestPatientId: string | null;
   setStartTestPatientId: any;
   canAddPatient: boolean;
+  addToQueueWithoutAoe?: (patient: Patient) => Promise<void>;
 }
 
 const AddToQueueSearchBox = ({
@@ -57,6 +58,7 @@ const AddToQueueSearchBox = ({
   startTestPatientId,
   setStartTestPatientId,
   canAddPatient,
+  addToQueueWithoutAoe,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -181,6 +183,7 @@ const AddToQueueSearchBox = ({
         patients={data?.patients || []}
         selectedPatient={selectedPatient}
         onAddToQueue={onAddToQueue}
+        addToQueueWithoutAoe={addToQueueWithoutAoe}
         patientsInQueue={patientsInQueue}
         shouldShowSuggestions={showDropdown}
         loading={debounced !== queryString || loading}
