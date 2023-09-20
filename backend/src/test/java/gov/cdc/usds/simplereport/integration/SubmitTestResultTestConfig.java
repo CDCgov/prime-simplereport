@@ -9,12 +9,10 @@ import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
-
 import java.time.Instant;
 import java.util.Date;
 import java.util.Properties;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -23,27 +21,29 @@ import org.springframework.context.annotation.Bean;
 
 @TestConfiguration
 public class SubmitTestResultTestConfig {
-    @MockBean
-    DateGenerator dateGenerator;
+  @MockBean DateGenerator dateGenerator;
 
-    @MockBean
-    UUIDGenerator uuidGenerator;
+  @MockBean UUIDGenerator uuidGenerator;
 
-    @Bean("fhirQueueReportingService")
-    TestEventReportingService fhirQueueReportingService(
-            @Qualifier("mockClient") QueueAsyncClient queueAsyncClient) {
-        var properties = new Properties();
-        // short commit id
-        properties.setProperty("commit.id.abbrev", "CommitID");
-        properties.setProperty("commit.time", "1688565766");
+  @Bean("fhirQueueReportingService")
+  TestEventReportingService fhirQueueReportingService(
+      @Qualifier("mockClient") QueueAsyncClient queueAsyncClient) {
+    var properties = new Properties();
+    // short commit id
+    properties.setProperty("commit.id.abbrev", "CommitID");
+    properties.setProperty("commit.time", "1688565766");
 
-        Date date = Date.from(Instant.parse("2023-05-24T19:33:06.472Z"));
-        when(dateGenerator.newDate()).thenReturn(date);
-        when(uuidGenerator.randomUUID()).thenReturn(UUID.randomUUID());
+    Date date = Date.from(Instant.parse("2023-05-24T19:33:06.472Z"));
+    when(dateGenerator.newDate()).thenReturn(date);
+    when(uuidGenerator.randomUUID()).thenReturn(UUID.randomUUID());
 
-        BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter = new BulkTestResultUploadFhirConverter(uuidGenerator, dateGenerator);
+    BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter =
+        new BulkTestResultUploadFhirConverter(uuidGenerator, dateGenerator);
 
-        return new AzureStorageQueueFhirReportingService(
-                FhirContext.forR4(), queueAsyncClient, new GitProperties(properties), bulkTestResultUploadFhirConverter);
-    }
+    return new AzureStorageQueueFhirReportingService(
+        FhirContext.forR4(),
+        queueAsyncClient,
+        new GitProperties(properties),
+        bulkTestResultUploadFhirConverter);
+  }
 }

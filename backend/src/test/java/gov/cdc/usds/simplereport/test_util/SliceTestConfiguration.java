@@ -26,6 +26,7 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.TenantDataAccessService;
+import gov.cdc.usds.simplereport.service.fhirConversion.strategies.ConvertToFhirForBulkTestUpload;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.lang.annotation.ElementType;
@@ -95,6 +96,7 @@ import org.springframework.security.test.context.support.WithMockUser;
   CurrentPatientContextHolder.class,
   CurrentAccountRequestContextHolder.class,
   ApiUserContextHolder.class,
+  ConvertToFhirForBulkTestUpload.class,
   CurrentOrganizationRolesContextHolder.class,
   OrderingProviderRequiredValidator.class,
   CurrentTenantDataAccessContextHolder.class,

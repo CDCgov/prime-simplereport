@@ -15,9 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.okta.commons.http.MediaType;
 import gov.cdc.usds.simplereport.api.BaseAuthenticatedFullStackTest;
+import gov.cdc.usds.simplereport.service.fhirConversion.TestResultBulkUploadToFhirTest;
+import gov.cdc.usds.simplereport.service.fhirConversion.strategies.ConvertToFhirForBulkTestUpload;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
-import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
-import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhirTest;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.utils.UUIDGenerator;
@@ -57,7 +57,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
 
   @MockBean private UUIDGenerator uuidGenerator;
 
-  @SpyBean private BulkUploadResultsToFhir bulkUploadResultsToFhir;
+  @SpyBean private ConvertToFhirForBulkTestUpload bulkUploadResultsToFhir;
 
   @BeforeAll
   void setup() throws IOException {
@@ -136,6 +136,6 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
   }
 
   private InputStream loadCsv(String csvFile) {
-    return BulkUploadResultsToFhirTest.class.getClassLoader().getResourceAsStream(csvFile);
+    return TestResultBulkUploadToFhirTest.class.getClassLoader().getResourceAsStream(csvFile);
   }
 }
