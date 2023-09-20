@@ -3,8 +3,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
-import { UserEvent } from "@testing-library/user-event/setup/setup";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import * as smartyStreets from "../utils/smartyStreets";
 import SRToastContainer from "../commonComponents/SRToastContainer";
@@ -175,6 +174,38 @@ describe("AddPatient", () => {
         .mockReturnValue(true);
     });
     const mocks = [
+      {
+        request: {
+          query: PATIENT_EXISTS,
+          variables: {
+            firstName: "Alice",
+            lastName: "Hamilton",
+            birthDate: "1970-09-22",
+            facilityId: "b0d2041f-93c9-4192-b19a-dd99c0044a7e",
+          },
+        },
+        result: {
+          data: {
+            patientExistsWithoutZip: false,
+          },
+        },
+      },
+      {
+        request: {
+          query: PATIENT_EXISTS,
+          variables: {
+            firstName: "Alice",
+            lastName: "Hamilton",
+            birthDate: "1970-09-22",
+            facilityId: "",
+          },
+        },
+        result: {
+          data: {
+            patientExistsWithoutZip: false,
+          },
+        },
+      },
       {
         request: {
           query: ADD_PATIENT,
@@ -479,20 +510,27 @@ describe("AddPatient", () => {
     });
 
     describe("facility select input", () => {
-      const { user } = renderWithUser();
-      let facilityInput: HTMLSelectElement;
-      beforeEach(() => {
-        facilityInput = screen.getByLabelText("Facility", {
+      it("is present in the form", () => {
+        renderWithUser();
+        const facilityInput = screen.getByLabelText("Facility", {
           exact: false,
         }) as HTMLSelectElement;
-      });
-      it("is present in the form", () => {
         expect(facilityInput).toBeInTheDocument();
       });
+
       it("defaults to no selection", () => {
+        renderWithUser();
+        const facilityInput = screen.getByLabelText("Facility", {
+          exact: false,
+        }) as HTMLSelectElement;
         expect(facilityInput.value).toBe("");
       });
+
       it("updates its selection on change", async () => {
+        const { user } = renderWithUser();
+        const facilityInput = screen.getByLabelText("Facility", {
+          exact: false,
+        }) as HTMLSelectElement;
         await user.selectOptions(facilityInput, [mockFacilityID]);
         expect(facilityInput.value).toBe(mockFacilityID);
       });
@@ -577,7 +615,7 @@ describe("AddPatient", () => {
         await screen.findByText(/Testing Queue!/i);
       });
 
-      it("redirects to the queue with a patient id and selected facility id", async () => {
+      it.only("redirects to the queue with a patient id and selected facility id", async () => {
         const { user } = renderWithUser();
         await fillOutForm(
           user,

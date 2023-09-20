@@ -7,9 +7,7 @@ import OrganizationForm, {
 } from "./OrganizationForm";
 
 const getOrgNameInput = () =>
-  screen.getByRole("textbox", {
-    name: "Organization name required",
-  });
+  screen.getByRole("textbox", { name: /organization name \*/i });
 const getOrgStateDropdown = () =>
   screen.getByLabelText("Organization state *") as HTMLSelectElement;
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
