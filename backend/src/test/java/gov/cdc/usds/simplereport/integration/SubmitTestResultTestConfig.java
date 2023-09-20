@@ -4,7 +4,7 @@ import static org.mockito.Mockito.when;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
-import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.api.converter.BulkTestResultUploadFhirConverter;
 import gov.cdc.usds.simplereport.service.AzureStorageQueueFhirReportingService;
 import gov.cdc.usds.simplereport.service.TestEventReportingService;
 import gov.cdc.usds.simplereport.utils.DateGenerator;
@@ -37,9 +37,13 @@ public class SubmitTestResultTestConfig {
     when(dateGenerator.newDate()).thenReturn(date);
     when(uuidGenerator.randomUUID()).thenReturn(UUID.randomUUID());
 
-    FhirConverter fhirConverter = new FhirConverter(uuidGenerator, dateGenerator);
+    BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter =
+        new BulkTestResultUploadFhirConverter(uuidGenerator, dateGenerator);
 
     return new AzureStorageQueueFhirReportingService(
-        FhirContext.forR4(), queueAsyncClient, new GitProperties(properties), fhirConverter);
+        FhirContext.forR4(),
+        queueAsyncClient,
+        new GitProperties(properties),
+        bulkTestResultUploadFhirConverter);
   }
 }

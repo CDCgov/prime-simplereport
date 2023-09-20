@@ -7,7 +7,7 @@ import com.azure.storage.queue.QueueAsyncClient;
 import com.azure.storage.queue.QueueClientBuilder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.api.converter.BulkTestResultUploadFhirConverter;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.api.model.errors.TestEventSerializationFailureException;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -48,10 +48,10 @@ class AzureTestEventReportingQueueConfiguration {
       FhirContext context,
       @Qualifier("fhirQueueClient") QueueAsyncClient queueClient,
       GitProperties gitProperties,
-      FhirConverter fhirConverter) {
+      BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter) {
     log.info("Configured for queue={}", queueClient.getQueueName());
     return new AzureStorageQueueFhirReportingService(
-        context, queueClient, gitProperties, fhirConverter);
+        context, queueClient, gitProperties, bulkTestResultUploadFhirConverter);
   }
 
   @Bean
@@ -71,11 +71,13 @@ class AzureTestEventReportingQueueConfiguration {
   @Bean(name = "fhirQueueReportingService")
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
   TestEventReportingService noOpFhirReportingService(
-      FhirContext context, GitProperties gitProperties, FhirConverter fhirConverter) {
+      FhirContext context,
+      GitProperties gitProperties,
+      BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter) {
     return NoOpFHIRReportingService.builder()
         .fhirContext(context)
         .gitProperties(gitProperties)
-        .fhirConverter(fhirConverter)
+        .bulkTestResultUploadFhirConverter(bulkTestResultUploadFhirConverter)
         .build();
   }
 
@@ -91,11 +93,13 @@ class AzureTestEventReportingQueueConfiguration {
   @Bean(name = "fhirQueueReportingService")
   @ConditionalOnMissingBean(name = "fhirQueueReportingService")
   TestEventReportingService noOpDebugFhirReportingService(
-      FhirContext context, GitProperties gitProperties, FhirConverter fhirConverter) {
+      FhirContext context,
+      GitProperties gitProperties,
+      BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter) {
     return NoOpFHIRReportingService.builder()
         .fhirContext(context)
         .gitProperties(gitProperties)
-        .fhirConverter(fhirConverter)
+        .bulkTestResultUploadFhirConverter(bulkTestResultUploadFhirConverter)
         .printSerializedTestEvent(true)
         .build();
   }
@@ -156,7 +160,7 @@ class AzureTestEventReportingQueueConfiguration {
 
     private FhirContext fhirContext;
     private GitProperties gitProperties;
-    private FhirConverter fhirConverter;
+    private BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter;
 
     @Override
     public CompletableFuture<Void> reportAsync(TestEvent testEvent) {
@@ -173,7 +177,8 @@ class AzureTestEventReportingQueueConfiguration {
     private String toBuffer(TestEvent testEvent) {
       return fhirContext
           .newJsonParser()
-          .encodeResourceToString(fhirConverter.createFhirBundle(testEvent, gitProperties, "P"));
+          .encodeResourceToString(
+              bulkTestResultUploadFhirConverter.createFhirBundle(testEvent, gitProperties, "P"));
     }
   }
 }

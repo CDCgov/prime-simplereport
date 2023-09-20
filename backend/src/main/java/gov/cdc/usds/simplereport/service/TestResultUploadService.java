@@ -30,10 +30,11 @@ import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
+import gov.cdc.usds.simplereport.service.fhirConversion.FhirConverter;
+import gov.cdc.usds.simplereport.service.fhirConversion.strategies.ConvertToFhirForBulkTestUpload;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
-import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -72,7 +73,7 @@ public class TestResultUploadService {
   private final ResultsUploaderCachingService resultsUploaderCachingService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
-  private final BulkUploadResultsToFhir fhirConverter;
+  private final ConvertToFhirForBulkTestUpload bulkTestUploadFhirConversionStrategy;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -361,6 +362,7 @@ public class TestResultUploadService {
 
   private Future<UploadResponse> submitResultsAsFhir(
       ByteArrayInputStream content, Organization org) {
+    FhirConverter fhirConverter = new FhirConverter(bulkTestUploadFhirConversionStrategy);
     // send to report stream
     return CompletableFuture.supplyAsync(
         withMDC(

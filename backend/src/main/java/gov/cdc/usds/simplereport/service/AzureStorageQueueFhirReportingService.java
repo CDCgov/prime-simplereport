@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import ca.uhn.fhir.context.FhirContext;
 import com.azure.storage.queue.QueueAsyncClient;
-import gov.cdc.usds.simplereport.api.converter.FhirConverter;
+import gov.cdc.usds.simplereport.api.converter.BulkTestResultUploadFhirConverter;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
   private final FhirContext context;
   private final QueueAsyncClient queueClient;
   private final GitProperties gitProperties;
-  private final FhirConverter fhirConverter;
+  private final BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter;
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
@@ -32,7 +32,8 @@ public final class AzureStorageQueueFhirReportingService implements TestEventRep
       return queueClient
           .sendMessage(
               parser.encodeResourceToString(
-                  fhirConverter.createFhirBundle(testEvent, gitProperties, processingModeCode)))
+                  bulkTestResultUploadFhirConverter.createFhirBundle(
+                      testEvent, gitProperties, processingModeCode)))
           .toFuture()
           .thenApply(result -> null);
     }

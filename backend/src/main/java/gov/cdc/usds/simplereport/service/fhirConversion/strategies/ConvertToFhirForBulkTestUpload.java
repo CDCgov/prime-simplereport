@@ -1,22 +1,16 @@
-package gov.cdc.usds.simplereport.utils;
+package gov.cdc.usds.simplereport.service.fhirConversion.strategies;
 
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
-import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
-import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.api.converter.BulkTestResultUploadFhirConverter;
 import gov.cdc.usds.simplereport.api.converter.ConvertToObservationProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToPatientProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToSpecimenProps;
 import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
-import gov.cdc.usds.simplereport.api.converter.FhirConverter;
-import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
@@ -27,7 +21,10 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
-import java.io.InputStream;
+import gov.cdc.usds.simplereport.service.fhirConversion.FhirConversionStrategy;
+import gov.cdc.usds.simplereport.utils.DateGenerator;
+import gov.cdc.usds.simplereport.utils.MultiplexUtils;
+import gov.cdc.usds.simplereport.utils.UUIDGenerator;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -37,8 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -48,34 +43,23 @@ import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
 @Slf4j
 @RequiredArgsConstructor
-public class BulkUploadResultsToFhir {
-
+@Service
+public class ConvertToFhirForBulkTestUpload implements FhirConversionStrategy {
+  private final ResultsUploaderCachingService resultsUploaderCachingService;
   private static final String ALPHABET_REGEX = "^[a-zA-Z\\s]+$";
   private static final String SNOMED_REGEX = "(^\\d{9}$)|(^\\d{15}$)";
-  private final ResultsUploaderCachingService resultsUploaderCachingService;
+
   private final GitProperties gitProperties;
   private final UUIDGenerator uuidGenerator;
   private final DateGenerator dateGenerator;
-  private final FhirConverter fhirConverter;
+  private final BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter;
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
-
-  final FhirContext ctx = FhirContext.forR4();
-  final IParser parser = ctx.newJsonParser();
-
-  private final Map<String, String> testResultToSnomedMap =
-      Map.of(
-          "Positive".toLowerCase(), "260373001",
-          "Negative".toLowerCase(), "260415000",
-          "Detected".toLowerCase(), "260373001",
-          "Not Detected".toLowerCase(), "260415000",
-          "Invalid Result".toLowerCase(), "455371000124106");
 
   private static final Map<String, Boolean> yesNoToBooleanMap = new HashMap<>();
 
@@ -90,47 +74,21 @@ public class BulkUploadResultsToFhir {
     yesNoToBooleanMap.put("", null);
   }
 
-  public List<String> convertToFhirBundles(InputStream csvStream, UUID orgId) {
-    var futureTestEvents = new ArrayList<CompletableFuture<String>>();
-    final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
-    while (valueIterator.hasNext()) {
-      final Map<String, String> row;
-      try {
-        row = getNextRow(valueIterator);
-      } catch (CsvProcessingException ex) {
-        // anything that would land here should have been caught and handled by the file validator
-        log.error("Unable to parse csv.", ex);
-        continue;
-      }
-      var fileRow = new TestResultRow(row);
+  private final Map<String, String> testResultToSnomedMap =
+      Map.of(
+          "Positive".toLowerCase(), "260373001",
+          "Negative".toLowerCase(), "260415000",
+          "Detected".toLowerCase(), "260373001",
+          "Not Detected".toLowerCase(), "260415000",
+          "Invalid Result".toLowerCase(), "455371000124106");
 
-      var future =
-          CompletableFuture.supplyAsync(() -> convertRowToFhirBundle(fileRow, orgId))
-              .thenApply(parser::encodeResourceToString);
-      futureTestEvents.add(future);
-    }
-
-    List<String> bundles =
-        futureTestEvents.stream()
-            .map(
-                future -> {
-                  try {
-                    return future.get();
-                  } catch (InterruptedException | ExecutionException e) {
-                    log.error("Bulk upload failure to convert to fhir.", e);
-                    Thread.currentThread().interrupt();
-                    throw new CsvProcessingException("Unable to process file.");
-                  }
-                })
-            .toList();
-
-    // Clear cache to free memory
-    resultsUploaderCachingService.clearAddressTimezoneLookupCache();
-
-    return bundles;
+  @Override
+  public Bundle convertRowToFhirBundle(Map<String, String> row, UUID orgId) {
+    return convertTestResultRowToFhir(row, orgId);
   }
 
-  private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
+  private Bundle convertTestResultRowToFhir(Map<String, String> rawRow, UUID orgId) {
+    TestResultRow row = new TestResultRow(rawRow);
     var testEventId = row.getAccessionNumber().getValue();
 
     var patientAddr =
@@ -205,7 +163,7 @@ public class BulkUploadResultsToFhir {
             : emptyList();
 
     var patient =
-        fhirConverter.convertToPatient(
+        bulkTestResultUploadFhirConverter.convertToPatient(
             ConvertToPatientProps.builder()
                 .id(row.getPatientId().getValue())
                 .name(
@@ -226,7 +184,7 @@ public class BulkUploadResultsToFhir {
                 .build());
 
     var testingLabOrg =
-        fhirConverter.convertToOrganization(
+        bulkTestResultUploadFhirConverter.convertToOrganization(
             orgId.toString(),
             row.getTestingLabName().getValue(),
             row.getTestingLabClia().getValue(),
@@ -252,7 +210,7 @@ public class BulkUploadResultsToFhir {
               row.getOrderingFacilityZipCode().getValue(),
               null);
       orderingFacility =
-          fhirConverter.convertToOrganization(
+          bulkTestResultUploadFhirConverter.convertToOrganization(
               uuidGenerator.randomUUID().toString(),
               row.getOrderingFacilityName().getValue(),
               row.getTestingLabClia().getValue(),
@@ -267,7 +225,7 @@ public class BulkUploadResultsToFhir {
     }
 
     var practitioner =
-        fhirConverter.convertToPractitioner(
+        bulkTestResultUploadFhirConverter.convertToPractitioner(
             row.getOrderingProviderId().getValue(),
             new PersonName(
                 row.getOrderingProviderFirstName().getValue(),
@@ -301,10 +259,10 @@ public class BulkUploadResultsToFhir {
               .toList();
       manufacturer = matchingDevice.getManufacturer();
       equipmentUid =
-          fhirConverter.getCommonDiseaseValue(
+          bulkTestResultUploadFhirConverter.getCommonDiseaseValue(
               deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
       testKitNameId =
-          fhirConverter.getCommonDiseaseValue(
+          bulkTestResultUploadFhirConverter.getCommonDiseaseValue(
               deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
       deviceId =
           deviceTypeDiseaseEntries.stream()
@@ -338,12 +296,14 @@ public class BulkUploadResultsToFhir {
     // code was not passed via api or inferred above: defaulting to the test performed code.
     testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
 
-    var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
+    var device =
+        bulkTestResultUploadFhirConverter.convertToDevice(
+            manufacturer, modelName, deviceId.toString());
 
     String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
     String specimenName = getSpecimenTypeName(specimenCode);
     var specimen =
-        fhirConverter.convertToSpecimen(
+        bulkTestResultUploadFhirConverter.convertToSpecimen(
             ConvertToSpecimenProps.builder()
                 .specimenCode(specimenCode)
                 .specimenName(specimenName)
@@ -357,7 +317,7 @@ public class BulkUploadResultsToFhir {
 
     var observation =
         List.of(
-            fhirConverter.convertToObservation(
+            bulkTestResultUploadFhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
                     .diseaseCode(row.getTestPerformedCode().getValue())
                     .diseaseName(diseaseName)
@@ -393,24 +353,25 @@ public class BulkUploadResultsToFhir {
     }
 
     var aoeObservations =
-        fhirConverter.convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
+        bulkTestResultUploadFhirConverter.convertToAOEObservation(
+            testEventId, symptomatic, symptomOnsetDate);
 
     var serviceRequest =
-        fhirConverter.convertToServiceRequest(
+        bulkTestResultUploadFhirConverter.convertToServiceRequest(
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderedCode,
             uuidGenerator.randomUUID().toString(),
             orderTestDate);
 
     var diagnosticReport =
-        fhirConverter.convertToDiagnosticReport(
+        bulkTestResultUploadFhirConverter.convertToDiagnosticReport(
             mapTestResultStatusToFhirValue(row.getTestResultStatus().getValue()),
             testPerformedCode,
             testEventId,
             testResultDate,
             dateResultReleased);
 
-    return fhirConverter.createFhirBundle(
+    return bulkTestResultUploadFhirConverter.createFhirBundle(
         CreateFhirBundleProps.builder()
             .patient(patient)
             .testingLab(testingLabOrg)

@@ -92,7 +92,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.util.ReflectionTestUtils;
 
 @SpringBootTest
-class FhirConverterTest {
+class BulkTestResultUploadFhirConverterTest {
   private static final String unknownSystem = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor";
   private static final String raceCodeSystem = "http://terminology.hl7.org/CodeSystem/v3-Race";
   private static final String ethnicitySystem = "http://terminology.hl7.org/CodeSystem/v2-0189";
@@ -108,7 +108,7 @@ class FhirConverterTest {
   @Mock private GitProperties gitProperties;
   @MockBean private DateGenerator dateGenerator;
   @MockBean private UUIDGenerator uuidGenerator;
-  @Autowired private FhirConverter fhirConverter;
+  @Autowired private BulkTestResultUploadFhirConverter bulkTestResultUploadFhirConverter;
 
   @BeforeEach
   public void init() {
@@ -120,7 +120,8 @@ class FhirConverterTest {
 
   @Test
   void convertToHumanName_String_allFields() {
-    var actual = fhirConverter.convertToHumanName("first", "middle", "last", "jr");
+    var actual =
+        bulkTestResultUploadFhirConverter.convertToHumanName("first", "middle", "last", "jr");
     assertThat(actual.getGiven().stream().map(PrimitiveType::getValue))
         .containsExactly("first", "middle");
     assertThat(actual.getFamily()).isEqualTo("last");
@@ -129,14 +130,14 @@ class FhirConverterTest {
 
   @Test
   void convertToHumanName_Strings_nullMiddleName() {
-    var actual = fhirConverter.convertToHumanName("first", null, "last", "jr");
+    var actual = bulkTestResultUploadFhirConverter.convertToHumanName("first", null, "last", "jr");
 
     assertThat(actual.getGiven().stream().map(PrimitiveType::getValue)).containsExactly("first");
   }
 
   @Test
   void convertToHumanName_Strings_null() {
-    var actual = fhirConverter.convertToHumanName(null, null, null, null);
+    var actual = bulkTestResultUploadFhirConverter.convertToHumanName(null, null, null, null);
 
     assertThat(actual.getGiven()).isEmpty();
     assertThat(actual.getFamily()).isNull();
@@ -149,7 +150,8 @@ class FhirConverterTest {
     var phoneNumber2 = new PhoneNumber(PhoneType.LANDLINE, "2485551233");
 
     var actual =
-        fhirConverter.convertPhoneNumbersToContactPoint(List.of(phoneNumber, phoneNumber2));
+        bulkTestResultUploadFhirConverter.convertPhoneNumbersToContactPoint(
+            List.of(phoneNumber, phoneNumber2));
     assertThat(actual).hasSize(2);
 
     assertThat(actual.stream().map(ContactPoint::getValue))
@@ -160,7 +162,7 @@ class FhirConverterTest {
   void convertToContactPoint_PhoneNumber_validLandline() {
     var phoneNumber = new PhoneNumber(PhoneType.LANDLINE, "2485551234");
 
-    var actual = fhirConverter.convertToContactPoint(phoneNumber);
+    var actual = bulkTestResultUploadFhirConverter.convertToContactPoint(phoneNumber);
 
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.PHONE);
     assertThat(actual.getUse().toCode()).isEqualTo(ContactPointUse.HOME.toCode());
@@ -170,7 +172,8 @@ class FhirConverterTest {
   @Test
   void convertToContactPoint_PhoneNumber_validMobile() {
     var actual =
-        fhirConverter.convertToContactPoint(ContactPoint.ContactPointUse.MOBILE, "2485551234");
+        bulkTestResultUploadFhirConverter.convertToContactPoint(
+            ContactPoint.ContactPointUse.MOBILE, "2485551234");
 
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.PHONE);
     assertThat(actual.getUse().toCode()).isEqualTo(ContactPointUse.MOBILE.toCode());
@@ -179,7 +182,9 @@ class FhirConverterTest {
 
   @Test
   void convertToContactPoint_ContactPointAndString_invalidNumber() {
-    var actual = fhirConverter.convertToContactPoint(ContactPoint.ContactPointUse.HOME, "+0333");
+    var actual =
+        bulkTestResultUploadFhirConverter.convertToContactPoint(
+            ContactPoint.ContactPointUse.HOME, "+0333");
 
     assertThat(actual)
         .returns(ContactPointSystem.PHONE, from(ContactPoint::getSystem))
@@ -192,7 +197,7 @@ class FhirConverterTest {
   @Test
   void convertEmailsToContactPoint_valid() {
     var actual =
-        fhirConverter.convertEmailsToContactPoint(
+        bulkTestResultUploadFhirConverter.convertEmailsToContactPoint(
             ContactPointUse.HOME, List.of("email1@example.com", "email2@example.com"));
 
     assertThat(actual).hasSize(2);
@@ -209,7 +214,8 @@ class FhirConverterTest {
   @Test
   void convertEmailToContactPoint_valid() {
     var actual =
-        fhirConverter.convertEmailToContactPoint(ContactPointUse.WORK, "example@example.com");
+        bulkTestResultUploadFhirConverter.convertEmailToContactPoint(
+            ContactPointUse.WORK, "example@example.com");
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.EMAIL);
     assertThat(actual.getValue()).isEqualTo("example@example.com");
     assertThat(actual.getUse()).isEqualTo(ContactPointUse.WORK);
@@ -218,7 +224,8 @@ class FhirConverterTest {
   @Test
   void convertToContactPoint_CodePointUseAndCodePointSystemAndString_valid() {
     var actual =
-        fhirConverter.convertToContactPoint(null, ContactPointSystem.EMAIL, "example@example.com");
+        bulkTestResultUploadFhirConverter.convertToContactPoint(
+            null, ContactPointSystem.EMAIL, "example@example.com");
     assertThat(actual.getUse()).isNull();
     assertThat(actual.getSystem()).isEqualTo(ContactPointSystem.EMAIL);
     assertThat(actual.getValue()).isEqualTo("example@example.com");
@@ -227,7 +234,7 @@ class FhirConverterTest {
   @ParameterizedTest
   @MethodSource("genderArgs")
   void convertToAdministrativeGender_matches(String personGender, AdministrativeGender expected) {
-    var actual = fhirConverter.convertToAdministrativeGender(personGender);
+    var actual = bulkTestResultUploadFhirConverter.convertToAdministrativeGender(personGender);
 
     assertThat(actual).isEqualTo(expected);
   }
@@ -247,7 +254,7 @@ class FhirConverterTest {
     var address =
         new StreetAddress(
             List.of("1234 Main", "Apartment #1"), "MyCity", "MyCounty", "PA", "15025");
-    var actual = fhirConverter.convertToAddress(address, "USA");
+    var actual = bulkTestResultUploadFhirConverter.convertToAddress(address, "USA");
     assertThat(actual.getLine().stream().map(PrimitiveType::getValue))
         .containsExactly("1234 Main", "Apartment #1");
     assertThat(actual.getCity()).isEqualTo(address.getCity());
@@ -259,7 +266,7 @@ class FhirConverterTest {
   @Test
   void convertToAddress_Strings_valid() {
     var actual =
-        fhirConverter.convertToAddress(
+        bulkTestResultUploadFhirConverter.convertToAddress(
             List.of("1234 Main", "Apartment #1"), "MyCity", "MyCounty", "PA", "15025", "Canada");
     assertThat(actual.getLine().stream().map(PrimitiveType::getValue))
         .containsExactly("1234 Main", "Apartment #1");
@@ -271,7 +278,8 @@ class FhirConverterTest {
 
   @Test
   void convertToAddress_Strings_null() {
-    var actual = fhirConverter.convertToAddress(null, null, null, null, null, null);
+    var actual =
+        bulkTestResultUploadFhirConverter.convertToAddress(null, null, null, null, null, null);
     assertThat(actual.getLine()).isEmpty();
     assertThat(actual.getCity()).isNull();
     assertThat(actual.getDistrict()).isNull();
@@ -281,7 +289,7 @@ class FhirConverterTest {
 
   @Test
   void convertToDate_valid() {
-    var actual = fhirConverter.convertToDate(LocalDate.of(2022, 12, 13));
+    var actual = bulkTestResultUploadFhirConverter.convertToDate(LocalDate.of(2022, 12, 13));
 
     assertThat(actual).isEqualToIgnoringHours(new Date(1670936400000L));
   }
@@ -290,7 +298,7 @@ class FhirConverterTest {
   @MethodSource("raceArgs")
   void convertToRaceArgs_matches(
       String personRaceValue, String codeSystem, String expectedCode, String expectedText) {
-    var actual = fhirConverter.convertToRaceExtension(personRaceValue);
+    var actual = bulkTestResultUploadFhirConverter.convertToRaceExtension(personRaceValue);
     var codeableConcept = actual.castToCodeableConcept(actual.getValue());
     var code = codeableConcept.getCoding();
 
@@ -312,7 +320,7 @@ class FhirConverterTest {
   void convertToEthnicityExtension_matches(
       String ethnicity, String system, String ethnicityCode, String ethnicityDisplay) {
 
-    var actual = fhirConverter.convertToEthnicityExtension(ethnicity);
+    var actual = bulkTestResultUploadFhirConverter.convertToEthnicityExtension(ethnicity);
     assert actual != null;
     var codeableConcept = actual.castToCodeableConcept(actual.getValue());
     var coding = codeableConcept.getCoding();
@@ -335,13 +343,13 @@ class FhirConverterTest {
 
   @Test
   void convertToEthnicityExtension_String_returnsNullIfEmpty() {
-    var actual = fhirConverter.convertToEthnicityExtension(null);
+    var actual = bulkTestResultUploadFhirConverter.convertToEthnicityExtension(null);
     assertThat(actual).isNull();
   }
 
   @Test
   void convertToTribalAffiliation_String() {
-    var actual = fhirConverter.convertToTribalAffiliationExtension("1").get();
+    var actual = bulkTestResultUploadFhirConverter.convertToTribalAffiliationExtension("1").get();
     var tribalAffiliationExtension = actual.getExtensionByUrl("tribalAffiliation");
     var tribalCodeableConcept = actual.castToCodeableConcept(tribalAffiliationExtension.getValue());
     var tribalCoding = tribalCodeableConcept.getCoding().get(0);
@@ -355,7 +363,9 @@ class FhirConverterTest {
 
   @Test
   void convertToTribalAffiliation_List_empty() {
-    var actual = fhirConverter.convertToTribalAffiliationExtension(Collections.emptyList());
+    var actual =
+        bulkTestResultUploadFhirConverter.convertToTribalAffiliationExtension(
+            Collections.emptyList());
     assertThat(actual).isEmpty();
   }
 
@@ -363,7 +373,7 @@ class FhirConverterTest {
   void convertToTribalAffiliation_List_nullElement() {
     var list = new ArrayList<String>();
     list.add(null);
-    var actual = fhirConverter.convertToTribalAffiliationExtension(list);
+    var actual = bulkTestResultUploadFhirConverter.convertToTribalAffiliationExtension(list);
     assertThat(actual).isEmpty();
   }
 
@@ -384,7 +394,7 @@ class FhirConverterTest {
             "248 555 1234");
     ReflectionTestUtils.setField(provider, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToPractitioner(provider);
+    var actual = bulkTestResultUploadFhirConverter.convertToPractitioner(provider);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -412,7 +422,7 @@ class FhirConverterTest {
 
     ReflectionTestUtils.setField(facility, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToOrganization(facility);
+    var actual = bulkTestResultUploadFhirConverter.convertToOrganization(facility);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -458,7 +468,7 @@ class FhirConverterTest {
             new PhoneNumber(PhoneType.LANDLINE, "3045551233")));
     ReflectionTestUtils.setField(person, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToPatient(person);
+    var actual = bulkTestResultUploadFhirConverter.convertToPatient(person);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -472,7 +482,7 @@ class FhirConverterTest {
   @Test
   void convertToDevice_Strings_valid() {
     var actual =
-        fhirConverter.convertToDevice(
+        bulkTestResultUploadFhirConverter.convertToDevice(
             "PHASE Scientific International, Ltd.\n",
             "INDICAID COVID-19 Rapid Antigen Test*",
             "id-123");
@@ -491,7 +501,7 @@ class FhirConverterTest {
     var deviceType = new DeviceType("name", "manufacturer", "model", 15);
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
-    var actual = fhirConverter.convertToDevice(deviceType);
+    var actual = bulkTestResultUploadFhirConverter.convertToDevice(deviceType);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
@@ -508,7 +518,7 @@ class FhirConverterTest {
             "name", "BioFire Diagnostics", "BioFire Respiratory Panel 2.1 (RP2.1)*@", 15);
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToDevice(deviceType);
+    var actual = bulkTestResultUploadFhirConverter.convertToDevice(deviceType);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -526,7 +536,7 @@ class FhirConverterTest {
     var receivedTime = ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"));
 
     var actual =
-        fhirConverter.convertToSpecimen(
+        bulkTestResultUploadFhirConverter.convertToSpecimen(
             ConvertToSpecimenProps.builder()
                 .specimenCode("258500001")
                 .specimenName("Nasopharyngeal swab")
@@ -558,7 +568,9 @@ class FhirConverterTest {
 
   @Test
   void convertToSpecimen_Strings_null() {
-    var actual = fhirConverter.convertToSpecimen(ConvertToSpecimenProps.builder().build());
+    var actual =
+        bulkTestResultUploadFhirConverter.convertToSpecimen(
+            ConvertToSpecimenProps.builder().build());
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getType().getText()).isNull();
@@ -585,7 +597,7 @@ class FhirConverterTest {
     var receivedTime = ZonedDateTime.of(2023, 6, 23, 12, 0, 0, 0, ZoneId.of("US/Eastern"));
 
     var actual =
-        fhirConverter.convertToSpecimen(
+        bulkTestResultUploadFhirConverter.convertToSpecimen(
             specimenType, UUID.randomUUID(), collectionDate, receivedTime);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
@@ -614,7 +626,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(specimenType, "internalId", UUID.fromString(internalId));
 
     var actual =
-        fhirConverter.convertToSpecimen(
+        bulkTestResultUploadFhirConverter.convertToSpecimen(
             specimenType,
             UUID.randomUUID(),
             ZonedDateTime.ofInstant(
@@ -637,7 +649,7 @@ class FhirConverterTest {
   void convertToObservation_Strings_valid() {
 
     var actual =
-        fhirConverter.convertToObservation(
+        bulkTestResultUploadFhirConverter.convertToObservation(
             ConvertToObservationProps.builder()
                 .diseaseCode("diseaseCode")
                 .diseaseName("diseaseName")
@@ -677,7 +689,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual =
-        fhirConverter.convertToObservation(
+        bulkTestResultUploadFhirConverter.convertToObservation(
             result,
             "loinc",
             TestCorrectionStatus.ORIGINAL,
@@ -711,7 +723,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual =
-        fhirConverter.convertToObservation(
+        bulkTestResultUploadFhirConverter.convertToObservation(
             result,
             "loinc",
             TestCorrectionStatus.CORRECTED,
@@ -735,7 +747,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(result, "internalId", internalId);
 
     var actual =
-        fhirConverter.convertToObservation(
+        bulkTestResultUploadFhirConverter.convertToObservation(
             result,
             "loinc",
             TestCorrectionStatus.REMOVED,
@@ -755,7 +767,7 @@ class FhirConverterTest {
   @Test
   void convertToObservation_Result_null() {
     var actual =
-        fhirConverter.convertToObservation(
+        bulkTestResultUploadFhirConverter.convertToObservation(
             null,
             "",
             TestCorrectionStatus.ORIGINAL,
@@ -773,7 +785,7 @@ class FhirConverterTest {
     Result result = new Result(null, TestResult.POSITIVE);
 
     var actual =
-        fhirConverter.convertToObservation(
+        bulkTestResultUploadFhirConverter.convertToObservation(
             result,
             "",
             TestCorrectionStatus.ORIGINAL,
@@ -812,7 +824,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(device, "model", "deviceModel");
 
     var actual =
-        fhirConverter.convertToObservation(
+        bulkTestResultUploadFhirConverter.convertToObservation(
             Set.of(covidResult, fluResult),
             device,
             TestCorrectionStatus.ORIGINAL,
@@ -866,7 +878,7 @@ class FhirConverterTest {
         device, "supportedDiseaseTestPerformed", List.of(covidDiseaseTestPerformedCode));
 
     var actual =
-        fhirConverter.convertToObservation(
+        bulkTestResultUploadFhirConverter.convertToObservation(
             Set.of(result),
             device,
             TestCorrectionStatus.CORRECTED,
@@ -887,7 +899,7 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers);
+    var actual = bulkTestResultUploadFhirConverter.convertToAOEObservations(testId, answers);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -904,7 +916,7 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4));
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers);
+    var actual = bulkTestResultUploadFhirConverter.convertToAOEObservations(testId, answers);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -923,7 +935,7 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers);
+    var actual = bulkTestResultUploadFhirConverter.convertToAOEObservations(testId, answers);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -942,7 +954,7 @@ class FhirConverterTest {
     var testEvent = TestDataBuilder.createEmptyTestEventWithValidDevice();
     ReflectionTestUtils.setField(
         testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
-    var actual = fhirConverter.convertToDiagnosticReport(testEvent, new Date());
+    var actual = bulkTestResultUploadFhirConverter.convertToDiagnosticReport(testEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.FINAL);
     assertThat(actual.getCode().getCoding()).hasSize(1);
@@ -956,7 +968,8 @@ class FhirConverterTest {
     var correctedTestEvent =
         new TestEvent(invalidTestEvent, TestCorrectionStatus.CORRECTED, "typo");
 
-    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
+    var actual =
+        bulkTestResultUploadFhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.CORRECTED);
   }
@@ -967,7 +980,8 @@ class FhirConverterTest {
     var correctedTestEvent =
         new TestEvent(invalidTestEvent, TestCorrectionStatus.REMOVED, "wrong person");
 
-    var actual = fhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
+    var actual =
+        bulkTestResultUploadFhirConverter.convertToDiagnosticReport(correctedTestEvent, new Date());
 
     assertThat(actual.getStatus()).isEqualTo(DiagnosticReportStatus.ENTEREDINERROR);
   }
@@ -982,7 +996,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(
         testEvent, "deviceType", TestDataBuilder.createDeviceTypeForMultiplex());
 
-    var actual = fhirConverter.convertToDiagnosticReport(testEvent, date);
+    var actual = bulkTestResultUploadFhirConverter.convertToDiagnosticReport(testEvent, date);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -1020,7 +1034,7 @@ class FhirConverterTest {
                 TemporalPrecisionEnum.SECOND,
                 TimeZone.getTimeZone(DEFAULT_TIME_ZONE_ID));
     var actual =
-        fhirConverter.convertToDiagnosticReport(
+        bulkTestResultUploadFhirConverter.convertToDiagnosticReport(
             DiagnosticReportStatus.FINAL, "95422-2", "id-123", zonedDateTime, zonedDateTime);
 
     assertThat(actual.getId()).isEqualTo("id-123");
@@ -1035,7 +1049,8 @@ class FhirConverterTest {
 
   @Test
   void convertToDiagnosticReport_Strings_null() {
-    var actual = fhirConverter.convertToDiagnosticReport(null, null, null, null, null);
+    var actual =
+        bulkTestResultUploadFhirConverter.convertToDiagnosticReport(null, null, null, null, null);
 
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
@@ -1046,7 +1061,7 @@ class FhirConverterTest {
   void convertToServiceRequest_TestOrder_valid() {
     var testOrder = TestDataBuilder.createTestOrderWithMultiplexDevice();
     var actual =
-        fhirConverter.convertToServiceRequest(
+        bulkTestResultUploadFhirConverter.convertToServiceRequest(
             testOrder,
             ZonedDateTime.ofInstant(
                 Instant.parse("2023-06-22T10:30:00.000Z"), DEFAULT_TIME_ZONE_ID));
@@ -1097,7 +1112,8 @@ class FhirConverterTest {
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.markComplete();
     var actual =
-        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
+        bulkTestResultUploadFhirConverter.convertToServiceRequest(
+            testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
   }
@@ -1109,7 +1125,8 @@ class FhirConverterTest {
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(true));
     testOrder.cancelOrder();
     var actual =
-        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
+        bulkTestResultUploadFhirConverter.convertToServiceRequest(
+            testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.REVOKED);
   }
@@ -1121,7 +1138,8 @@ class FhirConverterTest {
             TestDataBuilder.createEmptyPerson(true), TestDataBuilder.createEmptyFacility(false));
     testOrder.cancelOrder();
     var actual =
-        fhirConverter.convertToServiceRequest(testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
+        bulkTestResultUploadFhirConverter.convertToServiceRequest(
+            testOrder, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
 
     assertThat(actual.getCode().getCoding()).isEmpty();
   }
@@ -1129,7 +1147,7 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_Strings_valid() {
     var actual =
-        fhirConverter.convertToServiceRequest(
+        bulkTestResultUploadFhirConverter.convertToServiceRequest(
             ServiceRequestStatus.COMPLETED,
             "94533-7",
             "id-123",
@@ -1154,7 +1172,7 @@ class FhirConverterTest {
   @Test
   void convertToServiceRequest_Strings_null() {
     var actual =
-        fhirConverter.convertToServiceRequest(
+        bulkTestResultUploadFhirConverter.convertToServiceRequest(
             null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
@@ -1169,7 +1187,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(testOrder, "internalId", UUID.fromString(internalId));
 
     var actual =
-        fhirConverter.convertToServiceRequest(
+        bulkTestResultUploadFhirConverter.convertToServiceRequest(
             testOrder,
             ZonedDateTime.ofInstant(
                 Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID));
@@ -1187,7 +1205,7 @@ class FhirConverterTest {
   @Test
   void createPractitionerRole_valid() {
     var practitionerRole =
-        fhirConverter.createPractitionerRole(
+        bulkTestResultUploadFhirConverter.createPractitionerRole(
             "Organization/org-id", "Practitioner/practitioner-id", UUID.randomUUID());
 
     assertThat(practitionerRole.getOrganization().getReference()).isEqualTo("Organization/org-id");
@@ -1198,7 +1216,7 @@ class FhirConverterTest {
   @Test
   void createMessageHeader_valid() {
     var messageHeader =
-        fhirConverter.createMessageHeader(
+        bulkTestResultUploadFhirConverter.createMessageHeader(
             "Organization/org-id",
             "mainResource",
             "provenance",
@@ -1254,7 +1272,9 @@ class FhirConverterTest {
   @Test
   void createProvenance_valid() {
     var date = new Date();
-    var provenance = fhirConverter.createProvenance("Organization/org-id", date, UUID.randomUUID());
+    var provenance =
+        bulkTestResultUploadFhirConverter.createProvenance(
+            "Organization/org-id", date, UUID.randomUUID());
 
     assertThat(provenance.getActivity().getCoding()).hasSize(1);
     assertThat(provenance.getActivity().getCodingFirstRep().getCode()).isEqualTo("R01");
@@ -1292,7 +1312,7 @@ class FhirConverterTest {
     diagnosticReport.setId(UUID.randomUUID().toString());
 
     var actual =
-        fhirConverter.createFhirBundle(
+        bulkTestResultUploadFhirConverter.createFhirBundle(
             CreateFhirBundleProps.builder()
                 .patient(patient)
                 .testingLab(organization)
@@ -1548,7 +1568,7 @@ class FhirConverterTest {
     ReflectionTestUtils.setField(
         person, "phoneNumbers", List.of(new PhoneNumber(PhoneType.LANDLINE, "7735551234")));
 
-    var actual = fhirConverter.createFhirBundle(testEvent, gitProperties, "P");
+    var actual = bulkTestResultUploadFhirConverter.createFhirBundle(testEvent, gitProperties, "P");
 
     String actualSerialized = parser.encodeResourceToString(actual);
 

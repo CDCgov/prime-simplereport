@@ -127,7 +127,7 @@ import org.springframework.util.CollectionUtils;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class FhirConverter {
+public class BulkTestResultUploadFhirConverter {
 
   private final UUIDGenerator uuidGenerator;
   private final DateGenerator dateGenerator;
