@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { configureAxe } from "jest-axe";
+import userEvent from "@testing-library/user-event";
 
 import {
   EditUserEmailDocument,
@@ -65,8 +66,9 @@ const searchForValidUser = async () => {
 const mockStore = createMockStore([]);
 const mockedStore = mockStore({ user: { isAdmin: true } });
 
-const renderComponent = (mocks?: any[]) =>
-  render(
+const renderComponent = (mocks?: any[]) => ({
+  user: userEvent.setup(),
+  ...render(
     <Provider store={mockedStore}>
       <MemoryRouter>
         <MockedProvider mocks={mocks} addTypename={false}>
@@ -77,7 +79,9 @@ const renderComponent = (mocks?: any[]) =>
         </MockedProvider>
       </MemoryRouter>
     </Provider>
-  );
+  ),
+});
+
 const axe = configureAxe({
   rules: {
     // disable landmark rules when testing isolated components.
@@ -298,11 +302,14 @@ describe("Admin manage users", () => {
           },
         },
       };
-      renderComponent([...validResponse, resetUserPasswordResponse]);
+      const { user } = renderComponent([
+        ...validResponse,
+        resetUserPasswordResponse,
+      ]);
       await searchForValidUser();
-      fireEvent.click(screen.getByText("Send password reset email"));
+      await user.click(screen.getByText("Send password reset email"));
       await screen.findByText("Reset Barnes, Ben Billy's password");
-      fireEvent.click(screen.getByText("Yes, I'm sure"));
+      await user.click(screen.getByText("Yes, I'm sure"));
 
       expect(
         await screen.findByText("Password reset for Barnes, Ben Billy")
@@ -324,10 +331,13 @@ describe("Admin manage users", () => {
           },
         },
       };
-      renderComponent([...validResponse, resetUserPasswordResponse]);
+      const { user } = renderComponent([
+        ...validResponse,
+        resetUserPasswordResponse,
+      ]);
       await searchForValidUser();
-      fireEvent.click(screen.getByText("Reset MFA"));
-      fireEvent.click(
+      await user.click(screen.getByText("Reset MFA"));
+      await user.click(
         await screen.findByText("Reset multi-factor authentication")
       );
 
@@ -352,14 +362,13 @@ describe("Admin manage users", () => {
           },
         },
       };
-      renderComponent([...validResponse, deleteUserResponse]);
+      const { user } = renderComponent([...validResponse, deleteUserResponse]);
       await searchForValidUser();
-      fireEvent.click(screen.getAllByText("Delete user")[1]);
+      await user.click(screen.getAllByText("Delete user")[1]);
       await screen.findByText(/Remove user/i);
-      fireEvent.click(await screen.findByText("Yes, I'm sure"));
-
-      expect(await screen.findByText("Edit name")).toBeDisabled();
+      await user.click(await screen.findByText("Yes, I'm sure"));
       expect(await axe(document.body)).toHaveNoViolations();
+      expect(await screen.findByText("Edit name")).toBeDisabled();
       expect(screen.getByText("Edit email")).toBeDisabled();
       expect(screen.getByText("Send password reset email")).toBeDisabled();
       expect(screen.getByText("Reset MFA")).toBeDisabled();
@@ -557,14 +566,16 @@ describe("Admin manage users", () => {
     expect(document.body).toMatchSnapshot(); // deleted account
     await screen.findByRole("heading", { name: /barnes, ben billy/i });
     const undeleteBtn = screen.getByRole("button", { name: /undelete user/i });
-    fireEvent.click(undeleteBtn);
+    const user = userEvent.setup();
+    await user.click(undeleteBtn);
 
     await screen.findByRole("heading", { name: /undelete barnes, ben billy/i });
     expect(document.body).toMatchSnapshot(); //confirmation modal
     const confirmUndeleteBtn = screen.getByRole("button", {
       name: /yes, undelete user/i,
     });
-    fireEvent.click(confirmUndeleteBtn);
+    await user.click(confirmUndeleteBtn);
+
     await waitFor(() =>
       expect(
         screen.queryByRole("heading", { name: /undelete barnes, ben billy/i })

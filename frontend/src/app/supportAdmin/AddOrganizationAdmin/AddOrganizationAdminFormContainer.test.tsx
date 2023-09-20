@@ -1,13 +1,8 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import selectEvent from "react-select-event";
+import userEvent from "@testing-library/user-event";
 
 import {
   AddUserDocument,
@@ -85,14 +80,17 @@ jest.mock("../../facilitySelect/useSelectedFacility", () => {
 });
 
 function renderView() {
-  return render(
-    <MemoryRouter>
-      {" "}
-      <MockedProvider mocks={[organizationsQuery, addAdminMutation]}>
-        <AddOrganizationAdminFormContainer />
-      </MockedProvider>
-    </MemoryRouter>
-  );
+  return {
+    user: userEvent.setup(),
+    ...render(
+      <MemoryRouter>
+        {" "}
+        <MockedProvider mocks={[organizationsQuery, addAdminMutation]}>
+          <AddOrganizationAdminFormContainer />
+        </MockedProvider>
+      </MemoryRouter>
+    ),
+  };
 }
 
 const waitForOrgLoadReturnTitle = async () => {
@@ -102,9 +100,10 @@ const waitForOrgLoadReturnTitle = async () => {
 };
 
 const selectOrg = async () => {
-  await act(() => {
-    selectEvent.select(screen.getByLabelText(/organization/i), "Space Camp");
-  });
+  await selectEvent.select(
+    screen.getByLabelText(/organization/i),
+    "Space Camp"
+  );
 };
 
 describe("when loading orgs", () => {
@@ -138,10 +137,10 @@ describe("unsuccessful form submission", () => {
   });
 
   it("displays an error when there are form errors", async () => {
-    renderView();
+    const { user } = renderView();
     await waitForOrgLoadReturnTitle();
     await selectOrg();
-    fireEvent.click(screen.getByText("Save Changes"));
+    await user.click(screen.getByText("Save Changes"));
     await waitFor(async () => {
       expect(screen.getByText("First name is missing")).toBeInTheDocument();
     });
@@ -151,14 +150,13 @@ describe("unsuccessful form submission", () => {
   });
 
   it("displays an error when no organization is selected", async () => {
-    renderView();
+    const { user } = renderView();
     await waitForOrgLoadReturnTitle();
-    fireEvent.change(screen.getByLabelText("First name", { exact: false }), {
-      target: {
-        value: "Flora",
-      },
-    });
-    fireEvent.click(screen.getByText("Save Changes"));
+    await user.type(
+      screen.getByLabelText("First name", { exact: false }),
+      "Flora"
+    );
+    await user.click(screen.getByText("Save Changes"));
     await waitFor(async () => {
       expect(screen.getByText("Organization is missing")).toBeInTheDocument();
     });
@@ -166,14 +164,10 @@ describe("unsuccessful form submission", () => {
   });
 
   it("displays an error with invalid email", async () => {
-    renderView();
+    const { user } = renderView();
     await waitForOrgLoadReturnTitle();
-    fireEvent.change(screen.getByLabelText("Email *"), {
-      target: {
-        value: "Flora",
-      },
-    });
-    fireEvent.click(screen.getByText("Save Changes"));
+    await user.type(screen.getByLabelText("Email *"), "Flora");
+    await user.click(screen.getByText("Save Changes"));
     await waitFor(async () => {
       expect(screen.getByText("Invalid email address")).toBeInTheDocument();
     });
@@ -183,27 +177,24 @@ describe("unsuccessful form submission", () => {
 describe("successful form submission", () => {
   it("redirects the user", async () => {
     let alertSpy: jest.SpyInstance = jest.spyOn(srToast, "showSuccess");
-    renderView();
+    const { user } = renderView();
     await waitForOrgLoadReturnTitle();
     await selectOrg();
-    fireEvent.change(screen.getByLabelText("First name", { exact: false }), {
-      target: {
-        value: "Flora",
-      },
-    });
-    fireEvent.change(screen.getByLabelText("Last name", { exact: false }), {
-      target: {
-        value: "Murray",
-      },
-    });
-    fireEvent.change(screen.getByLabelText("Email", { exact: false }), {
-      target: {
-        value: "Flora.Murray@example.com",
-      },
-    });
+    await user.type(
+      screen.getByLabelText("First name", { exact: false }),
+      "Flora"
+    );
+    await user.type(
+      screen.getByLabelText("Last name", { exact: false }),
+      "Murray"
+    );
+    await user.type(
+      screen.getByLabelText("Email", { exact: false }),
+      "Flora.Murray@example.com"
+    );
     expect(screen.getByText("Save Changes", { exact: false })).toBeEnabled();
     expect(screen.getByTestId("combo-box-input")).toHaveValue("Space Camp");
-    fireEvent.click(screen.getByText("Save Changes"));
+    await user.click(screen.getByText("Save Changes"));
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith(
         "The organization admin has been added",

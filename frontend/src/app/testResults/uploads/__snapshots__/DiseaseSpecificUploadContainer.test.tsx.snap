@@ -1,0 +1,162 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Disease specific upload container test passes axe tests 1`] = `
+<body>
+  <div>
+    <div
+      class="Toastify"
+    />
+    <div
+      class="grid-row header-size-fix sr-test-results-uploads"
+    >
+      <div
+        class="prime-container card-container"
+      >
+        <div
+          class="usa-card__header"
+        >
+          <h1>
+            Upload your results
+          </h1>
+        </div>
+        <div
+          class="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg"
+        >
+          <div
+            class="usa-alert__body"
+          >
+            <h2
+              class="usa-alert__heading"
+            >
+              New: Report flu results to California
+            </h2>
+            <p
+              class="usa-alert__text"
+            >
+              Organizations sending results to the California Department of Public Health (CDPH) can now use the bulk results upload feature to report positive flu tests. Report COVID-19, flu A, and flu B results all from a single spreadsheet. 
+              <a
+                href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
+              >
+                See more information and guidance about flu reporting
+              </a>
+              .
+              <br />
+              <br />
+              All organizations can continue to report COVID-19 results to their public health department using the bulk uploader. Flu reporting will be available in other jurisdictions soon.
+            </p>
+          </div>
+        </div>
+        <div
+          class="usa-card__body padding-y-2 maxw-prose"
+        >
+          <p>
+            Report results in bulk using a comma-separated values (CSV) spreadsheet. To upload your spreadsheet:
+          </p>
+          <section>
+            <ol
+              class="usa-process-list"
+            >
+              <li
+                class="usa-process-list__item margin-bottom-1em"
+              >
+                <p
+                  class="usa-process-list__heading"
+                >
+                  Visit the
+                   
+                  <a
+                    class=""
+                    href="/results/upload/submit/guide"
+                  >
+                    <strong>
+                      spreadsheet upload guide
+                    </strong>
+                  </a>
+                </p>
+              </li>
+              <li
+                class="usa-process-list__item margin-bottom-1em"
+              >
+                <p
+                  class="usa-process-list__heading"
+                >
+                  Download the
+                   
+                  <a
+                    href="/assets/resources/test_results_example_10-3-2022.csv"
+                  >
+                    spreadsheet template
+                  </a>
+                </p>
+              </li>
+              <li
+                class="usa-process-list__item margin-bottom-1em"
+              >
+                <p
+                  class="usa-process-list__heading"
+                >
+                  Following the guide and template, format your data to match SimpleReport requirements
+                </p>
+              </li>
+              <li
+                class="usa-process-list__item margin-bottom-1em"
+              >
+                <p
+                  class="usa-process-list__heading"
+                >
+                  Save your spreadsheet in a CSV format (file size limit is 50 MB or 10,000 rows)
+                </p>
+              </li>
+              <li
+                class="usa-process-list__item margin-bottom-1em"
+              >
+                <p
+                  class="usa-process-list__heading"
+                >
+                  Submit your CSV to the uploader below
+                </p>
+              </li>
+            </ol>
+          </section>
+          <div
+            class="usa-form-group margin-bottom-3"
+            data-testid="formGroup"
+          >
+            <div
+              class="sr-single-file-input blank"
+            >
+              <input
+                accept="text/csv, .csv"
+                aria-describedby="file-input-specific-hint"
+                aria-invalid="false"
+                aria-label="Choose CSV file"
+                class="usa-file-input"
+                data-testid="upload-csv-input"
+                id="upload-csv-input"
+                name="upload-csv-input"
+                required=""
+                type="file"
+              />
+              <span
+                id="file-input-specific-hint"
+              >
+                Drag file here or choose from folder
+              </span>
+            </div>
+          </div>
+          <button
+            class="usa-button"
+            data-testid="button"
+            disabled=""
+            type="submit"
+          >
+            <span>
+              Upload your CSV
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+`;

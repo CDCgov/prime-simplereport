@@ -17,27 +17,24 @@ import {
 } from "./testSelectUtils";
 
 describe("ManageFacility", () => {
-  const renderWithMocks = () =>
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MockedProvider mocks={mocks}>
         <MemoryRouter>
           <ManageFacility />
         </MemoryRouter>
       </MockedProvider>
-    );
+    ),
+  });
 
   const getClearFilterBtn = () =>
     screen.getByRole("button", {
       name: /clear facility selection filters/i,
     });
 
-  const user = userEvent.setup();
-
-  beforeEach(() => {
-    renderWithMocks();
-  });
-
   it("does nothing if no org selection is made", async () => {
+    renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
@@ -49,6 +46,7 @@ describe("ManageFacility", () => {
   });
 
   it("does nothing if no facility selection is made", async () => {
+    const { user } = renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
@@ -65,6 +63,7 @@ describe("ManageFacility", () => {
   });
 
   it("resets the controls after clicking clear filters", async () => {
+    const { user } = renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
@@ -83,6 +82,7 @@ describe("ManageFacility", () => {
   });
 
   it("loads facility and deletes it", async () => {
+    const { user } = renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
@@ -131,6 +131,7 @@ describe("ManageFacility", () => {
   });
 
   it("loads the page even when no facility is retrieved", async () => {
+    const { user } = renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 

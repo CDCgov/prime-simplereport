@@ -1,79 +1,74 @@
 import React from "react";
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { cloneDeep } from "lodash";
 import selectEvent from "react-select-event";
+import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import DeviceForm from "./DeviceForm";
 import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDiseaseTestPerformedCovid";
 import mockSupportedDiseaseTestPerformedMultiplex from "./mocks/mockSupportedDiseaseTestPerformedMultiplex";
 
-const addValue = async (name: string, value: string) => {
-  await act(
-    async () =>
-      await userEvent.type(screen.getByLabelText(name, { exact: false }), value)
-  );
+const addValue = async (user: UserEvent, name: string, value: string) => {
+  await user.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
-const clearAndEnterInput = async (fieldToEdit: string, newValue: string) => {
+const clearAndEnterInput = async (
+  user: UserEvent,
+  fieldToEdit: string,
+  newValue: string
+) => {
   const label = screen.getAllByLabelText(fieldToEdit)[0];
-  await act(async () => await userEvent.clear(label));
-  await act(async () => await userEvent.type(label, newValue));
+  await user.clear(label);
+  await user.type(label, newValue);
 };
 
 describe("create new device", () => {
   let saveDeviceType: jest.Mock;
-
-  beforeEach(() => {
-    saveDeviceType = jest.fn();
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <DeviceForm
         formTitle="Device type"
         saveDeviceType={saveDeviceType}
         swabOptions={[{ label: "Swab (445297001)", value: "445297001" }]}
         supportedDiseaseOptions={[{ label: "COVID-19", value: "3821904728" }]}
       />
-    );
+    ),
+  });
+
+  beforeEach(() => {
+    saveDeviceType = jest.fn();
   });
 
   it("Disables the save button", () => {
+    renderWithUser();
     expect(screen.getByText("Save changes")).toBeDisabled();
   });
 
   it("validates all form fields and displays error as needed", async () => {
-    await addValue("Equipment Uid", "123");
-    await act(
-      async () => await userEvent.click(screen.getByText("Save changes"))
-    );
+    const { user } = renderWithUser();
+    await addValue(user, "Equipment Uid", "123");
+    await user.click(screen.getByText("Save changes"));
     await waitFor(() =>
       expect(screen.getAllByText("This is a required field")).toHaveLength(8)
     );
-    await addValue("Device name", "Solvey rx350");
-    await addValue("Manufacturer", "Solvey");
-    await addValue("Model", "rx350");
-    await addValue("Test length", "15");
-    await act(
-      async () =>
-        await userEvent.click(
-          screen.getByText("Swab (445297001)", { exact: false })
-        )
-    );
+    await addValue(user, "Device name", "Solvey rx350");
+    await addValue(user, "Manufacturer", "Solvey");
+    await addValue(user, "Model", "rx350");
+    await addValue(user, "Test length", "15");
+    await user.click(screen.getByText("Swab (445297001)", { exact: false }));
     // in tests, combobox changes not updating the UI after selection so click save button afterward
-    await act(
-      async () => await userEvent.click(screen.getByText("Save changes"))
-    );
+    await user.click(screen.getByText("Save changes"));
     await waitFor(() =>
       expect(screen.getAllByText("This is a required field")).toHaveLength(3)
     );
-    await act(
-      async () =>
-        await userEvent.selectOptions(
-          screen.getByLabelText("Supported disease *"),
-          "COVID-19"
-        )
+    await user.selectOptions(
+      screen.getByLabelText("Supported disease *"),
+      "COVID-19"
     );
-    await addValue("Test performed code *", "1920-12");
-    await addValue("Test ordered code *", "2102-91");
+    await addValue(user, "Test performed code *", "1920-12");
+    await addValue(user, "Test ordered code *", "2102-91");
     await waitFor(() =>
       expect(
         screen.queryByText("This is a required field")
@@ -82,63 +77,43 @@ describe("create new device", () => {
   });
 
   describe("All fields completed", () => {
-    beforeEach(async () => {
-      await addValue("Device name", "Accula");
-      await addValue("Manufacturer", "Mesa Biotech");
-      await addValue("Model", "Accula SARS-Cov-2 Test*");
-      await addValue("Test length", "10");
-      await act(
-        async () =>
-          await userEvent.click(
-            screen.getByText("Swab (445297001)", { exact: false })
-          )
-      );
+    const fillOutForm = async (user: UserEvent) => {
+      await addValue(user, "Device name", "Accula");
+      await addValue(user, "Manufacturer", "Mesa Biotech");
+      await addValue(user, "Model", "Accula SARS-Cov-2 Test*");
+      await addValue(user, "Test length", "10");
+      await user.click(screen.getByText("Swab (445297001)", { exact: false }));
 
-      await act(
-        async () =>
-          await userEvent.selectOptions(
-            screen.getByLabelText("Supported disease *"),
-            "COVID-19"
-          )
+      await user.selectOptions(
+        screen.getByLabelText("Supported disease *"),
+        "COVID-19"
       );
-      await act(
-        async () =>
-          await userEvent.type(
-            screen.getByLabelText("Test performed code *"),
-            "1920-12"
-          )
+      await user.type(
+        screen.getByLabelText("Test performed code *"),
+        "1920-12"
       );
-      await act(
-        async () =>
-          await userEvent.type(
-            screen.getByLabelText("Test ordered code *"),
-            "2102-91"
-          )
+      await user.type(screen.getByLabelText("Test ordered code *"), "2102-91");
+      await user.type(
+        screen.getByLabelText("Testkit Name Id"),
+        "testkitNameId123"
       );
-      await act(
-        async () =>
-          await userEvent.type(
-            screen.getByLabelText("Testkit Name Id"),
-            "testkitNameId123"
-          )
+      await user.type(
+        screen.getByLabelText("Equipment Uid"),
+        "equipmentUid321"
       );
-      await act(
-        async () =>
-          await userEvent.type(
-            screen.getByLabelText("Equipment Uid"),
-            "equipmentUid321"
-          )
-      );
-    });
+    };
 
     it("enables the save button", async () => {
+      const { user } = renderWithUser();
+      await fillOutForm(user);
       expect(screen.getByText("Save changes")).toBeEnabled();
     });
 
     it("on form submission calls the save callback once", async () => {
-      await act(
-        async () => await userEvent.click(screen.getByText("Save changes"))
-      );
+      const { user } = renderWithUser();
+      await fillOutForm(user);
+
+      await user.click(screen.getByText("Save changes"));
       await waitFor(() =>
         expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
           internalId: undefined,
@@ -164,15 +139,14 @@ describe("create new device", () => {
 
 describe("update existing devices", () => {
   let saveDeviceType: jest.Mock;
-  let container: any;
-  beforeEach(() => {
-    saveDeviceType = jest.fn();
-    let supportedDiseaseWithoutTestPerformedLoinc = cloneDeep(
-      mockSupportedDiseaseTestPerformedMultiplex
-    );
-    supportedDiseaseWithoutTestPerformedLoinc[1].testPerformedLoincCode = "";
-    supportedDiseaseWithoutTestPerformedLoinc[2].testPerformedLoincCode = "";
-    container = render(
+  let supportedDiseaseWithoutTestPerformedLoinc = cloneDeep(
+    mockSupportedDiseaseTestPerformedMultiplex
+  );
+  supportedDiseaseWithoutTestPerformedLoinc[1].testPerformedLoincCode = "";
+  supportedDiseaseWithoutTestPerformedLoinc[2].testPerformedLoincCode = "";
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <DeviceForm
         formTitle="Manage devices"
         saveDeviceType={saveDeviceType}
@@ -242,18 +216,25 @@ describe("update existing devices", () => {
           },
         ]}
       />
-    );
+    ),
+  });
+
+  beforeEach(() => {
+    saveDeviceType = jest.fn();
   });
 
   it("renders the Device Form", () => {
+    const { container } = renderWithUser();
     expect(container).toMatchSnapshot();
   });
 
   it("Disables the save button", () => {
+    renderWithUser();
     expect(screen.getByText("Save changes")).toBeDisabled();
   });
 
   it("disables all input fields when no device is selected", function () {
+    renderWithUser();
     expect(
       screen.getByLabelText("Manufacturer", { exact: false })
     ).toBeDisabled();
@@ -269,9 +250,8 @@ describe("update existing devices", () => {
   });
 
   it("shows a list of devices to select from", async () => {
-    await act(
-      async () => await userEvent.click(screen.getByTestId("combo-box-select"))
-    );
+    const { user } = renderWithUser();
+    await user.click(screen.getByTestId("combo-box-select"));
     expect(screen.getAllByText("Tesla Emitter")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Fission Energizer")[1]).toBeInTheDocument();
     expect(screen.getAllByText("Covalent Observer")[1]).toBeInTheDocument();
@@ -280,12 +260,12 @@ describe("update existing devices", () => {
 
   describe("When selecting a device", () => {
     it("enables input fields and prefills them with current values", async () => {
-      await act(() => {
-        selectEvent.select(
-          screen.getByLabelText(/select device/i),
-          "Postal Swab"
-        );
-      });
+      renderWithUser();
+
+      await selectEvent.select(
+        screen.getByLabelText(/select device/i),
+        "Postal Swab"
+      );
 
       const manufacturerInput = screen.getByLabelText("Manufacturer", {
         exact: false,
@@ -341,12 +321,11 @@ describe("update existing devices", () => {
     });
 
     it("maps supported diseases to supported disease and empty test performed", async () => {
-      await act(() => {
-        selectEvent.select(
-          screen.getByLabelText(/select device/i),
-          "Fission Energizer"
-        );
-      });
+      renderWithUser();
+      await selectEvent.select(
+        screen.getByLabelText(/select device/i),
+        "Fission Energizer"
+      );
 
       const supportedDisease = screen.getAllByLabelText("Supported disease *");
       const testPerformed = screen.getAllByLabelText("Test performed code *");
@@ -369,6 +348,7 @@ describe("update existing devices", () => {
     });
 
     it("displays a list of available snomeds", () => {
+      renderWithUser();
       const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
       expect(within(snomedList).getByText("eye")).toBeInTheDocument();
@@ -377,12 +357,12 @@ describe("update existing devices", () => {
     });
 
     it("removes a supported disease when trash button is clicked", async () => {
-      await act(() => {
-        selectEvent.select(
-          screen.getByLabelText(/select device/i),
-          "Postal Swab"
-        );
-      });
+      const { user } = renderWithUser();
+
+      await selectEvent.select(
+        screen.getByLabelText(/select device/i),
+        "Postal Swab"
+      );
 
       expect(
         screen
@@ -393,10 +373,7 @@ describe("update existing devices", () => {
         "e286f2a8-38e2-445b-80a5-c16507a96b66",
         "14924488-268f-47db-bea6-aa706971a098",
       ]);
-      await act(
-        async () =>
-          await userEvent.click(screen.getAllByLabelText("Delete disease")[0])
-      );
+      await user.click(screen.getAllByLabelText("Delete disease")[0]);
       expect(
         screen
           .getAllByLabelText("Supported disease *")
@@ -409,12 +386,13 @@ describe("update existing devices", () => {
 
     describe("selecting another device", () => {
       it("prefills input fields with new values", async () => {
-        await act(() => {
-          selectEvent.select(
-            screen.getByLabelText(/select device/i),
-            "Fission Energizer"
-          );
-        });
+        renderWithUser();
+
+        await selectEvent.select(
+          screen.getByLabelText(/select device/i),
+          "Fission Energizer"
+        );
+
         const manufacturerInput = screen.getByLabelText("Manufacturer", {
           exact: false,
         });
@@ -431,66 +409,47 @@ describe("update existing devices", () => {
 
     describe("updating a device", () => {
       it("calls update device with the current values", async () => {
-        await act(() => {
-          selectEvent.select(
-            screen.getByLabelText(/select device/i),
-            "Tesla Emitter"
-          );
-        });
+        const { user } = renderWithUser();
+
+        await selectEvent.select(
+          screen.getByLabelText(/select device/i),
+          "Tesla Emitter"
+        );
 
         const snomedInput = screen.getAllByTestId("multi-select-toggle")[0];
         const snomedList = screen.getAllByTestId("multi-select-option-list")[0];
 
-        await addValue("Manufacturer", " LLC");
-        await addValue("Model", "X");
-        await act(async () => await userEvent.click(snomedInput));
-        await act(
-          async () => await userEvent.click(within(snomedList).getByText("eye"))
-        );
-        await clearAndEnterInput("Test ordered code *", "LP 321");
-        await act(
-          async () =>
-            await userEvent.click(screen.getByText("Add another disease"))
-        );
-        await act(
-          async () =>
-            await userEvent.selectOptions(
-              screen.getAllByLabelText("Supported disease *")[1],
-              "Flu A"
-            )
-        );
-        await act(
-          async () =>
-            await userEvent.type(
-              screen.getAllByLabelText("Test performed code *")[1],
-              "LP 123"
-            )
-        );
-        await act(
-          async () =>
-            await userEvent.type(
-              screen.getAllByLabelText("Test ordered code *")[1],
-              "LP 444"
-            )
-        );
-        await act(
-          async () =>
-            await userEvent.type(
-              screen.getAllByLabelText("Testkit Name Id")[1],
-              "testkitNameId123"
-            )
-        );
-        await act(
-          async () =>
-            await userEvent.type(
-              screen.getAllByLabelText("Equipment Uid")[1],
-              "equipmentUid321"
-            )
+        await addValue(user, "Manufacturer", " LLC");
+        await addValue(user, "Model", "X");
+        await user.click(snomedInput);
+        await user.click(within(snomedList).getByText("eye"));
+        await clearAndEnterInput(user, "Test ordered code *", "LP 321");
+
+        await user.click(screen.getByText("Add another disease"));
+
+        await user.selectOptions(
+          screen.getAllByLabelText("Supported disease *")[1],
+          "Flu A"
         );
 
-        await act(
-          async () => await userEvent.click(screen.getByText("Save changes"))
+        await user.type(
+          screen.getAllByLabelText("Test performed code *")[1],
+          "LP 123"
         );
+        await user.type(
+          screen.getAllByLabelText("Test ordered code *")[1],
+          "LP 444"
+        );
+        await user.type(
+          screen.getAllByLabelText("Testkit Name Id")[1],
+          "testkitNameId123"
+        );
+        await user.type(
+          screen.getAllByLabelText("Equipment Uid")[1],
+          "equipmentUid321"
+        );
+
+        await user.click(screen.getByText("Save changes"));
 
         await waitFor(() =>
           expect(saveDeviceType).toHaveBeenNthCalledWith(1, {
@@ -520,17 +479,15 @@ describe("update existing devices", () => {
         );
       });
       it("sets loinc code to the test performed code for covid", async () => {
-        await act(() => {
-          selectEvent.select(
-            screen.getByLabelText(/select device/i),
-            "Tesla Emitter"
-          );
-        });
-        await clearAndEnterInput("Test performed code *", "950-9501");
-        await clearAndEnterInput("Test ordered code *", "1059-059");
-        await act(
-          async () => await userEvent.click(screen.getByText("Save changes"))
+        const { user } = renderWithUser();
+        await selectEvent.select(
+          screen.getByLabelText(/select device/i),
+          "Tesla Emitter"
         );
+
+        await clearAndEnterInput(user, "Test performed code *", "950-9501");
+        await clearAndEnterInput(user, "Test ordered code *", "1059-059");
+        await user.click(screen.getByText("Save changes"));
 
         await waitFor(() =>
           expect(saveDeviceType).toHaveBeenNthCalledWith(1, {

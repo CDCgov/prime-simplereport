@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class AddressValidationService {
-  public final String FACILITY_DISPLAY_NAME = "facility";
   private Client _client;
 
   public AddressValidationService(Client client) {
@@ -67,7 +66,7 @@ public class AddressValidationService {
     return lookup.getResult();
   }
 
-  public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
+  public StreetAddress getValidatedAddress(Lookup lookup) {
     var results = getLookupResults(lookup);
 
     if (results.isEmpty()) {
@@ -95,14 +94,9 @@ public class AddressValidationService {
 
   /** Returns a StreetAddress if the address is valid and throws an exception if it is not */
   public StreetAddress getValidatedAddress(
-      String street1,
-      String street2,
-      String city,
-      String state,
-      String postalCode,
-      String fieldName) {
+      String street1, String street2, String city, String state, String postalCode) {
     Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
-    return getValidatedAddress(lookup, fieldName);
+    return getValidatedAddress(lookup);
   }
 
   public TimezoneInfo getTimezoneInfoByLookup(Lookup lookup) {

@@ -1,6 +1,7 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import selectEvent from "react-select-event";
+import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
@@ -11,11 +12,8 @@ import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDisease
 
 const mockUpdateDeviceType = jest.fn();
 
-const addValue = async (name: string, value: string) => {
-  await act(
-    async () =>
-      await userEvent.type(screen.getByLabelText(name, { exact: false }), value)
-  );
+const addValue = async (user: UserEvent, name: string, value: string) => {
+  await user.type(screen.getByLabelText(name, { exact: false }), value);
 };
 
 jest.mock("../../../generated/graphql", () => {
@@ -134,73 +132,54 @@ jest.mock("../../facilitySelect/useSelectedFacility", () => {
   };
 });
 
-let container: any;
-
 describe("ManageDeviceTypeFormContainer", () => {
-  beforeEach(() => {
-    container = render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <>
         <ManageDeviceTypeFormContainer />
         <SRToastContainer />
       </>
-    );
+    ),
   });
 
   it("renders the Manage Device Type Form Container item", () => {
+    const { container } = renderWithUser();
     expect(container).toMatchSnapshot();
   });
 
   it("should show the device type form", async () => {
+    renderWithUser();
     expect(await screen.findByText(editDevicePageTitle)).toBeInTheDocument();
   });
 
   it("should update the selected device", async () => {
-    await new Promise((resolve) => setTimeout(resolve, 0));
+    const { user } = renderWithUser();
 
-    await act(() => {
-      selectEvent.select(
-        screen.getByLabelText(/select device/i),
-        "Covalent Observer"
-      );
-    });
-
-    await addValue("Manufacturer", " LLC");
-    await addValue("Model", "D");
-    await act(
-      async () =>
-        await userEvent.selectOptions(
-          screen.getByLabelText("Supported disease *"),
-          "COVID-19"
-        )
-    );
-    await act(
-      async () =>
-        await userEvent.clear(screen.getByLabelText("Test performed code *"))
-    );
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Test performed code *"),
-          "LP 123"
-        )
+    await selectEvent.select(
+      screen.getByLabelText(/select device/i),
+      "Covalent Observer"
     );
 
-    await act(
-      async () =>
-        await userEvent.clear(screen.getByLabelText("Test ordered code *"))
+    await addValue(user, "Manufacturer", " LLC");
+    await addValue(user, "Model", "D");
+
+    await user.selectOptions(
+      screen.getByLabelText("Supported disease *"),
+      "COVID-19"
     );
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Test ordered code *"),
-          "LP 321"
-        )
-    );
+
+    await user.clear(screen.getByLabelText("Test performed code *"));
+
+    await user.type(screen.getByLabelText("Test performed code *"), "LP 123");
+
+    await user.clear(screen.getByLabelText("Test ordered code *"));
+
+    await user.type(screen.getByLabelText("Test ordered code *"), "LP 321");
 
     expect(screen.getByText("Save changes")).toBeEnabled();
-    await act(
-      async () => await userEvent.click(screen.getByText("Save changes"))
-    );
+
+    await user.click(screen.getByText("Save changes"));
 
     await waitFor(() =>
       expect(mockUpdateDeviceType).toHaveBeenCalledWith({
