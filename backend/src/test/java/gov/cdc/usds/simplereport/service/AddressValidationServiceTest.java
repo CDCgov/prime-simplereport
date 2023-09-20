@@ -38,7 +38,7 @@ class AddressValidationServiceTest {
     Lookup lookup = mock(Lookup.class);
     when(lookup.getResult()).thenReturn(results);
 
-    StreetAddress address = s.getValidatedAddress(lookup, null);
+    StreetAddress address = s.getValidatedAddress(lookup);
 
     assertEquals("", address.getCounty());
   }
@@ -50,7 +50,7 @@ class AddressValidationServiceTest {
     Lookup lookup = mock(Lookup.class);
     when(lookup.getResult()).thenReturn(results);
 
-    StreetAddress address = s.getValidatedAddress(lookup, null);
+    StreetAddress address = s.getValidatedAddress(lookup);
 
     assertEquals("District of Columbia", address.getCounty());
   }
@@ -63,7 +63,7 @@ class AddressValidationServiceTest {
     when(lookup.getStreet()).thenReturn("User entered street");
     when(lookup.getResult()).thenReturn(results);
 
-    StreetAddress address = s.getValidatedAddress(lookup, null);
+    StreetAddress address = s.getValidatedAddress(lookup);
 
     assertEquals("User entered street", address.getStreetOne());
   }

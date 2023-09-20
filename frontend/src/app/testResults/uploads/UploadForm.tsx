@@ -7,7 +7,6 @@ import { showError } from "../../utils/srToast";
 import { FeedbackMessage } from "../../../generated/graphql";
 import { useDocumentTitle } from "../../utils/hooks";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
-import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import "./Uploads.scss";
 import "../HeaderSizeFix.scss";
 import { getAppInsights } from "../../TelemetryService";
@@ -163,8 +162,22 @@ export function getGuidance(error: EnhancedFeedbackMessage) {
   }
 }
 
-const Uploads = () => {
-  useDocumentTitle("Upload spreadsheet");
+interface UploadFormProps {
+  uploadResults: (file: File) => Promise<Response>;
+  alert?: React.JSX.Element;
+  uploadType: "Agnostic" | "Disease Specific";
+  spreadsheetTemplateLocation: string;
+  uploadGuideLocation: string;
+}
+
+const UploadForm: React.FC<UploadFormProps> = ({
+  alert,
+  uploadResults,
+  uploadType,
+  spreadsheetTemplateLocation,
+  uploadGuideLocation,
+}) => {
+  useDocumentTitle(`Upload ${uploadType.toLowerCase()} spreadsheet`);
 
   const appInsights = getAppInsights();
   const orgName = useSelector<RootState, string>(
@@ -293,7 +306,7 @@ const Uploads = () => {
       return;
     }
 
-    FileUploadService.uploadResults(file).then(async (res) => {
+    uploadResults(file).then(async (res) => {
       setIsSubmitting(false);
       setFileInputResetValue(fileInputResetValue + 1);
       setFile(undefined);
@@ -308,6 +321,7 @@ const Uploads = () => {
           properties: {
             org: orgName,
             user: user?.email,
+            uploadType: uploadType,
           },
         });
       } else {
@@ -322,6 +336,7 @@ const Uploads = () => {
               "report ID": response.reportId,
               org: orgName,
               user: user?.email,
+              uploadType: uploadType,
             },
           });
         }
@@ -342,6 +357,7 @@ const Uploads = () => {
               errors: response.errors,
               org: orgName,
               user: user?.email,
+              uploadType: uploadType,
             },
           });
         }
@@ -355,35 +371,7 @@ const Uploads = () => {
         <div className="usa-card__header">
           <h1>Upload your results</h1>
         </div>
-        <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
-          <div className="usa-alert__body">
-            <h2 className="usa-alert__heading">
-              New: Report flu results to California
-            </h2>
-            <p className="usa-alert__text">
-              Organizations sending results to the California Department of
-              Public Health (CDPH) can now use the bulk results upload feature
-              to report positive flu tests. Report COVID-19, flu A, and flu B
-              results all from a single spreadsheet.&nbsp;
-              <a
-                href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
-                onClick={() => {
-                  appInsights?.trackEvent({
-                    name: "Access bulk uploader flu guide",
-                  });
-                }}
-              >
-                See more information and guidance about flu reporting
-              </a>
-              .
-              <br />
-              <br />
-              All organizations can continue to report COVID-19 results to their
-              public health department using the bulk uploader. Flu reporting
-              will be available in other jurisdictions soon.
-            </p>
-          </div>
-        </div>
+        {alert}
         <div className="usa-card__body padding-y-2 maxw-prose">
           <p>
             Report results in bulk using a comma-separated values (CSV)
@@ -394,7 +382,7 @@ const Uploads = () => {
               <li className="usa-process-list__item margin-bottom-1em">
                 <p className="usa-process-list__heading">
                   Visit the{" "}
-                  <LinkWithQuery to="/results/upload/submit/guide">
+                  <LinkWithQuery to={uploadGuideLocation}>
                     <strong>spreadsheet upload guide</strong>
                   </LinkWithQuery>
                 </p>
@@ -403,10 +391,13 @@ const Uploads = () => {
                 <p className="usa-process-list__heading">
                   Download the{" "}
                   <a
-                    href="/assets/resources/test_results_example_10-3-2022.csv"
+                    href={spreadsheetTemplateLocation}
                     onClick={() => {
                       appInsights?.trackEvent({
                         name: "Download spreadsheet template",
+                        properties: {
+                          uploadType: uploadType,
+                        },
                       });
                     }}
                   >
@@ -533,4 +524,4 @@ const Uploads = () => {
   );
 };
 
-export default Uploads;
+export default UploadForm;
