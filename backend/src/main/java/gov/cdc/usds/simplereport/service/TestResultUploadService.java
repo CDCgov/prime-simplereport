@@ -372,6 +372,9 @@ public class TestResultUploadService {
               var serializedFhirBundles =
                   fhirConverter.convertToFhirBundles(content, org.getInternalId());
 
+              // Clear cache to free memory
+              resultsUploaderCachingService.clearAddressTimezoneLookupCache();
+
               // build the ndjson request body
               var ndJson = new StringBuilder();
               for (String bundle : serializedFhirBundles) {
