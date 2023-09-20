@@ -39,6 +39,8 @@ import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer"
 import UploadPatients from "./patients/UploadPatients";
 import DiseaseSpecificUploadContainer from "./testResults/uploads/DiseaseSpecificUploadContainer";
 import AgnosticUploadContainer from "./testResults/uploads/AgnosticUploadContainer";
+import { specificSchemaBuilder } from "./testResults/uploads/specificSchemaBuilder";
+import { agnosticSchemaBuilder } from "./testResults/uploads/agnosticSchemaBuilder";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -73,7 +75,7 @@ const checkOktaLoginStatus = (
       const params = new URLSearchParams(location.hash.slice(1));
       if (params.get("error")) {
         throw new Error(
-          params.get("error_description") || "Unknown Okta error"
+          params.get("error_description") ?? "Unknown Okta error"
         );
       }
       throw new Error("Not authenticated, redirecting to Okta...");
@@ -269,6 +271,23 @@ const ReportingApp = () => {
                       />
                     }
                   />
+                  <Route
+                    path="results/agnostic/upload/submit/guide"
+                    element={
+                      <ProtectedRoute
+                        requiredPermissions={canViewResults}
+                        userPermissions={data.whoami.permissions}
+                        element={
+                          <ResultsNavWrapper>
+                            <Schema
+                              schemaBuilder={agnosticSchemaBuilder}
+                              returnUrl={"/results/agnostic/upload/submit"}
+                            />
+                          </ResultsNavWrapper>
+                        }
+                      />
+                    }
+                  />
                 </>
               )}
               <Route
@@ -279,7 +298,10 @@ const ReportingApp = () => {
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper>
-                        <Schema />
+                        <Schema
+                          schemaBuilder={specificSchemaBuilder}
+                          returnUrl={"/results/upload/submit"}
+                        />
                       </ResultsNavWrapper>
                     }
                   />

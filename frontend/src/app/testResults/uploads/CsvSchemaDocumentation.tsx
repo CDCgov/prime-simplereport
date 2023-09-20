@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
@@ -8,7 +8,7 @@ import { getAppInsights } from "../../TelemetryService";
 import ScrollToTopOnMount from "../../commonComponents/ScrollToTopOnMount";
 import { getFacilityIdFromUrl } from "../../utils/url";
 
-import { schemaBuilder } from "./schemaBuilder";
+import { CsvSchema } from "./specificSchemaBuilder";
 
 export type CsvSchemaItem = {
   name: string;
@@ -152,8 +152,15 @@ export const getPageTitle = (hash: string) => {
   }
 };
 
-/* eslint-disable jsx-a11y/anchor-has-content */
-const CsvSchemaDocumentation = () => {
+interface CsvSchemaDocumentationProps {
+  schemaBuilder: (facilityId: string | null) => CsvSchema;
+  returnUrl: string;
+}
+
+const CsvSchemaDocumentation: React.FC<CsvSchemaDocumentationProps> = ({
+  schemaBuilder,
+  returnUrl,
+}) => {
   let location = useLocation();
   let locationHash = location.hash;
   let pageTitle = getPageTitle(locationHash);
@@ -180,10 +187,7 @@ const CsvSchemaDocumentation = () => {
             >
               <use xlinkHref={iconSprite + "#arrow_back"}></use>
             </svg>
-            <LinkWithQuery
-              to={`/results/upload/submit`}
-              className="margin-left-05"
-            >
+            <LinkWithQuery to={returnUrl} className="margin-left-05">
               Upload spreadsheet
             </LinkWithQuery>
           </div>

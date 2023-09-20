@@ -2,6 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
+import { axe } from "jest-axe";
 
 import { getAppInsights } from "../../TelemetryService";
 
@@ -10,6 +11,7 @@ import CsvSchemaDocumentation, {
   CsvSchemaItem,
   getPageTitle,
 } from "./CsvSchemaDocumentation";
+import { specificSchemaBuilder } from "./specificSchemaBuilder";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -148,13 +150,19 @@ describe("CsvSchemaDocumentation tests", () => {
           <Routes>
             <Route
               path={"/results/upload/submit/guide"}
-              element={<CsvSchemaDocumentation />}
+              element={
+                <CsvSchemaDocumentation
+                  schemaBuilder={specificSchemaBuilder}
+                  returnUrl={"/results/upload/submit"}
+                />
+              }
             />
           </Routes>
         </MemoryRouter>
       );
 
       expect(container).toMatchSnapshot();
+      expect(axe(container)).toMatchSnapshot();
     });
     it("logs to App Insights on template download", async () => {
       const mockTrackEvent = jest.fn();
@@ -167,7 +175,12 @@ describe("CsvSchemaDocumentation tests", () => {
           <Routes>
             <Route
               path={"/results/upload/submit/guide"}
-              element={<CsvSchemaDocumentation />}
+              element={
+                <CsvSchemaDocumentation
+                  schemaBuilder={specificSchemaBuilder}
+                  returnUrl={"/results/upload/submit"}
+                />
+              }
             />
           </Routes>
         </MemoryRouter>
