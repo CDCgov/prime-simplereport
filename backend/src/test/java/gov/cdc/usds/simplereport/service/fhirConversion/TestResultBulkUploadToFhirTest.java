@@ -32,7 +32,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.hl7.fhir.r4.model.*;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.ServiceRequest;
+import org.hl7.fhir.r4.model.Observation;
+import org.hl7.fhir.r4.model.Specimen;
+import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.DateTimeType;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
