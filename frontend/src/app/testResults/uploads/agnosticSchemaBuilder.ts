@@ -95,7 +95,7 @@ export const agnosticSchemaBuilder = (facilityId: string | null) => {
                   "SNOMED code from lookup table, example: <em>260373001<em>",
                 ],
                 description: [
-                  `Where else can you find it? or find your device on the ${deviceCodeLookupLink}.`,
+                  `Search for the SNOMED code in <a href="https://snomedbrowser.com/" class="usa-link" target="_blank" rel="noreferrer noopener">the SNOMED browser</a> or find your device on the ${deviceCodeLookupLink}.`,
                 ],
               },
               {
@@ -107,7 +107,9 @@ export const agnosticSchemaBuilder = (facilityId: string | null) => {
                   "<mark><code>C</code></mark>",
                   "<mark><code>F</code></mark>",
                 ],
-                description: [`What does this stand for?`],
+                description: [
+                  `The code used to determine if the result is a correction or final.`,
+                ],
               },
               {
                 name: "Test result date",
