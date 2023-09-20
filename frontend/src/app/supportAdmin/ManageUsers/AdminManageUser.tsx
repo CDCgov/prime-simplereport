@@ -4,19 +4,20 @@ import classNames from "classnames";
 
 import { useDocumentTitle } from "../../utils/hooks";
 import {
+  Role as MutationRole,
   useEditUserEmailMutation,
   useFindUserByEmailLazyQuery,
+  useGetFacilitiesByOrgIdLazyQuery,
+  User,
   useReactivateUserAndResetPasswordMutation,
   useResendActivationEmailMutation,
   useResetUserMfaMutation,
   useResetUserPasswordMutation,
+  UserPermission,
   useSetUserIsDeletedMutation,
-  useUpdateUserNameMutation,
   useUndeleteUserMutation,
-  User,
+  useUpdateUserNameMutation,
   useUpdateUserPrivilegesAndGroupAccessMutation,
-  Role as MutationRole,
-  useGetFacilitiesByOrgIdLazyQuery,
 } from "../../../generated/graphql";
 import Prompt from "../../utils/Prompt";
 import { showSuccess } from "../../utils/srToast";
@@ -275,13 +276,21 @@ export const AdminManageUser: React.FC = () => {
             foundUser: undefined,
           }));
         } else {
+          let facilityIds: string[] =
+            data?.user?.organization?.testingFacility.map(
+              (facility) => facility.id
+            ) || [];
+
+          if (
+            data?.user?.permissions.includes(UserPermission.AccessAllFacilities)
+          ) {
+            facilityIds = facilityIds.concat(["ALL_FACILITIES"]);
+          }
+
           reset({
             role: data?.user?.role || "USER",
             organizationId: data?.user?.organization?.id,
-            facilityIds:
-              data?.user?.organization?.testingFacility.map(
-                (facility) => facility.id
-              ) || [],
+            facilityIds,
           });
 
           setSearchState((prevState) => ({

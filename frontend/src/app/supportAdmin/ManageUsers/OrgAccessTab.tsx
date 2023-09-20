@@ -177,7 +177,7 @@ const OrgAccessTab: React.FC<UserAccessTabProps> = ({
           isLoadingUser={isLoadingUser}
         />
         <UserRoleFormField
-          control={control}
+          selectedRole={formValues.role}
           registrationProps={register("role", { required: "Role is required" })}
           error={errors.role}
           disabled={disabled}

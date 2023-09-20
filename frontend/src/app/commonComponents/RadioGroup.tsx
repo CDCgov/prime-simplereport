@@ -109,7 +109,7 @@ const RadioGroup = <T extends string>({
               );
               const className = classnames(groupClass, c.className);
               return (
-                <div className={className} key={uid(c.value)}>
+                <div className={className} key={c.value}>
                   <input
                     type="radio"
                     id={uid(c.value)}
