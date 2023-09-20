@@ -12,9 +12,6 @@ import { PATIENT_TERM_CAP } from "../../config/constants";
 import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
 
-jest.mock("@trussworks/react-uswds", () => ({
-  ComboBox: () => <></>,
-}));
 const mockStore = configureStore([]);
 
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
@@ -97,6 +94,7 @@ describe("EditPatient", () => {
               facility: null,
               testResultDelivery: null,
               tribalAffiliation: [null],
+              notes: null,
             },
           },
         },
@@ -133,7 +131,9 @@ describe("EditPatient", () => {
             facility: null,
             testResultDelivery: null,
             tribalAffiliation: undefined,
+            preferredLanguage: null,
             facilityId: null,
+            notes: "Red tent",
           },
         },
         result: {
@@ -197,6 +197,9 @@ describe("EditPatient", () => {
       await user.type(name, "Fake Name");
       await user.tab();
 
+      const notes = await screen.findByLabelText("Notes", { exact: false });
+      await user.type(notes, "Red tent");
+
       const saveAndStartButton = screen.getByText("Save and start test", {
         exact: false,
       });
@@ -225,6 +228,10 @@ describe("EditPatient", () => {
       await user.clear(name);
       await user.type(name, "Fake Name");
       await user.tab();
+
+      const notes = await screen.findByLabelText("Notes", { exact: false });
+      await user.type(notes, "Red tent");
+
 
       const saveButton = screen.getAllByText("Save changes", {
         exact: false,
@@ -354,50 +361,52 @@ describe("EditPatient", () => {
   });
 
   describe("facility select input", () => {
-    const mocks = [
-      {
-        request: {
-          query: GET_PATIENT,
-          variables: {
-            id: mockPatientID,
+
+      const mocks = [
+        {
+          request: {
+            query: GET_PATIENT,
+            variables: {
+              id: mockPatientID,
+            },
           },
-        },
-        result: {
-          data: {
-            patient: {
-              firstName: "Eugenia",
-              middleName: null,
-              lastName: "Franecki",
-              birthDate: "1939-10-11",
-              street: "736 Jackson PI NW",
-              streetTwo: "DC",
-              city: null,
-              state: "DC",
-              zipCode: null,
-              telephone: "(270) 867-5309",
-              phoneNumbers: [
-                {
-                  type: "MOBILE",
-                  number: "(270) 867-5309",
-                },
-              ],
-              role: "UNKNOWN",
-              emails: ["foo@bar.com"],
-              county: null,
-              race: null,
-              ethnicity: null,
-              gender: null,
-              genderIdentity: null,
-              residentCongregateSetting: true,
-              employedInHealthcare: true,
-              facility: null,
-              testResultDelivery: null,
-              tribalAffiliation: [null],
+          result: {
+            data: {
+              patient: {
+                firstName: "Eugenia",
+                middleName: null,
+                lastName: "Franecki",
+                birthDate: "1939-10-11",
+                street: "736 Jackson PI NW",
+                streetTwo: "DC",
+                city: null,
+                state: "DC",
+                zipCode: null,
+                telephone: "(270) 867-5309",
+                phoneNumbers: [
+                  {
+                    type: "MOBILE",
+                    number: "(270) 867-5309",
+                  },
+                ],
+                role: "UNKNOWN",
+                emails: ["foo@bar.com"],
+                county: null,
+                race: null,
+                ethnicity: null,
+                gender: null,
+                genderIdentity: null,
+                residentCongregateSetting: true,
+                employedInHealthcare: true,
+                facility: null,
+                testResultDelivery: null,
+                tribalAffiliation: [null],
+                notes: null,
+              },
             },
           },
         },
-      },
-    ];
+      ];
 
     const renderWithUser = () => ({
       user: userEvent.setup(),
