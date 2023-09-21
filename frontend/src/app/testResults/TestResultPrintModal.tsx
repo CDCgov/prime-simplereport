@@ -182,11 +182,7 @@ export const StaticTestResultModal = ({
               <b>{t("testResult.testDate")}</b>
               <div>{formatDateWithTimeOption(dateTested, true)}</div>
             </li>
-            <TestResultsList
-              results={results}
-              isPatientApp={isPatientApp}
-              multiplexEnabled={multiplexEnabled}
-            />
+            <TestResultsList results={results} isPatientApp={isPatientApp} />
           </ul>
         </section>
         {(haCovidResults(results) || hasPositiveFluResults(results)) && (

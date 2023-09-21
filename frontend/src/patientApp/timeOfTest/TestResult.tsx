@@ -74,7 +74,6 @@ const TestResult = () => {
               <div className="grid-col usa-prose">
                 <TestResultsList
                   results={testResult.results}
-                  multiplexEnabled={multiplexEnabled}
                   isPatientApp={true}
                 />
               </div>
