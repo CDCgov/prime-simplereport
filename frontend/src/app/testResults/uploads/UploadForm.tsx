@@ -177,7 +177,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
   spreadsheetTemplateLocation,
   uploadGuideLocation,
 }) => {
-  useDocumentTitle(`Upload ${uploadType.toLowerCase()} spreadsheet`);
+  useDocumentTitle(`Upload ${uploadTypeq.toLowerCase()} spreadsheet`);
 
   const appInsights = getAppInsights();
   const orgName = useSelector<RootState, string>(
