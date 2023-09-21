@@ -163,6 +163,14 @@ jobs:
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: frontend
           platform: ${{ matrix.platform }}
+          build_args: |
+            "REACT_APP_OKTA_URL=http://wiremock:8088"
+            "REACT_APP_OKTA_CLIENT_ID=0oa1k0163nAwfVxNW1d7"
+            "REACT_APP_BASE_URL=https://localhost.simplereport.gov"
+            "REACT_APP_BACKEND_URL=https://localhost.simplereport.gov/api"
+            "PUBLIC_URL=/app/"
+            "REACT_APP_OKTA_ENABLED=true"
+            "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
 
   build_frontend_lighthouse_image:
     if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'

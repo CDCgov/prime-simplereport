@@ -4,13 +4,11 @@ import { Meta, StoryFn } from "@storybook/react";
 
 import { store } from "../../app/store";
 import { StoryGraphQLProvider } from "../storyMocks";
-import UploadForm from "../../app/testResults/uploads/UploadForm";
-
-type Props = React.ComponentProps<typeof UploadForm>;
+import DiseaseSpecificUploadContainer from "../../app/testResults/uploads/DiseaseSpecificUploadContainer";
+import AgnosticUploadContainer from "../../app/testResults/uploads/AgnosticUploadContainer";
 
 export default {
   title: "App/Test results/Upload CSV",
-  component: UploadForm,
   argTypes: {},
   args: {},
   decorators: [
@@ -22,13 +20,24 @@ export default {
   ],
 } as Meta;
 
-const Template: StoryFn<Props> = (args) => (
+const DiseaseSpecificTemplate: StoryFn<{}> = () => (
   <Provider store={store}>
     <MemoryRouter>
-      <UploadForm {...args} />
+      <DiseaseSpecificUploadContainer />
     </MemoryRouter>
   </Provider>
 );
 
-export const Default = Template.bind({});
-Default.args = {};
+export const DiseaseSpecificUpload = DiseaseSpecificTemplate.bind({});
+DiseaseSpecificUpload.args = {};
+
+const DiseaseAgnosticTemplate: StoryFn<{}> = () => (
+  <Provider store={store}>
+    <MemoryRouter>
+      <AgnosticUploadContainer />
+    </MemoryRouter>
+  </Provider>
+);
+
+export const DiseaseAgnosticUpload = DiseaseAgnosticTemplate.bind({});
+DiseaseAgnosticUpload.args = {};
