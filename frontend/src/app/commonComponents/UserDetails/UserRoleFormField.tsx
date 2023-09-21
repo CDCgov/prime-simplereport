@@ -17,15 +17,18 @@ const UserRoleFormField: React.FC<UserRoleFormFieldProps> = ({
   registrationProps,
   selectedRole,
 }) => {
+  const buttons = [...ROLES];
+
   return (
     <div className={"usa-form-group"}>
       <RadioGroup
+        key={selectedRole}
         className="margin-top-neg-1 margin-bottom-4"
         legend="User Role"
         hintText={
           "Admins have full access to use and change settings on SimpleReport. Standard and testing-only users have limited access for specific tasks, as described below."
         }
-        buttons={ROLES}
+        buttons={buttons}
         selectedRadio={selectedRole}
         validationStatus={error ? "error" : undefined}
         errorMessage={error?.message}
