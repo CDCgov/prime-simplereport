@@ -10,7 +10,7 @@ on:
         description: "Force build the docker images"
         required: true
         default: true
-  pull_request_target:
+  pull_request:
     branches:
       - "**"
   merge_group:
@@ -55,15 +55,7 @@ jobs:
 
 # Build Docker Images for the backend, cypress, database, frontend, and nginx
   build_backend_image:
-<<<<<<< Updated upstream
     if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
-=======
-    if: |
-      needs.workflow_changes.outputs.has_changes == 'true' || 
-      needs.backend_changes.outputs.has_changes == 'true' || 
-      inputs.force_build == 'true' || 
-      github.ref == 'refs/heads/main'
->>>>>>> Stashed changes
     needs:
       - backend_changes
     runs-on: ubuntu-latest

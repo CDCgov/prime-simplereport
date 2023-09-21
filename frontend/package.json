@@ -27,7 +27,7 @@
     "classnames": "^2.2.6",
     "flagged": "^2.0.8",
     "google-libphonenumber": "^3.2.33",
-    "graphql": "^16.6.0",
+    "graphql": "^16.8.1",
     "i18next": "^23.4.6",
     "jwt-decode": "^3.1.2",
     "loader-utils": "^3.2.1",
