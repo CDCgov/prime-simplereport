@@ -22,11 +22,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 public class FhirConverter {
-  private static FhirConversionStrategy selectedConversionStrategy;
-
-  public FhirConverter(FhirConversionStrategy conversionStrategy) {
-    selectedConversionStrategy = conversionStrategy;
-  }
+  private final FhirConversionStrategy selectedConversionStrategy;
 
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();

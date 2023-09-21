@@ -83,11 +83,7 @@ public class ConvertToFhirForBulkTestUpload implements FhirConversionStrategy {
           "Invalid Result".toLowerCase(), "455371000124106");
 
   @Override
-  public Bundle convertRowToFhirBundle(Map<String, String> row, UUID orgId) {
-    return convertTestResultRowToFhir(row, orgId);
-  }
-
-  private Bundle convertTestResultRowToFhir(Map<String, String> rawRow, UUID orgId) {
+  public Bundle convertRowToFhirBundle(Map<String, String> rawRow, UUID orgId) {
     TestResultRow row = new TestResultRow(rawRow);
     var testEventId = row.getAccessionNumber().getValue();
 

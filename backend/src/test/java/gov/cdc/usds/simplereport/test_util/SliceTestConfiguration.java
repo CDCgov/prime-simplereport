@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
+import gov.cdc.usds.simplereport.api.converter.BulkTestResultUploadFhirConverter;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
@@ -26,6 +27,7 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientSelfRegistrationLinkService;
 import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.TenantDataAccessService;
+import gov.cdc.usds.simplereport.service.fhirConversion.strategies.ConvertToFhirForBulkTestUpload;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.validators.OrderingProviderRequiredValidator;
 import java.lang.annotation.ElementType;
@@ -100,7 +102,9 @@ import org.springframework.security.test.context.support.WithMockUser;
   CurrentTenantDataAccessContextHolder.class,
   WebhookContextHolder.class,
   TenantDataAccessService.class,
-  PatientSelfRegistrationLinkService.class
+  PatientSelfRegistrationLinkService.class,
+  BulkTestResultUploadFhirConverter.class,
+  ConvertToFhirForBulkTestUpload.class
 })
 @EnableConfigurationProperties({InitialSetupProperties.class, AuthorizationProperties.class})
 public class SliceTestConfiguration {

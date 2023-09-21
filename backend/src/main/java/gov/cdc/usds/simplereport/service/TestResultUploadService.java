@@ -31,7 +31,6 @@ import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.fhirConversion.FhirConverter;
-import gov.cdc.usds.simplereport.service.fhirConversion.strategies.ConvertToFhirForBulkTestUpload;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
@@ -73,7 +72,7 @@ public class TestResultUploadService {
   private final ResultsUploaderCachingService resultsUploaderCachingService;
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
-  private final ConvertToFhirForBulkTestUpload bulkTestUploadFhirConversionStrategy;
+  private final FhirConverter bulkUploadFhirConverter;
 
   @Value("${data-hub.url}")
   private String dataHubUrl;
@@ -362,7 +361,6 @@ public class TestResultUploadService {
 
   private Future<UploadResponse> submitResultsAsFhir(
       ByteArrayInputStream content, Organization org) {
-    FhirConverter fhirConverter = new FhirConverter(bulkTestUploadFhirConversionStrategy);
     // send to report stream
     return CompletableFuture.supplyAsync(
         withMDC(
@@ -370,7 +368,7 @@ public class TestResultUploadService {
               long start = System.currentTimeMillis();
               // convert csv to fhir and serialize to json
               var serializedFhirBundles =
-                  fhirConverter.convertToFhirBundles(content, org.getInternalId());
+                  bulkUploadFhirConverter.convertToFhirBundles(content, org.getInternalId());
 
               // Clear cache to free memory
               resultsUploaderCachingService.clearAddressTimezoneLookupCache();
