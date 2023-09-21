@@ -1,14 +1,35 @@
 import { validate } from "uuid";
 
-export const schemaBuilder = (facilityId: string | null) => {
+export interface CsvSchema {
+  fields: Field[];
+}
+
+export interface Field {
+  sections: Section[];
+}
+
+export interface Section {
+  title: string;
+  slug: string;
+  items: Item[];
+}
+
+export interface Item {
+  name: string;
+  colHeader: string;
+  required: boolean;
+  requested: boolean;
+  examples?: string[];
+  description?: string[];
+  acceptedValues?: string[];
+  format?: string;
+}
+
+export const specificSchemaBuilder = (facilityId: string | null) => {
   const validUuid = facilityId && validate(facilityId) ? facilityId : "";
   const deviceCodeLookupLink = `<a href="${process.env.PUBLIC_URL}/results/upload/submit/code-lookup?facility=${validUuid}" class="usa-link" target="_blank" rel="noreferrer noopener">device code lookup tool</a>`;
 
   return {
-    title: "Example title",
-    summary: "Example summary ...",
-    description:
-      "Documentation for each field in the ReportStream schema [placeholder]",
     fields: [
       {
         sections: [
