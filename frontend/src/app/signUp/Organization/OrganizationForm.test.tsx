@@ -1,14 +1,12 @@
-import { act, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import OrganizationForm, {
   OrganizationCreateRequest,
 } from "./OrganizationForm";
 
 const getOrgNameInput = () =>
-  screen.getByRole("textbox", {
-    name: "Organization name required",
-  });
+  screen.getByRole("textbox", { name: /organization name \*/i });
 const getOrgStateDropdown = () =>
   screen.getByLabelText("Organization state *") as HTMLSelectElement;
 const getOrgTypeDropdown = () => screen.getByLabelText("Organization type *");
@@ -19,8 +17,8 @@ const getEmailInput = () => screen.getByLabelText("Work email *");
 const getPhoneInput = () => screen.getByLabelText("Work phone number *");
 const getSubmitButton = () => screen.getByText("Continue");
 
-const fillInDropDown = async (input: any, text: string) =>
-  await act(async () => await userEvent.selectOptions(input, [text]));
+const fillInDropDown = async (user: UserEvent, input: any, text: string) =>
+  await user.selectOptions(input, [text]);
 
 jest.mock("../SignUpApi", () => ({
   SignUpApi: {
@@ -61,11 +59,13 @@ jest.mock("react-router-dom", () => ({
 window.scrollTo = jest.fn();
 
 describe("OrganizationForm", () => {
-  beforeEach(() => {
-    render(<OrganizationForm />);
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(<OrganizationForm />),
   });
 
   it("initializes with the submit button disabled", () => {
+    renderWithUser();
     expect(getOrgNameInput()).toBeTruthy();
     expect(getOrgStateDropdown()).toBeTruthy();
     expect(getOrgTypeDropdown()).toBeTruthy();
@@ -78,9 +78,10 @@ describe("OrganizationForm", () => {
   });
 
   it("displays form errors when submitting invalid input", async () => {
-    await fillInDropDown(getOrgStateDropdown(), "VI");
-    await act(async () => await userEvent.tab());
-    await act(async () => getSubmitButton().click());
+    const { user } = renderWithUser();
+    await fillInDropDown(user, getOrgStateDropdown(), "VI");
+    await user.tab();
+    await user.click(getSubmitButton());
 
     expect(await screen.findByText("Organization name is required"));
 
@@ -99,9 +100,10 @@ describe("OrganizationForm", () => {
   });
 
   it("clears input when escaping out of modal", async () => {
-    await fillInDropDown(getOrgStateDropdown(), "VI");
+    const { user } = renderWithUser();
+    await fillInDropDown(user, getOrgStateDropdown(), "VI");
     expect(getOrgStateDropdown().value).toEqual("VI");
-    await act(async () => await userEvent.tab());
+    await user.tab();
     expect(
       screen.getByText(
         "U.S. Virgin Islands isn't connected to SimpleReport yet.",
@@ -111,14 +113,15 @@ describe("OrganizationForm", () => {
       )
     ).toBeInTheDocument();
 
-    await act(async () => await userEvent.keyboard("{Escape}"));
+    await user.keyboard("{Escape}");
     expect(getOrgStateDropdown().value).toBeFalsy();
   });
 
   it("does not clear input when continuing through modal", async () => {
-    await fillInDropDown(getOrgStateDropdown(), "VI");
+    const { user } = renderWithUser();
+    await fillInDropDown(user, getOrgStateDropdown(), "VI");
     expect(getOrgStateDropdown().value).toEqual("VI");
-    await act(async () => await userEvent.tab());
+    await user.tab();
     expect(
       screen.getByText(
         "U.S. Virgin Islands isn't connected to SimpleReport yet.",
@@ -128,26 +131,23 @@ describe("OrganizationForm", () => {
       )
     ).toBeInTheDocument();
 
-    await act(async () => screen.getByLabelText("acknowledged").click());
-    await act(async () => screen.getByText("Continue sign up").click());
+    await user.click(screen.getByLabelText("acknowledged"));
+    await user.click(screen.getByText("Continue sign up"));
 
     expect(getOrgStateDropdown().value).toEqual("VI");
   });
 
   it("redirects to identity verification when submitting valid input", async () => {
-    await act(async () => await userEvent.type(getOrgNameInput(), "Drake"));
-    await fillInDropDown(getOrgStateDropdown(), "TX");
-    await fillInDropDown(getOrgTypeDropdown(), "Employer");
-    await act(
-      async () => await userEvent.type(getFirstNameInput(), "Greatest")
-    );
-    await act(async () => await userEvent.type(getMiddleNameInput(), "OG"));
-    await act(async () => await userEvent.type(getLastNameInput(), "Ever"));
-    await act(
-      async () => await userEvent.type(getEmailInput(), "ever@greatest.com")
-    );
-    await act(async () => await userEvent.type(getPhoneInput(), "8008675309"));
-    await act(async () => getSubmitButton().click());
+    const { user } = renderWithUser();
+    await user.type(getOrgNameInput(), "Drake");
+    await fillInDropDown(user, getOrgStateDropdown(), "TX");
+    await fillInDropDown(user, getOrgTypeDropdown(), "Employer");
+    await user.type(getFirstNameInput(), "Greatest");
+    await user.type(getMiddleNameInput(), "OG");
+    await user.type(getLastNameInput(), "Ever");
+    await user.type(getEmailInput(), "ever@greatest.com");
+    await user.type(getPhoneInput(), "8008675309");
+    await user.click(getSubmitButton());
 
     expect(
       await screen.findByText("Redirected to /sign-up/identity-verification")
@@ -155,19 +155,16 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a duplicate org error when submitting a duplicate org", async () => {
-    await act(async () => await userEvent.type(getOrgNameInput(), "Duplicate"));
-    await fillInDropDown(getOrgStateDropdown(), "TX");
-    await fillInDropDown(getOrgTypeDropdown(), "Employer");
-    await act(
-      async () => await userEvent.type(getFirstNameInput(), "Greatest")
-    );
-    await act(async () => await userEvent.type(getMiddleNameInput(), "OG"));
-    await act(async () => await userEvent.type(getLastNameInput(), "Ever"));
-    await act(
-      async () => await userEvent.type(getEmailInput(), "ever@greatest.com")
-    );
-    await act(async () => await userEvent.type(getPhoneInput(), "8008675309"));
-    await act(async () => getSubmitButton().click());
+    const { user } = renderWithUser();
+    await user.type(getOrgNameInput(), "Duplicate");
+    await fillInDropDown(user, getOrgStateDropdown(), "TX");
+    await fillInDropDown(user, getOrgTypeDropdown(), "Employer");
+    await user.type(getFirstNameInput(), "Greatest");
+    await user.type(getMiddleNameInput(), "OG");
+    await user.type(getLastNameInput(), "Ever");
+    await user.type(getEmailInput(), "ever@greatest.com");
+    await user.type(getPhoneInput(), "8008675309");
+    await user.click(getSubmitButton());
 
     expect(
       await screen.findByText(
@@ -178,19 +175,16 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a duplicate email error when submitting a duplicate email", async () => {
-    await act(async () => await userEvent.type(getOrgNameInput(), "Foo"));
-    await fillInDropDown(getOrgStateDropdown(), "TX");
-    await fillInDropDown(getOrgTypeDropdown(), "Employer");
-    await act(
-      async () => await userEvent.type(getFirstNameInput(), "Greatest")
-    );
-    await act(async () => await userEvent.type(getMiddleNameInput(), "OG"));
-    await act(async () => await userEvent.type(getLastNameInput(), "Ever"));
-    await act(
-      async () => await userEvent.type(getEmailInput(), "duplicate@test.com")
-    );
-    await act(async () => await userEvent.type(getPhoneInput(), "8008675309"));
-    await act(async () => getSubmitButton().click());
+    const { user } = renderWithUser();
+    await user.type(getOrgNameInput(), "Foo");
+    await fillInDropDown(user, getOrgStateDropdown(), "TX");
+    await fillInDropDown(user, getOrgTypeDropdown(), "Employer");
+    await user.type(getFirstNameInput(), "Greatest");
+    await user.type(getMiddleNameInput(), "OG");
+    await user.type(getLastNameInput(), "Ever");
+    await user.type(getEmailInput(), "duplicate@test.com");
+    await user.type(getPhoneInput(), "8008675309");
+    await user.click(getSubmitButton());
 
     expect(
       await screen.findByText(
@@ -201,21 +195,16 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a duplicate org error and id verification link for an admin re-signing up", async () => {
-    await act(
-      async () => await userEvent.type(getOrgNameInput(), "DuplicateAdmin")
-    );
-    await fillInDropDown(getOrgStateDropdown(), "TX");
-    await fillInDropDown(getOrgTypeDropdown(), "Employer");
-    await act(
-      async () => await userEvent.type(getFirstNameInput(), "Greatest")
-    );
-    await act(async () => await userEvent.type(getMiddleNameInput(), "OG"));
-    await act(async () => await userEvent.type(getLastNameInput(), "Ever"));
-    await act(
-      async () => await userEvent.type(getEmailInput(), "admin@example.com")
-    );
-    await act(async () => await userEvent.type(getPhoneInput(), "8008675309"));
-    await act(async () => getSubmitButton().click());
+    const { user } = renderWithUser();
+    await user.type(getOrgNameInput(), "DuplicateAdmin");
+    await fillInDropDown(user, getOrgStateDropdown(), "TX");
+    await fillInDropDown(user, getOrgTypeDropdown(), "Employer");
+    await user.type(getFirstNameInput(), "Greatest");
+    await user.type(getMiddleNameInput(), "OG");
+    await user.type(getLastNameInput(), "Ever");
+    await user.type(getEmailInput(), "admin@example.com");
+    await user.type(getPhoneInput(), "8008675309");
+    await user.click(getSubmitButton());
 
     expect(
       await screen.findByText(
@@ -226,22 +215,17 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a duplicate org error and instructions for admin user who has finished id verification", async () => {
-    await act(
-      async () =>
-        await userEvent.type(getOrgNameInput(), "IdentityVerificationComplete")
-    );
-    await fillInDropDown(getOrgStateDropdown(), "TX");
-    await fillInDropDown(getOrgTypeDropdown(), "Employer");
-    await act(
-      async () => await userEvent.type(getFirstNameInput(), "Greatest")
-    );
-    await act(async () => await userEvent.type(getMiddleNameInput(), "OG"));
-    await act(async () => await userEvent.type(getLastNameInput(), "Ever"));
-    await act(
-      async () => await userEvent.type(getEmailInput(), "admin@example.com")
-    );
-    await act(async () => await userEvent.type(getPhoneInput(), "8008675309"));
-    await act(async () => getSubmitButton().click());
+    const { user } = renderWithUser();
+
+    await user.type(getOrgNameInput(), "IdentityVerificationComplete");
+    await fillInDropDown(user, getOrgStateDropdown(), "TX");
+    await fillInDropDown(user, getOrgTypeDropdown(), "Employer");
+    await user.type(getFirstNameInput(), "Greatest");
+    await user.type(getMiddleNameInput(), "OG");
+    await user.type(getLastNameInput(), "Ever");
+    await user.type(getEmailInput(), "admin@example.com");
+    await user.type(getPhoneInput(), "8008675309");
+    await user.click(getSubmitButton());
 
     expect(
       await screen.findByText(
@@ -252,21 +236,16 @@ describe("OrganizationForm", () => {
   });
 
   it("displays a generic error message for Okta internal errors", async () => {
-    await act(
-      async () => await userEvent.type(getOrgNameInput(), "InternalError")
-    );
-    await fillInDropDown(getOrgStateDropdown(), "TX");
-    await fillInDropDown(getOrgTypeDropdown(), "Employer");
-    await act(
-      async () => await userEvent.type(getFirstNameInput(), "Greatest")
-    );
-    await act(async () => await userEvent.type(getMiddleNameInput(), "OG"));
-    await act(async () => await userEvent.type(getLastNameInput(), "Ever"));
-    await act(
-      async () => await userEvent.type(getEmailInput(), "admin@example.com")
-    );
-    await act(async () => await userEvent.type(getPhoneInput(), "8008675309"));
-    await act(async () => getSubmitButton().click());
+    const { user } = renderWithUser();
+    await user.type(getOrgNameInput(), "InternalError");
+    await fillInDropDown(user, getOrgStateDropdown(), "TX");
+    await fillInDropDown(user, getOrgTypeDropdown(), "Employer");
+    await user.type(getFirstNameInput(), "Greatest");
+    await user.type(getMiddleNameInput(), "OG");
+    await user.type(getLastNameInput(), "Ever");
+    await user.type(getEmailInput(), "admin@example.com");
+    await user.type(getPhoneInput(), "8008675309");
+    await user.click(getSubmitButton());
 
     expect(
       await screen.findByText(

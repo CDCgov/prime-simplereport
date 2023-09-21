@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import userEvent from "@testing-library/user-event";
@@ -17,27 +17,24 @@ import {
 } from "./testSelectUtils";
 
 describe("ManageFacility", () => {
-  const renderWithMocks = () =>
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MockedProvider mocks={mocks}>
         <MemoryRouter>
           <ManageFacility />
         </MemoryRouter>
       </MockedProvider>
-    );
+    ),
+  });
 
   const getClearFilterBtn = () =>
     screen.getByRole("button", {
       name: /clear facility selection filters/i,
     });
 
-  const user = userEvent.setup();
-
-  beforeEach(() => {
-    renderWithMocks();
-  });
-
   it("does nothing if no org selection is made", async () => {
+    renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
@@ -49,17 +46,16 @@ describe("ManageFacility", () => {
   });
 
   it("does nothing if no facility selection is made", async () => {
+    const { user } = renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
     const [orgComboBoxInput, orgComboBoxList] = getOrgComboBoxElements();
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
-    await act(async () => await user.type(orgComboBoxInput, "dis"));
-    await act(
-      async () =>
-        await user.click(within(orgComboBoxList).getByText("Dis Organization"))
-    );
+    await user.type(orgComboBoxInput, "dis");
+    await user.click(within(orgComboBoxList).getByText("Dis Organization"));
+
     expect(orgComboBoxInput).toHaveValue("Dis Organization");
     expect(clearFiltersBtn).toBeEnabled();
 
@@ -67,20 +63,18 @@ describe("ManageFacility", () => {
   });
 
   it("resets the controls after clicking clear filters", async () => {
+    const { user } = renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
     const [orgComboBoxInput, orgComboBoxList] = getOrgComboBoxElements();
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
 
-    await act(async () => await user.type(orgComboBoxInput, "dis"));
-    await act(
-      async () =>
-        await user.click(within(orgComboBoxList).getByText("Dis Organization"))
-    );
+    await user.type(orgComboBoxInput, "dis");
+    await user.click(within(orgComboBoxList).getByText("Dis Organization"));
 
     await waitFor(() => expect(clearFiltersBtn).toBeEnabled());
-    await act(async () => await user.click(clearFiltersBtn));
+    await user.click(clearFiltersBtn);
 
     await waitFor(() => expect(clearFiltersBtn).toBeDisabled());
     expect(orgComboBoxInput).toHaveValue("");
@@ -88,6 +82,7 @@ describe("ManageFacility", () => {
   });
 
   it("loads facility and deletes it", async () => {
+    const { user } = renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
@@ -96,39 +91,31 @@ describe("ManageFacility", () => {
       getFacilityComboBoxElements();
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
-    await act(async () => await user.type(orgComboBoxInput, "dis"));
-    await act(
-      async () =>
-        await user.click(within(orgComboBoxList).getByText("Dis Organization"))
-    );
+    await user.type(orgComboBoxInput, "dis");
+    await user.click(within(orgComboBoxList).getByText("Dis Organization"));
 
     await waitFor(() => expect(facilityComboBoxInput).toBeEnabled());
     await waitFor(() => expect(clearFiltersBtn).toBeEnabled());
-    await act(
-      async () => await user.type(facilityComboBoxInput, "testing site")
-    );
-    await act(
-      async () =>
-        await user.click(within(facilityComboBoxList).getByText("Testing Site"))
-    );
+    await user.type(facilityComboBoxInput, "testing site");
+    await user.click(within(facilityComboBoxList).getByText("Testing Site"));
 
     const searchBtn = screen.getByRole("button", {
       name: /search/i,
     });
-    await act(async () => await user.click(searchBtn));
+    await user.click(searchBtn);
 
     await screen.findByRole("heading", { name: /Testing Site/i });
 
     const deleteFacilityBtn = screen.getByRole("button", {
       name: /delete facility testing site/i,
     });
-    await act(async () => await user.click(deleteFacilityBtn));
+    await user.click(deleteFacilityBtn);
 
     await screen.findByRole("heading", { name: /delete testing site/i });
     const yesDeleteBtn = screen.getByRole("button", {
       name: /yes, delete facility/i,
     });
-    await act(async () => await user.click(yesDeleteBtn));
+    await user.click(yesDeleteBtn);
 
     await waitFor(() =>
       expect(
@@ -144,6 +131,7 @@ describe("ManageFacility", () => {
   });
 
   it("loads the page even when no facility is retrieved", async () => {
+    const { user } = renderWithUser();
     const clearFiltersBtn = getClearFilterBtn();
     expect(clearFiltersBtn).toBeDisabled();
 
@@ -152,26 +140,18 @@ describe("ManageFacility", () => {
       getFacilityComboBoxElements();
 
     await waitFor(() => expect(orgComboBoxInput).toBeEnabled());
-    await act(async () => await user.type(orgComboBoxInput, "dat"));
-    await act(
-      async () =>
-        await user.click(within(orgComboBoxList).getByText("Dat Organization"))
-    );
+    await user.type(orgComboBoxInput, "dat");
+    await user.click(within(orgComboBoxList).getByText("Dat Organization"));
 
     await waitFor(() => expect(facilityComboBoxInput).toBeEnabled());
     expect(clearFiltersBtn).toBeEnabled();
-    await act(async () => await user.type(facilityComboBoxInput, "incom"));
-    await act(
-      async () =>
-        await user.click(
-          within(facilityComboBoxList).getByText("Incomplete Site")
-        )
-    );
+    await user.type(facilityComboBoxInput, "incom");
+    await user.click(within(facilityComboBoxList).getByText("Incomplete Site"));
 
     const searchBtn = screen.getByRole("button", {
       name: /search/i,
     });
-    await act(async () => await user.click(searchBtn));
+    await user.click(searchBtn);
 
     await screen.findByRole("heading", { name: /Incomplete Site/i });
   });
