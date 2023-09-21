@@ -5,10 +5,9 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import "./TestResultCorrectionModal.scss";
-import userEvent from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 import configureStore from "redux-mock-store";
 import { MockedResponse } from "@apollo/client/testing/core";
-import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import {
   TestCorrectionReasons,

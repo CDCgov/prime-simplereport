@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
-import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import {
   GetPendingOrganizationsDocument,

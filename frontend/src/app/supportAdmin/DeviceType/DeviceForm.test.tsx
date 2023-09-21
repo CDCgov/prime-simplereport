@@ -1,9 +1,8 @@
 import React from "react";
 import { render, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 import { cloneDeep } from "lodash";
 import selectEvent from "react-select-event";
-import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import DeviceForm from "./DeviceForm";
 import mockSupportedDiseaseTestPerformedCovid from "./mocks/mockSupportedDiseaseTestPerformedCovid";

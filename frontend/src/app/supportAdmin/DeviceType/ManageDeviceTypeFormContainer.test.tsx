@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 import selectEvent from "react-select-event";
-import { UserEvent } from "@testing-library/user-event/setup/setup";
 
 import { DeviceType, SpecimenType } from "../../../generated/graphql";
 import SRToastContainer from "../../commonComponents/SRToastContainer";

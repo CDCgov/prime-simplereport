@@ -3,8 +3,7 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
-import userEvent from "@testing-library/user-event";
-import { UserEvent } from "@testing-library/user-event/setup/setup";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 
 import {
   GetAllFacilitiesDocument,
