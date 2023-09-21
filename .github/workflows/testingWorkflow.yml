@@ -10,7 +10,7 @@ on:
         description: "Force build the docker images"
         required: true
         default: true
-  pull_request:
+  pull_request_target:
     branches:
       - "**"
   merge_group:
