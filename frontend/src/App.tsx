@@ -53,7 +53,7 @@ if (getNodeEnv() !== "test") {
 
 if (window.location.hash) {
   const params = new URLSearchParams(window.location.hash.slice(1));
-  const bearerToken = params.get("access_token");
+  const bearerToken = params.get("access_token") || "test";
   if (bearerToken) {
     localStorage.setItem("access_token", bearerToken);
   }

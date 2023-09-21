@@ -47,6 +47,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @EnableFeignClients
 public class SimpleReportApplication {
+  // test
   public static void main(String[] args) {
     SpringApplication.run(SimpleReportApplication.class, args);
   }

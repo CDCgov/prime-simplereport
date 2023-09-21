@@ -17,6 +17,7 @@ describe("Organization sign up", () => {
     cy.checkAccessibility(); // Sign up page
 
     cy.contains("Sign up for SimpleReport");
+    cy.contains("Sign up for SimpleReport");
     cy.contains("My organization is new to SimpleReport").click();
     cy.contains("Continue").click();
   });
