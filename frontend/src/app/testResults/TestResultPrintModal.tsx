@@ -191,7 +191,6 @@ export const StaticTestResultModal = ({
             <MultiplexResultsGuidance
               results={results}
               isPatientApp={isPatientApp}
-              multiplexEnabled={multiplexEnabled}
             />
           </section>
         )}

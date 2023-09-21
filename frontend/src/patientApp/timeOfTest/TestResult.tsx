@@ -86,7 +86,6 @@ const TestResult = () => {
             <MultiplexResultsGuidance
               results={testResult.results}
               isPatientApp={true}
-              multiplexEnabled={multiplexEnabled}
             />
           </div>
         </div>

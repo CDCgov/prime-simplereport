@@ -59,15 +59,14 @@ const PositiveFluResultInfo = ({
 interface MultiplexResultsGuidanceProps {
   results: MultiplexResult[];
   isPatientApp: boolean;
-  multiplexEnabled: boolean;
 }
-const MultiplexResultsGuidance = (props: MultiplexResultsGuidanceProps) => {
-  const results = props.results;
-  const isPatientApp = props.isPatientApp;
-  const multiplexEnabled = props.multiplexEnabled;
+const MultiplexResultsGuidance: React.FC<MultiplexResultsGuidanceProps> = ({
+  results,
+  isPatientApp,
+}) => {
   const { t } = useTranslation();
   const needsCovidHeading = haCovidResults(results);
-  const needsFluGuidance = multiplexEnabled && hasPositiveFluResults(results);
+  const needsFluGuidance = hasPositiveFluResults(results);
   const covidResult = getResultByDiseaseName(results, "COVID-19") as TestResult;
 
   return (
