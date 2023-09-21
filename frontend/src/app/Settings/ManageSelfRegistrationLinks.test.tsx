@@ -53,12 +53,6 @@ describe("ManageSelfRegistrationLinks", () => {
 
   beforeEach(() => {
     process.env.REACT_APP_BASE_URL = testBaseUrl;
-
-    /*Object.assign(navigator, {
-      clipboard: {
-        writeText: jest.fn(),
-      },
-    });*/
   });
 
   afterEach(() => {
