@@ -260,6 +260,7 @@ export const AdminManageUser: React.FC = () => {
             displayedError: userNotFoundError,
             foundUser: undefined,
           }));
+          reset();
         } else if (
           error?.message ===
           "header: Error finding user email; body: Please escalate this issue to the SimpleReport team."
@@ -269,12 +270,14 @@ export const AdminManageUser: React.FC = () => {
             displayedError: userIdentityError,
             foundUser: undefined,
           }));
+          reset();
         } else if (error) {
           setSearchState((prevState) => ({
             ...prevState,
             displayedError: genericError,
             foundUser: undefined,
           }));
+          reset();
         } else {
           let facilityIds: string[] =
             data?.user?.organization?.testingFacility.map(
@@ -404,7 +407,7 @@ export const AdminManageUser: React.FC = () => {
       });
 
       showSuccess("", `Access updated for ${userFullName}`);
-      await retrieveUser(searchEmail);
+      await retrieveUser(foundUser?.email as string);
     });
   };
 
