@@ -10,7 +10,7 @@ on:
         description: "Force build the docker images"
         required: true
         default: true
-  pull_request:
+  pull_request_target:
     branches:
       - "**"
   merge_group:
@@ -19,6 +19,11 @@ on:
   push:
     branches:
       - main
+
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
 
@@ -50,7 +55,15 @@ jobs:
 
 # Build Docker Images for the backend, cypress, database, frontend, and nginx
   build_backend_image:
+<<<<<<< Updated upstream
     if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
+=======
+    if: |
+      needs.workflow_changes.outputs.has_changes == 'true' || 
+      needs.backend_changes.outputs.has_changes == 'true' || 
+      inputs.force_build == 'true' || 
+      github.ref == 'refs/heads/main'
+>>>>>>> Stashed changes
     needs:
       - backend_changes
     runs-on: ubuntu-latest
@@ -69,9 +82,6 @@ jobs:
         with:
           context: ./
           file: ./backend/Dockerfile
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
           gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
@@ -98,9 +108,6 @@ jobs:
         with:
           context: ./
           file: ./cypress/Dockerfile
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
           gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
@@ -126,9 +133,6 @@ jobs:
         uses: ./.github/actions/build-docker-image
         with:
           context: ./backend/db-setup
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
           gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
@@ -155,9 +159,6 @@ jobs:
         with:
           context: ./
           file: ./frontend/Dockerfile
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
           gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
@@ -192,9 +193,6 @@ jobs:
         with:
           context: ./
           file: ./frontend/Dockerfile
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
           gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
@@ -226,9 +224,6 @@ jobs:
         uses: ./.github/actions/build-docker-image
         with:
           context: ./nginx
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
           gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
