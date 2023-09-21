@@ -615,7 +615,7 @@ describe("AddPatient", () => {
         await screen.findByText(/Testing Queue!/i);
       });
 
-      it.only("redirects to the queue with a patient id and selected facility id", async () => {
+      it("redirects to the queue with a patient id and selected facility id", async () => {
         const { user } = renderWithUser();
         await fillOutForm(
           user,
