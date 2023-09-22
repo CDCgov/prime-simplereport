@@ -5074,7 +5074,7 @@ databaseChangeLog:
                  FROM ${database.defaultSchemaName}.api_user
                  WHERE login_email = '${migrations_user_email}'
                )
-              INSERT INTO .feature_flag (internal_id, name, value,
+              INSERT INTO ${database.defaultSchemaName}.feature_flag (internal_id, name, value,
               created_at, created_by, updated_at, updated_by)
               SELECT
                 gen_random_uuid(),
