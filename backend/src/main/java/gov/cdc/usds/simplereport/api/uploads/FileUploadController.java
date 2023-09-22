@@ -60,6 +60,20 @@ public class FileUploadController {
     }
   }
 
+   @PostMapping(CONDITION_AGNOSTIC_RESULT_UPLOAD)
+   @PreAuthorize("@featureFlagsConfig.isConditionAgnosticBulkUploadEnabled()")
+   public TestResultUpload handleConditionAgnosticResultsUpload(
+       @RequestParam("file") MultipartFile file) {
+     assertCsvFileType(file);
+     try (InputStream resultsUpload = file.getInputStream()) {
+       return testResultUploadService.processConditionAgnosticResultCSV(resultsUpload);
+     } catch (IOException e) {
+       log.error("Condition agnostic test result CSV encountered an unexpected error", e);
+       throw new CsvProcessingException(
+           "Unable to process condition agnostic test result CSV upload");
+     }
+   }
+
   @PostMapping(RESULT_UPLOAD)
   public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);

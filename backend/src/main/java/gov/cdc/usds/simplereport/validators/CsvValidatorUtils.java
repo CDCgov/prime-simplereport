@@ -162,6 +162,25 @@ public class CsvValidatorUtils {
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
   public static final String ITEM_SCOPE = "item";
 
+  //  http://hl7.org/fhir/R4/codesystem-data-absent-reason.html#data-absent-reason-unknown
+  private static final Set<String> DATA_ABSENT_REASONS =
+      Set.of(
+          UNKNOWN_LITERAL,
+          "asked-unknown",
+          "temp-unknown",
+          "not-asked",
+          "asked-declined",
+          "masked",
+          "not-applicable",
+          "unsupported",
+          "as-text",
+          "error",
+          "not-a-number",
+          "negative-infinity",
+          "positive-infinity",
+          "not-performed",
+          "not-permitted");
+
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
   }
@@ -339,6 +358,10 @@ public class CsvValidatorUtils {
       throw new CsvProcessingException(
           e.getMessage(), location.getLineNr(), location.getColumnNr());
     }
+  }
+
+  public static List<FeedbackMessage> validateDataAbsentReason(ValueOrError input) {
+    return validateInSet(input, DATA_ABSENT_REASONS);
   }
 
   public static ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
