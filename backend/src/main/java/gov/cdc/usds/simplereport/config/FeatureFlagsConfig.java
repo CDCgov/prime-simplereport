@@ -24,7 +24,6 @@ public class FeatureFlagsConfig {
   @Setter(AccessLevel.NONE)
   private final FeatureFlagRepository _repo;
 
-  private boolean multiplexEnabled;
   private boolean hivEnabled;
   private boolean rsvEnabled;
   private boolean singleEntryRsvEnabled;
@@ -37,7 +36,6 @@ public class FeatureFlagsConfig {
 
   private void flagMapping(String flagName, Boolean flagValue) {
     switch (flagName) {
-      case "multiplexEnabled" -> setMultiplexEnabled(flagValue);
       case "hivEnabled" -> setHivEnabled(flagValue);
       case "rsvEnabled" -> setRsvEnabled(flagValue);
       case "singleEntryRsvEnabled" -> setSingleEntryRsvEnabled(flagValue);
