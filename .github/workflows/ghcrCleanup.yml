@@ -3,7 +3,7 @@ name: Delete old container images
 
 on:
   schedule:
-    - cron: "0 0 1 * *"
+    - cron: "0 0 * * *"
 
 permissions:
   packages: write
