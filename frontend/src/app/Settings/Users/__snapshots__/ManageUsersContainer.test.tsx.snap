@@ -199,7 +199,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
             class="prime-secondary-nav margin-top-4 padding-bottom-0"
           >
             <div
-              aria-owns="user-information-tab-id facility-access-tab-id"
+              aria-owns="userinformation-tab facility-access-tab-id"
               class="usa-nav__secondary-links prime-nav usa-list"
               role="tablist"
             >
@@ -209,7 +209,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
                 <button
                   aria-selected="true"
                   class="usa-button--unstyled text-ink text-no-underline"
-                  id="user-information-tab-id"
+                  id="userinformation-tab"
                   role="tab"
                 >
                   User information
@@ -230,7 +230,7 @@ exports[`ManageUsersContainer loads the component and displays users successfull
             </div>
           </nav>
           <div
-            aria-labelledby="user-information-tab-id"
+            aria-labelledby="userinformation-tab"
             class="padding-left-1"
             role="tabpanel"
           >
