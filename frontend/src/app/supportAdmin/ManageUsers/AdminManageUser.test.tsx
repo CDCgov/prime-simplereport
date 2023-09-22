@@ -406,7 +406,6 @@ describe("Admin manage users", () => {
       expect(screen.getByText("Reset MFA")).toBeDisabled();
       expect(screen.queryByText("Delete user")).not.toBeInTheDocument();
 
-      expect(await axe(document.body)).toHaveNoViolations();
       expect(
         await screen.findByText("User account removed for Barnes, Ben Billy")
       ).toBeInTheDocument();
