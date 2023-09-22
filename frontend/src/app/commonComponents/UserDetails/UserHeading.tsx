@@ -7,11 +7,14 @@ import { capitalizeText, formatUserStatus } from "../../utils/text";
 import Alert from "../Alert";
 import { ReactComponent as DeactivatedIcon } from "../../../img/account-deactivated.svg";
 import { ReactComponent as PendingIcon } from "../../../img/account-pending.svg";
+import { User } from "../../../generated/graphql";
 
 import { SpecialStatusNotice } from "./SpecialStatusNotice";
 import "./UserHeading.scss";
 
-const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
+const NoFacilityWarning: React.FC<{ user: SettingsUser | User }> = ({
+  user,
+}) => {
   if (
     user?.id &&
     (!user?.organization?.testingFacility ||
@@ -28,7 +31,9 @@ const NoFacilityWarning: React.FC<{ user: SettingsUser }> = ({ user }) => {
   return null;
 };
 
-const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
+const UserStatusSubheading: React.FC<{ user: SettingsUser | User }> = ({
+  user,
+}) => {
   function getUserStatusText() {
     if (user.status === OktaUserStatus.ACTIVE) {
       return (
@@ -61,7 +66,7 @@ const UserStatusSubheading: React.FC<{ user: SettingsUser }> = ({ user }) => {
 };
 
 const UserHeading: React.FC<{
-  user: SettingsUser;
+  user: SettingsUser | User;
   isUserSelf?: boolean;
   isUpdating: boolean;
   onResendUserActivationEmail: (userId: string) => void;

@@ -3,7 +3,6 @@ import { Provider } from "react-redux";
 import createMockStore, { MockStoreEnhanced } from "redux-mock-store";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
-  act,
   render,
   screen,
   waitFor,
@@ -205,19 +204,22 @@ const renderApp = (
   newStore: MockStoreEnhanced<unknown, {}>,
   queryMocks: MockedResponse[]
 ) => {
-  return render(
-    <PrimeErrorBoundary>
-      <Provider store={newStore}>
-        <MockedProvider mocks={queryMocks} addTypename={false}>
-          <MemoryRouter>
-            <Routes>
-              <Route path="/*" element={<ReportingApp />} />
-            </Routes>
-          </MemoryRouter>
-        </MockedProvider>
-      </Provider>
-    </PrimeErrorBoundary>
-  );
+  return {
+    user: userEvent.setup(),
+    ...render(
+      <PrimeErrorBoundary>
+        <Provider store={newStore}>
+          <MockedProvider mocks={queryMocks} addTypename={false}>
+            <MemoryRouter>
+              <Routes>
+                <Route path="/*" element={<ReportingApp />} />
+              </Routes>
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
+      </PrimeErrorBoundary>
+    ),
+  };
 };
 
 const MODAL_TEXT = "Welcome to the SimpleReport";
@@ -245,7 +247,7 @@ describe("App", () => {
 
   it("Render main screen", async () => {
     const mockedStore = mockStore({ ...store, dataLoaded: true });
-    renderApp(mockedStore, [
+    const { user } = renderApp(mockedStore, [
       WhoAmIQueryMock,
       facilityQueryMock,
       getAnalyticsQueryMock(),
@@ -253,12 +255,8 @@ describe("App", () => {
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading account information...")
     );
-    await act(
-      async () =>
-        await userEvent.click(
-          screen.getAllByText("Testing Site", { exact: false })[0]
-        )
-    );
+
+    await user.click(screen.getAllByText("Testing Site", { exact: false })[0]);
     expect(
       await screen.findByText("COVID-19 testing data")
     ).toBeInTheDocument();
@@ -274,7 +272,7 @@ describe("App", () => {
   it("displays the training header and modal and dismisses the modal", async () => {
     process.env.REACT_APP_IS_TRAINING_SITE = "true";
     const mockedStore = mockStore({ ...store, dataLoaded: true });
-    renderApp(mockedStore, [
+    const { user } = renderApp(mockedStore, [
       WhoAmIQueryMock,
       facilityQueryMock,
       getAnalyticsQueryMock(),
@@ -284,10 +282,8 @@ describe("App", () => {
       exact: false,
     });
     expect(trainingWelcome).toBeInTheDocument();
-    await act(
-      async () =>
-        await userEvent.click(screen.getByText("Got it", { exact: false }))
-    );
+
+    await user.click(screen.getByText("Got it", { exact: false }));
     expect(trainingWelcome).not.toBeInTheDocument();
   });
 

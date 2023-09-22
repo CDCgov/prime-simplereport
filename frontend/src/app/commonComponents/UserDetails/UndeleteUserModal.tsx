@@ -5,11 +5,12 @@ import Modal from "../Modal";
 import { displayFullName } from "../../utils";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import "../../Settings/Users/ManageUsers.scss";
+import { User } from "../../../generated/graphql";
 
 interface Props {
   onClose: () => void;
   onUndeleteUser: () => void;
-  user: SettingsUser;
+  user: SettingsUser | User;
   isOpen: boolean;
 }
 

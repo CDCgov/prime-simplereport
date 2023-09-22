@@ -8,11 +8,12 @@ import { displayFullName } from "../../utils";
 import { RootState } from "../../store";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import "../../Settings/Users/ManageUsers.scss";
+import { User } from "../../../generated/graphql";
 
 interface Props {
   onClose: () => void;
   onReactivateUser: (userId: string) => void;
-  user: SettingsUser;
+  user: SettingsUser | User;
   isOpen: boolean;
 }
 

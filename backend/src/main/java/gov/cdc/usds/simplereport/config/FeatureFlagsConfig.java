@@ -27,6 +27,7 @@ public class FeatureFlagsConfig {
   private boolean hivEnabled;
   private boolean rsvEnabled;
   private boolean singleEntryRsvEnabled;
+  private boolean agnosticEnabled;
 
   @Scheduled(fixedRateString = "60000") // 1 min
   private void loadFeatureFlagsFromDB() {
@@ -39,6 +40,7 @@ public class FeatureFlagsConfig {
       case "hivEnabled" -> setHivEnabled(flagValue);
       case "rsvEnabled" -> setRsvEnabled(flagValue);
       case "singleEntryRsvEnabled" -> setSingleEntryRsvEnabled(flagValue);
+      case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }
