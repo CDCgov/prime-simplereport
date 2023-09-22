@@ -3,7 +3,6 @@ import Modal from "react-modal";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { CSVLink } from "react-csv";
-import { useFeature } from "flagged";
 import { ApolloError } from "@apollo/client";
 
 import { showError } from "../utils/srToast";
@@ -36,7 +35,6 @@ export const DownloadResultsCsvModal = ({
   const csvLink = useRef<
     CSVLink & HTMLAnchorElement & { link: HTMLAnchorElement }
   >(null);
-  const multiplexEnabled = useFeature("multiplexEnabled") as boolean;
   // Disable downloads because backend will hang on over 20k results (#3953)
   const disableDownload = totalEntries > rowsMaxLimit;
 
@@ -69,11 +67,8 @@ export const DownloadResultsCsvModal = ({
     });
 
   const handleComplete = (data: GetFacilityResultsForCsvWithCountQuery) => {
-    if (data.testResultsPage && data.testResultsPage.content) {
-      const csvResults = parseDataForCSV(
-        data.testResultsPage.content,
-        multiplexEnabled
-      );
+    if (data?.testResultsPage?.content) {
+      const csvResults = parseDataForCSV(data.testResultsPage.content);
       setResults(csvResults);
     } else {
       showError("Unknown error downloading results");
