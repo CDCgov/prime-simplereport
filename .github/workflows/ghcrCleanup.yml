@@ -16,7 +16,7 @@ jobs:
       - name: Delete all containers older than a month
         uses: snok/container-retention-policy@v2
         with:
-          image-names: nginx, backend, frontend, cypress, frontend-lighthouse, database
+          image-names: backend, cypress, database, frontend, frontend-lighthouse, nginx
           cut-off: One month ago UTC
           account-type: org
           org-name: CDCgov
