@@ -1,6 +1,5 @@
 name: Dependabot Gradle Helper
 on:
-  workflow_dispatch:
   pull_request_target:
     paths: 
       - backend/build.gradle
@@ -28,7 +27,7 @@ jobs:
     # Run when manually requested or when dependabot creates/updates a PR
     # DO NOT run if somebody else updates a PR (a probably unnecessarily strict guard against infinite 
     # workflow loops, in case we ever enable this workflow to trigger other workflows)
-    if: github.event.pull_request.user.login  == 'dependabot[bot]' || github.event_name == 'workflow_dispatch'
+    if: github.event.pull_request.user.login  == 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -36,7 +35,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_WORKFLOW_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           ref: ${{ github.head_ref }}
           fetch-depth: 0 # Disable shallow clones: we need to be able to push
 
