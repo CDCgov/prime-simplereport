@@ -74,7 +74,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Backend Image
         id: set_backend_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
           file: ./backend/Dockerfile
           gh_username: ${{ github.actor }}
@@ -99,7 +99,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Cypress Image
         id: set_cypress_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
           file: ./cypress/Dockerfile
           gh_username: ${{ github.actor }}
@@ -124,7 +124,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Database Image
         id: set_database_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
           context: ./backend/db-setup
           gh_username: ${{ github.actor }}
@@ -149,7 +149,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Frontend Image
         id: set_frontend_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
           file: ./frontend/Dockerfile
           gh_username: ${{ github.actor }}
@@ -182,7 +182,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Frontend Lighthouse Image
         id: set_frontend_lighthouse_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
           file: ./frontend/Dockerfile
           gh_username: ${{ github.actor }}
@@ -213,7 +213,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Nginx Image
         id: set_nginx_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
           context: ./nginx
           gh_username: ${{ github.actor }}
