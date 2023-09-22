@@ -150,6 +150,12 @@ export type FacilityStats = {
   usersSingleAccessCount?: Maybe<Scalars["Int"]>;
 };
 
+export type FeatureFlag = {
+  __typename?: "FeatureFlag";
+  name: Scalars["String"];
+  value: Scalars["Boolean"];
+};
+
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
   errorType: Scalars["String"];
@@ -212,6 +218,7 @@ export type Mutation = {
   submitQueueItem?: Maybe<AddTestResultResponse>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
+  updateFeatureFlag?: Maybe<FeatureFlag>;
   updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
   updateRegistrationLink?: Maybe<Scalars["String"]>;
@@ -440,6 +447,11 @@ export type MutationUpdateDeviceTypeArgs = {
 
 export type MutationUpdateFacilityArgs = {
   facilityInfo: UpdateFacilityInput;
+};
+
+export type MutationUpdateFeatureFlagArgs = {
+  name: Scalars["String"];
+  value: Scalars["Boolean"];
 };
 
 export type MutationUpdateOrganizationArgs = {
