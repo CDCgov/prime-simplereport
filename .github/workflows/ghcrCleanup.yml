@@ -1,0 +1,23 @@
+name: Delete old container images
+
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1 * *"  # every day at midnight
+
+jobs:
+  clean_ghcr:
+    name: Delete old unused container images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete all test containers older than a month, using a wildcard
+        uses: snok/container-retention-policy@v2
+        with:
+          image-names: nginx, backend, frontend, cypress, frontend-lighthouse, database
+          cut-off: One month ago UTC
+          account-type: personal
+          keep-at-least: 1
+          skip-tags: main
+          token: ${{ secrets.GH_RPDP_WORKFLOW_PAT }}
+          dry-run: true
