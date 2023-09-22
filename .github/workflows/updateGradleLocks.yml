@@ -33,20 +33,29 @@ jobs:
     permissions:
       contents: write
     steps:
+
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GH_WORKFLOW_PAT }}
           ref: ${{ github.head_ref }}
           fetch-depth: 0 # Disable shallow clones: we need to be able to push
+
       - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v3
         with:
           java-version: ${{env.JAVA_VERSION}}
           distribution: ${{env.JAVA_DISTRIBUTION}}
+
+      - name: Get last commit message
+        id: last-commit-message
+        run: echo "msg=$(git log -1 --pretty=%s)" >> $GITHUB_OUTPUT
+          
       - name: Update dependency locks
         run: ./gradlew dependencies --write-locks
+ 
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Updated dependency locks for dependabot.
-          commit_user_name: simplereport-dependabot-helper
-          commit_user_email: no-reply@simplereport.gov
+          commit_message: ${{ steps.last-commit-message.outputs.msg }}
+          commit_options: '--amend --no-edit'
+          push_options: '--force'
+          skip_fetch: true

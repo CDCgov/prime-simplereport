@@ -7,6 +7,7 @@ import moment, { Moment } from "moment";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { isEqual } from "lodash";
+import { useFeature } from "flagged";
 
 import {
   GetFacilityQueueQuery,
@@ -30,6 +31,10 @@ import {
 } from "../testResults/TestResultCorrectionModal";
 import MultiplexResultInputForm from "../testResults/MultiplexResultInputForm";
 import { MULTIPLEX_DISEASES } from "../testResults/constants";
+import {
+  DeviceWithoutModelOrManufacturer,
+  filterRsvFromAllDevices,
+} from "../utils/rsvHelper";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
@@ -191,6 +196,7 @@ const QueueItem = ({
   facility,
   devicesMap,
 }: QueueItemProps) => {
+  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
   const navigate = useNavigate();
   const appInsights = getAppInsights();
@@ -749,7 +755,13 @@ const QueueItem = ({
   };
 
   function getDeviceTypeOptions() {
-    let deviceTypeOptions = [...facility!.deviceTypes]
+    let deviceTypes = [
+      ...facility!.deviceTypes,
+    ] as DeviceWithoutModelOrManufacturer[];
+    if (!singleEntryRsvEnabled) {
+      deviceTypes = filterRsvFromAllDevices(deviceTypes);
+    }
+    let deviceTypeOptions = [...deviceTypes]
       .sort(alphabetizeByName)
       .map((d) => ({
         label: d.name,

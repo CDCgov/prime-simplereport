@@ -1,6 +1,4 @@
 // this component removes all filter search params from the url
-import qs from "querystring";
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -15,9 +13,9 @@ const CleanTestResultsList = () => {
     if (activeFacilityId && navigate) {
       navigate({
         pathname: "/results/1",
-        search: qs.stringify({
+        search: new URLSearchParams({
           facility: activeFacilityId,
-        }),
+        }).toString(),
       });
     }
   }, [activeFacilityId, navigate]);

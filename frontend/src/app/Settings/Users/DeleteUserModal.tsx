@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button/Button";
 import { displayFullName } from "../../utils";
+import { User } from "../../../generated/graphql";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
@@ -11,7 +12,7 @@ import "./ManageUsers.scss";
 interface Props {
   onClose: () => void;
   onDeleteUser: (userId: string) => void;
-  user: SettingsUser;
+  user: SettingsUser | User;
 }
 
 const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {

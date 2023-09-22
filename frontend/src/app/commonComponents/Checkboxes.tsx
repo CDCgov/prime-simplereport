@@ -17,6 +17,7 @@ interface Props {
   boxes: Checkbox[];
   legend: React.ReactNode;
   legendSrOnly?: boolean;
+  hintText?: string;
   name: string;
   disabled?: boolean;
   className?: string;
@@ -38,6 +39,7 @@ const Checkboxes = (props: Props) => {
     errorMessage,
     required,
     inputRef,
+    hintText,
   } = props;
 
   return (
@@ -59,6 +61,7 @@ const Checkboxes = (props: Props) => {
         >
           {required ? <Required label={legend} /> : <Optional label={legend} />}
         </legend>
+        {hintText && <span className="usa-hint">{hintText}</span>}
         {validationStatus === "error" && (
           <div className="usa-error-message" role="alert">
             <span className="usa-sr-only">Error: </span>

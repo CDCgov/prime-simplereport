@@ -12,12 +12,12 @@ import { getAppInsights } from "../../TelemetryService";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 
-import Uploads, {
+import UploadForm, {
   EnhancedFeedbackMessage,
   getErrorMessage,
   getGuidance,
   groupErrors,
-} from "./Uploads";
+} from "./UploadForm";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -44,7 +44,12 @@ const TestContainer = () => (
   <Provider store={store}>
     <MemoryRouter>
       <SRToastContainer />
-      <Uploads />
+      <UploadForm
+        uploadResults={FileUploadService.uploadResults}
+        uploadType={"Disease Specific"}
+        spreadsheetTemplateLocation={""}
+        uploadGuideLocation={""}
+      />
     </MemoryRouter>
   </Provider>
 );
@@ -208,6 +213,7 @@ describe("Uploads", () => {
             org: "Test Org",
             "report ID": "fake-report-id",
             user: "testuser@test.org",
+            uploadType: "Disease Specific",
           },
         });
       });
@@ -255,6 +261,7 @@ describe("Uploads", () => {
         properties: {
           org: "Test Org",
           user: "testuser@test.org",
+          uploadType: "Disease Specific",
         },
       });
     });
@@ -310,6 +317,7 @@ describe("Uploads", () => {
           ],
           org: "Test Org",
           user: "testuser@test.org",
+          uploadType: "Disease Specific",
         },
       });
     });

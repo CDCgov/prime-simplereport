@@ -1,5 +1,5 @@
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
-import React from "react";
+import React, { MouseEventHandler } from "react";
 
 import SupportHomeLink from "../SupportHomeLink";
 import Button from "../../commonComponents/Button/Button";
@@ -7,7 +7,7 @@ import SearchInput from "../../testQueue/addToQueue/SearchInput";
 
 interface UserSearchProps {
   onClearFilter: () => void;
-  onSearchClick: (e: any) => void;
+  onSearchClick: MouseEventHandler<HTMLButtonElement>;
   onInputChange: (e: any) => void;
   searchEmail: string;
   disableClearFilters: boolean;

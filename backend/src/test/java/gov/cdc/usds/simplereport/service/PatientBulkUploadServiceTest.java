@@ -28,7 +28,7 @@ class PatientBulkUploadServiceTest extends BaseServiceTest<PatientBulkUploadServ
   @BeforeEach
   void setupData() {
     initSampleData();
-    when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any(), any()))
+    when(addressValidationService.getValidatedAddress(any(), any(), any(), any(), any()))
         .thenReturn(new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null));
   }
 

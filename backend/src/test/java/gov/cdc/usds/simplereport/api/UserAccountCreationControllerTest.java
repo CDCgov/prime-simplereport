@@ -11,9 +11,14 @@ import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfigur
 import gov.cdc.usds.simplereport.idp.authentication.DemoOktaAuthentication;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
+import java.util.stream.Stream;
 import javax.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -383,8 +388,9 @@ class UserAccountCreationControllerTest extends BaseNonSpringBootTestConfigurati
     this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
   }
 
-  @Test
-  void activateSecurityKey_failsWithInvalidAttestation() throws Exception {
+  @ParameterizedTest
+  @MethodSource("namedArguments")
+  void activateSecurityKey_fails(String requestBody) throws Exception {
     MockHttpSession session = new MockHttpSession();
     issueActivationRequest(session);
     issueSetPasswordRequest(session);
@@ -393,52 +399,20 @@ class UserAccountCreationControllerTest extends BaseNonSpringBootTestConfigurati
         createPostRequest(session, "", ResourceLinks.USER_ENROLL_SECURITY_KEY_MFA);
 
     MockHttpServletRequestBuilder activateSecurityKeyBuilder =
-        createPostRequest(
-            session,
-            "{\"attestation\":\"\", \"clientData\":\"dataaaaa\"}",
-            ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
+        createPostRequest(session, requestBody, ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
 
     performRequestAndGetSession(enrollSecurityKeyBuilder);
 
     this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
   }
 
-  @Test
-  void activateSecurityKey_failsWithInvalidClientData() throws Exception {
-    MockHttpSession session = new MockHttpSession();
-    issueActivationRequest(session);
-    issueSetPasswordRequest(session);
-
-    MockHttpServletRequestBuilder enrollSecurityKeyBuilder =
-        createPostRequest(session, "", ResourceLinks.USER_ENROLL_SECURITY_KEY_MFA);
-
-    MockHttpServletRequestBuilder activateSecurityKeyBuilder =
-        createPostRequest(
-            session,
-            "{\"attestation\":\"123456\", \"clientData\":\"\"}",
-            ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
-
-    performRequestAndGetSession(enrollSecurityKeyBuilder);
-
-    this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
-  }
-
-  @Test
-  void activateSecurityKey_failsWithInvalidRequest() throws Exception {
-    MockHttpSession session = new MockHttpSession();
-    issueActivationRequest(session);
-    issueSetPasswordRequest(session);
-
-    MockHttpServletRequestBuilder enrollSecurityKeyBuilder =
-        createPostRequest(session, "", ResourceLinks.USER_ENROLL_SECURITY_KEY_MFA);
-
-    MockHttpServletRequestBuilder activateSecurityKeyBuilder =
-        createPostRequest(
-            session, "{\"attestation\":\"123456\"}", ResourceLinks.USER_ACTIVATE_SECURITY_KEY_MFA);
-
-    performRequestAndGetSession(enrollSecurityKeyBuilder);
-
-    this._mockMvc.perform(activateSecurityKeyBuilder).andExpect(status().is4xxClientError());
+  static Stream<Arguments> namedArguments() {
+    return Stream.of(
+        Arguments.of(
+            Named.of("Invalid Attestation", "{\"attestation\":\"\", \"clientData\":\"dataaaaa\"}")),
+        Arguments.of(
+            Named.of("Invalid client data", "{\"attestation\":\"123456\", \"clientData\":\"\"}")),
+        Arguments.of(Named.of("Invalid request", "{\"attestation\":\"123456\"}")));
   }
 
   @Test
