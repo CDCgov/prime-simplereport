@@ -76,9 +76,7 @@ jobs:
         id: set_backend_version
         uses: ./.github/actions/build-docker-image
         with:
-          context: ./
           file: ./backend/Dockerfile
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: backend
@@ -103,9 +101,7 @@ jobs:
         id: set_cypress_version
         uses: ./.github/actions/build-docker-image
         with:
-          context: ./
           file: ./cypress/Dockerfile
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: cypress
@@ -131,7 +127,6 @@ jobs:
         uses: ./.github/actions/build-docker-image
         with:
           context: ./backend/db-setup
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: database
@@ -156,9 +151,7 @@ jobs:
         id: set_frontend_version
         uses: ./.github/actions/build-docker-image
         with:
-          context: ./
           file: ./frontend/Dockerfile
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: frontend
@@ -191,9 +184,7 @@ jobs:
         id: set_frontend_lighthouse_version
         uses: ./.github/actions/build-docker-image
         with:
-          context: ./
           file: ./frontend/Dockerfile
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: frontend-lighthouse
@@ -225,7 +216,6 @@ jobs:
         uses: ./.github/actions/build-docker-image
         with:
           context: ./nginx
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: nginx

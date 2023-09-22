@@ -1,27 +1,21 @@
 name: Build Docker Image
 description: Build and push Docker image to the registry
 inputs:
-  acr_registry:
-    description: Azure Container Registry to push the image to
-    required: true
-  acr_username:
-    description: Azure Container Registry username
-    required: true
-  acr_password:
-    description: Azure Container Registry password
-    required: true
   build_args:
     description: Build arguments to pass to the Docker build
     required: false
   context:
     description: Path to the build context
-    required: true
+    required: false
+    default: ./
   file:
     description: Path to the Dockerfile
-    required: true
+    required: false
+    default: ./Dockerfile
   gh_registry:
     description: Registry to push the image to
-    required: true
+    required: false
+    default: ghcr.io
   gh_username:
     description: Github username
     required: true
@@ -33,10 +27,8 @@ inputs:
     required: true
   platform:
     description: Platform to build the image for
-    required: true
-  version_tag:
-    description: Version tag to use for the image
     required: false
+    default: linux/amd64
 outputs:
   version:
     description: Version of the image that was built
