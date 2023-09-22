@@ -1,11 +1,4 @@
-import {
-  render,
-  screen,
-  fireEvent,
-  within,
-  waitFor,
-  act,
-} from "@testing-library/react";
+import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -40,11 +33,11 @@ const RouterWithFacility: React.FC<RouterWithFacilityProps> = ({
 
 describe("EditPatient", () => {
   describe("Waiting for network response", () => {
-    beforeEach(() => {
+    it("shows loading text", async () => {
       render(
         <MemoryRouter>
           <Provider store={store}>
-            <MockedProvider mocks={[]} addTypename={false}>
+            <MockedProvider mocks={mocks} addTypename={false}>
               <EditPatient
                 facilityId={mockFacilityID}
                 patientId={mockPatientID}
@@ -53,8 +46,6 @@ describe("EditPatient", () => {
           </Provider>
         </MemoryRouter>
       );
-    });
-    it("shows loading text", async () => {
       expect(
         screen.getAllByText("loading...", { exact: false })[0]
       ).toBeInTheDocument();
@@ -158,17 +149,19 @@ describe("EditPatient", () => {
       },
     ];
 
+    const Queue = () => {
+      const location = useLocation();
+      return <p>Testing Queue! {location.search}</p>;
+    };
+
     let renderWithRoutes = (
       facilityId: string,
       patientId: string,
       fromQueue: boolean
-    ) => {
-      const Queue = () => {
-        const location = useLocation();
-        return <p>Testing Queue! {location.search}</p>;
-      };
+    ) => ({
+      user: userEvent.setup(),
 
-      render(
+      ...render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <RouterWithFacility>
@@ -187,12 +180,12 @@ describe("EditPatient", () => {
             </RouterWithFacility>
           </MockedProvider>
         </Provider>
-      );
-    };
+      ),
+    });
 
     it("can redirect to the new test form upon save", async () => {
-      renderWithRoutes(mockFacilityID, mockPatientID, false);
-      expect(await screen.findByText(/Loading/i));
+      const { user } = renderWithRoutes(mockFacilityID, mockPatientID, false);
+      await screen.findByText(/Loading/i);
       await waitFor(() =>
         expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
       );
@@ -200,8 +193,9 @@ describe("EditPatient", () => {
       // Make an arbitrary change on the form to allow submission
       const name = await screen.findByLabelText("First name", { exact: false });
       // Error message on bad value
-      fireEvent.change(name, { target: { value: "Fake Name" } });
-      fireEvent.blur(name);
+      await user.clear(name);
+      await user.type(name, "Fake Name");
+      await user.tab();
 
       const saveAndStartButton = screen.getByText("Save and start test", {
         exact: false,
@@ -209,7 +203,7 @@ describe("EditPatient", () => {
 
       expect(saveAndStartButton).toBeEnabled();
 
-      await act(async () => await userEvent.click(saveAndStartButton));
+      await user.click(saveAndStartButton);
 
       await waitFor(() => {
         expect(
@@ -217,9 +211,10 @@ describe("EditPatient", () => {
         ).toBeInTheDocument();
       });
     });
+
     it("redirects to test queue on save when coming from Conduct tests page", async () => {
-      renderWithRoutes(mockFacilityID, mockPatientID, true);
-      expect(await screen.findByText(/Loading/i));
+      const { user } = renderWithRoutes(mockFacilityID, mockPatientID, true);
+      await screen.findByText(/Loading/i);
       await waitFor(() =>
         expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
       );
@@ -227,8 +222,9 @@ describe("EditPatient", () => {
       // Make an arbitrary change on the form to allow submission
       const name = await screen.findByLabelText("First name", { exact: false });
 
-      fireEvent.change(name, { target: { value: "Fake Name" } });
-      fireEvent.blur(name);
+      await user.clear(name);
+      await user.type(name, "Fake Name");
+      await user.tab();
 
       const saveButton = screen.getAllByText("Save changes", {
         exact: false,
@@ -236,7 +232,7 @@ describe("EditPatient", () => {
 
       expect(saveButton).toBeEnabled();
 
-      await act(async () => await userEvent.click(saveButton));
+      await user.click(saveButton);
 
       await waitFor(() => {
         expect(
@@ -247,57 +243,58 @@ describe("EditPatient", () => {
   });
 
   describe("phone number input", () => {
-    beforeEach(async () => {
-      const mocks = [
-        {
-          request: {
-            query: GET_PATIENT,
-            variables: {
-              id: mockPatientID,
-            },
+    const mocks = [
+      {
+        request: {
+          query: GET_PATIENT,
+          variables: {
+            id: mockPatientID,
           },
-          result: {
-            data: {
-              patient: {
-                firstName: "Eugenia",
-                middleName: null,
-                lastName: "Franecki",
-                birthDate: "1939-10-11",
-                street: "736 Jackson PI NW",
-                streetTwo: "DC",
-                city: null,
-                state: "DC",
-                zipCode: null,
-                telephone: "(270) 867-5309",
-                phoneNumbers: [
-                  {
-                    type: "LANDLINE",
-                    number: "(631) 867-5309",
-                  },
-                  {
-                    type: "MOBILE",
-                    number: "(270) 867-5309",
-                  },
-                ],
-                role: "UNKNOWN",
-                emails: ["foo@bar.com"],
-                county: null,
-                race: null,
-                ethnicity: null,
-                gender: null,
-                genderIdentity: null,
-                residentCongregateSetting: true,
-                employedInHealthcare: true,
-                facility: null,
-                testResultDelivery: null,
-                tribalAffiliation: [null],
-              },
+        },
+        result: {
+          data: {
+            patient: {
+              firstName: "Eugenia",
+              middleName: null,
+              lastName: "Franecki",
+              birthDate: "1939-10-11",
+              street: "736 Jackson PI NW",
+              streetTwo: "DC",
+              city: null,
+              state: "DC",
+              zipCode: null,
+              telephone: "(270) 867-5309",
+              phoneNumbers: [
+                {
+                  type: "LANDLINE",
+                  number: "(631) 867-5309",
+                },
+                {
+                  type: "MOBILE",
+                  number: "(270) 867-5309",
+                },
+              ],
+              role: "UNKNOWN",
+              emails: ["foo@bar.com"],
+              county: null,
+              race: null,
+              ethnicity: null,
+              gender: null,
+              genderIdentity: null,
+              residentCongregateSetting: true,
+              employedInHealthcare: true,
+              facility: null,
+              testResultDelivery: null,
+              tribalAffiliation: [null],
             },
           },
         },
-      ];
+      },
+    ];
 
-      render(
+    const renderWithUser = () => ({
+      user: userEvent.setup(),
+      ...render(
         <>
           <MemoryRouter>
             <Provider store={store}>
@@ -311,14 +308,18 @@ describe("EditPatient", () => {
           </MemoryRouter>
           <SRToastContainer />
         </>
-      );
+      ),
+    });
 
+    const waitForDataLoad = async () => {
       expect(
         (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
       ).toBeInTheDocument();
-    });
+    };
 
-    it("populates primary phone number field with patient `telephone`", () => {
+    it("populates primary phone number field with patient `telephone`", async () => {
+      renderWithUser();
+      await waitForDataLoad();
       const legend = "Primary phone number";
       const input = screen.getByLabelText(legend, {
         exact: false,
@@ -335,26 +336,17 @@ describe("EditPatient", () => {
     });
 
     it("displays a validation failure alert if phone type not entered", async () => {
-      await act(
-        async () =>
-          await userEvent.click(
-            screen.queryAllByText("Add another number", {
-              exact: false,
-            })[0]
-          )
+      const { user } = renderWithUser();
+      await waitForDataLoad();
+      await user.click(
+        screen.queryAllByText("Add another number", {
+          exact: false,
+        })[0]
       );
       // Do not enter phone type for additional number
-      await act(
-        async () =>
-          await userEvent.type(
-            await screen.findByTestId("phoneInput-2"),
-            "6378908987"
-          )
-      );
-      await act(
-        async () =>
-          await userEvent.click((await screen.findAllByText("Save changes"))[0])
-      );
+
+      await user.type(await screen.findByTestId("phoneInput-2"), "6378908987");
+      await user.click((await screen.findAllByText("Save changes"))[0]);
       await waitFor(() =>
         expect(screen.queryAllByText(/Phone type is required/i)).toHaveLength(2)
       );
@@ -362,55 +354,54 @@ describe("EditPatient", () => {
   });
 
   describe("facility select input", () => {
-    let component: any;
-    beforeEach(async () => {
-      MockDate.set("2021-08-01");
-      const mocks = [
-        {
-          request: {
-            query: GET_PATIENT,
-            variables: {
-              id: mockPatientID,
-            },
+    const mocks = [
+      {
+        request: {
+          query: GET_PATIENT,
+          variables: {
+            id: mockPatientID,
           },
-          result: {
-            data: {
-              patient: {
-                firstName: "Eugenia",
-                middleName: null,
-                lastName: "Franecki",
-                birthDate: "1939-10-11",
-                street: "736 Jackson PI NW",
-                streetTwo: "DC",
-                city: null,
-                state: "DC",
-                zipCode: null,
-                telephone: "(270) 867-5309",
-                phoneNumbers: [
-                  {
-                    type: "MOBILE",
-                    number: "(270) 867-5309",
-                  },
-                ],
-                role: "UNKNOWN",
-                emails: ["foo@bar.com"],
-                county: null,
-                race: null,
-                ethnicity: null,
-                gender: null,
-                genderIdentity: null,
-                residentCongregateSetting: true,
-                employedInHealthcare: true,
-                facility: null,
-                testResultDelivery: null,
-                tribalAffiliation: [null],
-              },
+        },
+        result: {
+          data: {
+            patient: {
+              firstName: "Eugenia",
+              middleName: null,
+              lastName: "Franecki",
+              birthDate: "1939-10-11",
+              street: "736 Jackson PI NW",
+              streetTwo: "DC",
+              city: null,
+              state: "DC",
+              zipCode: null,
+              telephone: "(270) 867-5309",
+              phoneNumbers: [
+                {
+                  type: "MOBILE",
+                  number: "(270) 867-5309",
+                },
+              ],
+              role: "UNKNOWN",
+              emails: ["foo@bar.com"],
+              county: null,
+              race: null,
+              ethnicity: null,
+              gender: null,
+              genderIdentity: null,
+              residentCongregateSetting: true,
+              employedInHealthcare: true,
+              facility: null,
+              testResultDelivery: null,
+              tribalAffiliation: [null],
             },
           },
         },
-      ];
+      },
+    ];
 
-      component = render(
+    const renderWithUser = () => ({
+      user: userEvent.setup(),
+      ...render(
         <MemoryRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks} addTypename={false}>
@@ -421,43 +412,39 @@ describe("EditPatient", () => {
             </MockedProvider>
           </Provider>
         </MemoryRouter>
-      );
+      ),
+    });
+
+    const waitForDataLoad = async () => {
       expect(
         (await screen.findAllByText("Franecki, Eugenia", { exact: false }))[0]
       ).toBeInTheDocument();
+    };
+
+    beforeEach(async () => {
+      MockDate.set("2021-08-01");
     });
 
     afterEach(() => {
       MockDate.reset();
     });
 
-    it("shows the form title", () => {
-      expect(
-        screen.getAllByText("Franecki, Eugenia", { exact: false })[0]
-      ).toBeInTheDocument();
-    });
-
-    it("matches screenshot", () => {
-      expect(component).toMatchSnapshot();
+    it("matches screenshot", async () => {
+      const { container } = renderWithUser();
+      await waitForDataLoad();
+      expect(container).toMatchSnapshot();
     });
 
     describe("facility select input", () => {
-      let facilityInput: HTMLSelectElement;
-      beforeEach(() => {
-        facilityInput = screen.getByLabelText("Facility", {
-          exact: false,
-        }) as HTMLSelectElement;
-      });
-      it("is present in the form", () => {
-        expect(facilityInput).toBeInTheDocument();
-      });
-      it("patient with null facility prop maps to all facilities", () => {
-        expect(facilityInput.value).toBe("~~ALL-FACILITIES~~");
-      });
       it("updates its selection on change", async () => {
-        fireEvent.change(facilityInput, {
-          target: { value: mockFacilityID },
-        });
+        const { user } = renderWithUser();
+        await waitForDataLoad();
+        const facilityInput = (await screen.findByLabelText("Facility", {
+          exact: false,
+        })) as HTMLSelectElement;
+        expect(facilityInput.value).toBe("~~ALL-FACILITIES~~");
+
+        await user.selectOptions(facilityInput, mockFacilityID);
         expect(facilityInput.value).toBe(mockFacilityID);
       });
     });
@@ -558,8 +545,9 @@ describe("EditPatient", () => {
   });
 
   describe("form validations", () => {
-    beforeEach(async () => {
-      render(
+    const renderWithUser = () => ({
+      user: userEvent.setup(),
+      ...render(
         <MemoryRouter>
           <Provider store={store}>
             <MockedProvider mocks={mocks} addTypename={false}>
@@ -570,25 +558,29 @@ describe("EditPatient", () => {
             </MockedProvider>
           </Provider>
         </MemoryRouter>
-      );
-      await screen.findAllByText("Franecki, Eugenia", { exact: false });
+      ),
     });
-    it("defaults to USA for a patient with country as null", () => {
+
+    it("defaults to USA for a patient with country as null", async () => {
+      renderWithUser();
+      await screen.findAllByText("Franecki, Eugenia", { exact: false });
       expect(screen.getByLabelText("Country", { exact: false })).toHaveValue(
         "USA"
       );
     });
     it("shows validation errors", async () => {
+      const { user } = renderWithUser();
+      await screen.findAllByText("Franecki, Eugenia", { exact: false });
       const name = await screen.findByLabelText("First name", { exact: false });
       // Error message on bad value
-      fireEvent.change(name, { target: { value: "" } });
-      fireEvent.blur(name);
+      await user.clear(name);
+      await user.tab();
       expect(
         await screen.findByText("First name is missing")
       ).toBeInTheDocument();
       // No error message on good value
-      fireEvent.change(name, { target: { value: "James" } });
-      fireEvent.blur(name);
+      await user.type(name, "James");
+      await user.tab();
       await waitFor(() => {
         expect(
           screen.queryByText("First name is missing")
