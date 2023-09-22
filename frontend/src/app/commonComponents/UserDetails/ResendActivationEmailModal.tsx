@@ -6,11 +6,12 @@ import Button from "../Button/Button";
 import { displayFullName } from "../../utils";
 import { SettingsUser } from "../../Settings/Users/ManageUsersContainer";
 import "../../Settings/Users/ManageUsers.scss";
+import { User } from "../../../generated/graphql";
 
 interface Props {
   onClose: () => void;
   onResendActivationEmail: (userId: string) => void;
-  user: SettingsUser;
+  user: SettingsUser | User;
   isOpen: boolean;
 }
 

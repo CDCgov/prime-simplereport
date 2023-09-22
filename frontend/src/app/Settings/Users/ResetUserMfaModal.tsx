@@ -3,6 +3,7 @@ import Modal from "react-modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button/Button";
+import { User } from "../../../generated/graphql";
 import { displayFullName } from "../../utils";
 
 import { SettingsUser } from "./ManageUsersContainer";
@@ -11,7 +12,7 @@ import "./ManageUsers.scss";
 interface Props {
   onClose: () => void;
   onResetMfa: (userId: string) => void;
-  user: SettingsUser;
+  user: SettingsUser | User;
 }
 
 const ResetUserMfaModal: React.FC<Props> = ({ onClose, onResetMfa, user }) => {
