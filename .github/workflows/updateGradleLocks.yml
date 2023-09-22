@@ -17,16 +17,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # in case we once again need to figure out why this thing is not running, some day...
-  # debug-message:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - run: echo "Actor for this run is ${{github.actor}} and event name is ${{github.event_name}}"
-  #       working-directory: /
+
   update_locks:
     # Run when manually requested or when dependabot creates/updates a PR
-    # DO NOT run if somebody else updates a PR (a probably unnecessarily strict guard against infinite 
-    # workflow loops, in case we ever enable this workflow to trigger other workflows)
     if: github.event.pull_request.user.login  == 'dependabot[bot]'
     runs-on: ubuntu-latest
     permissions:
