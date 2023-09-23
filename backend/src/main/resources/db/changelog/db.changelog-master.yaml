@@ -5066,22 +5066,4 @@ databaseChangeLog:
             schemaName: ${database.defaultSchemaName}
             tableName: feature_flag
             where: name='multiplexEnabled'
-      rollback:
-        - sql:
-            sql: |
-              WITH migration_user as (
-                 SELECT internal_id as migration_user_id
-                 FROM ${database.defaultSchemaName}.api_user
-                 WHERE login_email = '${migrations_user_email}'
-               )
-              INSERT INTO ${database.defaultSchemaName}.feature_flag (internal_id, name, value,
-              created_at, created_by, updated_at, updated_by)
-              SELECT
-                gen_random_uuid(),
-                'multiplexEnabled',
-                true,
-                now(),
-                migration_user_id,
-                now(),
-                migration_user_id
-              FROM migration_user
+      rollback: ""
