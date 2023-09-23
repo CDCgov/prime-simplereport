@@ -5058,7 +5058,7 @@ databaseChangeLog:
   - changeSet:
       id: remove-multiplex-flag
       author: boban@skylight.digital
-      comment: inserts multiplex flag in table
+      comment: remove multiplex flag in table
       changes:
         - tagDatabase:
             tag: remove-multiplex-flag
