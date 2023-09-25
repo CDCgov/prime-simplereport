@@ -13,7 +13,7 @@ export interface TestFormState {
   devicesMap: DevicesMap;
   specimenId: string;
   testResults: MultiplexResultInput[];
-  covidAoeQuestions: CovidAoeQuestionResponses;
+  covidAOEResponses: CovidAoeQuestionResponses;
 }
 
 export interface CovidAoeQuestionResponses {
@@ -131,7 +131,7 @@ export const testCardFormReducer = (
       return {
         ...prevState,
         dirty: true,
-        covidAoeQuestions: payload,
+        covidAOEResponses: payload,
       };
     }
     case TestFormActionCase.UPDATE_DIRTY_STATE: {
@@ -148,8 +148,8 @@ export const testCardFormReducer = (
         specimenId: payload.specimenType.internalId,
         dateTested: payload.dateTested,
         testResults: convertFromMultiplexResponse(payload.results),
-        covidAoeQuestions: {
-          ...prevState.covidAoeQuestions,
+        covidAOEResponses: {
+          ...prevState.covidAOEResponses,
           noSymptoms: payload.noSymptoms,
           symptoms: payload.symptoms,
           symptomOnsetDate: payload.symptomOnset,
