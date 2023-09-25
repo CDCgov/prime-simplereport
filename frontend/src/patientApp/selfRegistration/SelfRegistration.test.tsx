@@ -9,12 +9,13 @@ import {
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import createMockStore from "redux-mock-store";
-import faker from "faker";
 
 import * as AppInsightsMock from "../../app/TelemetryService";
 import "../../i18n";
 
 import { SelfRegistration } from "./SelfRegistration";
+
+import { faker } from "@faker-js/faker";
 
 const VALID_LINK = "foo-facility";
 
@@ -176,12 +177,12 @@ describe("SelfRegistration", () => {
 });
 
 const filledForm = {
-  "First name": faker.name.firstName(),
-  "Middle name": faker.name.middleName(),
-  "Last name": faker.name.lastName(),
+  "First name": faker.person.firstName(),
+  "Middle name": faker.person.middleName(),
+  "Last name": faker.person.lastName(),
   "Date of birth": "1970-09-22",
   "Primary phone number": "7038675309",
-  "Street address 1": faker.address.streetAddress(),
+  "Street address 1": faker.location.streetAddress(),
   City: "Rockville",
   State: "MD",
   "ZIP code": "12345",
