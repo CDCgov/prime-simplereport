@@ -59,6 +59,8 @@ export interface TestFormProps {
   devicesMap: DevicesMap;
   facility: QueriedFacility;
   refetchQueue: () => void;
+  startTestPatientId: string | null;
+  setStartTestPatientId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 interface UpdateQueueItemProps {
@@ -144,6 +146,8 @@ const TestCardForm = ({
   devicesMap,
   facility,
   refetchQueue,
+  startTestPatientId,
+  setStartTestPatientId,
 }: TestFormProps) => {
   const initialFormState: TestFormState = {
     dirty: false,
@@ -258,21 +262,19 @@ const TestCardForm = ({
         dateTested: props.dateTested,
         specimenTypeId: props.specimenTypeId,
       },
-    })
-      .then((response) => {
-        if (!response.data) throw Error("updateQueueItem null response");
+    }).then((response) => {
+      if (!response.data) throw Error("updateQueueItem null response");
 
-        // potentially update the other fields returned from editQueueItem?
-        const newDeviceId = response?.data?.editQueueItem?.deviceType;
-        if (newDeviceId && newDeviceId.internalId !== state.deviceId) {
-          dispatch({
-            type: TestFormActionCase.UPDATE_DEVICE_ID,
-            payload: newDeviceId.internalId,
-          });
-          updateTimer(testOrder.internalId, newDeviceId.testLength);
-        }
-      })
-      .catch((e) => console.error("temp dev test, will be caught by apollo"));
+      // potentially update the other fields returned from editQueueItem?
+      const newDeviceId = response?.data?.editQueueItem?.deviceType;
+      if (newDeviceId && newDeviceId.internalId !== state.deviceId) {
+        dispatch({
+          type: TestFormActionCase.UPDATE_DEVICE_ID,
+          payload: newDeviceId.internalId,
+        });
+        updateTimer(testOrder.internalId, newDeviceId.testLength);
+      }
+    });
   };
 
   // when user makes changes, send update to backend
@@ -379,10 +381,15 @@ const TestCardForm = ({
         },
       });
       notifyUserOnResponse(result);
-      refetchQueue();
+      if (startTestPatientId === testOrder.patient.internalId) {
+        setStartTestPatientId(null);
+      }
       removeTimer(testOrder.internalId);
+      refetchQueue();
     } catch (error: any) {
+      // should we send error alert here that it failed instead of default error boundary?
       setSaveStatus("error");
+      throw error;
     }
   };
 
@@ -490,7 +497,12 @@ const TestCardForm = ({
             </Alert>
           )}
           {showErrorSummary && (
-            <Alert type={"error"} headingLevel={"h4"} className="margin-top-2">
+            <Alert
+              type={"error"}
+              headingLevel={"h4"}
+              className="margin-top-2"
+              validation
+            >
               <div>
                 <strong>Please correct the following errors:</strong>
               </div>
@@ -545,7 +557,7 @@ const TestCardForm = ({
                       payload: e.target.value,
                     })
                   }
-                  onBlur={(e) => setDateTestedTouched(true)}
+                  onBlur={() => setDateTestedTouched(true)}
                   validationStatus={
                     dateTestedTouched && dateTestedErrorMessage
                       ? "error"

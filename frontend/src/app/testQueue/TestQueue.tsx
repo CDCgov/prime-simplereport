@@ -229,6 +229,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 facility={facility}
                 refetchQueue={refetch}
                 removePatientFromQueue={removePatientFromQueue}
+                startTestPatientId={startTestPatientId}
+                setStartTestPatientId={setStartTestPatientId}
               ></TestCard>
             ) : (
               <QueueItem
