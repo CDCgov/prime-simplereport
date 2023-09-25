@@ -26,6 +26,7 @@ import {
   SubmitQueueItemMutation,
   useEditQueueItemMutation,
   useSubmitQueueItemMutation,
+  useUpdateAoeMutation,
 } from "../../../generated/graphql";
 import { removeTimer, updateTimer } from "../TestTimer";
 import { getAppInsights } from "../../TelemetryService";
@@ -61,14 +62,6 @@ export interface TestFormProps {
   refetchQueue: () => void;
   startTestPatientId: string | null;
   setStartTestPatientId: React.Dispatch<React.SetStateAction<string | null>>;
-}
-
-interface UpdateQueueItemProps {
-  deviceId?: string;
-  specimenTypeId?: string;
-  testLength?: number;
-  results?: MultiplexResultInput[];
-  dateTested: string | null;
 }
 
 function alphabetizeByName(
@@ -124,12 +117,12 @@ const areAOEAnswersComplete = (
   whichAOE: AOEFormOptions
 ) => {
   if (whichAOE === AOEFormOptions.COVID) {
-    const isPregnancyAnswered = !!formState.covidAoeQuestions.pregnancy;
-    const isHasAnySymptomsAnswered = !!formState.covidAoeQuestions.noSymptoms;
-    if (formState.covidAoeQuestions.noSymptoms === false) {
-      const areSymptomsFilledIn = !!formState.covidAoeQuestions.symptoms;
+    const isPregnancyAnswered = !!formState.covidAOEResponses.pregnancy;
+    const isHasAnySymptomsAnswered = !!formState.covidAOEResponses.noSymptoms;
+    if (formState.covidAOEResponses.noSymptoms === false) {
+      const areSymptomsFilledIn = !!formState.covidAOEResponses.symptoms;
       const isSymptomOnsetDateAnswered =
-        !!formState.covidAoeQuestions.symptomOnsetDate;
+        !!formState.covidAOEResponses.symptomOnsetDate;
       return (
         isPregnancyAnswered &&
         isHasAnySymptomsAnswered &&
@@ -156,7 +149,7 @@ const TestCardForm = ({
     devicesMap: devicesMap,
     specimenId: testOrder.specimenType.internalId ?? "",
     testResults: testOrder.results,
-    covidAoeQuestions: {
+    covidAOEResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnsetDate: testOrder.symptomOnset,
@@ -168,7 +161,8 @@ const TestCardForm = ({
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [testResultsError, setTestResultsError] = useState("");
   const [editQueueItem] = useEditQueueItemMutation();
-  const [submitTestResult, { loading }] = useSubmitQueueItemMutation();
+  const [updateAoeMutation] = useUpdateAoeMutation();
+  const [submitTestResult] = useSubmitQueueItemMutation();
   const [useCurrentTime, setUseCurrentTime] = useState(true);
   const appInsights = getAppInsights();
   const submitModalRef = useRef<ModalRef>(null);
@@ -228,7 +222,8 @@ const TestCardForm = ({
     return doesDeviceSupportMultiplex(state.deviceId, devicesMap);
   }, [devicesMap, state.deviceId]);
 
-  const whichAOEForm = AOEFormOptions.COVID;
+  // when other diseases are added, update this to use the correct AOE for that disease
+  const whichAOEFormOption = AOEFormOptions.COVID;
 
   const validateDateTested = () => {
     const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
@@ -253,20 +248,48 @@ const TestCardForm = ({
 
   let dateTestedErrorMessage = validateDateTested();
 
-  const updateQueueItem = (props: UpdateQueueItemProps) => {
-    return editQueueItem({
-      variables: {
-        id: testOrder.internalId,
-        deviceTypeId: props.deviceId,
-        results: props.results,
-        dateTested: props.dateTested,
-        specimenTypeId: props.specimenTypeId,
-      },
-    }).then((response) => {
-      if (!response.data) throw Error("updateQueueItem null response");
+  const saveAOEResponses = async () => {
+    if (whichAOEFormOption === AOEFormOptions.COVID) {
+      trackUpdateAoEResponse();
+      try {
+        await updateAoeMutation({
+          variables: {
+            patientId: testOrder.patient.internalId,
+            noSymptoms: state.covidAOEResponses.noSymptoms,
+            symptoms: state.covidAOEResponses.symptoms,
+            symptomOnset: state.covidAOEResponses.symptomOnsetDate,
+            pregnancy: state.covidAOEResponses.pregnancy,
+            // testResultDelivery will now be determined by user preferences on backend
+          },
+        });
+        refetchQueue();
+      } catch (e) {
+        // caught upstream by error boundary
+        throw e;
+      }
+    }
+  };
 
-      // potentially update the other fields returned from editQueueItem?
-      const newDeviceId = response?.data?.editQueueItem?.deviceType;
+  const saveTestOrderChanges = async () => {
+    const resultsToSave = doesDeviceSupportMultiplex(state.deviceId, devicesMap)
+      ? state.testResults
+      : state.testResults.filter(
+          (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
+        );
+    try {
+      const response = await editQueueItem({
+        variables: {
+          id: testOrder.internalId,
+          deviceTypeId: state.deviceId,
+          dateTested: state.dateTested,
+          specimenTypeId: state.specimenId,
+          results: resultsToSave,
+        },
+      });
+      if (!response.data) {
+        throw Error("updateQueueItem null response data");
+      }
+      const newDeviceId = response.data.editQueueItem?.deviceType;
       if (newDeviceId && newDeviceId.internalId !== state.deviceId) {
         dispatch({
           type: TestFormActionCase.UPDATE_DEVICE_ID,
@@ -274,7 +297,10 @@ const TestCardForm = ({
         });
         updateTimer(testOrder.internalId, newDeviceId.testLength);
       }
-    });
+    } catch (e) {
+      // caught upstream by error boundary
+      throw e;
+    }
   };
 
   // when user makes changes, send update to backend
@@ -284,16 +310,8 @@ const TestCardForm = ({
       dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
       setSaveStatus("editing");
       debounceTimer = setTimeout(async () => {
-        await updateQueueItem({
-          deviceId: state.deviceId,
-          dateTested: state.dateTested,
-          specimenTypeId: state.specimenId,
-          results: doesDeviceSupportMultiplex(state.deviceId, devicesMap)
-            ? state.testResults
-            : state.testResults.filter(
-                (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
-              ),
-        });
+        await saveTestOrderChanges();
+        await saveAOEResponses();
         setSaveStatus("idle");
       }, DEBOUNCE_TIME);
     }
@@ -304,7 +322,7 @@ const TestCardForm = ({
     // eslint-disable-next-line
   }, [state.deviceId, state.specimenId, state.dateTested, state.testResults]);
 
-  // when backend sends update on test order, update the form state
+  // when backend sends an updated test order, update the form state
   useEffect(() => {
     // don't update if not done saving changes
     if (state.dirty) return;
@@ -315,6 +333,7 @@ const TestCardForm = ({
     // eslint-disable-next-line
   }, [testOrder]);
 
+  // when backend sends an updated devices map, update the form state
   useEffect(() => {
     // don't update if not done saving changes
     if (state.dirty) return;
@@ -357,7 +376,7 @@ const TestCardForm = ({
       return;
     }
 
-    if (!forceSubmit && !areAOEAnswersComplete(state, whichAOEForm)) {
+    if (!forceSubmit && !areAOEAnswersComplete(state, whichAOEFormOption)) {
       submitModalRef.current?.toggleModal();
       return;
     }
@@ -663,10 +682,10 @@ const TestCardForm = ({
             </FormGroup>
           </div>
           <div className="grid-row grid-gap">
-            {whichAOEForm === AOEFormOptions.COVID && (
+            {whichAOEFormOption === AOEFormOptions.COVID && (
               <CovidAoEForm
                 testOrder={testOrder}
-                responses={state.covidAoeQuestions}
+                responses={state.covidAOEResponses}
                 onResponseChange={(responses) => {
                   dispatch({
                     type: TestFormActionCase.UPDATE_COVID_AOE_RESPONSES,
