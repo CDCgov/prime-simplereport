@@ -12,11 +12,11 @@ import {
   useGetFacilityQueueQuery,
   GetFacilityQueueQuery,
   useAddPatientToQueueMutation,
-  useGetPatientQuery,
+  useRemovePatientFromQueueMutation,
 } from "../../generated/graphql";
-import { Patient } from "../patients/ManagePatients";
 import { getSymptomsAllFalse } from "../../patientApp/timeOfTest/constants";
 import { getAppInsights } from "../TelemetryService";
+import { Patient } from "../patients/ManagePatients";
 
 import AddToQueueSearch, {
   StartTestProps,
@@ -84,16 +84,17 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   ) as boolean;
   const appInsights = getAppInsights();
   const [addPatientToQueueMutation] = useAddPatientToQueueMutation();
+  const [removePatientFromQueueMutation] = useRemovePatientFromQueueMutation();
+  const trackRemovePatientFromQueue = () => {
+    if (appInsights) {
+      appInsights.trackEvent({ name: "Remove Patient From Queue" });
+    }
+  };
 
   const location = useLocation();
   const [startTestPatientId, setStartTestPatientId] = useState<string | null>(
     null
   );
-  const patientIdParam = (location.state as StartTestProps)?.patientId;
-  const getPatientQueryResult = useGetPatientQuery({
-    variables: { internalId: patientIdParam },
-    skip: !patientIdParam,
-  });
 
   const canUseCsvUploader = hasPermission(
     useAppSelector((state) => state.user.permissions),
@@ -106,19 +107,11 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
 
   useEffect(() => {
-    (async () => {
-      if (patientIdParam && data?.queue && getPatientQueryResult.data) {
-        const doesPatientExistInQueue = data.queue.some(
-          (testOrder) => testOrder?.patient.internalId === patientIdParam
-        );
-        if (!doesPatientExistInQueue) {
-          const patient = getPatientQueryResult.data.patient as Patient;
-          await addToQueueWithoutAoe(patient);
-        }
-      }
-    })();
-    // eslint-disable-next-line
-  }, [location.state, data, patientIdParam, getPatientQueryResult.data]);
+    const patientId = (location.state as StartTestProps)?.patientId;
+    if (patientId) {
+      setStartTestPatientId(patientId);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     // Start polling on creation, stop on component teardown
@@ -155,7 +148,16 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     );
   }
 
-  const addToQueueWithoutAoe = async (patient: Patient) => {
+  const showPatientAddedToQueueAlert = (patient: Patient) => {
+    const { type, title, body } = {
+      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
+        patient
+      ),
+    };
+    showAlertNotification(type, title, body);
+  };
+
+  const addPatientToQueue = async (patient: Patient) => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Add Patient To Queue" });
     }
@@ -170,16 +172,28 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           noSymptoms: null,
         },
       });
-      const { type, title, body } = {
-        ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
-          patient
-        ),
-      };
-      showAlertNotification(type, title, body);
-      refetch();
-      setStartTestPatientId(patient.internalId);
+      showPatientAddedToQueueAlert(patient);
+      await refetch();
     } catch (err: any) {
       throw err;
+    }
+  };
+
+  const removePatientFromQueue = async (patientId: string) => {
+    if (appInsights) {
+      trackRemovePatientFromQueue();
+    }
+    try {
+      await removePatientFromQueueMutation({
+        variables: {
+          patientId: patientId,
+        },
+      });
+      setStartTestPatientId(null);
+      await refetch();
+    } catch (e) {
+      // caught by upstream error boundary
+      throw e;
     }
   };
 
@@ -194,30 +208,32 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const devicesMap: DevicesMap = new Map();
   facility.deviceTypes.map((d) => devicesMap.set(d.internalId, d));
 
-  const createQueueItems = (patientQueue: GetFacilityQueueQuery["queue"]) => {
+  const createQueueItems = (testOrderQueue: GetFacilityQueueQuery["queue"]) => {
     const queue =
       shouldRenderQueue &&
-      patientQueue &&
-      patientQueue.map((queueItem) => {
-        if (!queueItem) return <></>;
+      testOrderQueue &&
+      testOrderQueue.map((testOrder) => {
+        if (!testOrder) return <></>;
 
         return (
           <CSSTransition
-            key={queueItem.internalId}
+            key={testOrder.internalId}
             onExiting={onExiting}
             timeout={transitionDuration}
+            classNames={"test-card-transitions"}
           >
             {testCardRefactorEnabled ? (
               <TestCard
-                testOrder={queueItem}
+                testOrder={testOrder}
                 devicesMap={devicesMap}
                 facility={facility}
                 refetchQueue={refetch}
+                removePatientFromQueue={removePatientFromQueue}
               ></TestCard>
             ) : (
               <QueueItem
                 refetchQueue={refetch}
-                queueItem={queueItem}
+                queueItem={testOrder}
                 startTestPatientId={startTestPatientId}
                 setStartTestPatientId={setStartTestPatientId}
                 facility={facility}
@@ -267,7 +283,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             startTestPatientId={startTestPatientId}
             setStartTestPatientId={setStartTestPatientId}
             canAddPatient={canAddPatient}
-            addToQueueWithoutAoe={addToQueueWithoutAoe}
+            addPatientToQueue={addPatientToQueue}
           />
         </div>
         {createQueueItems(data.queue)}
