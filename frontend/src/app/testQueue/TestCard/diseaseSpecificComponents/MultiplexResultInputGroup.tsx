@@ -1,12 +1,15 @@
 import React from "react";
 
-import RadioGroup from "../../commonComponents/RadioGroup";
-import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
-import { DevicesMap, findResultByDiseaseName } from "../QueueItem";
-import { TextWithTooltip } from "../../commonComponents/TextWithTooltip";
-import Checkboxes from "../../commonComponents/Checkboxes";
-import { MultiplexResultInput } from "../../../generated/graphql";
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
+import RadioGroup from "../../../commonComponents/RadioGroup";
+import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../../constants";
+import { DevicesMap, findResultByDiseaseName } from "../../QueueItem";
+import { TextWithTooltip } from "../../../commonComponents/TextWithTooltip";
+import Checkboxes from "../../../commonComponents/Checkboxes";
+import { MultiplexResultInput } from "../../../../generated/graphql";
+import {
+  MULTIPLEX_DISEASES,
+  TEST_RESULTS,
+} from "../../../testResults/constants";
 
 const MULTIPLEX_DISEASE_TYPE = {
   COVID: MULTIPLEX_DISEASES.COVID_19 as MultiplexDisease,

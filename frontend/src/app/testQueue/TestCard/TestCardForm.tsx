@@ -45,12 +45,12 @@ import {
   TestFormState,
   testCardFormReducer,
 } from "./TestCardFormReducer";
-import CovidResultInputGroup from "./CovidResultInputGroup";
+import CovidResultInputGroup from "./diseaseSpecificComponents/CovidResultInputGroup";
 import MultiplexResultInputGroup, {
   convertFromMultiplexResultInputs,
   validateMultiplexResultState,
-} from "./MultiplexResultInputGroup";
-import CovidAoEForm from "./AoE/CovidAoEForm";
+} from "./diseaseSpecificComponents/MultiplexResultInputGroup";
+import CovidAoEForm from "./diseaseSpecificComponents/CovidAoEForm";
 import { SaveStatus } from "./TestCard";
 import { TestCardSubmitLoader } from "./TestCardSubmitLoader";
 
@@ -149,6 +149,7 @@ const TestCardForm = ({
     dirty: false,
     dateTested: testOrder.dateTested,
     deviceId: testOrder.deviceType.internalId ?? "",
+    devicesMap: devicesMap,
     specimenId: testOrder.specimenType.internalId ?? "",
     testResults: testOrder.results,
     covidAoeQuestions: {
@@ -168,11 +169,6 @@ const TestCardForm = ({
   const appInsights = getAppInsights();
   const submitModalRef = useRef<ModalRef>(null);
 
-  const trackRemovePatientFromQueue = () => {
-    if (appInsights) {
-      appInsights.trackEvent({ name: "Remove Patient From Queue" });
-    }
-  };
   const trackSubmitTestResult = () => {
     if (appInsights) {
       appInsights.trackEvent({ name: "Submit Test Result" });
@@ -271,7 +267,7 @@ const TestCardForm = ({
         if (newDeviceId && newDeviceId.internalId !== state.deviceId) {
           dispatch({
             type: TestFormActionCase.UPDATE_DEVICE_ID,
-            payload: { deviceId: newDeviceId.internalId, devicesMap },
+            payload: newDeviceId.internalId,
           });
           updateTimer(testOrder.internalId, newDeviceId.testLength);
         }
@@ -316,6 +312,16 @@ const TestCardForm = ({
     });
     // eslint-disable-next-line
   }, [testOrder]);
+
+  useEffect(() => {
+    // don't update if not done saving changes
+    if (state.dirty) return;
+    dispatch({
+      type: TestFormActionCase.UPDATE_DEVICES_MAP,
+      payload: devicesMap,
+    });
+    // eslint-disable-next-line
+  }, [devicesMap]);
 
   const validateForm = () => {
     dateTestedErrorMessage = validateDateTested();
@@ -422,38 +428,12 @@ const TestCardForm = ({
   const reasonForCorrection =
     testOrder.reasonForCorrection as TestCorrectionReason;
 
-  const correctionWarningAlert = (
-    <Alert type="warning" headingLevel="h4" className="margin-top-2">
-      <strong>Correction: </strong>
-      {reasonForCorrection in TestCorrectionReasons
-        ? TestCorrectionReasons[reasonForCorrection]
-        : reasonForCorrection}
-    </Alert>
-  );
-
   const showDateMonthsAgoWarning =
     moment(state.dateTested) < moment().subtract(6, "months") &&
     dateTestedErrorMessage.length === 0;
-  const dateMonthsAgoWarningAlert = (
-    <Alert type="warning" headingLevel="h4" className="margin-top-2">
-      <strong>Check test date:</strong> The date you selected is more than six
-      months ago. Please make sure it's correct before submitting.
-    </Alert>
-  );
 
   const showErrorSummary =
     dateTestedErrorMessage.length > 0 || testResultsError.length > 0;
-  const errorSummaryAlert = (
-    <Alert type={"error"} headingLevel={"h4"} className="margin-top-2">
-      <div>
-        <strong>Please correct the following errors:</strong>
-      </div>
-      <ul className={"margin-y-0"}>
-        {dateTestedErrorMessage && <li>{dateTestedErrorMessage}</li>}
-        {testResultsError && <li>{testResultsError}</li>}
-      </ul>
-    </Alert>
-  );
 
   return (
     <>
@@ -475,7 +455,8 @@ const TestCardForm = ({
             <ModalToggleButton
               modalRef={submitModalRef}
               closer
-              onClick={(e) => submitForm(true)}
+              className={"margin-right-1"}
+              onClick={() => submitForm(true)}
             >
               Submit anyway.
             </ModalToggleButton>
@@ -492,9 +473,33 @@ const TestCardForm = ({
             submitForm();
           }}
         >
-          {isCorrection && correctionWarningAlert}
-          {showDateMonthsAgoWarning && dateMonthsAgoWarningAlert}
-          {showErrorSummary && errorSummaryAlert}
+          {/* error and warning alerts */}
+          {isCorrection && (
+            <Alert type="warning" headingLevel="h4" className="margin-top-2">
+              <strong>Correction: </strong>
+              {reasonForCorrection in TestCorrectionReasons
+                ? TestCorrectionReasons[reasonForCorrection]
+                : reasonForCorrection}
+            </Alert>
+          )}
+          {showDateMonthsAgoWarning && (
+            <Alert type="warning" headingLevel="h4" className="margin-top-2">
+              <strong>Check test date:</strong> The date you selected is more
+              than six months ago. Please make sure it's correct before
+              submitting.
+            </Alert>
+          )}
+          {showErrorSummary && (
+            <Alert type={"error"} headingLevel={"h4"} className="margin-top-2">
+              <div>
+                <strong>Please correct the following errors:</strong>
+              </div>
+              <ul className={"margin-y-0"}>
+                {dateTestedErrorMessage && <li>{dateTestedErrorMessage}</li>}
+                {testResultsError && <li>{testResultsError}</li>}
+              </ul>
+            </Alert>
+          )}
           {!useCurrentTime && (
             <div className="grid-row grid-gap">
               <div className="grid-col-auto">
@@ -585,7 +590,7 @@ const TestCardForm = ({
                 onChange={(e) =>
                   dispatch({
                     type: TestFormActionCase.UPDATE_DEVICE_ID,
-                    payload: { deviceId: e.target.value, devicesMap },
+                    payload: e.target.value,
                   })
                 }
                 className="card-dropdown"
