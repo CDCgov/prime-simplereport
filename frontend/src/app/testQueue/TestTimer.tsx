@@ -277,7 +277,9 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         data-testid="timer"
         aria-label="Reset timer"
       >
-        <span className="result-ready">RESULT READY</span>{" "}
+        <span className="result-ready">
+          <strong>RESULT READY</strong>
+        </span>{" "}
         <span className="timer-overtime margin-x-1" role="timer">
           {mmss(elapsed)} elapsed{" "}
         </span>{" "}
