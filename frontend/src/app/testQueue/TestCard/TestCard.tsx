@@ -13,18 +13,15 @@ import {
 } from "@trussworks/react-uswds";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import moment from "moment";
 
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import Button from "../../commonComponents/Button/Button";
 import { removeTimer, TestTimerWidget, useTestTimer } from "../TestTimer";
 import { RootState } from "../../store";
 import "./TestCard.scss";
-import { displayFullName } from "../../utils";
 
 import TestCardForm from "./TestCardForm";
-
-export type SaveStatus = "idle" | "editing" | "saving" | "error";
+import { useTestOrderPatient } from "./TestCardForm.utils";
 
 export interface TestCardProps {
   testOrder: QueriedTestOrder;
@@ -64,13 +61,8 @@ export const TestCard = ({
     testOrderId: testOrder.internalId,
   };
 
-  const patientFullName = displayFullName(
-    testOrder.patient.firstName,
-    testOrder.patient.middleName,
-    testOrder.patient.lastName
-  );
-
-  const patientDateOfBirth = moment(testOrder.patient.birthDate);
+  const { patientFullName, patientDateOfBirth } =
+    useTestOrderPatient(testOrder);
 
   const toggleOpen = () => setIsOpen((prevState) => !prevState);
 
