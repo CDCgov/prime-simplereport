@@ -9,7 +9,7 @@ resource "azurerm_postgresql_flexible_server" "db" {
 
 
   administrator_login    = var.administrator_login
-  administrator_password = data.azurerm_key_vault_secret.db_password.value
+  administrator_password = azurerm_key_vault_secret.db_password.value
 
   storage_mb                   = 524288 // 512 GB
   backup_retention_days        = 7
@@ -38,7 +38,8 @@ resource "azurerm_postgresql_flexible_server" "db" {
     ignore_changes = [
       zone,
       high_availability.0.standby_availability_zone,
-      tags
+      tags,
+      administrator_password
     ]
   }
 }
