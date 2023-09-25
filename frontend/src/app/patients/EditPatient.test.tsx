@@ -232,7 +232,6 @@ describe("EditPatient", () => {
       const notes = await screen.findByLabelText("Notes", { exact: false });
       await user.type(notes, "Red tent");
 
-
       const saveButton = screen.getAllByText("Save changes", {
         exact: false,
       })[0];
@@ -361,52 +360,51 @@ describe("EditPatient", () => {
   });
 
   describe("facility select input", () => {
-
-      const mocks = [
-        {
-          request: {
-            query: GET_PATIENT,
-            variables: {
-              id: mockPatientID,
-            },
+    const mocks = [
+      {
+        request: {
+          query: GET_PATIENT,
+          variables: {
+            id: mockPatientID,
           },
-          result: {
-            data: {
-              patient: {
-                firstName: "Eugenia",
-                middleName: null,
-                lastName: "Franecki",
-                birthDate: "1939-10-11",
-                street: "736 Jackson PI NW",
-                streetTwo: "DC",
-                city: null,
-                state: "DC",
-                zipCode: null,
-                telephone: "(270) 867-5309",
-                phoneNumbers: [
-                  {
-                    type: "MOBILE",
-                    number: "(270) 867-5309",
-                  },
-                ],
-                role: "UNKNOWN",
-                emails: ["foo@bar.com"],
-                county: null,
-                race: null,
-                ethnicity: null,
-                gender: null,
-                genderIdentity: null,
-                residentCongregateSetting: true,
-                employedInHealthcare: true,
-                facility: null,
-                testResultDelivery: null,
-                tribalAffiliation: [null],
-                notes: null,
-              },
+        },
+        result: {
+          data: {
+            patient: {
+              firstName: "Eugenia",
+              middleName: null,
+              lastName: "Franecki",
+              birthDate: "1939-10-11",
+              street: "736 Jackson PI NW",
+              streetTwo: "DC",
+              city: null,
+              state: "DC",
+              zipCode: null,
+              telephone: "(270) 867-5309",
+              phoneNumbers: [
+                {
+                  type: "MOBILE",
+                  number: "(270) 867-5309",
+                },
+              ],
+              role: "UNKNOWN",
+              emails: ["foo@bar.com"],
+              county: null,
+              race: null,
+              ethnicity: null,
+              gender: null,
+              genderIdentity: null,
+              residentCongregateSetting: true,
+              employedInHealthcare: true,
+              facility: null,
+              testResultDelivery: null,
+              tribalAffiliation: [null],
+              notes: null,
             },
           },
         },
-      ];
+      },
+    ];
 
     const renderWithUser = () => ({
       user: userEvent.setup(),
