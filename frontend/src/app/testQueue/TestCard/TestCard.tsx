@@ -32,6 +32,8 @@ export interface TestCardProps {
   devicesMap: DevicesMap;
   refetchQueue: () => void;
   removePatientFromQueue: (patientId: string) => Promise<void>;
+  startTestPatientId: string | null;
+  setStartTestPatientId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export const TestCard = ({
@@ -40,6 +42,8 @@ export const TestCard = ({
   devicesMap,
   refetchQueue,
   removePatientFromQueue,
+  startTestPatientId,
+  setStartTestPatientId,
 }: TestCardProps) => {
   const navigate = useNavigate();
   const timer = useTestTimer(
@@ -164,6 +168,8 @@ export const TestCard = ({
               devicesMap={devicesMap}
               facility={facility}
               refetchQueue={refetchQueue}
+              startTestPatientId={startTestPatientId}
+              setStartTestPatientId={setStartTestPatientId}
             ></TestCardForm>
           </CardBody>
         </div>
