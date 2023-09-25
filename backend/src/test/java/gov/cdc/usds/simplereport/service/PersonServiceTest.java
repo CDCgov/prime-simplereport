@@ -106,6 +106,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         false,
         false,
         "English",
+        null,
         null);
     _service.addPatient(
         _site1.getInternalId(),
@@ -128,7 +129,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         false,
         false,
         "Spanish",
-        null);
+        null,
+        "Outlandish spacefarer");
     _service.addPatient(
         _site2.getInternalId(),
         "BAZ",
@@ -150,7 +152,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         false,
         false,
         "French",
-        null);
+        null,
+        "Interstellar-traveling desperado");
     List<Person> all =
         _service.getPatients(
             null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, ArchivedStatus.UNARCHIVED, null, false, "");
@@ -196,6 +199,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         false,
         false,
         "English",
+        null,
         null);
 
     LocalDate dob = LocalDate.of(1950, 1, 1);
@@ -225,6 +229,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 false,
                 false,
                 "English",
+                null,
                 null));
 
     TestUserIdentities.setFacilityAuthorities(fac);
@@ -249,6 +254,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         false,
         false,
         "Spanish",
+        null,
         null);
   }
 
@@ -278,6 +284,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 false,
                 false,
                 "English",
+                null,
                 null));
   }
 
@@ -319,6 +326,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                     false,
                     false,
                     "English",
+                    null,
                     null));
     assertEquals("Duplicate phone number entered", e.getMessage());
   }
@@ -351,7 +359,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            null);
     UUID personInternalId = person.getInternalId();
 
     List<PhoneNumber> phoneNumbers = new ArrayList<>();
@@ -395,7 +404,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            null);
 
     List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
@@ -434,6 +444,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "Spanish",
+            null,
             null);
     TestUserIdentities.setFacilityAuthorities();
     UUID patientId = p.getInternalId();
@@ -484,6 +495,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "English",
+            null,
             null);
 
     _service.setIsDeleted(p.getInternalId(), true, null);
@@ -529,6 +541,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "German",
+            null,
             null);
 
     assertEquals(
@@ -757,6 +770,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "German",
+            null,
             null);
 
     assertEquals(
@@ -1345,7 +1359,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            null);
 
     var result =
         _service.isDuplicatePatient(
@@ -1388,7 +1403,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            null);
 
     var result =
         _service.isDuplicatePatient(
@@ -1446,7 +1462,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            null);
 
     var result =
         _service.isDuplicatePatient(
@@ -1492,7 +1509,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            null);
 
     // Check for existing user in second facility
     var result =
@@ -1538,7 +1556,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            null);
 
     // Check if patient exists in constituent facility
     var result =

@@ -150,6 +150,12 @@ export type FacilityStats = {
   usersSingleAccessCount?: Maybe<Scalars["Int"]>;
 };
 
+export type FeatureFlag = {
+  __typename?: "FeatureFlag";
+  name: Scalars["String"];
+  value: Scalars["Boolean"];
+};
+
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
   errorType: Scalars["String"];
@@ -212,6 +218,7 @@ export type Mutation = {
   submitQueueItem?: Maybe<AddTestResultResponse>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
+  updateFeatureFlag?: Maybe<FeatureFlag>;
   updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
   updateRegistrationLink?: Maybe<Scalars["String"]>;
@@ -242,6 +249,7 @@ export type MutationAddPatientArgs = {
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
+  notes?: InputMaybe<Scalars["String"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
   race?: InputMaybe<Scalars["String"]>;
@@ -442,6 +450,11 @@ export type MutationUpdateFacilityArgs = {
   facilityInfo: UpdateFacilityInput;
 };
 
+export type MutationUpdateFeatureFlagArgs = {
+  name: Scalars["String"];
+  value: Scalars["Boolean"];
+};
+
 export type MutationUpdateOrganizationArgs = {
   type: Scalars["String"];
 };
@@ -462,6 +475,7 @@ export type MutationUpdatePatientArgs = {
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
+  notes?: InputMaybe<Scalars["String"]>;
   patientId: Scalars["ID"];
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
@@ -583,6 +597,7 @@ export type Patient = {
   lookupId?: Maybe<Scalars["String"]>;
   middleName?: Maybe<Scalars["String"]>;
   name?: Maybe<NameInfo>;
+  notes?: Maybe<Scalars["String"]>;
   phoneNumbers?: Maybe<Array<Maybe<PhoneNumber>>>;
   preferredLanguage?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;

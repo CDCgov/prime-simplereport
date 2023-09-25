@@ -285,7 +285,8 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
         false,
         false,
         "",
-        null);
+        null,
+        "Wanderer of the stars");
     assertThat(fetchDatabasePatients()).hasSize(1);
 
     // WHEN
