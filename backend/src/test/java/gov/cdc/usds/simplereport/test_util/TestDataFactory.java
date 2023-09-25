@@ -256,6 +256,34 @@ public class TestDataFactory {
   }
 
   @Transactional
+  public Person createFullPersonWithUnknownAddressAndPhone(Organization org) {
+
+    Person p =
+        new Person(
+            org,
+            "HELLOTHERE",
+            "FRED",
+            "M",
+            "ASTAIRE",
+            null,
+            DEFAULT_BDAY,
+            getUnknownAddress(),
+            "USA",
+            PersonRole.UNKNOWN,
+            List.of("test@testerson.com"),
+            "white",
+            "not_hispanic",
+            null,
+            "male",
+            "male",
+            false,
+            false,
+            "English",
+            TestResultDeliveryPreference.NONE);
+    return personRepository.save(p);
+  }
+
+  @Transactional
   public Person createFullPersonWithPreferredLanguage(Organization org, String language) {
     // consts are to keep style check happy othewise it complains about
     // "magic numbers"
@@ -611,6 +639,10 @@ public class TestDataFactory {
   public StreetAddress getFullAddress() {
     return new StreetAddress(
         "736 Jackson PI NW", "APT. 123", "Washington", "DC", "20503", "Washington");
+  }
+
+  public StreetAddress getUnknownAddress() {
+    return new StreetAddress("** Unknown / Not Given **", null, null, "NA", "00000", null);
   }
 
   public static List<PhoneNumber> getListOfOnePhoneNumber() {

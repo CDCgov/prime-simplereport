@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.model.TestEventExport.UNKNOWN_ADDRESS_INDICATOR;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -458,13 +459,56 @@ class FhirConverterTest {
             new PhoneNumber(PhoneType.LANDLINE, "3045551233")));
     ReflectionTestUtils.setField(person, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToPatient(person);
+    var actual = fhirConverter.convertToPatient(person, null);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
         IOUtils.toString(
             Objects.requireNonNull(
                 getClass().getClassLoader().getResourceAsStream("fhir/patient.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToPatientWithUnknownFields_Person_matchesJson() throws IOException {
+    var birthDate = LocalDate.of(2022, 12, 13);
+    var internalId = "3c9c7370-e2e3-49ad-bb7a-f6005f41cf29";
+    var facility = TestDataBuilder.createFacility();
+    var person =
+        new Person(
+            null,
+            null,
+            null,
+            "Austin",
+            "Wingate",
+            "Curtis",
+            "Jr",
+            birthDate,
+            new StreetAddress(List.of(UNKNOWN_ADDRESS_INDICATOR, ""), "", "NA", "00000", ""),
+            "USA",
+            null,
+            List.of("email1", "email2"),
+            "black",
+            "hispanic",
+            List.of("123"),
+            "Male",
+            false,
+            false,
+            "English",
+            null);
+    ReflectionTestUtils.setField(person, "phoneNumbers", Collections.emptyList());
+    ReflectionTestUtils.setField(person, "internalId", UUID.fromString(internalId));
+
+    var actual = fhirConverter.convertToPatient(person, facility);
+
+    String actualSerialized = parser.encodeResourceToString(actual);
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/patient-unknown-fields.json")),
             StandardCharsets.UTF_8);
     JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
   }
