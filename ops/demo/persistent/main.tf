@@ -34,7 +34,7 @@ resource "random_password" "random_nophi_password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-resource "random_password" "random_password" {
+resource "random_password" "administrator_password" {
   length           = 30
   special          = false
   override_special = "!#$%&*()-_=+[]{}<>:?"
@@ -53,7 +53,7 @@ module "db" {
   log_workspace_id    = module.monitoring.log_analytics_workspace_id
   private_dns_zone_id = module.vnet.private_dns_zone_id
 
-  administrator_password = random_password.random_password.result
+  administrator_password = random_password.administrator_password.result
   nophi_user_password = random_password.random_nophi_password.result
 
   tags = local.management_tags
