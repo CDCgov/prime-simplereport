@@ -16,10 +16,10 @@ import org.json.JSONObject;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AskOnEntrySurvey {
 
-  private String pregnancy = null;
-  private Map<String, Boolean> symptoms = null;
-  private Boolean noSymptoms = null;
-  private LocalDate symptomOnsetDate = null;
+  private String pregnancy;
+  private Map<String, Boolean> symptoms;
+  private Boolean noSymptoms;
+  private LocalDate symptomOnsetDate;
 
   public AskOnEntrySurvey(
       String pregnancy,
