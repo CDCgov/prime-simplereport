@@ -18,7 +18,7 @@ interface SearchResultsProps {
   dropDownRef?: React.RefObject<HTMLDivElement>;
   selectedPatient?: Patient;
   canAddPatient: boolean;
-  addToQueueWithoutAoe?: (patient: Patient) => Promise<void>;
+  addPatientToQueue?: (patient: Patient) => Promise<void>;
 }
 
 export interface QueueProps extends SearchResultsProps {
@@ -43,6 +43,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     loading,
     dropDownRef,
     selectedPatient,
+    addPatientToQueue,
   } = props;
   const testCardRefactorEnabled = useFeature(
     "testCardRefactorEnabled"
@@ -78,8 +79,8 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   }
 
   const handleBeginTestClick = (patient: Patient) => {
-    if (testCardRefactorEnabled && props.addToQueueWithoutAoe) {
-      return props.addToQueueWithoutAoe(patient);
+    if (testCardRefactorEnabled && addPatientToQueue) {
+      return addPatientToQueue(patient);
     }
 
     // existing logic

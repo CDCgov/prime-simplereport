@@ -6,16 +6,26 @@ export const QUEUE_NOTIFICATION_TYPES = {
   SUBMITTED_RESULT__SUCCESS: 2,
 };
 
+export type SomeoneWithName = {
+  firstName?: string | null | undefined;
+  middleName?: string | null | undefined;
+  lastName?: string | null | undefined;
+};
+
 export const ALERT_CONTENT = {
-  [QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS]: (
-    patient: any
+  [QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS]: <
+    T extends SomeoneWithName
+  >(
+    patient: T,
+    startWithLastName: boolean = true
   ): AlertContent => {
     return {
       type: "success",
       title: `${displayFullName(
         patient.firstName,
         patient.middleName,
-        patient.lastName
+        patient.lastName,
+        startWithLastName
       )} was added to the queue`,
       body: "Newly added patients go to the bottom of the queue",
     };
