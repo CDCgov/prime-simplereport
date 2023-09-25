@@ -26,4 +26,5 @@ public record PatientSelfRegistration(
     Boolean residentCongregateSetting,
     Boolean employedInHealthcare,
     String preferredLanguage,
-    TestResultDeliveryPreference testResultDelivery) {}
+    TestResultDeliveryPreference testResultDelivery,
+    String notes) {}

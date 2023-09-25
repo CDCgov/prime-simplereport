@@ -65,7 +65,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 false,
                 false,
                 "English",
-                TestResultDeliveryPreference.NONE));
+                TestResultDeliveryPreference.NONE,
+                null));
     PhoneNumber pn = new PhoneNumber(PhoneType.LANDLINE, "5555555555");
     pn.setPerson(hoya);
     _phoneRepo.save(pn);
@@ -110,7 +111,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 false,
                 false,
                 "English",
-                TestResultDeliveryPreference.NONE));
+                TestResultDeliveryPreference.NONE,
+                null));
     PhoneNumber pn = new PhoneNumber(PhoneType.LANDLINE, "5555555555");
     pn.setPerson(hoya);
     _phoneRepo.save(pn);

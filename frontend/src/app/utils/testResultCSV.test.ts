@@ -1,5 +1,3 @@
-import { cloneDeep } from "lodash";
-
 import { parseDataForCSV } from "./testResultCSV";
 
 const data = [
@@ -14,6 +12,18 @@ const data = [
       {
         disease: {
           name: "COVID-19",
+        },
+        testResult: "NEGATIVE",
+      },
+      {
+        disease: {
+          name: "Flu A",
+        },
+        testResult: "NEGATIVE",
+      },
+      {
+        disease: {
+          name: "Flu B",
         },
         testResult: "NEGATIVE",
       },
@@ -103,53 +113,23 @@ const result = [
     "Test correction reason": "DUPLICATE_TEST",
     "Test correction status": "REMOVED",
     "Test date": "06/13/2022 7:24pm",
+    "Flu A result": "Negative",
+    "Flu B result": "Negative",
   },
 ];
 
 describe("parseDataForCSV", () => {
-  it("parses non-multiplex data", () => {
-    const multiplexEnabled = false;
-    expect(parseDataForCSV(data, multiplexEnabled)).toEqual(result);
-  });
-
   it("parses multiplex data", () => {
-    const multiplexData = cloneDeep(data);
-    multiplexData[0]["results"].push(
-      {
-        disease: {
-          name: "Flu A",
-        },
-        testResult: "NEGATIVE",
-      },
-      {
-        disease: {
-          name: "Flu B",
-        },
-        testResult: "NEGATIVE",
-      }
-    );
-    const multiplexEnabled = true;
-    const multiplexResult = cloneDeep(result);
-    // @ts-ignore
-    multiplexResult[0]["Flu A result"] = "Negative";
-    // @ts-ignore
-    multiplexResult[0]["Flu B result"] = "Negative";
-    expect(parseDataForCSV(multiplexData, multiplexEnabled)).toEqual(
-      multiplexResult
-    );
+    expect(parseDataForCSV(data)).toEqual(result);
   });
   it("parse data does not fail if tribalAffiliation is null", () => {
-    const multiplexEnabled = false;
     expect(
-      parseDataForCSV(
-        [
-          {
-            ...data[0],
-            patient: { ...data[0].patient, tribalAffiliation: null },
-          },
-        ],
-        multiplexEnabled
-      )
+      parseDataForCSV([
+        {
+          ...data[0],
+          patient: { ...data[0].patient, tribalAffiliation: null },
+        },
+      ])
     ).toEqual(result);
   });
 });

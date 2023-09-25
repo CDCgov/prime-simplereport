@@ -1,11 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-  within,
-} from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { FacilityFormData } from "../FacilityForm";
@@ -91,10 +84,14 @@ function ManageDevicesContainer(props: { facility: FacilityFormData }) {
     />
   );
 }
+const renderWithUser = (facility: FacilityFormData) => ({
+  user: userEvent.setup(),
+  ...render(<ManageDevicesContainer facility={facility} />),
+});
 
 describe("ManageDevices", () => {
   it("renders a message if no devices are present in the list", async () => {
-    render(<ManageDevicesContainer facility={validFacility} />);
+    renderWithUser(validFacility);
 
     const expected = await screen.findByText("There are currently no devices", {
       exact: false,
@@ -105,17 +102,13 @@ describe("ManageDevices", () => {
 
   it("allows adding devices", async () => {
     validFacility.devices = ["device-a", "device-b"];
-    render(<ManageDevicesContainer facility={validFacility} />);
+    const { user } = renderWithUser(validFacility);
 
     const deviceInput = screen.getByLabelText("Search for a device to add it");
 
-    await act(async () => await userEvent.click(deviceInput));
-    await act(
-      async () =>
-        await userEvent.click(
-          screen.getByLabelText("Select Manufacturer C Device C")
-        )
-    );
+    await user.click(deviceInput);
+
+    await user.click(screen.getByLabelText("Select Manufacturer C Device C"));
 
     expect(await screen.findByTestId("pill-container"));
     expect(
@@ -125,12 +118,12 @@ describe("ManageDevices", () => {
 
   it("removes a device from the list", async () => {
     validFacility.devices = ["device-a", "device-b"];
-    render(<ManageDevicesContainer facility={validFacility} />);
+    const { user } = renderWithUser(validFacility);
     const pillContainer = screen.getByTestId("pill-container");
     const deleteIcon = await within(pillContainer).getAllByRole("button")[0];
 
     within(pillContainer).getByText("Device A");
-    fireEvent.click(deleteIcon);
+    await user.click(deleteIcon);
 
     await waitFor(() =>
       expect(
@@ -140,20 +133,16 @@ describe("ManageDevices", () => {
   });
 
   it("removes selected items from dropdown list", async () => {
-    render(<ManageDevicesContainer facility={validFacility} />);
+    const { user } = renderWithUser(validFacility);
     const deviceInput = screen.getByLabelText("Search for a device to add it");
 
-    await act(async () => await userEvent.click(deviceInput));
-    await act(
-      async () =>
-        await userEvent.click(
-          screen.getByLabelText("Select Manufacturer C Device C")
-        )
-    );
+    await user.click(deviceInput);
+
+    await user.click(screen.getByLabelText("Select Manufacturer C Device C"));
     const pillContainer = screen.getByTestId("pill-container");
     within(pillContainer).getByText("Device C");
 
-    await act(async () => await userEvent.click(deviceInput));
+    await user.click(deviceInput);
     expect(onChangeSpy).toBeCalledWith(["device-c"]);
   });
 });

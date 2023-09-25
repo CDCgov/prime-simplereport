@@ -1,5 +1,4 @@
 import {
-  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -131,8 +130,9 @@ describe("TenantDataAccessFormContainer", () => {
     window.location.reload = reload;
   });
 
-  beforeEach(() => {
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MemoryRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks}>
@@ -140,14 +140,15 @@ describe("TenantDataAccessFormContainer", () => {
           </MockedProvider>
         </Provider>
       </MemoryRouter>
-    );
+    ),
   });
 
   it("Redirects on successful save", async () => {
+    const { user } = renderWithUser();
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
-    await act(async () => await userEvent.click(screen.getByRole("button")));
+    await user.click(screen.getByRole("button"));
     expect(await screen.findByText("Redirected")).toBeInTheDocument();
   });
 });

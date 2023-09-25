@@ -1,0 +1,6 @@
+mutation updateFeatureFlag($name: String!, $value: Boolean!){
+ updateFeatureFlag(name:$name, value: $value){
+     name
+     value
+ }
+}
