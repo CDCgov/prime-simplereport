@@ -10161,10 +10161,10 @@ find-up@^6.3.0:
     locate-path "^7.1.0"
     path-exists "^5.0.0"
 
-flagged@^2.0.8:
-  version "2.0.8"
-  resolved "https://registry.yarnpkg.com/flagged/-/flagged-2.0.8.tgz#c403b61bbe45a02b79c973ba3d69f278299d4a8a"
-  integrity sha512-kB3IW4Txjj2qk60f365+Ev2DzvL79yHOcRAQYscR936tw70o/VmYCOqzZf/3Anlo3L0hTKIfCsG90viTzp533A==
+flagged@^2.0.10:
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/flagged/-/flagged-2.0.10.tgz#8de03ac9c9595ec60dfb3592978e8d9484d3b16d"
+  integrity sha512-yv6Y6uAOVhH+6Ob661v/SAtWqYHehsAKgKnjm9QvkWzUpI7QmTj9BblRhKReaGrDa+yA6lNZZS73Uu5l467iDA==
 
 flat-cache@^3.0.4:
   version "3.1.0"

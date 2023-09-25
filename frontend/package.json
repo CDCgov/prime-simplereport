@@ -25,7 +25,7 @@
     "apollo-upload-client": "^17.0.0",
     "browserslist": "4.21.10",
     "classnames": "^2.2.6",
-    "flagged": "^2.0.8",
+    "flagged": "^2.0.10",
     "google-libphonenumber": "^3.2.33",
     "graphql": "^16.6.0",
     "i18next": "^23.4.6",
