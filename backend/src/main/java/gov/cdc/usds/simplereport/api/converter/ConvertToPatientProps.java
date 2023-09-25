@@ -13,6 +13,7 @@ import lombok.Getter;
 public class ConvertToPatientProps {
   private String id;
   private PersonName name;
+  private String nameAbsentReason;
   private List<PhoneNumber> phoneNumbers;
   private List<String> emails;
   private String gender;

@@ -36,7 +36,7 @@ import gov.cdc.usds.simplereport.service.model.reportstream.TokenResponse;
 import gov.cdc.usds.simplereport.service.model.reportstream.UploadResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import gov.cdc.usds.simplereport.utils.BulkUploadResultsToFhir;
+import gov.cdc.usds.simplereport.utils.TestResultBulkUploadToFhir;
 import gov.cdc.usds.simplereport.utils.TokenAuthentication;
 import gov.cdc.usds.simplereport.validators.FileValidator;
 import java.io.ByteArrayInputStream;
@@ -85,7 +85,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private ResultsUploaderCachingService resultsUploaderCachingServiceMock;
   @Mock private TokenAuthentication tokenAuthMock;
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
-  @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
+  @Mock private TestResultBulkUploadToFhir bulkUploadFhirConverterMock;
   @InjectMocks private TestResultUploadService sut;
 
   @BeforeEach()

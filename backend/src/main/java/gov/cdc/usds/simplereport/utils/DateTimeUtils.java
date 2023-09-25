@@ -93,6 +93,27 @@ public class DateTimeUtils {
     return ZonedDateTime.of(localDateTime, zoneId);
   }
 
+  public static ZonedDateTime convertToZonedDateTime(String dateString) {
+    ZoneId zoneId;
+    LocalDateTime localDateTime;
+
+    // If user provided timezone code in datetime field
+    if (hasTimezoneSubstring(dateString)) {
+      var timezoneCode = dateString.substring(dateString.lastIndexOf(" ")).trim();
+      try {
+        zoneId = parseZoneId(timezoneCode);
+      } catch (DateTimeException e) {
+        zoneId = FALLBACK_TIMEZONE_ID;
+      }
+    } else {
+      // If that fails, use fallback
+      zoneId = FALLBACK_TIMEZONE_ID;
+    }
+
+    localDateTime = parseLocalDateTime(dateString, DATE_TIME_FORMATTER);
+    return ZonedDateTime.of(localDateTime, zoneId);
+  }
+
   public static boolean hasTimezoneSubstring(String value) {
     return value.matches(TIMEZONE_SUFFIX_REGEX);
   }

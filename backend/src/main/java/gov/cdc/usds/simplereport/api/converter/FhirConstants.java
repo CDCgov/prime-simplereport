@@ -69,4 +69,12 @@ public class FhirConstants {
 
   public static final String ORDER_EFFECTIVE_DATE_EXTENSION_URL =
       "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date";
+
+  public static final String OBSERVATION_CATEGORY_CODE_SYSTEM =
+      "https://terminology.hl7.org/5.2.0/CodeSystem-observation-category.html";
+  public static final String DATA_ABSENT_REASON_EXTENSION_URL =
+      "http://hl7.org/fhir/StructureDefinition/data-absent-reason";
+
+  public static final String DIAGNOSTIC_CODE_SYSTEM =
+      "https://terminology.hl7.org/5.2.0/CodeSystem-v2-0074.html";
 }
