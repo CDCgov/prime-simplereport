@@ -1,6 +1,11 @@
 package gov.cdc.usds.simplereport.utils;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_HOSPITALIZED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ICU;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
@@ -33,6 +38,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.beans.factory.annotation.Value;
@@ -355,7 +362,7 @@ public class BulkUploadResultsToFhir {
                 .receivedTime(testingLabSpecimenReceivedDate)
                 .build());
 
-    var observation =
+    var resultObservation =
         List.of(
             fhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
@@ -375,9 +382,10 @@ public class BulkUploadResultsToFhir {
                     .issued(Date.from(testResultDate.toInstant()))
                     .build()));
 
+    var aoeObservations = new LinkedHashSet<Observation>();
+
     LocalDate symptomOnsetDate = null;
-    if (row.getIllnessOnsetDate().getValue() != null
-        && !row.getIllnessOnsetDate().getValue().trim().isBlank()) {
+    if (Boolean.TRUE.equals(rowHasValue(row.getIllnessOnsetDate().getValue()))) {
       try {
         symptomOnsetDate =
             LocalDate.parse(row.getIllnessOnsetDate().getValue(), DATE_TIME_FORMATTER);
@@ -388,12 +396,58 @@ public class BulkUploadResultsToFhir {
     }
 
     Boolean symptomatic = null;
-    if (row.getSymptomaticForDisease().getValue() != null) {
+    if (Boolean.TRUE.equals(rowHasValue(row.getSymptomaticForDisease().getValue()))) {
       symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().getValue().toLowerCase());
     }
 
-    var aoeObservations =
-        fhirConverter.convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
+    aoeObservations.addAll(
+        fhirConverter.convertToAOESymptomObservation(testEventId, symptomatic, symptomOnsetDate));
+
+    String pregnancyValue = row.getPregnant().getValue();
+    if (Boolean.TRUE.equals(rowHasValue(pregnancyValue))) {
+      String pregnancySnomed = getPregnancyStatusSnomed(pregnancyValue);
+      aoeObservations.add(fhirConverter.convertToAOEPregnancyObservation(pregnancySnomed));
+    }
+
+    String employedInHealthcareValue = row.getEmployedInHealthcare().getValue();
+    if (Boolean.TRUE.equals(rowHasValue(employedInHealthcareValue))) {
+      Boolean employedInHealthcare = yesNoToBooleanMap.get(employedInHealthcareValue.toLowerCase());
+      aoeObservations.add(
+          fhirConverter.convertToAOEYesNoUnkObservation(
+              employedInHealthcare,
+              LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
+              AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
+    }
+
+    String hospitalizedValue = row.getHospitalized().getValue();
+    if (Boolean.TRUE.equals(rowHasValue(hospitalizedValue))) {
+      Boolean hospitalized = yesNoToBooleanMap.get(hospitalizedValue.toLowerCase());
+      aoeObservations.add(
+          fhirConverter.convertToAOEYesNoUnkObservation(
+              hospitalized, LOINC_AOE_HOSPITALIZED, "Hospitalized for condition"));
+    }
+
+    String icuValue = row.getIcu().getValue();
+    if (Boolean.TRUE.equals(rowHasValue(icuValue))) {
+      Boolean hospitalized = yesNoToBooleanMap.get(icuValue.toLowerCase());
+      aoeObservations.add(
+          fhirConverter.convertToAOEYesNoUnkObservation(
+              hospitalized, LOINC_AOE_ICU, "Admitted to ICU for condition"));
+    }
+
+    String residentCongregateSettingValue = row.getResidentCongregateSetting().getValue();
+    if (Boolean.TRUE.equals(rowHasValue(residentCongregateSettingValue))) {
+      Boolean residesInCongregateSetting =
+          yesNoToBooleanMap.get(residentCongregateSettingValue.toLowerCase());
+      String residenceTypeValue = row.getResidenceType().getValue();
+      String residenceTypeSnomed = null;
+      if (Boolean.TRUE.equals(rowHasValue(residenceTypeValue))) {
+        residenceTypeSnomed = getResidenceTypeSnomed(residenceTypeValue);
+      }
+      aoeObservations.addAll(
+          fhirConverter.convertToAOEResidenceObservation(
+              residesInCongregateSetting, residenceTypeSnomed));
+    }
 
     var serviceRequest =
         fhirConverter.convertToServiceRequest(
@@ -419,7 +473,7 @@ public class BulkUploadResultsToFhir {
             .practitioner(practitioner)
             .device(device)
             .specimen(specimen)
-            .resultObservations(observation)
+            .resultObservations(resultObservation)
             .aoeObservations(aoeObservations)
             .serviceRequest(serviceRequest)
             .diagnosticReport(diagnosticReport)
@@ -427,6 +481,24 @@ public class BulkUploadResultsToFhir {
             .gitProperties(gitProperties)
             .processingId(processingModeCode)
             .build());
+  }
+
+  private Boolean rowHasValue(String rowValue) {
+    return rowValue != null && !rowValue.trim().isBlank();
+  }
+
+  private String getPregnancyStatusSnomed(String input) {
+    if (input.matches(ALPHABET_REGEX)) {
+      return PersonUtils.pregnancyStatusSnomedMap.get(input.toLowerCase());
+    }
+    return null;
+  }
+
+  private String getResidenceTypeSnomed(String input) {
+    if (input.matches(ALPHABET_REGEX)) {
+      return getResidenceTypeMap().get(input.toLowerCase());
+    }
+    return input;
   }
 
   private String getEthnicityLiteral(String input) {

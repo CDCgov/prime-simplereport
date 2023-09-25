@@ -109,8 +109,8 @@ public class BulkUploadResultsToFhirTest {
 
     verify(resultsUploaderCachingService, times(1)).getModelAndTestPerformedCodeToDeviceMap();
     assertThat(serializedBundles).hasSize(1);
-    assertThat(deserializedBundle.getEntry()).hasSize(14);
-    assertThat(resourceUrls).hasSize(14);
+    assertThat(deserializedBundle.getEntry()).hasSize(19);
+    assertThat(resourceUrls).hasSize(19);
   }
 
   @Test
@@ -186,30 +186,32 @@ public class BulkUploadResultsToFhirTest {
     InputStream input = loadCsv("testResultUpload/test-results-upload-all-fields.csv");
     var serializedBundles = sut.convertToFhirBundles(input, UUID.randomUUID());
 
-    var asymptomaticEntry = serializedBundles.get(0);
-    var deserializedAsymptomatic = (Bundle) parser.parseResource(asymptomaticEntry);
-    var asymptomaticObservations =
-        deserializedAsymptomatic.getEntry().stream()
+    var asymptomaticNotCongregateSettingEntry = serializedBundles.get(0);
+    var deserializedAsymptomaticNotCongregateEntry =
+        (Bundle) parser.parseResource(asymptomaticNotCongregateSettingEntry);
+    var asymptomaticNotCongregateObservations =
+        deserializedAsymptomaticNotCongregateEntry.getEntry().stream()
             .filter(entry -> entry.getFullUrl().contains("Observation/"))
             .toList();
-    var asymptomaticAOE =
-        asymptomaticObservations.stream()
+    var asymptomaticNotCongregateAOE =
+        asymptomaticNotCongregateObservations.stream()
             .filter(
                 observation -> observation.getResource().getNamedProperty("identifier").hasValues())
             .toList();
-    assertThat(asymptomaticAOE).hasSize(1);
+    assertThat(asymptomaticNotCongregateAOE).hasSize(6);
 
-    var symptomaticEntry = serializedBundles.get(1);
-    var deserializedSymptomatic = (Bundle) parser.parseResource(symptomaticEntry);
-    var symptomaticObservations =
-        deserializedSymptomatic.getEntry().stream()
+    var symptomaticCongregateSettingEntry = serializedBundles.get(1);
+    var deserializedSymptomaticCongregateEntry =
+        (Bundle) parser.parseResource(symptomaticCongregateSettingEntry);
+    var symptomaticCongregateObservations =
+        deserializedSymptomaticCongregateEntry.getEntry().stream()
             .filter(entry -> entry.getFullUrl().contains("Observation/"))
             .toList();
-    var symptomaticAOE =
-        symptomaticObservations.stream()
+    var symptomaticCongregateAOE =
+        symptomaticCongregateObservations.stream()
             .filter(obs -> obs.getResource().getNamedProperty("identifier").hasValues())
             .toList();
-    assertThat(symptomaticAOE).hasSize(2);
+    assertThat(symptomaticCongregateAOE).hasSize(8);
   }
 
   private InputStream loadCsv(String csvFile) {
@@ -238,7 +240,7 @@ public class BulkUploadResultsToFhirTest {
         });
 
     assertThat(serializedBundles).hasSize(1);
-    assertThat(deserializedBundle.getEntry()).hasSize(14);
+    assertThat(deserializedBundle.getEntry()).hasSize(19);
   }
 
   private InputStream getJsonStream(String jsonFile) {
@@ -443,7 +445,6 @@ public class BulkUploadResultsToFhirTest {
     InputStream jsonStream =
         getJsonStream("testResultUpload/test-results-upload-valid-as-fhir.ndjson");
     String expectedBundleString = inputStreamToString(jsonStream);
-
     assertThat(actualBundles).isEqualTo(expectedBundleString);
   }
 

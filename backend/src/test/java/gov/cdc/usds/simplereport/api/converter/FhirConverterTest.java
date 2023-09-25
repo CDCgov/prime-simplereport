@@ -116,7 +116,8 @@ class FhirConverterTest {
     when(gitProperties.getCommitTime()).thenReturn(instant);
     when(gitProperties.getShortCommitId()).thenReturn("FRIDAY");
     when(dateGenerator.newDate()).thenReturn(currentDate);
-    when(uuidGenerator.randomUUID()).thenReturn(UUID.randomUUID());
+    when(uuidGenerator.randomUUID())
+        .thenReturn(UUID.fromString("5db534ea-5e97-4861-ba18-d74acc46db15"));
   }
 
   @Test
@@ -888,7 +889,7 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), true, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers);
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -905,7 +906,7 @@ class FhirConverterTest {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", true), false, LocalDate.of(2023, 3, 4));
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers);
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
@@ -920,11 +921,86 @@ class FhirConverterTest {
   }
 
   @Test
+  void convertToAoeObservation_employedInHealthcare_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null);
+    String testId = "fakeId";
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, true, null);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationEmployedInHealthcare.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_residesInCongregateSetting_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey(null, Map.of("fake", false), null, null);
+    String testId = "fakeId";
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, true);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationResidesInCongregateSetting.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_pregnancyStatus_matchesJson() throws IOException {
+    var answers = new AskOnEntrySurvey("77386006", Map.of("fake", false), null, null);
+    String testId = "fakeId";
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("fhir/observationPregnancyStatus.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
+  void convertToAoeObservation_allAOE_matchesJson() throws IOException {
+    var answers =
+        new AskOnEntrySurvey("102874004", Map.of("fake", true), false, LocalDate.of(2023, 3, 4));
+    String testId = "fakeId";
+
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, false, false);
+
+    String actualSerialized =
+        actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
+    var expectedSerialized =
+        IOUtils.toString(
+            Objects.requireNonNull(
+                getClass().getClassLoader().getResourceAsStream("fhir/observationAllAoe.json")),
+            StandardCharsets.UTF_8);
+    JSONAssert.assertEquals(expectedSerialized, actualSerialized, true);
+  }
+
+  @Test
   void convertToAoeObservation_noAnswer_matchesJson() throws IOException {
     var answers = new AskOnEntrySurvey(null, Map.of("fake", false), false, null);
     String testId = "fakeId";
 
-    var actual = fhirConverter.convertToAOEObservations(testId, answers);
+    var actual = fhirConverter.convertToAOEObservations(testId, answers, null, null);
 
     String actualSerialized =
         actual.stream().map(parser::encodeResourceToString).collect(Collectors.toSet()).toString();
