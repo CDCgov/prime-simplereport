@@ -9,6 +9,7 @@ resource "azurerm_key_vault_secret" "db_username" {
 data "azurerm_key_vault_secret" "db_password" {
   name         = "simple-report-${var.env}-db-password"
   key_vault_id = var.global_vault_id
+  value        = var.administrator_password
 }
 
 # Create the no-PHI user

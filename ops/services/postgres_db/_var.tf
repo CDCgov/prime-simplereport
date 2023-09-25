@@ -39,6 +39,12 @@ variable "administrator_login" {
   default = "simple_report"
 }
 
+variable "administrator_password" {
+  description = "Password for the admin user."
+  type        = string
+  sensitive   = true
+}
+
 variable "db_table" {
   default = "simple_report"
 }
