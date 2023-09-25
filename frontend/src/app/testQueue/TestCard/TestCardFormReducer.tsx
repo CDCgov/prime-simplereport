@@ -10,6 +10,7 @@ export interface TestFormState {
   dateTested: string;
   dirty: boolean;
   deviceId: string;
+  devicesMap: DevicesMap;
   specimenId: string;
   testResults: MultiplexResultInput[];
   covidAoeQuestions: CovidAoeQuestionResponses;
@@ -26,6 +27,7 @@ export enum TestFormActionCase {
   UPDATE_DATE_TESTED = "UPDATE_DATE_TESTED",
   UPDATE_TIME_TESTED = "UPDATE_TIME_TESTED",
   UPDATE_DEVICE_ID = "UPDATE_DEVICE_ID",
+  UPDATE_DEVICES_MAP = "UPDATE_DEVICES_MAP",
   UPDATE_SPECIMEN_ID = "UPDATE_SPECIMEN_ID",
   UPDATE_TEST_RESULT = "UPDATE_TEST_RESULT",
   UPDATE_COVID_AOE_RESPONSES = "UPDATE_COVID_AOE_RESPONSES",
@@ -38,7 +40,11 @@ export type TestFormAction =
   | { type: TestFormActionCase.UPDATE_TIME_TESTED; payload: string }
   | {
       type: TestFormActionCase.UPDATE_DEVICE_ID;
-      payload: { deviceId: string; devicesMap: DevicesMap };
+      payload: string;
+    }
+  | {
+      type: TestFormActionCase.UPDATE_DEVICES_MAP;
+      payload: DevicesMap;
     }
   | { type: TestFormActionCase.UPDATE_SPECIMEN_ID; payload: string }
   | {
@@ -100,9 +106,9 @@ export const testCardFormReducer = (
     case TestFormActionCase.UPDATE_DEVICE_ID: {
       return {
         ...prevState,
-        deviceId: payload.deviceId,
+        deviceId: payload,
         specimenId:
-          payload.devicesMap.get(payload.deviceId)?.swabTypes[0].internalId ??
+          prevState.devicesMap.get(payload)?.swabTypes[0].internalId ??
           prevState.specimenId,
         dirty: true,
       };
@@ -149,6 +155,12 @@ export const testCardFormReducer = (
           symptomOnsetDate: payload.symptomOnset,
           pregnancy: payload.pregnancy as PregnancyCode,
         },
+      };
+    }
+    case TestFormActionCase.UPDATE_DEVICES_MAP: {
+      return {
+        ...prevState,
+        devicesMap: payload,
       };
     }
   }
