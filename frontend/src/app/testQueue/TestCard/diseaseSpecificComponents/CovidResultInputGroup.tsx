@@ -1,10 +1,13 @@
 import React from "react";
 
-import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../../testResults/constants";
-import { findResultByDiseaseName } from "../QueueItem";
-import { MultiplexResultInput } from "../../../generated/graphql";
-import RadioGroup from "../../commonComponents/RadioGroup";
-import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
+import {
+  MULTIPLEX_DISEASES,
+  TEST_RESULTS,
+} from "../../../testResults/constants";
+import { findResultByDiseaseName } from "../../QueueItem";
+import { MultiplexResultInput } from "../../../../generated/graphql";
+import RadioGroup from "../../../commonComponents/RadioGroup";
+import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../../constants";
 
 interface CovidResult extends MultiplexResultInput {
   diseaseName: MULTIPLEX_DISEASES.COVID_19;
