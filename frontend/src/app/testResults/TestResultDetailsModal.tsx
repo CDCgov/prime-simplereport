@@ -1,7 +1,6 @@
 import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import classnames from "classnames";
-import { useFeature } from "flagged";
 
 import iconClose from "../../img/close.svg";
 import "./TestResultPrintModal.scss";
@@ -111,9 +110,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
       ? getResultByDiseaseName(results, MULTIPLEX_DISEASES.COVID_19)
       : "UNKNOWN",
   };
-  const multiplexFeatureFlagEnabled = useFeature("multiplexEnabled");
-  const multiplexEnabled =
-    multiplexFeatureFlagEnabled && results && hasMultiplexResults(results);
+  const multiplexEnabled = results && hasMultiplexResults(results);
   if (multiplexEnabled) {
     displayResult["fluAResult"] = getResultByDiseaseName(
       results,
@@ -234,7 +231,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           />
           <DetailsRow
             label="Device"
-            value={deviceType && deviceType.name}
+            value={deviceType?.name}
             removed={removed}
             aria-describedby="result-detail-title"
           />
@@ -314,7 +311,7 @@ const DetailsRow = ({
     <tr>
       <th className={labelColumnClasses}>{label}</th>
       <td className={classnames(tdClasses, removed && strikeClasses)}>
-        {value || "--"}
+        {value ?? "--"}
       </td>
     </tr>
   );
