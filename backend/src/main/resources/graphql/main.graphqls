@@ -372,6 +372,11 @@ type UploadSubmissionPage {
   content: [UploadResult!]!
 }
 
+type FeatureFlag{
+  name: String!
+  value: Boolean!
+}
+
 # Queries and mutations for everyday use
 
 type Query {
