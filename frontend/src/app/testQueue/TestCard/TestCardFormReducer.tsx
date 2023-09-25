@@ -4,7 +4,7 @@ import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
 import { DevicesMap, QueriedTestOrder } from "../QueueItem";
 
-import { convertFromMultiplexResponse } from "./TestCardForm";
+import { convertFromMultiplexResponse } from "./TestCardForm.utils";
 
 export interface TestFormState {
   dateTested: string;
