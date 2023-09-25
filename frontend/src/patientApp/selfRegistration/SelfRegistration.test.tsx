@@ -9,13 +9,12 @@ import {
 import { Provider } from "react-redux";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import createMockStore from "redux-mock-store";
+import { faker } from "@faker-js/faker";
 
 import * as AppInsightsMock from "../../app/TelemetryService";
 import "../../i18n";
 
 import { SelfRegistration } from "./SelfRegistration";
-
-import { faker } from "@faker-js/faker";
 
 const VALID_LINK = "foo-facility";
 
