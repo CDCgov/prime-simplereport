@@ -1,8 +1,16 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.AuditedEntity_;
+import gov.cdc.usds.simplereport.db.model.BaseTestInfo_;
+import gov.cdc.usds.simplereport.db.model.IdentifiedEntity_;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Person_;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.Result_;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestEvent_;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -12,6 +20,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,17 +35,93 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ResultService {
   private final ResultRepository resultRepository;
+  private final DiseaseService diseaseService;
+  private final OrganizationService organizationService;
 
-  private Specification<Result> buildTestEventSearchFilter(
+  private Specification<Result> buildResultSearchFilter(
       UUID facilityId,
       UUID patientId,
       TestResult result,
       PersonRole role,
+      SupportedDisease disease,
       Date startDate,
-      Date endDate,
-      UUID orgId) {
+      Date endDate) {
     return (root, query, cb) -> {
-      return null;
+      Join<Result, TestEvent> testEventJoin = root.join(Result_.testEvent);
+      Join<TestEvent, Person> personJoin = testEventJoin.join(TestEvent_.patient);
+      Predicate p = cb.conjunction();
+      query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
+      query.distinct(true);
+
+      if (facilityId != null) {
+        p =
+            cb.and(
+                p,
+                cb.equal(
+                    testEventJoin.get(BaseTestInfo_.facility).get(IdentifiedEntity_.internalId),
+                    facilityId));
+      } else {
+        final UUID finalOrgId = organizationService.getCurrentOrganization().getInternalId();
+        p =
+            cb.and(
+                p,
+                cb.equal(
+                    testEventJoin.get(BaseTestInfo_.organization).get(IdentifiedEntity_.internalId),
+                    finalOrgId));
+      }
+
+      if (patientId != null) {
+        p =
+            cb.and(
+                p,
+                cb.equal(
+                    testEventJoin.get(BaseTestInfo_.patient).get(IdentifiedEntity_.internalId),
+                    patientId));
+      }
+
+      if (result != null) {
+        p = cb.and(p, cb.equal(root.get(Result_.testResult), result));
+      }
+
+      if (role != null) {
+        p = cb.and(p, cb.equal(personJoin.get(Person_.role), role));
+      }
+
+      if (disease != null) {
+        p = cb.and(p, cb.equal(root.get(Result_.disease), disease));
+      }
+
+      if (startDate != null) {
+        p =
+            cb.and(
+                p,
+                cb.or(
+                    cb.and(
+                        cb.isNotNull(testEventJoin.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.greaterThanOrEqualTo(
+                            testEventJoin.get(BaseTestInfo_.dateTestedBackdate), startDate)),
+                    cb.and(
+                        cb.isNull(testEventJoin.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.greaterThanOrEqualTo(
+                            testEventJoin.get(AuditedEntity_.createdAt), startDate))));
+      }
+
+      if (endDate != null) {
+        p =
+            cb.and(
+                p,
+                cb.or(
+                    cb.and(
+                        cb.isNotNull(testEventJoin.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.lessThanOrEqualTo(
+                            testEventJoin.get(BaseTestInfo_.dateTestedBackdate), endDate)),
+                    cb.and(
+                        cb.isNull(testEventJoin.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.lessThanOrEqualTo(
+                            testEventJoin.get(AuditedEntity_.createdAt), endDate))));
+      }
+
+      return p;
     };
   }
 
@@ -45,6 +131,7 @@ public class ResultService {
       UUID patientId,
       TestResult result,
       PersonRole role,
+      SupportedDisease supportedDisease,
       Date startDate,
       Date endDate,
       int pageOffset,
@@ -54,7 +141,8 @@ public class ResultService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return resultRepository.findAll(
-        buildTestEventSearchFilter(null, patientId, result, role, startDate, endDate, null),
+        buildResultSearchFilter(
+            null, patientId, result, role, supportedDisease, startDate, endDate),
         pageRequest);
   }
 
@@ -65,6 +153,7 @@ public class ResultService {
       UUID patientId,
       TestResult result,
       PersonRole role,
+      SupportedDisease supportedDisease,
       Date startDate,
       Date endDate,
       int pageOffset,
@@ -74,7 +163,8 @@ public class ResultService {
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
     return resultRepository.findAll(
-        buildTestEventSearchFilter(facilityId, patientId, result, role, startDate, endDate, null),
+        buildResultSearchFilter(
+            facilityId, patientId, result, role, supportedDisease, startDate, endDate),
         pageRequest);
   }
 

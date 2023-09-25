@@ -2,6 +2,8 @@ package gov.cdc.usds.simplereport.api.testresult;
 
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.Result;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
+import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import java.util.Date;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Controller;
 public class ResultResolver {
 
   private final ResultService service;
+  private final DiseaseService diseaseService;
 
   @QueryMapping
   public Page<Result> resultsPage(
@@ -24,6 +27,7 @@ public class ResultResolver {
       @Argument UUID patientId,
       @Argument String result,
       @Argument String role,
+      @Argument String disease,
       @Argument Date startDate,
       @Argument Date endDate,
       @Argument int pageNumber,
@@ -37,11 +41,14 @@ public class ResultResolver {
       pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
     }
 
+    SupportedDisease supportedDisease = diseaseService.getDiseaseByName(disease);
+
     if (facilityId == null) {
       return service.getOrganizationResults(
           patientId,
           Translators.parseTestResult(result),
           Translators.parsePersonRole(role, true),
+          supportedDisease,
           startDate,
           endDate,
           pageNumber,
@@ -53,6 +60,7 @@ public class ResultResolver {
         patientId,
         Translators.parseTestResult(result),
         Translators.parsePersonRole(role, true),
+        supportedDisease,
         startDate,
         endDate,
         pageNumber,
