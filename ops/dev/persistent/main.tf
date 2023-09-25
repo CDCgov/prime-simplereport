@@ -52,7 +52,7 @@ module "db" {
   private_dns_zone_id = module.vnet.private_dns_zone_id
 
   administrator_password = random_password.administrator_password.result
-  nophi_user_password = random_password.random_nophi_password.result
+  nophi_user_password    = random_password.random_nophi_password.result
 
   tags = local.management_tags
 }
