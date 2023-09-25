@@ -242,6 +242,7 @@ export type MutationAddPatientArgs = {
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
+  notes?: InputMaybe<Scalars["String"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
   race?: InputMaybe<Scalars["String"]>;
@@ -462,6 +463,7 @@ export type MutationUpdatePatientArgs = {
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
+  notes?: InputMaybe<Scalars["String"]>;
   patientId: Scalars["ID"];
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
@@ -583,6 +585,7 @@ export type Patient = {
   lookupId?: Maybe<Scalars["String"]>;
   middleName?: Maybe<Scalars["String"]>;
   name?: Maybe<NameInfo>;
+  notes?: Maybe<Scalars["String"]>;
   phoneNumbers?: Maybe<Array<Maybe<PhoneNumber>>>;
   preferredLanguage?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;

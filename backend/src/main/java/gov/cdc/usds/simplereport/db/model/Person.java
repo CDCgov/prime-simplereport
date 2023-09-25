@@ -59,6 +59,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @Getter @Column private String country;
   @Getter @Column private String gender;
   @Getter @Column private String genderIdentity;
+  @Getter @Column private String notes;
 
   @Getter
   @Column
@@ -140,7 +141,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDeliveryPreference) {
+      TestResultDeliveryPreference testResultDeliveryPreference,
+      String notes) {
     super(organization);
     this.lookupId = lookupId;
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
@@ -158,6 +160,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.employedInHealthcare = employedInHealthcare;
     this.preferredLanguage = preferredLanguage;
     this.testResultDeliveryPreference = testResultDeliveryPreference;
+    this.notes = notes;
   }
 
   public Person(
@@ -201,7 +204,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
         residentCongregateSetting,
         employedInHealthcare,
         preferredLanguage,
-        testResultDeliveryPreference);
+        testResultDeliveryPreference,
+        null);
     this.facility = facility;
   }
 
@@ -267,7 +271,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDeliveryPreference) {
+      TestResultDeliveryPreference testResultDeliveryPreference,
+      String notes) {
     this.lookupId = lookupId;
     this.nameInfo.setFirstName(firstName);
     this.nameInfo.setMiddleName(middleName);
@@ -289,6 +294,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     if (testResultDeliveryPreference != null) {
       this.testResultDeliveryPreference = testResultDeliveryPreference;
     }
+    this.notes = notes;
   }
 
   public void setFacility(Facility f) {

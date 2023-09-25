@@ -396,6 +396,32 @@
           {
             "reference": "Observation/087864a3-81d3-3d38-a4be-4bbb928f1f99"
           }
+        ],
+        "note": [
+          {
+            "extension": [
+              {
+                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "extension": [
+                        {
+                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
+                          "valueString": "identifier"
+                        }
+                      ],
+                      "system": "HL70364",
+                      "version": "2.5.1",
+                      "code": "RE",
+                      "display": "Remark"
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": "Test Comment"
+          }
         ]
       }
     },
