@@ -10,14 +10,12 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.converter.*;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hl7.fhir.r4.model.Bundle;
@@ -30,81 +28,81 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @RequiredArgsConstructor
 public class ConditionAgnosticBulkUploadToFhir {
-    private final ConditionAgnosticFhirConverter fhirConverter;
-    final FhirContext ctx = FhirContext.forR4();
-    final IParser parser = ctx.newJsonParser();
+  private final ConditionAgnosticFhirConverter fhirConverter;
+  final FhirContext ctx = FhirContext.forR4();
+  final IParser parser = ctx.newJsonParser();
 
-    public List<String> convertToFhirBundles(InputStream csvStream) {
-        var futureTestEvents = new ArrayList<CompletableFuture<String>>();
-        final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
-        while (valueIterator.hasNext()) {
-            final Map<String, String> row;
-            try {
-                row = getNextRow(valueIterator);
-            } catch (CsvProcessingException ex) {
-                // anything that would land here should have been caught and handled by the file validator
-                log.error("Unable to parse csv.", ex);
-                continue;
-            }
-            var fileRow = new ConditionAgnosticResultRow(row);
+  public List<String> convertToFhirBundles(InputStream csvStream) {
+    var futureTestEvents = new ArrayList<CompletableFuture<String>>();
+    final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
+    while (valueIterator.hasNext()) {
+      final Map<String, String> row;
+      try {
+        row = getNextRow(valueIterator);
+      } catch (CsvProcessingException ex) {
+        // anything that would land here should have been caught and handled by the file validator
+        log.error("Unable to parse csv.", ex);
+        continue;
+      }
+      var fileRow = new ConditionAgnosticResultRow(row);
 
-            var future =
-                    CompletableFuture.supplyAsync(() -> convertRowToFhirBundle(fileRow))
-                            .thenApply(parser::encodeResourceToString);
-            futureTestEvents.add(future);
-        }
-
-        List<String> bundles =
-                futureTestEvents.stream()
-                        .map(
-                                future -> {
-                                    try {
-                                        return future.get();
-                                    } catch (InterruptedException | ExecutionException e) {
-                                        log.error("Bulk upload failure to convert to fhir.", e);
-                                        Thread.currentThread().interrupt();
-                                        throw new CsvProcessingException("Unable to process file.");
-                                    }
-                                })
-                        .toList();
-        return bundles;
+      var future =
+          CompletableFuture.supplyAsync(() -> convertRowToFhirBundle(fileRow))
+              .thenApply(parser::encodeResourceToString);
+      futureTestEvents.add(future);
     }
 
-    private Bundle convertRowToFhirBundle(ConditionAgnosticResultRow row) {
-        Patient patient =
-                fhirConverter.convertToPatient(
-                        ConditionAgnosticConvertToPatientProps.builder()
-                                .id(row.getPatientId().getValue())
-                                .firstName(row.getPatientFirstName().getValue())
-                                .lastName(row.getPatientLastName().getValue())
-                                .nameAbsentReason(row.getPatientNameAbsentReason().getValue())
-                                .gender(row.getPatientAdminGender().getValue())
-                                .build());
+    List<String> bundles =
+        futureTestEvents.stream()
+            .map(
+                future -> {
+                  try {
+                    return future.get();
+                  } catch (InterruptedException | ExecutionException e) {
+                    log.error("Bulk upload failure to convert to fhir.", e);
+                    Thread.currentThread().interrupt();
+                    throw new CsvProcessingException("Unable to process file.");
+                  }
+                })
+            .toList();
+    return bundles;
+  }
 
-        Observation observation =
-                fhirConverter.convertToObservation(
-                        ConditionAgnosticConvertToObservationProps.builder()
-                                .correctionStatus(
-                                        mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
-                                .resultValue(row.getTestResultValue().getValue())
-                                .patient(patient)
-                                .testPerformedCode(row.getTestPerformedCode().getValue())
-                                .build());
+  private Bundle convertRowToFhirBundle(ConditionAgnosticResultRow row) {
+    Patient patient =
+        fhirConverter.convertToPatient(
+            ConditionAgnosticConvertToPatientProps.builder()
+                .id(row.getPatientId().getValue())
+                .firstName(row.getPatientFirstName().getValue())
+                .lastName(row.getPatientLastName().getValue())
+                .nameAbsentReason(row.getPatientNameAbsentReason().getValue())
+                .gender(row.getPatientAdminGender().getValue())
+                .build());
 
-        DiagnosticReport diagnosticReport =
-                fhirConverter.convertToDiagnosticReport(
-                        ConditionAgnosticConvertToDiagnosticReportProps.builder()
-                                .observation(observation)
-                                .patient(patient)
-                                .testEffectiveDate(row.getTestResultEffectiveDate().getValue())
-                                .testPerformedCode(row.getTestPerformedCode().getValue())
-                                .build());
+    Observation observation =
+        fhirConverter.convertToObservation(
+            ConditionAgnosticConvertToObservationProps.builder()
+                .correctionStatus(
+                    mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
+                .resultValue(row.getTestResultValue().getValue())
+                .patient(patient)
+                .testPerformedCode(row.getTestPerformedCode().getValue())
+                .build());
 
-        return fhirConverter.createFhirBundle(
-                ConditionAgnosticCreateFhirBundleProps.builder()
-                        .patient(patient)
-                        .observation(observation)
-                        .diagnosticReport(diagnosticReport)
-                        .build());
-    }
+    DiagnosticReport diagnosticReport =
+        fhirConverter.convertToDiagnosticReport(
+            ConditionAgnosticConvertToDiagnosticReportProps.builder()
+                .observation(observation)
+                .patient(patient)
+                .testEffectiveDate(row.getTestResultEffectiveDate().getValue())
+                .testPerformedCode(row.getTestPerformedCode().getValue())
+                .build());
+
+    return fhirConverter.createFhirBundle(
+        ConditionAgnosticCreateFhirBundleProps.builder()
+            .patient(patient)
+            .observation(observation)
+            .diagnosticReport(diagnosticReport)
+            .build());
+  }
 }
