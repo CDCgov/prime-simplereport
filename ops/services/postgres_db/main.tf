@@ -33,6 +33,10 @@ resource "azurerm_postgresql_flexible_server" "db" {
     }
   }
 
+  authentication {
+    password_auth_enabled = true
+  }
+
   # See note at https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#high_availability
   lifecycle {
     ignore_changes = [
