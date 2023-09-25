@@ -1,5 +1,4 @@
 import {
-  act,
   render,
   screen,
   waitFor,
@@ -53,25 +52,22 @@ const devices = [
 ];
 
 describe("Device lookup", () => {
-  beforeEach(() => {
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MemoryRouter>
         <DeviceLookup deviceOptions={devices} />
       </MemoryRouter>
-    );
+    ),
   });
+
   afterAll(() => {
     jest.resetAllMocks();
   });
 
   it("displays no results message if no matches found", async () => {
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Select device"),
-          "noresults"
-        )
-    );
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "noresults");
     await waitFor(() => {
       expect(
         screen.getByText("No device found matching", { exact: false })
@@ -80,10 +76,8 @@ describe("Device lookup", () => {
   });
 
   it("dropdown displays devices", async () => {
-    await act(
-      async () =>
-        await userEvent.type(screen.getByLabelText("Select device"), "model")
-    );
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "model");
 
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
 
@@ -95,12 +89,10 @@ describe("Device lookup", () => {
   });
 
   it("selected device displays device info", async () => {
-    await act(
-      async () =>
-        await userEvent.type(screen.getByLabelText("Select device"), "model")
-    );
+    const { user } = renderWithUser();
+    await user.type(screen.getByLabelText("Select device"), "model");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    await act(async () => await userEvent.click(screen.getByText("Select")));
+    await user.click(screen.getByText("Select"));
 
     expect(screen.getByText("Acme Emitter (RT-PCR)")).toBeInTheDocument();
 
@@ -127,27 +119,29 @@ describe("Device lookup", () => {
   });
 
   it("copy button displays when device selected", async () => {
-    Object.assign(navigator, {
-      clipboard: {
-        writeText: () => {},
+    const { user } = renderWithUser();
+    const nav = navigator;
+    const mockNav = jest.fn();
+    Object.defineProperty(global, "navigator", {
+      writable: true,
+      value: {
+        clipboard: {
+          writeText: mockNav,
+        },
       },
     });
-
     jest.spyOn(navigator.clipboard, "writeText");
-
-    await act(
-      async () =>
-        await userEvent.type(screen.getByLabelText("Select device"), "model")
-    );
+    await user.type(screen.getByLabelText("Select device"), "model");
     await waitForElementToBeRemoved(() => screen.queryByText("Searching..."));
-    await act(async () => await userEvent.click(screen.getByText("Select")));
+    await user.click(screen.getByText("Select"));
 
     const button = screen.getByLabelText(
       "Copy equipment model name for Acme Emitter (RT-PCR)"
     );
 
-    await act(async () => await userEvent.click(button));
+    await user.click(button);
 
-    expect(navigator.clipboard.writeText).toHaveBeenCalledWith("Model A");
+    expect(mockNav).toHaveBeenCalledWith("Model A");
+    Object.defineProperty(global, "navigator", { writable: true, value: nav });
   });
 });

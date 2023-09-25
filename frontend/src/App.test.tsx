@@ -1,11 +1,5 @@
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
-import { MockedProvider } from "@apollo/client/testing";
+import { render, screen } from "@testing-library/react";
 import createMockStore from "redux-mock-store";
-import { Provider } from "react-redux";
 
 import { ReactApp } from "./App";
 
@@ -13,20 +7,13 @@ jest.mock("./featureFlags/WithFeatureFlags", () => {
   return ({ children }: any): JSX.Element => <>{children}</>;
 });
 
+jest.mock("./app/ReportingApp", () => {
+  return (): JSX.Element => <>Reporting App space holder</>;
+});
 describe("App Component", () => {
   it("renders without crashing", async () => {
     const mockStore = createMockStore([]);
-    const mockedStore = mockStore({});
-    render(
-      <Provider store={mockedStore}>
-        <MockedProvider mocks={[]} addTypename={false}>
-          <ReactApp />
-        </MockedProvider>
-      </Provider>
-    );
-
-    await waitForElementToBeRemoved(() =>
-      screen.queryByText(/loading account information.../i)
-    );
+    render(<ReactApp />);
+    await screen.findByText(/Reporting App space holder/i);
   });
 });
