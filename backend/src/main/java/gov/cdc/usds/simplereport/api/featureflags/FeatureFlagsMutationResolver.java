@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.featureflags;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.FeatureFlag;
 import gov.cdc.usds.simplereport.db.repository.FeatureFlagRepository;
@@ -18,9 +17,7 @@ public class FeatureFlagsMutationResolver {
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public FeatureFlag updateFeatureFlag(@Argument String name, @Argument boolean value) {
     FeatureFlag featureFlag =
-        featureFlagRepository
-            .findFeatureFlagByName(name)
-            .orElseThrow(() -> new IllegalGraphqlArgumentException("Feature flag not found"));
+        featureFlagRepository.findFeatureFlagByName(name).orElse(new FeatureFlag(name, value));
     featureFlag.setValue(value);
     return featureFlagRepository.save(featureFlag);
   }
