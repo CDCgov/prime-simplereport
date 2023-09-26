@@ -279,7 +279,8 @@ public class TestDataFactory {
             false,
             false,
             "English",
-            TestResultDeliveryPreference.NONE);
+            TestResultDeliveryPreference.NONE,
+            "NOTES AND STUFF AND THINGS");
     return personRepository.save(p);
   }
 
