@@ -132,7 +132,7 @@ public class FhirConverter {
   private final UUIDGenerator uuidGenerator;
   private final DateGenerator dateGenerator;
 
-  private static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
+  static final String SIMPLE_REPORT_ORG_ID = "07640c5d-87cd-488b-9343-a226c5166539";
 
   public HumanName convertToHumanName(@NotNull PersonName personName) {
     return convertToHumanName(

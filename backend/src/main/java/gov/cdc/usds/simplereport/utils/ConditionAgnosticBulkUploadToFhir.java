@@ -101,7 +101,7 @@ public class ConditionAgnosticBulkUploadToFhir {
     return fhirConverter.createFhirBundle(
         ConditionAgnosticCreateFhirBundleProps.builder()
             .patient(patient)
-            .observation(observation)
+            .resultObservations(observation)
             .diagnosticReport(diagnosticReport)
             .build());
   }
