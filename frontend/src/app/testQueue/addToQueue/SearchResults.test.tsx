@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { Patient } from "../../patients/ManagePatients";
@@ -112,12 +112,10 @@ describe("SearchResults", () => {
           />
         </RouterWithFacility>
       );
-
+      const user = userEvent.setup();
       expect(screen.getByText(`Add new ${PATIENT_TERM}`)).toBeInTheDocument();
-      await act(
-        async () =>
-          await userEvent.click(screen.getByText(`Add new ${PATIENT_TERM}`))
-      );
+      await user.click(screen.getByText(`Add new ${PATIENT_TERM}`));
+
       expect(
         screen.getByText(
           `Redirected to /add-patient?facility=${mockFacilityID}`

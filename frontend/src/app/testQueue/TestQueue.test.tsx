@@ -1,5 +1,4 @@
 import {
-  act,
   render,
   screen,
   waitFor,
@@ -34,6 +33,19 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
 describe("TestQueue", () => {
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
+
+  const renderWithUser = (mocks: any[]) => ({
+    user: userEvent.setup(),
+    ...render(
+      <MemoryRouter>
+        <MockedProvider mocks={mocks}>
+          <Provider store={store}>
+            <TestQueue activeFacilityId="a1" />
+          </Provider>
+        </MockedProvider>
+      </MemoryRouter>
+    ),
+  });
 
   beforeEach(() => {
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
@@ -83,22 +95,14 @@ describe("TestQueue", () => {
   });
 
   it("should remove items queue using the transition group", async () => {
-    render(
-      <MemoryRouter>
-        <MockedProvider mocks={mocks}>
-          <Provider store={store}>
-            <TestQueue activeFacilityId="a1" />
-          </Provider>
-        </MockedProvider>
-      </MemoryRouter>
-    );
+    const { user } = renderWithUser(mocks);
     expect(await screen.findByText("Doe, John A"));
     const removeButton = await screen.findByLabelText(
       "Close test for Doe, John A"
     );
-    await act(async () => await userEvent.click(removeButton));
+    await user.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
-    await act(async () => await userEvent.click(confirmButton));
+    await user.click(confirmButton);
     expect(
       screen.getByText("Submitting test data for Doe, John A...")
     ).toBeInTheDocument();
@@ -188,16 +192,8 @@ describe("TestQueue", () => {
   });
 
   describe("clicking on test questionnaire", () => {
-    beforeEach(async () => {
-      render(
-        <MemoryRouter>
-          <MockedProvider mocks={mocks}>
-            <Provider store={store}>
-              <TestQueue activeFacilityId="a1" />
-            </Provider>
-          </MockedProvider>
-        </MemoryRouter>
-      );
+    it("should open test questionnaire and display emails and phone numbers correctly", async () => {
+      const { user } = renderWithUser(mocks);
 
       await screen.findByLabelText(
         `Search for a ${PATIENT_TERM} to start their test`
@@ -205,13 +201,8 @@ describe("TestQueue", () => {
       expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
       expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
 
-      await act(
-        async () =>
-          await userEvent.click(screen.getAllByText("Test questionnaire")[0])
-      );
-    });
+      await user.click(screen.getAllByText("Test questionnaire")[0]);
 
-    it("should open test questionnaire and display emails and phone numbers correctly", () => {
       const modal = screen.getByRole("dialog");
 
       expect(within(modal).getByText("Test questionnaire")).toBeInTheDocument();
