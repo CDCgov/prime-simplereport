@@ -11,6 +11,7 @@ import {
 import moment from "moment";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
+import MockDate from "mockdate";
 
 import { getAppInsights } from "../TelemetryService";
 import * as srToast from "../utils/srToast";
@@ -22,6 +23,12 @@ import {
   EditQueueItemMutationVariables as EDIT_QUEUE_ITEM_VARIABLES,
   SubmitQueueItemMutation as SUBMIT_QUEUE_ITEM_DATA,
   EditQueueItemMutation as EDIT_QUEUE_ITEM_DATA,
+  RemovePatientFromQueueDocument,
+  RemovePatientFromQueueMutationVariables,
+  RemovePatientFromQueueMutation,
+  UpdateAoeDocument,
+  UpdateAoeMutationVariables,
+  UpdateAoeMutation,
 } from "../../generated/graphql";
 import SRToastContainer from "../commonComponents/SRToastContainer";
 import PrimeErrorBoundary from "../PrimeErrorBoundary";
@@ -77,7 +84,7 @@ const specimen2Id = "f127ef55-4133-4556-9bca-33615d071e8d";
 
 const deletedSpecimenId = "fddb9ef4-7606-4621-b7a2-20772bac5136";
 
-const getDeciceTypeDropdown = async () =>
+const getDeviceTypeDropdown = async () =>
   (await screen.findByTestId("device-type-dropdown")) as HTMLSelectElement;
 
 async function getSpecimenTypeDropdown() {
@@ -85,6 +92,84 @@ async function getSpecimenTypeDropdown() {
     "specimen-type-dropdown"
   )) as HTMLSelectElement;
 }
+
+const getEditQueueItemMock = (variables: EDIT_QUEUE_ITEM_VARIABLES) => ({
+  request: {
+    query: EDIT_QUEUE_ITEM,
+    variables: variables,
+  },
+  result: {
+    data: {
+      editQueueItem: {
+        results: [
+          {
+            disease: { name: "COVID-19" },
+            testResult: "POSITIVE",
+          },
+        ],
+        dateTested: null,
+        deviceType: {
+          internalId: device1Id,
+          testLength: 10,
+        },
+      },
+    } as EDIT_QUEUE_ITEM_DATA,
+  },
+});
+
+const getSubmitQueueItem = (
+  variables: SUBMIT_QUEUE_ITEM_VARIABLES,
+  queueItemId: string
+) => ({
+  request: {
+    query: SUBMIT_TEST_RESULT,
+    variables,
+  },
+  result: {
+    data: {
+      submitQueueItem: {
+        testResult: {
+          internalId: queueItemId,
+        },
+        deliverySuccess: true,
+      },
+    } as SUBMIT_QUEUE_ITEM_DATA,
+  },
+});
+
+const getRemovePatientFromQueueMock = (
+  variables: RemovePatientFromQueueMutationVariables
+) => ({
+  request: {
+    query: RemovePatientFromQueueDocument,
+    variables,
+  },
+  result: {
+    data: {
+      removePatientFromQueue: {},
+    } as RemovePatientFromQueueMutation,
+  },
+});
+
+const getUpdateTimeOfTestQuestionMock = (
+  variables: UpdateAoeMutationVariables
+) => ({
+  request: {
+    query: UpdateAoeDocument,
+    variables,
+  },
+  result: {
+    data: {
+      updateTimeOfTestQuestions: {},
+    } as UpdateAoeMutation,
+  },
+});
+
+const waitForEditQueueToFinish = async (elementToTrack: any) => {
+  // waits for endpoint to respond
+  await waitFor(() => expect(elementToTrack).toBeDisabled());
+  await waitFor(() => expect(elementToTrack).toBeEnabled());
+};
 
 describe("QueueItem", () => {
   let nowFn = Date.now;
@@ -245,6 +330,7 @@ describe("QueueItem", () => {
   };
 
   const devicesMap = new Map();
+
   facilityInfo.deviceTypes.map((d) => devicesMap.set(d.internalId, d));
 
   const testProps: QueueItemProps = {
@@ -261,12 +347,11 @@ describe("QueueItem", () => {
     mocks?: any;
   };
 
-  const renderQueueItem = async (
+  const renderQueueItemWithUser = async (
     { props, mocks }: testRenderProps = { props: testProps, mocks: undefined }
   ) => {
     props = props || testProps;
-
-    const { container } = render(
+    const { ...renderControls } = render(
       <PrimeErrorBoundary>
         <Provider store={store}>
           <MemoryRouter>
@@ -285,8 +370,10 @@ describe("QueueItem", () => {
         <SRToastContainer />
       </PrimeErrorBoundary>
     );
-    await new Promise((resolve) => setTimeout(resolve, 501));
-    return container;
+
+    await screen.findByText(/Test questionnaire/i);
+
+    return { user: userEvent.setup(), ...renderControls };
   };
 
   beforeEach(() => {
@@ -315,11 +402,12 @@ describe("QueueItem", () => {
   });
 
   it("matches snapshot", async () => {
-    expect(await renderQueueItem()).toMatchSnapshot();
+    await renderQueueItemWithUser();
+    expect(document.body).toMatchSnapshot();
   });
 
   it("correctly renders the test queue", async () => {
-    await renderQueueItem();
+    await renderQueueItemWithUser();
     expect(
       screen.getByText("Dixon, Althea Hedda Mclaughlin")
     ).toBeInTheDocument();
@@ -330,7 +418,7 @@ describe("QueueItem", () => {
     let scrollIntoViewMock = jest.fn();
     window.HTMLElement.prototype.scrollIntoView = scrollIntoViewMock;
 
-    await renderQueueItem({
+    await renderQueueItemWithUser({
       props: {
         ...testProps,
         startTestPatientId: queueItemInfo.patient.internalId,
@@ -346,10 +434,10 @@ describe("QueueItem", () => {
   });
 
   it("navigates to edit the user when clicking their name", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItemWithUser();
     const patientName = screen.getByText("Dixon, Althea Hedda Mclaughlin");
     expect(patientName).toBeInTheDocument();
-    await userEvent.click(patientName);
+    await user.click(patientName);
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: `/patient/${queueItemInfo.patient.internalId}`,
       search: `?facility=${facilityInfo.id}&fromQueue=true`,
@@ -357,14 +445,14 @@ describe("QueueItem", () => {
   });
 
   it("updates the timer when a device is changed", async () => {
-    await renderQueueItem();
-    await userEvent.type(screen.getByTestId("device-type-dropdown"), "lumira");
+    const { user } = await renderQueueItemWithUser();
+    await user.type(screen.getByTestId("device-type-dropdown"), "lumira");
 
     expect(await screen.findByTestId("timer")).toHaveTextContent("15:00");
   });
 
   it("renders dropdown of device types", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItemWithUser();
 
     const deviceDropdown = (await screen.findByTestId(
       "device-type-dropdown"
@@ -377,7 +465,7 @@ describe("QueueItem", () => {
     expect(deviceDropdown.options[3].label).toEqual("Multiplex");
     expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
-    await userEvent.selectOptions(deviceDropdown, "Abbott BinaxNow");
+    await user.selectOptions(deviceDropdown, "Abbott BinaxNow");
 
     expect(
       ((await screen.findByText("Abbott BinaxNow")) as HTMLOptionElement)
@@ -389,7 +477,7 @@ describe("QueueItem", () => {
   });
 
   it("renders dropdown of swab types configured with selected device", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItemWithUser();
     const swabDropdown = (await screen.findByTestId(
       "specimen-type-dropdown"
     )) as HTMLSelectElement;
@@ -407,7 +495,7 @@ describe("QueueItem", () => {
       ).selected
     ).toBeTruthy();
 
-    await userEvent.selectOptions(swabDropdown, "Nasopharyngeal swab");
+    await user.selectOptions(swabDropdown, "Nasopharyngeal swab");
 
     expect(
       ((await screen.findByText("Nasopharyngeal swab")) as HTMLOptionElement)
@@ -417,64 +505,21 @@ describe("QueueItem", () => {
 
   it("correctly handles when device is deleted from facility", async () => {
     const mocks = [
-      {
-        request: {
-          query: EDIT_QUEUE_ITEM,
-          variables: {
-            id: queueItemInfo.internalId,
-            deviceTypeId: deletedDeviceId,
-            specimenTypeId: specimen1Id,
-            results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-            dateTested: null,
-          } as EDIT_QUEUE_ITEM_VARIABLES,
-        },
-        result: {
-          data: {
-            editQueueItem: {
-              results: [
-                {
-                  disease: { name: "COVID-19" },
-                  testResult: "POSITIVE",
-                },
-              ],
-              dateTested: null,
-              deviceType: {
-                internalId: deletedDeviceId,
-                testLength: 10,
-              },
-            },
-          } as EDIT_QUEUE_ITEM_DATA,
-        },
-      },
-      {
-        request: {
-          query: EDIT_QUEUE_ITEM,
-          variables: {
-            id: queueItemInfo.internalId,
-            deviceTypeId: device1Id,
-            specimenTypeId: specimen1Id,
-            results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-            dateTested: null,
-          } as EDIT_QUEUE_ITEM_VARIABLES,
-        },
-        result: {
-          data: {
-            editQueueItem: {
-              results: [
-                {
-                  disease: { name: "COVID-19" },
-                  testResult: "POSITIVE",
-                },
-              ],
-              dateTested: null,
-              deviceType: {
-                internalId: device1Id,
-                testLength: 10,
-              },
-            },
-          } as EDIT_QUEUE_ITEM_DATA,
-        },
-      },
+      getEditQueueItemMock({
+        id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+        deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+        results: [],
+        dateTested: null,
+        specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+      }),
+      ,
+      getEditQueueItemMock({
+        id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+        deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+        results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
+        dateTested: null,
+        specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+      }),
     ];
 
     const props = {
@@ -493,9 +538,9 @@ describe("QueueItem", () => {
       },
     };
 
-    await renderQueueItem({ props, mocks });
+    const { user } = await renderQueueItemWithUser({ props, mocks });
 
-    const deviceDropdown = await getDeciceTypeDropdown();
+    const deviceDropdown = await getDeviceTypeDropdown();
     expect(deviceDropdown.options.length).toEqual(6);
     expect(deviceDropdown.options[0].label).toEqual("");
     expect(deviceDropdown.options[1].label).toEqual("Abbott BinaxNow");
@@ -526,8 +571,8 @@ describe("QueueItem", () => {
     // notice the error message
     expect(screen.getByText("Please select a device")).toBeInTheDocument();
 
-    await userEvent.selectOptions(deviceDropdown, device1Id);
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    await user.selectOptions(deviceDropdown, device1Id);
+    await waitForEditQueueToFinish(positiveResult);
 
     // error goes away after selecting a valid device
     expect(
@@ -539,71 +584,27 @@ describe("QueueItem", () => {
     expect(currentDateTimeButton).toBeEnabled();
 
     // enables submitting of results after selecting one
-    await userEvent.click(positiveResult);
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    await user.click(positiveResult);
+    await waitForEditQueueToFinish(positiveResult);
     expect(submitButton).toBeEnabled();
   });
 
   it("correctly handles when swab is deleted from device", async () => {
     const mocks = [
-      {
-        request: {
-          query: EDIT_QUEUE_ITEM,
-          variables: {
-            id: queueItemInfo.internalId,
-            deviceTypeId: device2Id,
-            specimenTypeId: deletedSpecimenId,
-            results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-            dateTested: null,
-          } as EDIT_QUEUE_ITEM_VARIABLES,
-        },
-        result: {
-          data: {
-            editQueueItem: {
-              results: [
-                {
-                  disease: { name: "COVID-19" },
-                  testResult: "POSITIVE",
-                },
-              ],
-              dateTested: null,
-              deviceType: {
-                internalId: device2Id,
-                testLength: 10,
-              },
-            },
-          } as EDIT_QUEUE_ITEM_DATA,
-        },
-      },
-      {
-        request: {
-          query: EDIT_QUEUE_ITEM,
-          variables: {
-            id: queueItemInfo.internalId,
-            deviceTypeId: device1Id,
-            specimenTypeId: specimen1Id,
-            results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
-            dateTested: null,
-          } as EDIT_QUEUE_ITEM_VARIABLES,
-        },
-        result: {
-          data: {
-            editQueueItem: {
-              results: [
-                {
-                  disease: { name: "COVID-19" },
-                  testResult: "POSITIVE",
-                },
-              ],
-              dateTested: null,
-              deviceType: {
-                internalId: device1Id,
-                testLength: 10,
-              },
-            },
-          } as EDIT_QUEUE_ITEM_DATA,
-        },
-      },
+      getEditQueueItemMock({
+        id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+        deviceTypeId: "5c711888-ba37-4b2e-b347-311ca364efdb",
+        results: [],
+        dateTested: null,
+        specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+      }),
+      getEditQueueItemMock({
+        id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+        deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+        results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
+        dateTested: null,
+        specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+      }),
     ];
 
     const props = {
@@ -633,9 +634,9 @@ describe("QueueItem", () => {
       },
     };
 
-    await renderQueueItem({ props, mocks });
+    const { user } = await renderQueueItemWithUser({ props, mocks });
 
-    const deviceDropdown = await getDeciceTypeDropdown();
+    const deviceDropdown = await getDeviceTypeDropdown();
     expect(deviceDropdown.options.length).toEqual(5);
     expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
     expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
@@ -665,8 +666,8 @@ describe("QueueItem", () => {
     // notice the error message
     expect(screen.getByText("Please select a swab type")).toBeInTheDocument();
 
-    await userEvent.selectOptions(swabDropdown, specimen1Id);
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    await user.selectOptions(swabDropdown, specimen1Id);
+    await waitForEditQueueToFinish(positiveResult);
 
     // error goes away after selecting a valid device
     expect(
@@ -678,8 +679,8 @@ describe("QueueItem", () => {
     expect(currentDateTimeButton).toBeEnabled();
 
     // enables submitting of results after selecting one
-    await userEvent.click(positiveResult);
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    await user.click(positiveResult);
+    await waitForEditQueueToFinish(positiveResult);
     expect(submitButton).toBeEnabled();
   });
 
@@ -821,9 +822,9 @@ describe("QueueItem", () => {
     ];
 
     it("updates test order on device type and specimen type change", async () => {
-      await renderQueueItem({ mocks });
+      const { user } = await renderQueueItemWithUser({ mocks });
 
-      const deviceDropdown = await getDeciceTypeDropdown();
+      const deviceDropdown = await getDeviceTypeDropdown();
       expect(deviceDropdown.options.length).toEqual(5);
       expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
       expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
@@ -832,14 +833,16 @@ describe("QueueItem", () => {
       expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
       // select results
-      await userEvent.click(
+      await user.click(screen.getByLabelText("Positive", { exact: false }));
+      await waitForEditQueueToFinish(
         screen.getByLabelText("Positive", { exact: false })
       );
-      await new Promise((resolve) => setTimeout(resolve, 501));
 
       // Change device type
-      await userEvent.selectOptions(deviceDropdown, device3Name);
-      await new Promise((resolve) => setTimeout(resolve, 501));
+      await user.selectOptions(deviceDropdown, device3Name);
+      await waitForEditQueueToFinish(
+        screen.getByLabelText("Positive", { exact: false })
+      );
 
       // Change specimen type
       const swabDropdown = await getSpecimenTypeDropdown();
@@ -847,27 +850,26 @@ describe("QueueItem", () => {
       expect(swabDropdown.options[0].label).toEqual("Nasopharyngeal swab");
       expect(swabDropdown.options[1].label).toEqual("Swab of internal nose");
 
-      await userEvent.selectOptions(swabDropdown, specimen2Name);
-      await new Promise((resolve) => setTimeout(resolve, 501));
+      await user.selectOptions(swabDropdown, specimen2Name);
+      await waitForEditQueueToFinish(
+        screen.getByLabelText("Positive", { exact: false })
+      );
 
       expect(deviceDropdown.value).toEqual(device3Id);
       expect(swabDropdown.value).toEqual(specimen2Id);
 
-      await waitFor(
-        () => {
-          expect(screen.getByText("Submit")).toBeEnabled();
-        },
-        { timeout: 1000 }
-      );
+      await waitFor(() => {
+        expect(screen.getByText("Submit")).toBeEnabled();
+      });
     });
 
     it("adds radio buttons for Flu A and Flu B when a multiplex device is chosen", async () => {
-      await renderQueueItem({ mocks });
+      const { user } = await renderQueueItemWithUser({ mocks });
 
       expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
       expect(screen.queryByText("Flu B")).not.toBeInTheDocument();
 
-      const deviceDropdown = await getDeciceTypeDropdown();
+      const deviceDropdown = await getDeviceTypeDropdown();
       expect(deviceDropdown.options.length).toEqual(5);
       expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
       expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
@@ -876,10 +878,8 @@ describe("QueueItem", () => {
       expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
       // Change device type to a multiplex device
-      await userEvent.selectOptions(deviceDropdown, device4Name);
-      await new Promise((resolve) => setTimeout(resolve, 501));
-
-      expect(screen.getByText("Flu A")).toBeInTheDocument();
+      await user.selectOptions(deviceDropdown, device4Name);
+      await screen.findByText("Flu A");
       expect(screen.getByText("Flu B")).toBeInTheDocument();
     });
   });
@@ -963,27 +963,28 @@ describe("QueueItem", () => {
         },
       };
 
-      await renderQueueItem({ props, mocks });
+      const { user } = await renderQueueItemWithUser({ props, mocks });
 
       // Select result
-      await userEvent.click(
+      await user.click(
         screen.getByLabelText("Inconclusive", {
           exact: false,
         })
       );
 
-      // Wait for the genuinely long-running "edit queue" operation to finish
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      // Submit
-      await userEvent.click(screen.getByText("Submit"));
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
-      await userEvent.click(
-        screen.getByText("Submit anyway", {
+      await waitForEditQueueToFinish(
+        screen.getByLabelText("Inconclusive", {
           exact: false,
         })
       );
+
+      // Submit
+      await user.click(screen.getByText("Submit"));
+      const submitAnywayBtn = await screen.findByText("Submit anyway", {
+        exact: false,
+      });
+
+      await user.click(submitAnywayBtn);
 
       // Displays submitting indicator
       expect(
@@ -991,9 +992,6 @@ describe("QueueItem", () => {
           "Submitting test data for Dixon, Althea Hedda Mclaughlin..."
         )
       ).toBeInTheDocument();
-
-      // Wait for MockedProvider to populate the mocked result
-      await new Promise((resolve) => setTimeout(resolve, 0));
 
       // Verify alert is displayed
       await waitFor(() => {
@@ -1024,77 +1022,21 @@ describe("QueueItem", () => {
   });
 
   it("updates custom test date/time", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItemWithUser();
     const toggle = await screen.findByLabelText("Current date/time");
-    await userEvent.click(toggle);
+    await user.click(toggle);
     const dateInput = screen.getByTestId("test-date");
     expect(dateInput).toBeInTheDocument();
     const timeInput = screen.getByTestId("test-time");
     expect(timeInput).toBeInTheDocument();
-    userEvent.type(dateInput, `${updatedDateString}T00:00`);
-    userEvent.type(timeInput, updatedTimeString);
+    await user.type(dateInput, `${updatedDateString}T00:00`);
+    await user.type(timeInput, updatedTimeString);
   });
 
   it("does not allow future date for test date", async () => {
+    MockDate.set("2023-09-26T19:14:21.305Z");
+
     const mocks = [
-      {
-        request: {
-          query: EDIT_QUEUE_ITEM,
-          variables: {
-            id: queueItemInfo.internalId,
-            deviceTypeId: device1Id,
-            specimenTypeId: specimen1Id,
-            results: [],
-            dateTested: null,
-          } as EDIT_QUEUE_ITEM_VARIABLES,
-        },
-        result: {
-          data: {
-            editQueueItem: {
-              results: [
-                {
-                  disease: { name: "COVID-19" },
-                  testResult: "UNDETERMINED",
-                },
-              ],
-              dateTested: null,
-              deviceType: {
-                internalId: device1Id,
-                testLength: 10,
-              },
-            },
-          } as EDIT_QUEUE_ITEM_DATA,
-        },
-      },
-      {
-        request: {
-          query: EDIT_QUEUE_ITEM,
-          variables: {
-            id: queueItemInfo.internalId,
-            deviceTypeId: device1Id,
-            specimenTypeId: specimen1Id,
-            results: [],
-            dateTested: "2022-07-15T12:35:00.000Z",
-          } as EDIT_QUEUE_ITEM_VARIABLES,
-        },
-        result: {
-          data: {
-            editQueueItem: {
-              results: [
-                {
-                  disease: { name: "COVID-19" },
-                  testResult: "UNDETERMINED",
-                },
-              ],
-              dateTested: null,
-              deviceType: {
-                internalId: device1Id,
-                testLength: 10,
-              },
-            },
-          } as EDIT_QUEUE_ITEM_DATA,
-        },
-      },
       {
         request: {
           query: SUBMIT_TEST_RESULT,
@@ -1117,13 +1059,36 @@ describe("QueueItem", () => {
           } as SUBMIT_QUEUE_ITEM_DATA,
         },
       },
+      getEditQueueItemMock({
+        id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+        deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+        results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
+        dateTested: "2023-09-26T19:59:21.305Z",
+        specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+      }),
+      getEditQueueItemMock({
+        id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+        deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+        results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
+        dateTested: "2023-09-26T19:14:21.305Z",
+        specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+      }),
+      getEditQueueItemMock({
+        id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+        deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+        results: [],
+        dateTested: "2023-09-26T19:14:21.305Z",
+        specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+      }),
     ];
 
-    await renderQueueItem({ mocks });
+    const { user } = await renderQueueItemWithUser({ mocks });
 
     const toggle = await screen.findByLabelText("Current date/time");
-    await userEvent.click(toggle);
-    await new Promise((resolve) => setTimeout(resolve, 501));
+    await user.click(toggle);
+    await waitForEditQueueToFinish(
+      screen.getByLabelText("Inconclusive", { exact: true })
+    );
 
     const dateInput = screen.getByTestId("test-date");
     expect(dateInput).toBeInTheDocument();
@@ -1131,12 +1096,10 @@ describe("QueueItem", () => {
     expect(timeInput).toBeInTheDocument();
 
     // Select result
-    await userEvent.click(
+    await user.click(screen.getByLabelText("Inconclusive", { exact: true }));
+    await waitForEditQueueToFinish(
       screen.getByLabelText("Inconclusive", { exact: true })
     );
-
-    // There is a 500ms debounce on queue item update operations
-    await new Promise((resolve) => setTimeout(resolve, 501));
 
     // Input invalid (future date) - can't submit
     const futureDateTime = moment({
@@ -1146,23 +1109,17 @@ describe("QueueItem", () => {
       hour: 12,
       minute: 35,
     });
-    await userEvent.type(dateInput, futureDateTime.format("YYYY-MM-DD"));
-    await userEvent.type(timeInput, futureDateTime.format("hh:mm"));
+    await user.click(dateInput);
+    await user.paste(futureDateTime.format("YYYY-MM-DD"));
+    await user.click(timeInput);
+    await user.paste(futureDateTime.format("hh:mm"));
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    await waitFor(
-      () => {
-        expect(screen.getByText("Submit")).toBeEnabled();
-      },
-      { timeout: 1000 }
-    );
+    await waitFor(() => {
+      expect(screen.getByText("Submit")).toBeEnabled();
+    });
 
     // Submit test
-    await userEvent.click(await screen.findByText("Submit"));
-
-    // 500ms debounce on queue item update operations plus a little extra wait time
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await user.click(await screen.findByText("Submit"));
 
     // Toast alert should appear
     expect(await screen.findByText("Invalid test date")).toBeInTheDocument();
@@ -1174,13 +1131,14 @@ describe("QueueItem", () => {
     expect(dateLabel).toHaveClass("queue-item-error-message");
     const updatedDateInput = await screen.findByTestId("test-date");
     expect(updatedDateInput).toHaveClass("card-test-input__error");
+    MockDate.reset();
   });
 
   it("formats card with warning state if selected date input is more than six months ago", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItemWithUser();
 
     const toggle = await screen.findByLabelText("Current date/time");
-    await userEvent.click(toggle);
+    await user.click(toggle);
 
     const dateInput = screen.getByTestId("test-date");
     const timeInput = screen.getByTestId("test-time");
@@ -1210,7 +1168,7 @@ describe("QueueItem", () => {
       },
     };
 
-    await renderQueueItem({ props });
+    await renderQueueItemWithUser({ props });
     const testCard = await screen.findByTestId(
       `test-card-${queueItemInfo.patient.internalId}`
     );
@@ -1226,10 +1184,10 @@ describe("QueueItem", () => {
   });
 
   it("displays person's mobile phone numbers", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItemWithUser();
 
     const questionnaire = await screen.findByText("Test questionnaire");
-    await userEvent.click(questionnaire);
+    await user.click(questionnaire);
 
     await screen.findByText("Required fields are marked", { exact: false });
     expect(
@@ -1244,9 +1202,26 @@ describe("QueueItem", () => {
 
   describe("when device supports covid only and multiplex", () => {
     it("should allow you to submit covid only results", async () => {
-      await renderQueueItem({});
+      const mocks = [
+        getEditQueueItemMock({
+          id: queueItemInfo.internalId,
+          deviceTypeId: "da524a8e-672d-4ff4-a4ec-c1e14d0337db",
+          results: [{ diseaseName: "COVID-19", testResult: "POSITIVE" }],
+          dateTested: null,
+          specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+        }), //multiplexCovidOnly
+        getEditQueueItemMock({
+          id: queueItemInfo.internalId,
+          deviceTypeId: "67109f6f-eaee-49d3-b8ff-c61b79a9da8e",
+          results: [],
+          dateTested: null,
+          specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+        }), //multiplex
+      ];
 
-      const deviceDropdown = await getDeciceTypeDropdown();
+      const { user } = await renderQueueItemWithUser({ mocks });
+
+      const deviceDropdown = await getDeviceTypeDropdown();
       expect(deviceDropdown.options.length).toEqual(5);
       expect(deviceDropdown.options[0].label).toEqual("Abbott BinaxNow");
       expect(deviceDropdown.options[1].label).toEqual("BD Veritor");
@@ -1255,79 +1230,128 @@ describe("QueueItem", () => {
       expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
       // Change device type to multiplex
-      await userEvent.selectOptions(deviceDropdown, device4Name);
-      await new Promise((resolve) => setTimeout(resolve, 501));
+      await user.selectOptions(deviceDropdown, device4Name);
 
-      // select results
-      await userEvent.click(
+      // waits for endpoint to respond
+      await waitForEditQueueToFinish(
         within(
           screen.getByTestId(`covid-test-result-${queueItemInfo.internalId}`)
         ).getByLabelText("Positive", { exact: false })
       );
-      await new Promise((resolve) => setTimeout(resolve, 501));
+
+      await user.click(
+        within(
+          screen.getByTestId(`covid-test-result-${queueItemInfo.internalId}`)
+        ).getByLabelText("Positive", { exact: false })
+      );
 
       // Notice submit is disabled
       expect(screen.getByText("Submit")).toBeDisabled();
 
       // Change device type to multiplex that supports covid only
-      await userEvent.selectOptions(deviceDropdown, device5Name);
-      await new Promise((resolve) => setTimeout(resolve, 501));
-      expect(deviceDropdown.value).toEqual(device5Id);
+      await user.selectOptions(deviceDropdown, device5Name);
+      // waits for endpoint to respond
+      await waitForEditQueueToFinish(
+        within(
+          screen.getByTestId(`covid-test-result-${queueItemInfo.internalId}`)
+        ).getByLabelText("Positive", { exact: false })
+      );
 
       // Notice submit is enabled
-      expect(screen.getByText("Submit")).toBeEnabled();
+      await waitFor(() => {
+        expect(screen.getByText("Submit")).toBeEnabled();
+      });
     });
   });
 
   describe("telemetry", () => {
-    beforeEach(async () => {
-      await renderQueueItem();
-    });
-
     it("tracks removal of patient from queue as custom event", async () => {
+      const mocks = [
+        getRemovePatientFromQueueMock({
+          patientId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
+        }),
+      ];
+      const { user } = await renderQueueItemWithUser({ mocks });
       const button = screen.getByLabelText(
         `Close test for Dixon, Althea Hedda Mclaughlin`
       );
-      await userEvent.click(button);
+      await user.click(button);
       const iAmSure = screen.getByText("Yes, I'm sure");
-      await userEvent.click(iAmSure);
+      await user.click(iAmSure);
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Remove Patient From Queue",
       });
     });
 
     it("tracks submitted test result as custom event", async () => {
+      const mocks = [
+        getEditQueueItemMock({
+          id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
+          deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+          results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
+          dateTested: null,
+          specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+        }),
+        getSubmitQueueItem(
+          {
+            patientId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
+            deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
+            specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
+            dateTested: null,
+            results: [{ diseaseName: "COVID-19", testResult: "UNDETERMINED" }],
+          },
+          "1b02363b-ce71-4f30-a2d6-d82b56a91b39"
+        ),
+      ];
+      const { user } = await renderQueueItemWithUser({ mocks });
+
       // Select result
-      await userEvent.click(
+      await user.click(
         screen.getByLabelText("Inconclusive", {
           exact: false,
         })
       );
 
-      // Wait for the genuinely long-running "edit queue" operation to finish
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await waitForEditQueueToFinish(
+        screen.getByLabelText("Inconclusive", {
+          exact: false,
+        })
+      );
 
       // Submit
-      await userEvent.click(screen.getByText("Submit"));
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await user.click(screen.getByText("Submit"));
 
-      expect(trackEventMock).toHaveBeenCalledWith({
-        name: "Submit Test Result",
-      });
+      await waitFor(() =>
+        expect(trackEventMock).toHaveBeenCalledWith({
+          name: "Submit Test Result",
+        })
+      );
     });
 
     it("tracks AoE form updates as custom event", async () => {
+      const mocks = [
+        getUpdateTimeOfTestQuestionMock({
+          noSymptoms: false,
+          symptoms:
+            '{"25064002":false,"36955009":false,"43724002":false,"44169009":false,"49727002":false,"62315008":false,"64531003":false,"68235000":false,"68962001":false,"84229001":false,"103001002":false,"162397003":false,"230145002":false,"267036007":false,"422400008":false,"422587007":false,"426000000":false}',
+          symptomOnset: null,
+          pregnancy: "60001007",
+          testResultDelivery: null,
+          patientId: "72b3ce1e-9d5a-4ad2-9ae8-e1099ed1b7e0",
+        }),
+      ];
+      const { user } = await renderQueueItemWithUser({ mocks });
       // Update AoE questionnaire
       const questionnaire = await screen.findByText("Test questionnaire");
-      await userEvent.click(questionnaire);
+      await user.click(questionnaire);
       const symptomInput = await screen.findByText("No symptoms", {
         exact: false,
       });
-      await userEvent.click(symptomInput);
+      await user.click(symptomInput);
 
       // Save changes
       const continueButton = await screen.findByText("Continue");
-      await userEvent.click(continueButton);
+      await user.click(continueButton);
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Update AoE Response",
