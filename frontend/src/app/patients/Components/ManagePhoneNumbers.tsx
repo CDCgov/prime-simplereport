@@ -109,6 +109,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       }
     },
     [
+      unknownPhoneNumber,
       phoneNumbersOrDefault,
       clearError,
       phoneNumberUpdateSchema,
@@ -133,7 +134,7 @@ const ManagePhoneNumbers: React.FC<Props> = ({
       updatePhoneNumbers([]);
       clearError(0, "type", "number");
     }
-  }, [unknownPhoneNumber]);
+  }, [unknownPhoneNumber, clearError, updatePhoneNumbers]);
 
   // Make sure all existing errors are up-to-date (including translations)
   useEffect(() => {
