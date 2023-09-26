@@ -512,7 +512,6 @@ describe("QueueItem", () => {
         dateTested: null,
         specimenTypeId: "8596682d-6053-4720-8a39-1f5d19ff4ed9",
       }),
-      ,
       getEditQueueItemMock({
         id: "1b02363b-ce71-4f30-a2d6-d82b56a91b39",
         deviceTypeId: "ee4f40b7-ac32-4709-be0a-56dd77bb9609",
