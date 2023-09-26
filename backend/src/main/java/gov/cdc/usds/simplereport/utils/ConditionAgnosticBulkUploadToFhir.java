@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.converter.*;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DiagnosticReport;
 import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Patient;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -29,10 +32,18 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ConditionAgnosticBulkUploadToFhir {
   private final ConditionAgnosticFhirConverter fhirConverter;
+  private final GitProperties gitProperties;
+
+  @Value("${simple-report.processing-mode-code:P}")
+  private String processingModeCode = "P";
+
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
 
-  public List<String> convertToFhirBundles(InputStream csvStream) {
+  public List<String> convertToFhirBundles(InputStream csvStream, Organization org) {
+    //      QUESTION: it wasn't explicitly in the spec but should we be adding org-related info into
+    // the FHIR bundle?
+
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     while (valueIterator.hasNext()) {
@@ -101,8 +112,10 @@ public class ConditionAgnosticBulkUploadToFhir {
     return fhirConverter.createFhirBundle(
         ConditionAgnosticCreateFhirBundleProps.builder()
             .patient(patient)
-            .resultObservations(observation)
+            .observation(observation)
             .diagnosticReport(diagnosticReport)
+            .gitProperties(gitProperties)
+            .processingId(processingModeCode)
             .build());
   }
 }

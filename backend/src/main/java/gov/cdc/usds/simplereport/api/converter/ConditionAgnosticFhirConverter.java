@@ -68,20 +68,18 @@ public class ConditionAgnosticFhirConverter {
             ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
             new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
 
-    props
-        .getResultObservations()
-        .forEach(
-            observation -> {
-              var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
-
-              observation.setSubject(new Reference(patientFullUrl));
-              // QUESTION: guessing we don't need these?
-              // observation.addPerformer(new Reference(testingLabOrganizationFullUrl));
-              // observation.setSpecimen(new Reference(specimenFullUrl));
-              // observation.setDevice(new Reference(deviceFullUrl));
-              props.getDiagnosticReport().addResult(new Reference(observationFullUrl));
-              entryList.add(Pair.of(observationFullUrl, observation));
-            });
+    // QUESTION: the other FHIR converter is passing in these observations in a list, but I was
+    // assuming
+    // that for a CSV file, we'd only have the one observation per row. Are there multiple
+    // observations per
+    // row within a CSV?
+    Observation observation = props.getObservation();
+    // QUESTION: these ID's don't exist within the spec. Should we be generating them internally
+    // somehow?
+    var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+    observation.setSubject(new Reference(patientFullUrl));
+    props.getDiagnosticReport().addResult(new Reference(observationFullUrl));
+    entryList.add(Pair.of(observationFullUrl, observation));
 
     Date curDate = new DateGenerator().newDate();
     var bundle =

@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.api.model.errors.BadRequestException;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.service.ConditionAgnosticUploadService;
 import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import java.io.IOException;
@@ -29,6 +30,7 @@ public class FileUploadController {
   public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
   private final PatientBulkUploadService patientBulkUploadService;
   private final TestResultUploadService testResultUploadService;
+  private final ConditionAgnosticUploadService conditionAgnosticUploadService;
 
   @PostMapping(PATIENT_UPLOAD)
   public PatientBulkUploadResponse handlePatientsUpload(
@@ -67,7 +69,7 @@ public class FileUploadController {
       @RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);
     try (InputStream resultsUpload = file.getInputStream()) {
-      return testResultUploadService.processConditionAgnosticResultCSV(resultsUpload);
+      return conditionAgnosticUploadService.processConditionAgnosticResultCSV(resultsUpload);
     } catch (IOException e) {
       log.error("Condition agnostic test result CSV encountered an unexpected error", e);
       throw new CsvProcessingException(

@@ -99,7 +99,6 @@ public class ConditionAgnosticResultRow implements FileRow {
     testResultStatus = getValue(rawRow, TEST_RESULT_STATUS, isRequired(TEST_RESULT_STATUS));
     testResultEffectiveDate =
         getValue(rawRow, TEST_RESULT_EFFECTIVE_DATE, isRequired(TEST_RESULT_EFFECTIVE_DATE));
-    // todo: come back to this one
     testPerformedCode = getValue(rawRow, TEST_PERFORMED_CODE, isRequired(TEST_PERFORMED_CODE));
     testResultValue = getValue(rawRow, TEST_RESULT_VALUE, isRequired(TEST_RESULT_VALUE));
     patientId = getValue(rawRow, PATIENT_ID, isRequired(PATIENT_ID));
