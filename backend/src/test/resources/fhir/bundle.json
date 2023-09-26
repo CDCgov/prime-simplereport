@@ -360,6 +360,32 @@
           {
             "reference":"Observation/c17b0cd0-fdfd-3381-98e9-730eaa5ba842"
           }
+        ],
+        "note": [
+          {
+            "extension": [
+              {
+                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "extension": [
+                        {
+                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
+                          "valueString": "identifier"
+                        }
+                      ],
+                      "system": "HL70364",
+                      "version": "2.5.1",
+                      "code": "RE",
+                      "display": "Remark"
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": "Adventurer of the cosmos"
+          }
         ]
       }
     },

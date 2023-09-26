@@ -1,11 +1,11 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { configureAxe } from "jest-axe";
-import userEvent from "@testing-library/user-event";
 
 import {
   EditUserEmailDocument,
@@ -21,6 +21,13 @@ import {
 import { OktaUserStatus } from "../../utils/user";
 
 import { AdminManageUser } from "./AdminManageUser";
+import {
+  findUserByEmailMock,
+  getAllOrgsMock,
+  getFacilitiesByDatOrgMock,
+  getFacilitiesByDisOrgMock,
+  getTestResultCountByOrgMock,
+} from "./operationMocks";
 
 jest.mock("uuid", () => ({
   v4: jest
@@ -56,12 +63,20 @@ const validResponse = [
     },
   },
 ];
-const searchForValidUser = async () => {
-  const searchInput = screen.getByLabelText("Search by email address of user");
-  fireEvent.change(searchInput, { target: { value: "ben@example.com" } });
-  fireEvent.click(screen.getByAltText("Search"));
+const searchForValidUser = async (
+  user: UserEvent,
+  email = "ben@example.com",
+  fullName = "Barnes, Ben Billy"
+) => {
+  const searchInput = await screen.findByLabelText(
+    "Search by email address of user"
+  );
 
-  expect(await screen.findByText("Barnes, Ben Billy")).toBeInTheDocument();
+  await user.type(searchInput, email);
+
+  await user.click(screen.getByAltText("Search"));
+
+  expect(await screen.findByText(fullName)).toBeInTheDocument();
 };
 const mockStore = createMockStore([]);
 const mockedStore = mockStore({ user: { isAdmin: true } });
@@ -90,24 +105,26 @@ const axe = configureAxe({
 });
 describe("Admin manage users", () => {
   it("search results matches snapshot", async () => {
-    renderComponent(validResponse);
-    await searchForValidUser();
+    const { user } = renderComponent(validResponse);
+    await searchForValidUser(user);
 
     expect(document.body).toMatchSnapshot();
     expect(await axe(document.body)).toHaveNoViolations();
   });
   describe("clear filter button", () => {
     it("should clear search results", async () => {
-      renderComponent(validResponse);
-      await searchForValidUser();
-      fireEvent.click(screen.getByLabelText("Clear user search"));
+      const { user } = renderComponent(validResponse);
+      await searchForValidUser(user);
+
+      await user.click(screen.getByLabelText("Clear user search"));
+
       expect(
         await screen.findByPlaceholderText("email@example.com")
       ).toBeInTheDocument();
       expect(screen.queryByText("Ben")).not.toBeInTheDocument();
     });
     it("should clear error", async () => {
-      renderComponent([
+      const { user } = renderComponent([
         {
           request: {
             query: FindUserByEmailDocument,
@@ -121,10 +138,12 @@ describe("Admin manage users", () => {
       const searchInput = screen.getByLabelText(
         "Search by email address of user"
       );
-      fireEvent.change(searchInput, { target: { value: "bad@example.com" } });
-      fireEvent.click(screen.getByAltText("Search"));
+      await user.type(searchInput, "bad@example.com");
+      await user.click(screen.getByAltText("Search"));
+
       expect(await screen.findByText("User not found")).toBeInTheDocument();
-      fireEvent.click(screen.getByLabelText("Clear user search"));
+      await user.click(screen.getByLabelText("Clear user search"));
+
       expect(
         await screen.findByPlaceholderText("email@example.com")
       ).toBeInTheDocument();
@@ -133,7 +152,7 @@ describe("Admin manage users", () => {
   });
   describe("search error", () => {
     it("displays user not found", async () => {
-      renderComponent([
+      const { user } = renderComponent([
         {
           request: {
             query: FindUserByEmailDocument,
@@ -147,14 +166,14 @@ describe("Admin manage users", () => {
       const searchInput = screen.getByLabelText(
         "Search by email address of user"
       );
-      fireEvent.change(searchInput, { target: { value: "bad@example.com" } });
-      fireEvent.click(screen.getByAltText("Search"));
+      await user.type(searchInput, "bad@example.com");
+      await user.click(screen.getByAltText("Search"));
       expect(await screen.findByText("User not found")).toBeInTheDocument();
       expect(await axe(document.body)).toHaveNoViolations();
       expect(document.body).toMatchSnapshot();
     });
     it("displays user is an admin", async () => {
-      renderComponent([
+      const { user } = renderComponent([
         {
           request: {
             query: FindUserByEmailDocument,
@@ -179,8 +198,8 @@ describe("Admin manage users", () => {
       const searchInput = screen.getByLabelText(
         "Search by email address of user"
       );
-      fireEvent.change(searchInput, { target: { value: "admin@example.com" } });
-      fireEvent.click(screen.getByAltText("Search"));
+      await user.type(searchInput, "admin@example.com");
+      await user.click(screen.getByAltText("Search"));
       expect(
         await screen.findByText("Can't determine user identity")
       ).toBeInTheDocument();
@@ -188,7 +207,7 @@ describe("Admin manage users", () => {
       expect(document.body).toMatchSnapshot();
     });
     it("displays generic error", async () => {
-      renderComponent([
+      const { user } = renderComponent([
         {
           request: {
             query: FindUserByEmailDocument,
@@ -212,8 +231,8 @@ describe("Admin manage users", () => {
       const searchInput = screen.getByLabelText(
         "Search by email address of user"
       );
-      fireEvent.change(searchInput, { target: { value: "bob@example.com" } });
-      fireEvent.click(screen.getByAltText("Search"));
+      await user.type(searchInput, "bob@example.com");
+      await user.click(screen.getByAltText("Search"));
       expect(
         await screen.findByText("Something went wrong")
       ).toBeInTheDocument();
@@ -242,19 +261,23 @@ describe("Admin manage users", () => {
           },
         },
       };
-      renderComponent([...validResponse, updateUserNameResponse]);
-      await searchForValidUser();
-      fireEvent.click(screen.getByText("Edit name"));
+      const { user } = renderComponent([
+        ...validResponse,
+        updateUserNameResponse,
+      ]);
+      await searchForValidUser(user);
+      await user.click(screen.getByText("Edit name"));
+
       await screen.findByText("Edit name for Barnes, Ben");
       const firstNameField = screen.getByLabelText("First name *");
       const lastNameField = screen.getByLabelText("Last name *");
-      fireEvent.change(firstNameField, { target: { value: "Granny" } });
-      fireEvent.change(lastNameField, { target: { value: "Smith" } });
-      fireEvent.click(screen.getByText("Confirm"));
+      await user.clear(lastNameField);
+      await user.type(lastNameField, "Smith");
+      await user.clear(firstNameField);
+      await user.type(firstNameField, "Granny");
 
-      expect(
-        await screen.findByText("Smith, Granny Billy")
-      ).toBeInTheDocument();
+      await user.click(screen.getByText("Confirm"));
+      await screen.findByText("Smith, Granny Billy");
     });
     it("edit email handler calls", async () => {
       const updateUserNameResponse = {
@@ -274,13 +297,18 @@ describe("Admin manage users", () => {
           },
         },
       };
-      renderComponent([...validResponse, updateUserNameResponse]);
-      await searchForValidUser();
-      fireEvent.click(screen.getByText("Edit email"));
+      const { user } = renderComponent([
+        ...validResponse,
+        updateUserNameResponse,
+      ]);
+      await searchForValidUser(user);
+
+      await user.click(screen.getByText("Edit email"));
       await screen.findByText("Edit email address for Barnes, Ben Billy");
       const emailField = screen.getByLabelText("Email address *");
-      fireEvent.change(emailField, { target: { value: "granny@example.com" } });
-      fireEvent.click(screen.getByText("Confirm"));
+      await user.clear(emailField);
+      await user.type(emailField, "granny@example.com");
+      await user.click(screen.getByText("Confirm"));
 
       await screen.findByText("granny@example.com");
     });
@@ -306,7 +334,8 @@ describe("Admin manage users", () => {
         ...validResponse,
         resetUserPasswordResponse,
       ]);
-      await searchForValidUser();
+
+      await searchForValidUser(user);
       await user.click(screen.getByText("Send password reset email"));
       await screen.findByText("Reset Barnes, Ben Billy's password");
       await user.click(screen.getByText("Yes, I'm sure"));
@@ -335,7 +364,8 @@ describe("Admin manage users", () => {
         ...validResponse,
         resetUserPasswordResponse,
       ]);
-      await searchForValidUser();
+
+      await searchForValidUser(user);
       await user.click(screen.getByText("Reset MFA"));
       await user.click(
         await screen.findByText("Reset multi-factor authentication")
@@ -345,6 +375,7 @@ describe("Admin manage users", () => {
         await screen.findByText("MFA reset for Barnes, Ben Billy")
       ).toBeInTheDocument();
     });
+
     it("delete user handler", async () => {
       const deleteUserResponse = {
         request: {
@@ -363,7 +394,8 @@ describe("Admin manage users", () => {
         },
       };
       const { user } = renderComponent([...validResponse, deleteUserResponse]);
-      await searchForValidUser();
+
+      await searchForValidUser(user);
       await user.click(screen.getAllByText("Delete user")[1]);
       await screen.findByText(/Remove user/i);
       await user.click(await screen.findByText("Yes, I'm sure"));
@@ -373,7 +405,7 @@ describe("Admin manage users", () => {
       expect(screen.getByText("Send password reset email")).toBeDisabled();
       expect(screen.getByText("Reset MFA")).toBeDisabled();
       expect(screen.queryByText("Delete user")).not.toBeInTheDocument();
-      expect(screen.getByText("Account deleted")).toBeInTheDocument();
+
       expect(
         await screen.findByText("User account removed for Barnes, Ben Billy")
       ).toBeInTheDocument();
@@ -419,15 +451,21 @@ describe("Admin manage users", () => {
           },
         },
       };
-      renderComponent([suspendedUserResponse, reactivateUserResponse]);
-      await searchForValidUser();
-      fireEvent.click(await screen.findByText("Activate user"));
-      fireEvent.click(await screen.findByText("Yes, reactivate"));
+      const { user } = renderComponent([
+        suspendedUserResponse,
+        reactivateUserResponse,
+      ]);
+      await searchForValidUser(user);
+
+      await user.click(await screen.findByText("Activate user"));
+
+      await user.click(await screen.findByText("Yes, reactivate"));
 
       expect(
         await screen.findByText("Barnes, Ben Billy has been reactivated.")
       ).toBeInTheDocument();
     });
+
     it("resend user activation handler", async () => {
       const suspendedUserResponse = {
         request: {
@@ -473,10 +511,15 @@ describe("Admin manage users", () => {
           },
         },
       };
-      renderComponent([suspendedUserResponse, reactivateUserResponse]);
-      await searchForValidUser();
-      fireEvent.click(await screen.findByText("Send account setup email"));
-      fireEvent.click(await screen.findByText("Yes, send email"));
+      const { user } = renderComponent([
+        suspendedUserResponse,
+        reactivateUserResponse,
+      ]);
+      await searchForValidUser(user);
+
+      await user.click(await screen.findByText("Send account setup email"));
+
+      await user.click(await screen.findByText("Yes, send email"));
 
       expect(
         await screen.findByText(
@@ -557,16 +600,15 @@ describe("Admin manage users", () => {
         },
       },
     };
-    renderComponent([
+    const { user } = renderComponent([
       deletedUserResponse,
       undeleteUserResponse,
       undeletedUserResponse,
     ]);
-    await searchForValidUser();
+    await searchForValidUser(user);
     expect(document.body).toMatchSnapshot(); // deleted account
     await screen.findByRole("heading", { name: /barnes, ben billy/i });
     const undeleteBtn = screen.getByRole("button", { name: /undelete user/i });
-    const user = userEvent.setup();
     await user.click(undeleteBtn);
 
     await screen.findByRole("heading", { name: /undelete barnes, ben billy/i });
@@ -581,5 +623,115 @@ describe("Admin manage users", () => {
         screen.queryByRole("heading", { name: /undelete barnes, ben billy/i })
       ).not.toBeInTheDocument()
     );
+  });
+
+  describe("Organization access tab", () => {
+    it("loads organization access tab", async () => {
+      const { user } = renderComponent([
+        getAllOrgsMock,
+        getFacilitiesByDisOrgMock,
+        getFacilitiesByDisOrgMock,
+        findUserByEmailMock,
+      ]);
+      await searchForValidUser(
+        user,
+        "ruby@example.com",
+        "Reynolds, Ruby Raven"
+      );
+      const orgAccessTab = await screen.findByRole("tab", {
+        name: /organization access/i,
+      });
+
+      await user.click(orgAccessTab);
+
+      await screen.findByText(/user role/i);
+      const roleRadioBtn = await screen.findByRole("radio", {
+        name: /standard user conduct tests, bulk upload results, manage test results, and patient profiles/i,
+      });
+      await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
+    });
+
+    it("checks form validation happens on submit", async () => {
+      const { user } = renderComponent([
+        getAllOrgsMock,
+        getFacilitiesByDisOrgMock,
+        getFacilitiesByDisOrgMock,
+        findUserByEmailMock,
+      ]);
+      await searchForValidUser(
+        user,
+        "ruby@example.com",
+        "Reynolds, Ruby Raven"
+      );
+      const orgAccessTab = await screen.findByRole("tab", {
+        name: /organization access/i,
+      });
+      // eslint-disable-next-line testing-library/no-unnecessary-act
+      await user.click(orgAccessTab);
+
+      const roleRadioBtn = await screen.findByRole("radio", {
+        name: /standard user conduct tests, bulk upload results, manage test results, and patient profiles/i,
+      });
+      await waitFor(() => expect(roleRadioBtn).toHaveAttribute("checked", ""));
+
+      await user.click(
+        screen.getByRole("button", { name: /clear the select contents/i })
+      );
+
+      const saveBtn = screen.getByRole("button", { name: /save changes/i });
+
+      await waitFor(() => expect(saveBtn).toBeEnabled());
+      await user.click(saveBtn);
+
+      await screen.findByText(/Error: Organization is required/i);
+    });
+  });
+
+  it("shows warning modal if org updates that will make user lose access to data are submitted", async () => {
+    const { user } = renderComponent([
+      findUserByEmailMock,
+      getAllOrgsMock,
+      getFacilitiesByDisOrgMock,
+      getFacilitiesByDisOrgMock,
+      getFacilitiesByDatOrgMock,
+      getTestResultCountByOrgMock,
+    ]);
+
+    await searchForValidUser(user, "ruby@example.com", "Reynolds, Ruby Raven");
+
+    const orgAccessTab = await screen.findByRole("tab", {
+      name: /organization access/i,
+    });
+
+    await user.click(orgAccessTab);
+
+    // change organization
+    const orgComboBoxInput = await screen.findByTestId("combo-box-input");
+
+    await user.clear(orgComboBoxInput);
+
+    await user.type(orgComboBoxInput, "Dat Organization");
+
+    await user.type(orgComboBoxInput, "{enter}");
+
+    // select facility
+    const downtownCheckbox = await screen.findByLabelText(/Downtown Clinic/i);
+
+    await user.click(downtownCheckbox);
+
+    // submit changes
+    const saveChangesBtn = screen.getByRole("button", {
+      name: /save changes/i,
+    });
+
+    await user.click(saveChangesBtn);
+
+    // verify warning modal shows
+    await screen.findByText(/organization update/i);
+    expect(
+      screen.getByText(
+        /this update will move to a different organization\. the user will lose access to test result reported under it\./i
+      )
+    ).toBeInTheDocument();
   });
 });

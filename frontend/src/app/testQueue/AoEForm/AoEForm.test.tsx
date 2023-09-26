@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import AoEForm from "./AoEForm";
@@ -222,12 +222,13 @@ describe("AoEForm", () => {
           />
         );
 
+        const user = userEvent.setup();
         const emailDeliveryRadio = screen.getByRole("radio", {
           name: "Yes Results will be sent to these email addresses: jon@bon.jovi",
         });
 
         expect(emailDeliveryRadio).toBeInTheDocument();
-        await act(async () => await userEvent.click(emailDeliveryRadio));
+        await user.click(emailDeliveryRadio);
         expect(emailDeliveryRadio).toBeChecked();
       });
     });

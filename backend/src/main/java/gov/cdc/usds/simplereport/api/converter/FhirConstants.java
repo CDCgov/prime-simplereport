@@ -59,6 +59,16 @@ public class FhirConstants {
   public static final String ORDER_CONTROL_CODE_SYSTEM =
       "http://terminology.hl7.org/CodeSystem/v2-0119";
 
+  public static final String NOTE_TYPE_EXTENSION_URL =
+      "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type";
+  public static final String NOTE_TYPE_CODING_SYSTEM = "HL70364";
+  public static final String NOTE_TYPE_CODING_SYSTEM_VERSION = "2.5.1";
+  public static final String NOTE_TYPE_CODING_SYSTEM_CODE = "RE";
+  public static final String NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_EXTENSION_URL =
+      "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name";
+  public static final String NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_VALUE = "identifier";
+  public static final String NOTE_TYPE_CODING_SYSTEM_DISPLAY = "Remark";
+
   public static final String ABNORMAL_FLAGS_CODE_SYSTEM =
       "http://terminology.hl7.org/CodeSystem/v2-0078";
   public static final CodingRecord ABNORMAL_FLAG_NORMAL = new CodingRecord("N", "Normal");

@@ -5055,3 +5055,15 @@ databaseChangeLog:
               - column:
                   name: notes
                   type: text
+  - changeSet:
+      id: remove-multiplex-flag
+      author: boban@skylight.digital
+      comment: remove multiplex flag in table
+      changes:
+        - tagDatabase:
+            tag: remove-multiplex-flag
+        - delete:
+            schemaName: ${database.defaultSchemaName}
+            tableName: feature_flag
+            where: name='multiplexEnabled'
+      rollback: ""

@@ -400,7 +400,8 @@ public class TestResultBulkUploadToFhir {
             ServiceRequest.ServiceRequestStatus.COMPLETED,
             testOrderedCode,
             uuidGenerator.randomUUID().toString(),
-            orderTestDate);
+            orderTestDate,
+            row.getComment().getValue());
 
     var diagnosticReport =
         fhirConverter.convertToDiagnosticReport(

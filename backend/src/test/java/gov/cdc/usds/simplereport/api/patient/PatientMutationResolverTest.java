@@ -52,7 +52,8 @@ class PatientMutationResolverTest {
         false,
         false,
         "English",
-        null);
+        null,
+        "Hero of the frontier");
 
     verify(personService)
         .addPatient(
@@ -76,7 +77,8 @@ class PatientMutationResolverTest {
             any(),
             any(),
             any(),
-            any());
+            any(),
+            eq("Hero of the frontier"));
   }
 
   @Test
@@ -114,7 +116,8 @@ class PatientMutationResolverTest {
         false,
         false,
         "English",
-        null);
+        null,
+        "Outlaw of the galaxy");
 
     verify(personService)
         .addPatient(
@@ -138,6 +141,7 @@ class PatientMutationResolverTest {
             any(),
             any(),
             any(),
-            any());
+            any(),
+            eq("Outlaw of the galaxy"));
   }
 }

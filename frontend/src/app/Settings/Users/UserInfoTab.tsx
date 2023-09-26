@@ -2,6 +2,7 @@ import classnames from "classnames";
 import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button/Button";
+import { User } from "../../../generated/graphql";
 
 import { SettingsUser } from "./ManageUsersContainer";
 import DeleteUserModal from "./DeleteUserModal";
@@ -12,7 +13,7 @@ import EditUserEmailModal from "./EditUserEmailModal";
 import "./UserInfoTab.scss";
 
 interface UserInfoTabProps {
-  user: SettingsUser;
+  user: SettingsUser | User;
   isUserActive: boolean;
   isUserSelf?: boolean;
   isUpdating: boolean;
@@ -50,7 +51,7 @@ const UserInfoTab: React.FC<UserInfoTabProps> = ({
     <>
       <div
         role="tabpanel"
-        aria-labelledby={"user-information-tab-id"}
+        aria-labelledby={"userinformation-tab"}
         className="padding-left-1"
       >
         <h3 className="basic-info-header">Basic information</h3>
