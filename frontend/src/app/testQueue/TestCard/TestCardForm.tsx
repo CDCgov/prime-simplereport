@@ -51,6 +51,7 @@ import { TestCardSubmitLoader } from "./TestCardSubmitLoader";
 import {
   AOEFormOptions,
   areAOEAnswersComplete,
+  convertFromMultiplexResponse,
   doesDeviceSupportMultiplex,
   useAppInsightTestCardEvents,
   useDeviceTypeOptions,
@@ -83,7 +84,7 @@ const TestCardForm = ({
     deviceId: testOrder.deviceType.internalId ?? "",
     devicesMap: devicesMap,
     specimenId: testOrder.specimenType.internalId ?? "",
-    testResults: testOrder.results,
+    testResults: convertFromMultiplexResponse(testOrder.results),
     covidAOEResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
       noSymptoms: testOrder.noSymptoms,
@@ -150,10 +151,8 @@ const TestCardForm = ({
   useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (state.dirty) {
-      dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
       debounceTimer = setTimeout(async () => {
         await updateTestOrder();
-        await updateAOE();
       }, DEBOUNCE_TIME);
     }
     return () => {
@@ -161,6 +160,20 @@ const TestCardForm = ({
     };
     // eslint-disable-next-line
   }, [state.deviceId, state.specimenId, state.dateTested, state.testResults]);
+
+  // when user makes changes to aoe, send update to backend
+  useEffect(() => {
+    let debounceTimer: ReturnType<typeof setTimeout>;
+    if (state.dirty) {
+      debounceTimer = setTimeout(async () => {
+        await updateAOE();
+      }, DEBOUNCE_TIME);
+    }
+    return () => {
+      clearTimeout(debounceTimer);
+    };
+    // eslint-disable-next-line
+  }, [state.covidAOEResponses]);
 
   const updateAOE = async () => {
     if (whichAOEFormOption === AOEFormOptions.COVID) {
@@ -177,6 +190,10 @@ const TestCardForm = ({
           },
         });
         refetchQueue();
+        dispatch({
+          type: TestFormActionCase.UPDATE_DIRTY_STATE,
+          payload: false,
+        });
       } catch (e) {
         // caught upstream by error boundary
         throw e;
@@ -211,6 +228,10 @@ const TestCardForm = ({
         });
         updateTimer(testOrder.internalId, newDeviceId.testLength);
       }
+      dispatch({
+        type: TestFormActionCase.UPDATE_DIRTY_STATE,
+        payload: false,
+      });
     } catch (e) {
       // caught upstream by error boundary
       throw e;
