@@ -20,8 +20,8 @@ import { removeTimer, TestTimerWidget, useTestTimer } from "../TestTimer";
 import { RootState } from "../../store";
 import "./TestCard.scss";
 
-import TestCardForm from "./TestCardForm";
-import { useTestOrderPatient } from "./TestCardForm.utils";
+import TestCardForm from "../TestCardForm/TestCardForm";
+import { useTestOrderPatient } from "../TestCardForm/TestCardForm.utils";
 
 export interface TestCardProps {
   testOrder: QueriedTestOrder;

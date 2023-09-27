@@ -35,6 +35,7 @@ import {
   TestCorrectionReasons,
 } from "../../testResults/TestResultCorrectionModal";
 import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
+import { QueueItemSubmitLoader } from "../QueueItemSubmitLoader";
 
 import {
   TestFormActionCase,
@@ -49,7 +50,6 @@ import MultiplexResultInputGroup, {
   validateMultiplexResultState,
 } from "./diseaseSpecificComponents/MultiplexResultInputGroup";
 import CovidAoEForm from "./diseaseSpecificComponents/CovidAoEForm";
-import { TestCardSubmitLoader } from "./TestCardSubmitLoader";
 import {
   AOEFormOptions,
   areAOEAnswersComplete,
@@ -380,7 +380,7 @@ const TestCardForm = ({
 
   return (
     <>
-      <TestCardSubmitLoader show={submitLoading} name={patientFullName} />
+      <QueueItemSubmitLoader show={submitLoading} name={patientFullName} />
       <Modal
         ref={submitModalRef}
         aria-labelledby={"submit-modal-heading"}
