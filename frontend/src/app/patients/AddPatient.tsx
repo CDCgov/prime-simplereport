@@ -53,6 +53,7 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   country: "USA",
   preferredLanguage: null,
   testResultDelivery: null,
+  notes: null,
 };
 
 export const PATIENT_EXISTS = gql`
@@ -98,6 +99,7 @@ export const ADD_PATIENT = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -125,6 +127,7 @@ export const ADD_PATIENT = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
+      notes: $notes
     ) {
       internalId
       facility {

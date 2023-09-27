@@ -23,6 +23,7 @@ import { TestResultDeliveryPreferences } from "./TestResultDeliveryPreference";
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 const MAX_LENGTH = 256;
+const NOTES_MAX_LENGTH = 10000;
 
 type TranslatedSchema<T> = (t: TFunction) => yup.SchemaOf<T>;
 
@@ -295,6 +296,10 @@ const updateFieldSchemata: (
       [...Object.values(TestResultDeliveryPreferences), "", null],
       t("patient.form.errors.testResultDelivery") || ""
     ),
+  notes: yup
+    .string()
+    .max(NOTES_MAX_LENGTH, t("patient.form.errors.fieldLength") || "")
+    .nullable(),
 });
 
 const updatePhoneNumberSchemata: (

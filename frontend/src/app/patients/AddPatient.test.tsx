@@ -113,6 +113,7 @@ const addPatientRequestParams = {
   facilityId: mockFacilityID,
   preferredLanguage: null,
   testResultDelivery: "SMS",
+  notes: "Green tent",
 };
 
 const addPatientRequestNoDelivery = {
@@ -355,8 +356,8 @@ describe("AddPatient", () => {
             "Email address": "foo@bar.org",
             "Street address 1": "25 Shattuck St",
             City: "Boston",
-
             "ZIP code": "02115",
+            Notes: "Green tent",
           },
           { Facility: mockFacilityID, State: "MA", Country: "USA" },
           {
@@ -557,8 +558,8 @@ describe("AddPatient", () => {
             "Email address": "foo@bar.org",
             "Street address 1": "25 Shattuck St",
             City: "Boston",
-
             "ZIP code": "02115",
+            notes: "Green tent",
           },
           { Facility: mockFacilityID, State: "MA", Country: "USA" },
           {
@@ -628,6 +629,7 @@ describe("AddPatient", () => {
             "Street address 1": "25 Shattuck St",
             City: "Boston",
             "ZIP code": "02115",
+            notes: "Green tent",
           },
           { Facility: mockFacilityID, State: "MA", Country: "USA" },
           {
