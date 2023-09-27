@@ -25,8 +25,12 @@ permissions:
   packages: write
 
 jobs:
-
 # Check for changes in the backend, cypress, database, frontend, and nginx directories
+  workflow_changes:
+    with:
+      what_to_check: ./.github
+    uses: ./.github/workflows/checkForChanges.yml
+
   backend_changes:
     with:
       what_to_check: ./backend
@@ -54,9 +58,10 @@ jobs:
 
 # Build Docker Images for the backend, cypress, database, frontend, and nginx
   build_backend_image:
-    if: needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
+    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.backend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - backend_changes
+      - workflow_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -69,23 +74,19 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Backend Image
         id: set_backend_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
-          context: ./
           file: ./backend/Dockerfile
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: backend
           platform: ${{ matrix.platform }}
   
   build_cypress_image:
-    if: needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
+    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.cypress_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - cypress_changes
+      - workflow_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -98,23 +99,19 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Cypress Image
         id: set_cypress_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
-          context: ./
           file: ./cypress/Dockerfile
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: cypress
           platform: ${{ matrix.platform }}
 
   build_database_image:
-    if: needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
+    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.database_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - database_changes
+      - workflow_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -127,22 +124,19 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Database Image
         id: set_database_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
           context: ./backend/db-setup
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: database
           platform: ${{ matrix.platform }}
 
   build_frontend_image:
-    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
+    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - frontend_changes
+      - workflow_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -155,14 +149,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Frontend Image
         id: set_frontend_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
-          context: ./
           file: ./frontend/Dockerfile
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: frontend
@@ -177,9 +166,10 @@ jobs:
             "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
 
   build_frontend_lighthouse_image:
-    if: needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
+    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.frontend_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - frontend_changes
+      - workflow_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -192,14 +182,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Frontend Lighthouse Image
         id: set_frontend_lighthouse_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
-          context: ./
           file: ./frontend/Dockerfile
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: frontend-lighthouse
@@ -212,9 +197,10 @@ jobs:
             "REACT_APP_DISABLE_MAINTENANCE_BANNER=true"
 
   build_nginx_image:
-    if: needs.nginx_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
+    if: needs.workflow_changes.outputs.has_changes == 'true' || needs.nginx_changes.outputs.has_changes == 'true' || inputs.force_build == 'true' || github.ref == 'refs/heads/main'
     needs:
       - nginx_changes
+      - workflow_changes
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -227,13 +213,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: Build Nginx Image
         id: set_nginx_version
-        uses: ./.github/actions/build-docker-image
+        uses: ./.github/actions/docker-buildx
         with:
           context: ./nginx
-          acr_password: ${{ secrets.ACR_ADMIN_PASWORD }}
-          acr_registry: ${{ secrets.ACR_REPO_URL }}
-          acr_username: ${{ secrets.ACR_ADMIN_USERNAME }}
-          gh_registry: ghcr.io
           gh_username: ${{ github.actor }}
           gh_token: ${{ secrets.GITHUB_TOKEN }}
           image_name: nginx
