@@ -411,7 +411,7 @@ describe("QueueItem", () => {
     expect(
       screen.getByText("Dixon, Althea Hedda Mclaughlin")
     ).toBeInTheDocument();
-    expect(screen.getByTestId("timer")).toHaveTextContent("15:00");
+    expect(screen.getByTestId("timer")).toHaveTextContent("Start timer");
   });
 
   it("scroll to patient and highlight when startTestPatientId is present", async () => {
@@ -448,7 +448,7 @@ describe("QueueItem", () => {
     const { user } = await renderQueueItemWithUser();
     await user.type(screen.getByTestId("device-type-dropdown"), "lumira");
 
-    expect(await screen.findByTestId("timer")).toHaveTextContent("15:00");
+    expect(await screen.findByTestId("timer")).toHaveTextContent("Start timer");
   });
 
   it("renders dropdown of device types", async () => {
