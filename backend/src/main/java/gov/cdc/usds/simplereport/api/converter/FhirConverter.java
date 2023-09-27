@@ -772,8 +772,7 @@ public class FhirConverter {
             "Resides in a congregate care setting"));
 
     if (Boolean.TRUE.equals(residesInCongregateSetting)
-        && residenceTypeSnomed != null
-        && !residenceTypeSnomed.trim().isEmpty()) {
+        && StringUtils.isNotBlank(residenceTypeSnomed)) {
 
       CodeableConcept residenceTypeCode =
           createLoincConcept(LOINC_AOE_RESIDENCE_TYPE, "Residence", "Residence");
