@@ -41,7 +41,9 @@ import {
   TestFormState,
   testCardFormReducer,
 } from "./TestCardFormReducer";
-import CovidResultInputGroup from "./diseaseSpecificComponents/CovidResultInputGroup";
+import CovidResultInputGroup, {
+  validateCovidResultInput,
+} from "./diseaseSpecificComponents/CovidResultInputGroup";
 import MultiplexResultInputGroup, {
   convertFromMultiplexResultInputs,
   validateMultiplexResultState,
@@ -93,10 +95,12 @@ const TestCardForm = ({
     },
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
+  const [useCurrentTime, setUseCurrentTime] = useState(!testOrder.dateTested);
+
   const [dateTestedTouched, setDateTestedTouched] = useState(false);
+  const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
   const [dateTestedError, setDateTestedError] = useState("");
   const [testResultsError, setTestResultsError] = useState("");
-  const [useCurrentTime, setUseCurrentTime] = useState(true);
 
   const [editQueueItem] = useEditQueueItemMutation();
   const [updateAoeMutation] = useUpdateAoeMutation();
@@ -259,30 +263,31 @@ const TestCardForm = ({
     return "";
   };
 
-  useEffect(() => {
-    if (dateTestedTouched) {
-      setDateTestedError(validateDateTested());
-    }
-    // eslint-disable-next-line
-  }, [state.dateTested]);
-
   const validateTestResults = () => {
     if (deviceSupportsMultiplex) {
       const multiplexResults = convertFromMultiplexResultInputs(
         state.testResults
       );
-      const isMultiplexValid = validateMultiplexResultState(
+      return validateMultiplexResultState(
         multiplexResults,
         state.deviceId,
         devicesMap
       );
-      if (!isMultiplexValid) {
-        // TODO: provide better error message based on device rules
-        return "Multiplex result is not valid";
-      }
     }
-    return "";
+    return validateCovidResultInput(state.testResults);
   };
+
+  // when date tested changes, only set error if user has touched dateTested
+  useEffect(() => {
+    setDateTestedError(validateDateTested());
+    // eslint-disable-next-line
+  }, [state.dateTested]);
+
+  // when test results changes, only set error if user has attempted submission
+  useEffect(() => {
+    setTestResultsError(validateTestResults());
+    // eslint-disable-next-line
+  }, [state.testResults, state.deviceId, state.devicesMap]);
 
   const validateForm = () => {
     const dateTestedErrorMessage = validateDateTested();
@@ -302,6 +307,7 @@ const TestCardForm = ({
   };
 
   const submitForm = async (forceSubmit: boolean = false) => {
+    setHasAttemptedSubmit(true);
     if (!validateForm()) {
       return;
     }
@@ -366,9 +372,11 @@ const TestCardForm = ({
     moment(state.dateTested) < moment().subtract(6, "months") &&
     dateTestedError.length === 0;
 
-  const showErrorSummary =
-    (dateTestedTouched && dateTestedError.length > 0) ||
-    testResultsError.length > 0;
+  const showDateTestedError =
+    (dateTestedTouched || hasAttemptedSubmit) && dateTestedError.length > 0;
+
+  const showTestResultsError =
+    hasAttemptedSubmit && testResultsError.length > 0;
 
   return (
     <>
@@ -414,20 +422,24 @@ const TestCardForm = ({
             six months ago. Please make sure it's correct before submitting.
           </Alert>
         )}
-        {showErrorSummary && (
+        {showDateTestedError && (
           <Alert
             type={"error"}
             headingLevel={"h4"}
             className="margin-top-2"
             validation
           >
-            <div>
-              <strong>Please correct the following errors:</strong>
-            </div>
-            <ul className={"margin-y-0"}>
-              {dateTestedError && <li>{dateTestedError}</li>}
-              {testResultsError && <li>{testResultsError}</li>}
-            </ul>
+            {dateTestedError}
+          </Alert>
+        )}
+        {showTestResultsError && (
+          <Alert
+            type={"error"}
+            headingLevel={"h4"}
+            className="margin-top-2"
+            validation
+          >
+            {testResultsError}
           </Alert>
         )}
         {!useCurrentTime && (
@@ -451,10 +463,8 @@ const TestCardForm = ({
                   })
                 }
                 disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
-                validationStatus={
-                  dateTestedTouched && dateTestedError ? "error" : undefined
-                }
-                errorMessage={dateTestedTouched && dateTestedError}
+                validationStatus={showDateTestedError ? "error" : undefined}
+                errorMessage={showDateTestedError && dateTestedError}
               ></TextInput>
             </div>
             <div className="grid-col-auto display-flex">
@@ -474,9 +484,7 @@ const TestCardForm = ({
                   })
                 }
                 onBlur={() => setDateTestedTouched(true)}
-                validationStatus={
-                  dateTestedTouched && dateTestedError ? "error" : undefined
-                }
+                validationStatus={showDateTestedError ? "error" : undefined}
                 disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
               ></TextInput>
             </div>
