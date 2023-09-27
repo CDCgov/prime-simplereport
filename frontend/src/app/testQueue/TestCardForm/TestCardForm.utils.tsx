@@ -1,5 +1,4 @@
 import moment from "moment/moment";
-import { useMemo } from "react";
 
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import { displayFullName } from "../../utils";
@@ -30,14 +29,13 @@ export function useDeviceTypeOptions(
   facility: QueriedFacility,
   state: TestFormState
 ) {
-  let deviceTypeOptions = useMemo(
-    () =>
-      [...facility!.deviceTypes].sort(alphabetizeByName).map((d) => ({
-        label: d.name,
-        value: d.internalId,
-      })),
-    [facility]
-  );
+  let deviceTypeOptions = [...facility!.deviceTypes]
+    .sort(alphabetizeByName)
+    .map((d) => ({
+      label: d.name,
+      value: d.internalId,
+    }));
+
   const deviceTypeIsInvalid = !state.devicesMap.has(state.deviceId);
 
   if (state.deviceId && deviceTypeIsInvalid) {
@@ -48,18 +46,16 @@ export function useDeviceTypeOptions(
 }
 
 export function useSpecimenTypeOptions(state: TestFormState) {
-  let specimenTypeOptions = useMemo(
-    () =>
-      state.deviceId && state.devicesMap.has(state.deviceId)
-        ? [...state.devicesMap.get(state.deviceId)!.swabTypes]
-            .sort(alphabetizeByName)
-            .map((s: SpecimenType) => ({
-              label: s.name,
-              value: s.internalId,
-            }))
-        : [],
-    [state.deviceId, state.devicesMap]
-  );
+  let specimenTypeOptions =
+    state.deviceId && state.devicesMap.has(state.deviceId)
+      ? [...state.devicesMap.get(state.deviceId)!.swabTypes]
+          .sort(alphabetizeByName)
+          .map((s: SpecimenType) => ({
+            label: s.name,
+            value: s.internalId,
+          }))
+      : [];
+
   const specimenTypeIsInvalid =
     state.devicesMap.has(state.deviceId) &&
     state.devicesMap
