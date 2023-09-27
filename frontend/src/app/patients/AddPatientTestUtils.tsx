@@ -25,30 +25,29 @@ export const fillOutForm = async (
 ) => {
   const inputElements = Object.entries(inputs);
 
-  for (let i = 0; i < inputElements.length; i++) {
+  for (const [label, value] of inputElements) {
     fireEvent.change(
-      screen.getByLabelText(inputElements[i][0], {
+      screen.getByLabelText(label, {
         exact: false,
       }),
-      { target: { value: inputElements[i][1] } }
+      { target: { value } }
     );
   }
 
   const dropDownElements = Object.entries(dropdowns);
 
-  for (let i = 0; i < dropDownElements.length; i++) {
+  for (const [label, value] of dropDownElements) {
     fireEvent.change(
-      screen.getByLabelText(dropDownElements[i][0], {
+      screen.getByLabelText(label, {
         exact: false,
       }),
-      { target: { value: dropDownElements[i][1] } }
+      { target: { value } }
     );
   }
 
   const inputGroupsElements = Object.entries(inputGroups);
 
-  for (let i = 0; i < inputGroupsElements.length; i++) {
-    const [legend, { label, exact }] = inputGroupsElements[i];
+  for (const [legend, { label, exact }] of inputGroupsElements) {
     const fieldset = screen
       .getByText(legend, {
         exact: true,
@@ -59,7 +58,7 @@ export const fillOutForm = async (
     }
     fireEvent.click(
       within(fieldset).getByLabelText(label, {
-        exact: exact || false,
+        exact: exact ?? false,
       })
     );
   }
