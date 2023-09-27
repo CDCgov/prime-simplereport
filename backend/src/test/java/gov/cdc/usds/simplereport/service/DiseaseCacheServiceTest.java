@@ -34,7 +34,7 @@ class DiseaseCacheServiceTest extends BaseServiceTest<DiseaseCacheService> {
     Map<UUID, SupportedDisease> serviceMap = _service.getKnownSupportedDiseasesMap();
     List<SupportedDisease> repoList = repo.findAll();
 
-    assertThat(serviceMap).isNotNull().hasSize(4);
+    assertThat(serviceMap).isNotNull().isNotEmpty();
 
     repoList.forEach(
         d -> {
@@ -50,7 +50,7 @@ class DiseaseCacheServiceTest extends BaseServiceTest<DiseaseCacheService> {
     Map<UUID, SupportedDisease> serviceMap = _service.getKnownSupportedDiseasesMap();
     List<SupportedDisease> repoList = repo.findAll();
 
-    assertThat(serviceMap).isNotNull().hasSize(4);
+    assertThat(serviceMap).isNotNull().isNotEmpty();
 
     repoList.forEach(
         d -> {

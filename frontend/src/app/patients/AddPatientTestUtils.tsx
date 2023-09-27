@@ -90,6 +90,7 @@ const addPatientRequestParams = {
   city: "Boston",
   state: "MA",
   zipCode: "02115",
+  notes: "Green tent",
   country: "USA",
   telephone: null,
   phoneNumbers: [

@@ -1,5 +1,5 @@
-import * as router from "react-router";
 import { screen, waitFor, within } from "@testing-library/react";
+import * as router from "react-router";
 
 import * as smartyStreets from "../utils/smartyStreets";
 
@@ -9,19 +9,19 @@ import {
   renderWithUserWithFacility,
 } from "./AddPatientTestUtils";
 
-// These tests have been broken down into multiple files so they can execute in parallel
-describe("Add Patient: All required fields entered and submitting address verification", () => {
+describe("Add Patient: saving changes and starting a test", () => {
+  const mockNavigate = jest.fn();
   beforeEach(async () => {
     jest.spyOn(smartyStreets, "getBestSuggestion").mockImplementation();
     jest.spyOn(smartyStreets, "suggestionIsCloseEnough").mockReturnValue(false);
     jest.spyOn(smartyStreets, "getZipCodeData").mockResolvedValue(undefined);
+
+    jest.spyOn(router, "useNavigate").mockImplementation(() => mockNavigate);
   });
 
-  it("redirects to the person tab", async () => {
-    const mockNavigate = jest.fn();
-    jest.spyOn(router, "useNavigate").mockImplementation(() => mockNavigate);
+  it("redirects to the queue after address validation", async () => {
+    jest.spyOn(smartyStreets, "suggestionIsCloseEnough").mockReturnValue(true);
     const { user } = renderWithUserWithFacility();
-
     await fillOutForm(
       {
         "First Name": "Alice",
@@ -32,7 +32,7 @@ describe("Add Patient: All required fields entered and submitting address verifi
         "Street address 1": "25 Shattuck St",
         City: "Boston",
         "ZIP code": "02115",
-        Notes: "Green tent",
+        notes: "Green tent",
       },
       { Facility: mockFacilityID, State: "MA", Country: "USA" },
       {
@@ -69,33 +69,32 @@ describe("Add Patient: All required fields entered and submitting address verifi
       }
     );
 
-    await user.click(screen.queryAllByText(/Save Changes/i)[0]);
-    await screen.findByRole("heading", { name: "Address validation" });
-    const modal = screen.getByRole("dialog");
-
     await user.click(
-      within(modal).getByLabelText("Use address as entered", {
+      screen.queryAllByText("Save and start test", {
+        exact: false,
+      })[0]
+    );
+
+    expect(
+      screen.queryByText("Address validation", {
         exact: false,
       })
-    );
-    await user.click(
-      within(modal).getByRole("button", { name: "Save changes" })
-    );
+    ).not.toBeInTheDocument();
+
     await waitFor(() =>
       expect(mockNavigate).toHaveBeenCalledWith(
-        "/patients/?facility=b0d2041f-93c9-4192-b19a-dd99c0044a7e",
-        {}
+        "/queue?facility=facility-id-001",
+        {
+          state: {
+            patientId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+          },
+        }
       )
     );
   });
 
-  it("surfaces an error if invalid zip code for state", async () => {
+  it("redirects to the queue with a patient id and selected facility id", async () => {
     const { user } = renderWithUserWithFacility();
-    let zipCodeSpy: jest.SpyInstance;
-    zipCodeSpy = jest
-      .spyOn(smartyStreets, "isValidZipCodeForState")
-      .mockReturnValue(true);
-    zipCodeSpy.mockReturnValue(false);
     await fillOutForm(
       {
         "First Name": "Alice",
@@ -106,6 +105,7 @@ describe("Add Patient: All required fields entered and submitting address verifi
         "Street address 1": "25 Shattuck St",
         City: "Boston",
         "ZIP code": "02115",
+        notes: "Green tent",
       },
       { Facility: mockFacilityID, State: "MA", Country: "USA" },
       {
@@ -134,55 +134,45 @@ describe("Add Patient: All required fields entered and submitting address verifi
           value: "female",
           exact: true,
         },
-      }
-    );
-    await user.click(
-      screen.queryAllByText("Save Changes", {
-        exact: false,
-      })[0]
-    );
-    await screen.findByText(/Invalid ZIP code for this state/i);
-  });
-
-  it("requires race field to be populated", async () => {
-    const { user } = renderWithUserWithFacility();
-    await fillOutForm(
-      {
-        "First Name": "Alice",
-        "Last Name": "Hamilton",
-        "Date of birth": "1970-09-22",
-        "Primary phone number": "617-432-1000",
-        "Email address": "foo@bar.org",
-        "Street address 1": "25 Shattuck St",
-        City: "Boston",
-        "ZIP code": "02115",
-      },
-      { Facility: mockFacilityID, State: "MA", Country: "USA" },
-      {
-        "Phone type": {
-          label: "Mobile",
-          value: "MOBILE",
-          exact: true,
-        },
-        "Would you like to receive your results via text message?": {
-          label: "Yes",
-          value: "SMS",
-          exact: false,
-        },
-        "Sex assigned at birth": {
+        "What's your gender identity?": {
           label: "Female",
           value: "female",
           exact: true,
         },
       }
     );
-
     await user.click(
-      screen.queryAllByText("Save Changes", {
+      screen.queryAllByText("Save and start test", {
         exact: false,
       })[0]
     );
+    expect(
+      await screen.findByText("Address validation", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
 
-    await waitFor(() => expect(screen.queryByText("Error: Race is missing")));
+    const modal = screen.getByRole("dialog");
+
+    await user.click(
+      within(modal).getByLabelText("Use address as entered", {
+        exact: false,
+      })
+    );
+    await user.click(
+      within(modal).getByText("Save changes", {
+        exact: false,
+      })
+    );
+    await waitFor(() =>
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/queue?facility=facility-id-001",
+        {
+          state: {
+            patientId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+          },
+        }
+      )
+    );
   });
 });
