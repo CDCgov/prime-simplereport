@@ -530,7 +530,7 @@ public class ApiUserService {
     }
   }
 
-  private ApiUser getCurrentApiUser() {
+  public ApiUser getCurrentApiUser() {
     if (RequestContextHolder.getRequestAttributes() == null) {
       // short-circuit in the event this is called from outside a request
       return getCurrentApiUserNoCache();
@@ -557,7 +557,7 @@ public class ApiUserService {
 
   public UserInfo getCurrentUserInfo() {
     ApiUser currentUser = getCurrentApiUser();
-    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getRolesFromOkta(currentUser);
     boolean isAdmin = _authService.isSiteAdmin();
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }

@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.FacilityBuilder;
@@ -51,6 +52,7 @@ public class OrganizationService {
   private final OrderingProviderRequiredValidator orderingProviderValidator;
   private final PatientSelfRegistrationLinkService patientSelfRegistrationLinkService;
   private final DeviceTypeRepository deviceTypeRepository;
+  private final ApiUserService apiUserService;
 
   public void resetOrganizationRolesContext() {
     organizationRolesContext.reset();
@@ -61,7 +63,7 @@ public class OrganizationService {
       if (organizationRolesContext.hasBeenPopulated()) {
         return organizationRolesContext.getOrganizationRoles();
       }
-      var result = fetchCurrentOrganizationRoles();
+      var result = getRolesFromOkta(apiUserService.getCurrentApiUser());
       organizationRolesContext.setOrganizationRoles(result);
       return result;
     } catch (ScopeNotActiveException e) {
@@ -69,8 +71,23 @@ public class OrganizationService {
     }
   }
 
+  public Optional<OrganizationRoles> getRolesFromOkta(ApiUser apiUser) {
+    Optional<OrganizationRoleClaims> currentOrgRoleClaims =
+        oktaRepository.findUser(apiUser.getLoginEmail()).getOrganizationRoleClaims();
+    Optional<OrganizationRoles> currentOrgRoles = Optional.empty();
+    if (currentOrgRoleClaims.isPresent()) {
+      currentOrgRoles = convertToOrganizationRoles(List.of(currentOrgRoleClaims.get()));
+    }
+    return currentOrgRoles;
+  }
+
   private Optional<OrganizationRoles> fetchCurrentOrganizationRoles() {
     List<OrganizationRoleClaims> orgRoles = authorizationService.findAllOrganizationRoles();
+    return convertToOrganizationRoles(orgRoles);
+  }
+
+  public Optional<OrganizationRoles> convertToOrganizationRoles(
+      List<OrganizationRoleClaims> orgRoles) {
     List<String> candidateExternalIds =
         orgRoles.stream()
             .map(OrganizationRoleClaims::getOrganizationExternalId)
