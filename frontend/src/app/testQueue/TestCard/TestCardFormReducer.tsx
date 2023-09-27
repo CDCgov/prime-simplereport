@@ -1,4 +1,5 @@
 import moment from "moment/moment";
+import { isEqual, sortBy } from "lodash";
 
 import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
@@ -137,25 +138,43 @@ export const testCardFormReducer = (
     case TestFormActionCase.UPDATE_DIRTY_STATE: {
       return {
         ...prevState,
-        dirty: false,
+        dirty: payload,
       };
     }
     case TestFormActionCase.UPDATE_WITH_CHANGES_FROM_SERVER: {
-      return {
-        ...prevState,
-        dirty: false,
-        deviceId: payload.deviceType.internalId,
-        specimenId: payload.specimenType.internalId,
-        dateTested: payload.dateTested,
-        testResults: convertFromMultiplexResponse(payload.results),
-        covidAOEResponses: {
-          ...prevState.covidAOEResponses,
-          noSymptoms: payload.noSymptoms,
-          symptoms: payload.symptoms,
-          symptomOnsetDate: payload.symptomOnset,
-          pregnancy: payload.pregnancy as PregnancyCode,
-        },
-      };
+      const resultState = { ...prevState, dirty: false };
+
+      if (prevState.deviceId !== payload.deviceType.internalId) {
+        resultState.deviceId = payload.deviceType.internalId;
+      }
+      if (prevState.specimenId !== payload.specimenType.internalId) {
+        resultState.specimenId = payload.specimenType.internalId;
+      }
+      if (prevState.dateTested !== payload.dateTested) {
+        resultState.dateTested = payload.dateTested;
+      }
+      const updatedResults = convertFromMultiplexResponse(payload.results);
+      // We need to sort before comparing because the order of results within the array does not always match
+      // and the deep comparison would then return false even if individual test results are the same
+      if (
+        !isEqual(
+          sortBy(prevState.testResults, "diseaseName"),
+          sortBy(updatedResults, "diseaseName")
+        )
+      ) {
+        resultState.testResults = updatedResults;
+      }
+      const aoeAnswers = {
+        noSymptoms: payload.noSymptoms,
+        symptoms: payload.symptoms,
+        symptomOnset: payload.symptomOnset,
+        pregnancy: payload.pregnancy,
+      } as CovidAoeQuestionResponses;
+      if (!isEqual(aoeAnswers, prevState.covidAOEResponses)) {
+        resultState.covidAOEResponses = aoeAnswers;
+      }
+
+      return resultState;
     }
     case TestFormActionCase.UPDATE_DEVICES_MAP: {
       return {
