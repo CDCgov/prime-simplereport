@@ -110,6 +110,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     const patientId = (location.state as StartTestProps)?.patientId;
     if (patientId) {
       setStartTestPatientId(patientId);
+      // prevents the patient from being added again if the user had submitted or removed the patient and then refreshed the page
+      window.history.replaceState({}, "");
     }
   }, [location.state]);
 
@@ -220,7 +222,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             key={testOrder.internalId}
             onExiting={onExiting}
             timeout={transitionDuration}
-            classNames={"test-card-transitions"}
           >
             {testCardRefactorEnabled ? (
               <TestCard
@@ -231,7 +232,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 removePatientFromQueue={removePatientFromQueue}
                 startTestPatientId={startTestPatientId}
                 setStartTestPatientId={setStartTestPatientId}
-              ></TestCard>
+              />
             ) : (
               <QueueItem
                 refetchQueue={refetch}
