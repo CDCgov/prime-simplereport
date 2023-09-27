@@ -72,7 +72,7 @@ export const TestCard = ({
   };
 
   return (
-    <>
+    <div>
       <Modal
         ref={closeModalRef}
         aria-labelledby={"close-modal-heading"}
@@ -166,6 +166,6 @@ export const TestCard = ({
           </CardBody>
         </div>
       </Card>
-    </>
+    </div>
   );
 };
