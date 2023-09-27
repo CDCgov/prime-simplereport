@@ -462,6 +462,7 @@ const TestCardForm = ({
                     payload: e.target.value,
                   })
                 }
+                required={true}
                 disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
                 validationStatus={showDateTestedError ? "error" : undefined}
                 errorMessage={showDateTestedError && dateTestedError}
@@ -494,7 +495,13 @@ const TestCardForm = ({
           <div className="grid-col-auto">
             {useCurrentTime && (
               <Label className={"margin-top-3"} htmlFor={"current-date-time"}>
-                Test date and time
+                <span>Test date and time </span>
+                <abbr
+                  title="required"
+                  className={"usa-hint usa-hint--required"}
+                >
+                  *
+                </abbr>
               </Label>
             )}
             <Checkbox
@@ -537,6 +544,7 @@ const TestCardForm = ({
               data-testid="device-type-dropdown"
               errorMessage={deviceTypeIsInvalid ? "Invalid device type" : ""}
               validationStatus={deviceTypeIsInvalid ? "error" : undefined}
+              required={true}
             />
           </div>
           <div className="grid-col-auto">
@@ -558,6 +566,7 @@ const TestCardForm = ({
                 specimenTypeIsInvalid ? "Invalid specimen type" : ""
               }
               validationStatus={specimenTypeIsInvalid ? "error" : undefined}
+              required={true}
             />
           </div>
         </div>
