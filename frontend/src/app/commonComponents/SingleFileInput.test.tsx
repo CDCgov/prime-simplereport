@@ -56,7 +56,7 @@ describe("Single File Input", () => {
   });
 
   it("checks component state when file is unselected", async () => {
-    const { user } = renderWithUser({
+    renderWithUser({
       required: false,
       ariaInvalid: false,
       accept: undefined,
