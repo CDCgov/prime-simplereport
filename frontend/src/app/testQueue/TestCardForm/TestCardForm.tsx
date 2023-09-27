@@ -102,8 +102,10 @@ const TestCardForm = ({
   const [dateTestedError, setDateTestedError] = useState("");
   const [testResultsError, setTestResultsError] = useState("");
 
-  const [editQueueItem] = useEditQueueItemMutation();
-  const [updateAoeMutation] = useUpdateAoeMutation();
+  const [editQueueItem, { loading: editQueueItemMutationLoading }] =
+    useEditQueueItemMutation();
+  const [updateAoeMutation, { loading: updateAoeMutationLoading }] =
+    useUpdateAoeMutation();
   const [submitTestResult, { loading: submitLoading }] =
     useSubmitQueueItemMutation();
 
@@ -127,20 +129,28 @@ const TestCardForm = ({
   }, [devicesMap, state.deviceId]);
 
   // when other diseases are added, update this to use the correct AOE for that disease
+  // probably a good use to encapsulate this in a custom hook like useAOEFormOption
   const whichAOEFormOption = AOEFormOptions.COVID;
 
-  // when backend sends an updated test order, update the form state
+  /**
+   * When backend sends an updated test order, update the form state
+   * see refetch function and periodic polling on TestQueue useGetFacilityQueueQuery
+   */
   useEffect(() => {
-    // don't update if not done saving changes
-    if (state.dirty) return;
+    // don't update if there are unsaved dirty changes or if still awaiting saved edits
+    if (state.dirty || editQueueItemMutationLoading || updateAoeMutationLoading)
+      return;
     dispatch({
       type: TestFormActionCase.UPDATE_WITH_CHANGES_FROM_SERVER,
       payload: testOrder,
     });
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [testOrder]);
 
-  // when backend sends an updated devices map, update the form state
+  /**
+   * When backend sends an updated devices map, update the form state
+   * see refetch function and periodic polling on TestQueue useGetFacilityQueueQuery
+   */
   useEffect(() => {
     // don't update if not done saving changes
     if (state.dirty) return;
@@ -148,13 +158,23 @@ const TestCardForm = ({
       type: TestFormActionCase.UPDATE_DEVICES_MAP,
       payload: devicesMap,
     });
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [devicesMap]);
 
-  // when user makes changes, send update to backend
+  /** When device id changes, update the test timer */
+  useEffect(() => {
+    const deviceTestLength = state.devicesMap.get(state.deviceId)?.testLength;
+    if (deviceTestLength) {
+      updateTimer(testOrder.internalId, deviceTestLength);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.deviceId]);
+
+  /** When user makes changes on test order fields, send update to backend */
   useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (state.dirty) {
+      dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
       debounceTimer = setTimeout(async () => {
         await updateTestOrder();
       }, DEBOUNCE_TIME);
@@ -162,13 +182,14 @@ const TestCardForm = ({
     return () => {
       clearTimeout(debounceTimer);
     };
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.deviceId, state.specimenId, state.dateTested, state.testResults]);
 
-  // when user makes changes to aoe, send update to backend
+  /** When user makes changes to AOE responses, send update to backend */
   useEffect(() => {
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (state.dirty) {
+      dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
       debounceTimer = setTimeout(async () => {
         await updateAOE();
       }, DEBOUNCE_TIME);
@@ -176,8 +197,20 @@ const TestCardForm = ({
     return () => {
       clearTimeout(debounceTimer);
     };
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.covidAOEResponses]);
+
+  /** Validate after dateTested changes */
+  useEffect(() => {
+    setDateTestedError(validateDateTested());
+    // eslint-disable-next-line
+  }, [state.dateTested]);
+
+  /** Validate after testResults change */
+  useEffect(() => {
+    setTestResultsError(validateTestResults());
+    // eslint-disable-next-line
+  }, [state.testResults, state.deviceId, state.devicesMap]);
 
   const updateAOE = async () => {
     if (whichAOEFormOption === AOEFormOptions.COVID) {
@@ -192,11 +225,6 @@ const TestCardForm = ({
             pregnancy: state.covidAOEResponses.pregnancy,
             // testResultDelivery will now be determined by user preferences on backend
           },
-        });
-        refetchQueue();
-        dispatch({
-          type: TestFormActionCase.UPDATE_DIRTY_STATE,
-          payload: false,
         });
       } catch (e) {
         // caught upstream by error boundary
@@ -224,18 +252,6 @@ const TestCardForm = ({
       if (!response.data) {
         throw Error("updateQueueItem null response data");
       }
-      const newDeviceId = response.data.editQueueItem?.deviceType;
-      if (newDeviceId && newDeviceId.internalId !== state.deviceId) {
-        dispatch({
-          type: TestFormActionCase.UPDATE_DEVICE_ID,
-          payload: newDeviceId.internalId,
-        });
-        updateTimer(testOrder.internalId, newDeviceId.testLength);
-      }
-      dispatch({
-        type: TestFormActionCase.UPDATE_DIRTY_STATE,
-        payload: false,
-      });
     } catch (e) {
       // caught upstream by error boundary
       throw e;
@@ -276,18 +292,6 @@ const TestCardForm = ({
     }
     return validateCovidResultInput(state.testResults);
   };
-
-  // when date tested changes, only set error if user has touched dateTested
-  useEffect(() => {
-    setDateTestedError(validateDateTested());
-    // eslint-disable-next-line
-  }, [state.dateTested]);
-
-  // when test results changes, only set error if user has attempted submission
-  useEffect(() => {
-    setTestResultsError(validateTestResults());
-    // eslint-disable-next-line
-  }, [state.testResults, state.deviceId, state.devicesMap]);
 
   const validateForm = () => {
     const dateTestedErrorMessage = validateDateTested();
