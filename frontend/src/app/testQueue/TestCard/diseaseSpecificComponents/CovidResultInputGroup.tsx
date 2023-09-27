@@ -38,6 +38,16 @@ const convertFromCovidResult = (covidResult: TestResult): CovidResult[] => {
   );
 };
 
+export const validateCovidResultInput = (
+  testResults: MultiplexResultInput[]
+) => {
+  const resultCovidFormat = convertFromMultiplexResultInputs(testResults);
+  if (resultCovidFormat === TEST_RESULTS.UNKNOWN) {
+    return "Please enter a COVID-19 test result.";
+  }
+  return "";
+};
+
 interface Props {
   queueItemId: string;
   testResults: MultiplexResultInput[];
@@ -82,6 +92,7 @@ const CovidResultInputGroup: React.FC<Props> = ({
       selectedRadio={resultCovidFormat}
       wrapperClassName="prime-radio__group"
       disabled={isSubmitDisabled}
+      required
     />
   );
 };
