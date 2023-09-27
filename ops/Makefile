@@ -60,8 +60,8 @@ init-%: .valid-env-%
 # 	terraform -chdir=$* init -upgrade -migrate-state
 
 plan-%: .valid-env-% api.tfvars
-	terraform -chdir=$*/persistent plan -lock-timeout=30m
-	terraform -chdir=$* plan -var-file=../api.tfvars -lock-timeout=30m
+	terraform -chdir=$*/persistent plan -out=tfplan-persistent -lock-timeout=30m
+	terraform -chdir=$* plan -out=tfplan -var-file=../api.tfvars -lock-timeout=30m
 
 deploy-%: .valid-env-% api.tfvars
 	terraform -chdir=$*/persistent apply -auto-approve -lock-timeout=30m
