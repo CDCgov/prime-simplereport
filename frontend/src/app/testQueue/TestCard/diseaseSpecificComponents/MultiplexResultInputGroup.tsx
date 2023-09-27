@@ -120,6 +120,18 @@ const doesDeviceSupportMultiplexAndCovidOnlyResult = (
   return false;
 };
 
+const isCovidFilled = (results: MultiplexResultState) =>
+  results.covid === TEST_RESULTS.POSITIVE ||
+  results.covid === TEST_RESULTS.NEGATIVE;
+
+const isFluAFilled = (results: MultiplexResultState) =>
+  results.fluA === TEST_RESULTS.POSITIVE ||
+  results.fluA === TEST_RESULTS.NEGATIVE;
+
+const isFluBFilled = (results: MultiplexResultState) =>
+  results.fluB === TEST_RESULTS.POSITIVE ||
+  results.fluB === TEST_RESULTS.NEGATIVE;
+
 export const validateMultiplexResultState = (
   resultsMultiplexFormat: MultiplexResultState,
   deviceId: string,
@@ -128,6 +140,10 @@ export const validateMultiplexResultState = (
   const deviceSupportsCovidOnlyResult =
     doesDeviceSupportMultiplexAndCovidOnlyResult(deviceId, devicesMap);
   const isFluOnly = isDeviceFluOnly(deviceId, devicesMap);
+
+  const covidIsFilled = isCovidFilled(resultsMultiplexFormat);
+  const fluAIsFilled = isFluAFilled(resultsMultiplexFormat);
+  const fluBIsFilled = isFluBFilled(resultsMultiplexFormat);
 
   let allResultsAreInconclusive =
     resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED &&
@@ -143,41 +159,46 @@ export const validateMultiplexResultState = (
     resultsMultiplexFormat.covid === resultsMultiplexFormat.fluA &&
     resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
 
+  let allResultsAreFilled = covidIsFilled && fluAIsFilled && fluBIsFilled;
+
+  let allResultsAreRequired =
+    fluAIsFilled || fluBIsFilled || !deviceSupportsCovidOnlyResult;
+
+  // recalculate booleans if flu only
   if (isFluOnly) {
     allResultsAreEqual =
       resultsMultiplexFormat.fluA === resultsMultiplexFormat.fluB;
+
     allResultsAreInconclusive =
       resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED &&
       resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED;
+
     anyResultIsInconclusive =
       resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED ||
       resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
+
+    allResultsAreFilled = fluAIsFilled && fluBIsFilled;
+
+    allResultsAreRequired = true;
   }
 
-  const covidIsFilled =
-    resultsMultiplexFormat.covid === TEST_RESULTS.POSITIVE ||
-    resultsMultiplexFormat.covid === TEST_RESULTS.NEGATIVE;
-
-  const fluAIsFilled =
-    resultsMultiplexFormat.fluA === TEST_RESULTS.POSITIVE ||
-    resultsMultiplexFormat.fluA === TEST_RESULTS.NEGATIVE;
-
-  const fluBIsFilled =
-    resultsMultiplexFormat.fluB === TEST_RESULTS.POSITIVE ||
-    resultsMultiplexFormat.fluB === TEST_RESULTS.NEGATIVE;
+  if (allResultsAreInconclusive) {
+    return "";
+  }
 
   if (anyResultIsInconclusive && !allResultsAreEqual) {
-    return false;
+    return "This device only supports inconclusive results if all are inconclusive.";
   }
-  return (
-    allResultsAreInconclusive ||
-    (deviceSupportsCovidOnlyResult &&
-      covidIsFilled &&
-      !fluAIsFilled &&
-      !fluBIsFilled) ||
-    (isFluOnly && fluAIsFilled && fluBIsFilled) ||
-    (covidIsFilled && fluAIsFilled && fluBIsFilled)
-  );
+
+  if (allResultsAreRequired && !allResultsAreFilled) {
+    return "Please enter results for all conditions tested with this device.";
+  }
+
+  if (!covidIsFilled && !isFluOnly) {
+    return "Please enter a COVID-19 test result.";
+  }
+
+  return "";
 };
 
 /**
@@ -202,11 +223,14 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
   const isMobile = screen.width <= 600;
   const resultsMultiplexFormat: MultiplexResultState =
     convertFromMultiplexResultInputs(testResults);
+
   let allResultsInconclusive =
     resultsMultiplexFormat.covid === TEST_RESULTS.UNDETERMINED &&
     resultsMultiplexFormat.fluA === TEST_RESULTS.UNDETERMINED &&
     resultsMultiplexFormat.fluB === TEST_RESULTS.UNDETERMINED;
 
+  const deviceSupportsCovidOnlyResult =
+    doesDeviceSupportMultiplexAndCovidOnlyResult(deviceId, devicesMap);
   const isFluOnly = isDeviceFluOnly(deviceId, devicesMap);
 
   if (isFluOnly) {
@@ -267,9 +291,11 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
     }
   };
 
-  /**
-   * Form Validation
-   * */
+  const isSomeFluFilled =
+    isFluAFilled(resultsMultiplexFormat) ||
+    isFluBFilled(resultsMultiplexFormat);
+  const areAllResultsRequired =
+    isSomeFluFilled || !deviceSupportsCovidOnlyResult;
 
   return (
     <>
@@ -297,6 +323,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
               name={`covid-test-result-${queueItemId}`}
               selectedRadio={resultsMultiplexFormat.covid}
               wrapperClassName="prime-radio__group"
+              required={true}
             />
           </div>
         )}
@@ -322,6 +349,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
             name={`flu-a-test-result-${queueItemId}`}
             selectedRadio={resultsMultiplexFormat.fluA}
             wrapperClassName="prime-radio__group"
+            required={areAllResultsRequired}
           />
         </div>
         <div
@@ -346,6 +374,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
             name={`flu-b-test-result-${queueItemId}`}
             selectedRadio={resultsMultiplexFormat.fluB}
             wrapperClassName="prime-radio__group"
+            required={areAllResultsRequired}
           />
         </div>
       </div>
