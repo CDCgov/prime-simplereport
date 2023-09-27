@@ -557,9 +557,24 @@ public class ApiUserService {
 
   public UserInfo getCurrentUserInfo() {
     ApiUser currentUser = getCurrentApiUser();
-    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     boolean isAdmin = _authService.isSiteAdmin();
+    Optional<OrganizationRoles> currentOrgRoles;
+    if (isAdmin) {
+      currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    } else {
+      currentOrgRoles = getClaimsFromOkta(currentUser);
+    }
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
+  }
+
+  private Optional<OrganizationRoles> getClaimsFromOkta(ApiUser currentUser) {
+    Optional<OrganizationRoleClaims> currentOrgRoleClaims =
+        _oktaRepo.findUser(currentUser.getLoginEmail()).getOrganizationRoleClaims();
+    Optional<OrganizationRoles> currentOrgRoles = Optional.empty();
+    if (currentOrgRoleClaims.isPresent()) {
+      currentOrgRoles = _orgService.convertToOrganizationRoles(List.of(currentOrgRoleClaims.get()));
+    }
+    return currentOrgRoles;
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers

@@ -71,6 +71,11 @@ public class OrganizationService {
 
   private Optional<OrganizationRoles> fetchCurrentOrganizationRoles() {
     List<OrganizationRoleClaims> orgRoles = authorizationService.findAllOrganizationRoles();
+    return convertToOrganizationRoles(orgRoles);
+  }
+
+  public Optional<OrganizationRoles> convertToOrganizationRoles(
+      List<OrganizationRoleClaims> orgRoles) {
     List<String> candidateExternalIds =
         orgRoles.stream()
             .map(OrganizationRoleClaims::getOrganizationExternalId)
