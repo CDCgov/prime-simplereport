@@ -20,28 +20,32 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class FeatureFlagsConfig {
-  @Getter(AccessLevel.NONE)
-  @Setter(AccessLevel.NONE)
-  private final FeatureFlagRepository _repo;
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private final FeatureFlagRepository _repo;
 
-  private boolean hivEnabled;
-  private boolean rsvEnabled;
-  private boolean singleEntryRsvEnabled;
-  private boolean agnosticEnabled;
+    private boolean hivEnabled;
+    private boolean rsvEnabled;
+    private boolean singleEntryRsvEnabled;
+    private boolean agnosticEnabled;
+    private boolean agnosticBulkUploadEnabled;
 
-  @Scheduled(fixedRateString = "60000") // 1 min
-  private void loadFeatureFlagsFromDB() {
-    Iterable<FeatureFlag> flags = _repo.findAll();
-    flags.forEach(flag -> flagMapping(flag.getName(), flag.getValue()));
-  }
 
-  private void flagMapping(String flagName, Boolean flagValue) {
-    switch (flagName) {
-      case "hivEnabled" -> setHivEnabled(flagValue);
-      case "rsvEnabled" -> setRsvEnabled(flagValue);
-      case "singleEntryRsvEnabled" -> setSingleEntryRsvEnabled(flagValue);
-      case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
-      default -> log.info("no mapping for " + flagName);
+    @Scheduled(fixedRateString = "60000") // 1 min
+    private void loadFeatureFlagsFromDB() {
+        Iterable<FeatureFlag> flags = _repo.findAll();
+        flags.forEach(flag -> flagMapping(flag.getName(), flag.getValue()));
     }
-  }
+
+    private void flagMapping(String flagName, Boolean flagValue) {
+        switch (flagName) {
+            case "hivEnabled" -> setHivEnabled(flagValue);
+            case "rsvEnabled" -> setRsvEnabled(flagValue);
+            case "singleEntryRsvEnabled" -> setSingleEntryRsvEnabled(flagValue);
+            case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
+            case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);
+
+            default -> log.info("no mapping for " + flagName);
+        }
+    }
 }

@@ -13,8 +13,10 @@ import gov.cdc.usds.simplereport.db.model.TestResultUpload;
 import gov.cdc.usds.simplereport.service.ConditionAgnosticUploadService;
 import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
+
 import java.io.IOException;
 import java.io.InputStream;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,71 +29,71 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 @Slf4j
 public class FileUploadController {
-  public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
-  private final PatientBulkUploadService patientBulkUploadService;
-  private final TestResultUploadService testResultUploadService;
-  private final ConditionAgnosticUploadService conditionAgnosticUploadService;
+    public static final String TEXT_CSV_CONTENT_TYPE = "text/csv";
+    private final PatientBulkUploadService patientBulkUploadService;
+    private final TestResultUploadService testResultUploadService;
+    private final ConditionAgnosticUploadService conditionAgnosticUploadService;
 
-  @PostMapping(PATIENT_UPLOAD)
-  public PatientBulkUploadResponse handlePatientsUpload(
-      @RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
-    assertCsvFileType(file);
+    @PostMapping(PATIENT_UPLOAD)
+    public PatientBulkUploadResponse handlePatientsUpload(
+            @RequestParam("file") MultipartFile file, @RequestParam String rawFacilityId) {
+        assertCsvFileType(file);
 
-    try (InputStream people = file.getInputStream()) {
-      return patientBulkUploadService.processPersonCSV(people, parseUUID(rawFacilityId));
-    } catch (IllegalGraphqlArgumentException e) {
-      log.error("Invalid facility id passed", e);
-      throw new BadRequestException("Invalid facility id");
-    } catch (IllegalArgumentException e) {
-      log.error("Patient CSV upload failed", e);
-      throw new CsvProcessingException(e.getMessage());
-    } catch (IOException e) {
-      log.error("Patient CSV upload failed", e);
-      throw new CsvProcessingException("Unable to complete patient CSV upload");
+        try (InputStream people = file.getInputStream()) {
+            return patientBulkUploadService.processPersonCSV(people, parseUUID(rawFacilityId));
+        } catch (IllegalGraphqlArgumentException e) {
+            log.error("Invalid facility id passed", e);
+            throw new BadRequestException("Invalid facility id");
+        } catch (IllegalArgumentException e) {
+            log.error("Patient CSV upload failed", e);
+            throw new CsvProcessingException(e.getMessage());
+        } catch (IOException e) {
+            log.error("Patient CSV upload failed", e);
+            throw new CsvProcessingException("Unable to complete patient CSV upload");
+        }
     }
-  }
 
-  @PostMapping(HIV_RESULT_UPLOAD)
-  @PreAuthorize("@featureFlagsConfig.isHivEnabled()")
-  public TestResultUpload handleHIVResultsUpload(@RequestParam("file") MultipartFile file) {
-    assertCsvFileType(file);
-    try (InputStream resultsUpload = file.getInputStream()) {
-      return testResultUploadService.processHIVResultCSV(resultsUpload);
-    } catch (IOException e) {
-      log.error("Test result CSV encountered an unexpected error", e);
-      throw new CsvProcessingException("Unable to process test result CSV upload");
+    @PostMapping(HIV_RESULT_UPLOAD)
+    @PreAuthorize("@featureFlagsConfig.isHivEnabled()")
+    public TestResultUpload handleHIVResultsUpload(@RequestParam("file") MultipartFile file) {
+        assertCsvFileType(file);
+        try (InputStream resultsUpload = file.getInputStream()) {
+            return testResultUploadService.processHIVResultCSV(resultsUpload);
+        } catch (IOException e) {
+            log.error("Test result CSV encountered an unexpected error", e);
+            throw new CsvProcessingException("Unable to process test result CSV upload");
+        }
     }
-  }
 
-  @PostMapping(CONDITION_AGNOSTIC_RESULT_UPLOAD)
-  @PreAuthorize("@featureFlagsConfig.isConditionAgnosticBulkUploadEnabled()")
-  public TestResultUpload handleConditionAgnosticResultsUpload(
-      @RequestParam("file") MultipartFile file) {
-    assertCsvFileType(file);
-    try (InputStream resultsUpload = file.getInputStream()) {
-      return conditionAgnosticUploadService.processConditionAgnosticResultCSV(resultsUpload);
-    } catch (IOException e) {
-      log.error("Condition agnostic test result CSV encountered an unexpected error", e);
-      throw new CsvProcessingException(
-          "Unable to process condition agnostic test result CSV upload");
+    @PostMapping(CONDITION_AGNOSTIC_RESULT_UPLOAD)
+    @PreAuthorize("@featureFlagsConfig.isAgnosticBulkUploadEnabled()")
+    public TestResultUpload handleConditionAgnosticResultsUpload(
+            @RequestParam("file") MultipartFile file) {
+        assertCsvFileType(file);
+        try (InputStream resultsUpload = file.getInputStream()) {
+            return conditionAgnosticUploadService.processConditionAgnosticResultCSV(resultsUpload);
+        } catch (IOException e) {
+            log.error("Condition agnostic test result CSV encountered an unexpected error", e);
+            throw new CsvProcessingException(
+                    "Unable to process condition agnostic test result CSV upload");
+        }
     }
-  }
 
-  @PostMapping(RESULT_UPLOAD)
-  public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
-    assertCsvFileType(file);
+    @PostMapping(RESULT_UPLOAD)
+    public TestResultUpload handleResultsUpload(@RequestParam("file") MultipartFile file) {
+        assertCsvFileType(file);
 
-    try (InputStream resultsUpload = file.getInputStream()) {
-      return testResultUploadService.processResultCSV(resultsUpload);
-    } catch (IOException e) {
-      log.error("Test result CSV encountered an unexpected error", e);
-      throw new CsvProcessingException("Unable to process test result CSV upload");
+        try (InputStream resultsUpload = file.getInputStream()) {
+            return testResultUploadService.processResultCSV(resultsUpload);
+        } catch (IOException e) {
+            log.error("Test result CSV encountered an unexpected error", e);
+            throw new CsvProcessingException("Unable to process test result CSV upload");
+        }
     }
-  }
 
-  private static void assertCsvFileType(MultipartFile file) {
-    if (!TEXT_CSV_CONTENT_TYPE.equals(file.getContentType())) {
-      throw new CsvProcessingException("Only CSV files are supported");
+    private static void assertCsvFileType(MultipartFile file) {
+        if (!TEXT_CSV_CONTENT_TYPE.equals(file.getContentType())) {
+            throw new CsvProcessingException("Only CSV files are supported");
+        }
     }
-  }
 }

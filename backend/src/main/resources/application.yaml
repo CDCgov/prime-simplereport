@@ -153,6 +153,7 @@ features:
   rsvEnabled: true
   singleEntryRsvEnabled: true
   agnosticEnabled: true
+  agnosticBulkUploadEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}
