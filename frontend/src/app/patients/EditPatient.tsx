@@ -54,6 +54,7 @@ export const GET_PATIENT = gql`
         id
       }
       testResultDelivery
+      notes
     }
   }
 `;
@@ -92,6 +93,7 @@ interface GetPatientResponse {
       id: string;
     } | null;
     testResultDelivery: TestResultDeliveryPreference | null;
+    notes: string | null;
   };
 }
 
@@ -124,6 +126,7 @@ export const UPDATE_PATIENT = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -153,6 +156,7 @@ export const UPDATE_PATIENT = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
+      notes: $notes
     ) {
       internalId
     }

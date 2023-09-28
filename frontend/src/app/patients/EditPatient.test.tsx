@@ -12,9 +12,6 @@ import { PATIENT_TERM_CAP } from "../../config/constants";
 import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
 
-jest.mock("@trussworks/react-uswds", () => ({
-  ComboBox: () => <></>,
-}));
 const mockStore = configureStore([]);
 
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
@@ -97,6 +94,7 @@ describe("EditPatient", () => {
               facility: null,
               testResultDelivery: null,
               tribalAffiliation: [null],
+              notes: null,
             },
           },
         },
@@ -133,7 +131,9 @@ describe("EditPatient", () => {
             facility: null,
             testResultDelivery: null,
             tribalAffiliation: undefined,
+            preferredLanguage: null,
             facilityId: null,
+            notes: "Red tent",
           },
         },
         result: {
@@ -197,6 +197,9 @@ describe("EditPatient", () => {
       await user.type(name, "Fake Name");
       await user.tab();
 
+      const notes = await screen.findByLabelText("Notes", { exact: false });
+      await user.type(notes, "Red tent");
+
       const saveAndStartButton = screen.getByText("Save and start test", {
         exact: false,
       });
@@ -225,6 +228,9 @@ describe("EditPatient", () => {
       await user.clear(name);
       await user.type(name, "Fake Name");
       await user.tab();
+
+      const notes = await screen.findByLabelText("Notes", { exact: false });
+      await user.type(notes, "Red tent");
 
       const saveButton = screen.getAllByText("Save changes", {
         exact: false,
@@ -393,6 +399,7 @@ describe("EditPatient", () => {
               facility: null,
               testResultDelivery: null,
               tribalAffiliation: [null],
+              notes: null,
             },
           },
         },

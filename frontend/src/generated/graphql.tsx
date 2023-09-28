@@ -1482,6 +1482,7 @@ export type AddPatientMutationVariables = Exact<{
   employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+  notes?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type AddPatientMutation = {
@@ -1536,6 +1537,7 @@ export type GetPatientDetailsQuery = {
     employedInHealthcare?: boolean | null;
     preferredLanguage?: string | null;
     testResultDelivery?: TestResultDeliveryPreference | null;
+    notes?: string | null;
     phoneNumbers?: Array<{
       __typename?: "PhoneNumber";
       type?: PhoneType | null;
@@ -1575,6 +1577,7 @@ export type UpdatePatientMutationVariables = Exact<{
   employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+  notes?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type UpdatePatientMutation = {
@@ -4228,6 +4231,7 @@ export const AddPatientDocument = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -4255,6 +4259,7 @@ export const AddPatientDocument = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
+      notes: $notes
     ) {
       internalId
       facility {
@@ -4306,6 +4311,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'
  *      testResultDelivery: // value for 'testResultDelivery'
+ *      notes: // value for 'notes'
  *   },
  * });
  */
@@ -4416,6 +4422,7 @@ export const GetPatientDetailsDocument = gql`
         id
       }
       testResultDelivery
+      notes
     }
   }
 `;
@@ -4499,6 +4506,7 @@ export const UpdatePatientDocument = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -4528,6 +4536,7 @@ export const UpdatePatientDocument = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
+      notes: $notes
     ) {
       internalId
     }
@@ -4578,6 +4587,7 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'
  *      testResultDelivery: // value for 'testResultDelivery'
+ *      notes: // value for 'notes'
  *   },
  * });
  */
