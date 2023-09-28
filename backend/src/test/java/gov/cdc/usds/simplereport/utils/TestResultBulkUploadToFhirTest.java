@@ -357,7 +357,7 @@ public class TestResultBulkUploadToFhirTest {
         .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
 
     sut =
-        new BulkUploadResultsToFhir(
+        new TestResultBulkUploadToFhir(
             resultsUploaderCachingService,
             gitProperties,
             mockedUUIDGenerator,
