@@ -6,15 +6,6 @@ module.exports = {
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     "@storybook/preset-create-react-app",
-    {
-      name: "@storybook/addon-storysource",
-      options: {
-        rule: {
-          test: [/\.stories\.[j|t]sx?$/],
-          include: [resolve(__dirname, "../src")],
-        },
-      },
-    },
   ],
   webpackFinal: async (config) => {
     config.resolve.alias["@microsoft/applicationinsights-react-js"] =
