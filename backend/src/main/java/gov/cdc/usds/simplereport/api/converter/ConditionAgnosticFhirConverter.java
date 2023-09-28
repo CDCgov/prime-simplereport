@@ -43,43 +43,36 @@ public class ConditionAgnosticFhirConverter {
   public Bundle createFhirBundle(ConditionAgnosticCreateFhirBundleProps props) {
 
     var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
+    props.getDiagnosticReport().setSubject(new Reference(patientFullUrl));
 
-    // QUESTION: these ID's don't exist within the spec. Should we be generating them internally
-    // somehow?
-    var diagnosticReportFullUrl = ResourceType.Patient + "/" + props.getDiagnosticReport().getId();
+    var diagnosticReportFullUrl =
+        ResourceType.DiagnosticReport + "/" + props.getDiagnosticReport().getId();
 
     var messageHeader =
         createMessageHeader(
             diagnosticReportFullUrl, props.getGitProperties(), props.getProcessingId());
     var messageHeaderFullUrl = ResourceType.MessageHeader + "/" + messageHeader.getId();
 
-    // QUESTION: other FHIR converter has this concept of a service request. Do we need this for the
-    // condition
-    // agnostic bundle as well?
-    // props.getDiagnosticReport().addBasedOn(new Reference(serviceRequestFullUrl));
-    props.getDiagnosticReport().setSubject(new Reference(patientFullUrl));
-
     var entryList = new ArrayList<Pair<String, Resource>>();
     entryList.add(Pair.of(messageHeaderFullUrl, messageHeader));
-    entryList.add(Pair.of(diagnosticReportFullUrl, props.getDiagnosticReport()));
     entryList.add(Pair.of(patientFullUrl, props.getPatient()));
     entryList.add(
         Pair.of(
             ResourceType.Organization + "/" + SIMPLE_REPORT_ORG_ID,
             new Organization().setName("SimpleReport").setId(SIMPLE_REPORT_ORG_ID)));
 
-    // QUESTION: the other FHIR converter is passing in these observations in a list, but I was
-    // assuming
-    // that for a CSV file, we'd only have the one observation per row. Are there multiple
-    // observations per
-    // row within a CSV?
-    Observation observation = props.getObservation();
-    // QUESTION: these ID's don't exist within the spec. Should we be generating them internally
-    // somehow?
-    var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
-    observation.setSubject(new Reference(patientFullUrl));
-    props.getDiagnosticReport().addResult(new Reference(observationFullUrl));
-    entryList.add(Pair.of(observationFullUrl, observation));
+    props
+        .getResultObservations()
+        .forEach(
+            observation -> {
+              var observationFullUrl = ResourceType.Observation + "/" + observation.getId();
+              observation.setSubject(new Reference(patientFullUrl));
+              entryList.add(Pair.of(observationFullUrl, observation));
+              Reference observationReference = new Reference(observationFullUrl);
+              props.getDiagnosticReport().addResult(observationReference);
+            });
+
+    entryList.add(Pair.of(diagnosticReportFullUrl, props.getDiagnosticReport()));
 
     Date curDate = new DateGenerator().newDate();
     var bundle =
@@ -161,14 +154,11 @@ public class ConditionAgnosticFhirConverter {
     diagnosticCoding.setSystem(LOINC_CODE_SYSTEM).setCode(props.getTestPerformedCode());
     diagnosticReport.setCode(diagnosticCodeableConcept);
 
-    var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
-    diagnosticReport.setSubject(new Reference(patientFullUrl));
-
-    var observationFullUrl = ResourceType.Observation + "/" + props.getObservation().getId();
-    diagnosticReport.setResult(List.of(new Reference(observationFullUrl)));
-
     var effectiveDateTime = DateTimeUtils.convertToZonedDateTime(props.getTestEffectiveDate());
     diagnosticReport.setEffective(fhirConverter.convertToDateTimeType(effectiveDateTime));
+
+    String diagnosticReportId = uuidGenerator.randomUUID().toString();
+    diagnosticReport.setId(diagnosticReportId);
 
     return diagnosticReport;
   }
@@ -188,10 +178,10 @@ public class ConditionAgnosticFhirConverter {
     observationCoding.setSystem(LOINC_CODE_SYSTEM).setCode(props.getTestPerformedCode());
     observation.setCode(observationCodeableConcept);
 
-    var patientFullUrl = ResourceType.Patient + "/" + props.getPatient().getId();
-
-    observation.setSubject(new Reference(patientFullUrl));
     addSNOMEDValue(props.getResultValue(), observation);
+
+    String observationId = uuidGenerator.randomUUID().toString();
+    observation.setId(observationId);
 
     return observation;
   }

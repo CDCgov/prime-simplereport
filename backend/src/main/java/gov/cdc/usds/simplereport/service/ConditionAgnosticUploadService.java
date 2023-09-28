@@ -78,12 +78,13 @@ public class ConditionAgnosticUploadService {
       return validationErrorResult;
     }
 
+    Organization org = _orgService.getCurrentOrganization();
     TestResultUpload fhirResult = null;
-    Future<UploadResponse> fhirResponse = null;
+    Future<UploadResponse> fhirResponse;
 
     if (content.length > 0) {
 
-      fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content));
+      fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
 
       try {
         if (fhirResponse != null && fhirResponse.get() != null) {
@@ -127,6 +128,7 @@ public class ConditionAgnosticUploadService {
               }
               log.info(
                   "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+
               return response;
             }));
   }

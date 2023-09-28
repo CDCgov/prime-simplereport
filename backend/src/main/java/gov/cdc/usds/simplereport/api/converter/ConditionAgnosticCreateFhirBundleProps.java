@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import org.hl7.fhir.r4.model.DiagnosticReport;
@@ -11,7 +12,7 @@ import org.springframework.boot.info.GitProperties;
 @Getter
 public class ConditionAgnosticCreateFhirBundleProps {
   private Patient patient;
-  private Observation observation;
+  private List<Observation> resultObservations;
   private DiagnosticReport diagnosticReport;
   private GitProperties gitProperties;
   private String processingId;

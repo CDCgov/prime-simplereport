@@ -76,6 +76,7 @@ public class ConditionAgnosticBulkUploadToFhir {
                   }
                 })
             .toList();
+
     return bundles;
   }
 
@@ -109,13 +110,23 @@ public class ConditionAgnosticBulkUploadToFhir {
                 .testPerformedCode(row.getTestPerformedCode().getValue())
                 .build());
 
-    return fhirConverter.createFhirBundle(
-        ConditionAgnosticCreateFhirBundleProps.builder()
-            .patient(patient)
-            .observation(observation)
-            .diagnosticReport(diagnosticReport)
-            .gitProperties(gitProperties)
-            .processingId(processingModeCode)
-            .build());
+    var bundle =
+        fhirConverter.createFhirBundle(
+            ConditionAgnosticCreateFhirBundleProps.builder()
+                .patient(patient)
+                .resultObservations(List.of(observation))
+                .diagnosticReport(diagnosticReport)
+                .gitProperties(gitProperties)
+                .processingId(processingModeCode)
+                .build());
+
+    // Indent the output
+    parser.setPrettyPrint(true);
+
+    // Serialize it
+    String serialized = parser.encodeResourceToString(bundle);
+    log.warn("RESULT FROM FHIR CONVERTER: " + serialized);
+
+    return bundle;
   }
 }
