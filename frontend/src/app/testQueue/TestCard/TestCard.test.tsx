@@ -508,38 +508,30 @@ describe("TestCard", () => {
     expect(swabDropdown.options.length).toEqual(0);
     expect(swabDropdown).toBeDisabled();
 
-    // disables submitting results and changing date
-    const submitButton = screen.getByText("Submit") as HTMLInputElement;
-    const positiveResult = screen.getByLabelText("Positive", {
-      exact: false,
-    }) as HTMLInputElement;
-    const currentDateTimeButton = screen.getByLabelText("Current date/time", {
-      exact: false,
-    }) as HTMLInputElement;
+    // notice the initial error message
+    expect(screen.getByText("Please select a device.")).toBeInTheDocument();
 
-    expect(submitButton).toBeDisabled();
-    expect(positiveResult).toBeDisabled();
-    expect(currentDateTimeButton).toBeDisabled();
+    const submitButton = screen.getByText("Submit results") as HTMLInputElement;
+    await userEvent.click(submitButton);
 
-    // notice the error message
-    expect(screen.getByText("Please select a device")).toBeInTheDocument();
+    // attempting to submit should show error toast
+    expect(screen.getByText("Invalid test device")).toBeInTheDocument();
 
     await userEvent.selectOptions(deviceDropdown, device1Id);
-    await new Promise((resolve) => setTimeout(resolve, 501));
 
     // error goes away after selecting a valid device
+    const deviceTypeDropdownContainer = screen.getByTestId(
+      "device-type-dropdown-container"
+    );
     expect(
-      screen.queryByText("Please select a device")
+      within(deviceTypeDropdownContainer).queryByText("Please select a device.")
     ).not.toBeInTheDocument();
 
-    // enable selecting date/time and results
-    expect(positiveResult).toBeEnabled();
-    expect(currentDateTimeButton).toBeEnabled();
+    await userEvent.click(submitButton);
 
-    // enables submitting of results after selecting one
-    await userEvent.click(positiveResult);
-    await new Promise((resolve) => setTimeout(resolve, 501));
-    expect(submitButton).toBeEnabled();
+    // able to submit after selecting valid device
+    // submit modal appears when able to submit but AOE responses are incomplete
+    expect(screen.getByText("Submit anyway.")).toBeInTheDocument();
   });
 
   it("correctly handles when swab is deleted from device", async () => {

@@ -12,7 +12,7 @@ import {
   ModalRef,
   ModalToggleButton,
 } from "@trussworks/react-uswds";
-import React, { useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 
 import TextInput from "../../commonComponents/TextInput";
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
@@ -26,8 +26,7 @@ import {
   useUpdateAoeMutation,
 } from "../../../generated/graphql";
 import { removeTimer, updateTimer } from "../TestTimer";
-import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "../constants";
-import { showError, showSuccess } from "../../utils/srToast";
+import { showError } from "../../utils/srToast";
 import "./TestCardForm.scss";
 
 import {
@@ -55,6 +54,7 @@ import {
   areAOEAnswersComplete,
   convertFromMultiplexResponse,
   doesDeviceSupportMultiplex,
+  showTestResultDeliveryStatusAlert,
   useAppInsightTestCardEvents,
   useDeviceTypeOptions,
   useSpecimenTypeOptions,
@@ -96,11 +96,10 @@ const TestCardForm = ({
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
   const [useCurrentTime, setUseCurrentTime] = useState(!testOrder.dateTested);
-
-  const [dateTestedTouched, setDateTestedTouched] = useState(false);
+  // used for controlling when to show validation messages
+  const [hasDateTestedBeenTouched, setHasDateTestedBeenTouched] =
+    useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
-  const [dateTestedError, setDateTestedError] = useState("");
-  const [testResultsError, setTestResultsError] = useState("");
 
   const [editQueueItem, { loading: editQueueItemMutationLoading }] =
     useEditQueueItemMutation();
@@ -109,24 +108,24 @@ const TestCardForm = ({
   const [submitTestResult, { loading: submitLoading }] =
     useSubmitQueueItemMutation();
 
-  const submitModalRef = useRef<ModalRef>(null);
-
   const { trackSubmitTestResult, trackUpdateAoEResponse } =
     useAppInsightTestCardEvents();
+
+  const submitModalRef = useRef<ModalRef>(null);
 
   const { deviceTypeOptions, deviceTypeIsInvalid } = useDeviceTypeOptions(
     facility,
     state
   );
-
   const { specimenTypeOptions, specimenTypeIsInvalid } =
     useSpecimenTypeOptions(state);
 
   const { patientFullName } = useTestOrderPatient(testOrder);
 
-  const deviceSupportsMultiplex = useMemo(() => {
-    return doesDeviceSupportMultiplex(state.deviceId, devicesMap);
-  }, [devicesMap, state.deviceId]);
+  const deviceSupportsMultiplex = doesDeviceSupportMultiplex(
+    state.deviceId,
+    devicesMap
+  );
 
   // when other diseases are added, update this to use the correct AOE for that disease
   // probably a good use to encapsulate this in a custom hook like useAOEFormOption
@@ -199,18 +198,6 @@ const TestCardForm = ({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.covidAOEResponses]);
-
-  /** Validate after dateTested changes */
-  useEffect(() => {
-    setDateTestedError(validateDateTested());
-    // eslint-disable-next-line
-  }, [state.dateTested]);
-
-  /** Validate after testResults change */
-  useEffect(() => {
-    setTestResultsError(validateTestResults());
-    // eslint-disable-next-line
-  }, [state.testResults, state.deviceId, state.devicesMap]);
 
   const updateAOE = async () => {
     if (whichAOEFormOption === AOEFormOptions.COVID) {
@@ -293,20 +280,47 @@ const TestCardForm = ({
     return validateCovidResultInput(state.testResults);
   };
 
+  // derived state, not expensive to calculate every render and avoids unnecessary tracked state
+  const dateTestedError = validateDateTested();
+  const deviceTypeError = deviceTypeIsInvalid ? "Please select a device." : "";
+  const specimenTypeError = specimenTypeIsInvalid
+    ? "Please select a specimen type."
+    : "";
+  const testResultsError = validateTestResults();
+
+  const showDateTestedError =
+    (hasDateTestedBeenTouched || hasAttemptedSubmit) &&
+    dateTestedError.length > 0;
+
+  const showTestResultsError =
+    hasAttemptedSubmit && testResultsError.length > 0;
+
+  const isCorrection = testOrder.correctionStatus === "CORRECTED";
+  const reasonForCorrection =
+    testOrder.reasonForCorrection as TestCorrectionReason;
+
+  const showDateMonthsAgoWarning =
+    moment(state.dateTested) < moment().subtract(6, "months") &&
+    dateTestedError.length === 0;
+
   const validateForm = () => {
-    const dateTestedErrorMessage = validateDateTested();
-    if (dateTestedErrorMessage) {
-      showError(dateTestedErrorMessage, "Invalid test date");
+    if (dateTestedError) {
+      showError(dateTestedError, "Invalid test date");
     }
-    const testResultsErrorMessage = validateTestResults();
-    if (testResultsErrorMessage) {
-      showError(testResultsErrorMessage, "Invalid test results");
+    if (deviceTypeError) {
+      showError(deviceTypeError, "Invalid test device");
     }
-    setDateTestedError(dateTestedErrorMessage);
-    setTestResultsError(testResultsErrorMessage);
+    if (specimenTypeError) {
+      showError(specimenTypeError, "Invalid specimen type");
+    }
+    if (testResultsError) {
+      showError(testResultsError, "Invalid test results");
+    }
     return (
-      dateTestedErrorMessage.length === 0 &&
-      testResultsErrorMessage.length === 0
+      !dateTestedError &&
+      !deviceTypeError &&
+      !specimenTypeError &&
+      !testResultsError
     );
   };
 
@@ -337,7 +351,8 @@ const TestCardForm = ({
         },
       });
       showTestResultDeliveryStatusAlert(
-        result.data?.submitQueueItem?.deliverySuccess
+        result.data?.submitQueueItem?.deliverySuccess,
+        testOrder.patient
       );
       if (startTestPatientId === testOrder.patient.internalId) {
         setStartTestPatientId(null);
@@ -349,38 +364,6 @@ const TestCardForm = ({
       throw error;
     }
   };
-
-  const showTestResultDeliveryStatusAlert = (
-    deliverySuccess: boolean | null | undefined
-  ) => {
-    const { title, body } = {
-      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
-        testOrder.patient
-      ),
-    };
-
-    if (deliverySuccess === false) {
-      const deliveryFailureTitle = `Unable to text result to ${patientFullName}`;
-      const deliveryFailureMsg =
-        "The phone number provided may not be valid or may not be able to accept text messages";
-      return showError(deliveryFailureMsg, deliveryFailureTitle);
-    }
-    showSuccess(body, title);
-  };
-
-  const isCorrection = testOrder.correctionStatus === "CORRECTED";
-  const reasonForCorrection =
-    testOrder.reasonForCorrection as TestCorrectionReason;
-
-  const showDateMonthsAgoWarning =
-    moment(state.dateTested) < moment().subtract(6, "months") &&
-    dateTestedError.length === 0;
-
-  const showDateTestedError =
-    (dateTestedTouched || hasAttemptedSubmit) && dateTestedError.length > 0;
-
-  const showTestResultsError =
-    hasAttemptedSubmit && testResultsError.length > 0;
 
   return (
     <>
@@ -426,16 +409,6 @@ const TestCardForm = ({
             six months ago. Please make sure it's correct before submitting.
           </Alert>
         )}
-        {showDateTestedError && (
-          <Alert
-            type={"error"}
-            headingLevel={"h4"}
-            className="margin-top-2"
-            validation
-          >
-            {dateTestedError}
-          </Alert>
-        )}
         {showTestResultsError && (
           <Alert
             type={"error"}
@@ -459,7 +432,7 @@ const TestCardForm = ({
                 min={formatDate(new Date("Jan 1, 2020"))}
                 max={formatDate(moment().toDate())}
                 value={formatDate(moment(state.dateTested).toDate())}
-                onBlur={() => setDateTestedTouched(true)}
+                onBlur={() => setHasDateTestedBeenTouched(true)}
                 onChange={(e) =>
                   dispatch({
                     type: TestFormActionCase.UPDATE_DATE_TESTED,
@@ -467,7 +440,6 @@ const TestCardForm = ({
                   })
                 }
                 required={true}
-                disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
                 validationStatus={showDateTestedError ? "error" : undefined}
                 errorMessage={showDateTestedError && dateTestedError}
               ></TextInput>
@@ -488,9 +460,8 @@ const TestCardForm = ({
                     payload: e.target.value,
                   })
                 }
-                onBlur={() => setDateTestedTouched(true)}
+                onBlur={() => setHasDateTestedBeenTouched(true)}
                 validationStatus={showDateTestedError ? "error" : undefined}
-                disabled={deviceTypeIsInvalid || specimenTypeIsInvalid}
               ></TextInput>
             </div>
           </div>
@@ -523,9 +494,13 @@ const TestCardForm = ({
             ></Checkbox>
           </div>
         </div>
-        <div className="grid-row grid-gap margin-top-2">
+        <div
+          className="grid-row grid-gap margin-top-2"
+          data-testid="device-type-dropdown-container"
+        >
           <div className="grid-col-auto">
             <Dropdown
+              id={`test-device-${testOrder.patient.internalId}`}
               options={deviceTypeOptions}
               label={
                 <>
@@ -546,13 +521,17 @@ const TestCardForm = ({
               }
               className="card-dropdown"
               data-testid="device-type-dropdown"
-              errorMessage={deviceTypeIsInvalid ? "Invalid device type" : ""}
+              errorMessage={deviceTypeError}
               validationStatus={deviceTypeIsInvalid ? "error" : undefined}
               required={true}
             />
           </div>
-          <div className="grid-col-auto">
+          <div
+            className="grid-col-auto"
+            data-testid="specimen-type-dropdown-container"
+          >
             <Dropdown
+              id={`specimen-type-${testOrder.patient.internalId}`}
               options={specimenTypeOptions}
               label="Specimen type"
               name="specimenType"
@@ -566,9 +545,7 @@ const TestCardForm = ({
               className="card-dropdown"
               data-testid="specimen-type-dropdown"
               disabled={specimenTypeOptions.length === 0}
-              errorMessage={
-                specimenTypeIsInvalid ? "Invalid specimen type" : ""
-              }
+              errorMessage={specimenTypeError}
               validationStatus={specimenTypeIsInvalid ? "error" : undefined}
               required={true}
             />
