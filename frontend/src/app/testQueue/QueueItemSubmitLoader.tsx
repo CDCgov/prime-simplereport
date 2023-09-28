@@ -1,10 +1,10 @@
 import classNames from "classnames";
+import { useFeature } from "flagged";
 import { CSSTransition } from "react-transition-group";
 
 import iconLoader from "../../img/loader.svg";
 
 import "./QueueItemSubmitLoader.scss";
-import { useFeature } from "flagged";
 
 type Props = {
   name: string;

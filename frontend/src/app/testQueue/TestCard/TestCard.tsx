@@ -19,7 +19,6 @@ import Button from "../../commonComponents/Button/Button";
 import { removeTimer, TestTimerWidget, useTestTimer } from "../TestTimer";
 import { RootState } from "../../store";
 import "./TestCard.scss";
-
 import TestCardForm from "../TestCardForm/TestCardForm";
 import { useTestOrderPatient } from "../TestCardForm/TestCardForm.utils";
 
@@ -61,6 +60,7 @@ export const TestCard = ({
       testCardElement.current.scrollIntoView({ behavior: "smooth" });
     }
     // only run on first render to prevent disruptive repeated scrolls
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const timerContext = {
