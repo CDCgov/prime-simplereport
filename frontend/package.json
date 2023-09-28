@@ -70,7 +70,7 @@
     "lint:stylelint": "stylelint '**/*.scss'",
     "lint:stylelint:write": "stylelint '**/*.scss' --fix",
     "test": "react-scripts test",
-    "test:ci": "CI=true yarn test --coverage --runInBand",
+    "test:ci": "CI=true yarn test --coverage",
     "eject": "react-scripts eject",
     "create-storybook-public": "rm -rf ./storybook_public && cp -R ./public ./storybook_public && cp mockServiceWorker.js ./storybook_public",
     "storybook": "yarn create-storybook-public && SASS_PATH=$(cd ./node_modules && pwd):$(cd ./node_modules/@uswds && pwd):$(cd ./node_modules/@uswds/uswds/packages && pwd):$(cd ./src/scss && pwd) storybook dev -p 6006 -s ../storybook_public",
