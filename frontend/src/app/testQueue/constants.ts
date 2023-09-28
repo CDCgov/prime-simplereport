@@ -4,6 +4,7 @@ import { displayFullName } from "../utils";
 export const QUEUE_NOTIFICATION_TYPES = {
   ADDED_TO_QUEUE__SUCCESS: 1,
   SUBMITTED_RESULT__SUCCESS: 2,
+  DELIVERED_RESULT_TO_PATIENT__FAILURE: 3,
 };
 
 export type SomeoneWithName = {
@@ -30,17 +31,38 @@ export const ALERT_CONTENT = {
       body: "Newly added patients go to the bottom of the queue",
     };
   },
-  [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: (
-    patient: any
+  [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: <
+    T extends SomeoneWithName
+  >(
+    patient: T,
+    startWithLastName: boolean = true
   ): AlertContent => {
     return {
       type: "success",
       title: `Result for ${displayFullName(
         patient.firstName,
         patient.middleName,
-        patient.lastName
+        patient.lastName,
+        startWithLastName
       )} was saved and reported.`,
       body: "See Results to view all test submissions",
+    };
+  },
+  [QUEUE_NOTIFICATION_TYPES.DELIVERED_RESULT_TO_PATIENT__FAILURE]: <
+    T extends SomeoneWithName
+  >(
+    patient: T,
+    startWithLastName: boolean = true
+  ): AlertContent => {
+    return {
+      type: "error",
+      title: `Unable to text result to ${displayFullName(
+        patient.firstName,
+        patient.middleName,
+        patient.lastName,
+        startWithLastName
+      )}`,
+      body: "The phone number provided may not be valid or may not be able to accept text messages",
     };
   },
 };
