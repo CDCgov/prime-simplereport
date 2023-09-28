@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ButtonGroup,
   Card,
@@ -54,6 +54,15 @@ export const TestCard = ({
 
   const [isOpen, setIsOpen] = useState(true);
 
+  const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
+
+  useEffect(() => {
+    if (startTestPatientId === testOrder.patient.internalId) {
+      testCardElement.current.scrollIntoView({ behavior: "smooth" });
+    }
+    // only run on first render to prevent disruptive repeated scrolls
+  }, []);
+
   const timerContext = {
     organizationName: organization.name,
     facilityName: facility!.name,
@@ -72,7 +81,10 @@ export const TestCard = ({
   };
 
   return (
-    <div>
+    <div
+      data-testid={`test-card-${testOrder.patient.internalId}`}
+      ref={testCardElement}
+    >
       <Modal
         ref={closeModalRef}
         aria-labelledby={"close-modal-heading"}
