@@ -190,15 +190,10 @@ describe("App", () => {
     MockDate.reset();
   });
 
-  it("Render first loading screen", async () => {
-    const mockedStore = mockStore({});
-    renderApp(mockedStore, [WhoAmIQueryMock]);
-    await screen.findByText("Loading account information...");
-  });
-
-  it("Render facility loading", async () => {
+  it("Renders loading masks (account and facility)", async () => {
     const mockedStore = mockStore({ ...store });
     renderApp(mockedStore, [WhoAmIQueryMock, facilityQueryMock]);
+    await screen.findByText("Loading account information...");
     expect(await screen.findByText("Loading facility information..."));
   });
 
@@ -209,6 +204,7 @@ describe("App", () => {
       facilityQueryMock,
       getAnalyticsQueryMock(),
     ]);
+
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading account information...")
     );

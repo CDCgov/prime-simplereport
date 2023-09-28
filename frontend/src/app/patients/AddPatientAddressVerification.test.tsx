@@ -87,6 +87,7 @@ describe("Add Patient: All required fields entered and submitting address verifi
         {}
       )
     );
+    jest.restoreAllMocks();
   });
 
   it("surfaces an error if invalid zip code for state", async () => {

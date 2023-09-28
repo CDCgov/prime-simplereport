@@ -5,6 +5,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import MockDate from "mockdate";
+import * as router from "react-router";
 
 import SRToastContainer from "../commonComponents/SRToastContainer";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -183,6 +184,16 @@ describe("EditPatient", () => {
       ),
     });
 
+    const mockNavigate = jest.fn();
+
+    beforeEach(() => {
+      jest.spyOn(router, "useNavigate").mockImplementation(() => mockNavigate);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+    });
+
     it("can redirect to the new test form upon save", async () => {
       const { user } = renderWithRoutes(mockFacilityID, mockPatientID, false);
       await screen.findByText(/Loading/i);
@@ -208,11 +219,16 @@ describe("EditPatient", () => {
 
       await user.click(saveAndStartButton);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText("Testing Queue!", { exact: false })
-        ).toBeInTheDocument();
-      });
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          "/queue?facility=b0d2041f-93c9-4192-b19a-dd99c0044a7e",
+          {
+            state: {
+              patientId: "555e8a40-0f95-458e-a038-6b500a0fc2ad",
+            },
+          }
+        )
+      );
     });
 
     it("redirects to test queue on save when coming from Conduct tests page", async () => {
@@ -240,11 +256,16 @@ describe("EditPatient", () => {
 
       await user.click(saveButton);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText("Testing Queue!", { exact: false })
-        ).toBeInTheDocument();
-      });
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          "/queue?facility=b0d2041f-93c9-4192-b19a-dd99c0044a7e",
+          {
+            state: {
+              patientId: "555e8a40-0f95-458e-a038-6b500a0fc2ad",
+            },
+          }
+        )
+      );
     });
   });
 
