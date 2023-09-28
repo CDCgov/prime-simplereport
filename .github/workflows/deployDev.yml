@@ -40,6 +40,7 @@ jobs:
 
   build_frontend:
     runs-on: ubuntu-latest
+    environment: ${{ inputs.deploy_env }}
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/build-frontend
