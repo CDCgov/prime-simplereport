@@ -5,6 +5,12 @@ import { displayFullName } from "../../utils";
 import { MULTIPLEX_DISEASES } from "../../testResults/constants";
 import { MultiplexResultInput } from "../../../generated/graphql";
 import { getAppInsights } from "../../TelemetryService";
+import {
+  ALERT_CONTENT,
+  QUEUE_NOTIFICATION_TYPES,
+  SomeoneWithName,
+} from "../constants";
+import { showError, showSuccess } from "../../utils/srToast";
 
 import { TestFormState } from "./TestCardFormReducer";
 
@@ -145,4 +151,24 @@ export const areAOEAnswersComplete = (
     }
     return isPregnancyAnswered && isHasAnySymptomsAnswered;
   }
+};
+
+export const showTestResultDeliveryStatusAlert = (
+  deliverySuccess: boolean | null | undefined,
+  patient: SomeoneWithName
+) => {
+  if (deliverySuccess === false) {
+    const { title, body } = {
+      ...ALERT_CONTENT[
+        QUEUE_NOTIFICATION_TYPES.DELIVERED_RESULT_TO_PATIENT__FAILURE
+      ](patient),
+    };
+    return showError(body, title);
+  }
+  const { title, body } = {
+    ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
+      patient
+    ),
+  };
+  showSuccess(body, title);
 };
