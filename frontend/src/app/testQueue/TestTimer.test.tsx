@@ -141,9 +141,11 @@ describe("TestTimerWidget", () => {
       await screen.findByText("0:00");
       await screen.findByText("RESULT READY");
 
-      expect(trackEventMock).toHaveBeenCalledWith(
-        { name: "Test timer finished" },
-        context
+      await waitFor(() =>
+        expect(trackEventMock).toHaveBeenCalledWith(
+          { name: "Test timer finished" },
+          context
+        )
       );
     });
   });
