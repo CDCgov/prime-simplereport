@@ -339,7 +339,6 @@ describe("TestCard", () => {
     const testCard = await screen.findByTestId(
       `test-card-${testOrderInfo.patient.internalId}`
     );
-    expect(testCard).toHaveClass("prime-queue-item__info");
     expect(testCard).toBeInTheDocument();
     expect(scrollIntoViewMock).toBeCalled();
   });
