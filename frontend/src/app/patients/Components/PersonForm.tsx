@@ -47,6 +47,7 @@ import YesNoNotSureRadioGroup, {
 import FacilitySelect from "./FacilitySelect";
 import ManagePhoneNumbers from "./ManagePhoneNumbers";
 import ManageEmails from "./ManageEmails";
+import "./PersonForm.scss";
 
 export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
@@ -514,7 +515,9 @@ const PersonForm = (props: Props) => {
         <p className="usa-hint maxw-prose">
           {t("patient.form.contact.helpText")}
         </p>
-        <h4>{t("patient.form.contact.phoneHeading")}</h4>
+        <div className="sr-patient-sub-header">
+          {t("patient.form.contact.phoneHeading")}
+        </div>
         <ManagePhoneNumbers
           phoneNumbers={patient.phoneNumbers || []}
           testResultDelivery={patient.testResultDelivery}
@@ -524,7 +527,9 @@ const PersonForm = (props: Props) => {
           unknownPhoneNumber={unknownPhoneNumber}
           setUnknownPhoneNumber={onUpdateUnknownNumber}
         />
-        <h4>{t("patient.form.contact.emailHeading")}</h4>
+        <div className="sr-patient-sub-header">
+          {t("patient.form.contact.emailHeading")}
+        </div>
         <div className="usa-form">
           <ManageEmails
             emails={patient.emails}
@@ -555,7 +560,9 @@ const PersonForm = (props: Props) => {
             />
           )}
         </div>
-        <h4>{t("patient.form.contact.addressHeading")}</h4>
+        <div className="sr-patient-sub-header">
+          {t("patient.form.contact.addressHeading")}
+        </div>
         <Checkbox
           id={"unknownAddress"}
           name={"unknownAddress"}
