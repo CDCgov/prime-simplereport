@@ -37,11 +37,11 @@ import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
 import {
   ArchivedStatus,
-  GetFacilityResultsMultiplexWithCountQuery,
+  GetResultsMultiplexWithCountQuery,
   Maybe,
-  TestResult,
+  Result,
   useGetAllFacilitiesQuery,
-  useGetFacilityResultsMultiplexWithCountQuery,
+  useGetResultsMultiplexWithCountQuery,
 } from "../../generated/graphql";
 import { waitForElement } from "../utils/elements";
 import useComponentVisible from "../commonComponents/ComponentVisible";
@@ -54,7 +54,6 @@ import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 import ResultsTable, {
   generateTableHeaders,
-  getEnrichedMultiplexResultsFromTestEvent,
 } from "./resultsTable/ResultsTable";
 
 export const ALL_FACILITIES_ID = "all";
@@ -73,7 +72,7 @@ export const byDateTested = (a: any, b: any) => {
  */
 
 interface DetachedTestResultsListProps {
-  data: GetFacilityResultsMultiplexWithCountQuery | undefined;
+  data: GetResultsMultiplexWithCountQuery | undefined;
   loading: boolean;
   pageNumber: number;
   entriesPerPage: number;
@@ -98,10 +97,10 @@ const getResultCountText = (
 
 const getFilteredPatientName = (
   params: FilterParams,
-  data: GetFacilityResultsMultiplexWithCountQuery
+  data: GetResultsMultiplexWithCountQuery
 ) => {
   const firstLoadedContentEntry =
-    data?.testResultsPage?.content && data?.testResultsPage?.content[0];
+    data?.resultsPage?.content && data?.resultsPage?.content[0];
   const person = firstLoadedContentEntry && firstLoadedContentEntry.patient;
   if (params.patientId && person) {
     return displayFullName(
@@ -330,7 +329,7 @@ export const DetachedTestResultsList = ({
       <TestResultCorrectionModal
         testResultId={markCorrectionId}
         isFacilityDeleted={
-          data?.testResultsPage?.content?.find(
+          data?.resultsPage?.content?.find(
             (content) => content?.internalId === markCorrectionId
           )?.facility?.isDeleted ?? false
         }
@@ -353,7 +352,7 @@ export const DetachedTestResultsList = ({
     );
   }
 
-  const testResults = data?.testResultsPage?.content || [];
+  const testResults = data?.resultsPage?.content || [];
   const displayFacilityColumn =
     filterParams.filterFacilityId === ALL_FACILITIES_ID ||
     activeFacilityId === ALL_FACILITIES_ID;
@@ -573,7 +572,7 @@ export const DetachedTestResultsList = ({
         </div>
         <div title="filtered-result">
           <ResultsTable
-            results={testResults as TestResult[]}
+            results={testResults as Result[]}
             setPrintModalId={setPrintModalId}
             setMarkCorrectionId={setMarkCorrectionId}
             setDetailsModalId={setDetailsModalId}
@@ -605,6 +604,7 @@ export interface ResultsQueryVariables {
   facilityId: string | null;
   result?: string | null;
   role?: string | null;
+  disease?: string | null;
   startDate?: string | null;
   endDate?: string | null;
   pageNumber: number;
@@ -625,6 +625,7 @@ const TestResultsList = () => {
   const startDate = getParameterFromUrl("startDate", location);
   const endDate = getParameterFromUrl("endDate", location);
   const role = getParameterFromUrl("role", location);
+  const disease = getParameterFromUrl("disease", location);
   const result = getParameterFromUrl("result", location);
   const filterFacilityId = getParameterFromUrl("filterFacilityId", location);
 
@@ -632,6 +633,7 @@ const TestResultsList = () => {
     ...(patientId && { patientId: patientId }),
     ...(startDate && { startDate: startDate }),
     ...(endDate && { endDate: endDate }),
+    ...(disease && { disease: disease }),
     ...(result && { result: result }),
     ...(role && { role: role }),
   };
@@ -675,10 +677,11 @@ const TestResultsList = () => {
     ...queryParams,
   };
 
-  const results = useGetFacilityResultsMultiplexWithCountQuery({
+  const results = useGetResultsMultiplexWithCountQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });
+  console.log(JSON.stringify(results.data, null, 4));
 
   if (!activeFacilityId) {
     return <div>"No facility selected"</div>;
@@ -687,10 +690,8 @@ const TestResultsList = () => {
   if (results.error) {
     throw results.error;
   }
-  const totalEntries =
-    getEnrichedMultiplexResultsFromTestEvent(
-      results.data?.testResultsPage?.content as TestResult[]
-    ).length || 0;
+
+  const totalEntries = results?.data?.resultsPage?.content?.length || 0;
 
   return (
     <DetachedTestResultsList

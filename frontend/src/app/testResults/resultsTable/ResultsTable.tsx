@@ -4,7 +4,6 @@ import moment from "moment";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import { TEST_RESULT_DESCRIPTIONS } from "../../constants";
-import { getUrl } from "../../utils/url";
 import Button from "../../commonComponents/Button/Button";
 import { displayFullName, facilityDisplayName } from "../../utils";
 import { formatDateWithTimeOption } from "../../utils/date";
@@ -12,7 +11,7 @@ import { ActionsMenu } from "../../commonComponents/ActionsMenu";
 import { byDateTested } from "../TestResultsList";
 import { MULTIPLEX_DISEASES } from "../constants";
 import { toLowerCaseHyphenate } from "../../utils/text";
-import { TestResult, PhoneNumber, Maybe } from "../../../generated/graphql";
+import { PhoneNumber, Maybe, Result } from "../../../generated/graphql";
 
 export const TEST_RESULT_ARIA_TIME_FORMAT = "MMMM Do YYYY, h:mm:ss a";
 
@@ -22,6 +21,7 @@ const testResultOrdering = [
   MULTIPLEX_DISEASES.FLU_B,
 ];
 
+// TODO: hmmmm.... wut do
 const sortTestResults = (results: MultiplexResults) => {
   return [...results].sort(
     (a, b) =>
@@ -30,8 +30,9 @@ const sortTestResults = (results: MultiplexResults) => {
   );
 };
 
+/*
 export const getEnrichedMultiplexResultsFromTestEvent = (
-  results: TestResult[]
+  results: Result[]
 ): EnrichedMultiplexResult[] => {
   const enrichedMultiplexResults: EnrichedMultiplexResult[] = [];
 
@@ -52,8 +53,9 @@ export const getEnrichedMultiplexResultsFromTestEvent = (
 
   return enrichedMultiplexResults;
 };
+ */
 
-export function formatTestResultAriaLabel(result: TestResult) {
+export function formatTestResultAriaLabel(result: Result) {
   const patientFullName = displayFullName(
     result.patient?.firstName,
     result.patient?.middleName,
@@ -102,7 +104,7 @@ export const generateTableHeaders = (hasFacility: boolean) => (
 
 function createActionItemList(
   setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
-  r: TestResult,
+  r: Result,
   setEmailModalTestResultId: Dispatch<
     SetStateAction<Maybe<string> | undefined>
   >,
@@ -114,12 +116,12 @@ function createActionItemList(
   const actionItems = [];
   actionItems.push({
     name: "Print result",
-    action: () => setPrintModalId(r.internalId),
+    action: () => setPrintModalId(r.id),
   });
   if (r.patient?.email) {
     actionItems.push({
       name: "Email result",
-      action: () => setEmailModalTestResultId(r.internalId),
+      action: () => setEmailModalTestResultId(r.id),
     });
   }
 
@@ -130,25 +132,25 @@ function createActionItemList(
   ) {
     actionItems.push({
       name: "Text result",
-      action: () => setTextModalId(r.internalId),
+      action: () => setTextModalId(r.id),
     });
   }
 
   if (!removed) {
     actionItems.push({
       name: "Correct result",
-      action: () => setMarkCorrectionId(r.internalId),
+      action: () => setMarkCorrectionId(r.id),
     });
   }
   actionItems.push({
     name: "View details",
-    action: () => setDetailsModalId(r.internalId),
+    action: () => setDetailsModalId(r.id),
   });
   return actionItems;
 }
 
 const generateResultRows = (
-  testResults: Array<TestResult>,
+  testResults: Array<Result>,
   setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
   setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
   setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>,
@@ -169,94 +171,96 @@ const generateResultRows = (
 
   const sortedResults = [...testResults].sort(byDateTested);
 
-  return getEnrichedMultiplexResultsFromTestEvent(sortedResults).map(
-    (r: EnrichedMultiplexResult) => {
-      const removed = r.correctionStatus === "REMOVED";
-      let diseaseIdName = toLowerCaseHyphenate(r.disease.name);
-      const actionItems = createActionItemList(
-        setPrintModalId,
-        r,
-        setEmailModalTestResultId,
-        setTextModalId,
-        removed,
-        setMarkCorrectionId,
-        setDetailsModalId
-      );
-      const getResultCellHTML = () => {
-        return (
-          <td
-            key={`${r.internalId}-${diseaseIdName}`}
-            className="test-result-cell"
-            data-testid={`${diseaseIdName}-result`}
-          >
-            {r.testResult ? TEST_RESULT_DESCRIPTIONS[r.testResult] : "N/A"}
-          </td>
-        );
-      };
+  return sortedResults.map((r: Result) => {
+    const removed = r.correctionStatus === "REMOVED";
+    // TODO: values are required; update to reflect
+    let diseaseIdName = toLowerCaseHyphenate(r?.disease?.name);
+    const actionItems = createActionItemList(
+      setPrintModalId,
+      r,
+      setEmailModalTestResultId,
+      setTextModalId,
+      removed,
+      setMarkCorrectionId,
+      setDetailsModalId
+    );
+    const getResultCellHTML = () => {
       return (
-        <tr
-          key={`${r.internalId}-${diseaseIdName}`}
-          title={removed ? "Marked as error" : ""}
-          className={classnames(
-            "sr-test-result-row",
-            removed && "sr-test-result-row--removed"
-          )}
-          data-testid={`test-result-${r.internalId}-${diseaseIdName}`}
-          data-patient-link={
-            r.patientLink
-              ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
-              : null
-          }
+        <td
+          key={`${r.id}-${diseaseIdName}`}
+          className="test-result-cell"
+          data-testid={`${diseaseIdName}-result`}
         >
-          <td className="patient-name-cell">
-            <Button
-              variant="unstyled"
-              ariaLabel={formatTestResultAriaLabel(r)}
-              label={displayFullName(
-                r.patient?.firstName,
-                r.patient?.middleName,
-                r.patient?.lastName
-              )}
-              onClick={() => setDetailsModalId(r.internalId)}
-              className="sr-link__primary"
-            />
-            <span className="display-block text-base font-ui-2xs">
-              DOB: {formatDateWithTimeOption(r.patient?.birthDate)}
-            </span>
-          </td>
-          <td className="test-date-cell">
-            {formatDateWithTimeOption(r.dateTested, true)}
-          </td>
-          <td className="test-condition-cell">{r.disease.name}</td>
-          {getResultCellHTML()}
-          <td className="test-device-cell">{r.deviceType?.name}</td>
-          {!hasFacility ? (
-            <td className="submitted-by-cell">
-              {displayFullName(
-                r.createdBy?.nameInfo?.firstName,
-                null,
-                r.createdBy?.nameInfo?.lastName
-              )}
-            </td>
-          ) : (
-            <td className="test-facility-cell">
-              {facilityDisplayName(
-                r.facility?.name as string,
-                r.facility?.isDeleted as boolean
-              )}
-            </td>
-          )}
-          <td className="actions-cell">
-            <ActionsMenu items={actionItems} id={r.internalId as string} />
-          </td>
-        </tr>
+          {r.testResult ? TEST_RESULT_DESCRIPTIONS[r.testResult] : "N/A"}
+        </td>
       );
-    }
-  );
+    };
+    return (
+      <tr
+        key={`${r.id}-${diseaseIdName}`}
+        title={removed ? "Marked as error" : ""}
+        className={classnames(
+          "sr-test-result-row",
+          removed && "sr-test-result-row--removed"
+        )}
+        data-testid={`test-result-${r.id}-${diseaseIdName}`}
+        data-patient-link={null}
+        /*
+        data-patient-link={
+          r.testOrder.patientLink
+            ? `${getUrl()}pxp?plid=${r.testOrder.patientLink.internalId}`
+            : null
+        }
+         */
+      >
+        <td className="patient-name-cell">
+          <Button
+            variant="unstyled"
+            ariaLabel={formatTestResultAriaLabel(r)}
+            label={displayFullName(
+              r.patient?.firstName,
+              r.patient?.middleName,
+              r.patient?.lastName
+            )}
+            onClick={() => setDetailsModalId(r.id)}
+            className="sr-link__primary"
+          />
+          <span className="display-block text-base font-ui-2xs">
+            DOB: {formatDateWithTimeOption(r.patient?.birthDate)}
+          </span>
+        </td>
+        <td className="test-date-cell">
+          {formatDateWithTimeOption(r.dateTested, true)}
+        </td>
+        <td className="test-condition-cell">{r.disease.name}</td>
+        {getResultCellHTML()}
+        <td className="test-device-cell">{r.deviceType?.name}</td>
+        {!hasFacility ? (
+          <td className="submitted-by-cell">
+            {displayFullName(
+              r.createdBy?.nameInfo?.firstName,
+              null,
+              r.createdBy?.nameInfo?.lastName
+            )}
+          </td>
+        ) : (
+          <td className="test-facility-cell">
+            {facilityDisplayName(
+              r.facility?.name as string,
+              r.facility?.isDeleted as boolean
+            )}
+          </td>
+        )}
+        <td className="actions-cell">
+          <ActionsMenu items={actionItems} id={r.id as string} />
+        </td>
+      </tr>
+    );
+  });
 };
 
 interface ResultsTableListProps {
-  results: Array<TestResult>;
+  results: Array<Result>;
   setPrintModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
   setMarkCorrectionId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
   setDetailsModalId: Dispatch<SetStateAction<Maybe<string> | undefined>>;
