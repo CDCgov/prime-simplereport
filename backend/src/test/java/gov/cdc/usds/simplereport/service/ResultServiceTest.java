@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -46,7 +47,6 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
   @BeforeEach
   void setupData() {
     initSampleData();
-    //    org = testDataFactory.saveValidOrganization();
     org = organizationService.getCurrentOrganization();
     facilityA = testDataFactory.createValidFacility(org, "Facility A");
     facilityB = testDataFactory.createValidFacility(org, "Facility B");
@@ -117,6 +117,7 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                 facilityA.getInternalId(), null, null, null, covid, null, null, 0, 10)
             .toList();
     assertEquals(2, res.size());
+    assertTrue(res.stream().allMatch(r -> covid.getName().equals(r.getDisease().getName())));
   }
 
   @Test
@@ -128,6 +129,7 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                 facilityA.getInternalId(), null, TestResult.POSITIVE, null, null, null, null, 0, 10)
             .toList();
     assertEquals(3, res.size());
+    assertTrue(res.stream().allMatch(r -> TestResult.POSITIVE.equals(r.getTestResult())));
   }
 
   @Test
@@ -147,6 +149,11 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                 10)
             .toList();
     assertEquals(3, res.size());
+    assertTrue(
+        res.stream()
+            .allMatch(
+                r ->
+                    personB.getInternalId().equals(r.getTestEvent().getPatient().getInternalId())));
   }
 
   @Test
@@ -158,6 +165,11 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                 facilityB.getInternalId(), null, null, PersonRole.STAFF, null, null, null, 0, 10)
             .toList();
     assertEquals(3, res.size());
+    assertTrue(
+        res.stream()
+            .allMatch(
+                r ->
+                    personA.getInternalId().equals(r.getTestEvent().getPatient().getInternalId())));
   }
 
   @Test

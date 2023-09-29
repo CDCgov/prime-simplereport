@@ -249,7 +249,9 @@ type TestOrder {
   id: ID!
   internalId: ID! @deprecated(reason: "alias for 'id'")
   patient: Patient!
+  facility: Facility!
   dateAdded: String!
+  dateUpdated: DateTime
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String
@@ -260,6 +262,8 @@ type TestOrder {
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
+  createdBy: ApiUser
+  patientLink: PatientLink
 }
 
 type TestResult {
@@ -287,11 +291,22 @@ type TestResultsPage {
 }
 
 type Result {
-  internalId: ID
-  testEvent: TestOrder
-  disease: SupportedDisease
-  resultSNOMED: String
-  testResult: TestResult
+  id: ID!
+  facility: Facility!
+  patient: Patient!
+  dateAdded: String!
+  dateUpdated: DateTime
+  pregnancy: String
+  noSymptoms: Boolean!
+  symptoms: String!
+  symptomOnset: LocalDate
+  deviceType: DeviceType!
+  disease: SupportedDisease!
+  testResult: String!
+  dateTested: DateTime!
+  correctionStatus: String
+  reasonForCorrection: String
+  createdBy: ApiUser!
 }
 
 type ResultsPage {
@@ -300,8 +315,8 @@ type ResultsPage {
 }
 
 type MultiplexResult {
-  disease: SupportedDisease
-  testResult: String
+  disease: SupportedDisease!
+  testResult: String!
 }
 
 input MultiplexResultInput {

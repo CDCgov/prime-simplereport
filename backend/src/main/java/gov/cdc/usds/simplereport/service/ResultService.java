@@ -140,10 +140,13 @@ public class ResultService {
     PageRequest pageRequest =
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
-    return resultRepository.findAll(
-        buildResultSearchFilter(
-            null, patientId, result, role, supportedDisease, startDate, endDate),
-        pageRequest);
+    var ok =
+        resultRepository.findAll(
+            buildResultSearchFilter(
+                null, patientId, result, role, supportedDisease, startDate, endDate),
+            pageRequest);
+
+    return ok;
   }
 
   @Transactional(readOnly = true)
@@ -162,10 +165,13 @@ public class ResultService {
     PageRequest pageRequest =
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
-    return resultRepository.findAll(
-        buildResultSearchFilter(
-            facilityId, patientId, result, role, supportedDisease, startDate, endDate),
-        pageRequest);
+    var ok =
+        resultRepository.findAll(
+            buildResultSearchFilter(
+                facilityId, patientId, result, role, supportedDisease, startDate, endDate),
+            pageRequest);
+
+    return ok;
   }
 
   public TestEvent addResultsToTestEvent(TestEvent testEvent, Collection<Result> results) {
