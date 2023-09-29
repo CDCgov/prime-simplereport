@@ -840,7 +840,7 @@ describe("ManageUsers", () => {
     });
 
     it("only shows status for non-active users", async () => {
-      const { user } = await renderWithSuspendedUsers();
+      await renderWithSuspendedUsers();
       expect(await screen.findByText("Activate user")).toBeInTheDocument();
       // status appears twice for each suspended user - once in the side nav, and once in the detail view.
       // the suspendedUsers list only has two users, one active and one suspended.

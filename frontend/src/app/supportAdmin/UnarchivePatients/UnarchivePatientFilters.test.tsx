@@ -1,5 +1,5 @@
 import React from "react";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { ComboBoxRef } from "@trussworks/react-uswds";
@@ -45,28 +45,31 @@ describe("unarchive patient filters", () => {
   ) => {
     const orgRef = React.createRef<ComboBoxRef>();
     const facilityRef = React.createRef<ComboBoxRef>();
-    render(
-      <MemoryRouter>
-        <UnarchivePatientFilters
-          orgOptions={mockOrgOptions}
-          facilityOptions={
-            unarchivePatientState.facilities.map((facility) => ({
-              value: facility.id,
-              label: facility.name,
-            })) ?? []
-          }
-          onSelectOrg={onSelectOrg}
-          onSelectFacility={onSelectFacility}
-          onSearch={onSearch}
-          onClearFilter={onClearFilter}
-          loading={loading}
-          disableClearFilters={false}
-          disableSearch={loading}
-          orgRef={orgRef}
-          facilityRef={facilityRef}
-        />
-      </MemoryRouter>
-    );
+    return {
+      user: userEvent.setup(),
+      ...render(
+        <MemoryRouter>
+          <UnarchivePatientFilters
+            orgOptions={mockOrgOptions}
+            facilityOptions={
+              unarchivePatientState.facilities.map((facility) => ({
+                value: facility.id,
+                label: facility.name,
+              })) ?? []
+            }
+            onSelectOrg={onSelectOrg}
+            onSelectFacility={onSelectFacility}
+            onSearch={onSearch}
+            onClearFilter={onClearFilter}
+            loading={loading}
+            disableClearFilters={false}
+            disableSearch={loading}
+            orgRef={orgRef}
+            facilityRef={facilityRef}
+          />
+        </MemoryRouter>
+      ),
+    };
   };
 
   beforeEach(() => {
@@ -75,8 +78,6 @@ describe("unarchive patient filters", () => {
     onSearch = jest.fn();
     onClearFilter = jest.fn();
   });
-
-  const user = userEvent.setup();
 
   it("displays no errors and calls event handlers when search fields are completed", async () => {
     let unarchivePatientState: UnarchivePatientState = {
@@ -89,31 +90,24 @@ describe("unarchive patient filters", () => {
       facilities: [mockFacility1, mockFacility2],
       patient: undefined,
     };
-    renderWithMocks(unarchivePatientState);
+    const { user } = renderWithMocks(unarchivePatientState);
 
     const [, orgComboBoxList] = getOrgComboBoxElements();
     expect(orgComboBoxList).toBeEnabled();
 
-    await act(
-      async () => await user.selectOptions(orgComboBoxList, mockOrg1.name)
-    );
+    await user.selectOptions(orgComboBoxList, mockOrg1.name);
     expect(onSelectOrg).toHaveBeenCalledWith(mockOrg1.internalId);
 
     const [, facilityComboBoxList] = getFacilityComboBoxElements();
     expect(facilityComboBoxList).toBeEnabled();
 
-    await act(
-      async () =>
-        await user.selectOptions(facilityComboBoxList, mockFacility1.name)
-    );
+    await user.selectOptions(facilityComboBoxList, mockFacility1.name);
     expect(onSelectFacility).toHaveBeenCalledWith(mockFacility1.id);
 
     expect(screen.getByText("Clear filters")).toBeEnabled();
-    await clickSearch();
+    await clickSearch(user);
 
-    await act(
-      async () => await userEvent.click(screen.getByText("Clear filters"))
-    );
+    await userEvent.click(screen.getByText("Clear filters"));
     expect(onClearFilter).toHaveBeenCalledTimes(1);
   });
   it("disables select options if patients are loading", async () => {

@@ -5,7 +5,7 @@ import {
   waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import userEvent, { UserEvent } from "@testing-library/user-event";
 import { Provider } from "react-redux";
 import { MockedProvider, MockedProviderProps } from "@apollo/client/testing";
 import createMockStore from "redux-mock-store";
@@ -81,20 +81,23 @@ const mockStore = createMockStore([]);
 const mockedStore = mockStore({ facilities: [] });
 
 function renderWithMocks(mocks: MockedProviderProps["mocks"]) {
-  render(
-    <Provider store={mockedStore}>
-      <MockedProvider mocks={mocks} addTypename={false}>
-        <MemoryRouter>
-          <UnarchivePatient />
-        </MemoryRouter>
-      </MockedProvider>
-    </Provider>
-  );
+  return {
+    user: userEvent.setup(),
+    ...render(
+      <Provider store={mockedStore}>
+        <MockedProvider mocks={mocks} addTypename={false}>
+          <MemoryRouter>
+            <UnarchivePatient />
+          </MemoryRouter>
+        </MockedProvider>
+      </Provider>
+    ),
+  };
 }
 
 describe("Unarchive patient", () => {
   it("displays search and instructions", async () => {
-    renderWithMocks(defaultMocks);
+    const { user } = renderWithMocks(defaultMocks);
 
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
@@ -110,7 +113,7 @@ describe("Unarchive patient", () => {
     expect(await axe(document.body)).toHaveNoViolations();
 
     // selecting an org with no facilities
-    await selectComboBoxOption("org-selection-container", mockOrg2.name);
+    await selectComboBoxOption(user, "org-selection-container", mockOrg2.name);
     await waitFor(() =>
       expect(screen.getByText("Clear filters")).toBeEnabled()
     );
@@ -133,17 +136,15 @@ describe("Unarchive patient", () => {
     );
   });
   it("displays patients table on valid search", async () => {
-    renderWithMocks(mocksWithPatients);
+    const { user } = renderWithMocks(mocksWithPatients);
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
     expect(screen.getByText("Clear filters")).toBeDisabled();
-    await searchByOrgAndFacility();
+    await searchByOrgAndFacility(user);
     checkPatientResultRows();
     expect(await axe(document.body)).toHaveNoViolations();
-    await act(
-      async () => await userEvent.click(screen.getByText("Clear filters"))
-    );
+    await user.click(screen.getByText("Clear filters"));
     const [facilityInput] = getFacilityComboBoxElements();
     const [orgInput] = getOrgComboBoxElements();
 
@@ -160,6 +161,7 @@ describe("Unarchive patient", () => {
     // show form errors
     expect(await axe(document.body)).toHaveNoViolations();
   });
+
   it("displays unarchive patient modal and unarchives patient", async () => {
     let alertErrorSpy: jest.SpyInstance;
     let alertSuccessSpy: jest.SpyInstance;
@@ -167,21 +169,25 @@ describe("Unarchive patient", () => {
     alertSuccessSpy = jest.spyOn(srToast, "showSuccess");
 
     const mocks = [...mocksWithPatients, ...additionalMocks];
-    renderWithMocks(mocks);
+    const { user } = renderWithMocks(mocks);
 
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Loading Organizations …")
     );
-    await searchByOrgAndFacility();
+    await searchByOrgAndFacility(user);
+    await screen.findByText(/Archived patients for Mars Facility/i);
 
-    await act(async () => screen.getAllByText("Unarchive")[0].click());
+    await user.click(screen.getAllByText("Unarchive")[0]);
+
+    await screen.findByText(/are you sure you want to unarchive \?/i);
     expect(screen.getByRole("dialog")).toHaveTextContent(
       /Are you sure you want to unarchive Gutmann, Rod\?/
     );
+
     await act(async () =>
       expect(await axe(document.body)).toHaveNoViolations()
     );
-    await act(async () => screen.getByText("Yes, I'm sure").click());
+    await user.click(screen.getByText("Yes, I'm sure"));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     await waitFor(() => {
       expect(alertErrorSpy).toHaveBeenCalledWith(
@@ -190,11 +196,11 @@ describe("Unarchive patient", () => {
       );
     });
     checkPatientResultRows();
-    await act(async () => screen.getAllByText("Unarchive")[1].click());
+    await user.click(screen.getAllByText("Unarchive")[1]);
     expect(screen.getByRole("dialog")).toHaveTextContent(
       /Are you sure you want to unarchive Mode, Mia\?/
     );
-    await act(async () => screen.getByText("Yes, I'm sure").click());
+    await user.click(screen.getByText("Yes, I'm sure"));
     await waitFor(() => {
       expect(alertSuccessSpy).toHaveBeenCalledWith(
         "",
@@ -205,21 +211,22 @@ describe("Unarchive patient", () => {
     expect(await axe(document.body)).toHaveNoViolations();
   });
   it("navigates to previous page when archiving last patient on page", async () => {
-    renderWithMocks(mocksWithExtraPatients);
+    const { user } = renderWithMocks(mocksWithExtraPatients);
 
     await waitFor(() =>
       expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
     );
-    await searchByOrgAndFacility();
-    await act(async () => screen.getByText("2").closest("a")?.click());
+    await searchByOrgAndFacility(user);
+
+    await user.click(screen.getByText("2").closest("a") as any);
     await waitFor(() =>
       expect(screen.queryByText(/Loading/i)).not.toBeInTheDocument()
     );
-    await act(async () => screen.getAllByText("Unarchive")[0].click());
+    await user.click(screen.getAllByText("Unarchive")[0]);
     expect(screen.getByRole("dialog")).toHaveTextContent(
       /Are you sure you want to unarchive Gutmann, Rod\?/
     );
-    await act(async () => screen.getByText("Yes, I'm sure").click());
+    await user.click(screen.getByText("Yes, I'm sure"));
     await waitFor(() =>
       expect(screen.queryByText("Loading...")).not.toBeInTheDocument()
     );
@@ -231,15 +238,16 @@ describe("Unarchive patient", () => {
   });
 });
 
-const searchByOrgAndFacility = async () => {
-  await selectComboBoxOption("org-selection-container", mockOrg1.name);
+const searchByOrgAndFacility = async (user: UserEvent) => {
+  await selectComboBoxOption(user, "org-selection-container", mockOrg1.name);
   const [facilityInput] = getFacilityComboBoxElements();
   await waitFor(async () => expect(facilityInput).toBeEnabled());
   await selectComboBoxOption(
+    user,
     "facility-selection-container",
     mockFacility1.name
   );
-  await clickSearch();
+  await clickSearch(user);
   await waitFor(async () => {
     expect(screen.getByText(/Archived patients for/i)).toBeInTheDocument();
   });
