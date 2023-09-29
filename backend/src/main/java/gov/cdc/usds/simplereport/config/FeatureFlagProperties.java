@@ -8,7 +8,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter
 @Setter
 public class FeatureFlagProperties {
-  private boolean multiplexEnabled;
   private boolean hivEnabled;
   private boolean rsvEnabled;
+  private boolean singleEntryRsvEnabled;
+  private boolean agnosticEnabled;
 }

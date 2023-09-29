@@ -21,7 +21,7 @@ Cypress.Commands.add("setPassword", () => {
 
 Cypress.Commands.add("setSecurityQuestion", () => {
   cy.get('select[name="security-question"]').select(
-    "In what city or town was your first job?"
+    "In what city or town was your first job?",
   );
   cy.get('input[name="answer"]').type("Omaha");
   cy.get(submitButton).click();
@@ -56,7 +56,7 @@ Cypress.Commands.add("scanQrCode", () => {
 
 Cypress.Commands.add("verifySecurityCode", (code) => {
   cy.contains("Verify your security code.");
-  cy.contains('One-time security code');
+  cy.contains("One-time security code");
   cy.checkAccessibility();
   cy.get('input[name="security-code"]').type(code);
   cy.get(submitButton).first().click();
@@ -135,7 +135,6 @@ describe("Okta account creation", () => {
     before(() => {
       cy.clearCookies();
       cy.resetWiremock();
-
     });
     it("navigates to the activation link", () => {
       cy.visit("/uac/?activationToken=gqYPzH1FlPzVr0U3tQ7H");

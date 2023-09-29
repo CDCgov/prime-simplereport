@@ -1,13 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
-import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import jakarta.transaction.Transactional;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,52 +23,42 @@ public class DiseaseService {
   public static final String FLU_RNA_NAME = "Flu RNA";
   public static final String RSV_NAME = "RSV";
 
-  private final SupportedDiseaseRepository _supportedDiseaseRepo;
-
-  private SupportedDisease covid;
-  private SupportedDisease fluA;
-  private SupportedDisease fluB;
-
-  private final Map<UUID, SupportedDisease> supportedDiseaseMap = new HashMap<>();
-
-  public void initDiseases() {
-    covid = _supportedDiseaseRepo.findByName(COVID19_NAME).orElse(null);
-    fluA = _supportedDiseaseRepo.findByName(FLU_A_NAME).orElse(null);
-    fluB = _supportedDiseaseRepo.findByName(FLU_B_NAME).orElse(null);
-
-    Optional.ofNullable(covid).ifPresent(sd -> supportedDiseaseMap.put(sd.getInternalId(), sd));
-    Optional.ofNullable(fluA).ifPresent(sd -> supportedDiseaseMap.put(sd.getInternalId(), sd));
-    Optional.ofNullable(fluB).ifPresent(sd -> supportedDiseaseMap.put(sd.getInternalId(), sd));
-  }
-
-  public List<SupportedDisease> fetchSupportedDiseases() {
-    return _supportedDiseaseRepo.findAll();
-  }
+  private final DiseaseCacheService diseaseCacheService;
 
   public Map<UUID, SupportedDisease> getKnownSupportedDiseasesMap() {
-    return supportedDiseaseMap;
+    return diseaseCacheService.getKnownSupportedDiseasesMap();
+  }
+
+  public void initDiseases() {
+    getKnownSupportedDiseasesMap();
+  }
+
+  public List<SupportedDisease> getSupportedDiseaseList() {
+    return getDiseaseNameToSupportedDiseaseMap().values().stream().toList();
+  }
+
+  public Map<String, SupportedDisease> getDiseaseNameToSupportedDiseaseMap() {
+    return getKnownSupportedDiseasesMap().values().stream()
+        .collect(Collectors.toMap(SupportedDisease::getName, Function.identity()));
   }
 
   public SupportedDisease getDiseaseByName(String name) {
-    return switch (name) {
-      case COVID19_NAME -> covid;
-      case FLU_A_NAME -> fluA;
-      case FLU_B_NAME -> fluB;
-      default -> _supportedDiseaseRepo
-          .findByName(name)
-          .orElseThrow(() -> new IllegalArgumentException("Disease not found"));
-    };
+    return getDiseaseNameToSupportedDiseaseMap().get(name);
   }
 
   public SupportedDisease covid() {
-    return covid;
+    return getDiseaseByName(COVID19_NAME);
   }
 
   public SupportedDisease fluA() {
-    return fluA;
+    return getDiseaseByName(FLU_A_NAME);
   }
 
   public SupportedDisease fluB() {
-    return fluB;
+    return getDiseaseByName(FLU_B_NAME);
+  }
+
+  public SupportedDisease rsv() {
+    return getDiseaseByName(RSV_NAME);
   }
 }

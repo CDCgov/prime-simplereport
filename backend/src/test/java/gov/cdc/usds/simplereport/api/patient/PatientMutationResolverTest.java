@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.patient;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -46,11 +47,13 @@ class PatientMutationResolverTest {
         null,
         null,
         null,
-        null,
+        "MALE",
+        "Transwoman",
         false,
         false,
         "English",
-        null);
+        null,
+        "Hero of the frontier");
 
     verify(personService)
         .addPatient(
@@ -69,11 +72,13 @@ class PatientMutationResolverTest {
             any(),
             any(),
             any(),
+            eq("male"),
+            eq("transwoman"),
             any(),
             any(),
             any(),
             any(),
-            any());
+            eq("Hero of the frontier"));
   }
 
   @Test
@@ -106,11 +111,13 @@ class PatientMutationResolverTest {
         null,
         null,
         null,
-        null,
+        "FeMaLe",
+        "FEMALE",
         false,
         false,
         "English",
-        null);
+        null,
+        "Outlaw of the galaxy");
 
     verify(personService)
         .addPatient(
@@ -129,10 +136,12 @@ class PatientMutationResolverTest {
             any(),
             any(),
             any(),
+            eq("female"),
+            eq("female"),
             any(),
             any(),
             any(),
             any(),
-            any());
+            eq("Outlaw of the galaxy"));
   }
 }

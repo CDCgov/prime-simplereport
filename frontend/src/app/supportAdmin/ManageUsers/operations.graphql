@@ -10,6 +10,7 @@ query findUserByEmail($email: String!) {
         email
         status
         organization {
+            id
             testingFacility {
                 id
                 name
@@ -28,4 +29,20 @@ mutation undeleteUser($userId: ID!){
         email
         isDeleted
     }
+}
+
+mutation updateUserPrivilegesAndGroupAccess($username: String!, $orgExternalId: String!, $accessAllFacilities: Boolean!, $role: Role!, $facilities: [ID]){
+    updateUserPrivilegesAndGroupAccess(
+        username:$username
+        orgExternalId: $orgExternalId
+        accessAllFacilities: $accessAllFacilities
+        facilities: $facilities
+        role: $role
+    ){
+        id
+    }
+}
+
+query getTestResultCountByOrg($orgId: ID!){
+    testResultsCount(orgId: $orgId)
 }

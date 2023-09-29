@@ -1,6 +1,6 @@
 import { loginHooks } from "../support/e2e";
-import {graphqlURL} from "../utils/request-utils";
-import {aliasGraphqlOperations} from "../utils/graphql-test-utils";
+import { graphqlURL } from "../utils/request-utils";
+import { aliasGraphqlOperations } from "../utils/graphql-test-utils";
 
 describe("Conducting a COVID test", () => {
   let patientName, lastName, covidOnlyDeviceName;
@@ -19,7 +19,7 @@ describe("Conducting a COVID test", () => {
 
   beforeEach(() => {
     cy.intercept("POST", graphqlURL, (req) => {
-      aliasGraphqlOperations(req)
+      aliasGraphqlOperations(req);
     });
   });
 
@@ -28,9 +28,9 @@ describe("Conducting a COVID test", () => {
     cy.get(".usa-nav-container");
     cy.get("#desktop-conduct-test-nav-link").click();
     cy.get("#search-field-small").type(lastName);
-    cy.get(".results-dropdown").contains(lastName)
+    cy.get(".results-dropdown").contains(lastName);
 
-    cy.wait("@GetPatientsByFacilityForQueue")
+    cy.wait("@GetPatientsByFacilityForQueue");
 
     cy.injectSRAxe();
     cy.checkAccessibility(); // Conduct Tests page
@@ -43,7 +43,7 @@ describe("Conducting a COVID test", () => {
     });
 
     cy.get(".ReactModal__Content").contains(
-      "Are you experiencing any of the following symptoms?"
+      "Are you experiencing any of the following symptoms?",
     );
 
     // Test a11y on the AoE modal
@@ -57,7 +57,7 @@ describe("Conducting a COVID test", () => {
     });
 
     cy.wait("@AddPatientToQueue");
-    cy.wait("@GetFacilityQueue", {timeout: 20000});
+    cy.wait("@GetFacilityQueue", { timeout: 20000 });
 
     cy.get(".prime-home").contains(patientName);
 
@@ -68,22 +68,32 @@ describe("Conducting a COVID test", () => {
   it("completes the test", () => {
     cy.get(queueCard).within(() => {
       cy.get('select[name="testDevice"]').select(covidOnlyDeviceName);
-      cy.get('select[name="testDevice"]').find('option:selected').should('have.text', covidOnlyDeviceName);
+      cy.get('select[name="testDevice"]')
+        .find("option:selected")
+        .should("have.text", covidOnlyDeviceName);
     });
 
     // We cant wait on EditQueueItem after selecting as device
     // because if the covid device was already selected,
     // then it won't trigger a network call
-    cy.wait("@GetFacilityQueue", {timeout: 20000});
+    cy.wait("@GetFacilityQueue", { timeout: 20000 });
 
+    // Wait for the FacilityQueue results to populate
+    // To be resolved in #6079
+    // https://github.com/CDCgov/prime-simplereport/pull/6464#discussion_r1313361521
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(100);
     cy.get(queueCard).within(() => {
-      cy.contains('label', 'Negative (-)').click();
+      cy.contains("label", "Negative (-)").click();
     });
 
     cy.wait("@EditQueueItem");
 
     cy.get(queueCard).within(() => {
-      cy.get(".prime-test-result-submit button").last().should("be.enabled").click();
+      cy.get(".prime-test-result-submit button")
+        .last()
+        .should("be.enabled")
+        .click();
     });
 
     cy.wait("@SubmitQueueItem");

@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.patient;
 import static gov.cdc.usds.simplereport.api.Translators.parseEmails;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
+import static gov.cdc.usds.simplereport.api.Translators.parseGenderIdentity;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
@@ -58,10 +59,12 @@ public class PatientMutationResolver {
       @Argument String ethnicity,
       @Argument String tribalAffiliation,
       @Argument String gender,
+      @Argument String genderIdentity,
       @Argument Boolean residentCongregateSetting,
       @Argument Boolean employedInHealthcare,
       @Argument String preferredLanguage,
-      @Argument TestResultDeliveryPreference testResultDelivery) {
+      @Argument TestResultDeliveryPreference testResultDelivery,
+      @Argument String notes) {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
@@ -92,10 +95,12 @@ public class PatientMutationResolver {
         parseEthnicity(ethnicity),
         parseTribalAffiliation(tribalAffiliation),
         parseGender(gender),
+        parseGenderIdentity(genderIdentity),
         residentCongregateSetting,
         employedInHealthcare,
         parseString(preferredLanguage),
-        testResultDelivery);
+        testResultDelivery,
+        notes);
   }
 
   @MutationMapping
@@ -124,10 +129,12 @@ public class PatientMutationResolver {
       @Argument String ethnicity,
       @Argument String tribalAffiliation,
       @Argument String gender,
+      @Argument String genderIdentity,
       @Argument Boolean residentCongregateSetting,
       @Argument Boolean employedInHealthcare,
       @Argument String preferredLanguage,
-      @Argument TestResultDeliveryPreference testResultDelivery) {
+      @Argument TestResultDeliveryPreference testResultDelivery,
+      @Argument String notes) {
     List<PhoneNumberInput> backwardsCompatiblePhoneNumbers =
         phoneNumbers != null
             ? phoneNumbers
@@ -159,10 +166,12 @@ public class PatientMutationResolver {
         parseEthnicity(ethnicity),
         parseTribalAffiliation(tribalAffiliation),
         parseGender(gender),
+        parseGenderIdentity(genderIdentity),
         residentCongregateSetting,
         employedInHealthcare,
         parseString(preferredLanguage),
-        testResultDelivery);
+        testResultDelivery,
+        notes);
   }
 
   @MutationMapping

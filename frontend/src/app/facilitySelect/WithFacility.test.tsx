@@ -100,48 +100,49 @@ describe("WithFacility", () => {
   });
 
   describe("With two facilities", () => {
-    beforeEach(() => {
-      store = mockStore({
-        dataLoaded: true,
-        organization: {
-          name: "Organization Name",
-        },
-        user: {
-          firstName: "Kim",
-          lastName: "Mendoza",
-          permissions: [],
-        },
-        facilities: [
-          { id: "1", name: "Facility 1" },
-          { id: "2", name: "Facility 2" },
-        ],
-      });
-      render(
+    const storeMock = mockStore({
+      dataLoaded: true,
+      organization: {
+        name: "Organization Name",
+      },
+      user: {
+        firstName: "Kim",
+        lastName: "Mendoza",
+        permissions: [],
+      },
+      facilities: [
+        { id: "1", name: "Facility 1" },
+        { id: "2", name: "Facility 2" },
+      ],
+    });
+
+    const renderWithUser = () => ({
+      user: userEvent.setup(),
+      ...render(
         <Router>
-          <Provider store={store}>
+          <Provider store={storeMock}>
             <WithFacility>App</WithFacility>
           </Provider>
         </Router>
-      );
+      ),
     });
 
     it("should show the facility selection screen", () => {
+      renderWithUser();
       expect(
         screen.getByText("Please select the testing facility", { exact: false })
       ).toBeInTheDocument();
     });
 
-    describe("On facility select", () => {
-      beforeEach(async () => {
-        const options = await screen.findAllByRole("button");
-        userEvent.click(options[0]);
-      });
-      it("should show the app", async () => {
-        const renderedApp = await screen.findByText("App");
-        expect(renderedApp).toBeInTheDocument();
-      });
+    it("should show the app after selecting facility", async () => {
+      const { user } = renderWithUser();
+      const options = await screen.findAllByRole("button");
+      await user.click(options[0]);
+      const renderedApp = await screen.findByText("App");
+      expect(renderedApp).toBeInTheDocument();
     });
   });
+
   describe("Facility ID from URL", () => {
     beforeEach(() => {
       store = mockStore({
@@ -170,11 +171,13 @@ describe("WithFacility", () => {
         </Router>
       );
     });
+
     it("loads facility directly from URL", async () => {
       const renderedApp = await screen.findByText("App");
       expect(renderedApp).toBeInTheDocument();
     });
   });
+
   describe("A new org", () => {
     beforeEach(async () => {
       store = mockStore({

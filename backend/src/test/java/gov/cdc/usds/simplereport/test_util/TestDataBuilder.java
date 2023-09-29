@@ -108,10 +108,12 @@ public class TestDataBuilder {
         "ethnicity",
         List.of(),
         "female",
+        "female",
         false,
         false,
         "eng",
-        null);
+        null,
+        "Nebula-navigating outlaw");
   }
 
   public static DeviceTypeDisease createDeviceTypeDisease(SupportedDisease supportedDisease) {

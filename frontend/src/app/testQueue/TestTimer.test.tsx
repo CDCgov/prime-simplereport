@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { getAppInsights } from "../TelemetryService";
@@ -98,12 +92,17 @@ describe("TestTimerWidget", () => {
       removeTimer("internal-id");
     });
 
+    const renderWithUser = (testLength: number) => ({
+      user: userEvent.setup(),
+      ...render(<DummyTestTimer testLength={testLength} context={context} />),
+    });
+
     it("tracks a custom event when the timer is started", async () => {
-      render(<DummyTestTimer testLength={15} context={context} />);
+      const { user } = renderWithUser(15);
 
       const startTimer = await screen.findByRole("button");
 
-      await act(async () => await userEvent.click(startTimer));
+      await user.click(startTimer);
       expect(trackEventMock).toHaveBeenCalled();
       expect(trackEventMock).toHaveBeenCalledTimes(1);
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -113,12 +112,11 @@ describe("TestTimerWidget", () => {
     });
 
     it("tracks a custom event when the timer reset", async () => {
-      render(<DummyTestTimer testLength={15} context={context} />);
-
+      const { user } = renderWithUser(15);
       const timerButton = await screen.findByRole("button");
 
       // Start timer
-      await act(async () => await userEvent.click(timerButton));
+      await user.click(timerButton);
       await screen.findByText("15:00");
 
       // The timer does not enter the countdown state instantly, so clicking the
@@ -127,7 +125,7 @@ describe("TestTimerWidget", () => {
       await waitFor(() => findTimer("internal-id")?.tick(Date.now()));
 
       // Reset timer
-      await act(async () => await userEvent.click(timerButton));
+      await user.click(timerButton);
       await screen.findByText("15:00");
 
       expect(trackEventMock).toHaveBeenCalledWith(
@@ -137,17 +135,17 @@ describe("TestTimerWidget", () => {
     });
 
     it("tracks a custom event when the timer reaches zero", async () => {
-      render(<DummyTestTimer testLength={0} context={context} />);
-
+      const { user } = renderWithUser(0);
       const timerButton = await screen.findByRole("button");
-
-      fireEvent.click(timerButton);
+      await user.click(timerButton);
       await screen.findByText("0:00");
       await screen.findByText("RESULT READY");
 
-      expect(trackEventMock).toHaveBeenCalledWith(
-        { name: "Test timer finished" },
-        context
+      await waitFor(() =>
+        expect(trackEventMock).toHaveBeenCalledWith(
+          { name: "Test timer finished" },
+          context
+        )
       );
     });
   });
@@ -158,7 +156,6 @@ function DummyTestTimer(props: {
   context: TimerTrackEventMetadata;
 }) {
   const timer = useTestTimer("internal-id", props.testLength);
-
   return <TestTimerWidget timer={timer} context={props.context} />;
 }
 

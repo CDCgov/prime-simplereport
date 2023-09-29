@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -275,7 +274,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     when(repoMock.findByInternalIdAndOrganization(any(), any())).thenReturn(dbResponse);
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
-    when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     var uploadResponse = new UploadResponse();
     uploadResponse.setId(testResultUpload.getReportId());
     uploadResponse.setOverallStatus(ReportStreamStatus.WAITING_TO_DELIVER);
@@ -423,7 +422,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     when(dataHubMock.uploadCSV(any())).thenReturn(response);
     when(dataHubMock.uploadFhir(any(), any())).thenReturn(response);
-    when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
 
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(List.of("a", "b", "c"));
@@ -474,7 +473,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
 
     when(dataHubMock.uploadCSV(any())).thenReturn(csvResponse);
     when(dataHubMock.uploadFhir(any(), any())).thenReturn(fhirResponse);
-    when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(repoMock.save(any())).thenReturn(csvResult);
 
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
@@ -544,7 +543,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
         .thenReturn(List.of("a", "b", "c"));
     when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))
         .thenReturn("fake-rs-sender-token");
-    when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(dataHubMock.uploadCSV(any())).thenReturn(successfulCsvResponse);
     when(dataHubMock.uploadFhir(any(), any())).thenThrow(reportStreamException);
     when(repoMock.save(any())).thenReturn(csvResult);
@@ -728,7 +727,7 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
     UploadResponse response = buildUploadResponse();
     var tokenResponse = new TokenResponse();
     tokenResponse.setAccessToken("fake-rs-access-token");
-    when(dataHubMock.fetchAccessToken(anyMap())).thenReturn(tokenResponse);
+    when(dataHubMock.fetchAccessToken(anyString())).thenReturn(tokenResponse);
     when(bulkUploadFhirConverterMock.convertToFhirBundles(any(), any()))
         .thenReturn(List.of("a", "b", "c"));
     when(tokenAuthMock.createRSAJWT(anyString(), anyString(), any(Date.class), anyString()))

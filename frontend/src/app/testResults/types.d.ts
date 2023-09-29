@@ -20,6 +20,9 @@ interface MultiplexResult extends DiseaseName {
 
 type MultiplexResults = MultiplexResult[];
 
+// Represents a single test result with context from parent test event
+type EnrichedMultiplexResult = TestResult & MultiplexResult;
+
 type FilterParams = {
   patientId?: string | null;
   startDate?: string | null;

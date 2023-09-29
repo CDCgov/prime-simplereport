@@ -31,6 +31,7 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   race: null,
   ethnicity: null,
   gender: null,
+  genderIdentity: null,
   residentCongregateSetting: undefined,
   employedInHealthcare: undefined,
   tribalAffiliation: undefined,
@@ -52,6 +53,7 @@ export const EMPTY_PERSON: Nullable<PersonFormData> = {
   country: "USA",
   preferredLanguage: null,
   testResultDelivery: null,
+  notes: null,
 };
 
 export const PATIENT_EXISTS = gql`
@@ -97,6 +99,7 @@ export const ADD_PATIENT = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -124,6 +127,7 @@ export const ADD_PATIENT = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
+      notes: $notes
     ) {
       internalId
       facility {
@@ -132,7 +136,6 @@ export const ADD_PATIENT = gql`
     }
   }
 `;
-
 type AddPatientParams = Nullable<Omit<PersonFormData, "lookupId">>;
 
 interface AddPatientResponse {
@@ -314,6 +317,15 @@ const AddPatient = () => {
     </>
   );
 
+  const getFooter: (
+    onSave: (startTest?: boolean) => void,
+    formChanged: boolean
+  ) => React.ReactNode = (onSave, formChanged) => (
+    <div className="prime-edit-patient-heading">
+      {getSaveButtons(formChanged, onSave, "lower")}
+    </div>
+  );
+
   function getHeader() {
     return (
       _: any,
@@ -353,11 +365,7 @@ const AddPatient = () => {
           onBlur={onBlur}
           getHeader={getHeader()}
           headerClassName={"padding-bottom-0"}
-          getFooter={(onSave, formChanged) => (
-            <div className="prime-edit-patient-heading">
-              {getSaveButtons(formChanged, onSave, "lower")}
-            </div>
-          )}
+          getFooter={getFooter}
         />
       </div>
     </div>

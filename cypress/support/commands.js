@@ -25,8 +25,8 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import "cypress-localstorage-commands";
-import {authenticator} from "otplib";
-import {graphqlURL} from "../utils/request-utils";
+import { authenticator } from "otplib";
+import { graphqlURL } from "../utils/request-utils";
 
 // read environment variables
 
@@ -35,7 +35,9 @@ const password = Cypress.env("OKTA_PASSWORD");
 const secret = Cypress.env("OKTA_SECRET");
 const scope = Cypress.env("OKTA_SCOPE") || "simple_report_dev";
 const clientId = Cypress.env("OKTA_CLIENT_ID") || "0oa1k0163nAwfVxNW1d7";
-const redirectUri = Cypress.env("OKTA_REDIRECT_URI") || "https%3A%2F%2Flocalhost.simplereport.gov%2F";
+const redirectUri =
+  Cypress.env("OKTA_REDIRECT_URI") ||
+  "https%3A%2F%2Flocalhost.simplereport.gov%2F";
 const isLocalRun = Cypress.env("IS_LOCAL_RUN") || false;
 
 Cypress.Commands.add("login", () => {
@@ -64,21 +66,21 @@ Cypress.Commands.add("login", () => {
           {
             passCode,
             stateToken,
-          }
+          },
         ).then((response) => {
           const sessionToken = response.body.sessionToken;
           cy.request(
             "GET",
-            `https://hhs-prime.oktapreview.com/oauth2/default/v1/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token%20id_token&scope=openid%20simple_report%20${scope}&nonce=thisisnotsafe&state=thisisbogus&sessionToken=${sessionToken}`
+            `https://hhs-prime.oktapreview.com/oauth2/default/v1/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=token%20id_token&scope=openid%20simple_report%20${scope}&nonce=thisisnotsafe&state=thisisbogus&sessionToken=${sessionToken}`,
           ).then((response) => {
             const redirect = response.redirects[0];
             const idTokenRegex = new RegExp(
               "(?:id_token=)((.[\\s\\S]*))(?:&access_token=)",
-              "ig"
+              "ig",
             );
             const accessTokenRegex = new RegExp(
               "(?:access_token=)((.[\\s\\S]*))(?:&token_type=Bearer)",
-              "ig"
+              "ig",
             );
             const id_token = idTokenRegex.exec(redirect)[1];
             const access_token = accessTokenRegex.exec(redirect)[1];
@@ -99,7 +101,7 @@ Cypress.Commands.add("selectFacility", () => {
       $body
         .text()
         .includes(
-          "Please select the testing facility where you are working today."
+          "Please select the testing facility where you are working today.",
         )
     ) {
       cy.get(".usa-card__body").last().click();
@@ -114,18 +116,36 @@ Cypress.Commands.add("addDevice", (device) => {
   cy.get('input[name="testLength"]').type("15");
   cy.get('input[role="combobox"]').first().type("Swab");
   cy.get('li[id="multi-select-swabTypes-list--option-1"]').click();
-  cy.get('select[name="supportedDiseases.0.supportedDisease"').select("COVID-19");
-  cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').type("123-456");
-  cy.get('input[name="supportedDiseases.0.testOrderedLoincCode"]').type("9500-6");
+  cy.get('select[name="supportedDiseases.0.supportedDisease"').select(
+    "COVID-19",
+  );
+  cy.get('input[name="supportedDiseases.0.testPerformedLoincCode"]').type(
+    "123-456",
+  );
+  cy.get('input[name="supportedDiseases.0.testOrderedLoincCode"]').type(
+    "9500-6",
+  );
   if (device.isMultiplex) {
-    cy.contains('.usa-button', "Add another disease").click();
-    cy.get('select[name="supportedDiseases.1.supportedDisease"').select("Flu A");
-    cy.get('input[name="supportedDiseases.1.testPerformedLoincCode"]').type("456-789");
-    cy.get('input[name="supportedDiseases.1.testOrderedLoincCode"]').type("9500-6");
-    cy.contains('.usa-button', "Add another disease").click();
-    cy.get('select[name="supportedDiseases.2.supportedDisease"').select("Flu B");
-    cy.get('input[name="supportedDiseases.2.testPerformedLoincCode"]').type("789-123");
-    cy.get('input[name="supportedDiseases.2.testOrderedLoincCode"]').type("9500-6");
+    cy.contains(".usa-button", "Add another disease").click();
+    cy.get('select[name="supportedDiseases.1.supportedDisease"').select(
+      "Flu A",
+    );
+    cy.get('input[name="supportedDiseases.1.testPerformedLoincCode"]').type(
+      "456-789",
+    );
+    cy.get('input[name="supportedDiseases.1.testOrderedLoincCode"]').type(
+      "9500-6",
+    );
+    cy.contains(".usa-button", "Add another disease").click();
+    cy.get('select[name="supportedDiseases.2.supportedDisease"').select(
+      "Flu B",
+    );
+    cy.get('input[name="supportedDiseases.2.testPerformedLoincCode"]').type(
+      "789-123",
+    );
+    cy.get('input[name="supportedDiseases.2.testOrderedLoincCode"]').type(
+      "9500-6",
+    );
   }
   cy.contains("Save changes").should("be.enabled").click();
   cy.wait("@createDeviceType");
@@ -139,34 +159,38 @@ Cypress.Commands.add("removeOrganizationAccess", () => {
   cy.wait(5);
 });
 
-
 Cypress.Commands.add("resetWiremock", () => {
-  return !isLocalRun && cy.request("POST", "http://wiremock:8088/__admin/reset");
+  return (
+    !isLocalRun && cy.request("POST", "http://wiremock:8088/__admin/reset")
+  );
 });
 
 Cypress.Commands.add("makePOSTRequest", (requestBody) => {
-  return cy.getLocalStorage('access_token').then(token => (cy.request(
-      {
-        method: 'POST',
-        url: graphqlURL,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: requestBody
-      }
-    ))
-  )
+  return cy.getLocalStorage("access_token").then((token) =>
+    cy.request({
+      method: "POST",
+      url: graphqlURL,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: requestBody,
+    }),
+  );
 });
 
 Cypress.Commands.add("injectSRAxe", () => {
-  return isLocalRun ? cy.injectAxe({ axeCorePath: './cypress/node_modules/axe-core/axe.min.js'}) : cy.injectAxe();
+  return isLocalRun
+    ? cy.injectAxe({
+        axeCorePath: "./cypress/node_modules/axe-core/axe.min.js",
+      })
+    : cy.injectAxe();
 });
 
 // Print cypress-axe violations to the terminal
 function printAccessibilityViolations(violations) {
   cy.task(
-    'table',
-    violations.map(({id, impact, description, nodes}) => ({
+    "table",
+    violations.map(({ id, impact, description, nodes }) => ({
       id,
       impact,
       description,
@@ -174,15 +198,15 @@ function printAccessibilityViolations(violations) {
     })),
   );
 
-  cy.task('print', "Nodes:")
-  violations.forEach(({nodes})=> {
-    nodes.forEach(node => {
-      cy.task('print', node.html)
-      cy.task('print', "=============\n")
-    })
-  })
+  cy.task("print", "Nodes:");
+  violations.forEach(({ nodes }) => {
+    nodes.forEach((node) => {
+      cy.task("print", node.html);
+      cy.task("print", "=============\n");
+    });
+  });
 }
 
-Cypress.Commands.add('checkAccessibility', () => {
-    cy.checkA11y(null, null, printAccessibilityViolations);
+Cypress.Commands.add("checkAccessibility", () => {
+  cy.checkA11y(null, null, printAccessibilityViolations);
 });

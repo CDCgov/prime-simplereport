@@ -1,4 +1,5 @@
 import React from "react";
+import { useFeature } from "flagged";
 
 import MultiSelect from "../../../commonComponents/MultiSelect/MultiSelect";
 import DeviceSearchResults from "../../../uploads/DeviceLookup/DeviceSearchResults";
@@ -6,6 +7,7 @@ import "./ManageDevices.scss";
 import { RegistrationProps } from "../../../commonComponents/MultiSelect/MultiSelectDropdown/MultiSelectDropdown";
 import { FacilityFormData } from "../FacilityForm";
 import { searchFacilityFormDevices } from "../../../utils/device";
+import { filterRsvFromAllDevices } from "../../../utils/rsvHelper";
 
 interface Props {
   deviceTypes: FacilityFormDeviceType[];
@@ -24,6 +26,11 @@ const ManageDevices: React.FC<Props> = ({
   onChange,
   registrationProps,
 }) => {
+  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
+  if (!singleEntryRsvEnabled) {
+    deviceTypes = filterRsvFromAllDevices(deviceTypes);
+  }
+
   const deviceTypeOptions = Array.from(
     deviceTypes.map((device) => ({
       label: device.model,
@@ -31,15 +38,14 @@ const ManageDevices: React.FC<Props> = ({
     }))
   );
 
-  const getFilteredDevices = (
-    deviceIds: string[]
-  ): FacilityFormDeviceType[] => {
-    return (deviceTypes ?? []).filter((d) => deviceIds.includes(d.internalId));
+  const getUnselectedDevices = (): FacilityFormDeviceType[] => {
+    return deviceTypes.filter(
+      (device) => !formCurrentValues.devices.includes(device.internalId)
+    );
   };
 
   const searchDevicesByInput = (inputValue: string) => {
-    const deviceIds = deviceTypeOptions.map((d) => d.value);
-    return searchFacilityFormDevices(getFilteredDevices(deviceIds), inputValue);
+    return searchFacilityFormDevices(getUnselectedDevices(), inputValue);
   };
 
   return (

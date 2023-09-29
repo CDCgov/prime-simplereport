@@ -300,7 +300,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(disease1TestPerformed.get().getTestOrderedLoincCode()).isEqualTo("loinc3");
 
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
-    assertThat(updatedSwabTypes.size()).isEqualTo(1);
+    assertThat(updatedSwabTypes).hasSize(1);
     assertThat(updatedSwabTypes.get(0).getName()).isEqualTo("Mouth");
   }
 
@@ -446,7 +446,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertThat(disease1TestPerformed.get().getTestOrderedLoincCode()).isEqualTo("loinc3");
 
     List<SpecimenType> updatedSwabTypes = updatedDevice.getSwabTypes();
-    assertThat(updatedSwabTypes.size()).isEqualTo(1);
+    assertThat(updatedSwabTypes).hasSize(1);
     assertThat(updatedSwabTypes.get(0).getName()).isEqualTo("Nose");
   }
 }

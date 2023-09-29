@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { ComboBoxRef } from "@trussworks/react-uswds";
 
 import {
   ArchivedStatus,
@@ -48,8 +49,8 @@ export type UnarchivePatientPatient = {
 export interface UnarchivePatientState {
   pageUrl: string;
   entriesPerPage: number;
-  orgId: string;
-  facilityId: string;
+  orgId: string | undefined;
+  facilityId: string | undefined;
   patientsCount: number | undefined;
   patients: UnarchivePatientPatient[] | undefined;
   facilities: UnarchivePatientFacility[];
@@ -59,8 +60,8 @@ export interface UnarchivePatientState {
 export const initialState: UnarchivePatientState = {
   pageUrl: "/admin/unarchive-patient",
   entriesPerPage: 20,
-  orgId: "",
-  facilityId: "",
+  orgId: undefined,
+  facilityId: undefined,
   patientsCount: undefined,
   patients: undefined,
   facilities: [],
@@ -83,6 +84,9 @@ const UnarchivePatient = () => {
   let currentPage = pageNumber ? +pageNumber : 1;
   const [activeFacility] = useSelectedFacility();
 
+  const orgRef = useRef<ComboBoxRef>(null);
+  const facilityRef = useRef<ComboBoxRef>(null);
+
   useDocumentTitle(unarchivePatientTitle);
 
   const getSearchParamsStr = () => {
@@ -101,11 +105,10 @@ const UnarchivePatient = () => {
     variables: { identityVerified: true },
   });
 
-  const [queryGetOrgWithFacilities] = useGetOrganizationWithFacilitiesLazyQuery(
-    {
+  const [queryGetOrgWithFacilities, { loading: loadingOrgWithFacilities }] =
+    useGetOrganizationWithFacilitiesLazyQuery({
       fetchPolicy: "no-cache",
-    }
-  );
+    });
 
   const [queryGetPatientsByFacilityWithOrg, { loading: loadingPatients }] =
     useGetPatientsByFacilityWithOrgLazyQuery({
@@ -136,6 +139,7 @@ const UnarchivePatient = () => {
           orgExternalId: orgExternalId,
         },
       });
+
       let patients: any[] = patientsRes?.patients ? patientsRes?.patients : [];
       updateLocalState((prevState) => {
         return {
@@ -162,23 +166,35 @@ const UnarchivePatient = () => {
     showError(error.message, "Something went wrong");
   }
 
-  const handleSelectOrganization = async (selectedOrgInternalId: string) => {
+  const handleSelectOrganization = async (
+    selectedOrgInternalId: string | undefined
+  ) => {
     updateLocalState(() => ({
       ...initialState,
       orgId: selectedOrgInternalId,
     }));
+
     if (selectedOrgInternalId) {
       let { data: facilitiesRes } = await queryGetOrgWithFacilities({
         variables: { id: selectedOrgInternalId },
+      }).then((data) => {
+        facilityRef.current?.clearSelection();
+        return data;
       });
+
       updateLocalState((prevState) => ({
         ...prevState,
         facilities: facilitiesRes?.organization?.facilities || [],
       }));
+    } else {
+      orgRef.current?.clearSelection();
+      facilityRef.current?.clearSelection();
     }
   };
 
-  const handleSelectFacility = async (selectedFacilityId: string) => {
+  const handleSelectFacility = async (
+    selectedFacilityId: string | undefined
+  ) => {
     updateLocalState((prevState) => ({
       ...prevState,
       facilityId: selectedFacilityId,
@@ -188,7 +204,7 @@ const UnarchivePatient = () => {
   };
 
   const fetchAndSetPatientsCount = async (orgExternalId: string) => {
-    if (orgExternalId) {
+    if (orgExternalId && localState.facilityId) {
       let { data: patientsCountRes } =
         await queryGetPatientsCountByFacilityWithOrg({
           variables: {
@@ -210,27 +226,31 @@ const UnarchivePatient = () => {
   };
 
   const handleSearch = async () => {
-    if (localState.orgId && localState.facilityId) {
-      let searchParams = getSearchParamsStr();
-      let orgExternalId = getOrgExternalIdWithInternalId(
-        orgs,
-        localState.orgId
-      );
-      if (orgExternalId) {
-        currentPage = 1;
-        await fetchAndSetPatientsCount(orgExternalId);
-        await fetchAndSetPatients(orgExternalId, currentPage);
-        // reset url to clear page number from pagination
-        navigate(`${localState.pageUrl}${searchParams}`);
-      }
+    if (localState.orgId === undefined || localState.facilityId === undefined) {
+      return;
+    }
+
+    let searchParams = getSearchParamsStr();
+    let orgExternalId = getOrgExternalIdWithInternalId(orgs, localState.orgId);
+
+    if (orgExternalId) {
+      currentPage = 1;
+      await fetchAndSetPatientsCount(orgExternalId);
+      await fetchAndSetPatients(orgExternalId, currentPage);
+
+      // reset url to clear page number from pagination
+      navigate(`${localState.pageUrl}${searchParams}`);
     }
   };
 
   const handleClearFilter = () => {
+    orgRef.current?.clearSelection();
+    facilityRef.current?.clearSelection();
+
     updateLocalState((prevState) => ({
       ...prevState,
-      orgId: "",
-      facilityId: "",
+      orgId: undefined,
+      facilityId: undefined,
       patients: undefined,
       patientsCount: undefined,
       facilities: [],
@@ -238,6 +258,7 @@ const UnarchivePatient = () => {
   };
 
   const handlePaginationClick = async (pageNumber: number) => {
+    if (localState.orgId === undefined) return;
     await fetchAndSetPatients(
       getOrgExternalIdWithInternalId(orgs, localState.orgId),
       pageNumber
@@ -254,6 +275,7 @@ const UnarchivePatient = () => {
   };
 
   const handleUnarchivePatientConfirmation = async (patientId: string) => {
+    if (localState.orgId === undefined) return;
     let orgExternalId = getOrgExternalIdWithInternalId(orgs, localState.orgId);
 
     if (orgExternalId) {
@@ -285,22 +307,34 @@ const UnarchivePatient = () => {
     }
   };
 
+  const facilityOptions =
+    localState.facilities.map((facility) => ({
+      value: facility.id,
+      label: facility.name,
+    })) ?? [];
+
+  const queryLoading =
+    loadingPatients || loadingPatientsCount || loadingOrgWithFacilities;
   return (
     <div className="prime-home flex-1">
       <div className="grid-container">
         <UnarchivePatientFilters
           orgOptions={orgOptions}
+          facilityOptions={facilityOptions}
           onSelectOrg={handleSelectOrganization}
           onSelectFacility={handleSelectFacility}
           onSearch={handleSearch}
           onClearFilter={handleClearFilter}
-          loading={loadingPatients || loadingPatientsCount}
-          unarchivePatientState={localState}
+          loading={queryLoading}
+          disableClearFilters={localState.orgId === undefined}
+          disableSearch={queryLoading || localState.facilityId === undefined}
+          orgRef={orgRef}
+          facilityRef={facilityRef}
         />
         <UnarchivePatientInformation
           unarchivePatientState={localState}
           currentPage={currentPage}
-          loading={loadingPatients || loadingPatientsCount}
+          loading={queryLoading}
           handlePaginationClick={handlePaginationClick}
           onUnarchivePatient={handleUnarchivePatient}
         />

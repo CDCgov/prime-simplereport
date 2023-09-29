@@ -344,6 +344,40 @@ public class BulkUploadResultsToFhirTest {
   }
 
   @Test
+  void convertExistingCsv_matchesFhir_with_comments() throws IOException {
+    // Mock random UUIDs
+    var mockedUUIDGenerator = mock(UUIDGenerator.class);
+    when(mockedUUIDGenerator.randomUUID())
+        .thenAnswer(
+            (Answer<UUID>) invocation -> UUID.fromString("5db534ea-5e97-4861-ba18-d74acc46db15"));
+
+    // Mock constructed UTC date object
+    var mockedDateGenerator = mock(DateGenerator.class);
+    when(mockedDateGenerator.newDate())
+        .thenReturn(Date.from(Instant.parse("2023-05-24T19:33:06.472Z")));
+
+    sut =
+        new BulkUploadResultsToFhir(
+            resultsUploaderCachingService,
+            gitProperties,
+            mockedUUIDGenerator,
+            mockedDateGenerator,
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
+
+    InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid-with-comments.csv");
+
+    var serializedBundles =
+        sut.convertToFhirBundles(
+            csvStream, UUID.fromString("12345000-0000-0000-0000-000000000000"));
+    String actualBundles = String.join("\n", serializedBundles);
+
+    InputStream jsonStream = getJsonStream("testResultUpload/fhir-for-csv-with-comments.ndjson");
+    String expectedBundleString = inputStreamToString(jsonStream);
+
+    assertThat(actualBundles).isEqualToIgnoringWhitespace(expectedBundleString);
+  }
+
+  @Test
   void convertExistingCsv_matchesFhir_with_flu_only() throws IOException {
     // Mock random UUIDs
     var mockedUUIDGenerator = mock(UUIDGenerator.class);
@@ -424,7 +458,14 @@ public class BulkUploadResultsToFhirTest {
     var endTime = System.currentTimeMillis();
     var elapsedTime = endTime - startTime;
 
-    assertTrue(elapsedTime < 20000, "Bundle processing took more than 20 seconds for 5000 rows");
+    // The processing is threaded so the elapsed time is closely tied to available CPU cores. GitHub
+    // action runners
+    // will require more time because they have less cores than our dev or prod machines.
+    assertTrue(
+        elapsedTime < 30000,
+        "Bundle processing took more than 30 seconds for 5000 rows. It took "
+            + elapsedTime
+            + " milliseconds.");
   }
 
   @Test

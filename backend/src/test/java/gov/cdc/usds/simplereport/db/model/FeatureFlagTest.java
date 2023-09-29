@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /** ToDo Remove public modifier from this test once Spring for GraphQL migration is done */
-public class FeatureFlagTest {
+class FeatureFlagTest {
   private FeatureFlag featureFlag = new FeatureFlag();
 
   @Test

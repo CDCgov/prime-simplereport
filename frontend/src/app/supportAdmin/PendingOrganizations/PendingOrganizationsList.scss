@@ -27,22 +27,6 @@
   background-color: #fff;
 }
 
-.verify-button-container {
-  text-align: right;
-}
-
-.delete-modal-header {
-  font-weight: bold;
-}
-
-.delete-modal-header:first-child {
-  margin-top: 2rem;
-}
-
-.delete-modal-info {
-  margin-bottom: 1rem;
-}
-
 .sr-pending-org-delete-button > svg > path {
   fill: #005ea2;
 }
@@ -53,4 +37,8 @@
 
 .sr-pending-org-delete-button:hover {
   cursor: pointer;
+}
+
+.word-break-break-word {
+  word-break: break-word;
 }

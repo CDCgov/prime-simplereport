@@ -5036,3 +5036,28 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'RSV';
+  - changeSet:
+      id: add-notes-to-person-table
+      author: zedd@skylight.digital
+      comment: Add notes and person table
+      changes:
+        - tagDatabase:
+            tag: add-notes-to-person-table
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: notes
+                  type: text
+  - changeSet:
+      id: remove-multiplex-flag
+      author: boban@skylight.digital
+      comment: remove multiplex flag in table
+      changes:
+        - tagDatabase:
+            tag: remove-multiplex-flag
+        - delete:
+            schemaName: ${database.defaultSchemaName}
+            tableName: feature_flag
+            where: name='multiplexEnabled'
+      rollback: ""

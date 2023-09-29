@@ -54,8 +54,7 @@ public class OrganizationMutationResolver {
             facilityInfo.getAddress().getStreetTwo(),
             facilityInfo.getAddress().getCity(),
             facilityInfo.getAddress().getState(),
-            facilityInfo.getAddress().getZipCode(),
-            addressValidationService.FACILITY_DISPLAY_NAME);
+            facilityInfo.getAddress().getZipCode());
     StreetAddress providerAddress =
         new StreetAddress(
             parseString(facilityInfo.getOrderingProvider().getStreet()),
@@ -95,8 +94,7 @@ public class OrganizationMutationResolver {
             facilityInfo.getAddress().getStreetTwo(),
             facilityInfo.getAddress().getCity(),
             facilityInfo.getAddress().getState(),
-            facilityInfo.getAddress().getZipCode(),
-            addressValidationService.FACILITY_DISPLAY_NAME);
+            facilityInfo.getAddress().getZipCode());
 
     PersonName providerName =
         new PersonName(

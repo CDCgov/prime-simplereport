@@ -40,6 +40,10 @@
       margin-left: 0;
       padding: 0;
     }
+
+    .usa-form-group--error {
+      padding-left: units(1);
+    }
   }
 }
 
@@ -1188,4 +1192,17 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 abbr.usa-hint.usa-hint--required {
   text-decoration: none;
+}
+
+.manage-user-form__site-admin,
+.create-user-form__org-admin {
+  .usa-form-group {
+    .usa-hint {
+      font-style: italic;
+    }
+
+    .usa-legend {
+      font-weight: bold;
+    }
+  }
 }

@@ -276,10 +276,12 @@ public class TestDataFactory {
             "not_hispanic",
             null,
             "male",
+            "male",
             false,
             false,
             language,
-            TestResultDeliveryPreference.SMS);
+            TestResultDeliveryPreference.SMS,
+            "Galactic wordsmith");
     personRepository.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, "216-555-1234");
     phoneNumberRepository.save(pn);
@@ -308,10 +310,12 @@ public class TestDataFactory {
             "not_hispanic",
             null,
             "male",
+            "male",
             false,
             false,
             "English",
-            TestResultDeliveryPreference.SMS);
+            TestResultDeliveryPreference.SMS,
+            "Outlandish mobile communicator");
     personRepository.save(p);
     PhoneNumber pn = new PhoneNumber(p, PhoneType.MOBILE, telephone);
     phoneNumberRepository.save(pn);
@@ -340,10 +344,12 @@ public class TestDataFactory {
             "not_hispanic",
             null,
             "male",
+            "male",
             false,
             false,
             "English",
-            TestResultDeliveryPreference.SMS);
+            TestResultDeliveryPreference.SMS,
+            "Nashville-born spacefarer");
     return personRepository.save(p);
   }
 

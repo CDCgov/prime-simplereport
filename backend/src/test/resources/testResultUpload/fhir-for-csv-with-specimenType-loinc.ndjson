@@ -396,6 +396,32 @@
           {
             "reference": "Observation/7e5bdd49-f9ca-3c9c-b379-19343eac04be"
           }
+        ],
+        "note": [
+          {
+            "extension": [
+              {
+                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "extension": [
+                        {
+                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
+                          "valueString": "identifier"
+                        }
+                      ],
+                      "system": "HL70364",
+                      "version": "2.5.1",
+                      "code": "RE",
+                      "display": "Remark"
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": "Test Comment"
+          }
         ]
       }
     },
@@ -950,6 +976,32 @@
         "supportingInfo": [
           {
             "reference": "Observation/7e5bdd49-f9ca-3c9c-b379-19343eac04be"
+          }
+        ],
+        "note": [
+          {
+            "extension": [
+              {
+                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "extension": [
+                        {
+                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
+                          "valueString": "identifier"
+                        }
+                      ],
+                      "system": "HL70364",
+                      "version": "2.5.1",
+                      "code": "RE",
+                      "display": "Remark"
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": "Test Comment"
           }
         ]
       }

@@ -21,8 +21,8 @@
   "dependencies": {
     "@azure/functions": "^3.5.1",
     "@azure/storage-queue": "^12.6.0",
-    "applicationinsights": "^2.7.0",
-    "csv-stringify": "^6.4.0",
+    "applicationinsights": "^2.7.3",
+    "csv-stringify": "^6.4.2",
     "jsonwebtoken": "^9.0.1",
     "node-fetch": "^2.7.0"
   },
@@ -34,14 +34,14 @@
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "azure-functions-core-tools": "^4.0.5274",
-    "eslint": "^8.27.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint": "^8.50.0",
+    "eslint-config-prettier": "^9.0.0",
     "jest": "^28.1.3",
     "jest-fetch-mock": "^3.0.3",
-    "prettier": "3.0.0",
+    "prettier": "3.0.3",
     "rimraf": "^3.0.0",
     "ts-jest": "^28.0.8",
-    "typescript": "^4.7.4"
+    "typescript": "^5.2.2"
   },
   "eslintConfig": {
     "parser": "@typescript-eslint/parser",

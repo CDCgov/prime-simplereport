@@ -28,9 +28,10 @@ public class FeatureFlagsConfig {
 
   private void flagMapping(String flagName, Boolean flagValue) {
     switch (flagName) {
-      case "multiplexEnabled" -> featureFlagProperties.setMultiplexEnabled(flagValue);
       case "hivEnabled" -> featureFlagProperties.setHivEnabled(flagValue);
       case "rsvEnabled" -> featureFlagProperties.setRsvEnabled(flagValue);
+      case "singleEntryRsvEnabled" -> featureFlagProperties.setSingleEntryRsvEnabled(flagValue);
+      case "agnosticEnabled" -> featureFlagProperties.setAgnosticEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }

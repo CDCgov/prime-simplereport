@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.Getter;
 import org.hibernate.annotations.Type;
 
 /**
@@ -43,23 +44,27 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   // NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
   // this is common for imported patients.
+  @Getter
   @ManyToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "facility_id")
   @JsonIgnore // do not serialize to TestEvents
   private Facility facility;
 
-  @Column private String lookupId;
+  @Getter @Column private String lookupId;
 
   @Column(nullable = false)
   @Embedded
   @JsonUnwrapped
   private PersonName nameInfo;
 
-  @Column private LocalDate birthDate;
+  @Getter @Column private LocalDate birthDate;
   @Embedded private StreetAddress address;
-  @Column private String country;
-  @Column private String gender;
+  @Getter @Column private String country;
+  @Getter @Column private String gender;
+  @Getter @Column private String genderIdentity;
+  @Getter @Column private String notes;
 
+  @Getter
   @Column
   @JsonDeserialize(converter = RaceArrayConverter.class)
   private String race;
@@ -68,19 +73,22 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
    * Tribal Affiliation maps to this data set:
    * https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/tribal.valuesets
    */
+  @Getter
   @Type(JsonBinaryType.class)
   @Column
   private List<String> tribalAffiliation;
 
-  @Column private String ethnicity;
+  @Getter @Column private String ethnicity;
 
   /**
    * Note that for the purposes of all upserts, the <em>first</em> phone number in a
    * List<PhoneNumber> is considered to be the primary
    */
+  @Getter
   @OneToOne(fetch = FetchType.LAZY)
   private PhoneNumber primaryPhone;
 
+  @Getter
   @OneToMany(mappedBy = "person", fetch = FetchType.LAZY)
   private List<PhoneNumber> phoneNumbers;
 
@@ -90,18 +98,16 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @Column
   private List<String> emails = new ArrayList<>();
 
-  @Column(nullable = true)
-  private Boolean employedInHealthcare;
+  @Getter @Column private Boolean employedInHealthcare;
 
+  @Getter
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private PersonRole role;
 
-  @Column(nullable = true)
-  private Boolean residentCongregateSetting;
+  @Getter @Column private Boolean residentCongregateSetting;
 
-  @Column(nullable = true)
-  private String preferredLanguage;
+  @Getter @Column private String preferredLanguage;
 
   @Type(PostgreSQLEnumType.class)
   @Enumerated(EnumType.STRING)
@@ -135,10 +141,12 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String ethnicity,
       List<String> tribalAffiliation,
       String gender,
+      String genderIdentity,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDeliveryPreference) {
+      TestResultDeliveryPreference testResultDeliveryPreference,
+      String notes) {
     super(organization);
     this.lookupId = lookupId;
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
@@ -151,10 +159,12 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.ethnicity = ethnicity;
     this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
+    this.genderIdentity = genderIdentity;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
     this.preferredLanguage = preferredLanguage;
     this.testResultDeliveryPreference = testResultDeliveryPreference;
+    this.notes = notes;
   }
 
   public Person(
@@ -194,10 +204,12 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
         ethnicity,
         tribalAffiliation,
         gender,
+        null,
         residentCongregateSetting,
         employedInHealthcare,
         preferredLanguage,
-        testResultDeliveryPreference);
+        testResultDeliveryPreference,
+        null);
     this.facility = facility;
   }
 
@@ -259,10 +271,12 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String ethnicity,
       List<String> tribalAffiliation,
       String gender,
+      String genderIdentity,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDeliveryPreference) {
+      TestResultDeliveryPreference testResultDeliveryPreference,
+      String notes) {
     this.lookupId = lookupId;
     this.nameInfo.setFirstName(firstName);
     this.nameInfo.setMiddleName(middleName);
@@ -277,24 +291,18 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.ethnicity = ethnicity;
     this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
+    this.genderIdentity = genderIdentity;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
     this.preferredLanguage = preferredLanguage;
     if (testResultDeliveryPreference != null) {
       this.testResultDeliveryPreference = testResultDeliveryPreference;
     }
-  }
-
-  public Facility getFacility() {
-    return facility;
+    this.notes = notes;
   }
 
   public void setFacility(Facility f) {
     facility = f;
-  }
-
-  public PhoneNumber getPrimaryPhone() {
-    return this.primaryPhone;
   }
 
   public void setPrimaryPhone(PhoneNumber phoneNumber) {
@@ -303,10 +311,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public void setPrimaryEmail(String email) {
     this.email = email;
-  }
-
-  public String getLookupId() {
-    return lookupId;
   }
 
   public PersonName getNameInfo() {
@@ -329,16 +333,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     return nameInfo.getSuffix();
   }
 
-  public LocalDate getBirthDate() {
-    return birthDate;
-  }
-
   public StreetAddress getAddress() {
     return address;
-  }
-
-  public String getCountry() {
-    return country;
   }
 
   public String getTelephone() {
@@ -347,10 +343,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       return "";
     }
     return pn.getNumber();
-  }
-
-  public List<PhoneNumber> getPhoneNumbers() {
-    return phoneNumbers;
   }
 
   public String getEmail() {
@@ -367,30 +359,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     }
 
     return emails.stream().filter(Objects::nonNull).collect(Collectors.toList());
-  }
-
-  public String getRace() {
-    return race;
-  }
-
-  public String getEthnicity() {
-    return ethnicity;
-  }
-
-  public List<String> getTribalAffiliation() {
-    return tribalAffiliation;
-  }
-
-  public String getGender() {
-    return gender;
-  }
-
-  public Boolean getResidentCongregateSetting() {
-    return residentCongregateSetting;
-  }
-
-  public Boolean getEmployedInHealthcare() {
-    return employedInHealthcare;
   }
 
   @JsonIgnore
@@ -433,14 +401,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       return "";
     }
     return address.getCounty();
-  }
-
-  public PersonRole getRole() {
-    return role;
-  }
-
-  public String getPreferredLanguage() {
-    return preferredLanguage;
   }
 
   /**

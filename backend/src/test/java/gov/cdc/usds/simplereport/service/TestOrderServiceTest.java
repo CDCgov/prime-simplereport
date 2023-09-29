@@ -145,9 +145,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "English",
+            null,
             null);
 
     _service.addPatientToQueue(
@@ -215,9 +217,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "English",
+            null,
             null);
 
     _service.addPatientToQueue(
@@ -293,10 +297,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "Spanish",
-            null);
+            null,
+            "Space-faring maverick");
 
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
@@ -328,10 +334,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "German",
-            null);
+            null,
+            "success depends on Fred's access");
 
     UUID facilityId = facility.getInternalId();
     Map<String, Boolean> symptoms = Collections.emptyMap();
@@ -376,9 +384,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "French",
+            null,
             null);
     _personService.updateTestResultDeliveryPreference(
         p.getInternalId(), TestResultDeliveryPreference.SMS);
@@ -424,9 +434,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "Spanish",
+            null,
             null);
     _service.addPatientToQueue(
         facility.getInternalId(), p, "", Collections.emptyMap(), LocalDate.of(1865, 12, 25), false);
@@ -472,9 +484,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "English",
+            null,
             null);
     Person p2 =
         _personService.addPatient(
@@ -494,9 +508,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "Spanish",
+            null,
             null);
 
     _service.addPatientToQueue(
@@ -1343,9 +1359,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
+            null,
             false,
             false,
             "Spanish",
+            null,
             null);
 
     _service.addPatientToQueue(
@@ -1376,9 +1394,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               null,
               null,
               null,
+              null,
               false,
               false,
               "French",
+              null,
               null);
 
       _service.addPatientToQueue(

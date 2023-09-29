@@ -339,10 +339,12 @@ public class PersonService {
       String ethnicity,
       String tribalAffiliation,
       String gender,
+      String genderIdentity,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery) {
+      TestResultDeliveryPreference testResultDelivery,
+      String notes) {
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -360,10 +362,12 @@ public class PersonService {
             ethnicity,
             Arrays.asList(tribalAffiliation),
             gender,
+            genderIdentity,
             residentCongregateSetting,
             employedInHealthcare,
             preferredLanguage,
-            testResultDelivery);
+            testResultDelivery,
+            notes);
     updatePersonFacility(newPatient, facilityId);
     Person savedPerson = _repo.save(newPatient);
     updatePhoneNumbers(newPatient, phoneNumbers);
@@ -388,10 +392,12 @@ public class PersonService {
       String ethnicity,
       String tribalAffiliation,
       String gender,
+      String genderIdentity,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery) {
+      TestResultDeliveryPreference testResultDelivery,
+      String notes) {
     Person newPatient =
         new Person(
             link.getOrganization(),
@@ -409,10 +415,12 @@ public class PersonService {
             ethnicity,
             Arrays.asList(tribalAffiliation),
             gender,
+            genderIdentity,
             residentCongregateSetting,
             employedInHealthcare,
             preferredLanguage,
-            testResultDelivery);
+            testResultDelivery,
+            notes);
     newPatient.setFacility(link.getFacility());
     Person savedPerson = _repo.save(newPatient);
     updatePhoneNumbers(newPatient, phoneNumbers);
@@ -504,10 +512,12 @@ public class PersonService {
       String ethnicity,
       String tribalAffiliation,
       String gender,
+      String genderIdentity,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare,
       String preferredLanguage,
-      TestResultDeliveryPreference testResultDelivery) {
+      TestResultDeliveryPreference testResultDelivery,
+      String notes) {
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -524,10 +534,12 @@ public class PersonService {
         ethnicity,
         Arrays.asList(tribalAffiliation),
         gender,
+        genderIdentity,
         residentCongregateSetting,
         employedInHealthcare,
         preferredLanguage,
-        testResultDelivery);
+        testResultDelivery,
+        notes);
 
     if (!emails.isEmpty()) {
       patientToUpdate.setPrimaryEmail(emails.get(0));

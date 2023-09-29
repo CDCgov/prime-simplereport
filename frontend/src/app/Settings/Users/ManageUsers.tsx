@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { ApolloQueryResult } from "@apollo/client";
 
 import Button from "../../commonComponents/Button/Button";
@@ -7,7 +7,7 @@ import { showSuccess } from "../../utils/srToast";
 import reload from "../../utils/reload";
 import {
   GetUsersAndStatusQuery,
-  useGetUserLazyQuery,
+  useGetUserQuery,
   UserPermission,
 } from "../../../generated/graphql";
 import UserHeading from "../../commonComponents/UserDetails/UserHeading";
@@ -122,15 +122,13 @@ const ManageUsers: React.FC<Props> = ({
     sortedUsers?.[0]
   );
 
-  const [queryUserWithPermissions] = useGetUserLazyQuery({
-    variables: { id: activeUser ? activeUser.id : loggedInUser.id },
+  const { refetch: refetchUser } = useGetUserQuery({
+    variables: { id: activeUser?.id },
     fetchPolicy: "no-cache",
+    skip: !activeUser?.id,
+    notifyOnNetworkStatusChange: true,
     onCompleted: (data) => updateUserWithPermissions(data.user),
   });
-
-  useEffect(() => {
-    queryUserWithPermissions();
-  }, [activeUser, queryUserWithPermissions]);
 
   // only updates the local state
   const updateLocalUserState: UpdateUser = (key, value) => {
@@ -183,7 +181,6 @@ const ManageUsers: React.FC<Props> = ({
       },
     })
       .then(async () => {
-        await getUsers();
         updateIsUserEdited(false);
         const fullName = displayFullName(
           userWithPermissions?.firstName,
@@ -262,7 +259,8 @@ const ManageUsers: React.FC<Props> = ({
       });
       const fullName = displayFullName(firstName, "", lastName);
       showSuccess("", `User name changed to ${fullName}`);
-      await queryUserWithPermissions();
+      refetchUser();
+      await getUsers();
     } catch (e: any) {
       setError(e);
     }
@@ -277,8 +275,7 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
       showSuccess("", `User email address changed to ${emailAddress}`);
-      await queryUserWithPermissions();
-      await getUsers();
+      await refetchUser();
     } catch (e: any) {}
   };
 
@@ -333,9 +330,7 @@ const ManageUsers: React.FC<Props> = ({
       );
 
       const nextUser: LimitedUser =
-        sortedUsers[0].id === userId && sortedUsers.length > 1
-          ? sortedUsers[1]
-          : sortedUsers[0];
+        sortedUsers[0].id === userId ? sortedUsers[1] : sortedUsers[0];
 
       await getUsers();
       updateActiveUser(nextUser);
@@ -438,7 +433,7 @@ const ManageUsers: React.FC<Props> = ({
               >
                 <div
                   role="tablist"
-                  aria-owns={`user-information-tab-id facility-access-tab-id`}
+                  aria-owns={`userinformation-tab facility-access-tab-id`}
                   className="usa-nav__secondary-links prime-nav usa-list"
                 >
                   <div
@@ -449,7 +444,7 @@ const ManageUsers: React.FC<Props> = ({
                     }`}
                   >
                     <button
-                      id={`user-information-tab-id`}
+                      id={`userinformation-tab`}
                       role="tab"
                       className="usa-button--unstyled text-ink text-no-underline"
                       onClick={() => setNavItemSelected("User information")}

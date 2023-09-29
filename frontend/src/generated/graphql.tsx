@@ -150,6 +150,12 @@ export type FacilityStats = {
   usersSingleAccessCount?: Maybe<Scalars["Int"]>;
 };
 
+export type FeatureFlag = {
+  __typename?: "FeatureFlag";
+  name: Scalars["String"];
+  value: Scalars["Boolean"];
+};
+
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
   errorType: Scalars["String"];
@@ -212,6 +218,7 @@ export type Mutation = {
   submitQueueItem?: Maybe<AddTestResultResponse>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
+  updateFeatureFlag?: Maybe<FeatureFlag>;
   updateOrganization?: Maybe<Scalars["String"]>;
   updatePatient?: Maybe<Patient>;
   updateRegistrationLink?: Maybe<Scalars["String"]>;
@@ -238,9 +245,11 @@ export type MutationAddPatientArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
+  notes?: InputMaybe<Scalars["String"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
   race?: InputMaybe<Scalars["String"]>;
@@ -441,6 +450,11 @@ export type MutationUpdateFacilityArgs = {
   facilityInfo: UpdateFacilityInput;
 };
 
+export type MutationUpdateFeatureFlagArgs = {
+  name: Scalars["String"];
+  value: Scalars["Boolean"];
+};
+
 export type MutationUpdateOrganizationArgs = {
   type: Scalars["String"];
 };
@@ -457,9 +471,11 @@ export type MutationUpdatePatientArgs = {
   facilityId?: InputMaybe<Scalars["ID"]>;
   firstName: Scalars["String"];
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   lastName: Scalars["String"];
   lookupId?: InputMaybe<Scalars["String"]>;
   middleName?: InputMaybe<Scalars["String"]>;
+  notes?: InputMaybe<Scalars["String"]>;
   patientId: Scalars["ID"];
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
@@ -571,6 +587,7 @@ export type Patient = {
   facility?: Maybe<Facility>;
   firstName?: Maybe<Scalars["String"]>;
   gender?: Maybe<Scalars["String"]>;
+  genderIdentity?: Maybe<Scalars["String"]>;
   id: Scalars["ID"];
   /** @deprecated alias for 'id' */
   internalId: Scalars["ID"];
@@ -580,6 +597,7 @@ export type Patient = {
   lookupId?: Maybe<Scalars["String"]>;
   middleName?: Maybe<Scalars["String"]>;
   name?: Maybe<NameInfo>;
+  notes?: Maybe<Scalars["String"]>;
   phoneNumbers?: Maybe<Array<Maybe<PhoneNumber>>>;
   preferredLanguage?: Maybe<Scalars["String"]>;
   race?: Maybe<Scalars["String"]>;
@@ -1464,6 +1482,7 @@ export type AddPatientMutationVariables = Exact<{
   employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+  notes?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type AddPatientMutation = {
@@ -1513,10 +1532,12 @@ export type GetPatientDetailsQuery = {
     ethnicity?: string | null;
     tribalAffiliation?: Array<string | null> | null;
     gender?: string | null;
+    genderIdentity?: string | null;
     residentCongregateSetting?: boolean | null;
     employedInHealthcare?: boolean | null;
     preferredLanguage?: string | null;
     testResultDelivery?: TestResultDeliveryPreference | null;
+    notes?: string | null;
     phoneNumbers?: Array<{
       __typename?: "PhoneNumber";
       type?: PhoneType | null;
@@ -1551,10 +1572,12 @@ export type UpdatePatientMutationVariables = Exact<{
   ethnicity?: InputMaybe<Scalars["String"]>;
   tribalAffiliation?: InputMaybe<Scalars["String"]>;
   gender?: InputMaybe<Scalars["String"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]>;
   residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
   employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
   preferredLanguage?: InputMaybe<Scalars["String"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
+  notes?: InputMaybe<Scalars["String"]>;
 }>;
 
 export type UpdatePatientMutation = {
@@ -1719,6 +1742,8 @@ export type GetFacilitiesByOrgIdQuery = {
   __typename?: "Query";
   organization?: {
     __typename?: "Organization";
+    id: string;
+    externalId: string;
     name: string;
     type: string;
     facilities: Array<{
@@ -1774,6 +1799,7 @@ export type FindUserByEmailQuery = {
     isDeleted?: boolean | null;
     organization?: {
       __typename?: "Organization";
+      id: string;
       testingFacility: Array<{
         __typename?: "Facility";
         id: string;
@@ -1795,6 +1821,30 @@ export type UndeleteUserMutation = {
     email: string;
     isDeleted?: boolean | null;
   } | null;
+};
+
+export type UpdateUserPrivilegesAndGroupAccessMutationVariables = Exact<{
+  username: Scalars["String"];
+  orgExternalId: Scalars["String"];
+  accessAllFacilities: Scalars["Boolean"];
+  role: Role;
+  facilities?: InputMaybe<
+    Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>
+  >;
+}>;
+
+export type UpdateUserPrivilegesAndGroupAccessMutation = {
+  __typename?: "Mutation";
+  updateUserPrivilegesAndGroupAccess: { __typename?: "User"; id: string };
+};
+
+export type GetTestResultCountByOrgQueryVariables = Exact<{
+  orgId: Scalars["ID"];
+}>;
+
+export type GetTestResultCountByOrgQuery = {
+  __typename?: "Query";
+  testResultsCount?: number | null;
 };
 
 export type GetPendingOrganizationsQueryVariables = Exact<{
@@ -4181,6 +4231,7 @@ export const AddPatientDocument = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -4208,6 +4259,7 @@ export const AddPatientDocument = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
+      notes: $notes
     ) {
       internalId
       facility {
@@ -4259,6 +4311,7 @@ export type AddPatientMutationFn = Apollo.MutationFunction<
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'
  *      testResultDelivery: // value for 'testResultDelivery'
+ *      notes: // value for 'notes'
  *   },
  * });
  */
@@ -4361,6 +4414,7 @@ export const GetPatientDetailsDocument = gql`
       ethnicity
       tribalAffiliation
       gender
+      genderIdentity
       residentCongregateSetting
       employedInHealthcare
       preferredLanguage
@@ -4368,6 +4422,7 @@ export const GetPatientDetailsDocument = gql`
         id
       }
       testResultDelivery
+      notes
     }
   }
 `;
@@ -4446,10 +4501,12 @@ export const UpdatePatientDocument = gql`
     $ethnicity: String
     $tribalAffiliation: String
     $gender: String
+    $genderIdentity: String
     $residentCongregateSetting: Boolean
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -4474,10 +4531,12 @@ export const UpdatePatientDocument = gql`
       ethnicity: $ethnicity
       tribalAffiliation: $tribalAffiliation
       gender: $gender
+      genderIdentity: $genderIdentity
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
+      notes: $notes
     ) {
       internalId
     }
@@ -4523,10 +4582,12 @@ export type UpdatePatientMutationFn = Apollo.MutationFunction<
  *      ethnicity: // value for 'ethnicity'
  *      tribalAffiliation: // value for 'tribalAffiliation'
  *      gender: // value for 'gender'
+ *      genderIdentity: // value for 'genderIdentity'
  *      residentCongregateSetting: // value for 'residentCongregateSetting'
  *      employedInHealthcare: // value for 'employedInHealthcare'
  *      preferredLanguage: // value for 'preferredLanguage'
  *      testResultDelivery: // value for 'testResultDelivery'
+ *      notes: // value for 'notes'
  *   },
  * });
  */
@@ -5172,6 +5233,8 @@ export type GetAllOrganizationsQueryResult = Apollo.QueryResult<
 export const GetFacilitiesByOrgIdDocument = gql`
   query GetFacilitiesByOrgId($orgId: ID!) {
     organization(id: $orgId) {
+      id
+      externalId
       name
       type
       facilities {
@@ -5355,6 +5418,7 @@ export const FindUserByEmailDocument = gql`
       email
       status
       organization {
+        id
         testingFacility {
           id
           name
@@ -5467,6 +5531,130 @@ export type UndeleteUserMutationResult =
 export type UndeleteUserMutationOptions = Apollo.BaseMutationOptions<
   UndeleteUserMutation,
   UndeleteUserMutationVariables
+>;
+export const UpdateUserPrivilegesAndGroupAccessDocument = gql`
+  mutation updateUserPrivilegesAndGroupAccess(
+    $username: String!
+    $orgExternalId: String!
+    $accessAllFacilities: Boolean!
+    $role: Role!
+    $facilities: [ID]
+  ) {
+    updateUserPrivilegesAndGroupAccess(
+      username: $username
+      orgExternalId: $orgExternalId
+      accessAllFacilities: $accessAllFacilities
+      facilities: $facilities
+      role: $role
+    ) {
+      id
+    }
+  }
+`;
+export type UpdateUserPrivilegesAndGroupAccessMutationFn =
+  Apollo.MutationFunction<
+    UpdateUserPrivilegesAndGroupAccessMutation,
+    UpdateUserPrivilegesAndGroupAccessMutationVariables
+  >;
+
+/**
+ * __useUpdateUserPrivilegesAndGroupAccessMutation__
+ *
+ * To run a mutation, you first call `useUpdateUserPrivilegesAndGroupAccessMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useUpdateUserPrivilegesAndGroupAccessMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [updateUserPrivilegesAndGroupAccessMutation, { data, loading, error }] = useUpdateUserPrivilegesAndGroupAccessMutation({
+ *   variables: {
+ *      username: // value for 'username'
+ *      orgExternalId: // value for 'orgExternalId'
+ *      accessAllFacilities: // value for 'accessAllFacilities'
+ *      role: // value for 'role'
+ *      facilities: // value for 'facilities'
+ *   },
+ * });
+ */
+export function useUpdateUserPrivilegesAndGroupAccessMutation(
+  baseOptions?: Apollo.MutationHookOptions<
+    UpdateUserPrivilegesAndGroupAccessMutation,
+    UpdateUserPrivilegesAndGroupAccessMutationVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useMutation<
+    UpdateUserPrivilegesAndGroupAccessMutation,
+    UpdateUserPrivilegesAndGroupAccessMutationVariables
+  >(UpdateUserPrivilegesAndGroupAccessDocument, options);
+}
+export type UpdateUserPrivilegesAndGroupAccessMutationHookResult = ReturnType<
+  typeof useUpdateUserPrivilegesAndGroupAccessMutation
+>;
+export type UpdateUserPrivilegesAndGroupAccessMutationResult =
+  Apollo.MutationResult<UpdateUserPrivilegesAndGroupAccessMutation>;
+export type UpdateUserPrivilegesAndGroupAccessMutationOptions =
+  Apollo.BaseMutationOptions<
+    UpdateUserPrivilegesAndGroupAccessMutation,
+    UpdateUserPrivilegesAndGroupAccessMutationVariables
+  >;
+export const GetTestResultCountByOrgDocument = gql`
+  query getTestResultCountByOrg($orgId: ID!) {
+    testResultsCount(orgId: $orgId)
+  }
+`;
+
+/**
+ * __useGetTestResultCountByOrgQuery__
+ *
+ * To run a query within a React component, call `useGetTestResultCountByOrgQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTestResultCountByOrgQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTestResultCountByOrgQuery({
+ *   variables: {
+ *      orgId: // value for 'orgId'
+ *   },
+ * });
+ */
+export function useGetTestResultCountByOrgQuery(
+  baseOptions: Apollo.QueryHookOptions<
+    GetTestResultCountByOrgQuery,
+    GetTestResultCountByOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useQuery<
+    GetTestResultCountByOrgQuery,
+    GetTestResultCountByOrgQueryVariables
+  >(GetTestResultCountByOrgDocument, options);
+}
+export function useGetTestResultCountByOrgLazyQuery(
+  baseOptions?: Apollo.LazyQueryHookOptions<
+    GetTestResultCountByOrgQuery,
+    GetTestResultCountByOrgQueryVariables
+  >
+) {
+  const options = { ...defaultOptions, ...baseOptions };
+  return Apollo.useLazyQuery<
+    GetTestResultCountByOrgQuery,
+    GetTestResultCountByOrgQueryVariables
+  >(GetTestResultCountByOrgDocument, options);
+}
+export type GetTestResultCountByOrgQueryHookResult = ReturnType<
+  typeof useGetTestResultCountByOrgQuery
+>;
+export type GetTestResultCountByOrgLazyQueryHookResult = ReturnType<
+  typeof useGetTestResultCountByOrgLazyQuery
+>;
+export type GetTestResultCountByOrgQueryResult = Apollo.QueryResult<
+  GetTestResultCountByOrgQuery,
+  GetTestResultCountByOrgQueryVariables
 >;
 export const GetPendingOrganizationsDocument = gql`
   query GetPendingOrganizations {

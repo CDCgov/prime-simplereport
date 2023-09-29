@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import org.junit.jupiter.api.Test;
 
-public class FlexibleDateScalarTypeTest {
+class FlexibleDateScalarTypeTest {
   private final FlexibleDateCoercion converter = new FlexibleDateCoercion();
 
   @Test
