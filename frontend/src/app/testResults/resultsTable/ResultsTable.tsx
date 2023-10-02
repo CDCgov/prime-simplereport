@@ -30,31 +30,6 @@ const sortTestResults = (results: MultiplexResults) => {
   );
 };
 
-/*
-export const getEnrichedMultiplexResultsFromTestEvent = (
-  results: Result[]
-): EnrichedMultiplexResult[] => {
-  const enrichedMultiplexResults: EnrichedMultiplexResult[] = [];
-
-  if (!results || !Array.isArray(results)) {
-    return enrichedMultiplexResults;
-  }
-
-  for (const result of results) {
-    for (const r of sortTestResults(result.results as MultiplexResults)) {
-      const enrichedMultiplexResult = {
-        ...result,
-        ...r,
-      };
-
-      enrichedMultiplexResults.push(enrichedMultiplexResult);
-    }
-  }
-
-  return enrichedMultiplexResults;
-};
- */
-
 export function formatTestResultAriaLabel(result: Result) {
   const patientFullName = displayFullName(
     result.patient?.firstName,

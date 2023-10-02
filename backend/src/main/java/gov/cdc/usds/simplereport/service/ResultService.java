@@ -50,6 +50,8 @@ public class ResultService {
       Join<Result, TestEvent> testEventJoin = root.join(Result_.testEvent);
       Join<TestEvent, Person> personJoin = testEventJoin.join(TestEvent_.patient);
       Predicate p = cb.conjunction();
+
+      // TODO: order alphabetically by disease name for a given id
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
       query.distinct(true);
 
@@ -62,6 +64,7 @@ public class ResultService {
                     facilityId));
       } else {
         final UUID finalOrgId = organizationService.getCurrentOrganization().getInternalId();
+
         p =
             cb.and(
                 p,
@@ -165,13 +168,10 @@ public class ResultService {
     PageRequest pageRequest =
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
-    var ok =
-        resultRepository.findAll(
-            buildResultSearchFilter(
-                facilityId, patientId, result, role, supportedDisease, startDate, endDate),
-            pageRequest);
-
-    return ok;
+    return resultRepository.findAll(
+        buildResultSearchFilter(
+            facilityId, patientId, result, role, supportedDisease, startDate, endDate),
+        pageRequest);
   }
 
   public TestEvent addResultsToTestEvent(TestEvent testEvent, Collection<Result> results) {

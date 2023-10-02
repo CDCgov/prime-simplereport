@@ -302,6 +302,7 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+
   if (textModalId) {
     return (
       <TestResultTextModal
@@ -313,6 +314,7 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+
   if (emailModalTestResultId) {
     return (
       <EmailTestResultModal
@@ -324,13 +326,14 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+
   if (markCorrectionId) {
     return (
       <TestResultCorrectionModal
         testResultId={markCorrectionId}
         isFacilityDeleted={
           data?.resultsPage?.content?.find(
-            (content) => content?.internalId === markCorrectionId
+            (content) => content?.id === markCorrectionId
           )?.facility?.isDeleted ?? false
         }
         closeModal={() => {
@@ -340,6 +343,7 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+
   if (detailsModalId) {
     return (
       <TestResultDetailsModal
@@ -681,7 +685,6 @@ const TestResultsList = () => {
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });
-  console.log(JSON.stringify(results.data, null, 4));
 
   if (!activeFacilityId) {
     return <div>"No facility selected"</div>;
@@ -691,7 +694,7 @@ const TestResultsList = () => {
     throw results.error;
   }
 
-  const totalEntries = results?.data?.resultsPage?.content?.length || 0;
+  const totalEntries = results?.data?.resultsPage?.totalElements || 0;
 
   return (
     <DetachedTestResultsList
