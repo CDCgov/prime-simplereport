@@ -48,11 +48,15 @@ AppServiceConsoleLogs
     operator  = "GreaterThan"
     threshold = 2
   }
+<<<<<<< HEAD
   lifecycle {
     ignore_changes = [
       tags
     ]
   }
+=======
+  tags = var.cdc_tags
+>>>>>>> 0278ebe75 (feat: add required CDC tags to various terraform resources for tracking and compliance)
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
@@ -103,11 +107,15 @@ requests
     operator  = "GreaterThan"
     threshold = 0
   }
+<<<<<<< HEAD
   lifecycle {
     ignore_changes = [
       tags
     ]
   }
+=======
+  tags = var.cdc_tags
+>>>>>>> 0278ebe75 (feat: add required CDC tags to various terraform resources for tracking and compliance)
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "account_request_failures" {
@@ -144,11 +152,15 @@ ${local.skip_on_weekends}
     operator  = "GreaterThan"
     threshold = 4
   }
+<<<<<<< HEAD
   lifecycle {
     ignore_changes = [
       tags
     ]
   }
+=======
+  tags = var.cdc_tags
+>>>>>>> 0278ebe75 (feat: add required CDC tags to various terraform resources for tracking and compliance)
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "experian_auth_failures" {
@@ -185,11 +197,15 @@ ${local.skip_on_weekends}
     operator  = "GreaterThan"
     threshold = 0
   }
+<<<<<<< HEAD
   lifecycle {
     ignore_changes = [
       tags
     ]
   }
+=======
+  tags = var.cdc_tags
+>>>>>>> 0278ebe75 (feat: add required CDC tags to various terraform resources for tracking and compliance)
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "all_experian_auth_failures" {
@@ -226,11 +242,15 @@ ${local.skip_on_weekends}
     operator  = "GreaterThan"
     threshold = 2
   }
+<<<<<<< HEAD
   lifecycle {
     ignore_changes = [
       tags
     ]
   }
+=======
+  tags = var.cdc_tags
+>>>>>>> 0278ebe75 (feat: add required CDC tags to various terraform resources for tracking and compliance)
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary" {
@@ -260,9 +280,13 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary"
     operator  = "GreaterThan"
     threshold = 0
   }
+<<<<<<< HEAD
   lifecycle {
     ignore_changes = [
       tags
     ]
   }
+=======
+  tags = var.cdc_tags
+>>>>>>> 0278ebe75 (feat: add required CDC tags to various terraform resources for tracking and compliance)
 }

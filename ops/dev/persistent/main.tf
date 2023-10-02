@@ -12,6 +12,21 @@ locals {
     environment    = local.env
     resource_group = data.azurerm_resource_group.dev.name
   }
+  # a list of tags that the cdc requires
+  cdc_tags = {
+    business_steward    = "vuj4@cdc.gov"
+    center              = "DDPHSS"
+    environment         = "dev"
+    escid               = "3205"
+    funding_source      = "TBD"
+    pii_data            = "false"
+    security_compliance = "moderate"
+    security_steward    = "ghv3@cdc.gov,vfd9@cdc.gov,xda7@cdc.gov,xii9@cdc.gov"
+    support_group       = "OMHS"
+    system              = "prim"
+    technical_steward   = "mxc1@cdc.gov,qom6@cdc.gov,qwl5@cdc.gov,tgi8@cdc.gov"
+    zone                = "EXTRANET"
+  }
 }
 
 module "monitoring" {
@@ -33,9 +48,8 @@ resource "random_password" "random_nophi_password" {
 }
 
 resource "random_password" "administrator_password" {
-  length           = 30
-  special          = false
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  length  = 30
+  special = true
 }
 
 module "db" {
@@ -65,6 +79,7 @@ module "db_alerting" {
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
+  cdc_tags = local.cdc_tags
 }
 
 module "vnet" {

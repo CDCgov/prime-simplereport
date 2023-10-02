@@ -12,7 +12,7 @@ data "azurerm_key_vault_secret" "db_password" {
 }
 
 resource "azurerm_key_vault_secret" "jdbc" {
-  name         = "simple-report-${var.env_level}-jdbc"
+  name         = "simple-report-${var.env_level}-db-jdbc"
   key_vault_id = var.global_vault_id
   value        = "jdbc:postgresql://${azurerm_postgresql_flexible_server.db.name}.postgres.database.azure.com:5432/${var.administrator_login}?user=${var.administrator_login}&password=${var.administrator_password}&sslmode=require"
 }

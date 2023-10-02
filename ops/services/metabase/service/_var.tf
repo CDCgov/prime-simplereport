@@ -81,3 +81,8 @@ variable "metabase_url" {
 # Secret Access
 variable "key_vault_id" {}
 variable "tenant_id" {}
+
+variable "cdc_tags" {
+  type        = map(string)
+  description = "Tags for CDC"
+}
