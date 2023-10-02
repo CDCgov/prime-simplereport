@@ -982,7 +982,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             () ->
                 _service.getPatientsCount(
                     null, ArchivedStatus.UNARCHIVED, null, false, externalId));
-    assertThat(err2.getMessage()).contains("Access is denied");
+    assertThat(err2.getMessage()).contains("Access Denied");
 
     AccessDeniedException err3 =
         assertThrows(
