@@ -95,7 +95,7 @@ class UploadTestResultsIntegrationTest extends BaseAuthenticatedFullStackTest {
         WireMock.post(urlEqualTo("/api/token"))
             .withRequestBody(
                 equalTo(
-                    "scope=simple_report.*.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=null"))
+                    "scope=simple_report.*.report&grant_type=client_credentials&client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer&client_assertion=generatedToken"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(HttpStatus.OK.value())
