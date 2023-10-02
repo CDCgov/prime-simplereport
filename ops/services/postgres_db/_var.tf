@@ -36,7 +36,8 @@ variable "log_workspace_id" {
 }
 
 variable "administrator_login" {
-  default = "simple_report"
+  default   = "simple_report"
+  sensitive = true
 }
 
 variable "administrator_password" {
