@@ -25,3 +25,4 @@ features:
   rsvEnabled: false
   singleEntryRsvEnabled: false
   agnosticEnabled: false
+  testCardRefactorEnabled: false

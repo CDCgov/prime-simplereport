@@ -32,6 +32,7 @@ public class FeatureFlagsConfig {
       case "rsvEnabled" -> featureFlagProperties.setRsvEnabled(flagValue);
       case "singleEntryRsvEnabled" -> featureFlagProperties.setSingleEntryRsvEnabled(flagValue);
       case "agnosticEnabled" -> featureFlagProperties.setAgnosticEnabled(flagValue);
+      case "testCardRefactorEnabled" -> featureFlagProperties.setTestCardRefactorEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }
   }
