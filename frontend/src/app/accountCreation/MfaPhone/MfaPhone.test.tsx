@@ -1,5 +1,4 @@
 import {
-  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -22,8 +21,9 @@ jest.mock("../AccountCreationApiService", () => ({
 }));
 
 describe("Phone call MFA", () => {
-  beforeEach(() => {
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MemoryRouter
         initialEntries={[
           {
@@ -36,21 +36,17 @@ describe("Phone call MFA", () => {
           <Route path="/mfa-phone/verify" element={<MfaPhoneVerify />} />
         </Routes>
       </MemoryRouter>
-    );
+    ),
   });
 
   it("can enter a valid phone number", async () => {
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Phone number", { exact: false }),
-          "(910) 867-5309"
-        )
+    const { user } = renderWithUser();
+    await user.type(
+      screen.getByLabelText("Phone number", { exact: false }),
+      "(910) 867-5309"
     );
-    await act(
-      async () =>
-        await userEvent.click(screen.getByText("Send code", { exact: false }))
-    );
+
+    await user.click(screen.getByText("Send code", { exact: false }));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating phone number …")
     );
@@ -60,27 +56,21 @@ describe("Phone call MFA", () => {
   });
 
   it("requires a phone number", async () => {
-    await act(
-      async () =>
-        await userEvent.click(screen.getByText("Send code", { exact: false }))
-    );
+    const { user } = renderWithUser();
+    await user.click(screen.getByText("Send code", { exact: false }));
     expect(
       await screen.findByText("Enter your phone number", { exact: false })
     );
   });
 
   it("requires a valid phone number", async () => {
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Phone number", { exact: false }),
-          "(555) 555-5555"
-        )
+    const { user } = renderWithUser();
+    await user.type(
+      screen.getByLabelText("Phone number", { exact: false }),
+      "(555) 555-5555"
     );
-    await act(
-      async () =>
-        await userEvent.click(screen.getByText("Send code", { exact: false }))
-    );
+
+    await user.click(screen.getByText("Send code", { exact: false }));
     expect(
       await screen.findByText("Enter a valid phone number", { exact: false })
     );
