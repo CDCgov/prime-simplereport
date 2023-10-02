@@ -99,7 +99,7 @@ export const initPersonalDetailsErrors = (): Record<
 const experianStreetRegex = new RegExp("^([a-zA-Z0-9# \\-'.]{1,60})$", "m");
 
 // this is the regex experian uses for zip validation
-const experianZipRegex = new RegExp("^([\\d]{5}([\\-]?[\\d]{4})?){1}$", "m");
+const experianZipRegex = new RegExp("^([0-9]{5}(-?[0-9]{4})?){1}$", "m");
 
 export const personalDetailsSchema: yup.SchemaOf<IdentityVerificationRequest> =
   yup.object().shape({
