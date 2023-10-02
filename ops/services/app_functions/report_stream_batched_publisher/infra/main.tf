@@ -107,4 +107,5 @@ resource "azurerm_linux_function_app" "functions" {
       azurerm_service_plan.asp
     ]
   }
+  tags = var.cdc_tags
 }

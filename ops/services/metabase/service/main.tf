@@ -73,6 +73,7 @@ resource "azurerm_linux_web_app" "metabase" {
       null_resource.service_plan_id
     ]
   }
+  tags = var.cdc_tags
 }
 
 resource "azurerm_key_vault_access_policy" "app_secret_access" {

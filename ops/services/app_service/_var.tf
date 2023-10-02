@@ -39,3 +39,8 @@ variable "deploy_info" {
 variable "sku_name" {
   default = "P1v3"
 }
+
+variable "cdc_tags" {
+  type    = map(string)
+  default = {}
+}

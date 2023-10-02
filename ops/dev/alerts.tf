@@ -34,4 +34,5 @@ module "metric_alerts" {
   function_id = module.report_stream_reporting_functions.azurerm_linux_function_app_id
 
   database_id = data.terraform_remote_state.persistent_dev.outputs.postgres_server_id
+  cdc_tags    = local.cdc_tags
 }
