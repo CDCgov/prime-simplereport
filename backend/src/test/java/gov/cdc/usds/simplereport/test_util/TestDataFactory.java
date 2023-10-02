@@ -585,9 +585,9 @@ public class TestDataFactory {
   }
 
   public DeviceType getGenericDevice() {
-    if (genericDeviceType == null) {
-      initGenericDeviceTypeAndSpecimenType();
-    }
+    //    if (genericDeviceType == null) {
+    initGenericDeviceTypeAndSpecimenType();
+    //    }
     return genericDeviceType;
   }
 
@@ -609,9 +609,9 @@ public class TestDataFactory {
   }
 
   public SpecimenType getGenericSpecimen() {
-    if (genericSpecimenType == null) {
-      initGenericDeviceTypeAndSpecimenType();
-    }
+    //    if (genericSpecimenType == null) {
+    initGenericDeviceTypeAndSpecimenType();
+    //    }
     return genericSpecimenType;
   }
 
