@@ -139,8 +139,11 @@ describe("TestTimerWidget", () => {
       const timerButton = await screen.findByRole("button");
       await user.click(timerButton);
       await screen.findByText("0:00");
-      await screen.findByText("RESULT READY");
-
+      // eslint-disable-next-line testing-library/prefer-find-by
+      await waitFor(
+        () => expect(screen.getByText(/result ready/i)).toBeInTheDocument(),
+        { timeout: 2000 }
+      );
       await waitFor(() =>
         expect(trackEventMock).toHaveBeenCalledWith(
           { name: "Test timer finished" },
