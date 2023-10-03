@@ -155,6 +155,37 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
   subnet_id      = var.webapp_subnet_id
 }
 
+resource "azurerm_private_dns_zone" "app" {
+  name                = "${var.env}.privatelink.azurewebsites.net"
+  resource_group_name = var.resource_group_name
+}
+
+resource "azurerm_private_dns_zone_virtual_network_link" "dnszonelink" {
+  name = "${var.env}-dnszonelink"
+  resource_group_name = var.resource_group_name
+  private_dns_zone_name = azurerm_private_dns_zone.app.name
+  virtual_network_id = var.vnet_id
+}
+
+resource "azurerm_private_endpoint" "privateendpoint" {
+  name                = "${var.env}-sr-private-endpoint"
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
+  subnet_id           = var.lb_subnet_id
+
+  private_dns_zone_group {
+    name = "${var.env}-private-dns-zone-group"
+    private_dns_zone_ids = [azurerm_private_dns_zone.dnsprivatezone.id]
+  }
+
+  private_service_connection {
+    name = "${var.env}-private-endpoint-connection"
+    private_connection_resource_id = azurerm_linux_web_app.service.id
+    subresource_names = ["sites"]
+    is_manual_connection = false
+  }
+}
+
 /*
   IMPORTANT APP SERVICE TLS/SSL INFORMATION
 
