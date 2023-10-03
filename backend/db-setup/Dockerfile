@@ -1,6 +1,6 @@
 FROM postgres:14.8-bookworm
 
-RUN apt install py3-pip postgresql-libs gcc musl-dev postgresql-dev make -y
+RUN apt install python3-pip postgresql-contrib gcc musl-dev postgresql-common make -y
 RUN pip3 install pgxnclient
 RUN pgxn install postgresql_anonymizer
 COPY ./requirements.txt /usr/local/lib/requirements.txt
