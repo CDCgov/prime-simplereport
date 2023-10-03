@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
@@ -34,20 +34,23 @@ jest.mock("../AccountCreationApiService", () => ({
 }));
 
 describe("MfaSelect", () => {
-  beforeEach(async () => {
-    render(<MfaSelect />);
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(<MfaSelect />),
   });
 
   it("can choose an mfa option", async () => {
+    const { user } = renderWithUser();
     const smsRadio = screen.getByLabelText("Text message (SMS)", {
       exact: false,
     });
-    await act(async () => await userEvent.click(smsRadio));
+    await user.click(smsRadio);
     expect(smsRadio).toBeChecked();
   });
 
   it("requires an mfa option", async () => {
-    await act(async () => await userEvent.click(screen.getByText("Continue")));
+    const { user } = renderWithUser();
+    await user.click(screen.getByText("Continue"));
     expect(
       screen.getByText("Select an authentication option")
     ).toBeInTheDocument();
@@ -67,14 +70,8 @@ function create(_obj: any) {
 
 describe("MfaSelect routing", () => {
   let continueButton: HTMLElement;
-  beforeEach(() => {
-    let credContainer = { create: create };
-    Object.defineProperty(window.navigator, "credentials", {
-      value: credContainer,
-      configurable: true,
-    });
-
-    render(
+  const renderAndContinue = () => {
+    const { ...renderControls } = render(
       <MemoryRouter basename="/uac" initialEntries={["/uac/mfa-select"]}>
         <Routes>
           <Route path="mfa-select" element={<MfaSelect />} />
@@ -89,15 +86,26 @@ describe("MfaSelect routing", () => {
     );
 
     continueButton = screen.getByText("Continue");
+
+    return { user: userEvent.setup(), ...renderControls };
+  };
+
+  beforeEach(() => {
+    let credContainer = { create: create };
+    Object.defineProperty(window.navigator, "credentials", {
+      value: credContainer,
+      configurable: true,
+    });
   });
 
   it("can route to the SMS page", async () => {
+    const { user } = renderAndContinue();
     const smsRadio = screen.getByLabelText("Text message (SMS)", {
       exact: false,
     });
-    await act(async () => await userEvent.click(smsRadio));
+    await user.click(smsRadio);
     expect(smsRadio).toBeChecked();
-    await act(async () => await userEvent.click(continueButton));
+    await user.click(continueButton);
     await waitFor(() => {
       expect(
         screen.getByText("Get your security code via text message (SMS).")
@@ -106,12 +114,13 @@ describe("MfaSelect routing", () => {
   });
 
   it("can route to the Google Auth page", async () => {
+    const { user } = renderAndContinue();
     const googleRadio = screen.getByLabelText("Google Authenticator", {
       exact: false,
     });
-    await act(async () => await userEvent.click(googleRadio));
+    await user.click(googleRadio);
     expect(googleRadio).toBeChecked();
-    await act(async () => await userEvent.click(continueButton));
+    await user.click(continueButton);
     expect(
       await screen.findByText(
         "Get your security code via the Google Authenticator application."
@@ -120,12 +129,13 @@ describe("MfaSelect routing", () => {
   });
 
   it("can route to the Okta Verify page", async () => {
+    const { user } = renderAndContinue();
     const oktaRadio = screen.getByLabelText("Okta Verify", {
       exact: false,
     });
-    await act(async () => await userEvent.click(oktaRadio));
+    await user.click(oktaRadio);
     expect(oktaRadio).toBeChecked();
-    await act(async () => await userEvent.click(continueButton));
+    await user.click(continueButton);
     expect(
       await screen.findByText(
         "Get your security code via the Okta Verify application."
@@ -134,6 +144,7 @@ describe("MfaSelect routing", () => {
   });
 
   it("can route to the Security Key page", async () => {
+    const { user } = renderAndContinue();
     const securityKeyRadio = screen.getByLabelText(
       "Security key or biometric authentication",
       {
@@ -141,9 +152,9 @@ describe("MfaSelect routing", () => {
       }
     );
 
-    await act(async () => await userEvent.click(securityKeyRadio));
+    await user.click(securityKeyRadio);
     expect(securityKeyRadio).toBeChecked();
-    await act(async () => await userEvent.click(continueButton));
+    await user.click(continueButton);
 
     await waitFor(() => {
       expect(
@@ -153,12 +164,13 @@ describe("MfaSelect routing", () => {
   });
 
   it("can route to the Email page", async () => {
+    const { user } = renderAndContinue();
     const emailRadio = screen.getByLabelText("Email", {
       exact: false,
     });
-    await act(async () => await userEvent.click(emailRadio));
+    await user.click(emailRadio);
     expect(emailRadio).toBeChecked();
-    await act(async () => await userEvent.click(continueButton));
+    await user.click(continueButton);
     await waitFor(() => {
       expect(
         screen.getByText(
@@ -170,12 +182,13 @@ describe("MfaSelect routing", () => {
   });
 
   it("can route to the Phone call page", async () => {
+    const { user } = renderAndContinue();
     const phoneRadio = screen.getByLabelText("Phone call", {
       exact: false,
     });
-    await act(async () => await userEvent.click(phoneRadio));
+    await user.click(phoneRadio);
     expect(phoneRadio).toBeChecked();
-    await act(async () => await userEvent.click(continueButton));
+    await user.click(continueButton);
     await waitFor(() => {
       expect(
         screen.getByText("Get your security code via a phone call")
