@@ -190,6 +190,11 @@ export const en = {
           },
           healthcareWorker: "Are you a health care worker?",
         },
+        notes: {
+          heading: "Notes",
+          helpText:
+            "Add details about the patient's location or alternative contact information.",
+        },
         errors: {
           unsaved:
             "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.",

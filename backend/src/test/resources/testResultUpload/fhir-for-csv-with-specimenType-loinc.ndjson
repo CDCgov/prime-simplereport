@@ -445,6 +445,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
+        "identifier": [
+          {
+            "value": "543212134"
+          }
+        ],
         "manufacturer": "Acme",
         "deviceName": [
           {
@@ -1261,6 +1266,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
+        "identifier": [
+          {
+            "value": "543212134"
+          }
+        ],
         "manufacturer": "Acme",
         "deviceName": [
           {

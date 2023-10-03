@@ -41,6 +41,7 @@ const patient = {
   testResultDelivery: null,
   preferredLanguage: null,
   tribalAffiliation: null,
+  notes: null,
 };
 
 function ManageEmailsContainer() {

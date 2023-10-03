@@ -65,6 +65,7 @@ import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -497,17 +498,24 @@ public class FhirConverter {
     return patient;
   }
 
-  public Device convertToDevice(@NotNull DeviceType deviceType) {
+  public Device convertToDevice(@NotNull DeviceType deviceType, String equipmentUid) {
     return convertToDevice(
-        deviceType.getManufacturer(), deviceType.getModel(), deviceType.getInternalId().toString());
+        deviceType.getManufacturer(),
+        deviceType.getModel(),
+        deviceType.getInternalId().toString(),
+        equipmentUid);
   }
 
-  public Device convertToDevice(String manufacturer, @NotNull String model, String id) {
+  public Device convertToDevice(
+      String manufacturer, @NotNull String model, String id, String equipmentUid) {
     var device =
         new Device()
             .addDeviceName(
                 new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
-    if (manufacturer != null) {
+    if (StringUtils.isNotBlank(equipmentUid)) {
+      device.addIdentifier().setValue(equipmentUid);
+    }
+    if (StringUtils.isNotBlank(manufacturer)) {
       device.setManufacturer(manufacturer);
     }
 
@@ -1062,13 +1070,22 @@ public class FhirConverter {
     ZonedDateTime specimenCollectionDate =
         dateTested != null ? dateTested.minus(Duration.ofMinutes(testDuration)) : null;
 
+    List<SupportedDisease> resultDiseases =
+        testEvent.getResults().stream().map(Result::getDisease).toList();
+    List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+        testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
+            .filter(code -> resultDiseases.contains(code.getSupportedDisease()))
+            .toList();
+    String equipmentUid =
+        getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+
     return createFhirBundle(
         CreateFhirBundleProps.builder()
             .patient(convertToPatient(testEvent.getPatient()))
             .testingLab(convertToOrganization(testEvent.getFacility()))
             .orderingFacility(null)
             .practitioner(convertToPractitioner(testEvent.getProviderData()))
-            .device(convertToDevice(testEvent.getDeviceType()))
+            .device(convertToDevice(testEvent.getDeviceType(), equipmentUid))
             .specimen(
                 convertToSpecimen(
                     testEvent.getSpecimenType(),

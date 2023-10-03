@@ -3,8 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import MockDate from "mockdate";
+import * as router from "react-router";
 
 import SRToastContainer from "../commonComponents/SRToastContainer";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -12,9 +13,6 @@ import { PATIENT_TERM_CAP } from "../../config/constants";
 import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 import EditPatientContainer from "./EditPatientContainer";
 
-jest.mock("@trussworks/react-uswds", () => ({
-  ComboBox: () => <></>,
-}));
 const mockStore = configureStore([]);
 
 const mockFacilityID = "b0d2041f-93c9-4192-b19a-dd99c0044a7e";
@@ -97,6 +95,7 @@ describe("EditPatient", () => {
               facility: null,
               testResultDelivery: null,
               tribalAffiliation: [null],
+              notes: null,
             },
           },
         },
@@ -133,7 +132,9 @@ describe("EditPatient", () => {
             facility: null,
             testResultDelivery: null,
             tribalAffiliation: undefined,
+            preferredLanguage: null,
             facilityId: null,
+            notes: "Red tent",
           },
         },
         result: {
@@ -149,18 +150,12 @@ describe("EditPatient", () => {
       },
     ];
 
-    const Queue = () => {
-      const location = useLocation();
-      return <p>Testing Queue! {location.search}</p>;
-    };
-
     let renderWithRoutes = (
       facilityId: string,
       patientId: string,
       fromQueue: boolean
     ) => ({
       user: userEvent.setup(),
-
       ...render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
@@ -175,12 +170,20 @@ describe("EditPatient", () => {
                 }
                 path={"/patient/"}
               />
-              <Route path={"/patients"} element={<p>Patients!</p>} />
-              <Route path={"/queue"} element={<Queue />} />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>
       ),
+    });
+
+    const mockNavigate = jest.fn();
+
+    beforeEach(() => {
+      jest.spyOn(router, "useNavigate").mockImplementation(() => mockNavigate);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
     });
 
     it("can redirect to the new test form upon save", async () => {
@@ -197,6 +200,9 @@ describe("EditPatient", () => {
       await user.type(name, "Fake Name");
       await user.tab();
 
+      const notes = await screen.findByLabelText("Notes", { exact: false });
+      await user.type(notes, "Red tent");
+
       const saveAndStartButton = screen.getByText("Save and start test", {
         exact: false,
       });
@@ -205,11 +211,16 @@ describe("EditPatient", () => {
 
       await user.click(saveAndStartButton);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText("Testing Queue!", { exact: false })
-        ).toBeInTheDocument();
-      });
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          "/queue?facility=b0d2041f-93c9-4192-b19a-dd99c0044a7e",
+          {
+            state: {
+              patientId: "555e8a40-0f95-458e-a038-6b500a0fc2ad",
+            },
+          }
+        )
+      );
     });
 
     it("redirects to test queue on save when coming from Conduct tests page", async () => {
@@ -226,6 +237,9 @@ describe("EditPatient", () => {
       await user.type(name, "Fake Name");
       await user.tab();
 
+      const notes = await screen.findByLabelText("Notes", { exact: false });
+      await user.type(notes, "Red tent");
+
       const saveButton = screen.getAllByText("Save changes", {
         exact: false,
       })[0];
@@ -234,11 +248,16 @@ describe("EditPatient", () => {
 
       await user.click(saveButton);
 
-      await waitFor(() => {
-        expect(
-          screen.getByText("Testing Queue!", { exact: false })
-        ).toBeInTheDocument();
-      });
+      await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(
+          "/queue?facility=b0d2041f-93c9-4192-b19a-dd99c0044a7e",
+          {
+            state: {
+              patientId: "555e8a40-0f95-458e-a038-6b500a0fc2ad",
+            },
+          }
+        )
+      );
     });
   });
 
@@ -393,6 +412,7 @@ describe("EditPatient", () => {
               facility: null,
               testResultDelivery: null,
               tribalAffiliation: [null],
+              notes: null,
             },
           },
         },
