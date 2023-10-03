@@ -338,13 +338,12 @@ const UnarchivePatient = () => {
           handlePaginationClick={handlePaginationClick}
           onUnarchivePatient={handleUnarchivePatient}
         />
-        {localState.patient !== undefined && (
-          <UnarchivePatientModal
-            onClose={() => handleUnarchivePatient(undefined)}
-            onUnarchivePatientConfirmation={handleUnarchivePatientConfirmation}
-            patient={localState.patient}
-          />
-        )}
+        <UnarchivePatientModal
+          isOpen={localState.patient !== undefined}
+          onClose={() => handleUnarchivePatient(undefined)}
+          onUnarchivePatientConfirmation={handleUnarchivePatientConfirmation}
+          patient={localState.patient}
+        />
       </div>
     </div>
   );

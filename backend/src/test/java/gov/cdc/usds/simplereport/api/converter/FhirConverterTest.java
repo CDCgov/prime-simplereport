@@ -476,9 +476,11 @@ class FhirConverterTest {
         fhirConverter.convertToDevice(
             "PHASE Scientific International, Ltd.\n",
             "INDICAID COVID-19 Rapid Antigen Test*",
-            "id-123");
+            "id-123",
+            "equipmentId");
 
     assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo("equipmentId");
     assertThat(actual.getManufacturer()).isEqualTo("PHASE Scientific International, Ltd.\n");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName())
@@ -490,11 +492,13 @@ class FhirConverterTest {
   void convertToDevice_DeviceType_valid() {
     var internalId = UUID.randomUUID();
     var deviceType = new DeviceType("name", "manufacturer", "model", 15);
+    var equipmentId = "equipmentId";
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
-    var actual = fhirConverter.convertToDevice(deviceType);
+    var actual = fhirConverter.convertToDevice(deviceType, equipmentId);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo(equipmentId);
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName()).isEqualTo("model");
@@ -507,9 +511,10 @@ class FhirConverterTest {
     DeviceType deviceType =
         new DeviceType(
             "name", "BioFire Diagnostics", "BioFire Respiratory Panel 2.1 (RP2.1)*@", 15);
+    var equipmentId = "equipmentId";
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToDevice(deviceType);
+    var actual = fhirConverter.convertToDevice(deviceType, equipmentId);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =

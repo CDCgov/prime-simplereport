@@ -338,7 +338,8 @@ public class BulkUploadResultsToFhir {
     // code was not passed via api or inferred above: defaulting to the test performed code.
     testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
 
-    var device = fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString());
+    var device =
+        fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString(), equipmentUid);
 
     String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
     String specimenName = getSpecimenTypeName(specimenCode);

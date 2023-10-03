@@ -19,6 +19,10 @@ describe("Add Patient: saving changes and starting a test", () => {
     jest.spyOn(router, "useNavigate").mockImplementation(() => mockNavigate);
   });
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("redirects to the queue after address validation", async () => {
     jest.spyOn(smartyStreets, "suggestionIsCloseEnough").mockReturnValue(true);
     const { user } = renderWithUserWithFacility();
