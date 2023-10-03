@@ -1,12 +1,12 @@
 import {
   GetAllFacilitiesDocument,
-  GetFacilityResultsMultiplexWithCountDocument,
   GetTestResultDetailsDocument,
   GetTestResultForCorrectionDocument,
   GetTestResultForPrintDocument,
   GetTestResultForResendingEmailsDocument,
   GetTestResultForTextDocument,
   GetFacilityResultsForCsvWithCountDocument,
+  GetResultsMultiplexWithCountDocument,
   ArchivedStatus,
 } from "../../../generated/graphql";
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
@@ -33,7 +33,7 @@ import resultForCorrection from "./resultForCorrection";
 export const mocks = [
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "",
         pageNumber: 0,
@@ -48,7 +48,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -117,7 +117,7 @@ export const mocks = [
 
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -133,7 +133,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         result: "NEGATIVE",
@@ -149,7 +149,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         role: "RESIDENT",
@@ -165,7 +165,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -181,7 +181,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -199,7 +199,7 @@ export const mocks = [
 
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "2",
         pageNumber: 0,
@@ -214,7 +214,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: null,
         pageNumber: 0,
@@ -245,7 +245,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -273,7 +273,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "3",
         pageNumber: 0,
@@ -301,7 +301,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -389,7 +389,7 @@ export const mocks = [
 export const mocksWithMultiplex = [
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: null,
         pageNumber: 0,
@@ -417,7 +417,7 @@ export const mocksWithMultiplex = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
