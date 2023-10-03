@@ -8,12 +8,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Provider } from "react-redux";
-import {
-  MemoryRouter,
-  Route,
-  Routes,
-  useParams,
-} from "react-router-dom";
+import { MemoryRouter, Route, Routes, useParams } from "react-router-dom";
 import createMockStore from "redux-mock-store";
 
 import { PATIENT_TERM, PATIENT_TERM_CAP } from "../../config/constants";
@@ -25,13 +20,6 @@ import ManagePatients, {
 } from "./ManagePatients";
 import ManagePatientsContainer from "./ManagePatientsContainer";
 
-interface LocationOptions {
-  search: string;
-  pathname: string;
-  state: {
-    patientId: string;
-  };
-}
 const PageNumberContainer = () => {
   const { pageNumber } = useParams();
   return (
