@@ -1,6 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import ReactDOM from "react-dom";
+import userEvent from "@testing-library/user-event";
 
 import { GetFacilityResultsForCsvWithCountDocument } from "../../generated/graphql";
 
@@ -23,6 +24,10 @@ const graphqlMocks = [
         testResultsPage: {
           content: [
             {
+              patient: {},
+              createdBy: { nameInfo: {} },
+              noSymptoms: false,
+              symptoms: '{"64531003":"false"}',
               facility: {
                 name: "1677594642-Russel - Mann",
                 isDeleted: null,
@@ -56,16 +61,9 @@ const graphqlMocks = [
 ];
 
 describe("DownloadResultsCsvModal with no filters and under 20k results", () => {
-  let component: any;
-
-  const closeModalMock = jest.fn();
-
-  beforeEach(() => {
-    ReactDOM.createPortal = jest.fn((element, _node) => {
-      return element;
-    }) as any;
-
-    component = render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MockedProvider mocks={graphqlMocks}>
         <DownloadResultsCsvModal
           filterParams={{}}
@@ -75,14 +73,24 @@ describe("DownloadResultsCsvModal with no filters and under 20k results", () => 
           activeFacilityId={mockFacilityID}
         />
       </MockedProvider>
-    );
+    ),
+  });
+
+  const closeModalMock = jest.fn();
+
+  beforeEach(() => {
+    ReactDOM.createPortal = jest.fn((element, _node) => {
+      return element;
+    }) as any;
   });
 
   it("matches screenshot", () => {
-    expect(component).toMatchSnapshot();
+    const { container } = renderWithUser();
+    expect(container).toMatchSnapshot();
   });
 
   it("allows for downloading and has no filters applied", async () => {
+    const { user } = renderWithUser();
     const downloadButton = await screen.findByText("Download results");
     expect(downloadButton).toBeEnabled();
     expect(
@@ -98,7 +106,7 @@ describe("DownloadResultsCsvModal with no filters and under 20k results", () => 
       await screen.findByLabelText("Download test results")
     ).toHaveTextContent("The CSV file will include 1 row");
 
-    fireEvent.click(screen.getByRole("button", { name: /download results/i }));
+    await user.click(screen.getByRole("button", { name: /download results/i }));
     expect(closeModalMock).toHaveBeenCalled();
   });
 });

@@ -1,13 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`App should show error UI 1`] = `
-<div>
-  <p>
-    Server connection error...
-  </p>
-</div>
-`;
-
 exports[`Escalations Renders the page 1`] = `
 <div>
   <div

@@ -9,19 +9,21 @@ import { unarchivePatientTitle } from "../pageTitles";
 import { UnarchivePatientPatient } from "./UnarchivePatient";
 
 interface Props {
+  isOpen: boolean;
   onClose: () => void;
   onUnarchivePatientConfirmation: (patientId: string) => void;
-  patient: UnarchivePatientPatient;
+  patient: UnarchivePatientPatient | undefined;
 }
 
 const UnarchivePatientModal: React.FC<Props> = ({
+  isOpen,
   onClose,
   onUnarchivePatientConfirmation,
   patient,
 }) => {
   return (
     <Modal
-      isOpen={true}
+      isOpen={isOpen}
       style={{
         content: {
           maxHeight: "90vh",
@@ -52,9 +54,9 @@ const UnarchivePatientModal: React.FC<Props> = ({
             Are you sure you want to unarchive{" "}
             <strong>
               {displayFullName(
-                patient.firstName,
-                patient.middleName,
-                patient.lastName
+                patient?.firstName,
+                patient?.middleName,
+                patient?.lastName
               )}
             </strong>
             ?
@@ -71,7 +73,7 @@ const UnarchivePatientModal: React.FC<Props> = ({
             <Button
               className="margin-right-205"
               onClick={() => {
-                onUnarchivePatientConfirmation(patient.internalId);
+                onUnarchivePatientConfirmation(patient?.internalId as string);
                 onClose();
               }}
               label="Yes, I'm sure"
