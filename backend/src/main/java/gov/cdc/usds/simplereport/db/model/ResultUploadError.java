@@ -3,14 +3,14 @@ package gov.cdc.usds.simplereport.db.model;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorType;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.util.UUID;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "result_upload_error")
@@ -20,14 +20,14 @@ public class ResultUploadError extends AuditedEntity {
   @Column private UUID submissionId;
 
   @Column(columnDefinition = "TEST_RESULT_UPLOAD_ERROR")
-  @Type(PostgreSQLEnumType.class)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Enumerated(EnumType.STRING)
   private ResultUploadErrorType type;
 
   @Column private String field;
 
   @Column(columnDefinition = "RESULT_UPLOAD_ERROR_SOURCE")
-  @Type(PostgreSQLEnumType.class)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Enumerated(EnumType.STRING)
   private ResultUploadErrorSource source;
 

@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import io.hypersistence.utils.hibernate.type.array.ListArrayType;
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -28,7 +27,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
+import org.hibernate.type.SqlTypes;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -109,7 +110,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Getter @Column private String preferredLanguage;
 
-  @Type(PostgreSQLEnumType.class)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Enumerated(EnumType.STRING)
   @Column(columnDefinition = "TEST_RESULT_DELIVERY")
   private TestResultDeliveryPreference testResultDeliveryPreference;

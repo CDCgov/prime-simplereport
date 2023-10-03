@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import io.hypersistence.utils.hibernate.type.basic.PostgreSQLEnumType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,7 +9,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import java.util.Date;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @MappedSuperclass
 public abstract class BaseTestInfo extends AuditedEntity implements OrganizationScoped {
@@ -38,7 +38,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @Column private Date dateTestedBackdate;
 
   @Column(columnDefinition = "TEST_CORRECTION_STATUS")
-  @Type(PostgreSQLEnumType.class)
+  @JdbcTypeCode(SqlTypes.NAMED_ENUM)
   @Enumerated(EnumType.STRING)
   private TestCorrectionStatus correctionStatus;
 
