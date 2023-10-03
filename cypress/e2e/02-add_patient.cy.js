@@ -45,14 +45,14 @@ describe("Adding a single patient", () => {
     cy.get(".prime-edit-patient").contains("Testing facility is missing");
     cy.get(".prime-edit-patient").contains("City is missing");
   });
-it("fills out the remaining fields, submits and checks for the patient", () => {
-  cy.get('input[name="lastName"]').type(patient.lastName);
-  cy.get('input[name="city"]').type(patient.city);
-  cy.get('select[name="facilityId"]').select("All facilities");
-  cy.get(".prime-save-patient-changes").first().click();
-  cy.get(
-    '.modal__container input[name="addressSelect-person"][value="userAddress"]+label'
-  ).click();
+  it("fills out the remaining fields, submits and checks for the patient", () => {
+    cy.get('input[name="lastName"]').type(patient.lastName);
+    cy.get('input[name="city"]').type(patient.city);
+    cy.get('select[name="facilityId"]').select("All facilities");
+    cy.get(".prime-save-patient-changes").first().click();
+    cy.get(
+      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label',
+    ).click();
 
     cy.checkAccessibility();
 

@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import { ApplicationInsights } from "@microsoft/applicationinsights-web";
 import jwtDecode from "jwt-decode";
+import { useFeature } from "flagged";
 
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 import Header from "./commonComponents/Header";
@@ -30,13 +31,16 @@ import VersionEnforcer from "./VersionEnforcer";
 import { TrainingNotification } from "./commonComponents/TrainingNotification";
 import { MaintenanceBanner } from "./commonComponents/MaintenanceBanner";
 import { Analytics } from "./analytics/Analytics";
-import Uploads from "./testResults/uploads/Uploads";
 import Schema from "./testResults/uploads/CsvSchemaDocumentation";
 import Submission from "./testResults/submissions/Submission";
 import Submissions from "./testResults/submissions/Submissions";
 import ResultsNavWrapper from "./testResults/ResultsNavWrapper";
 import DeviceLookupContainer from "./uploads/DeviceLookup/DeviceLookupContainer";
 import UploadPatients from "./patients/UploadPatients";
+import DiseaseSpecificUploadContainer from "./testResults/uploads/DiseaseSpecificUploadContainer";
+import AgnosticUploadContainer from "./testResults/uploads/AgnosticUploadContainer";
+import { specificSchemaBuilder } from "./testResults/uploads/specificSchemaBuilder";
+import { agnosticSchemaBuilder } from "./testResults/uploads/agnosticSchemaBuilder";
 
 export const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -71,7 +75,7 @@ const checkOktaLoginStatus = (
       const params = new URLSearchParams(location.hash.slice(1));
       if (params.get("error")) {
         throw new Error(
-          params.get("error_description") || "Unknown Okta error"
+          params.get("error_description") ?? "Unknown Okta error"
         );
       }
       throw new Error("Not authenticated, redirecting to Okta...");
@@ -80,6 +84,7 @@ const checkOktaLoginStatus = (
 };
 
 const ReportingApp = () => {
+  const agnosticEnabled = useFeature("agnosticEnabled");
   const appInsights = getAppInsights();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -244,12 +249,47 @@ const ReportingApp = () => {
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper>
-                        <Uploads />
+                        <DiseaseSpecificUploadContainer />
                       </ResultsNavWrapper>
                     }
                   />
                 }
               />
+              {agnosticEnabled && (
+                <>
+                  <Route
+                    path="results/agnostic/upload/submit"
+                    element={
+                      <ProtectedRoute
+                        requiredPermissions={canViewResults}
+                        userPermissions={data.whoami.permissions}
+                        element={
+                          <ResultsNavWrapper>
+                            <AgnosticUploadContainer />
+                          </ResultsNavWrapper>
+                        }
+                      />
+                    }
+                  />
+                  <Route
+                    path="results/agnostic/upload/submit/guide"
+                    element={
+                      <ProtectedRoute
+                        requiredPermissions={canViewResults}
+                        userPermissions={data.whoami.permissions}
+                        element={
+                          <ResultsNavWrapper>
+                            <Schema
+                              schemaBuilder={agnosticSchemaBuilder}
+                              returnUrl={"/results/agnostic/upload/submit"}
+                            />
+                          </ResultsNavWrapper>
+                        }
+                      />
+                    }
+                  />
+                </>
+              )}
               <Route
                 path="results/upload/submit/guide"
                 element={
@@ -258,7 +298,10 @@ const ReportingApp = () => {
                     userPermissions={data.whoami.permissions}
                     element={
                       <ResultsNavWrapper>
-                        <Schema />
+                        <Schema
+                          schemaBuilder={specificSchemaBuilder}
+                          returnUrl={"/results/upload/submit"}
+                        />
                       </ResultsNavWrapper>
                     }
                   />

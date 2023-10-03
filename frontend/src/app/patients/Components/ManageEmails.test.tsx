@@ -1,6 +1,5 @@
-/* eslint testing-library/no-unnecessary-act:0 */
 import { useRef, useState } from "react";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import i18n from "../../../i18n";
@@ -42,6 +41,7 @@ const patient = {
   testResultDelivery: null,
   preferredLanguage: null,
   tribalAffiliation: null,
+  notes: null,
 };
 
 function ManageEmailsContainer() {
@@ -58,10 +58,10 @@ function ManageEmailsContainer() {
 }
 
 describe("ManageEmails", () => {
-  beforeEach(() => {
-    render(<ManageEmailsContainer />);
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(<ManageEmailsContainer />),
   });
-
   afterEach(async () => {
     await waitFor(() => {
       i18n.changeLanguage("en");
@@ -71,34 +71,28 @@ describe("ManageEmails", () => {
   });
 
   it("shows and clears errors", async () => {
+    const { user } = renderWithUser();
     const primary = await screen.findByLabelText("Email address", {
       exact: false,
     });
 
     // Enter bad info and blur
-    await act(async () => {
-      await userEvent.type(primary, "invalid email");
-    });
 
-    await act(async () => {
-      await userEvent.tab();
-    });
+    await user.type(primary, "invalid email");
+
+    await user.tab();
+
     expect(
       await screen.findByText("Email is incorrectly formatted")
     ).toBeInTheDocument();
 
     // Enter good info and blur
-    await act(async () => {
-      await userEvent.clear(primary);
-    });
 
-    await act(async () => {
-      await userEvent.type(primary, "test@fake.com");
-    });
+    await user.clear(primary);
 
-    await act(async () => {
-      await userEvent.tab();
-    });
+    await user.type(primary, "test@fake.com");
+
+    await user.tab();
 
     await waitFor(() =>
       expect(
@@ -108,18 +102,16 @@ describe("ManageEmails", () => {
   });
 
   it("translates errors", async () => {
+    const { user } = renderWithUser();
     const primary = await screen.findByLabelText("Email address", {
       exact: false,
     });
 
     // Enter bad info and blur
-    await act(async () => {
-      await userEvent.type(primary, "invalid email");
-    });
 
-    await act(async () => {
-      await userEvent.tab();
-    });
+    await user.type(primary, "invalid email");
+
+    await user.tab();
 
     await waitFor(() => {
       i18n.changeLanguage("es");
@@ -131,22 +123,19 @@ describe("ManageEmails", () => {
   });
 
   it("adds and removes email addresses", async () => {
+    const { user } = renderWithUser();
     const primary = await screen.findByLabelText("Email address", {
       exact: false,
     });
 
-    await act(async () => {
-      await userEvent.type(primary, "test@fake.com");
-    });
+    await user.type(primary, "test@fake.com");
 
     const addButton = screen.getByRole("button", {
       name: /add another email address/i,
     });
 
     // adds more emails
-    await act(async () => {
-      await userEvent.click(addButton);
-    });
+    await user.click(addButton);
 
     await waitFor(() =>
       expect(
@@ -154,9 +143,7 @@ describe("ManageEmails", () => {
       ).toBe(1)
     );
 
-    await act(async () => {
-      await userEvent.click(addButton);
-    });
+    await user.click(addButton);
 
     await waitFor(() =>
       expect(
@@ -166,14 +153,12 @@ describe("ManageEmails", () => {
 
     //fills in the input
     const seconds = await screen.findAllByLabelText("Additional email address");
-    await act(async () => {
-      await userEvent.type(seconds[1], "foo@bar.com");
-    });
+
+    await user.type(seconds[1], "foo@bar.com");
 
     // removes additional email input fields
-    await act(async () => {
-      await userEvent.click(screen.getByTestId(`delete-email-1`));
-    });
+
+    await user.click(screen.getByTestId(`delete-email-1`));
 
     await waitFor(() =>
       expect(
@@ -181,9 +166,7 @@ describe("ManageEmails", () => {
       ).toBe(1)
     );
 
-    await act(async () => {
-      await userEvent.click(screen.getByTestId(`delete-email-1`));
-    });
+    await user.click(screen.getByTestId(`delete-email-1`));
 
     expect(
       screen.queryByText("Additional email address")

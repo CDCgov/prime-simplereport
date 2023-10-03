@@ -5042,3 +5042,46 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'RSV';
+  - changeSet:
+      id: add-notes-to-person-table
+      author: zedd@skylight.digital
+      comment: Add notes and person table
+      changes:
+        - tagDatabase:
+            tag: add-notes-to-person-table
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: notes
+                  type: text
+  - changeSet:
+      id: remove-multiplex-flag
+      author: boban@skylight.digital
+      comment: remove multiplex flag in table
+      changes:
+        - tagDatabase:
+            tag: remove-multiplex-flag
+        - delete:
+            schemaName: ${database.defaultSchemaName}
+            tableName: feature_flag
+            where: name='multiplexEnabled'
+      rollback: ""
+  - changeSet:
+      id: add-hiv-to-supported_disease-table
+      author: zedd@skylight.digital
+      comment: Add HIV to the supported_disease table.
+      changes:
+        - tagDatabase:
+            tag: add-hiv-to-supported_disease-table
+        - sql:
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.supported_disease (
+                   internal_id,
+                   name,
+                   loinc)
+              VALUES
+                   (gen_random_uuid(), 'HIV', 'LP17126-1')
+      rollback:
+        - sql:
+            sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'HIV';

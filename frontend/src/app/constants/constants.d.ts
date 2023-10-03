@@ -605,6 +605,7 @@ interface PersonUpdate extends Address {
   country: string;
   emails: string[];
   preferredLanguage: Language | null;
+  notes: string | null;
   testResultDelivery: TestResultDeliveryPreference | null;
 }
 

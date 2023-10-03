@@ -1,5 +1,5 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import {
@@ -38,42 +38,64 @@ const expectedFacilitySlug =
 const testBaseUrl = "https://example.com";
 
 describe("ManageSelfRegistrationLinks", () => {
+  const mockNav = jest.fn();
   const nav = { ...navigator };
   const originalBaseUrl = process.env.REACT_APP_BASE_URL;
 
-  beforeEach(async () => {
-    process.env.REACT_APP_BASE_URL = testBaseUrl;
-    Object.assign(navigator, {
-      clipboard: {
-        writeText: jest.fn(),
-      },
-    });
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MockedProvider mocks={mocks}>
         <ManageSelfRegistrationLinksContainer />
       </MockedProvider>
-    );
-    await screen.findByText("Patient self-registration");
+    ),
+  });
+
+  beforeEach(() => {
+    process.env.REACT_APP_BASE_URL = testBaseUrl;
   });
 
   afterEach(() => {
     process.env.REACT_APP_BASE_URL = originalBaseUrl;
-    Object.assign(navigator, nav);
+    Object.defineProperty(global, "navigator", { writable: true, value: nav });
   });
 
   it("copies the org link", async () => {
+    const { user } = renderWithUser();
+    await screen.findByText("Patient self-registration");
+
+    Object.defineProperty(global, "navigator", {
+      writable: true,
+      value: {
+        clipboard: {
+          writeText: mockNav,
+        },
+      },
+    });
     const orgUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedOrgSlug}`;
     const [orgBtn] = screen.getAllByRole("button");
-    await act(async () => await userEvent.click(orgBtn));
+    await user.click(orgBtn);
     await waitFor(async () => expect(orgBtn).toBeEnabled());
-    expect(navigator.clipboard.writeText).toBeCalledWith(orgUrl);
+    expect(mockNav).toBeCalledWith(orgUrl);
   });
 
   it("copies a facility link", async () => {
+    const { user } = renderWithUser();
+    Object.defineProperty(global, "navigator", {
+      writable: true,
+      value: {
+        clipboard: {
+          writeText: mockNav,
+        },
+      },
+    });
+    await screen.findByText("Patient self-registration");
     const facilityUrl = `${process.env.REACT_APP_BASE_URL}/register/${expectedFacilitySlug}`;
-    const btns = screen.getAllByRole("button");
-    await act(async () => await userEvent.click(btns[2]));
-    await waitFor(async () => expect(btns[2]).toBeEnabled());
-    expect(navigator.clipboard.writeText).toBeCalledWith(facilityUrl);
+    const btns = screen.getByRole("button", {
+      name: /copy patient self registration link for physics building/i,
+    });
+    await user.click(btns);
+    await waitFor(async () => expect(btns).toBeEnabled());
+    expect(mockNav).toBeCalledWith(facilityUrl);
   });
 });

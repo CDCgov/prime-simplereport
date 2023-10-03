@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { PATIENT_TERM_CAP } from "../../../config/constants";
@@ -191,30 +191,33 @@ describe("Component ResultsTable", () => {
   });
 
   describe("actions menu", () => {
+    const renderWithUser = (results: TestResult[]) => ({
+      user: userEvent.setup(),
+      ...render(
+        <ResultsTable
+          results={results}
+          setPrintModalId={setPrintModalIdFn}
+          setMarkCorrectionId={setMarkCorrectionIdFn}
+          setDetailsModalId={setDetailsModalIdFn}
+          setTextModalId={setTextModalIdFn}
+          setEmailModalTestResultId={setEmailModalTestResultIdFn}
+          hasMultiplexResults={false}
+          hasFacility={false}
+        />
+      ),
+    });
     describe("text result action", () => {
       it("includes `Text result` if patient has mobile number", async () => {
         const testResultPatientMobileNumber = [
           TEST_RESULTS_MULTIPLEX_CONTENT[1],
         ];
 
-        render(
-          <ResultsTable
-            results={testResultPatientMobileNumber}
-            setPrintModalId={setPrintModalIdFn}
-            setMarkCorrectionId={setMarkCorrectionIdFn}
-            setDetailsModalId={setDetailsModalIdFn}
-            setTextModalId={setTextModalIdFn}
-            setEmailModalTestResultId={setEmailModalTestResultIdFn}
-            hasMultiplexResults={false}
-            hasFacility={false}
-          />
-        );
-
+        const { user } = renderWithUser(testResultPatientMobileNumber);
         const moreActions = within(screen.getByRole("table")).getAllByRole(
           "button"
         )[1];
 
-        await act(async () => await userEvent.click(moreActions));
+        await user.click(moreActions);
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -226,24 +229,12 @@ describe("Component ResultsTable", () => {
           TEST_RESULTS_MULTIPLEX_CONTENT[0],
         ];
 
-        render(
-          <ResultsTable
-            results={testResultPatientNoMobileNumber}
-            setPrintModalId={setPrintModalIdFn}
-            setMarkCorrectionId={setMarkCorrectionIdFn}
-            setDetailsModalId={setDetailsModalIdFn}
-            setTextModalId={setTextModalIdFn}
-            setEmailModalTestResultId={setEmailModalTestResultIdFn}
-            hasMultiplexResults={false}
-            hasFacility={false}
-          />
-        );
-
+        const { user } = renderWithUser(testResultPatientNoMobileNumber);
         const moreActions = within(screen.getByRole("table")).getAllByRole(
           "button"
         )[1];
 
-        await act(async () => await userEvent.click(moreActions));
+        await user.click(moreActions);
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -255,25 +246,12 @@ describe("Component ResultsTable", () => {
         const testResultPatientEmail: TestResult[] = [
           TEST_RESULTS_MULTIPLEX_CONTENT[0],
         ];
-
-        render(
-          <ResultsTable
-            results={testResultPatientEmail}
-            setPrintModalId={setPrintModalIdFn}
-            setMarkCorrectionId={setMarkCorrectionIdFn}
-            setDetailsModalId={setDetailsModalIdFn}
-            setTextModalId={setTextModalIdFn}
-            setEmailModalTestResultId={setEmailModalTestResultIdFn}
-            hasMultiplexResults={false}
-            hasFacility={false}
-          />
-        );
-
+        const { user } = renderWithUser(testResultPatientEmail);
         const moreActions = within(screen.getByRole("table")).getAllByRole(
           "button"
         )[1];
 
-        await act(async () => await userEvent.click(moreActions));
+        await user.click(moreActions);
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();
@@ -282,25 +260,12 @@ describe("Component ResultsTable", () => {
 
       it("does not include `Email result` if no patient email address", async () => {
         const testResultPatientNoEmail = [TEST_RESULTS_MULTIPLEX_CONTENT[1]];
-
-        render(
-          <ResultsTable
-            results={testResultPatientNoEmail}
-            setPrintModalId={setPrintModalIdFn}
-            setMarkCorrectionId={setMarkCorrectionIdFn}
-            setDetailsModalId={setDetailsModalIdFn}
-            setTextModalId={setTextModalIdFn}
-            setEmailModalTestResultId={setEmailModalTestResultIdFn}
-            hasMultiplexResults={false}
-            hasFacility={false}
-          />
-        );
-
+        const { user } = renderWithUser(testResultPatientNoEmail);
         const moreActions = within(screen.getByRole("table")).getAllByRole(
           "button"
         )[1];
 
-        await act(async () => await userEvent.click(moreActions));
+        await user.click(moreActions);
 
         // Action menu is open
         expect(screen.getByText("Print result")).toBeInTheDocument();

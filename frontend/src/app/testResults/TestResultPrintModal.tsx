@@ -2,7 +2,6 @@ import React from "react";
 import Modal from "react-modal";
 import classnames from "classnames";
 import { useTranslation } from "react-i18next";
-import { useFeature } from "flagged";
 
 import Button from "../commonComponents/Button/Button";
 import MultiplexResultsGuidance from "../commonComponents/MultiplexResultsGuidance";
@@ -75,7 +74,6 @@ export const StaticTestResultModal = ({
     results,
     dateTested,
   } = testResult;
-  const multiplexEnabled = useFeature("multiplexEnabled") as boolean;
   const isPatientApp = false;
 
   return (
@@ -87,7 +85,7 @@ export const StaticTestResultModal = ({
     >
       <header className="display-flex flex-align-end flex-justify margin-bottom-1">
         <h1>
-          {multiplexEnabled && hasMultiplexResults(results)
+          {hasMultiplexResults(results)
             ? t("testResult.multiplexResultHeader")
             : t("testResult.covidResultHeader")}
         </h1>
@@ -158,7 +156,7 @@ export const StaticTestResultModal = ({
             <li>
               <b>{t("testResult.testingFacility.npi")}</b>
               <div>
-                {facility.orderingProvider.NPI || facility.orderingProvider.npi}
+                {facility.orderingProvider.NPI ?? facility.orderingProvider.npi}
               </div>
             </li>
           </ul>
@@ -182,11 +180,7 @@ export const StaticTestResultModal = ({
               <b>{t("testResult.testDate")}</b>
               <div>{formatDateWithTimeOption(dateTested, true)}</div>
             </li>
-            <TestResultsList
-              results={results}
-              isPatientApp={isPatientApp}
-              multiplexEnabled={multiplexEnabled}
-            />
+            <TestResultsList results={results} isPatientApp={isPatientApp} />
           </ul>
         </section>
         {(haCovidResults(results) || hasPositiveFluResults(results)) && (
@@ -195,7 +189,6 @@ export const StaticTestResultModal = ({
             <MultiplexResultsGuidance
               results={results}
               isPatientApp={isPatientApp}
-              multiplexEnabled={multiplexEnabled}
             />
           </section>
         )}
@@ -203,7 +196,7 @@ export const StaticTestResultModal = ({
       <footer>
         <p>
           {t("testResult.printed")}{" "}
-          {hardcodedPrintDate || new Date().toLocaleString()}
+          {hardcodedPrintDate ?? new Date().toLocaleString()}
         </p>
       </footer>
     </div>

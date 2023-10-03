@@ -396,6 +396,32 @@
           {
             "reference": "Observation/087864a3-81d3-3d38-a4be-4bbb928f1f99"
           }
+        ],
+        "note": [
+          {
+            "extension": [
+              {
+                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "extension": [
+                        {
+                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
+                          "valueString": "identifier"
+                        }
+                      ],
+                      "system": "HL70364",
+                      "version": "2.5.1",
+                      "code": "RE",
+                      "display": "Remark"
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": "Test Comment"
+          }
         ]
       }
     },
@@ -404,6 +430,9 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [{
+          "value": "00811877010616"
+        }],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -964,6 +993,9 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [{
+          "value": "00811877010616"
+        }],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -1515,6 +1547,9 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [{
+          "value": "00811877010616"
+        }],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -2104,6 +2139,9 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [{
+          "value": "00811877010616"
+        }],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -2652,6 +2690,9 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
+        "identifier": [{
+          "value": "00811877010616"
+        }],
         "manufacturer": "Abbott",
         "deviceName": [
           {

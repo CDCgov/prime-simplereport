@@ -1,0 +1,25 @@
+name: Build and Push
+description: Build and push Docker image to the registry
+inputs:
+  acr_registry:
+    description: Azure Container Registry to push the image to
+    required: true
+  acr_username:
+    description: Azure Container Registry username
+    required: true
+  acr_password:
+    description: Azure Container Registry password
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Login to ACR
+      shell: bash
+      run: docker login ${{ inputs.acr_registry }} -u ${{ inputs.acr_username }} -p ${{ inputs.acr_password }}
+    - name: Build and push Docker images
+      working-directory: ./backend
+      shell: bash
+      run: ./build_and_push.sh

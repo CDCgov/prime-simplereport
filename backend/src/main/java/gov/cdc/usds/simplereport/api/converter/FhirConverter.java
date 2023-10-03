@@ -15,6 +15,13 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ID
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOMATIC;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_SYMPTOM_ONSET;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_EXTENSION_URL;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_VALUE;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_DISPLAY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_CODING_SYSTEM_VERSION;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NPI_PREFIX;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NULL_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ORDER_CONTROL_CODE_OBSERVATIONS;
@@ -50,6 +57,7 @@ import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -481,17 +489,24 @@ public class FhirConverter {
     return patient;
   }
 
-  public Device convertToDevice(@NotNull DeviceType deviceType) {
+  public Device convertToDevice(@NotNull DeviceType deviceType, String equipmentUid) {
     return convertToDevice(
-        deviceType.getManufacturer(), deviceType.getModel(), deviceType.getInternalId().toString());
+        deviceType.getManufacturer(),
+        deviceType.getModel(),
+        deviceType.getInternalId().toString(),
+        equipmentUid);
   }
 
-  public Device convertToDevice(String manufacturer, @NotNull String model, String id) {
+  public Device convertToDevice(
+      String manufacturer, @NotNull String model, String id, String equipmentUid) {
     var device =
         new Device()
             .addDeviceName(
                 new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
-    if (manufacturer != null) {
+    if (StringUtils.isNotBlank(equipmentUid)) {
+      device.addIdentifier().setValue(equipmentUid);
+    }
+    if (StringUtils.isNotBlank(manufacturer)) {
       device.setManufacturer(manufacturer);
     }
 
@@ -814,14 +829,16 @@ public class FhirConverter {
         serviceRequestStatus,
         deviceLoincCode,
         Objects.toString(order.getInternalId(), ""),
-        orderTestDate);
+        orderTestDate,
+        order.getPatient().getNotes());
   }
 
   public ServiceRequest convertToServiceRequest(
       ServiceRequestStatus status,
       String requestedCode,
       String id,
-      ZonedDateTime orderEffectiveDate) {
+      ZonedDateTime orderEffectiveDate,
+      String notes) {
     var serviceRequest = new ServiceRequest();
     serviceRequest.setId(id);
     serviceRequest.setIntent(ServiceRequestIntent.ORDER);
@@ -845,6 +862,27 @@ public class FhirConverter {
         .addExtension()
         .setUrl(ORDER_EFFECTIVE_DATE_EXTENSION_URL)
         .setValue(convertToDateTimeType(orderEffectiveDate, TemporalPrecisionEnum.SECOND));
+
+    if (StringUtils.isNotEmpty(notes)) {
+      Coding noteTypeCoding =
+          new Coding()
+              .setSystem(NOTE_TYPE_CODING_SYSTEM)
+              .setVersion(NOTE_TYPE_CODING_SYSTEM_VERSION)
+              .setCode(NOTE_TYPE_CODING_SYSTEM_CODE)
+              .setDisplay(NOTE_TYPE_CODING_SYSTEM_DISPLAY);
+
+      noteTypeCoding
+          .addExtension()
+          .setUrl(NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_EXTENSION_URL)
+          .setValue(new StringType(NOTE_TYPE_CODING_SYSTEM_CODE_INDEX_VALUE));
+
+      serviceRequest
+          .addNote()
+          .setText(notes)
+          .addExtension()
+          .setUrl(NOTE_TYPE_EXTENSION_URL)
+          .setValue(new CodeableConcept().addCoding(noteTypeCoding));
+    }
 
     return serviceRequest;
   }
@@ -948,13 +986,22 @@ public class FhirConverter {
     ZonedDateTime specimenCollectionDate =
         dateTested != null ? dateTested.minus(Duration.ofMinutes(testDuration)) : null;
 
+    List<SupportedDisease> resultDiseases =
+        testEvent.getResults().stream().map(Result::getDisease).toList();
+    List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+        testEvent.getDeviceType().getSupportedDiseaseTestPerformed().stream()
+            .filter(code -> resultDiseases.contains(code.getSupportedDisease()))
+            .toList();
+    String equipmentUid =
+        getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+
     return createFhirBundle(
         CreateFhirBundleProps.builder()
             .patient(convertToPatient(testEvent.getPatient()))
             .testingLab(convertToOrganization(testEvent.getFacility()))
             .orderingFacility(null)
             .practitioner(convertToPractitioner(testEvent.getProviderData()))
-            .device(convertToDevice(testEvent.getDeviceType()))
+            .device(convertToDevice(testEvent.getDeviceType(), equipmentUid))
             .specimen(
                 convertToSpecimen(
                     testEvent.getSpecimenType(),

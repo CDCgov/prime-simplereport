@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.converter;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.NOTE_TYPE_EXTENSION_URL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -475,9 +476,11 @@ class FhirConverterTest {
         fhirConverter.convertToDevice(
             "PHASE Scientific International, Ltd.\n",
             "INDICAID COVID-19 Rapid Antigen Test*",
-            "id-123");
+            "id-123",
+            "equipmentId");
 
     assertThat(actual.getId()).isEqualTo("id-123");
+    assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo("equipmentId");
     assertThat(actual.getManufacturer()).isEqualTo("PHASE Scientific International, Ltd.\n");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName())
@@ -489,11 +492,13 @@ class FhirConverterTest {
   void convertToDevice_DeviceType_valid() {
     var internalId = UUID.randomUUID();
     var deviceType = new DeviceType("name", "manufacturer", "model", 15);
+    var equipmentId = "equipmentId";
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
-    var actual = fhirConverter.convertToDevice(deviceType);
+    var actual = fhirConverter.convertToDevice(deviceType, equipmentId);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
+    assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo(equipmentId);
     assertThat(actual.getManufacturer()).isEqualTo("manufacturer");
     assertThat(actual.getDeviceName()).hasSize(1);
     assertThat(actual.getDeviceNameFirstRep().getName()).isEqualTo("model");
@@ -506,9 +511,10 @@ class FhirConverterTest {
     DeviceType deviceType =
         new DeviceType(
             "name", "BioFire Diagnostics", "BioFire Respiratory Panel 2.1 (RP2.1)*@", 15);
+    var equipmentId = "equipmentId";
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToDevice(deviceType);
+    var actual = fhirConverter.convertToDevice(deviceType, equipmentId);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =
@@ -1134,7 +1140,8 @@ class FhirConverterTest {
             "94533-7",
             "id-123",
             ZonedDateTime.ofInstant(
-                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID));
+                Instant.parse("2023-06-22T10:35:00.000Z"), DEFAULT_TIME_ZONE_ID),
+            "very important comment");
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getStatus()).isEqualTo(ServiceRequestStatus.COMPLETED);
     assertThat(actual.getCode().getCoding()).hasSize(1);
@@ -1149,16 +1156,20 @@ class FhirConverterTest {
                         .getValue())
                 .getValue())
         .isEqualTo("2023-06-22T10:35:00.00Z");
+    assertThat(actual.getNote().get(0).getText()).isEqualTo("very important comment");
+    assertThat(actual.getNote().get(0).getExtension().get(0).getUrl())
+        .isEqualTo(NOTE_TYPE_EXTENSION_URL);
   }
 
   @Test
   void convertToServiceRequest_Strings_null() {
     var actual =
         fhirConverter.convertToServiceRequest(
-            null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID));
+            null, null, null, ZonedDateTime.now(DEFAULT_TIME_ZONE_ID), null);
     assertThat(actual.getId()).isNull();
     assertThat(actual.getStatus()).isNull();
     assertThat(actual.getCode().getCoding()).isEmpty();
+    assertThat(actual.getNote()).isEmpty();
   }
 
   @Test
@@ -1493,7 +1504,8 @@ class FhirConverterTest {
             false,
             false,
             "",
-            null);
+            null,
+            "Adventurer of the cosmos");
     var testOrder = new TestOrder(person, facility);
     var answers =
         new PatientAnswers(new AskOnEntrySurvey(null, Map.of("fake", false), false, null));

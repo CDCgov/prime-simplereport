@@ -9,10 +9,9 @@ import {
 } from "../utils/testResults";
 import { MULTIPLEX_DISEASES, TEST_RESULTS } from "../testResults/constants";
 
-interface Props {
+interface TestResultsListProps {
   results: MultiplexResults;
   isPatientApp: boolean;
-  multiplexEnabled: boolean;
 }
 
 const setDiseaseName = (diseaseName: MultiplexDisease, t: translateFn) => {
@@ -92,16 +91,15 @@ const pxpAppResultListItem = (
   );
 };
 
-const TestResultsList = (props: Props) => {
-  const results = props.results;
-  const multiplexEnabled = props.multiplexEnabled;
-  const isPatientApp = props.isPatientApp;
+const TestResultsList: React.FC<TestResultsListProps> = ({
+  results,
+  isPatientApp,
+}) => {
   const { t } = useTranslation();
 
-  const sortedTestResults =
-    multiplexEnabled && hasMultiplexResults(results)
-      ? getSortedResults(results)
-      : [getResultObjByDiseaseName(results, "COVID-19")];
+  const sortedTestResults = hasMultiplexResults(results)
+    ? getSortedResults(results)
+    : [getResultObjByDiseaseName(results, "COVID-19")];
 
   return (
     <>

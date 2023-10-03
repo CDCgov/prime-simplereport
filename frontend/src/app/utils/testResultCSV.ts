@@ -8,7 +8,7 @@ import { getResultByDiseaseName } from "./testResults";
 
 import { displayFullName, facilityDisplayName } from "./index";
 
-export function parseDataForCSV(data: any[], multiplexEnabled: boolean) {
+export function parseDataForCSV(data: any[]) {
   return data.sort(byDateTested).map((r: any) => {
     const symptomList = r.symptoms ? symptomsStringToArray(r.symptoms) : [];
 
@@ -27,16 +27,14 @@ export function parseDataForCSV(data: any[], multiplexEnabled: boolean) {
         TEST_RESULT_DESCRIPTIONS[
           getResultByDiseaseName(r.results, "COVID-19") as Results
         ],
-      ...(multiplexEnabled && {
-        "Flu A result":
-          TEST_RESULT_DESCRIPTIONS[
-            getResultByDiseaseName(r.results, "Flu A") as Results
-          ],
-        "Flu B result":
-          TEST_RESULT_DESCRIPTIONS[
-            getResultByDiseaseName(r.results, "Flu B") as Results
-          ],
-      }),
+      "Flu A result":
+        TEST_RESULT_DESCRIPTIONS[
+          getResultByDiseaseName(r.results, "Flu A") as Results
+        ],
+      "Flu B result":
+        TEST_RESULT_DESCRIPTIONS[
+          getResultByDiseaseName(r.results, "Flu B") as Results
+        ],
       "Result reported date": moment(r.dateUpdated).format("MM/DD/YYYY h:mma"),
       "Test correction status": r.correctionStatus,
       "Test correction reason": r.reasonForCorrection,

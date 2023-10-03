@@ -3,7 +3,6 @@ import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { MockedProvider, MockedResponse } from "@apollo/client/testing";
 import {
-  act,
   render,
   screen,
   waitFor,
@@ -230,8 +229,9 @@ describe("ManageUsersContainer", () => {
   const renderComponentWithMocks = (
     graphqlResponses: MockedResponse[],
     store: Store<unknown, AnyAction>
-  ) =>
-    render(
+  ) => ({
+    user: userEvent.setup(),
+    ...render(
       <MemoryRouter>
         <MockedProvider mocks={graphqlResponses}>
           <Provider store={store}>
@@ -239,8 +239,8 @@ describe("ManageUsersContainer", () => {
           </Provider>
         </MockedProvider>
       </MemoryRouter>
-    );
-
+    ),
+  });
   it("loads the component and displays users successfully", async () => {
     const { container } = renderComponentWithMocks(mocks, store);
     await waitForElementToBeRemoved(screen.queryByText("Loading..."));
@@ -264,13 +264,13 @@ describe("ManageUsersContainer", () => {
   });
 
   it("when user is an org admin , modal copy reflects the reactivate only flow", async () => {
-    renderComponentWithMocks(supendedUserMocks, store);
+    const { user } = renderComponentWithMocks(supendedUserMocks, store);
 
     const suspendedUser = await screen.findByText("Carter, Nicole Suspended");
-    await act(async () => await userEvent.click(suspendedUser));
+    await user.click(suspendedUser);
 
     const reactivateButton = await screen.findByText("Activate user");
-    await act(async () => await userEvent.click(reactivateButton));
+    await user.click(reactivateButton);
     expect(await screen.findByText(ORG_ADMIN_REACTIVATE_COPY));
   });
 
@@ -279,13 +279,13 @@ describe("ManageUsersContainer", () => {
     storeWithSiteAdminUser.user.isAdmin = true;
     const testMockStore = mockStore(storeWithSiteAdminUser);
 
-    renderComponentWithMocks(supendedUserMocks, testMockStore);
+    const { user } = renderComponentWithMocks(supendedUserMocks, testMockStore);
 
     const suspendedUser = await screen.findByText("Carter, Nicole Suspended");
-    await act(async () => await userEvent.click(suspendedUser));
+    await user.click(suspendedUser);
 
     const reactivateButton = await screen.findByText("Activate user");
-    await act(async () => await userEvent.click(reactivateButton));
+    await user.click(reactivateButton);
     expect(await screen.findByText(SITE_ADMIN_REACTIVATE_COPY));
   });
 });

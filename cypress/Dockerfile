@@ -13,7 +13,7 @@ COPY ./cypress/yarn.lock /app/yarn.lock
 
 WORKDIR /app
 
-RUN yarn install
+RUN CYPRESS_CACHE_FOLDER=./tmp/Cypress yarn install
 
 COPY ./cypress/e2e.sh /app/e2e.sh
 

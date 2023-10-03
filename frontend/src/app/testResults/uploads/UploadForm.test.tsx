@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import createMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
@@ -12,12 +12,12 @@ import { getAppInsights } from "../../TelemetryService";
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 import SRToastContainer from "../../commonComponents/SRToastContainer";
 
-import Uploads, {
+import UploadForm, {
   EnhancedFeedbackMessage,
   getErrorMessage,
   getGuidance,
   groupErrors,
-} from "./Uploads";
+} from "./UploadForm";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -40,18 +40,26 @@ const validFileContents =
 
 const validFile = () => file(validFileContents);
 
-const TestContainer = () => (
-  <Provider store={store}>
-    <MemoryRouter>
-      <SRToastContainer />
-      <Uploads />
-    </MemoryRouter>
-  </Provider>
-);
-
 describe("Uploads", () => {
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
+      <Provider store={store}>
+        <MemoryRouter>
+          <SRToastContainer />
+          <UploadForm
+            uploadResults={FileUploadService.uploadResults}
+            uploadType={"Disease Specific"}
+            spreadsheetTemplateLocation={""}
+            uploadGuideLocation={""}
+          />
+        </MemoryRouter>
+      </Provider>
+    ),
+  });
+
   it("should render the upload screen", async () => {
-    render(<TestContainer />);
+    renderWithUser();
 
     expect(await screen.findByText("Upload your CSV")).toBeInTheDocument();
     expect(await screen.findByText(/Drag file here or/i)).toBeInTheDocument();
@@ -61,11 +69,11 @@ describe("Uploads", () => {
   });
 
   it("should display error toast when empty file is uploaded, button disabled", async () => {
-    render(<TestContainer />);
+    const { user } = renderWithUser();
 
     const emptyFile = file("");
     const input = screen.getByTestId("upload-csv-input");
-    await act(async () => await userEvent.upload(input, emptyFile));
+    await user.upload(input, emptyFile);
     expect(
       await screen.findByText(
         "The file 'values.csv' doesn't contain any valid data. File should have a header line and at least one line of data."
@@ -79,11 +87,11 @@ describe("Uploads", () => {
   });
 
   it("max row validation displays error message", async () => {
-    render(<TestContainer />);
+    const { user } = renderWithUser();
     const tooManyRows = file("\n".repeat(10001));
 
     const input = screen.getByTestId("upload-csv-input");
-    await act(async () => await userEvent.upload(input, tooManyRows));
+    await user.upload(input, tooManyRows);
 
     expect(
       await screen.findByText(
@@ -98,11 +106,11 @@ describe("Uploads", () => {
   });
 
   it("max bytes validation displays error message", async () => {
-    render(<TestContainer />);
+    const { user } = renderWithUser();
     const tooBig = file("0".repeat(50 * 1000 * 1000 + 1));
 
     const input = screen.getByTestId("upload-csv-input");
-    await act(async () => await userEvent.upload(input, tooBig));
+    await user.upload(input, tooBig);
 
     expect(
       await screen.findByText(
@@ -117,11 +125,11 @@ describe("Uploads", () => {
   });
 
   it("max item columns validation displays error message", async () => {
-    render(<TestContainer />);
+    const { user } = renderWithUser();
     const tooManyColumns = file("a, ".repeat(2001) + "\n");
 
     const input = screen.getByTestId("upload-csv-input");
-    await act(async () => await userEvent.upload(input, tooManyColumns));
+    await user.upload(input, tooManyColumns);
 
     expect(
       await screen.findByText(
@@ -172,10 +180,10 @@ describe("Uploads", () => {
             );
           });
 
-        render(<TestContainer />);
+        const { user } = renderWithUser();
 
         const fileInput = screen.getByTestId("upload-csv-input");
-        await act(async () => await userEvent.upload(fileInput, file));
+        await user.upload(fileInput, file);
 
         expect(
           screen.getByText(
@@ -184,7 +192,7 @@ describe("Uploads", () => {
         ).toBeInTheDocument();
 
         const submitButton = screen.getByTestId("button");
-        await act(async () => await userEvent.click(submitButton));
+        await user.click(submitButton);
         await waitFor(() => {
           expect(
             screen.getByText("Success: File Accepted")
@@ -208,6 +216,7 @@ describe("Uploads", () => {
             org: "Test Org",
             "report ID": "fake-report-id",
             user: "testuser@test.org",
+            uploadType: "Disease Specific",
           },
         });
       });
@@ -225,17 +234,17 @@ describe("Uploads", () => {
         return Promise.resolve(new Response(null, { status: 500 }));
       });
 
-      render(<TestContainer />);
+      const { user } = renderWithUser();
 
       const fileInput = screen.getByTestId("upload-csv-input");
-      await act(async () => await userEvent.upload(fileInput, validFile()));
+      await user.upload(fileInput, validFile());
 
       expect(
         screen.getByText("Drag file here or choose from folder to change file")
       ).toBeInTheDocument();
 
       const submitButton = screen.getByTestId("button");
-      await act(async () => await userEvent.click(submitButton));
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(
@@ -255,6 +264,7 @@ describe("Uploads", () => {
         properties: {
           org: "Test Org",
           user: "testuser@test.org",
+          uploadType: "Disease Specific",
         },
       });
     });
@@ -280,16 +290,16 @@ describe("Uploads", () => {
         );
       });
 
-      await render(<TestContainer />);
+      const { user } = renderWithUser();
 
       const fileInput = screen.getByTestId("upload-csv-input");
-      await act(async () => await userEvent.upload(fileInput, validFile()));
+      await user.upload(fileInput, validFile());
       expect(
         screen.getByText("Drag file here or choose from folder to change file")
       ).toBeInTheDocument();
 
       const submitButton = screen.getByTestId("button");
-      await act(async () => await userEvent.click(submitButton));
+      await user.click(submitButton);
 
       await waitFor(() => {
         expect(
@@ -310,6 +320,7 @@ describe("Uploads", () => {
           ],
           org: "Test Org",
           user: "testuser@test.org",
+          uploadType: "Disease Specific",
         },
       });
     });

@@ -1,7 +1,7 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
 import { SchemaOf } from "yup";
 import { useTranslation } from "react-i18next";
-import { ComboBox } from "@trussworks/react-uswds";
+import { ComboBox, Label, Textarea } from "@trussworks/react-uswds";
 
 import {
   canadianProvinceCodes,
@@ -610,6 +610,26 @@ const PersonForm = (props: Props) => {
               </div>
             </div>
           ) : null}
+        </div>
+        <div className="usa-form" style={{ maxWidth: "30rem" }}>
+          <div className="usa-form-group">
+            <Label htmlFor="patient-notes-textarea">
+              {t("patient.form.notes.heading")}
+            </Label>
+            <span id="with-hint-textarea-hint" className="usa-hint">
+              {t("patient.form.notes.helpText")}
+            </span>
+            <Textarea
+              id="patient-notes-textarea"
+              maxLength={10000}
+              aria-describedby="with-hint-textarea-info with-hint-textarea-hint"
+              onChange={(value) => {
+                onPersonChange("notes")(value.target.value);
+              }}
+              name="notes"
+              value={patient.notes || undefined}
+            />
+          </div>
         </div>
       </FormGroup>
       <FormGroup title={t("patient.form.demographics.heading")}>

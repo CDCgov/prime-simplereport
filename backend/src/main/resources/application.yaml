@@ -151,6 +151,9 @@ datahub:
 features:
   hivEnabled: true
   rsvEnabled: true
+  singleEntryRsvEnabled: true
+  agnosticEnabled: true
+  testCardRefactorEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}

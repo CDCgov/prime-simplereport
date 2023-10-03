@@ -17,6 +17,7 @@ public class CachingConfig {
   public static final String SPECIMEN_NAME_TO_SNOMED_MAP = "specimenTypeNameSNOMEDMap";
   public static final String SNOMED_TO_SPECIMEN_NAME_MAP = "SNOMEDToSpecimenTypeNameMap";
   public static final String ADDRESS_TIMEZONE_LOOKUP_MAP = "addressTimezoneLookupMap";
+  public static final String SUPPORTED_DISEASE_ID_MAP = "supportedDiseaseIDMap";
 
   @Bean
   public CacheManager cacheManager() {
@@ -25,6 +26,7 @@ public class CachingConfig {
         DEVICE_MODEL_AND_TEST_PERFORMED_CODE_MAP,
         SPECIMEN_NAME_TO_SNOMED_MAP,
         SNOMED_TO_SPECIMEN_NAME_MAP,
-        ADDRESS_TIMEZONE_LOOKUP_MAP);
+        ADDRESS_TIMEZONE_LOOKUP_MAP,
+        SUPPORTED_DISEASE_ID_MAP);
   }
 }

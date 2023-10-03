@@ -1,16 +1,17 @@
 package gov.cdc.usds.simplereport.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-public class MultiplexUtilsTest {
+class MultiplexUtilsTest {
   @Test
   void inferMultiplexTestOrderLoinc_getsCalledWithEmptySupportedDiseaseTestPerformed() {
-    assertEquals(null, MultiplexUtils.inferMultiplexTestOrderLoinc(new ArrayList<>()));
+    assertNull(MultiplexUtils.inferMultiplexTestOrderLoinc(new ArrayList<>()));
   }
 
   @Test

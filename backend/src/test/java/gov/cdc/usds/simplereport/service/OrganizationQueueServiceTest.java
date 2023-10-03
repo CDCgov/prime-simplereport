@@ -76,7 +76,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
 
     Optional<OrganizationQueueItem> optFetchedQueueItem =
         _service.getUnverifiedQueuedOrganizationByExternalId(editedItem.getExternalId());
-    assertEquals(optFetchedQueueItem.get().getOrganizationName(), "Edited Org Queue Name");
+    assertEquals("Edited Org Queue Name", optFetchedQueueItem.get().getOrganizationName());
   }
 
   @Test
@@ -94,8 +94,8 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     // re-fetch queue item and see changes reflected
     Optional<OrganizationQueueItem> optFetchedQueueItem =
         _service.getUnverifiedQueuedOrganizationByExternalId(createdQueueItem.getExternalId());
-    assertEquals(optFetchedQueueItem.get().getRequestData().getFirstName(), "Sarah");
-    assertEquals(optFetchedQueueItem.get().getRequestData().getLastName(), "Samuels");
+    assertEquals("Sarah", optFetchedQueueItem.get().getRequestData().getFirstName());
+    assertEquals("Samuels", optFetchedQueueItem.get().getRequestData().getLastName());
   }
 
   @Test
@@ -113,8 +113,8 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
     // re-fetch queue item and see changes reflected
     Optional<OrganizationQueueItem> optFetchedQueueItem =
         _service.getUnverifiedQueuedOrganizationByExternalId(createdQueueItem.getExternalId());
-    assertEquals(optFetchedQueueItem.get().getRequestData().getEmail(), "foo@bar.com");
-    assertEquals(optFetchedQueueItem.get().getRequestData().getWorkPhoneNumber(), "123-456-7890");
+    assertEquals("foo@bar.com", optFetchedQueueItem.get().getRequestData().getEmail());
+    assertEquals("123-456-7890", optFetchedQueueItem.get().getRequestData().getWorkPhoneNumber());
   }
 
   @Test
@@ -139,7 +139,7 @@ class OrganizationQueueServiceTest extends BaseServiceTest<OrganizationQueueServ
                   editedOrgAdminPhone);
             });
     assertEquals(
-        exception.getMessage(), "Requesting edits on an organization that does not exist.");
+        "Requesting edits on an organization that does not exist.", exception.getMessage());
   }
 
   @Test

@@ -9,26 +9,10 @@ import { displayFullName, facilityDisplayName } from "../../utils";
 import { formatDateWithTimeOption } from "../../utils/date";
 import { ActionsMenu } from "../../commonComponents/ActionsMenu";
 import { byDateTested } from "../TestResultsList";
-import { MULTIPLEX_DISEASES } from "../constants";
 import { toLowerCaseHyphenate } from "../../utils/text";
 import { PhoneNumber, Maybe, Result } from "../../../generated/graphql";
 
 export const TEST_RESULT_ARIA_TIME_FORMAT = "MMMM Do YYYY, h:mm:ss a";
-
-const testResultOrdering = [
-  MULTIPLEX_DISEASES.COVID_19,
-  MULTIPLEX_DISEASES.FLU_A,
-  MULTIPLEX_DISEASES.FLU_B,
-];
-
-// TODO: hmmmm.... wut do
-const sortTestResults = (results: MultiplexResults) => {
-  return [...results].sort(
-    (a, b) =>
-      testResultOrdering.indexOf(a.disease.name) -
-      testResultOrdering.indexOf(b.disease.name)
-  );
-};
 
 export function formatTestResultAriaLabel(result: Result) {
   const patientFullName = displayFullName(
@@ -148,8 +132,9 @@ const generateResultRows = (
 
   return sortedResults.map((r: Result) => {
     const removed = r.correctionStatus === "REMOVED";
-    // TODO: values are required; update to reflect
+
     let diseaseIdName = toLowerCaseHyphenate(r?.disease?.name);
+
     const actionItems = createActionItemList(
       setPrintModalId,
       r,

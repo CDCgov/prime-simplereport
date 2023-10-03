@@ -11,7 +11,7 @@ import {
   mockOrg1,
   mockPatient1,
   mockPatient2,
-} from "./UnarchivePatient.test";
+} from "./testUtils";
 
 const mockNavigate = jest.fn();
 const mockLocation = jest.fn();
@@ -38,8 +38,8 @@ describe("unarchive patient information", () => {
     let unarchivePatientState: UnarchivePatientState = {
       pageUrl: "/admin/unarchive-patient",
       entriesPerPage: 20,
-      orgId: "",
-      facilityId: "",
+      orgId: undefined,
+      facilityId: undefined,
       patientsCount: undefined,
       patients: undefined,
       facilities: [],

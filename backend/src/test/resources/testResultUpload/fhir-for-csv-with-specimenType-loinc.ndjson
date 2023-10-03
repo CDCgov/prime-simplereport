@@ -396,6 +396,32 @@
           {
             "reference": "Observation/7e5bdd49-f9ca-3c9c-b379-19343eac04be"
           }
+        ],
+        "note": [
+          {
+            "extension": [
+              {
+                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "extension": [
+                        {
+                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
+                          "valueString": "identifier"
+                        }
+                      ],
+                      "system": "HL70364",
+                      "version": "2.5.1",
+                      "code": "RE",
+                      "display": "Remark"
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": "Test Comment"
+          }
         ]
       }
     },
@@ -404,6 +430,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
+        "identifier": [
+          {
+            "value": "543212134"
+          }
+        ],
         "manufacturer": "Acme",
         "deviceName": [
           {
@@ -951,6 +982,32 @@
           {
             "reference": "Observation/7e5bdd49-f9ca-3c9c-b379-19343eac04be"
           }
+        ],
+        "note": [
+          {
+            "extension": [
+              {
+                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "extension": [
+                        {
+                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
+                          "valueString": "identifier"
+                        }
+                      ],
+                      "system": "HL70364",
+                      "version": "2.5.1",
+                      "code": "RE",
+                      "display": "Remark"
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": "Test Comment"
+          }
         ]
       }
     },
@@ -959,6 +1016,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "5db534ea-5e97-4861-ba18-d74acc46db15",
+        "identifier": [
+          {
+            "value": "543212134"
+          }
+        ],
         "manufacturer": "Acme",
         "deviceName": [
           {

@@ -54,6 +54,7 @@ export const GET_PATIENT = gql`
         id
       }
       testResultDelivery
+      notes
     }
   }
 `;
@@ -92,6 +93,7 @@ interface GetPatientResponse {
       id: string;
     } | null;
     testResultDelivery: TestResultDeliveryPreference | null;
+    notes: string | null;
   };
 }
 
@@ -124,6 +126,7 @@ export const UPDATE_PATIENT = gql`
     $employedInHealthcare: Boolean
     $preferredLanguage: String
     $testResultDelivery: TestResultDeliveryPreference
+    $notes: String
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -153,6 +156,7 @@ export const UPDATE_PATIENT = gql`
       employedInHealthcare: $employedInHealthcare
       preferredLanguage: $preferredLanguage
       testResultDelivery: $testResultDelivery
+      notes: $notes
     ) {
       internalId
     }
@@ -269,8 +273,92 @@ const EditPatient = (props: Props) => {
     }
   };
 
-  const getTitle = (person: Nullable<PersonFormData>) =>
-    displayFullName(person.firstName, person.middleName, person.lastName);
+  const getHeader = (
+    person: Nullable<PersonFormData>,
+    onSave: (startTest?: boolean) => void,
+    formChanged: boolean
+  ) => (
+    <div className="display-flex flex-justify">
+      <div>
+        <div className="display-flex flex-align-center">
+          <svg
+            className="usa-icon text-base margin-left-neg-2px"
+            aria-hidden="true"
+            focusable="false"
+            role="img"
+          >
+            <use xlinkHref={iconSprite + "#arrow_back"}></use>
+          </svg>
+          {props.fromQueue ? (
+            <NavLink
+              to={`/queue?facility=${props.facilityId}`}
+              className="margin-left-05"
+            >
+              Conduct tests
+            </NavLink>
+          ) : (
+            <LinkWithQuery to={`/patients`} className="margin-left-05">
+              {PATIENT_TERM_PLURAL_CAP}
+            </LinkWithQuery>
+          )}
+        </div>
+        <div className="prime-edit-patient-heading margin-y-0">
+          <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+            {displayFullName(
+              person.firstName,
+              person.middleName,
+              person.lastName
+            )}
+          </h1>
+        </div>
+      </div>
+      <div className="display-flex flex-align-center">
+        {!props.fromQueue && (
+          <Button
+            id="edit-patient-save-upper"
+            className="prime-save-patient-changes-start-test"
+            disabled={loading || !formChanged}
+            onClick={() => {
+              onSave(true);
+            }}
+            variant="outline"
+            label={
+              loading
+                ? `${t("common.button.saving")}...`
+                : "Save and start test"
+            }
+          />
+        )}
+        <button
+          className="prime-save-patient-changes usa-button margin-right-0"
+          disabled={editPersonLoading || !formChanged}
+          onClick={() => onSave(props.fromQueue)}
+        >
+          {editPersonLoading
+            ? `${t("common.button.saving")}...`
+            : t("common.button.save")}
+        </button>
+      </div>
+    </div>
+  );
+  const getFooter = (
+    onSave: (startTest?: boolean) => void,
+    formChanged: boolean
+  ) => (
+    <div className="prime-edit-patient-heading">
+      <Button
+        id="edit-patient-save-lower"
+        className="prime-save-patient-changes"
+        disabled={editPersonLoading || !formChanged}
+        onClick={() => onSave(false)}
+        label={
+          editPersonLoading
+            ? `${t("common.button.saving")}...`
+            : t("common.button.save")
+        }
+      />
+    </div>
+  );
 
   return (
     <div className="prime-home bg-base-lightest">
@@ -303,84 +391,8 @@ const EditPatient = (props: Props) => {
               }}
               patientId={props.patientId}
               savePerson={savePerson}
-              getHeader={(person, onSave, formChanged) => (
-                <div className="display-flex flex-justify">
-                  <div>
-                    <div className="display-flex flex-align-center">
-                      <svg
-                        className="usa-icon text-base margin-left-neg-2px"
-                        aria-hidden="true"
-                        focusable="false"
-                        role="img"
-                      >
-                        <use xlinkHref={iconSprite + "#arrow_back"}></use>
-                      </svg>
-                      {props.fromQueue ? (
-                        <NavLink
-                          to={`/queue?facility=${props.facilityId}`}
-                          className="margin-left-05"
-                        >
-                          Conduct tests
-                        </NavLink>
-                      ) : (
-                        <LinkWithQuery
-                          to={`/patients`}
-                          className="margin-left-05"
-                        >
-                          {PATIENT_TERM_PLURAL_CAP}
-                        </LinkWithQuery>
-                      )}
-                    </div>
-                    <div className="prime-edit-patient-heading margin-y-0">
-                      <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
-                        {getTitle(person)}
-                      </h1>
-                    </div>
-                  </div>
-                  <div className="display-flex flex-align-center">
-                    {!props.fromQueue && (
-                      <Button
-                        id="edit-patient-save-upper"
-                        className="prime-save-patient-changes-start-test"
-                        disabled={loading || !formChanged}
-                        onClick={() => {
-                          onSave(true);
-                        }}
-                        variant="outline"
-                        label={
-                          loading
-                            ? `${t("common.button.saving")}...`
-                            : "Save and start test"
-                        }
-                      />
-                    )}
-                    <button
-                      className="prime-save-patient-changes usa-button margin-right-0"
-                      disabled={editPersonLoading || !formChanged}
-                      onClick={() => onSave(props.fromQueue)}
-                    >
-                      {editPersonLoading
-                        ? `${t("common.button.saving")}...`
-                        : t("common.button.save")}
-                    </button>
-                  </div>
-                </div>
-              )}
-              getFooter={(onSave, formChanged) => (
-                <div className="prime-edit-patient-heading">
-                  <Button
-                    id="edit-patient-save-lower"
-                    className="prime-save-patient-changes"
-                    disabled={editPersonLoading || !formChanged}
-                    onClick={() => onSave(false)}
-                    label={
-                      editPersonLoading
-                        ? `${t("common.button.saving")}...`
-                        : t("common.button.save")
-                    }
-                  />
-                </div>
-              )}
+              getHeader={getHeader}
+              getFooter={getFooter}
             />
           </div>
         </div>

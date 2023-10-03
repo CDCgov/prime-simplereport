@@ -61,4 +61,5 @@ extend type Mutation {
     accessAllFacilities: Boolean = false,
     facilities: [ID] = [],
     role: Role!): User!
+  updateFeatureFlag(name: String!, value: Boolean!):FeatureFlag
 }

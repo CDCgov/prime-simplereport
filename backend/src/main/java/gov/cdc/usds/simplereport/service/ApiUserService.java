@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.okta.sdk.resource.model.UserStatus;
 import gov.cdc.usds.simplereport.api.ApiUserContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.WebhookContextHolder;
@@ -40,7 +41,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.openapitools.client.model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.support.ScopeNotActiveException;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 
 @Service
-@Transactional(readOnly = false)
+@Transactional
 @Slf4j
 public class ApiUserService {
 
@@ -166,8 +166,7 @@ public class ApiUserService {
     apiUser.setIsDeleted(false);
 
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
-    boolean isAdmin = isAdmin(apiUser);
-    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
+    UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     log.info(
         "User with id={} re-provisioned by user with id={}",
@@ -200,8 +199,7 @@ public class ApiUserService {
             getOrganizationRoles(role, accessAllFacilities),
             active);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
-    boolean isAdmin = isAdmin(apiUser);
-    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
+    UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     log.info(
         "User with id={} created by user with id={}",
@@ -226,8 +224,7 @@ public class ApiUserService {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(userIdentity);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
-    boolean isAdmin = isAdmin(apiUser);
-    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
+    UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     createUserUpdatedAuditLog(
         apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
@@ -251,7 +248,7 @@ public class ApiUserService {
             username, org, facilitiesFound, getOrganizationRoles(role, accessAllFacilities));
     Optional<OrganizationRoles> orgRoles =
         newOrgClaims.map(c -> _orgService.getOrganizationRoles(org, c));
-    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
+    UserInfo user = new UserInfo(apiUser, orgRoles, false);
 
     createUserUpdatedAuditLog(apiUser.getInternalId(), getCurrentApiUser().getInternalId());
 
@@ -275,12 +272,11 @@ public class ApiUserService {
 
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUserEmail(userIdentity, email);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
-    boolean isAdmin = isAdmin(apiUser);
 
     createUserUpdatedAuditLog(
         apiUser.getInternalId(), getCurrentApiUser().getInternalId().toString());
 
-    return new UserInfo(apiUser, orgRoles, isAdmin);
+    return new UserInfo(apiUser, orgRoles, false);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
@@ -294,7 +290,7 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
@@ -308,7 +304,7 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
@@ -317,7 +313,7 @@ public class ApiUserService {
     apiUser.setIsDeleted(deleted);
     apiUser = _apiUserRepo.save(apiUser);
     _oktaRepo.setUserIsActive(apiUser.getLoginEmail(), !deleted);
-    return new UserInfo(apiUser, Optional.empty(), isAdmin(apiUser));
+    return new UserInfo(apiUser, Optional.empty(), false);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
@@ -338,7 +334,7 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
   // This method is to re-send the invitation email to join SimpleReport
@@ -353,14 +349,14 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     OrganizationRoles orgRoles = _orgService.getOrganizationRoles(org, orgClaims);
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+    return new UserInfo(apiUser, Optional.of(orgRoles), false);
   }
 
   private ApiUser getApiUser(UUID id) {
     return getApiUser(id, false);
   }
 
-  private ApiUser getApiUser(UUID id, Boolean includeArchived) {
+  private ApiUser getApiUser(UUID id, boolean includeArchived) {
     Optional<ApiUser> found =
         includeArchived ? _apiUserRepo.findByIdIncludeArchived(id) : _apiUserRepo.findById(id);
     if (found.isEmpty()) {
@@ -377,12 +373,6 @@ public class ApiUserService {
     }
 
     return result;
-  }
-
-  // In the future, this should be removed, but in the meantime, always return false.
-  // For more detail see comments on: https://github.com/CDCgov/prime-simplereport/pull/1218
-  public boolean isAdmin(ApiUser user) {
-    return false;
   }
 
   // Creating separate getCurrentApiUser() methods because the auditing use case and
@@ -623,9 +613,7 @@ public class ApiUserService {
         _tenantService.addTenantDataAccess(apiUser, org, justification);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
 
-    boolean isAdmin = isAdmin(apiUser);
-
-    return new UserInfo(apiUser, orgRoles, isAdmin);
+    return new UserInfo(apiUser, orgRoles, false);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser

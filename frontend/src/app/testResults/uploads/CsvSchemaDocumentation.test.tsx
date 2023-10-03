@@ -10,6 +10,7 @@ import CsvSchemaDocumentation, {
   CsvSchemaItem,
   getPageTitle,
 } from "./CsvSchemaDocumentation";
+import { specificSchemaBuilder } from "./specificSchemaBuilder";
 
 jest.mock("../../TelemetryService", () => ({
   ...jest.requireActual("../../TelemetryService"),
@@ -148,12 +149,16 @@ describe("CsvSchemaDocumentation tests", () => {
           <Routes>
             <Route
               path={"/results/upload/submit/guide"}
-              element={<CsvSchemaDocumentation />}
+              element={
+                <CsvSchemaDocumentation
+                  schemaBuilder={specificSchemaBuilder}
+                  returnUrl={"/results/upload/submit"}
+                />
+              }
             />
           </Routes>
         </MemoryRouter>
       );
-
       expect(container).toMatchSnapshot();
     });
     it("logs to App Insights on template download", async () => {
@@ -167,11 +172,17 @@ describe("CsvSchemaDocumentation tests", () => {
           <Routes>
             <Route
               path={"/results/upload/submit/guide"}
-              element={<CsvSchemaDocumentation />}
+              element={
+                <CsvSchemaDocumentation
+                  schemaBuilder={specificSchemaBuilder}
+                  returnUrl={"/results/upload/submit"}
+                />
+              }
             />
           </Routes>
         </MemoryRouter>
       );
+      const user = userEvent.setup();
 
       const templateLink1 = screen.getByRole("link", {
         name: "SimpleReport spreadsheet template with example data [CSV download]",
@@ -179,8 +190,8 @@ describe("CsvSchemaDocumentation tests", () => {
       const templateLink2 = screen.getByRole("link", {
         name: "spreadsheet template",
       });
-      await userEvent.click(templateLink1);
-      await userEvent.click(templateLink2);
+      await user.click(templateLink1);
+      await user.click(templateLink2);
 
       expect(mockTrackEvent).toHaveBeenCalledTimes(2);
       expect(mockTrackEvent).toHaveBeenNthCalledWith(1, {

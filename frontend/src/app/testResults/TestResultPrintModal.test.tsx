@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { cloneDeep } from "lodash";
 import MockDate from "mockdate";
@@ -54,7 +54,17 @@ window.print = jest.fn();
 
 describe("TestResultPrintModal with only COVID results", () => {
   let printSpy: jest.SpyInstance;
-  let component: any;
+
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
+      <DetachedTestResultPrintModal
+        data={{ testResult }}
+        testResultId="id"
+        closeModal={() => {}}
+      />
+    ),
+  });
 
   beforeEach(() => {
     ReactDOM.createPortal = jest.fn((element, _node) => {
@@ -62,15 +72,7 @@ describe("TestResultPrintModal with only COVID results", () => {
     }) as any;
 
     printSpy = jest.spyOn(window, "print");
-
     MockDate.set("2021/01/01");
-    component = render(
-      <DetachedTestResultPrintModal
-        data={{ testResult }}
-        testResultId="id"
-        closeModal={() => {}}
-      />
-    );
   });
 
   afterEach(() => {
@@ -78,23 +80,24 @@ describe("TestResultPrintModal with only COVID results", () => {
   });
 
   it("should render the test result print view", async () => {
-    await act(
-      async () => await userEvent.click(screen.getAllByText("Print")[1])
-    );
-
+    const { user } = renderWithUser();
+    await user.click(screen.getAllByText("Print")[1]);
     expect(printSpy).toBeCalled();
   });
 
   it("should render the test date and test time", () => {
+    renderWithUser();
     expect(screen.getByText("01/28/2022 5:56pm")).toBeInTheDocument();
   });
 
   it("should render only COVID information", () => {
+    renderWithUser();
     expect(screen.getByText("Test result: COVID-19")).toBeInTheDocument();
   });
 
   it("matches screenshot", () => {
-    expect(component).toMatchSnapshot();
+    const { container } = renderWithUser();
+    expect(container).toMatchSnapshot();
   });
 });
 

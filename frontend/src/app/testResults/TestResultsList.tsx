@@ -1,5 +1,3 @@
-import qs from "querystring";
-
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useLazyQuery } from "@apollo/client";
 import React, { ChangeEventHandler, useEffect, useMemo, useState } from "react";
@@ -436,14 +434,14 @@ export const DetachedTestResultsList = ({
       <div className="prime-container card-container sr-test-results-list">
         <div className="sticky-heading">
           <div className="usa-card__header">
-            <h1 className="font-sans-lg">
-              Test results
+            <div className="display-flex flex-align-center">
+              <h1 className="font-sans-lg margin-y-0">Test results</h1>
               {!loading && (
-                <span className="sr-showing-results-on-page">
+                <span className="sr-showing-results-on-page margin-left-4">
                   {getResultCountText(totalEntries, pageNumber, entriesPerPage)}
                 </span>
               )}
-            </h1>
+            </div>
             <div>
               <DownloadResultsCSVButton
                 filterParams={filterParams}
@@ -648,13 +646,18 @@ const TestResultsList = () => {
   };
 
   const filter = (params: FilterParams) => {
+    const searchParams = {
+      facility: activeFacilityId,
+      ...filterParams,
+      ...params,
+    };
+    const nonNullSearchParams = Object.fromEntries(
+      Object.entries(searchParams).filter(([_, v]) => v !== null)
+    ) as Record<string, string>;
+
     navigate({
       pathname: "/results/1",
-      search: qs.stringify({
-        facility: activeFacilityId,
-        ...filterParams,
-        ...params,
-      }),
+      search: new URLSearchParams(nonNullSearchParams).toString(),
     });
   };
 
@@ -665,7 +668,7 @@ const TestResultsList = () => {
   const clearFilterParams = () =>
     navigate({
       pathname: "/results/1",
-      search: qs.stringify({ facility: activeFacilityId }),
+      search: new URLSearchParams({ facility: activeFacilityId }).toString(),
     });
 
   const entriesPerPage = 20;

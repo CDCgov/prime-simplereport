@@ -126,6 +126,7 @@ const ManageUsers: React.FC<Props> = ({
     variables: { id: activeUser?.id },
     fetchPolicy: "no-cache",
     skip: !activeUser?.id,
+    notifyOnNetworkStatusChange: true,
     onCompleted: (data) => updateUserWithPermissions(data.user),
   });
 
@@ -432,7 +433,7 @@ const ManageUsers: React.FC<Props> = ({
               >
                 <div
                   role="tablist"
-                  aria-owns={`user-information-tab-id facility-access-tab-id`}
+                  aria-owns={`userinformation-tab facility-access-tab-id`}
                   className="usa-nav__secondary-links prime-nav usa-list"
                 >
                   <div
@@ -443,7 +444,7 @@ const ManageUsers: React.FC<Props> = ({
                     }`}
                   >
                     <button
-                      id={`user-information-tab-id`}
+                      id={`userinformation-tab`}
                       role="tab"
                       className="usa-button--unstyled text-ink text-no-underline"
                       onClick={() => setNavItemSelected("User information")}

@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class OrderingProviderRequiredValidatorTest {
+class OrderingProviderRequiredValidatorTest {
 
   private OrderingProviderRequiredValidator validator;
 
