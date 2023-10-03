@@ -915,7 +915,9 @@ databaseChangeLog:
       # we may want a check constraint on patient.facility (and arguably
       # test_order.facility and test_event.facility as well) to make sure that
       # the facility belongs to the correct organization
-      validCheckSum: 8:58ad437a388f111273560fde471a4f76
+      validCheckSum:
+        - 8:51b3552459ab927ea72a8c091bf69211
+        - 8:d2e0d1d37413eac3fe88ca3a88d3e0de
       changes:
         - renameColumn:
             tableName: organization
@@ -2307,7 +2309,9 @@ databaseChangeLog:
       id: add-phone-number-table
       author: nathan@skylight.digital
       comment: Add table to track user phone numbers
-      validCheckSum: 8:1c5c63c2b7c43160a183fcbe3209ac10
+      validCheckSum:
+        - 8:70c3b4930cb139d68729c7b9c9187463
+        - 8:d833c548817f8b2f40cdc0018a86b965
       changes:
           - sql:
             remarks: Create the enumerations needed for tracking a phone number's type
@@ -2594,6 +2598,7 @@ databaseChangeLog:
       id: add-organization-type
       author: nicholas.a.scialli@omb.eop.gov
       comment: Add type of organization.
+      validCheckSum: 8:a6b23862076020822dea6e1aac746d36
       changes:
         - addColumn:
             tableName: organization
@@ -3435,7 +3440,9 @@ databaseChangeLog:
       id: add-emails-to-patient
       author: nathan@skylight.digital
       comment: add emails column to person table to allow multiple patient emails
-      validCheckSum: 8:b46ba26e6035ee8c27fbf634e4dfaa3e
+      validCheckSum:
+        - 8:b46ba26e6035ee8c27fbf634e4dfaa3e
+        - 8:5dc7634e2ce3740dd0d94b231e0cb235
       changes:
         - tagDatabase:
             tag: add-emails-to-patient
