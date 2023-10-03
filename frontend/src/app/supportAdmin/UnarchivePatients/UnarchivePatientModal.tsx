@@ -18,7 +18,6 @@ interface Props {
 const UnarchivePatientModal: React.FC<Props> = ({
   isOpen,
   onClose,
-
   onUnarchivePatientConfirmation,
   patient,
 }) => {

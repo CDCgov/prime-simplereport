@@ -69,10 +69,8 @@ jest.mock("../../facilitySelect/useSelectedFacility", () => {
   };
 });
 
-let container: any;
-
 describe("DeviceTypeFormContainer", () => {
-  const renderWithsUser = () => ({
+  const renderWithUser = () => ({
     user: userEvent.setup(),
     ...render(
       <>
@@ -83,12 +81,12 @@ describe("DeviceTypeFormContainer", () => {
   });
 
   it("should render the device type form", async () => {
-    renderWithsUser();
+    const { container } = renderWithUser();
     expect(container).toMatchSnapshot();
   });
 
   it("should save the new device", async () => {
-    const { user } = renderWithsUser();
+    const { user } = renderWithUser();
     await addValue(user, "Device name", "Accula");
     await addValue(user, "Manufacturer", "Mesa Biotech");
     await addValue(user, "Model", "Accula SARS-Cov-2 Test*");

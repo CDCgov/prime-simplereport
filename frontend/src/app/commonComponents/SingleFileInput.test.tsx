@@ -62,7 +62,6 @@ describe("Single File Input", () => {
       accept: undefined,
     });
     const fileInput = screen.getByTestId("testId");
-    //await user.upload(fileInput, file(""));
     fireEvent.change(fileInput, { target: { files: { length: 0 } } });
     expect(await screen.findByText("Drag file here or choose from folder"));
   });

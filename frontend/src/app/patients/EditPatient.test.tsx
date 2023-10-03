@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import MockDate from "mockdate";
 import * as router from "react-router";
 
@@ -150,18 +150,12 @@ describe("EditPatient", () => {
       },
     ];
 
-    const Queue = () => {
-      const location = useLocation();
-      return <p>Testing Queue! {location.search}</p>;
-    };
-
     let renderWithRoutes = (
       facilityId: string,
       patientId: string,
       fromQueue: boolean
     ) => ({
       user: userEvent.setup(),
-
       ...render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
@@ -176,8 +170,6 @@ describe("EditPatient", () => {
                 }
                 path={"/patient/"}
               />
-              <Route path={"/patients"} element={<p>Patients!</p>} />
-              <Route path={"/queue"} element={<Queue />} />
             </RouterWithFacility>
           </MockedProvider>
         </Provider>

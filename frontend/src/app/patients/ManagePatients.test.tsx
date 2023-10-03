@@ -12,7 +12,6 @@ import {
   MemoryRouter,
   Route,
   Routes,
-  useLocation,
   useParams,
 } from "react-router-dom";
 import createMockStore from "redux-mock-store";
@@ -45,16 +44,6 @@ const PageNumberContainer = () => {
   );
 };
 
-const Queue = () => {
-  const location = useLocation() as LocationOptions;
-
-  return (
-    <p>
-      Testing Queue! {location.search} {location.state.patientId}
-    </p>
-  );
-};
-
 const renderWithUser = () => ({
   user: userEvent.setup(),
   ...render(<TestContainer />),
@@ -67,7 +56,6 @@ const TestContainer = () => (
         <Route path="/patients">
           <Route path=":pageNumber" element={<PageNumberContainer />} />
         </Route>
-        <Route path={"/queue"} element={<Queue />} />
       </Routes>
     </MemoryRouter>
   </MockedProvider>

@@ -524,7 +524,6 @@ describe("FacilityForm", () => {
         await user.type(opCityInput, "Englewood");
         const stateDropdownElement = screen.getByTestId("op-state-dropdown");
         await user.selectOptions(stateDropdownElement, "NJ");
-        //fireEvent.change(stateDropdownElement, { target: { value: "NJ" } });
         const opZIPInput = screen.getAllByLabelText("ZIP code", {
           exact: false,
         })[1];
