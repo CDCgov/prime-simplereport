@@ -33,7 +33,7 @@
     "@types/jest": "^28.1.6",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
-    "azure-functions-core-tools": "^4.0.5274",
+    "azure-functions-core-tools": "^4.0.5390",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "jest": "^28.1.3",
