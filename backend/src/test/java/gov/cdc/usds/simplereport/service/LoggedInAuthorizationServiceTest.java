@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class LoggedInAuthorizationServiceTest extends BaseServiceTest<DiseaseService> {
+class LoggedInAuthorizationServiceTest extends BaseServiceTest<DiseaseService> {
   @Autowired LoggedInAuthorizationService loggedInAuthorizationService;
 
   @Test
