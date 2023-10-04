@@ -80,7 +80,7 @@ export const mocks = [
     request: {
       query: testResultDetailsQuery,
       variables: {
-        id: testResults.content[0].internalId,
+        id: testResults.content[0].id,
       },
     },
     result: {
