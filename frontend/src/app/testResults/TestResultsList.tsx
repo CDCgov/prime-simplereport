@@ -90,7 +90,7 @@ const getResultCountText = (
   const from = totalEntries === 0 ? 0 : (pageNumber - 1) * entriesPerPage + 1;
   const to = Math.min(entriesPerPage * pageNumber, totalEntries);
 
-  return `Showing ${from}-${to} of ${totalEntries}`;
+  return `Showing results for ${from}-${to} of ${totalEntries} tests`;
 };
 
 const getFilteredPatientName = (
@@ -697,7 +697,7 @@ const TestResultsList = () => {
     throw results.error;
   }
 
-  const totalEntries = results?.data?.resultsPage?.totalElements || 0;
+  const totalEntries = results.data?.resultsPage?.totalElements || 0;
 
   return (
     <DetachedTestResultsList

@@ -87,7 +87,7 @@ describe("TestResultsList", () => {
     expect(
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
-    expect(await screen.findByText("Showing 1-3 of 3"));
+    expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
     expect(await screen.findByText(/Testing facility/i));
     expect(container).toMatchSnapshot();
   });
@@ -113,7 +113,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-1 of 1"));
+    expect(await screen.findByText("Showing results for 1-1 of 1 tests"));
     expect(await screen.findByLabelText("Date range (start)"));
     expect(await screen.findByDisplayValue("2021-03-18"));
 
@@ -170,7 +170,9 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-2 of 2")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Showing results for 1-2 of 2 tests")
+    ).toBeInTheDocument();
 
     expect(
       screen.getByRole("columnheader", { name: /facility/i })
@@ -195,7 +197,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-9 of 9"));
+    expect(await screen.findByText("Showing results for 1-5 of 5 tests"));
     expect(
       screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
@@ -224,7 +226,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing 1-9 of 9"));
+    expect(await screen.findByText("Showing results for 1-5 of 5 tests"));
 
     expect(
       screen.getByRole("columnheader", { name: /condition/i })
@@ -478,7 +480,9 @@ describe("TestResultsList", () => {
 
     it("opens the test detail modal from the actions menu", async () => {
       const { user } = renderWithUser();
-      expect(await screen.findByText("Showing 1-3 of 3")).toBeInTheDocument();
+      expect(
+        await screen.findByText("Showing results for 1-3 of 3 tests")
+      ).toBeInTheDocument();
       expect(
         await screen.findByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -494,7 +498,7 @@ describe("TestResultsList", () => {
 
     it("opens the email test results modal", async () => {
       const { user } = renderWithUser();
-      expect(await screen.findByText("Showing 1-3 of 3"));
+      expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -509,7 +513,7 @@ describe("TestResultsList", () => {
 
     it("opens the download test results modal and shows how many rows the csv will have", async () => {
       const { user } = renderWithUser();
-      expect(await screen.findByText("Showing 1-3 of 3"));
+      expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -530,7 +534,7 @@ describe("TestResultsList", () => {
     it("closes the download test results modal after downloading", async () => {
       const { user } = renderWithUser();
       // source of "navigation not implemented" error
-      expect(await screen.findByText("Showing 1-3 of 3"));
+      expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -564,7 +568,7 @@ describe("TestResultsList", () => {
 
     it("opens the download test results modal after applying filters and shows how many rows the csv will have", async () => {
       const { user } = renderWithUser();
-      expect(await screen.findByText("Showing 1-3 of 3"));
+      expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
       expect(
         screen.getByText("Test Results", { exact: false })
       ).toBeInTheDocument();
@@ -572,7 +576,7 @@ describe("TestResultsList", () => {
       await user.selectOptions(screen.getByLabelText("Test result"), [
         "NEGATIVE",
       ]);
-      expect(await screen.findByText("Showing 1-2 of 2"));
+      expect(await screen.findByText("Showing results for 1-2 of 2 tests"));
       const downloadButton = screen.getByText("Download results", {
         exact: false,
       });
@@ -593,7 +597,7 @@ describe("TestResultsList", () => {
     describe("patient has no email", () => {
       it("doesnt show the button to print results", async () => {
         const { user } = renderWithUser();
-        expect(await screen.findByText("Showing 1-3 of 3"));
+        expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
         expect(
           screen.getByText("Test Results", { exact: false })
         ).toBeInTheDocument();
@@ -640,7 +644,7 @@ describe("TestResultsList", () => {
     describe("return focus after modal close", () => {
       // source of the React key prop warning
       const clickActionMenu = async (user: UserEvent) => {
-        expect(await screen.findByText("Showing 1-3 of 3"));
+        expect(await screen.findByText("Showing results for 1-3 of 3 tests"));
         const actionMenuButton =
           document.querySelectorAll(".rc-menu-button")[0];
 
