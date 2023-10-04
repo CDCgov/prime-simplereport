@@ -4,13 +4,15 @@ import userEvent from "@testing-library/user-event";
 import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
 import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
-import { TestResult } from "../../../generated/graphql";
+import { Result } from "../../../generated/graphql";
 import { toLowerCaseHyphenate } from "../../utils/text";
 
 import ResultsTable, { generateTableHeaders } from "./ResultsTable";
 
 const TEST_RESULTS_MULTIPLEX_CONTENT =
-  TEST_RESULTS_MULTIPLEX.content as TestResult[];
+  // TODO: scream emoji
+  TEST_RESULTS_MULTIPLEX.content as unknown as Result[];
+
 describe("Method generateTableHeaders", () => {
   const table = (headers: JSX.Element) => (
     <table>
@@ -93,7 +95,8 @@ describe("Component ResultsTable", () => {
   it("checks table with covid results", () => {
     render(
       <ResultsTable
-        results={[TEST_RESULT_COVID.content[0]] as TestResult[]}
+        // TODO: awful, pls change
+        results={[TEST_RESULT_COVID.content[0] as unknown as Result]}
         setPrintModalId={setPrintModalIdFn}
         setMarkCorrectionId={setMarkCorrectionIdFn}
         setDetailsModalId={setDetailsModalIdFn}
@@ -126,14 +129,14 @@ describe("Component ResultsTable", () => {
     // 5 rows -> 9 rows
 
     for (const result of TEST_RESULTS_MULTIPLEX_CONTENT) {
-      const resultId = result.internalId;
+      const resultId = result.id;
 
-      for (const multiplexResult of result.results as MultiplexResults) {
-        const testId = `test-result-${resultId}-${toLowerCaseHyphenate(
-          multiplexResult.disease.name
-        )}`;
-        expect(screen.getByTestId(testId)).toBeInTheDocument();
-      }
+      // for (const multiplexResult of result.results as MultiplexResults) {
+      const testId = `test-result-${resultId}-${toLowerCaseHyphenate(
+        result.disease
+      )}`;
+      expect(screen.getByTestId(testId)).toBeInTheDocument();
+      // }
     }
 
     // TODO: all expected elements are present, but is it exhaustive?
@@ -191,7 +194,7 @@ describe("Component ResultsTable", () => {
   });
 
   describe("actions menu", () => {
-    const renderWithUser = (results: TestResult[]) => ({
+    const renderWithUser = (results: Result[]) => ({
       user: userEvent.setup(),
       ...render(
         <ResultsTable
@@ -243,7 +246,7 @@ describe("Component ResultsTable", () => {
     });
     describe("email result action", () => {
       it("includes `Email result` if patient email address", async () => {
-        const testResultPatientEmail: TestResult[] = [
+        const testResultPatientEmail: Result[] = [
           TEST_RESULTS_MULTIPLEX_CONTENT[0],
         ];
         const { user } = renderWithUser(testResultPatientEmail);

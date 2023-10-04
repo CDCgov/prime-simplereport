@@ -12,75 +12,84 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
   [SubKey in K]: Maybe<T[SubKey]>;
 };
+export type MakeEmpty<
+  T extends { [key: string]: unknown },
+  K extends keyof T
+> = { [_ in K]?: never };
+export type Incremental<T> =
+  | T
+  | {
+      [P in keyof T]?: P extends " $fragmentName" | "__typename" ? T[P] : never;
+    };
 const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: string;
-  String: string;
-  Boolean: boolean;
-  Int: number;
-  Float: number;
-  DateTime: any;
-  LocalDate: any;
+  ID: { input: string; output: string };
+  String: { input: string; output: string };
+  Boolean: { input: boolean; output: boolean };
+  Int: { input: number; output: number };
+  Float: { input: number; output: number };
+  DateTime: { input: any; output: any };
+  LocalDate: { input: any; output: any };
 };
 
 export type AddFacilityInput = {
   address: FacilityAddressInput;
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  deviceIds: Array<InputMaybe<Scalars["ID"]>>;
-  email?: InputMaybe<Scalars["String"]>;
-  facilityName: Scalars["String"];
+  cliaNumber?: InputMaybe<Scalars["String"]["input"]>;
+  deviceIds: Array<InputMaybe<Scalars["ID"]["input"]>>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  facilityName: Scalars["String"]["input"];
   orderingProvider?: InputMaybe<ProviderInput>;
-  phone?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type AddTestResultResponse = {
   __typename?: "AddTestResultResponse";
-  deliverySuccess?: Maybe<Scalars["Boolean"]>;
+  deliverySuccess?: Maybe<Scalars["Boolean"]["output"]>;
   testResult: TestOrder;
 };
 
 export type AddressInfo = {
   __typename?: "AddressInfo";
-  city?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  postalCode?: Maybe<Scalars["String"]>;
-  state?: Maybe<Scalars["String"]>;
-  streetOne?: Maybe<Scalars["String"]>;
-  streetTwo?: Maybe<Scalars["String"]>;
+  city?: Maybe<Scalars["String"]["output"]>;
+  county?: Maybe<Scalars["String"]["output"]>;
+  postalCode?: Maybe<Scalars["String"]["output"]>;
+  state?: Maybe<Scalars["String"]["output"]>;
+  streetOne?: Maybe<Scalars["String"]["output"]>;
+  streetTwo?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type AggregateFacilityMetrics = {
   __typename?: "AggregateFacilityMetrics";
-  facilityName?: Maybe<Scalars["String"]>;
-  negativeTestCount?: Maybe<Scalars["Int"]>;
-  positiveTestCount?: Maybe<Scalars["Int"]>;
-  totalTestCount?: Maybe<Scalars["Int"]>;
+  facilityName?: Maybe<Scalars["String"]["output"]>;
+  negativeTestCount?: Maybe<Scalars["Int"]["output"]>;
+  positiveTestCount?: Maybe<Scalars["Int"]["output"]>;
+  totalTestCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export type ApiUser = {
   __typename?: "ApiUser";
-  email: Scalars["String"];
-  firstName?: Maybe<Scalars["String"]>;
-  id?: Maybe<Scalars["ID"]>;
-  lastName: Scalars["String"];
-  middleName?: Maybe<Scalars["String"]>;
+  email: Scalars["String"]["output"];
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  id?: Maybe<Scalars["ID"]["output"]>;
+  lastName: Scalars["String"]["output"];
+  middleName?: Maybe<Scalars["String"]["output"]>;
   name: NameInfo;
   /** @deprecated needless connection of type to field name */
   nameInfo?: Maybe<NameInfo>;
-  suffix?: Maybe<Scalars["String"]>;
+  suffix?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type ApiUserWithStatus = {
   __typename?: "ApiUserWithStatus";
-  email: Scalars["String"];
-  firstName?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  lastName: Scalars["String"];
-  middleName?: Maybe<Scalars["String"]>;
+  email: Scalars["String"]["output"];
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["ID"]["output"];
+  lastName: Scalars["String"]["output"];
+  middleName?: Maybe<Scalars["String"]["output"]>;
   name: NameInfo;
-  status?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
+  status?: Maybe<Scalars["String"]["output"]>;
+  suffix?: Maybe<Scalars["String"]["output"]>;
 };
 
 export enum ArchivedStatus {
@@ -90,139 +99,139 @@ export enum ArchivedStatus {
 }
 
 export type CreateDeviceType = {
-  manufacturer: Scalars["String"];
-  model: Scalars["String"];
-  name: Scalars["String"];
+  manufacturer: Scalars["String"]["input"];
+  model: Scalars["String"]["input"];
+  name: Scalars["String"]["input"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
-  swabTypes: Array<Scalars["ID"]>;
-  testLength: Scalars["Int"];
+  swabTypes: Array<Scalars["ID"]["input"]>;
+  testLength: Scalars["Int"]["input"];
 };
 
 export type CreateSpecimenType = {
-  collectionLocationCode?: InputMaybe<Scalars["String"]>;
-  collectionLocationName?: InputMaybe<Scalars["String"]>;
-  name: Scalars["String"];
-  typeCode: Scalars["String"];
+  collectionLocationCode?: InputMaybe<Scalars["String"]["input"]>;
+  collectionLocationName?: InputMaybe<Scalars["String"]["input"]>;
+  name: Scalars["String"]["input"];
+  typeCode: Scalars["String"]["input"];
 };
 
 export type DeviceType = {
   __typename?: "DeviceType";
-  internalId: Scalars["ID"];
-  manufacturer: Scalars["String"];
-  model: Scalars["String"];
-  name: Scalars["String"];
+  internalId: Scalars["ID"]["output"];
+  manufacturer: Scalars["String"]["output"];
+  model: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformed>;
   swabTypes: Array<SpecimenType>;
-  testLength: Scalars["Int"];
+  testLength: Scalars["Int"]["output"];
 };
 
 export type Facility = {
   __typename?: "Facility";
   address?: Maybe<AddressInfo>;
-  city?: Maybe<Scalars["String"]>;
-  cliaNumber?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
+  city?: Maybe<Scalars["String"]["output"]>;
+  cliaNumber?: Maybe<Scalars["String"]["output"]>;
+  county?: Maybe<Scalars["String"]["output"]>;
   deviceTypes: Array<DeviceType>;
-  email?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  isDeleted?: Maybe<Scalars["Boolean"]>;
-  name: Scalars["String"];
+  email?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["ID"]["output"];
+  isDeleted?: Maybe<Scalars["Boolean"]["output"]>;
+  name: Scalars["String"]["output"];
   orderingProvider?: Maybe<Provider>;
-  patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
-  phone?: Maybe<Scalars["String"]>;
-  state?: Maybe<Scalars["String"]>;
-  street?: Maybe<Scalars["String"]>;
-  streetTwo?: Maybe<Scalars["String"]>;
-  zipCode?: Maybe<Scalars["String"]>;
+  patientSelfRegistrationLink?: Maybe<Scalars["String"]["output"]>;
+  phone?: Maybe<Scalars["String"]["output"]>;
+  state?: Maybe<Scalars["String"]["output"]>;
+  street?: Maybe<Scalars["String"]["output"]>;
+  streetTwo?: Maybe<Scalars["String"]["output"]>;
+  zipCode?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type FacilityAddressInput = {
-  city?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  zipCode: Scalars["String"];
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  state: Scalars["String"]["input"];
+  street: Scalars["String"]["input"];
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  zipCode: Scalars["String"]["input"];
 };
 
 export type FacilityStats = {
   __typename?: "FacilityStats";
-  patientsSingleAccessCount?: Maybe<Scalars["Int"]>;
-  usersSingleAccessCount?: Maybe<Scalars["Int"]>;
+  patientsSingleAccessCount?: Maybe<Scalars["Int"]["output"]>;
+  usersSingleAccessCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export type FeatureFlag = {
   __typename?: "FeatureFlag";
-  name: Scalars["String"];
-  value: Scalars["Boolean"];
+  name: Scalars["String"]["output"];
+  value: Scalars["Boolean"]["output"];
 };
 
 export type FeedbackMessage = {
   __typename?: "FeedbackMessage";
-  errorType: Scalars["String"];
-  fieldHeader: Scalars["String"];
-  fieldRequired: Scalars["Boolean"];
-  indices?: Maybe<Array<Maybe<Scalars["Int"]>>>;
-  message?: Maybe<Scalars["String"]>;
-  scope?: Maybe<Scalars["String"]>;
+  errorType: Scalars["String"]["output"];
+  fieldHeader: Scalars["String"]["output"];
+  fieldRequired: Scalars["Boolean"]["output"];
+  indices?: Maybe<Array<Maybe<Scalars["Int"]["output"]>>>;
+  message?: Maybe<Scalars["String"]["output"]>;
+  scope?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type MultiplexResult = {
   __typename?: "MultiplexResult";
   disease: SupportedDisease;
-  testResult: Scalars["String"];
+  testResult: Scalars["String"]["output"];
 };
 
 export type MultiplexResultInput = {
-  diseaseName?: InputMaybe<Scalars["String"]>;
-  testResult?: InputMaybe<Scalars["String"]>;
+  diseaseName?: InputMaybe<Scalars["String"]["input"]>;
+  testResult?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type Mutation = {
   __typename?: "Mutation";
   addFacility?: Maybe<Facility>;
   addPatient?: Maybe<Patient>;
-  addPatientToQueue?: Maybe<Scalars["String"]>;
+  addPatientToQueue?: Maybe<Scalars["String"]["output"]>;
   addUser?: Maybe<User>;
   addUserToCurrentOrg?: Maybe<User>;
-  adminUpdateOrganization?: Maybe<Scalars["String"]>;
+  adminUpdateOrganization?: Maybe<Scalars["String"]["output"]>;
   correctTestMarkAsCorrection?: Maybe<TestResult>;
   correctTestMarkAsError?: Maybe<TestResult>;
   createApiUserNoOkta?: Maybe<ApiUser>;
   createDeviceType?: Maybe<DeviceType>;
-  createFacilityRegistrationLink?: Maybe<Scalars["String"]>;
-  createOrganizationRegistrationLink?: Maybe<Scalars["String"]>;
+  createFacilityRegistrationLink?: Maybe<Scalars["String"]["output"]>;
+  createOrganizationRegistrationLink?: Maybe<Scalars["String"]["output"]>;
   createSpecimenType?: Maybe<SpecimenType>;
-  editPendingOrganization?: Maybe<Scalars["String"]>;
+  editPendingOrganization?: Maybe<Scalars["String"]["output"]>;
   editQueueItem?: Maybe<TestOrder>;
   markDeviceTypeAsDeleted?: Maybe<DeviceType>;
-  markFacilityAsDeleted?: Maybe<Scalars["String"]>;
-  markOrganizationAsDeleted?: Maybe<Scalars["String"]>;
-  markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]>;
+  markFacilityAsDeleted?: Maybe<Scalars["String"]["output"]>;
+  markOrganizationAsDeleted?: Maybe<Scalars["String"]["output"]>;
+  markPendingOrganizationAsDeleted?: Maybe<Scalars["String"]["output"]>;
   reactivateUser?: Maybe<User>;
   reactivateUserAndResetPassword?: Maybe<User>;
-  removePatientFromQueue?: Maybe<Scalars["String"]>;
+  removePatientFromQueue?: Maybe<Scalars["String"]["output"]>;
   resendActivationEmail?: Maybe<User>;
-  resendToReportStream?: Maybe<Scalars["Boolean"]>;
+  resendToReportStream?: Maybe<Scalars["Boolean"]["output"]>;
   resetUserMfa?: Maybe<User>;
   resetUserPassword?: Maybe<User>;
-  sendPatientLinkEmail?: Maybe<Scalars["Boolean"]>;
-  sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]>;
-  sendPatientLinkSms?: Maybe<Scalars["Boolean"]>;
-  sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]>;
-  sendSupportEscalation?: Maybe<Scalars["String"]>;
+  sendPatientLinkEmail?: Maybe<Scalars["Boolean"]["output"]>;
+  sendPatientLinkEmailByTestEventId?: Maybe<Scalars["Boolean"]["output"]>;
+  sendPatientLinkSms?: Maybe<Scalars["Boolean"]["output"]>;
+  sendPatientLinkSmsByTestEventId?: Maybe<Scalars["Boolean"]["output"]>;
+  sendSupportEscalation?: Maybe<Scalars["String"]["output"]>;
   setCurrentUserTenantDataAccess?: Maybe<User>;
-  setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]>;
+  setOrganizationIdentityVerified?: Maybe<Scalars["Boolean"]["output"]>;
   setPatientIsDeleted?: Maybe<Patient>;
-  setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]>;
+  setRegistrationLinkIsDeleted?: Maybe<Scalars["String"]["output"]>;
   setUserIsDeleted?: Maybe<User>;
   submitQueueItem?: Maybe<AddTestResultResponse>;
   updateDeviceType?: Maybe<DeviceType>;
   updateFacility?: Maybe<Facility>;
   updateFeatureFlag?: Maybe<FeatureFlag>;
-  updateOrganization?: Maybe<Scalars["String"]>;
+  updateOrganization?: Maybe<Scalars["String"]["output"]>;
   updatePatient?: Maybe<Patient>;
-  updateRegistrationLink?: Maybe<Scalars["String"]>;
-  updateTimeOfTestQuestions?: Maybe<Scalars["String"]>;
+  updateRegistrationLink?: Maybe<Scalars["String"]["output"]>;
+  updateTimeOfTestQuestions?: Maybe<Scalars["String"]["output"]>;
   updateUser?: Maybe<User>;
   updateUserEmail?: Maybe<User>;
   updateUserPrivileges?: Maybe<User>;
@@ -234,44 +243,44 @@ export type MutationAddFacilityArgs = {
 };
 
 export type MutationAddPatientArgs = {
-  birthDate: Scalars["LocalDate"];
-  city?: InputMaybe<Scalars["String"]>;
-  country?: InputMaybe<Scalars["String"]>;
-  county?: InputMaybe<Scalars["String"]>;
-  email?: InputMaybe<Scalars["String"]>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
-  ethnicity?: InputMaybe<Scalars["String"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  firstName: Scalars["String"];
-  gender?: InputMaybe<Scalars["String"]>;
-  genderIdentity?: InputMaybe<Scalars["String"]>;
-  lastName: Scalars["String"];
-  lookupId?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  notes?: InputMaybe<Scalars["String"]>;
+  birthDate: Scalars["LocalDate"]["input"];
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  country?: InputMaybe<Scalars["String"]["input"]>;
+  county?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]["input"]>;
+  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  gender?: InputMaybe<Scalars["String"]["input"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]["input"]>;
+  lastName: Scalars["String"]["input"];
+  lookupId?: InputMaybe<Scalars["String"]["input"]>;
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  notes?: InputMaybe<Scalars["String"]["input"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
-  preferredLanguage?: InputMaybe<Scalars["String"]>;
-  race?: InputMaybe<Scalars["String"]>;
-  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  suffix?: InputMaybe<Scalars["String"]>;
-  telephone?: InputMaybe<Scalars["String"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]["input"]>;
+  race?: InputMaybe<Scalars["String"]["input"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  state: Scalars["String"]["input"];
+  street: Scalars["String"]["input"];
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  telephone?: InputMaybe<Scalars["String"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]>;
-  zipCode: Scalars["String"];
+  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
+  zipCode: Scalars["String"]["input"];
 };
 
 export type MutationAddPatientToQueueArgs = {
-  facilityId: Scalars["ID"];
-  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
-  patientId: Scalars["ID"];
-  pregnancy?: InputMaybe<Scalars["String"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
-  symptoms?: InputMaybe<Scalars["String"]>;
+  facilityId: Scalars["ID"]["input"];
+  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
+  patientId: Scalars["ID"]["input"];
+  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  symptoms?: InputMaybe<Scalars["String"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
@@ -284,27 +293,27 @@ export type MutationAddUserToCurrentOrgArgs = {
 };
 
 export type MutationAdminUpdateOrganizationArgs = {
-  name: Scalars["String"];
-  type: Scalars["String"];
+  name: Scalars["String"]["input"];
+  type: Scalars["String"]["input"];
 };
 
 export type MutationCorrectTestMarkAsCorrectionArgs = {
-  id: Scalars["ID"];
-  reason?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"]["input"];
+  reason?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationCorrectTestMarkAsErrorArgs = {
-  id: Scalars["ID"];
-  reason?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"]["input"];
+  reason?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationCreateApiUserNoOktaArgs = {
-  email?: InputMaybe<Scalars["String"]>;
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
   name?: InputMaybe<NameInput>;
-  suffix?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationCreateDeviceTypeArgs = {
@@ -312,14 +321,14 @@ export type MutationCreateDeviceTypeArgs = {
 };
 
 export type MutationCreateFacilityRegistrationLinkArgs = {
-  facilityId: Scalars["ID"];
-  link: Scalars["String"];
-  organizationExternalId: Scalars["String"];
+  facilityId: Scalars["ID"]["input"];
+  link: Scalars["String"]["input"];
+  organizationExternalId: Scalars["String"]["input"];
 };
 
 export type MutationCreateOrganizationRegistrationLinkArgs = {
-  link: Scalars["String"];
-  organizationExternalId: Scalars["String"];
+  link: Scalars["String"]["input"];
+  organizationExternalId: Scalars["String"]["input"];
 };
 
 export type MutationCreateSpecimenTypeArgs = {
@@ -327,119 +336,119 @@ export type MutationCreateSpecimenTypeArgs = {
 };
 
 export type MutationEditPendingOrganizationArgs = {
-  adminEmail?: InputMaybe<Scalars["String"]>;
-  adminFirstName?: InputMaybe<Scalars["String"]>;
-  adminLastName?: InputMaybe<Scalars["String"]>;
-  adminPhone?: InputMaybe<Scalars["String"]>;
-  name?: InputMaybe<Scalars["String"]>;
-  orgExternalId: Scalars["String"];
+  adminEmail?: InputMaybe<Scalars["String"]["input"]>;
+  adminFirstName?: InputMaybe<Scalars["String"]["input"]>;
+  adminLastName?: InputMaybe<Scalars["String"]["input"]>;
+  adminPhone?: InputMaybe<Scalars["String"]["input"]>;
+  name?: InputMaybe<Scalars["String"]["input"]>;
+  orgExternalId: Scalars["String"]["input"];
 };
 
 export type MutationEditQueueItemArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-  deviceTypeId?: InputMaybe<Scalars["ID"]>;
-  id: Scalars["ID"];
+  dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
+  deviceTypeId?: InputMaybe<Scalars["ID"]["input"]>;
+  id: Scalars["ID"]["input"];
   results?: InputMaybe<Array<InputMaybe<MultiplexResultInput>>>;
-  specimenTypeId?: InputMaybe<Scalars["ID"]>;
+  specimenTypeId?: InputMaybe<Scalars["ID"]["input"]>;
 };
 
 export type MutationMarkDeviceTypeAsDeletedArgs = {
-  deviceId?: InputMaybe<Scalars["ID"]>;
-  deviceName?: InputMaybe<Scalars["String"]>;
+  deviceId?: InputMaybe<Scalars["ID"]["input"]>;
+  deviceName?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationMarkFacilityAsDeletedArgs = {
-  deleted: Scalars["Boolean"];
-  facilityId: Scalars["ID"];
+  deleted: Scalars["Boolean"]["input"];
+  facilityId: Scalars["ID"]["input"];
 };
 
 export type MutationMarkOrganizationAsDeletedArgs = {
-  deleted: Scalars["Boolean"];
-  organizationId: Scalars["ID"];
+  deleted: Scalars["Boolean"]["input"];
+  organizationId: Scalars["ID"]["input"];
 };
 
 export type MutationMarkPendingOrganizationAsDeletedArgs = {
-  deleted: Scalars["Boolean"];
-  orgExternalId: Scalars["String"];
+  deleted: Scalars["Boolean"]["input"];
+  orgExternalId: Scalars["String"]["input"];
 };
 
 export type MutationReactivateUserArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type MutationReactivateUserAndResetPasswordArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type MutationRemovePatientFromQueueArgs = {
-  patientId: Scalars["ID"];
+  patientId: Scalars["ID"]["input"];
 };
 
 export type MutationResendActivationEmailArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type MutationResendToReportStreamArgs = {
-  fhirOnly: Scalars["Boolean"];
-  testEventIds: Array<Scalars["ID"]>;
+  fhirOnly: Scalars["Boolean"]["input"];
+  testEventIds: Array<Scalars["ID"]["input"]>;
 };
 
 export type MutationResetUserMfaArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type MutationResetUserPasswordArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type MutationSendPatientLinkEmailArgs = {
-  internalId: Scalars["ID"];
+  internalId: Scalars["ID"]["input"];
 };
 
 export type MutationSendPatientLinkEmailByTestEventIdArgs = {
-  testEventId: Scalars["ID"];
+  testEventId: Scalars["ID"]["input"];
 };
 
 export type MutationSendPatientLinkSmsArgs = {
-  internalId: Scalars["ID"];
+  internalId: Scalars["ID"]["input"];
 };
 
 export type MutationSendPatientLinkSmsByTestEventIdArgs = {
-  testEventId: Scalars["ID"];
+  testEventId: Scalars["ID"]["input"];
 };
 
 export type MutationSetCurrentUserTenantDataAccessArgs = {
-  justification?: InputMaybe<Scalars["String"]>;
-  organizationExternalId?: InputMaybe<Scalars["String"]>;
+  justification?: InputMaybe<Scalars["String"]["input"]>;
+  organizationExternalId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationSetOrganizationIdentityVerifiedArgs = {
-  externalId: Scalars["String"];
-  verified: Scalars["Boolean"];
+  externalId: Scalars["String"]["input"];
+  verified: Scalars["Boolean"]["input"];
 };
 
 export type MutationSetPatientIsDeletedArgs = {
-  deleted: Scalars["Boolean"];
-  id: Scalars["ID"];
-  orgExternalId?: InputMaybe<Scalars["String"]>;
+  deleted: Scalars["Boolean"]["input"];
+  id: Scalars["ID"]["input"];
+  orgExternalId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationSetRegistrationLinkIsDeletedArgs = {
-  deleted: Scalars["Boolean"];
-  link?: InputMaybe<Scalars["String"]>;
+  deleted: Scalars["Boolean"]["input"];
+  link?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationSetUserIsDeletedArgs = {
-  deleted: Scalars["Boolean"];
-  id: Scalars["ID"];
+  deleted: Scalars["Boolean"]["input"];
+  id: Scalars["ID"]["input"];
 };
 
 export type MutationSubmitQueueItemArgs = {
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
-  deviceTypeId: Scalars["ID"];
-  patientId: Scalars["ID"];
+  dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
+  deviceTypeId: Scalars["ID"]["input"];
+  patientId: Scalars["ID"]["input"];
   results: Array<InputMaybe<MultiplexResultInput>>;
-  specimenTypeId: Scalars["ID"];
+  specimenTypeId: Scalars["ID"]["input"];
 };
 
 export type MutationUpdateDeviceTypeArgs = {
@@ -451,196 +460,196 @@ export type MutationUpdateFacilityArgs = {
 };
 
 export type MutationUpdateFeatureFlagArgs = {
-  name: Scalars["String"];
-  value: Scalars["Boolean"];
+  name: Scalars["String"]["input"];
+  value: Scalars["Boolean"]["input"];
 };
 
 export type MutationUpdateOrganizationArgs = {
-  type: Scalars["String"];
+  type: Scalars["String"]["input"];
 };
 
 export type MutationUpdatePatientArgs = {
-  birthDate: Scalars["LocalDate"];
-  city?: InputMaybe<Scalars["String"]>;
-  country?: InputMaybe<Scalars["String"]>;
-  county?: InputMaybe<Scalars["String"]>;
-  email?: InputMaybe<Scalars["String"]>;
-  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]>>>;
-  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
-  ethnicity?: InputMaybe<Scalars["String"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  firstName: Scalars["String"];
-  gender?: InputMaybe<Scalars["String"]>;
-  genderIdentity?: InputMaybe<Scalars["String"]>;
-  lastName: Scalars["String"];
-  lookupId?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  notes?: InputMaybe<Scalars["String"]>;
-  patientId: Scalars["ID"];
+  birthDate: Scalars["LocalDate"]["input"];
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  country?: InputMaybe<Scalars["String"]["input"]>;
+  county?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  emails?: InputMaybe<Array<InputMaybe<Scalars["String"]["input"]>>>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]["input"]>;
+  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  gender?: InputMaybe<Scalars["String"]["input"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]["input"]>;
+  lastName: Scalars["String"]["input"];
+  lookupId?: InputMaybe<Scalars["String"]["input"]>;
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  notes?: InputMaybe<Scalars["String"]["input"]>;
+  patientId: Scalars["ID"]["input"];
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput>>;
-  preferredLanguage?: InputMaybe<Scalars["String"]>;
-  race?: InputMaybe<Scalars["String"]>;
-  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  suffix?: InputMaybe<Scalars["String"]>;
-  telephone?: InputMaybe<Scalars["String"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]["input"]>;
+  race?: InputMaybe<Scalars["String"]["input"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  state: Scalars["String"]["input"];
+  street: Scalars["String"]["input"];
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  telephone?: InputMaybe<Scalars["String"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]>;
-  zipCode: Scalars["String"];
+  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
+  zipCode: Scalars["String"]["input"];
 };
 
 export type MutationUpdateRegistrationLinkArgs = {
-  link: Scalars["String"];
-  newLink: Scalars["String"];
+  link: Scalars["String"]["input"];
+  newLink: Scalars["String"]["input"];
 };
 
 export type MutationUpdateTimeOfTestQuestionsArgs = {
-  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
-  patientId: Scalars["ID"];
-  pregnancy?: InputMaybe<Scalars["String"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
-  symptoms?: InputMaybe<Scalars["String"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
+  patientId: Scalars["ID"]["input"];
+  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  symptoms?: InputMaybe<Scalars["String"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 };
 
 export type MutationUpdateUserArgs = {
-  firstName?: InputMaybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  id: Scalars["ID"]["input"];
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
   name?: InputMaybe<NameInput>;
-  suffix?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type MutationUpdateUserEmailArgs = {
-  email?: InputMaybe<Scalars["String"]>;
-  id: Scalars["ID"];
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  id: Scalars["ID"]["input"];
 };
 
 export type MutationUpdateUserPrivilegesArgs = {
-  accessAllFacilities: Scalars["Boolean"];
-  facilities?: InputMaybe<Array<Scalars["ID"]>>;
-  id: Scalars["ID"];
+  accessAllFacilities: Scalars["Boolean"]["input"];
+  facilities?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  id: Scalars["ID"]["input"];
   role: Role;
 };
 
 export type MutationUpdateUserPrivilegesAndGroupAccessArgs = {
-  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
-  facilities?: InputMaybe<Array<InputMaybe<Scalars["ID"]>>>;
-  orgExternalId: Scalars["String"];
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
+  facilities?: InputMaybe<Array<InputMaybe<Scalars["ID"]["input"]>>>;
+  orgExternalId: Scalars["String"]["input"];
   role: Role;
-  username: Scalars["String"];
+  username: Scalars["String"]["input"];
 };
 
 export type NameInfo = {
   __typename?: "NameInfo";
-  firstName?: Maybe<Scalars["String"]>;
-  lastName: Scalars["String"];
-  middleName?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  lastName: Scalars["String"]["output"];
+  middleName?: Maybe<Scalars["String"]["output"]>;
+  suffix?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type NameInput = {
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  suffix?: InputMaybe<Scalars["String"]>;
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type Organization = {
   __typename?: "Organization";
-  externalId: Scalars["String"];
+  externalId: Scalars["String"]["output"];
   facilities: Array<Facility>;
-  id: Scalars["ID"];
-  identityVerified: Scalars["Boolean"];
+  id: Scalars["ID"]["output"];
+  identityVerified: Scalars["Boolean"]["output"];
   /** @deprecated alias for 'id' */
-  internalId: Scalars["ID"];
-  name: Scalars["String"];
-  patientSelfRegistrationLink?: Maybe<Scalars["String"]>;
+  internalId: Scalars["ID"]["output"];
+  name: Scalars["String"]["output"];
+  patientSelfRegistrationLink?: Maybe<Scalars["String"]["output"]>;
   /** @deprecated Use the one that makes sense */
   testingFacility: Array<Facility>;
-  type: Scalars["String"];
+  type: Scalars["String"]["output"];
 };
 
 export type OrganizationLevelDashboardMetrics = {
   __typename?: "OrganizationLevelDashboardMetrics";
   facilityMetrics?: Maybe<Array<Maybe<AggregateFacilityMetrics>>>;
-  organizationNegativeTestCount?: Maybe<Scalars["Int"]>;
-  organizationPositiveTestCount?: Maybe<Scalars["Int"]>;
-  organizationTotalTestCount?: Maybe<Scalars["Int"]>;
+  organizationNegativeTestCount?: Maybe<Scalars["Int"]["output"]>;
+  organizationPositiveTestCount?: Maybe<Scalars["Int"]["output"]>;
+  organizationTotalTestCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export type Patient = {
   __typename?: "Patient";
   address?: Maybe<AddressInfo>;
-  birthDate?: Maybe<Scalars["LocalDate"]>;
-  city?: Maybe<Scalars["String"]>;
-  country?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  email?: Maybe<Scalars["String"]>;
-  emails?: Maybe<Array<Maybe<Scalars["String"]>>>;
-  employedInHealthcare?: Maybe<Scalars["Boolean"]>;
-  ethnicity?: Maybe<Scalars["String"]>;
+  birthDate?: Maybe<Scalars["LocalDate"]["output"]>;
+  city?: Maybe<Scalars["String"]["output"]>;
+  country?: Maybe<Scalars["String"]["output"]>;
+  county?: Maybe<Scalars["String"]["output"]>;
+  email?: Maybe<Scalars["String"]["output"]>;
+  emails?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  employedInHealthcare?: Maybe<Scalars["Boolean"]["output"]>;
+  ethnicity?: Maybe<Scalars["String"]["output"]>;
   facility?: Maybe<Facility>;
-  firstName?: Maybe<Scalars["String"]>;
-  gender?: Maybe<Scalars["String"]>;
-  genderIdentity?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  gender?: Maybe<Scalars["String"]["output"]>;
+  genderIdentity?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["ID"]["output"];
   /** @deprecated alias for 'id' */
-  internalId: Scalars["ID"];
-  isDeleted?: Maybe<Scalars["Boolean"]>;
-  lastName?: Maybe<Scalars["String"]>;
+  internalId: Scalars["ID"]["output"];
+  isDeleted?: Maybe<Scalars["Boolean"]["output"]>;
+  lastName?: Maybe<Scalars["String"]["output"]>;
   lastTest?: Maybe<TestResult>;
-  lookupId?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
+  lookupId?: Maybe<Scalars["String"]["output"]>;
+  middleName?: Maybe<Scalars["String"]["output"]>;
   name?: Maybe<NameInfo>;
-  notes?: Maybe<Scalars["String"]>;
+  notes?: Maybe<Scalars["String"]["output"]>;
   phoneNumbers?: Maybe<Array<Maybe<PhoneNumber>>>;
-  preferredLanguage?: Maybe<Scalars["String"]>;
-  race?: Maybe<Scalars["String"]>;
-  residentCongregateSetting?: Maybe<Scalars["Boolean"]>;
-  role?: Maybe<Scalars["String"]>;
-  state?: Maybe<Scalars["String"]>;
-  street?: Maybe<Scalars["String"]>;
-  streetTwo?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
-  telephone?: Maybe<Scalars["String"]>;
+  preferredLanguage?: Maybe<Scalars["String"]["output"]>;
+  race?: Maybe<Scalars["String"]["output"]>;
+  residentCongregateSetting?: Maybe<Scalars["Boolean"]["output"]>;
+  role?: Maybe<Scalars["String"]["output"]>;
+  state?: Maybe<Scalars["String"]["output"]>;
+  street?: Maybe<Scalars["String"]["output"]>;
+  streetTwo?: Maybe<Scalars["String"]["output"]>;
+  suffix?: Maybe<Scalars["String"]["output"]>;
+  telephone?: Maybe<Scalars["String"]["output"]>;
   testResultDelivery?: Maybe<TestResultDeliveryPreference>;
-  tribalAffiliation?: Maybe<Array<Maybe<Scalars["String"]>>>;
-  zipCode?: Maybe<Scalars["String"]>;
+  tribalAffiliation?: Maybe<Array<Maybe<Scalars["String"]["output"]>>>;
+  zipCode?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type PatientLink = {
   __typename?: "PatientLink";
-  createdAt?: Maybe<Scalars["DateTime"]>;
-  expiresAt?: Maybe<Scalars["DateTime"]>;
-  internalId?: Maybe<Scalars["ID"]>;
+  createdAt?: Maybe<Scalars["DateTime"]["output"]>;
+  expiresAt?: Maybe<Scalars["DateTime"]["output"]>;
+  internalId?: Maybe<Scalars["ID"]["output"]>;
   testOrder?: Maybe<TestOrder>;
 };
 
 export type PendingOrganization = {
   __typename?: "PendingOrganization";
-  adminEmail: Scalars["String"];
-  adminFirstName: Scalars["String"];
-  adminLastName: Scalars["String"];
-  adminPhone: Scalars["String"];
-  createdAt: Scalars["DateTime"];
-  externalId: Scalars["String"];
-  name: Scalars["String"];
+  adminEmail: Scalars["String"]["output"];
+  adminFirstName: Scalars["String"]["output"];
+  adminLastName: Scalars["String"]["output"];
+  adminPhone: Scalars["String"]["output"];
+  createdAt: Scalars["DateTime"]["output"];
+  externalId: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
 };
 
 export type PhoneNumber = {
   __typename?: "PhoneNumber";
-  number?: Maybe<Scalars["String"]>;
+  number?: Maybe<Scalars["String"]["output"]>;
   type?: Maybe<PhoneType>;
 };
 
 export type PhoneNumberInput = {
-  number?: InputMaybe<Scalars["String"]>;
-  type?: InputMaybe<Scalars["String"]>;
+  number?: InputMaybe<Scalars["String"]["input"]>;
+  type?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export enum PhoneType {
@@ -650,35 +659,35 @@ export enum PhoneType {
 
 export type Provider = {
   __typename?: "Provider";
-  NPI?: Maybe<Scalars["String"]>;
+  NPI?: Maybe<Scalars["String"]["output"]>;
   address?: Maybe<AddressInfo>;
-  city?: Maybe<Scalars["String"]>;
-  county?: Maybe<Scalars["String"]>;
-  firstName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  middleName?: Maybe<Scalars["String"]>;
+  city?: Maybe<Scalars["String"]["output"]>;
+  county?: Maybe<Scalars["String"]["output"]>;
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  lastName?: Maybe<Scalars["String"]["output"]>;
+  middleName?: Maybe<Scalars["String"]["output"]>;
   name?: Maybe<NameInfo>;
-  phone?: Maybe<Scalars["String"]>;
-  state?: Maybe<Scalars["String"]>;
-  street?: Maybe<Scalars["String"]>;
-  streetTwo?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
-  zipCode?: Maybe<Scalars["String"]>;
+  phone?: Maybe<Scalars["String"]["output"]>;
+  state?: Maybe<Scalars["String"]["output"]>;
+  street?: Maybe<Scalars["String"]["output"]>;
+  streetTwo?: Maybe<Scalars["String"]["output"]>;
+  suffix?: Maybe<Scalars["String"]["output"]>;
+  zipCode?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type ProviderInput = {
-  city?: InputMaybe<Scalars["String"]>;
-  county?: InputMaybe<Scalars["String"]>;
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  npi?: InputMaybe<Scalars["String"]>;
-  phone?: InputMaybe<Scalars["String"]>;
-  state?: InputMaybe<Scalars["String"]>;
-  street?: InputMaybe<Scalars["String"]>;
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  suffix?: InputMaybe<Scalars["String"]>;
-  zipCode?: InputMaybe<Scalars["String"]>;
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  county?: InputMaybe<Scalars["String"]["input"]>;
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  npi?: InputMaybe<Scalars["String"]["input"]>;
+  phone?: InputMaybe<Scalars["String"]["input"]>;
+  state?: InputMaybe<Scalars["String"]["input"]>;
+  street?: InputMaybe<Scalars["String"]["input"]>;
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  zipCode?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type Query = {
@@ -693,10 +702,10 @@ export type Query = {
   organizationLevelDashboardMetrics?: Maybe<OrganizationLevelDashboardMetrics>;
   organizations: Array<Organization>;
   patient?: Maybe<Patient>;
-  patientExists?: Maybe<Scalars["Boolean"]>;
-  patientExistsWithoutZip?: Maybe<Scalars["Boolean"]>;
+  patientExists?: Maybe<Scalars["Boolean"]["output"]>;
+  patientExistsWithoutZip?: Maybe<Scalars["Boolean"]["output"]>;
   patients?: Maybe<Array<Maybe<Patient>>>;
-  patientsCount?: Maybe<Scalars["Int"]>;
+  patientsCount?: Maybe<Scalars["Int"]["output"]>;
   pendingOrganizations: Array<PendingOrganization>;
   queue?: Maybe<Array<Maybe<TestOrder>>>;
   resultsPage?: Maybe<ResultsPage>;
@@ -705,7 +714,7 @@ export type Query = {
   supportedDiseases: Array<SupportedDisease>;
   testResult?: Maybe<TestResult>;
   testResults?: Maybe<Array<Maybe<TestResult>>>;
-  testResultsCount?: Maybe<Scalars["Int"]>;
+  testResultsCount?: Maybe<Scalars["Int"]["output"]>;
   testResultsPage?: Maybe<TestResultsPage>;
   topLevelDashboardMetrics?: Maybe<TopLevelDashboardMetrics>;
   uploadSubmission: UploadResponse;
@@ -717,160 +726,160 @@ export type Query = {
 };
 
 export type QueryFacilitiesArgs = {
-  showArchived?: InputMaybe<Scalars["Boolean"]>;
+  showArchived?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type QueryFacilityArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type QueryFacilityStatsArgs = {
-  facilityId: Scalars["ID"];
+  facilityId: Scalars["ID"]["input"];
 };
 
 export type QueryOrganizationArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type QueryOrganizationLevelDashboardMetricsArgs = {
-  endDate: Scalars["DateTime"];
-  startDate: Scalars["DateTime"];
+  endDate: Scalars["DateTime"]["input"];
+  startDate: Scalars["DateTime"]["input"];
 };
 
 export type QueryOrganizationsArgs = {
-  identityVerified?: InputMaybe<Scalars["Boolean"]>;
+  identityVerified?: InputMaybe<Scalars["Boolean"]["input"]>;
 };
 
 export type QueryPatientArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type QueryPatientExistsArgs = {
-  birthDate: Scalars["LocalDate"];
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  firstName: Scalars["String"];
-  lastName: Scalars["String"];
-  zipCode: Scalars["String"];
+  birthDate: Scalars["LocalDate"]["input"];
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  lastName: Scalars["String"]["input"];
+  zipCode: Scalars["String"]["input"];
 };
 
 export type QueryPatientExistsWithoutZipArgs = {
-  birthDate: Scalars["LocalDate"];
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  firstName: Scalars["String"];
-  lastName: Scalars["String"];
+  birthDate: Scalars["LocalDate"]["input"];
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  lastName: Scalars["String"]["input"];
 };
 
 export type QueryPatientsArgs = {
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  includeArchived?: InputMaybe<Scalars["Boolean"]>;
-  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]>;
-  orgExternalId?: InputMaybe<Scalars["String"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  includeArchived?: InputMaybe<Scalars["Boolean"]["input"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
 };
 
 export type QueryPatientsCountArgs = {
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  includeArchived?: InputMaybe<Scalars["Boolean"]>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]>;
-  orgExternalId?: InputMaybe<Scalars["String"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  includeArchived?: InputMaybe<Scalars["Boolean"]["input"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
+  orgExternalId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type QueryQueueArgs = {
-  facilityId: Scalars["ID"];
+  facilityId: Scalars["ID"]["input"];
 };
 
 export type QueryResultsPageArgs = {
-  disease?: InputMaybe<Scalars["String"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
+  disease?: InputMaybe<Scalars["String"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  patientId?: InputMaybe<Scalars["ID"]["input"]>;
+  result?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
 export type QueryTestResultArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type QueryTestResultsArgs = {
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  patientId?: InputMaybe<Scalars["ID"]["input"]>;
+  result?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
 export type QueryTestResultsCountArgs = {
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  orgId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  orgId?: InputMaybe<Scalars["ID"]["input"]>;
+  patientId?: InputMaybe<Scalars["ID"]["input"]>;
+  result?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
 export type QueryTestResultsPageArgs = {
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  patientId?: InputMaybe<Scalars["ID"]["input"]>;
+  result?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
 export type QueryTopLevelDashboardMetricsArgs = {
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
 export type QueryUploadSubmissionArgs = {
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 };
 
 export type QueryUploadSubmissionsArgs = {
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 };
 
 export type QueryUserArgs = {
-  email?: InputMaybe<Scalars["String"]>;
-  id?: InputMaybe<Scalars["ID"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  id?: InputMaybe<Scalars["ID"]["input"]>;
 };
 
 export type Result = {
   __typename?: "Result";
-  correctionStatus?: Maybe<Scalars["String"]>;
-  createdBy: ApiUser;
-  dateAdded: Scalars["String"];
-  dateTested: Scalars["DateTime"];
-  dateUpdated?: Maybe<Scalars["DateTime"]>;
+  correctionStatus?: Maybe<Scalars["String"]["output"]>;
+  createdBy?: Maybe<ApiUser>;
+  dateAdded: Scalars["String"]["output"];
+  dateTested: Scalars["DateTime"]["output"];
+  dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
   deviceType: DeviceType;
-  disease: SupportedDisease;
+  disease: Scalars["String"]["output"];
   facility: Facility;
-  id: Scalars["ID"];
-  noSymptoms: Scalars["Boolean"];
+  id: Scalars["ID"]["output"];
+  noSymptoms: Scalars["Boolean"]["output"];
   patient: Patient;
-  pregnancy?: Maybe<Scalars["String"]>;
-  reasonForCorrection?: Maybe<Scalars["String"]>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]>;
-  symptoms: Scalars["String"];
-  testResult: Scalars["String"];
+  pregnancy?: Maybe<Scalars["String"]["output"]>;
+  reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
+  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
+  symptoms: Scalars["String"]["output"];
+  testResult: Scalars["String"]["output"];
 };
 
 export enum ResultValue {
@@ -882,7 +891,7 @@ export enum ResultValue {
 export type ResultsPage = {
   __typename?: "ResultsPage";
   content?: Maybe<Array<Maybe<Result>>>;
-  totalElements?: Maybe<Scalars["Int"]>;
+  totalElements?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export enum Role {
@@ -894,35 +903,35 @@ export enum Role {
 
 export type SpecimenType = {
   __typename?: "SpecimenType";
-  collectionLocationCode?: Maybe<Scalars["String"]>;
-  collectionLocationName?: Maybe<Scalars["String"]>;
-  internalId: Scalars["ID"];
-  name: Scalars["String"];
-  typeCode: Scalars["String"];
+  collectionLocationCode?: Maybe<Scalars["String"]["output"]>;
+  collectionLocationName?: Maybe<Scalars["String"]["output"]>;
+  internalId: Scalars["ID"]["output"];
+  name: Scalars["String"]["output"];
+  typeCode: Scalars["String"]["output"];
 };
 
 export type SupportedDisease = {
   __typename?: "SupportedDisease";
-  internalId: Scalars["ID"];
-  loinc: Scalars["String"];
-  name: Scalars["String"];
+  internalId: Scalars["ID"]["output"];
+  loinc: Scalars["String"]["output"];
+  name: Scalars["String"]["output"];
 };
 
 export type SupportedDiseaseTestPerformed = {
   __typename?: "SupportedDiseaseTestPerformed";
-  equipmentUid?: Maybe<Scalars["String"]>;
+  equipmentUid?: Maybe<Scalars["String"]["output"]>;
   supportedDisease: SupportedDisease;
-  testOrderedLoincCode?: Maybe<Scalars["String"]>;
-  testPerformedLoincCode: Scalars["String"];
-  testkitNameId?: Maybe<Scalars["String"]>;
+  testOrderedLoincCode?: Maybe<Scalars["String"]["output"]>;
+  testPerformedLoincCode: Scalars["String"]["output"];
+  testkitNameId?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type SupportedDiseaseTestPerformedInput = {
-  equipmentUid?: InputMaybe<Scalars["String"]>;
-  supportedDisease: Scalars["ID"];
-  testOrderedLoincCode?: InputMaybe<Scalars["String"]>;
-  testPerformedLoincCode: Scalars["String"];
-  testkitNameId?: InputMaybe<Scalars["String"]>;
+  equipmentUid?: InputMaybe<Scalars["String"]["input"]>;
+  supportedDisease: Scalars["ID"]["input"];
+  testOrderedLoincCode?: InputMaybe<Scalars["String"]["input"]>;
+  testPerformedLoincCode: Scalars["String"]["input"];
+  testkitNameId?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export enum TestCorrectionStatus {
@@ -933,45 +942,45 @@ export enum TestCorrectionStatus {
 
 export type TestOrder = {
   __typename?: "TestOrder";
-  correctionStatus?: Maybe<Scalars["String"]>;
+  correctionStatus?: Maybe<Scalars["String"]["output"]>;
   createdBy?: Maybe<ApiUser>;
-  dateAdded: Scalars["String"];
-  dateTested?: Maybe<Scalars["DateTime"]>;
-  dateUpdated?: Maybe<Scalars["DateTime"]>;
+  dateAdded: Scalars["String"]["output"];
+  dateTested?: Maybe<Scalars["DateTime"]["output"]>;
+  dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
   deviceType: DeviceType;
   facility: Facility;
-  id: Scalars["ID"];
+  id: Scalars["ID"]["output"];
   /** @deprecated alias for 'id' */
-  internalId: Scalars["ID"];
-  noSymptoms?: Maybe<Scalars["Boolean"]>;
+  internalId: Scalars["ID"]["output"];
+  noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
   patient: Patient;
   patientLink?: Maybe<PatientLink>;
-  pregnancy?: Maybe<Scalars["String"]>;
-  reasonForCorrection?: Maybe<Scalars["String"]>;
+  pregnancy?: Maybe<Scalars["String"]["output"]>;
+  reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
   results: Array<MultiplexResult>;
   specimenType: SpecimenType;
-  symptomOnset?: Maybe<Scalars["LocalDate"]>;
-  symptoms?: Maybe<Scalars["String"]>;
+  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
+  symptoms?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type TestResult = {
   __typename?: "TestResult";
-  correctionStatus?: Maybe<Scalars["String"]>;
+  correctionStatus?: Maybe<Scalars["String"]["output"]>;
   createdBy?: Maybe<ApiUser>;
-  dateAdded?: Maybe<Scalars["String"]>;
-  dateTested?: Maybe<Scalars["DateTime"]>;
-  dateUpdated?: Maybe<Scalars["DateTime"]>;
+  dateAdded?: Maybe<Scalars["String"]["output"]>;
+  dateTested?: Maybe<Scalars["DateTime"]["output"]>;
+  dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
   deviceType?: Maybe<DeviceType>;
   facility?: Maybe<Facility>;
-  internalId?: Maybe<Scalars["ID"]>;
-  noSymptoms?: Maybe<Scalars["Boolean"]>;
+  internalId?: Maybe<Scalars["ID"]["output"]>;
+  noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
   patient?: Maybe<Patient>;
   patientLink?: Maybe<PatientLink>;
-  pregnancy?: Maybe<Scalars["String"]>;
-  reasonForCorrection?: Maybe<Scalars["String"]>;
+  pregnancy?: Maybe<Scalars["String"]["output"]>;
+  reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
   results?: Maybe<Array<Maybe<MultiplexResult>>>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]>;
-  symptoms?: Maybe<Scalars["String"]>;
+  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
+  symptoms?: Maybe<Scalars["String"]["output"]>;
 };
 
 export enum TestResultDeliveryPreference {
@@ -984,53 +993,53 @@ export enum TestResultDeliveryPreference {
 export type TestResultsPage = {
   __typename?: "TestResultsPage";
   content?: Maybe<Array<Maybe<TestResult>>>;
-  totalElements?: Maybe<Scalars["Int"]>;
+  totalElements?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export type TopLevelDashboardMetrics = {
   __typename?: "TopLevelDashboardMetrics";
-  positiveTestCount?: Maybe<Scalars["Int"]>;
-  totalTestCount?: Maybe<Scalars["Int"]>;
+  positiveTestCount?: Maybe<Scalars["Int"]["output"]>;
+  totalTestCount?: Maybe<Scalars["Int"]["output"]>;
 };
 
 export type UpdateDeviceType = {
-  internalId: Scalars["ID"];
-  manufacturer: Scalars["String"];
-  model: Scalars["String"];
-  name: Scalars["String"];
+  internalId: Scalars["ID"]["input"];
+  manufacturer: Scalars["String"]["input"];
+  model: Scalars["String"]["input"];
+  name: Scalars["String"]["input"];
   supportedDiseaseTestPerformed: Array<SupportedDiseaseTestPerformedInput>;
-  swabTypes: Array<Scalars["ID"]>;
-  testLength: Scalars["Int"];
+  swabTypes: Array<Scalars["ID"]["input"]>;
+  testLength: Scalars["Int"]["input"];
 };
 
 export type UpdateFacilityInput = {
   address: FacilityAddressInput;
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  deviceIds: Array<InputMaybe<Scalars["ID"]>>;
-  email?: InputMaybe<Scalars["String"]>;
-  facilityId: Scalars["ID"];
-  facilityName: Scalars["String"];
+  cliaNumber?: InputMaybe<Scalars["String"]["input"]>;
+  deviceIds: Array<InputMaybe<Scalars["ID"]["input"]>>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  facilityId: Scalars["ID"]["input"];
+  facilityName: Scalars["String"]["input"];
   orderingProvider?: InputMaybe<ProviderInput>;
-  phone?: InputMaybe<Scalars["String"]>;
+  phone?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type UploadResponse = {
   __typename?: "UploadResponse";
-  createdAt: Scalars["DateTime"];
+  createdAt: Scalars["DateTime"]["output"];
   errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
-  recordsCount: Scalars["Int"];
-  reportId: Scalars["ID"];
+  recordsCount: Scalars["Int"]["output"];
+  reportId: Scalars["ID"]["output"];
   status: UploadStatus;
   warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
 };
 
 export type UploadResult = {
   __typename?: "UploadResult";
-  createdAt: Scalars["DateTime"];
+  createdAt: Scalars["DateTime"]["output"];
   errors?: Maybe<Array<Maybe<FeedbackMessage>>>;
-  internalId: Scalars["ID"];
-  recordsCount: Scalars["Int"];
-  reportId?: Maybe<Scalars["ID"]>;
+  internalId: Scalars["ID"]["output"];
+  recordsCount: Scalars["Int"]["output"];
+  reportId?: Maybe<Scalars["ID"]["output"]>;
   status: UploadStatus;
   warnings?: Maybe<Array<Maybe<FeedbackMessage>>>;
 };
@@ -1044,40 +1053,40 @@ export enum UploadStatus {
 export type UploadSubmissionPage = {
   __typename?: "UploadSubmissionPage";
   content: Array<UploadResult>;
-  totalElements: Scalars["Int"];
+  totalElements: Scalars["Int"]["output"];
 };
 
 export type User = {
   __typename?: "User";
-  email: Scalars["String"];
-  firstName?: Maybe<Scalars["String"]>;
-  id: Scalars["ID"];
-  isAdmin?: Maybe<Scalars["Boolean"]>;
-  isDeleted?: Maybe<Scalars["Boolean"]>;
-  lastName: Scalars["String"];
-  middleName?: Maybe<Scalars["String"]>;
+  email: Scalars["String"]["output"];
+  firstName?: Maybe<Scalars["String"]["output"]>;
+  id: Scalars["ID"]["output"];
+  isAdmin?: Maybe<Scalars["Boolean"]["output"]>;
+  isDeleted?: Maybe<Scalars["Boolean"]["output"]>;
+  lastName: Scalars["String"]["output"];
+  middleName?: Maybe<Scalars["String"]["output"]>;
   name: NameInfo;
   organization?: Maybe<Organization>;
   permissions: Array<UserPermission>;
   role?: Maybe<Role>;
-  roleDescription: Scalars["String"];
+  roleDescription: Scalars["String"]["output"];
   /** @deprecated Users have only one role now */
   roles: Array<Role>;
-  status?: Maybe<Scalars["String"]>;
-  suffix?: Maybe<Scalars["String"]>;
+  status?: Maybe<Scalars["String"]["output"]>;
+  suffix?: Maybe<Scalars["String"]["output"]>;
 };
 
 export type UserInput = {
-  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
-  email: Scalars["String"];
-  facilities?: InputMaybe<Array<Scalars["ID"]>>;
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
+  email: Scalars["String"]["input"];
+  facilities?: InputMaybe<Array<Scalars["ID"]["input"]>>;
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
   name?: InputMaybe<NameInput>;
-  organizationExternalId?: InputMaybe<Scalars["String"]>;
+  organizationExternalId?: InputMaybe<Scalars["String"]["input"]>;
   role: Role;
-  suffix?: InputMaybe<Scalars["String"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export enum UserPermission {
@@ -1202,27 +1211,29 @@ export type GetFacilitiesQuery = {
 };
 
 export type AddFacilityMutationVariables = Exact<{
-  testingFacilityName: Scalars["String"];
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  city?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  zipCode: Scalars["String"];
-  phone?: InputMaybe<Scalars["String"]>;
-  email?: InputMaybe<Scalars["String"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
-  devices: Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>;
+  testingFacilityName: Scalars["String"]["input"];
+  cliaNumber?: InputMaybe<Scalars["String"]["input"]>;
+  street: Scalars["String"]["input"];
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  state: Scalars["String"]["input"];
+  zipCode: Scalars["String"]["input"];
+  phone?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]["input"]>;
+  devices:
+    | Array<InputMaybe<Scalars["ID"]["input"]>>
+    | InputMaybe<Scalars["ID"]["input"]>;
 }>;
 
 export type AddFacilityMutation = {
@@ -1231,28 +1242,30 @@ export type AddFacilityMutation = {
 };
 
 export type UpdateFacilityMutationVariables = Exact<{
-  facilityId: Scalars["ID"];
-  testingFacilityName: Scalars["String"];
-  cliaNumber?: InputMaybe<Scalars["String"]>;
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  city?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  zipCode: Scalars["String"];
-  phone?: InputMaybe<Scalars["String"]>;
-  email?: InputMaybe<Scalars["String"]>;
-  orderingProviderFirstName?: InputMaybe<Scalars["String"]>;
-  orderingProviderMiddleName?: InputMaybe<Scalars["String"]>;
-  orderingProviderLastName?: InputMaybe<Scalars["String"]>;
-  orderingProviderSuffix?: InputMaybe<Scalars["String"]>;
-  orderingProviderNPI?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreet?: InputMaybe<Scalars["String"]>;
-  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]>;
-  orderingProviderCity?: InputMaybe<Scalars["String"]>;
-  orderingProviderState?: InputMaybe<Scalars["String"]>;
-  orderingProviderZipCode?: InputMaybe<Scalars["String"]>;
-  orderingProviderPhone?: InputMaybe<Scalars["String"]>;
-  devices: Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>;
+  facilityId: Scalars["ID"]["input"];
+  testingFacilityName: Scalars["String"]["input"];
+  cliaNumber?: InputMaybe<Scalars["String"]["input"]>;
+  street: Scalars["String"]["input"];
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  state: Scalars["String"]["input"];
+  zipCode: Scalars["String"]["input"];
+  phone?: InputMaybe<Scalars["String"]["input"]>;
+  email?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderFirstName?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderMiddleName?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderLastName?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderSuffix?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderNPI?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderStreet?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderStreetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderCity?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderState?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderZipCode?: InputMaybe<Scalars["String"]["input"]>;
+  orderingProviderPhone?: InputMaybe<Scalars["String"]["input"]>;
+  devices:
+    | Array<InputMaybe<Scalars["ID"]["input"]>>
+    | InputMaybe<Scalars["ID"]["input"]>;
 }>;
 
 export type UpdateFacilityMutation = {
@@ -1281,7 +1294,7 @@ export type AllSelfRegistrationLinksQuery = {
 };
 
 export type GetUserQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetUserQuery = {
@@ -1324,7 +1337,7 @@ export type GetUsersAndStatusQuery = {
 };
 
 export type ResendActivationEmailMutationVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type ResendActivationEmailMutation = {
@@ -1341,11 +1354,11 @@ export type ResendActivationEmailMutation = {
 };
 
 export type UpdateUserNameMutationVariables = Exact<{
-  id: Scalars["ID"];
-  firstName: Scalars["String"];
-  middleName?: InputMaybe<Scalars["String"]>;
-  lastName: Scalars["String"];
-  suffix?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"]["input"];
+  firstName: Scalars["String"]["input"];
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName: Scalars["String"]["input"];
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type UpdateUserNameMutation = {
@@ -1354,8 +1367,8 @@ export type UpdateUserNameMutation = {
 };
 
 export type EditUserEmailMutationVariables = Exact<{
-  id: Scalars["ID"];
-  email?: InputMaybe<Scalars["String"]>;
+  id: Scalars["ID"]["input"];
+  email?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type EditUserEmailMutation = {
@@ -1364,7 +1377,7 @@ export type EditUserEmailMutation = {
 };
 
 export type ResetUserMfaMutationVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type ResetUserMfaMutation = {
@@ -1373,7 +1386,7 @@ export type ResetUserMfaMutation = {
 };
 
 export type ReactivateUserAndResetPasswordMutationVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type ReactivateUserAndResetPasswordMutation = {
@@ -1382,7 +1395,7 @@ export type ReactivateUserAndResetPasswordMutation = {
 };
 
 export type ReactivateUserMutationVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type ReactivateUserMutation = {
@@ -1391,10 +1404,10 @@ export type ReactivateUserMutation = {
 };
 
 export type UpdateUserPrivilegesMutationVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
   role: Role;
-  accessAllFacilities: Scalars["Boolean"];
-  facilities: Array<Scalars["ID"]> | Scalars["ID"];
+  accessAllFacilities: Scalars["Boolean"]["input"];
+  facilities: Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"];
 }>;
 
 export type UpdateUserPrivilegesMutation = {
@@ -1403,7 +1416,7 @@ export type UpdateUserPrivilegesMutation = {
 };
 
 export type ResetUserPasswordMutationVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type ResetUserPasswordMutation = {
@@ -1412,8 +1425,8 @@ export type ResetUserPasswordMutation = {
 };
 
 export type SetUserIsDeletedMutationVariables = Exact<{
-  id: Scalars["ID"];
-  deleted: Scalars["Boolean"];
+  id: Scalars["ID"]["input"];
+  deleted: Scalars["Boolean"]["input"];
 }>;
 
 export type SetUserIsDeletedMutation = {
@@ -1422,12 +1435,14 @@ export type SetUserIsDeletedMutation = {
 };
 
 export type AddUserToCurrentOrgMutationVariables = Exact<{
-  firstName?: InputMaybe<Scalars["String"]>;
-  lastName: Scalars["String"];
-  email: Scalars["String"];
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName: Scalars["String"]["input"];
+  email: Scalars["String"]["input"];
   role: Role;
-  accessAllFacilities?: InputMaybe<Scalars["Boolean"]>;
-  facilities?: InputMaybe<Array<Scalars["ID"]> | Scalars["ID"]>;
+  accessAllFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
+  facilities?: InputMaybe<
+    Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"]
+  >;
 }>;
 
 export type AddUserToCurrentOrgMutation = {
@@ -1452,8 +1467,8 @@ export type GetCurrentOrganizationQuery = {
 };
 
 export type AdminSetOrganizationMutationVariables = Exact<{
-  name: Scalars["String"];
-  type: Scalars["String"];
+  name: Scalars["String"]["input"];
+  type: Scalars["String"]["input"];
 }>;
 
 export type AdminSetOrganizationMutation = {
@@ -1462,7 +1477,7 @@ export type AdminSetOrganizationMutation = {
 };
 
 export type SetOrganizationMutationVariables = Exact<{
-  type: Scalars["String"];
+  type: Scalars["String"]["input"];
 }>;
 
 export type SetOrganizationMutation = {
@@ -1471,9 +1486,9 @@ export type SetOrganizationMutation = {
 };
 
 export type GetTopLevelDashboardMetricsNewQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 }>;
 
 export type GetTopLevelDashboardMetricsNewQuery = {
@@ -1486,10 +1501,10 @@ export type GetTopLevelDashboardMetricsNewQuery = {
 };
 
 export type PatientExistsQueryVariables = Exact<{
-  firstName: Scalars["String"];
-  lastName: Scalars["String"];
-  birthDate: Scalars["LocalDate"];
-  facilityId?: InputMaybe<Scalars["ID"]>;
+  firstName: Scalars["String"]["input"];
+  lastName: Scalars["String"]["input"];
+  birthDate: Scalars["LocalDate"]["input"];
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
 }>;
 
 export type PatientExistsQuery = {
@@ -1498,34 +1513,35 @@ export type PatientExistsQuery = {
 };
 
 export type AddPatientMutationVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  firstName: Scalars["String"];
-  middleName?: InputMaybe<Scalars["String"]>;
-  lastName: Scalars["String"];
-  birthDate: Scalars["LocalDate"];
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  city?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  zipCode: Scalars["String"];
-  country: Scalars["String"];
-  telephone?: InputMaybe<Scalars["String"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  firstName: Scalars["String"]["input"];
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName: Scalars["String"]["input"];
+  birthDate: Scalars["LocalDate"]["input"];
+  street: Scalars["String"]["input"];
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  state: Scalars["String"]["input"];
+  zipCode: Scalars["String"]["input"];
+  country: Scalars["String"]["input"];
+  telephone?: InputMaybe<Scalars["String"]["input"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput> | PhoneNumberInput>;
-  role?: InputMaybe<Scalars["String"]>;
-  lookupId?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  lookupId?: InputMaybe<Scalars["String"]["input"]>;
   emails?: InputMaybe<
-    Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
+    | Array<InputMaybe<Scalars["String"]["input"]>>
+    | InputMaybe<Scalars["String"]["input"]>
   >;
-  county?: InputMaybe<Scalars["String"]>;
-  race?: InputMaybe<Scalars["String"]>;
-  ethnicity?: InputMaybe<Scalars["String"]>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]>;
-  gender?: InputMaybe<Scalars["String"]>;
-  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
-  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
-  preferredLanguage?: InputMaybe<Scalars["String"]>;
+  county?: InputMaybe<Scalars["String"]["input"]>;
+  race?: InputMaybe<Scalars["String"]["input"]>;
+  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
+  gender?: InputMaybe<Scalars["String"]["input"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]["input"]>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]["input"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  notes?: InputMaybe<Scalars["String"]>;
+  notes?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type AddPatientMutation = {
@@ -1538,8 +1554,8 @@ export type AddPatientMutation = {
 };
 
 export type ArchivePersonMutationVariables = Exact<{
-  id: Scalars["ID"];
-  deleted: Scalars["Boolean"];
+  id: Scalars["ID"]["input"];
+  deleted: Scalars["Boolean"]["input"];
 }>;
 
 export type ArchivePersonMutation = {
@@ -1548,7 +1564,7 @@ export type ArchivePersonMutation = {
 };
 
 export type GetPatientDetailsQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetPatientDetailsQuery = {
@@ -1591,36 +1607,37 @@ export type GetPatientDetailsQuery = {
 };
 
 export type UpdatePatientMutationVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId: Scalars["ID"];
-  firstName: Scalars["String"];
-  middleName?: InputMaybe<Scalars["String"]>;
-  lastName: Scalars["String"];
-  birthDate: Scalars["LocalDate"];
-  street: Scalars["String"];
-  streetTwo?: InputMaybe<Scalars["String"]>;
-  city?: InputMaybe<Scalars["String"]>;
-  state: Scalars["String"];
-  zipCode: Scalars["String"];
-  telephone?: InputMaybe<Scalars["String"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  patientId: Scalars["ID"]["input"];
+  firstName: Scalars["String"]["input"];
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName: Scalars["String"]["input"];
+  birthDate: Scalars["LocalDate"]["input"];
+  street: Scalars["String"]["input"];
+  streetTwo?: InputMaybe<Scalars["String"]["input"]>;
+  city?: InputMaybe<Scalars["String"]["input"]>;
+  state: Scalars["String"]["input"];
+  zipCode: Scalars["String"]["input"];
+  telephone?: InputMaybe<Scalars["String"]["input"]>;
   phoneNumbers?: InputMaybe<Array<PhoneNumberInput> | PhoneNumberInput>;
-  role?: InputMaybe<Scalars["String"]>;
-  lookupId?: InputMaybe<Scalars["String"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  lookupId?: InputMaybe<Scalars["String"]["input"]>;
   emails?: InputMaybe<
-    Array<InputMaybe<Scalars["String"]>> | InputMaybe<Scalars["String"]>
+    | Array<InputMaybe<Scalars["String"]["input"]>>
+    | InputMaybe<Scalars["String"]["input"]>
   >;
-  county?: InputMaybe<Scalars["String"]>;
-  country?: InputMaybe<Scalars["String"]>;
-  race?: InputMaybe<Scalars["String"]>;
-  ethnicity?: InputMaybe<Scalars["String"]>;
-  tribalAffiliation?: InputMaybe<Scalars["String"]>;
-  gender?: InputMaybe<Scalars["String"]>;
-  genderIdentity?: InputMaybe<Scalars["String"]>;
-  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]>;
-  employedInHealthcare?: InputMaybe<Scalars["Boolean"]>;
-  preferredLanguage?: InputMaybe<Scalars["String"]>;
+  county?: InputMaybe<Scalars["String"]["input"]>;
+  country?: InputMaybe<Scalars["String"]["input"]>;
+  race?: InputMaybe<Scalars["String"]["input"]>;
+  ethnicity?: InputMaybe<Scalars["String"]["input"]>;
+  tribalAffiliation?: InputMaybe<Scalars["String"]["input"]>;
+  gender?: InputMaybe<Scalars["String"]["input"]>;
+  genderIdentity?: InputMaybe<Scalars["String"]["input"]>;
+  residentCongregateSetting?: InputMaybe<Scalars["Boolean"]["input"]>;
+  employedInHealthcare?: InputMaybe<Scalars["Boolean"]["input"]>;
+  preferredLanguage?: InputMaybe<Scalars["String"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
-  notes?: InputMaybe<Scalars["String"]>;
+  notes?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type UpdatePatientMutation = {
@@ -1629,9 +1646,9 @@ export type UpdatePatientMutation = {
 };
 
 export type GetPatientsCountByFacilityQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
+  facilityId: Scalars["ID"]["input"];
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type GetPatientsCountByFacilityQuery = {
@@ -1640,11 +1657,11 @@ export type GetPatientsCountByFacilityQuery = {
 };
 
 export type GetPatientsByFacilityQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
-  pageNumber: Scalars["Int"];
-  pageSize: Scalars["Int"];
+  facilityId: Scalars["ID"]["input"];
+  pageNumber: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type GetPatientsByFacilityQuery = {
@@ -1663,12 +1680,12 @@ export type GetPatientsByFacilityQuery = {
 };
 
 export type AddUserMutationVariables = Exact<{
-  firstName?: InputMaybe<Scalars["String"]>;
-  middleName?: InputMaybe<Scalars["String"]>;
-  lastName?: InputMaybe<Scalars["String"]>;
-  suffix?: InputMaybe<Scalars["String"]>;
-  email: Scalars["String"];
-  organizationExternalId: Scalars["String"];
+  firstName?: InputMaybe<Scalars["String"]["input"]>;
+  middleName?: InputMaybe<Scalars["String"]["input"]>;
+  lastName?: InputMaybe<Scalars["String"]["input"]>;
+  suffix?: InputMaybe<Scalars["String"]["input"]>;
+  email: Scalars["String"]["input"];
+  organizationExternalId: Scalars["String"]["input"];
   role: Role;
 }>;
 
@@ -1678,14 +1695,14 @@ export type AddUserMutation = {
 };
 
 export type CreateDeviceTypeMutationVariables = Exact<{
-  name: Scalars["String"];
-  manufacturer: Scalars["String"];
-  model: Scalars["String"];
-  swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+  name: Scalars["String"]["input"];
+  manufacturer: Scalars["String"]["input"];
+  model: Scalars["String"]["input"];
+  swabTypes: Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"];
   supportedDiseaseTestPerformed:
     | Array<SupportedDiseaseTestPerformedInput>
     | SupportedDiseaseTestPerformedInput;
-  testLength: Scalars["Int"];
+  testLength: Scalars["Int"]["input"];
 }>;
 
 export type CreateDeviceTypeMutation = {
@@ -1694,15 +1711,15 @@ export type CreateDeviceTypeMutation = {
 };
 
 export type UpdateDeviceTypeMutationVariables = Exact<{
-  internalId: Scalars["ID"];
-  name: Scalars["String"];
-  manufacturer: Scalars["String"];
-  model: Scalars["String"];
-  swabTypes: Array<Scalars["ID"]> | Scalars["ID"];
+  internalId: Scalars["ID"]["input"];
+  name: Scalars["String"]["input"];
+  manufacturer: Scalars["String"]["input"];
+  model: Scalars["String"]["input"];
+  swabTypes: Array<Scalars["ID"]["input"]> | Scalars["ID"]["input"];
   supportedDiseaseTestPerformed:
     | Array<SupportedDiseaseTestPerformedInput>
     | SupportedDiseaseTestPerformedInput;
-  testLength: Scalars["Int"];
+  testLength: Scalars["Int"]["input"];
 }>;
 
 export type UpdateDeviceTypeMutation = {
@@ -1778,7 +1795,7 @@ export type GetAllOrganizationsQuery = {
 };
 
 export type GetFacilitiesByOrgIdQueryVariables = Exact<{
-  orgId: Scalars["ID"];
+  orgId: Scalars["ID"]["input"];
 }>;
 
 export type GetFacilitiesByOrgIdQuery = {
@@ -1801,7 +1818,7 @@ export type GetFacilitiesByOrgIdQuery = {
 };
 
 export type GetFacilityStatsQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
+  facilityId: Scalars["ID"]["input"];
 }>;
 
 export type GetFacilityStatsQuery = {
@@ -1814,7 +1831,7 @@ export type GetFacilityStatsQuery = {
 };
 
 export type DeleteFacilityMutationVariables = Exact<{
-  facilityId: Scalars["ID"];
+  facilityId: Scalars["ID"]["input"];
 }>;
 
 export type DeleteFacilityMutation = {
@@ -1823,7 +1840,7 @@ export type DeleteFacilityMutation = {
 };
 
 export type FindUserByEmailQueryVariables = Exact<{
-  email: Scalars["String"];
+  email: Scalars["String"]["input"];
 }>;
 
 export type FindUserByEmailQuery = {
@@ -1853,7 +1870,7 @@ export type FindUserByEmailQuery = {
 };
 
 export type UndeleteUserMutationVariables = Exact<{
-  userId: Scalars["ID"];
+  userId: Scalars["ID"]["input"];
 }>;
 
 export type UndeleteUserMutation = {
@@ -1867,12 +1884,13 @@ export type UndeleteUserMutation = {
 };
 
 export type UpdateUserPrivilegesAndGroupAccessMutationVariables = Exact<{
-  username: Scalars["String"];
-  orgExternalId: Scalars["String"];
-  accessAllFacilities: Scalars["Boolean"];
+  username: Scalars["String"]["input"];
+  orgExternalId: Scalars["String"]["input"];
+  accessAllFacilities: Scalars["Boolean"]["input"];
   role: Role;
   facilities?: InputMaybe<
-    Array<InputMaybe<Scalars["ID"]>> | InputMaybe<Scalars["ID"]>
+    | Array<InputMaybe<Scalars["ID"]["input"]>>
+    | InputMaybe<Scalars["ID"]["input"]>
   >;
 }>;
 
@@ -1882,7 +1900,7 @@ export type UpdateUserPrivilegesAndGroupAccessMutation = {
 };
 
 export type GetTestResultCountByOrgQueryVariables = Exact<{
-  orgId: Scalars["ID"];
+  orgId: Scalars["ID"]["input"];
 }>;
 
 export type GetTestResultCountByOrgQuery = {
@@ -1909,8 +1927,8 @@ export type GetPendingOrganizationsQuery = {
 };
 
 export type SetOrgIdentityVerifiedMutationVariables = Exact<{
-  externalId: Scalars["String"];
-  verified: Scalars["Boolean"];
+  externalId: Scalars["String"]["input"];
+  verified: Scalars["Boolean"]["input"];
 }>;
 
 export type SetOrgIdentityVerifiedMutation = {
@@ -1919,8 +1937,8 @@ export type SetOrgIdentityVerifiedMutation = {
 };
 
 export type MarkPendingOrganizationAsDeletedMutationVariables = Exact<{
-  orgExternalId: Scalars["String"];
-  deleted: Scalars["Boolean"];
+  orgExternalId: Scalars["String"]["input"];
+  deleted: Scalars["Boolean"]["input"];
 }>;
 
 export type MarkPendingOrganizationAsDeletedMutation = {
@@ -1929,12 +1947,12 @@ export type MarkPendingOrganizationAsDeletedMutation = {
 };
 
 export type EditPendingOrganizationMutationVariables = Exact<{
-  externalId: Scalars["String"];
-  name?: InputMaybe<Scalars["String"]>;
-  adminFirstName?: InputMaybe<Scalars["String"]>;
-  adminLastName?: InputMaybe<Scalars["String"]>;
-  adminEmail?: InputMaybe<Scalars["String"]>;
-  adminPhone?: InputMaybe<Scalars["String"]>;
+  externalId: Scalars["String"]["input"];
+  name?: InputMaybe<Scalars["String"]["input"]>;
+  adminFirstName?: InputMaybe<Scalars["String"]["input"]>;
+  adminLastName?: InputMaybe<Scalars["String"]["input"]>;
+  adminEmail?: InputMaybe<Scalars["String"]["input"]>;
+  adminPhone?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type EditPendingOrganizationMutation = {
@@ -1943,7 +1961,7 @@ export type EditPendingOrganizationMutation = {
 };
 
 export type GetOrganizationsQueryVariables = Exact<{
-  identityVerified?: InputMaybe<Scalars["Boolean"]>;
+  identityVerified?: InputMaybe<Scalars["Boolean"]["input"]>;
 }>;
 
 export type GetOrganizationsQuery = {
@@ -1957,8 +1975,8 @@ export type GetOrganizationsQuery = {
 };
 
 export type SetCurrentUserTenantDataAccessOpMutationVariables = Exact<{
-  organizationExternalId?: InputMaybe<Scalars["String"]>;
-  justification?: InputMaybe<Scalars["String"]>;
+  organizationExternalId?: InputMaybe<Scalars["String"]["input"]>;
+  justification?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type SetCurrentUserTenantDataAccessOpMutation = {
@@ -1978,7 +1996,7 @@ export type SetCurrentUserTenantDataAccessOpMutation = {
 };
 
 export type GetOrganizationWithFacilitiesQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetOrganizationWithFacilitiesQuery = {
@@ -1992,11 +2010,11 @@ export type GetOrganizationWithFacilitiesQuery = {
 };
 
 export type GetPatientsByFacilityWithOrgQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
-  pageNumber: Scalars["Int"];
-  pageSize: Scalars["Int"];
+  facilityId: Scalars["ID"]["input"];
+  pageNumber: Scalars["Int"]["input"];
+  pageSize: Scalars["Int"]["input"];
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  orgExternalId: Scalars["String"];
+  orgExternalId: Scalars["String"]["input"];
 }>;
 
 export type GetPatientsByFacilityWithOrgQuery = {
@@ -2014,9 +2032,9 @@ export type GetPatientsByFacilityWithOrgQuery = {
 };
 
 export type GetPatientsCountByFacilityWithOrgQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
+  facilityId: Scalars["ID"]["input"];
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  orgExternalId: Scalars["String"];
+  orgExternalId: Scalars["String"]["input"];
 }>;
 
 export type GetPatientsCountByFacilityWithOrgQuery = {
@@ -2025,8 +2043,8 @@ export type GetPatientsCountByFacilityWithOrgQuery = {
 };
 
 export type UnarchivePatientMutationVariables = Exact<{
-  id: Scalars["ID"];
-  orgExternalId: Scalars["String"];
+  id: Scalars["ID"]["input"];
+  orgExternalId: Scalars["String"]["input"];
 }>;
 
 export type UnarchivePatientMutation = {
@@ -2044,7 +2062,7 @@ export type SendSupportEscalationMutation = {
 };
 
 export type GetPatientQueryVariables = Exact<{
-  internalId: Scalars["ID"];
+  internalId: Scalars["ID"]["input"];
 }>;
 
 export type GetPatientQuery = {
@@ -2069,10 +2087,10 @@ export type GetPatientQuery = {
 };
 
 export type GetPatientsByFacilityForQueueQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  namePrefixMatch?: InputMaybe<Scalars["String"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  namePrefixMatch?: InputMaybe<Scalars["String"]["input"]>;
   archivedStatus?: InputMaybe<ArchivedStatus>;
-  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]>;
+  includeArchivedFacilities?: InputMaybe<Scalars["Boolean"]["input"]>;
 }>;
 
 export type GetPatientsByFacilityForQueueQuery = {
@@ -2098,12 +2116,12 @@ export type GetPatientsByFacilityForQueueQuery = {
 };
 
 export type AddPatientToQueueMutationVariables = Exact<{
-  facilityId: Scalars["ID"];
-  patientId: Scalars["ID"];
-  symptoms?: InputMaybe<Scalars["String"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
-  pregnancy?: InputMaybe<Scalars["String"]>;
-  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
+  facilityId: Scalars["ID"]["input"];
+  patientId: Scalars["ID"]["input"];
+  symptoms?: InputMaybe<Scalars["String"]["input"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 }>;
 
@@ -2113,11 +2131,11 @@ export type AddPatientToQueueMutation = {
 };
 
 export type UpdateAoeMutationVariables = Exact<{
-  patientId: Scalars["ID"];
-  symptoms?: InputMaybe<Scalars["String"]>;
-  symptomOnset?: InputMaybe<Scalars["LocalDate"]>;
-  pregnancy?: InputMaybe<Scalars["String"]>;
-  noSymptoms?: InputMaybe<Scalars["Boolean"]>;
+  patientId: Scalars["ID"]["input"];
+  symptoms?: InputMaybe<Scalars["String"]["input"]>;
+  symptomOnset?: InputMaybe<Scalars["LocalDate"]["input"]>;
+  pregnancy?: InputMaybe<Scalars["String"]["input"]>;
+  noSymptoms?: InputMaybe<Scalars["Boolean"]["input"]>;
   testResultDelivery?: InputMaybe<TestResultDeliveryPreference>;
 }>;
 
@@ -2127,7 +2145,7 @@ export type UpdateAoeMutation = {
 };
 
 export type RemovePatientFromQueueMutationVariables = Exact<{
-  patientId: Scalars["ID"];
+  patientId: Scalars["ID"]["input"];
 }>;
 
 export type RemovePatientFromQueueMutation = {
@@ -2136,13 +2154,13 @@ export type RemovePatientFromQueueMutation = {
 };
 
 export type EditQueueItemMutationVariables = Exact<{
-  id: Scalars["ID"];
-  deviceTypeId?: InputMaybe<Scalars["ID"]>;
-  specimenTypeId?: InputMaybe<Scalars["ID"]>;
+  id: Scalars["ID"]["input"];
+  deviceTypeId?: InputMaybe<Scalars["ID"]["input"]>;
+  specimenTypeId?: InputMaybe<Scalars["ID"]["input"]>;
   results?: InputMaybe<
     Array<InputMaybe<MultiplexResultInput>> | InputMaybe<MultiplexResultInput>
   >;
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
 }>;
 
 export type EditQueueItemMutation = {
@@ -2164,13 +2182,13 @@ export type EditQueueItemMutation = {
 };
 
 export type SubmitQueueItemMutationVariables = Exact<{
-  patientId: Scalars["ID"];
-  deviceTypeId: Scalars["ID"];
-  specimenTypeId: Scalars["ID"];
+  patientId: Scalars["ID"]["input"];
+  deviceTypeId: Scalars["ID"]["input"];
+  specimenTypeId: Scalars["ID"]["input"];
   results:
     | Array<InputMaybe<MultiplexResultInput>>
     | InputMaybe<MultiplexResultInput>;
-  dateTested?: InputMaybe<Scalars["DateTime"]>;
+  dateTested?: InputMaybe<Scalars["DateTime"]["input"]>;
 }>;
 
 export type SubmitQueueItemMutation = {
@@ -2183,7 +2201,7 @@ export type SubmitQueueItemMutation = {
 };
 
 export type GetFacilityQueueQueryVariables = Exact<{
-  facilityId: Scalars["ID"];
+  facilityId: Scalars["ID"]["input"];
 }>;
 
 export type GetFacilityQueueQuery = {
@@ -2268,7 +2286,7 @@ export type GetFacilityQueueQuery = {
 };
 
 export type GetTestResultForCorrectionQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetTestResultForCorrectionQuery = {
@@ -2294,8 +2312,8 @@ export type GetTestResultForCorrectionQuery = {
 };
 
 export type MarkTestAsErrorMutationVariables = Exact<{
-  id: Scalars["ID"];
-  reason: Scalars["String"];
+  id: Scalars["ID"]["input"];
+  reason: Scalars["String"]["input"];
 }>;
 
 export type MarkTestAsErrorMutation = {
@@ -2307,8 +2325,8 @@ export type MarkTestAsErrorMutation = {
 };
 
 export type MarkTestAsCorrectionMutationVariables = Exact<{
-  id: Scalars["ID"];
-  reason: Scalars["String"];
+  id: Scalars["ID"]["input"];
+  reason: Scalars["String"]["input"];
 }>;
 
 export type MarkTestAsCorrectionMutation = {
@@ -2320,7 +2338,7 @@ export type MarkTestAsCorrectionMutation = {
 };
 
 export type GetTestResultDetailsQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetTestResultDetailsQuery = {
@@ -2358,7 +2376,7 @@ export type GetTestResultDetailsQuery = {
 };
 
 export type GetTestResultForTextQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetTestResultForTextQuery = {
@@ -2382,7 +2400,7 @@ export type GetTestResultForTextQuery = {
 };
 
 export type SendSmsMutationVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type SendSmsMutation = {
@@ -2391,7 +2409,7 @@ export type SendSmsMutation = {
 };
 
 export type GetTestResultForResendingEmailsQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetTestResultForResendingEmailsQuery = {
@@ -2411,7 +2429,7 @@ export type GetTestResultForResendingEmailsQuery = {
 };
 
 export type ResendTestResultsEmailMutationVariables = Exact<{
-  testEventId: Scalars["ID"];
+  testEventId: Scalars["ID"]["input"];
 }>;
 
 export type ResendTestResultsEmailMutation = {
@@ -2420,14 +2438,14 @@ export type ResendTestResultsEmailMutation = {
 };
 
 export type GetFacilityResultsForCsvWithCountQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  patientId?: InputMaybe<Scalars["ID"]["input"]>;
+  result?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
 }>;
 
 export type GetFacilityResultsForCsvWithCountQuery = {
@@ -2504,15 +2522,15 @@ export type GetFacilityResultsForCsvWithCountQuery = {
 };
 
 export type GetResultsMultiplexWithCountQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  disease?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  patientId?: InputMaybe<Scalars["ID"]["input"]>;
+  result?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  disease?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
 }>;
 
 export type GetResultsMultiplexWithCountQuery = {
@@ -2527,10 +2545,10 @@ export type GetResultsMultiplexWithCountQuery = {
       correctionStatus?: string | null;
       reasonForCorrection?: string | null;
       testResult: string;
+      disease: string;
       symptoms: string;
       noSymptoms: boolean;
       symptomOnset?: any | null;
-      disease: { __typename?: "SupportedDisease"; name: string };
       facility: {
         __typename?: "Facility";
         name: string;
@@ -2572,7 +2590,7 @@ export type GetResultsMultiplexWithCountQuery = {
         employedInHealthcare?: boolean | null;
         preferredLanguage?: string | null;
       };
-      createdBy: {
+      createdBy?: {
         __typename?: "ApiUser";
         nameInfo?: {
           __typename?: "NameInfo";
@@ -2580,13 +2598,13 @@ export type GetResultsMultiplexWithCountQuery = {
           middleName?: string | null;
           lastName: string;
         } | null;
-      };
+      } | null;
     } | null> | null;
   } | null;
 };
 
 export type GetAllFacilitiesQueryVariables = Exact<{
-  showArchived?: InputMaybe<Scalars["Boolean"]>;
+  showArchived?: InputMaybe<Scalars["Boolean"]["input"]>;
 }>;
 
 export type GetAllFacilitiesQuery = {
@@ -2600,12 +2618,12 @@ export type GetAllFacilitiesQuery = {
 };
 
 export type GetResultsCountByFacilityQueryVariables = Exact<{
-  facilityId?: InputMaybe<Scalars["ID"]>;
-  patientId?: InputMaybe<Scalars["ID"]>;
-  result?: InputMaybe<Scalars["String"]>;
-  role?: InputMaybe<Scalars["String"]>;
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
+  facilityId?: InputMaybe<Scalars["ID"]["input"]>;
+  patientId?: InputMaybe<Scalars["ID"]["input"]>;
+  result?: InputMaybe<Scalars["String"]["input"]>;
+  role?: InputMaybe<Scalars["String"]["input"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
 }>;
 
 export type GetResultsCountByFacilityQuery = {
@@ -2614,7 +2632,7 @@ export type GetResultsCountByFacilityQuery = {
 };
 
 export type GetTestResultForPrintQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetTestResultForPrintQuery = {
@@ -2662,7 +2680,7 @@ export type GetTestResultForPrintQuery = {
 };
 
 export type GetUploadSubmissionQueryVariables = Exact<{
-  id: Scalars["ID"];
+  id: Scalars["ID"]["input"];
 }>;
 
 export type GetUploadSubmissionQuery = {
@@ -2687,10 +2705,10 @@ export type GetUploadSubmissionQuery = {
 };
 
 export type GetUploadSubmissionsQueryVariables = Exact<{
-  startDate?: InputMaybe<Scalars["DateTime"]>;
-  endDate?: InputMaybe<Scalars["DateTime"]>;
-  pageNumber?: InputMaybe<Scalars["Int"]>;
-  pageSize?: InputMaybe<Scalars["Int"]>;
+  startDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  endDate?: InputMaybe<Scalars["DateTime"]["input"]>;
+  pageNumber?: InputMaybe<Scalars["Int"]["input"]>;
+  pageSize?: InputMaybe<Scalars["Int"]["input"]>;
 }>;
 
 export type GetUploadSubmissionsQuery = {
@@ -7655,9 +7673,7 @@ export const GetResultsMultiplexWithCountDocument = gql`
         correctionStatus
         reasonForCorrection
         testResult
-        disease {
-          name
-        }
+        disease
         facility {
           name
           isDeleted

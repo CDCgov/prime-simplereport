@@ -133,7 +133,7 @@ const generateResultRows = (
   return sortedResults.map((r: Result) => {
     const removed = r.correctionStatus === "REMOVED";
 
-    let diseaseIdName = toLowerCaseHyphenate(r?.disease?.name);
+    let diseaseIdName = toLowerCaseHyphenate(r.disease);
 
     const actionItems = createActionItemList(
       setPrintModalId,
@@ -192,7 +192,7 @@ const generateResultRows = (
         <td className="test-date-cell">
           {formatDateWithTimeOption(r.dateTested, true)}
         </td>
-        <td className="test-condition-cell">{r.disease.name}</td>
+        <td className="test-condition-cell">{r.disease}</td>
         {getResultCellHTML()}
         <td className="test-device-cell">{r.deviceType?.name}</td>
         {!hasFacility ? (

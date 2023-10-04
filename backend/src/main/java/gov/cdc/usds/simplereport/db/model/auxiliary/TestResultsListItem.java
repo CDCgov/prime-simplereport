@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Result;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.UUID;
@@ -23,7 +22,7 @@ public class TestResultsListItem {
   public String symptoms;
   public LocalDate symptomOnset;
   public DeviceType deviceType;
-  public SupportedDisease disease;
+  public String disease;
   public TestResult testResult;
   public Date dateTested;
   public TestCorrectionStatus correctionStatus;
@@ -41,7 +40,7 @@ public class TestResultsListItem {
     this.symptoms = result.getTestEvent().getSurveyData().getSymptomsJSON();
     this.symptomOnset = result.getTestEvent().getSurveyData().getSymptomOnsetDate();
     this.deviceType = result.getTestEvent().getDeviceType();
-    this.disease = result.getDisease();
+    this.disease = result.getDisease().getName();
     this.testResult = result.getTestResult();
     this.dateTested = result.getTestEvent().getDateTested();
     this.correctionStatus = result.getTestEvent().getCorrectionStatus();

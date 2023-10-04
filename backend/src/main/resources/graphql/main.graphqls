@@ -303,12 +303,12 @@ type Result {
   symptoms: String!
   symptomOnset: LocalDate
   deviceType: DeviceType!
-  disease: SupportedDisease!
+  disease: String!
   testResult: String!
   dateTested: DateTime!
   correctionStatus: String
   reasonForCorrection: String
-  createdBy: ApiUser!
+  createdBy: ApiUser
 }
 
 type ResultsPage {

@@ -126,9 +126,7 @@ query GetResultsMultiplexWithCount(
       correctionStatus
       reasonForCorrection
       testResult
-      disease {
-        name
-      }
+      disease
       facility {
         name
         isDeleted

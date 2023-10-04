@@ -1,8 +1,10 @@
 const data = [
   {
-    internalId: "0969da96-b211-41cd-ba61-002181f0918d",
+    id: "0969da96-b211-41cd-ba61-002181f0918d",
+    dateAdded: "2021-03-17T19:27:23.806Z",
     dateTested: "2021-03-17T19:27:23.806Z",
-    results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
+    disease: "COVID-19",
+    testResult: "NEGATIVE",
     correctionStatus: "ORIGINAL",
     deviceType: {
       internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
@@ -35,7 +37,7 @@ const data = [
     },
     noSymptoms: true,
     symptoms: "{}",
-    __typename: "TestResult",
+    __typename: "Result",
   },
 ];
 
