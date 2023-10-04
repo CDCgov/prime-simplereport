@@ -39,6 +39,7 @@ resource "azurerm_postgresql_flexible_server" "db" {
 
   # See note at https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server#high_availability
   lifecycle {
+    prevent_destroy = true
     ignore_changes = [
       zone,
       high_availability.0.standby_availability_zone,

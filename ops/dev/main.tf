@@ -8,11 +8,10 @@ locals {
     environment    = local.env
     resource_group = data.azurerm_resource_group.rg.name
   }
-  # a list of tags that the cdc requires
   cdc_tags = {
     business_steward    = "vuj4@cdc.gov"
     center              = "DDPHSS"
-    environment         = "dev"
+    environment         = local.env
     escid               = "3205"
     funding_source      = "TBD"
     pii_data            = "false"

@@ -1,0 +1,54 @@
+name: Terraform Key Replace
+description: Build and push Docker image to the registry
+inputs:
+  azure_creds:
+    description: Azure credentials
+    required: true
+  deploy_env:
+    description: The environment to deploy to
+    required: true
+  terraform_arm_client_id:
+    description: Terraform ARM client ID
+    required: true
+  terraform_arm_client_secret:
+    description: Terraform ARM client secret
+    required: true
+  terraform_arm_subscription_id:
+    description: Terraform ARM subscription ID
+    required: true
+  terraform_arm_tenant_id:
+    description: Terraform ARM tenant ID
+    required: true
+  okta_api_token:
+    description: Okta API token
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: azure/login@v1
+      with:
+        creds: ${{ inputs.azure_creds }}
+    - uses: hashicorp/setup-terraform@v2.0.3
+      with:
+        terraform_version: 1.3.3
+    - name: Terraform Init
+      working-directory: ./ops
+      env: # all Azure interaction is through Terraform
+        ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
+        ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
+        ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
+        OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
+      shell: bash
+      run: make init-${{ inputs.deploy_env }}
+    - name: Terraform Key Rotation
+      working-directory: ./ops
+      env: # all Azure interaction is through Terraform
+        ARM_CLIENT_ID: ${{ inputs.terraform_arm_client_id }}
+        ARM_CLIENT_SECRET: ${{ inputs.terraform_arm_client_secret }}
+        ARM_SUBSCRIPTION_ID: ${{ inputs.terraform_arm_subscription_id }}
+        ARM_TENANT_ID: ${{ inputs.terraform_arm_tenant_id }}
+        OKTA_API_TOKEN: ${{ inputs.okta_api_token }}
+      shell: bash
+      run: terraform -chdir=${{ inputs.deploy_env }}/persistent apply -auto-approve -lock-timeout=30m -replace="module.keys.random_password.db_administrator_password" -target="module.keys.random_password.db_administrator_password"

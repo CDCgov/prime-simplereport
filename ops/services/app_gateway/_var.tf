@@ -73,4 +73,5 @@ variable "zones" {
 variable "cdc_tags" {
   description = "cdc tags for resources"
   type        = map(string)
+  default     = {}
 }
