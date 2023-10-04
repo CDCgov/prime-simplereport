@@ -12,11 +12,10 @@ locals {
     environment    = local.env
     resource_group = data.azurerm_resource_group.dev.name
   }
-  # a list of tags that the cdc requires
   cdc_tags = {
     business_steward    = "vuj4@cdc.gov"
     center              = "DDPHSS"
-    environment         = "dev"
+    environment         = local.env
     escid               = "3205"
     funding_source      = "TBD"
     pii_data            = "false"
@@ -47,9 +46,8 @@ resource "random_password" "random_nophi_password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-resource "random_password" "administrator_password" {
-  length  = 30
-  special = true
+module "keys" {
+  source = "../../services/keys"
 }
 
 module "db" {
@@ -65,7 +63,7 @@ module "db" {
   log_workspace_id    = module.monitoring.log_analytics_workspace_id
   private_dns_zone_id = module.vnet.private_dns_zone_id
 
-  administrator_password = random_password.administrator_password.result
+  administrator_password = module.keys.db_administrator_password
   nophi_user_password    = random_password.random_nophi_password.result
 
   tags = local.management_tags

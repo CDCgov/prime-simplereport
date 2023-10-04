@@ -34,4 +34,5 @@ module "metabase_service" {
   depends_on = [
     module.metabase_database
   ]
+  cdc_tags = local.cdc_tags
 }

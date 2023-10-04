@@ -14,6 +14,20 @@ locals {
     # environments should use the "local.env_level" convention where possible.
     resource_group = data.azurerm_resource_group.dev2.name
   }
+  cdc_tags = {
+    business_steward    = "vuj4@cdc.gov"
+    center              = "DDPHSS"
+    environment         = local.env
+    escid               = "3205"
+    funding_source      = "TBD"
+    pii_data            = "false"
+    security_compliance = "moderate"
+    security_steward    = "ghv3@cdc.gov,vfd9@cdc.gov,xda7@cdc.gov,xii9@cdc.gov"
+    support_group       = "OMHS"
+    system              = "prim"
+    technical_steward   = "mxc1@cdc.gov,qom6@cdc.gov,qwl5@cdc.gov,tgi8@cdc.gov"
+    zone                = "EXTRANET"
+  }
 }
 
 module "monitoring" {
@@ -34,10 +48,8 @@ resource "random_password" "random_nophi_password" {
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
 
-resource "random_password" "administrator_password" {
-  length           = 30
-  special          = false
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+module "keys" {
+  source = "../../services/keys"
 }
 
 module "db" {
@@ -53,7 +65,7 @@ module "db" {
   log_workspace_id    = module.monitoring.log_analytics_workspace_id
   private_dns_zone_id = module.vnet.private_dns_zone_id
 
-  administrator_password = random_password.administrator_password.result
+  administrator_password = module.keys.db_administrator_password
   nophi_user_password    = random_password.random_nophi_password.result
 
   tags = local.management_tags
@@ -67,6 +79,7 @@ module "db_alerting" {
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
+  cdc_tags = local.cdc_tags
 }
 
 module "vnet" {

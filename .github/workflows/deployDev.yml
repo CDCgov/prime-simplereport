@@ -17,6 +17,14 @@ on:
           - dev5
           - dev6
           - pentest
+      replace_keys:
+        description: 'Replace keys'
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
 
 env:
   NODE_VERSION: 20
@@ -53,11 +61,22 @@ jobs:
           okta_url: https://hhs-prime.oktapreview.com
           okta_client_id: ${{ vars.OKTA_CLIENT_ID }}
 
-  prerelease_backend:
+  prerelease:
     runs-on: ubuntu-latest
     needs: [build_frontend, build_docker]
     steps:
       - uses: actions/checkout@v4
+      - uses: ./.github/actions/key-replace
+        name: Replace keys
+        if: inputs.replace_keys == 'true'
+        with:
+          azure_creds: ${{ secrets.AZURE_CREDENTIALS }}
+          deploy_env: ${{ inputs.deploy_env }}
+          terraform_arm_client_id: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+          terraform_arm_client_secret: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+          terraform_arm_subscription_id: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+          terraform_arm_tenant_id: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+          okta_api_token: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
       - uses: ./.github/actions/tf-deploy
         name: Deploy with Terraform
         with:
@@ -84,7 +103,7 @@ jobs:
     environment:
       name: ${{ inputs.deploy_env }}
       url: https://${{ inputs.deploy_env }}.simplereport.gov
-    needs: [prerelease_backend]
+    needs: [prerelease]
     steps:
       - uses: actions/checkout@v4
       - name: Promote and deploy
