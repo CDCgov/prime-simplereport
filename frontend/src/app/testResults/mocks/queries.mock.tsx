@@ -42,7 +42,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResults,
+        resultsPage: testResults,
       },
     },
   },
@@ -57,7 +57,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResults,
+        resultsPage: testResults,
       },
     },
   },
@@ -72,7 +72,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsForCsv,
+        resultsPage: testResultsForCsv,
       },
     },
   },
@@ -85,9 +85,10 @@ export const mocks = [
     },
     result: {
       data: {
-        testResult: {
+        result: {
           dateTested: "2021-03-17T19:27:23.806Z",
-          results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
+          disease: "COVID-19",
+          result: "NEGATIVE",
           correctionStatus: "ORIGINAL",
           deviceType: {
             name: "Abbott IDNow",
@@ -109,7 +110,7 @@ export const mocks = [
           symptoms: "{}",
           symptomOnset: null,
           pregnancy: null,
-          __typename: "TestResult",
+          __typename: "Result",
         },
       },
     },
@@ -127,7 +128,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByPatient,
+        resultsPage: testResultsByPatient,
       },
     },
   },
@@ -143,7 +144,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByResultValue,
+        resultsPage: testResultsByResultValue,
       },
     },
   },
@@ -159,7 +160,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByRole,
+        resultsPage: testResultsByRole,
       },
     },
   },
@@ -175,7 +176,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByStartDate,
+        resultsPage: testResultsByStartDate,
       },
     },
   },
@@ -192,7 +193,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByStartDateAndEndDate,
+        resultsPage: testResultsByStartDateAndEndDate,
       },
     },
   },
@@ -208,7 +209,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByFacility,
+        resultsPage: testResultsByFacility,
       },
     },
   },
@@ -223,7 +224,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByAllFacility,
+        resultsPage: testResultsByAllFacility,
       },
     },
   },
@@ -254,7 +255,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResults,
+        resultsPage: testResults,
       },
     },
   },
@@ -282,7 +283,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsMultiplex,
+        resultsPage: testResultsMultiplex,
       },
     },
   },
@@ -315,7 +316,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByStartDateAndEndDate,
+        resultsPage: testResultsByStartDateAndEndDate,
       },
     },
   },
@@ -398,7 +399,7 @@ export const mocksWithMultiplex = [
     },
     result: {
       data: {
-        testResultsPage: testResultsMultiplex,
+        resultsPage: testResultsMultiplex,
       },
     },
   },
@@ -426,7 +427,7 @@ export const mocksWithMultiplex = [
     },
     result: {
       data: {
-        testResultsPage: testResultsMultiplex,
+        resultsPage: testResultsMultiplex,
       },
     },
   },
