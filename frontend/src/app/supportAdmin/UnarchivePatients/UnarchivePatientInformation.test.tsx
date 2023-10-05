@@ -1,5 +1,6 @@
 import React from "react";
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 
 import { UnarchivePatientState } from "./UnarchivePatient";
@@ -12,6 +13,8 @@ import {
   mockPatient1,
   mockPatient2,
 } from "./testUtils";
+
+import Mock = jest.Mock;
 
 const mockNavigate = jest.fn();
 const mockLocation = jest.fn();
@@ -29,6 +32,26 @@ describe("unarchive patient information", () => {
   let handlePaginationClick: jest.Mock;
   let onUnarchivePatient: jest.Mock;
 
+  const renderWithUser = (
+    unarchivePatientState: UnarchivePatientState,
+    loading: boolean,
+    handlePaginationClick: Mock,
+    onUnarchivePatient: Mock
+  ) => ({
+    user: userEvent.setup(),
+    ...render(
+      <MemoryRouter>
+        <UnarchivePatientInformation
+          unarchivePatientState={unarchivePatientState}
+          currentPage={1}
+          loading={loading}
+          handlePaginationClick={handlePaginationClick}
+          onUnarchivePatient={onUnarchivePatient}
+        />
+      </MemoryRouter>
+    ),
+  });
+
   beforeEach(() => {
     handlePaginationClick = jest.fn();
     onUnarchivePatient = jest.fn();
@@ -45,16 +68,11 @@ describe("unarchive patient information", () => {
       facilities: [],
       patient: undefined,
     };
-    render(
-      <MemoryRouter>
-        <UnarchivePatientInformation
-          unarchivePatientState={unarchivePatientState}
-          currentPage={1}
-          loading={false}
-          handlePaginationClick={handlePaginationClick}
-          onUnarchivePatient={onUnarchivePatient}
-        />
-      </MemoryRouter>
+    renderWithUser(
+      unarchivePatientState,
+      false,
+      handlePaginationClick,
+      onUnarchivePatient
     );
     expect(screen.queryByText(`Archived patients`)).not.toBeInTheDocument();
     expect(
@@ -75,16 +93,11 @@ describe("unarchive patient information", () => {
       facilities: [mockFacility1, mockFacility2],
       patient: undefined,
     };
-    render(
-      <MemoryRouter>
-        <UnarchivePatientInformation
-          unarchivePatientState={unarchivePatientState}
-          currentPage={1}
-          loading={true}
-          handlePaginationClick={handlePaginationClick}
-          onUnarchivePatient={onUnarchivePatient}
-        />
-      </MemoryRouter>
+    renderWithUser(
+      unarchivePatientState,
+      true,
+      handlePaginationClick,
+      onUnarchivePatient
     );
     expect(screen.getByText("Loading...")).toBeInTheDocument();
     expect(
@@ -104,16 +117,11 @@ describe("unarchive patient information", () => {
       facilities: [mockFacility1, mockFacility2],
       patient: undefined,
     };
-    render(
-      <MemoryRouter>
-        <UnarchivePatientInformation
-          unarchivePatientState={unarchivePatientState}
-          currentPage={1}
-          loading={false}
-          handlePaginationClick={handlePaginationClick}
-          onUnarchivePatient={onUnarchivePatient}
-        />
-      </MemoryRouter>
+    const { user } = renderWithUser(
+      unarchivePatientState,
+      false,
+      handlePaginationClick,
+      onUnarchivePatient
     );
     expect(screen.queryByText("Loading")).not.toBeInTheDocument();
     expect(
@@ -136,11 +144,18 @@ describe("unarchive patient information", () => {
     checkTableHeadersExist();
     checkPatientResultRows();
     // check pagination
-    await act(async () => screen.getAllByText("1")[0].closest("a")?.click());
+
+    const paginationFirstLink = screen.getAllByText("1")[0].closest("a");
+    expect(paginationFirstLink).toBeInTheDocument();
+    // @ts-ignore
+    await user.click(paginationFirstLink);
     expect(handlePaginationClick).toHaveBeenCalledWith(1);
-    await act(async () => screen.getAllByText("2")[0].closest("a")?.click());
+    const paginationSecondLink = screen.getAllByText("2")[0].closest("a");
+    expect(paginationSecondLink).toBeInTheDocument();
+    // @ts-ignore
+    await user.click(paginationSecondLink);
     expect(handlePaginationClick).toHaveBeenNthCalledWith(2, 2);
-    await act(async () => screen.getAllByText("Unarchive")[0].click());
+    await user.click(screen.getAllByText("Unarchive")[0]);
     expect(onUnarchivePatient).toHaveBeenNthCalledWith(1, mockPatient1);
   });
   it("displays no results", async () => {
@@ -154,16 +169,11 @@ describe("unarchive patient information", () => {
       facilities: [mockFacility1, mockFacility2],
       patient: undefined,
     };
-    render(
-      <MemoryRouter>
-        <UnarchivePatientInformation
-          unarchivePatientState={unarchivePatientState}
-          currentPage={1}
-          loading={false}
-          handlePaginationClick={handlePaginationClick}
-          onUnarchivePatient={onUnarchivePatient}
-        />
-      </MemoryRouter>
+    renderWithUser(
+      unarchivePatientState,
+      false,
+      handlePaginationClick,
+      onUnarchivePatient
     );
     expect(screen.queryByText("Loading")).not.toBeInTheDocument();
     expect(

@@ -1,9 +1,8 @@
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
-import configureStore from "redux-mock-store";
+import configureStore, { MockStore } from "redux-mock-store";
 import { Provider } from "react-redux";
-import selectEvent from "react-select-event";
 
 import { OrganizationOption } from "../Components/OrganizationComboDropdown";
 
@@ -19,14 +18,19 @@ const organizations: OrganizationOption[] = [
 const mockStore = configureStore([]);
 
 describe("TenantDataAccessForm", () => {
+  let store: MockStore;
   beforeEach(() => {
     saveTenantDataAccess = jest.fn();
-    const store = mockStore({
+    store = mockStore({
       organization: {
         name: "Org 1 Name",
       },
     });
-    render(
+  });
+
+  const renderWithUser = (store: MockStore) => ({
+    user: userEvent.setup(),
+    ...render(
       <Provider store={store}>
         <MemoryRouter>
           <TenantDataAccessForm
@@ -37,84 +41,65 @@ describe("TenantDataAccessForm", () => {
           />
         </MemoryRouter>
       </Provider>
-    );
+    ),
   });
 
   it("Submits a valid access form", async () => {
+    const { user } = renderWithUser(store);
     // using the default test id that comes with the trusswork component
-    await act(
-      async () =>
-        await act(
-          async () =>
-            await userEvent.selectOptions(
-              screen.getByTestId("combo-box-select"),
-              "Org 1 Name"
-            )
-        )
+    await user.selectOptions(
+      screen.getByTestId("combo-box-select"),
+      "Org 1 Name"
     );
-    await act(
-      async () =>
-        await act(
-          async () =>
-            await userEvent.type(
-              screen.getByLabelText("Justification", { exact: false }),
-              "sample justification text"
-            )
-        )
+    await user.type(
+      screen.getByLabelText("Justification", { exact: false }),
+      "sample justification text"
     );
     const saveButton = screen.getAllByText("Access data")[0];
     expect(saveButton).toBeEnabled();
-    await act(async () => await userEvent.click(saveButton));
+    await user.click(saveButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
   it("selecting/clearing org enables/disables access", async () => {
-    await act(() => {
-      selectEvent.select(screen.getByLabelText(/organization/i), "Org 2 Name");
-    });
+    const { user } = renderWithUser(store);
+    await user.selectOptions(
+      screen.getByTestId("combo-box-select"),
+      "Org 2 Name"
+    );
     const saveButton = screen.getAllByText("Access data")[0];
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Justification", { exact: false }),
-          "sample justification text"
-        )
+    await user.type(
+      screen.getByLabelText("Justification", { exact: false }),
+      "sample justification text"
     );
     expect(saveButton).toBeEnabled();
-    await act(
-      async () =>
-        await userEvent.click(screen.getByTestId("combo-box-clear-button"))
-    );
+    await user.click(screen.getByTestId("combo-box-clear-button"));
     await waitFor(() => {
       expect(saveButton).toBeDisabled();
     });
   });
 
   it("Submits a cancellation form", async () => {
+    const { user } = renderWithUser(store);
     // using the default test id that comes with the trusswork component
-    await act(
-      async () =>
-        await userEvent.selectOptions(
-          screen.getByTestId("combo-box-select"),
-          "Org 1 Name"
-        )
+    await user.selectOptions(
+      screen.getByTestId("combo-box-select"),
+      "Org 1 Name"
     );
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Justification", { exact: false }),
-          "sample justification text"
-        )
+    await user.type(
+      screen.getByLabelText("Justification", { exact: false }),
+      "sample justification text"
     );
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
-    await act(async () => await userEvent.click(cancelButton));
+    await user.click(cancelButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
 
   it("Cancel button always enabled", async () => {
+    const { user } = renderWithUser(store);
     const cancelButton = await screen.getAllByText("Cancel access")[0];
     expect(cancelButton).toBeEnabled();
-    await act(async () => await userEvent.click(cancelButton));
+    await user.click(cancelButton);
     expect(saveTenantDataAccess).toBeCalledTimes(1);
   });
 });
