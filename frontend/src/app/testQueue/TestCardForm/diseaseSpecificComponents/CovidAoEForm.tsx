@@ -93,63 +93,61 @@ const CovidAoEForm = ({
   }
 
   return (
-    <>
-      <div className="grid-col-auto" id="covid-aoe-form">
-        <div className="grid-row">
-          <div className="grid-col-auto">
-            <RadioGroup
-              legend="Is the patient pregnant?"
-              name="pregnancy"
-              onChange={onPregnancyChange}
-              buttons={pregnancyResponses}
-              selectedRadio={responses.pregnancy}
-            />
-          </div>
+    <div className="grid-col-auto" id="covid-aoe-form">
+      <div className="grid-row">
+        <div className="grid-col-auto">
+          <RadioGroup
+            legend="Is the patient pregnant?"
+            name="pregnancy"
+            onChange={onPregnancyChange}
+            buttons={pregnancyResponses}
+            selectedRadio={responses.pregnancy}
+          />
         </div>
-        <div className="grid-row">
-          <div className="grid-col-auto">
-            <YesNoRadioGroup
-              name={`has-any-symptoms-${testOrder.internalId}`}
-              legend="Is the patient currently experiencing any symptoms?"
-              value={hasSymptoms}
-              onChange={onHasAnySymptomsChange}
-            />
-          </div>
-        </div>
-        {hasSymptoms === "YES" && (
-          <>
-            <div className="grid-row grid-gap">
-              <TextInput
-                id={"hello"}
-                data-testid="symptom-date"
-                name="symptom-date"
-                type="date"
-                label="When did the patient's symptoms start?"
-                aria-label="Symptom onset date"
-                min={formatDate(new Date("Jan 1, 2020"))}
-                max={formatDate(moment().toDate())}
-                value={formatDate(
-                  moment(responses.symptomOnset).format("YYYY-MM-DD")
-                )}
-                onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
-              ></TextInput>
-            </div>
-            <div className="grid-row grid-gap">
-              <Checkboxes
-                boxes={globalSymptomDefinitions.map(({ label, value }) => ({
-                  label,
-                  value,
-                  checked: symptoms[value],
-                }))}
-                legend="Select any symptoms the patient is experiencing"
-                name={`symptoms-${testOrder.internalId}`}
-                onChange={(e) => onSymptomsChange(e, symptoms)}
-              />
-            </div>
-          </>
-        )}
       </div>
-    </>
+      <div className="grid-row">
+        <div className="grid-col-auto">
+          <YesNoRadioGroup
+            name={`has-any-symptoms-${testOrder.internalId}`}
+            legend="Is the patient currently experiencing any symptoms?"
+            value={hasSymptoms}
+            onChange={onHasAnySymptomsChange}
+          />
+        </div>
+      </div>
+      {hasSymptoms === "YES" && (
+        <>
+          <div className="grid-row grid-gap">
+            <TextInput
+              id={"hello"}
+              data-testid="symptom-date"
+              name="symptom-date"
+              type="date"
+              label="When did the patient's symptoms start?"
+              aria-label="Symptom onset date"
+              min={formatDate(new Date("Jan 1, 2020"))}
+              max={formatDate(moment().toDate())}
+              value={formatDate(
+                moment(responses.symptomOnset).format("YYYY-MM-DD")
+              )}
+              onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
+            ></TextInput>
+          </div>
+          <div className="grid-row grid-gap">
+            <Checkboxes
+              boxes={globalSymptomDefinitions.map(({ label, value }) => ({
+                label,
+                value,
+                checked: symptoms[value],
+              }))}
+              legend="Select any symptoms the patient is experiencing"
+              name={`symptoms-${testOrder.internalId}`}
+              onChange={(e) => onSymptomsChange(e, symptoms)}
+            />
+          </div>
+        </>
+      )}
+    </div>
   );
 };
 

@@ -185,18 +185,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     if (appInsights) {
       trackRemovePatientFromQueue();
     }
-    try {
-      await removePatientFromQueueMutation({
-        variables: {
-          patientId: patientId,
-        },
-      });
-      setStartTestPatientId(null);
-      await refetch();
-    } catch (e) {
-      // caught by upstream error boundary
-      throw e;
-    }
+    await removePatientFromQueueMutation({
+      variables: {
+        patientId: patientId,
+      },
+    });
+    setStartTestPatientId(null);
+    await refetch();
   };
 
   let shouldRenderQueue =
