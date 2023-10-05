@@ -96,6 +96,7 @@ export const TextInput = ({
               labelClassName
             )}
             htmlFor={id}
+            id={`label-for-${id}`}
             aria-describedby={ariaDescribedBy}
           >
             {required ? <Required label={label} /> : <Optional label={label} />}
@@ -112,7 +113,6 @@ export const TextInput = ({
               "usa-input",
               validationStatus === "error" && "usa-input--error"
             )}
-            id={id}
             data-testid={idString}
             name={name}
             value={value || ""}
@@ -135,6 +135,7 @@ export const TextInput = ({
               ? { "aria-describedby": `error_${id}`, "aria-invalid": true }
               : null)}
             {...registrationProps}
+            id={id}
           />
         </div>
       )}

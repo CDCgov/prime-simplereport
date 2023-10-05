@@ -65,7 +65,7 @@ const CovidAoEForm = ({
   const onSymptomOnsetDateChange = (symptomOnsetDate: string) => {
     onResponseChange({
       ...responses,
-      symptomOnsetDate: moment(symptomOnsetDate).toISOString(),
+      symptomOnset: moment(symptomOnsetDate).format("YYYY-MM-DD"),
     });
   };
 
@@ -120,7 +120,7 @@ const CovidAoEForm = ({
           <>
             <div className="grid-row grid-gap">
               <TextInput
-                id={`symptom-onset-date-${testOrder.patient.internalId}`}
+                id={"hello"}
                 data-testid="symptom-date"
                 name="symptom-date"
                 type="date"
@@ -128,7 +128,9 @@ const CovidAoEForm = ({
                 aria-label="Symptom onset date"
                 min={formatDate(new Date("Jan 1, 2020"))}
                 max={formatDate(moment().toDate())}
-                value={formatDate(moment(responses.symptomOnsetDate).toDate())}
+                value={formatDate(
+                  moment(responses.symptomOnset).format("YYYY-MM-DD")
+                )}
                 onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
               ></TextInput>
             </div>
