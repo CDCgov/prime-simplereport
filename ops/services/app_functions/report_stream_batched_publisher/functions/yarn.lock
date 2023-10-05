@@ -1163,10 +1163,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-azure-functions-core-tools@^4.0.5274:
-  version "4.0.5274"
-  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-4.0.5274.tgz#dadb0527a7de5f0adbed2b92908863936e09cfb3"
-  integrity sha512-chonhkn8ADVkFMs/5cDS01xHtInxMnBM0eMlnHJBepHDvzwwQ1iFVhtbbDPjjEuUed9DoOOCinUorDXbb5c7GA==
+azure-functions-core-tools@^4.0.5390:
+  version "4.0.5390"
+  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-4.0.5390.tgz#fcf53612bc809c1a3a808373f080d1e7eda32824"
+  integrity sha512-qunPPVm5lU0oJjXSytfKTFeJDTDlxdfGVMQECIWT/o0YLQO8r6kEsJjfpTp7smVUOTyFujofOVhOJ5l0AJCpOg==
   dependencies:
     chalk "3.0.0"
     extract-zip "^2.0.1"
