@@ -2541,11 +2541,12 @@ export type GetResultsMultiplexWithCountQuery = {
     content?: Array<{
       __typename?: "Result";
       id: string;
+      dateAdded: string;
       dateTested: any;
+      disease: string;
+      testResult: string;
       correctionStatus?: string | null;
       reasonForCorrection?: string | null;
-      testResult: string;
-      disease: string;
       symptoms: string;
       noSymptoms: boolean;
       symptomOnset?: any | null;
@@ -2556,39 +2557,19 @@ export type GetResultsMultiplexWithCountQuery = {
       };
       deviceType: {
         __typename?: "DeviceType";
+        internalId: string;
         name: string;
-        manufacturer: string;
-        model: string;
-        swabTypes: Array<{
-          __typename?: "SpecimenType";
-          internalId: string;
-          name: string;
-        }>;
       };
       patient: {
         __typename?: "Patient";
+        internalId: string;
         firstName?: string | null;
         middleName?: string | null;
         lastName?: string | null;
         birthDate?: any | null;
         gender?: string | null;
-        race?: string | null;
-        ethnicity?: string | null;
-        tribalAffiliation?: Array<string | null> | null;
-        lookupId?: string | null;
-        telephone?: string | null;
-        email?: string | null;
-        street?: string | null;
-        streetTwo?: string | null;
-        city?: string | null;
-        county?: string | null;
-        state?: string | null;
-        zipCode?: string | null;
-        country?: string | null;
         role?: string | null;
-        residentCongregateSetting?: boolean | null;
-        employedInHealthcare?: boolean | null;
-        preferredLanguage?: string | null;
+        email?: string | null;
       };
       createdBy?: {
         __typename?: "ApiUser";
@@ -7669,47 +7650,29 @@ export const GetResultsMultiplexWithCountDocument = gql`
     ) {
       content {
         id
+        dateAdded
         dateTested
+        disease
+        testResult
         correctionStatus
         reasonForCorrection
-        testResult
-        disease
         facility {
           name
           isDeleted
         }
         deviceType {
+          internalId
           name
-          manufacturer
-          model
-          swabTypes {
-            internalId
-            name
-          }
         }
         patient {
+          internalId
           firstName
           middleName
           lastName
           birthDate
           gender
-          race
-          ethnicity
-          tribalAffiliation
-          lookupId
-          telephone
-          email
-          street
-          streetTwo
-          city
-          county
-          state
-          zipCode
-          country
           role
-          residentCongregateSetting
-          employedInHealthcare
-          preferredLanguage
+          email
         }
         createdBy {
           nameInfo {

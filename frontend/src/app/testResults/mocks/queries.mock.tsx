@@ -19,6 +19,7 @@ import testResultsByFacility from "./resultsByFacility.mock";
 import testResultsByAllFacility from "./resultsByAllFacilities.mock";
 import testResultsByStartDate from "./resultsByStartDate.mock";
 import testResultsByResultValue from "./resultsByResultValue.mock";
+import testResultsByCondition from "./resultsByCondition.mock";
 import testResultsByPatient from "./resultsByPatient.mock";
 import testResultsByStartDateAndEndDate from "./resultsByStartAndEndDate.mock";
 import testResultsMultiplex from "./resultsMultiplex.mock";
@@ -85,10 +86,10 @@ export const mocks = [
     },
     result: {
       data: {
-        result: {
+        testResult: {
           dateTested: "2021-03-17T19:27:23.806Z",
-          disease: "COVID-19",
-          result: "NEGATIVE",
+          // TODO: test error here
+          results: [{ disease: { name: "COVID-19", testResult: "NEGATIVE" } }],
           correctionStatus: "ORIGINAL",
           deviceType: {
             name: "Abbott IDNow",
@@ -110,7 +111,7 @@ export const mocks = [
           symptoms: "{}",
           symptomOnset: null,
           pregnancy: null,
-          __typename: "Result",
+          __typename: "TestResult",
         },
       },
     },
@@ -145,6 +146,22 @@ export const mocks = [
     result: {
       data: {
         resultsPage: testResultsByResultValue,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetResultsMultiplexWithCountDocument,
+      variables: {
+        facilityId: "1",
+        disease: "COVID-19",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        resultsPage: testResultsByCondition,
       },
     },
   },
@@ -310,6 +327,7 @@ export const mocks = [
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
         startDate: "2021-03-18T00:00:00.000Z",
         endDate: "2021-03-19T23:59:59.999Z",
+        disease: "COVID-19",
         role: "STAFF",
         result: "NEGATIVE",
       },

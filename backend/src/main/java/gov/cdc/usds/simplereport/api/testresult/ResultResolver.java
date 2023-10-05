@@ -58,20 +58,17 @@ public class ResultResolver {
           .map(TestResultsListItem::new);
     }
 
-    var ok =
-        service
-            .getFacilityResults(
-                facilityId,
-                patientId,
-                Translators.parseTestResult(result),
-                Translators.parsePersonRole(role, true),
-                supportedDisease,
-                startDate,
-                endDate,
-                pageNumber,
-                pageSize)
-            .map(TestResultsListItem::new);
-
-    return ok;
+    return service
+        .getFacilityResults(
+            facilityId,
+            patientId,
+            Translators.parseTestResult(result),
+            Translators.parsePersonRole(role, true),
+            supportedDisease,
+            startDate,
+            endDate,
+            pageNumber,
+            pageSize)
+        .map(TestResultsListItem::new);
   }
 }

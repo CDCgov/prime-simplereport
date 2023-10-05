@@ -29,11 +29,9 @@ const data = [
         lastName: "Admin",
       },
     },
-    patientLink: {
-      internalId: "68c543e8-7c65-4047-955c-e3f65bb8123a",
-    },
     facility: {
       name: "Facility 2",
+      isDeleted: false,
     },
     __typename: "Result",
   },

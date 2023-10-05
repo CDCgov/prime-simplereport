@@ -5,13 +5,14 @@ import { PATIENT_TERM_CAP } from "../../../config/constants";
 import TEST_RESULTS_MULTIPLEX from "../mocks/resultsMultiplex.mock";
 import TEST_RESULT_COVID from "../mocks/resultsCovid.mock";
 import { Result } from "../../../generated/graphql";
-import { toLowerCaseHyphenate } from "../../utils/text";
 
-import ResultsTable, { generateTableHeaders } from "./ResultsTable";
+import ResultsTable, {
+  generateRowIdentifier,
+  generateTableHeaders,
+} from "./ResultsTable";
 
 const TEST_RESULTS_MULTIPLEX_CONTENT =
-  // TODO: scream emoji
-  TEST_RESULTS_MULTIPLEX.content as unknown as Result[];
+  TEST_RESULTS_MULTIPLEX.content as Result[];
 
 describe("Method generateTableHeaders", () => {
   const table = (headers: JSX.Element) => (
@@ -126,21 +127,21 @@ describe("Component ResultsTable", () => {
       />
     );
 
-    // 5 rows -> 9 rows
-
+    const seen = new Set([]);
     for (const result of TEST_RESULTS_MULTIPLEX_CONTENT) {
-      const resultId = result.id;
-
-      // for (const multiplexResult of result.results as MultiplexResults) {
-      const testId = `test-result-${resultId}-${toLowerCaseHyphenate(
-        result.disease
-      )}`;
-      expect(screen.getByTestId(testId)).toBeInTheDocument();
-      // }
+      const identifier: String = generateRowIdentifier(result);
+      if (seen.has(identifier)) {
+        fail("YA MESSED UP");
+      } else {
+        console.log("Adding identifier:");
+        console.log(identifier);
+        seen.add(identifier);
+      }
+      // @ts-ignore
+      // TODO: wtf...
+      expect(screen.getByTestId(identifier)).toBeInTheDocument();
     }
 
-    // TODO: all expected elements are present, but is it exhaustive?
-    // Test to check the # of rows
     expect(screen.getByTestId("filtered-results").children.length).toBe(9);
   });
 

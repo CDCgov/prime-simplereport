@@ -27,9 +27,6 @@ const testOne = {
       lastName: "Admin",
     },
   },
-  patientLink: {
-    internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
-  },
   facility: {
     name: "Facility 1",
   },
@@ -72,9 +69,6 @@ const testTwo = {
       lastName: "User",
     },
   },
-  patientLink: {
-    internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
-  },
   facility: {
     name: "Facility 1",
   },
@@ -84,7 +78,7 @@ const testTwo = {
 };
 
 const testThree = {
-  id: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+  id: "a80e3bc5-32ef-406d-b84a-84b5cc6e4b58",
   dateAdded: "2021-03-17T19:27:23.806Z",
   dateTested: "2021-03-19T19:27:21.052Z",
   correctionStatus: "ORIGINAL",
@@ -111,9 +105,6 @@ const testThree = {
       middleName: "",
       lastName: "Entry",
     },
-  },
-  patientLink: {
-    internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
   },
   facility: {
     name: "Facility 1",
@@ -159,13 +150,11 @@ const data = [
     disease: "COVID-19",
     testResult: "POSITIVE",
   },
-  /*
   {
     ...testThree,
-    disease: "COVID-19",
+    disease: "Flu A",
     result: "POSITIVE",
   },
-     */
   {
     ...testThree,
     disease: "COVID-19",

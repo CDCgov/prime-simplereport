@@ -53,6 +53,7 @@ import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 import ResultsTable, {
   generateTableHeaders,
 } from "./resultsTable/ResultsTable";
+import { MULTIPLEX_DISEASES } from "./constants";
 
 export const ALL_FACILITIES_ID = "all";
 
@@ -524,6 +525,27 @@ export const DetachedTestResultsList = ({
                   defaultValue={getDateOrEmptyString(filterParams.endDate)}
                 />
               </div>
+              <Select
+                label="Condition"
+                name="disease"
+                value={filterParams.disease || ""}
+                options={[
+                  {
+                    value: MULTIPLEX_DISEASES.COVID_19,
+                    label: MULTIPLEX_DISEASES.COVID_19,
+                  },
+                  {
+                    value: MULTIPLEX_DISEASES.FLU_A,
+                    label: MULTIPLEX_DISEASES.FLU_A,
+                  },
+                  {
+                    value: MULTIPLEX_DISEASES.FLU_B,
+                    label: MULTIPLEX_DISEASES.FLU_B,
+                  },
+                ]}
+                defaultSelect
+                onChange={setFilterParams("disease")}
+              />
               <Select
                 label="Test result"
                 name="result"

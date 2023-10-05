@@ -122,47 +122,35 @@ query GetResultsMultiplexWithCount(
   ) {
     content {
       id
+      dateAdded
       dateTested
+      disease
+      testResult
       correctionStatus
       reasonForCorrection
-      testResult
-      disease
       facility {
         name
         isDeleted
       }
       deviceType {
+        internalId
         name
-        manufacturer
-        model
-        swabTypes {
-          internalId
-          name
-        }
+#        manufacturer
+#        model
+#        swabTypes {
+#          internalId
+#          name
+#        }
       }
       patient {
+        internalId
         firstName
         middleName
         lastName
         birthDate
         gender
-        race
-        ethnicity
-        tribalAffiliation
-        lookupId
-        telephone
-        email
-        street
-        streetTwo
-        city
-        county
-        state
-        zipCode
-        country
         role
-        residentCongregateSetting
-        employedInHealthcare
-        preferredLanguage
+        email
       }
       createdBy {
         nameInfo {

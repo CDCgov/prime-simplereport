@@ -39,7 +39,7 @@ const store = mockStore({
 
 const testResults = {
   data: {
-    testResultsPage: COVID_MOCK_DATA,
+    resultsPage: COVID_MOCK_DATA,
   },
 };
 
@@ -68,7 +68,7 @@ describe("TestResultsList", () => {
               data={testResults.data as GetResultsMultiplexWithCountQuery}
               pageNumber={1}
               entriesPerPage={20}
-              totalEntries={testResults.data.testResultsPage.totalElements}
+              totalEntries={testResults.data.resultsPage.totalElements}
               filterParams={{}}
               setFilterParams={() => () => {}}
               clearFilterParams={() => {}}
@@ -96,6 +96,7 @@ describe("TestResultsList", () => {
       patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
       startDate: "2021-03-18T00:00:00.000Z",
       endDate: "2021-03-19T23:59:59.999Z",
+      disease: "COVID-19",
       result: "NEGATIVE",
       role: "STAFF",
       facility: "1",
@@ -197,7 +198,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing results for 1-5 of 5 tests"));
+    expect(await screen.findByText("Showing results for 1-9 of 9 tests"));
     expect(
       screen.getByRole("columnheader", { name: /condition/i })
     ).toBeInTheDocument();
@@ -226,7 +227,7 @@ describe("TestResultsList", () => {
       </MemoryRouter>
     );
 
-    expect(await screen.findByText("Showing results for 1-5 of 5 tests"));
+    expect(await screen.findByText("Showing results for 1-9 of 9 tests"));
 
     expect(
       screen.getByRole("columnheader", { name: /condition/i })
@@ -258,6 +259,7 @@ describe("TestResultsList", () => {
       expect(await screen.findByText("Test Results", { exact: false }));
       expect(await screen.findByText("Cragell, Barb Whitaker"));
     });
+
     it("should be able to filter by patient", async () => {
       const { user } = renderWithUser();
       await screen.findByText("Test Results", { exact: false });
@@ -277,6 +279,28 @@ describe("TestResultsList", () => {
         "Cragell, Barb Whitaker"
       );
     });
+
+    it("should be able to filter by condition value", async () => {
+      const { user } = renderWithUser();
+      expect(
+        await screen.findByText("Test Results", { exact: false })
+      ).toBeInTheDocument();
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(await screen.findByText("Gerard, Sam G"));
+      expect(
+        await screen.findByRole("option", { name: "Negative" })
+      ).toBeInTheDocument();
+      await user.selectOptions(screen.getByLabelText("Condition"), [
+        "COVID-19",
+      ]);
+      expect(
+        await screen.findByText("Cragell, Barb Whitaker")
+      ).toBeInTheDocument();
+      expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
+    });
+
     it("should be able to filter by result value", async () => {
       const { user } = renderWithUser();
       expect(
@@ -297,6 +321,7 @@ describe("TestResultsList", () => {
       ).toBeInTheDocument();
       expect(screen.queryByText("Gerard, Sam G")).not.toBeInTheDocument();
     });
+
     it("should be able to filter by role", async () => {
       const { user } = renderWithUser();
       expect(
@@ -557,11 +582,15 @@ describe("TestResultsList", () => {
         }
       );
       await user.click(downloadButton2);
+
       await waitFor(() =>
         expect(
-          screen.queryByText("Download results without any search filters", {
-            exact: false,
-          })
+          screen.queryByText(
+            "Download results without any search filters applied?",
+            {
+              exact: true,
+            }
+          )
         ).not.toBeInTheDocument()
       );
     });
@@ -626,7 +655,10 @@ describe("TestResultsList", () => {
       renderWithUser();
       // facility 1 has no multiplex results
       expect(await screen.findByText("Gerard, Sam G"));
-      expect(screen.queryByText("Flu A")).not.toBeInTheDocument();
+      const resultRow = await screen.findByTestId(
+        `test-result-7c768a5d-ef90-44cd-8050-b96dd7aaa1d5-covid-19`
+      );
+      expect(within(resultRow).queryByText("Flu A")).not.toBeInTheDocument();
     });
 
     it("should show multiplex results", async () => {
@@ -814,7 +846,7 @@ describe("TestResultsList", () => {
               data={testResults.data as GetResultsMultiplexWithCountQuery}
               pageNumber={1}
               entriesPerPage={20}
-              totalEntries={testResults.data.testResultsPage.totalElements}
+              totalEntries={testResults.data.resultsPage.totalElements}
               filterParams={filterParams}
               setFilterParams={() => () => {}}
               clearFilterParams={() => {}}

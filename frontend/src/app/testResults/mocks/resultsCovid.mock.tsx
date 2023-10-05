@@ -29,9 +29,6 @@ const data = [
         lastName: "Admin",
       },
     },
-    patientLink: {
-      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
-    },
     facility: {
       name: "Facility 1",
     },
@@ -68,9 +65,6 @@ const data = [
         middleName: "",
         lastName: "User",
       },
-    },
-    patientLink: {
-      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
     facility: {
       name: "Facility 1",
@@ -117,14 +111,13 @@ const data = [
         lastName: "Entry",
       },
     },
-    patientLink: {
-      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
-    },
     facility: {
       name: "Facility 1",
+      isDeleted: false,
     },
     noSymptoms: false,
     symptoms: '{"someSymptom":"true"}',
+    symptomOnset: "",
     __typename: "Result",
   },
 ];
