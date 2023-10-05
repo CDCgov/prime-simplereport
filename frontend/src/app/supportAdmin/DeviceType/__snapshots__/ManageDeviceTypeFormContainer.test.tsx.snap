@@ -255,6 +255,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                   <label
                     class="usa-label"
                     for="1"
+                    id="label-for-1"
                   >
                     Device Name
                     <abbr
@@ -290,6 +291,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                   <label
                     class="usa-label"
                     for="2"
+                    id="label-for-2"
                   >
                     Model
                     <abbr
@@ -325,6 +327,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                   <label
                     class="usa-label"
                     for="3"
+                    id="label-for-3"
                   >
                     Manufacturer
                     <abbr
@@ -360,6 +363,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                   <label
                     class="usa-label"
                     for="4"
+                    id="label-for-4"
                   >
                     Test length (minutes)
                     <abbr
@@ -573,6 +577,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                         <label
                           class="usa-label"
                           for="7"
+                          id="label-for-7"
                         >
                           Test performed code
                           <abbr
@@ -604,6 +609,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                         <label
                           class="usa-label"
                           for="8"
+                          id="label-for-8"
                         >
                           Test ordered code
                           <abbr
@@ -635,6 +641,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                         <label
                           class="usa-label"
                           for="9"
+                          id="label-for-9"
                         >
                           Testkit Name Id
                         </label>
@@ -659,6 +666,7 @@ exports[`ManageDeviceTypeFormContainer renders the Manage Device Type Form Conta
                         <label
                           class="usa-label"
                           for="10"
+                          id="label-for-10"
                         >
                           Equipment Uid
                         </label>
