@@ -92,6 +92,7 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                   <label
                     class="usa-label"
                     for="1"
+                    id="label-for-1"
                   >
                     Device Name
                     <abbr
@@ -126,6 +127,7 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                   <label
                     class="usa-label"
                     for="2"
+                    id="label-for-2"
                   >
                     Model
                     <abbr
@@ -160,6 +162,7 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                   <label
                     class="usa-label"
                     for="3"
+                    id="label-for-3"
                   >
                     Manufacturer
                     <abbr
@@ -194,6 +197,7 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                   <label
                     class="usa-label"
                     for="4"
+                    id="label-for-4"
                   >
                     Test length (minutes)
                     <abbr
@@ -371,6 +375,7 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                         <label
                           class="usa-label"
                           for="7"
+                          id="label-for-7"
                         >
                           Test performed code
                           <abbr
@@ -401,6 +406,7 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                         <label
                           class="usa-label"
                           for="8"
+                          id="label-for-8"
                         >
                           Test ordered code
                           <abbr
@@ -431,6 +437,7 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                         <label
                           class="usa-label"
                           for="9"
+                          id="label-for-9"
                         >
                           Testkit Name Id
                         </label>
@@ -454,6 +461,7 @@ exports[`DeviceTypeFormContainer should render the device type form 1`] = `
                         <label
                           class="usa-label"
                           for="10"
+                          id="label-for-10"
                         >
                           Equipment Uid
                         </label>
