@@ -301,10 +301,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
     <>
       <div className="grid-row grid-gap">
         {!isFluOnly && (
-          <div
-            className="grid-col-auto"
-            data-testid={`covid-test-result-${queueItemId}`}
-          >
+          <div className="grid-col-auto">
             <RadioGroup
               legend="COVID-19 result"
               onChange={(value) => {
