@@ -95,9 +95,6 @@ const TestCardForm = ({
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
   const [useCurrentTime, setUseCurrentTime] = useState(!testOrder.dateTested);
-  // used for controlling when to show validation messages
-  const [hasDateTestedBeenTouched, setHasDateTestedBeenTouched] =
-    useState(false);
   const [hasAttemptedSubmit, setHasAttemptedSubmit] = useState(false);
 
   const [editQueueItem, { loading: editQueueItemMutationLoading }] =
@@ -437,7 +434,6 @@ const TestCardForm = ({
                 min={formatDate(new Date("Jan 1, 2020"))}
                 max={formatDate(moment().toDate())}
                 value={formatDate(moment(state.dateTested).toDate())}
-                onBlur={() => setHasDateTestedBeenTouched(true)}
                 onChange={(e) => {
                   if (!!e.target.value) {
                     dispatch({
@@ -470,7 +466,6 @@ const TestCardForm = ({
                     });
                   }
                 }}
-                onBlur={() => setHasDateTestedBeenTouched(true)}
                 validationStatus={showDateTestedError ? "error" : undefined}
               ></TextInput>
             </div>
