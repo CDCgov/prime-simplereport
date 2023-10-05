@@ -185,9 +185,7 @@ const TestCardForm = ({
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (state.dirty) {
       dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
-      updateAOE();
-      // debounceTimer = setTimeout(async () => {
-      // }, DEBOUNCE_TIME);
+      updateAOE().catch(console.error);
     }
     return () => {
       clearTimeout(debounceTimer);
@@ -198,22 +196,15 @@ const TestCardForm = ({
   const updateAOE = async () => {
     if (whichAOEFormOption === AOEFormOptions.COVID) {
       trackUpdateAoEResponse();
-      try {
-        const newVar = {
-          variables: {
-            patientId: testOrder.patient.internalId,
-            noSymptoms: state.covidAOEResponses.noSymptoms,
-            symptoms: state.covidAOEResponses.symptoms,
-            symptomOnset: state.covidAOEResponses.symptomOnset,
-            pregnancy: state.covidAOEResponses.pregnancy,
-            // testResultDelivery will now be determined by user preferences on backend
-          },
-        };
-        await updateAoeMutation(newVar);
-      } catch (e) {
-        // caught upstream by error boundary
-        throw e;
-      }
+      await updateAoeMutation({
+        variables: {
+          patientId: testOrder.patient.internalId,
+          noSymptoms: state.covidAOEResponses.noSymptoms,
+          symptoms: state.covidAOEResponses.symptoms,
+          symptomOnset: state.covidAOEResponses.symptomOnset,
+          pregnancy: state.covidAOEResponses.pregnancy,
+        },
+      });
     }
   };
 
@@ -223,29 +214,18 @@ const TestCardForm = ({
       : state.testResults.filter(
           (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
         );
-    try {
-      console.log({
+
+    const response = await editQueueItem({
+      variables: {
         id: testOrder.internalId,
         deviceTypeId: state.deviceId,
         dateTested: state.dateTested,
         specimenTypeId: state.specimenId,
         results: resultsToSave,
-      });
-      const response = await editQueueItem({
-        variables: {
-          id: testOrder.internalId,
-          deviceTypeId: state.deviceId,
-          dateTested: state.dateTested,
-          specimenTypeId: state.specimenId,
-          results: resultsToSave,
-        },
-      });
-      if (!response.data) {
-        throw Error("updateQueueItem null response data");
-      }
-    } catch (e) {
-      // caught upstream by error boundary
-      throw e;
+      },
+    });
+    if (!response.data) {
+      throw Error("updateQueueItem null response data");
     }
   };
 
@@ -338,33 +318,29 @@ const TestCardForm = ({
     }
 
     trackSubmitTestResult();
-    try {
-      const result = await submitTestResult({
-        variables: {
-          patientId: testOrder.patient?.internalId,
-          deviceTypeId: state.deviceId,
-          specimenTypeId: state.specimenId,
-          dateTested: state.dateTested,
-          results: doesDeviceSupportMultiplex(state.deviceId, devicesMap)
-            ? state.testResults
-            : state.testResults.filter(
-                (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
-              ),
-        },
-      });
-      showTestResultDeliveryStatusAlert(
-        result.data?.submitQueueItem?.deliverySuccess,
-        testOrder.patient
-      );
-      if (startTestPatientId === testOrder.patient.internalId) {
-        setStartTestPatientId(null);
-      }
-      removeTimer(testOrder.internalId);
-      refetchQueue();
-    } catch (error) {
-      // caught upstream by error boundary
-      throw error;
+
+    const result = await submitTestResult({
+      variables: {
+        patientId: testOrder.patient?.internalId,
+        deviceTypeId: state.deviceId,
+        specimenTypeId: state.specimenId,
+        dateTested: state.dateTested,
+        results: doesDeviceSupportMultiplex(state.deviceId, devicesMap)
+          ? state.testResults
+          : state.testResults.filter(
+              (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
+            ),
+      },
+    });
+    showTestResultDeliveryStatusAlert(
+      result.data?.submitQueueItem?.deliverySuccess,
+      testOrder.patient
+    );
+    if (startTestPatientId === testOrder.patient.internalId) {
+      setStartTestPatientId(null);
     }
+    removeTimer(testOrder.internalId);
+    refetchQueue();
   };
 
   return (
@@ -435,7 +411,7 @@ const TestCardForm = ({
                 max={formatDate(moment().toDate())}
                 value={formatDate(moment(state.dateTested).toDate())}
                 onChange={(e) => {
-                  if (!!e.target.value) {
+                  if (e.target.value) {
                     dispatch({
                       type: TestFormActionCase.UPDATE_DATE_TESTED,
                       payload: e.target.value,
@@ -459,7 +435,7 @@ const TestCardForm = ({
                 value={moment(state.dateTested).format("HH:mm")}
                 onChange={(e) => {
                   console.log("time I WAS HERE -----------", e.target.value);
-                  if (!!e.target.value) {
+                  if (e.target.value) {
                     dispatch({
                       type: TestFormActionCase.UPDATE_TIME_TESTED,
                       payload: e.target.value,
@@ -508,13 +484,11 @@ const TestCardForm = ({
               id={`test-device-${testOrder.patient.internalId}`}
               options={deviceTypeOptions}
               label={
-                <>
-                  <TextWithTooltip
-                    text="Test device"
-                    tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
-                    position="right"
-                  />
-                </>
+                <TextWithTooltip
+                  text="Test device"
+                  tooltip="Don’t see the test you’re using? Ask your organization admin to add the correct test and it'll show up here."
+                  position="right"
+                />
               }
               name="testDevice"
               selectedValue={state.deviceId}
