@@ -21,7 +21,7 @@ export interface CovidAoeQuestionResponses {
   pregnancy?: PregnancyCode;
   noSymptoms?: boolean | null;
   symptoms?: string | null;
-  symptomOnsetDate?: string;
+  symptomOnset?: string;
 }
 
 export enum TestFormActionCase {

@@ -105,10 +105,10 @@ export const TestCard = ({
               className={"margin-right-1"}
               onClick={removeTestFromQueue}
             >
-              Yes, I'm sure.
+              Yes, I'm sure
             </ModalToggleButton>
             <ModalToggleButton modalRef={closeModalRef} unstyled closer>
-              No, go back.
+              No, go back
             </ModalToggleButton>
           </ButtonGroup>
         </ModalFooter>
@@ -159,6 +159,7 @@ export const TestCard = ({
                 className={"card-close-button"}
                 variant="unstyled"
                 onClick={closeModalRef.current?.toggleModal}
+                ariaLabel={`Close test for ${patientFullName}`}
               >
                 <Icon.Close size={3} focusable={true} />
               </Button>

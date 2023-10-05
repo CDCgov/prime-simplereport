@@ -89,7 +89,7 @@ const TestCardForm = ({
     covidAOEResponses: {
       pregnancy: testOrder.pregnancy as PregnancyCode,
       noSymptoms: testOrder.noSymptoms,
-      symptomOnsetDate: testOrder.symptomOnset,
+      symptomOnset: testOrder.symptomOnset,
       symptoms: testOrder.symptoms,
     },
   };
@@ -188,9 +188,9 @@ const TestCardForm = ({
     let debounceTimer: ReturnType<typeof setTimeout>;
     if (state.dirty) {
       dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
-      debounceTimer = setTimeout(async () => {
-        await updateAOE();
-      }, DEBOUNCE_TIME);
+      updateAOE();
+      // debounceTimer = setTimeout(async () => {
+      // }, DEBOUNCE_TIME);
     }
     return () => {
       clearTimeout(debounceTimer);
@@ -202,16 +202,17 @@ const TestCardForm = ({
     if (whichAOEFormOption === AOEFormOptions.COVID) {
       trackUpdateAoEResponse();
       try {
-        await updateAoeMutation({
+        const newVar = {
           variables: {
             patientId: testOrder.patient.internalId,
             noSymptoms: state.covidAOEResponses.noSymptoms,
             symptoms: state.covidAOEResponses.symptoms,
-            symptomOnset: state.covidAOEResponses.symptomOnsetDate,
+            symptomOnset: state.covidAOEResponses.symptomOnset,
             pregnancy: state.covidAOEResponses.pregnancy,
             // testResultDelivery will now be determined by user preferences on backend
           },
-        });
+        };
+        await updateAoeMutation(newVar);
       } catch (e) {
         // caught upstream by error boundary
         throw e;
@@ -226,6 +227,13 @@ const TestCardForm = ({
           (result) => result.diseaseName === MULTIPLEX_DISEASES.COVID_19
         );
     try {
+      console.log({
+        id: testOrder.internalId,
+        deviceTypeId: state.deviceId,
+        dateTested: state.dateTested,
+        specimenTypeId: state.specimenId,
+        results: resultsToSave,
+      });
       const response = await editQueueItem({
         variables: {
           id: testOrder.internalId,
@@ -287,9 +295,7 @@ const TestCardForm = ({
     : "";
   const testResultsError = validateTestResults();
 
-  const showDateTestedError =
-    (hasDateTestedBeenTouched || hasAttemptedSubmit) &&
-    dateTestedError.length > 0;
+  const showDateTestedError = dateTestedError.length > 0;
 
   const showTestResultsError =
     hasAttemptedSubmit && testResultsError.length > 0;
@@ -432,12 +438,14 @@ const TestCardForm = ({
                 max={formatDate(moment().toDate())}
                 value={formatDate(moment(state.dateTested).toDate())}
                 onBlur={() => setHasDateTestedBeenTouched(true)}
-                onChange={(e) =>
-                  dispatch({
-                    type: TestFormActionCase.UPDATE_DATE_TESTED,
-                    payload: e.target.value,
-                  })
-                }
+                onChange={(e) => {
+                  if (!!e.target.value) {
+                    dispatch({
+                      type: TestFormActionCase.UPDATE_DATE_TESTED,
+                      payload: e.target.value,
+                    });
+                  }
+                }}
                 required={true}
                 validationStatus={showDateTestedError ? "error" : undefined}
                 errorMessage={showDateTestedError && dateTestedError}
@@ -453,12 +461,15 @@ const TestCardForm = ({
                 data-testid="test-time"
                 step="60"
                 value={moment(state.dateTested).format("HH:mm")}
-                onChange={(e) =>
-                  dispatch({
-                    type: TestFormActionCase.UPDATE_TIME_TESTED,
-                    payload: e.target.value,
-                  })
-                }
+                onChange={(e) => {
+                  console.log("time I WAS HERE -----------", e.target.value);
+                  if (!!e.target.value) {
+                    dispatch({
+                      type: TestFormActionCase.UPDATE_TIME_TESTED,
+                      payload: e.target.value,
+                    });
+                  }
+                }}
                 onBlur={() => setHasDateTestedBeenTouched(true)}
                 validationStatus={showDateTestedError ? "error" : undefined}
               ></TextInput>
@@ -469,7 +480,7 @@ const TestCardForm = ({
           <div className="grid-col-auto">
             {useCurrentTime && (
               <Label className={"margin-top-3"} htmlFor={"current-date-time"}>
-                <span>Test date and time </span>
+                Test date and time{" "}
                 <abbr
                   title="required"
                   className={"usa-hint usa-hint--required"}

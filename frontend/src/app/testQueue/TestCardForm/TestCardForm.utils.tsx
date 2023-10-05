@@ -141,7 +141,7 @@ export const areAOEAnswersComplete = (
     if (formState.covidAOEResponses.noSymptoms === false) {
       const areSymptomsFilledIn = !!formState.covidAOEResponses.symptoms;
       const isSymptomOnsetDateAnswered =
-        !!formState.covidAOEResponses.symptomOnsetDate;
+        !!formState.covidAOEResponses.symptomOnset;
       return (
         isPregnancyAnswered &&
         isHasAnySymptomsAnswered &&
