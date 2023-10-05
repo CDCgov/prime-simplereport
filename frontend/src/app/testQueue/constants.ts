@@ -8,9 +8,9 @@ export const QUEUE_NOTIFICATION_TYPES = {
 };
 
 export type SomeoneWithName = {
-  firstName: string | null | undefined;
-  middleName: string | null | undefined;
-  lastName: string | null | undefined;
+  firstName?: string | null;
+  middleName?: string | null;
+  lastName?: string | null;
 };
 
 export const ALERT_CONTENT = {
