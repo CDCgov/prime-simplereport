@@ -148,7 +148,7 @@ class ConditionAgnosticResultRowTest {
         new ConditionAgnosticResultRow(rowToCheck, mock(FeatureFlagsConfig.class));
 
     var shouldHaveNoErrors = conditionAgnosticRow.validateRequiredFields();
-    assertThat(shouldHaveNoErrors).hasSize(0);
+    assertThat(shouldHaveNoErrors).isEmpty();
   }
 
   @Test
@@ -164,8 +164,8 @@ class ConditionAgnosticResultRowTest {
     var shouldHaveNoRequiredErrors = conditionAgnosticRow.validateRequiredFields();
     var shouldHaveNoValueErrors = conditionAgnosticRow.validateIndividualValues();
 
-    assertThat(shouldHaveNoRequiredErrors).hasSize(0);
-    assertThat(shouldHaveNoValueErrors).hasSize(0);
+    assertThat(shouldHaveNoRequiredErrors).isEmpty();
+    assertThat(shouldHaveNoValueErrors).isEmpty();
   }
 
   @Test

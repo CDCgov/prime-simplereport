@@ -85,7 +85,7 @@ public class ConditionAgnosticResultRow implements FileRow {
 
     if (firstNameAbsent ^ lastNameAbsent) {
       if (firstNameAbsent) requiredFields.add(PATIENT_LAST_NAME);
-      else if (lastNameAbsent) requiredFields.add(PATIENT_FIRST_NAME);
+      else requiredFields.add(PATIENT_FIRST_NAME);
     } else if (firstNameAbsent && lastNameAbsent) {
       requiredFields.add(PATIENT_NAME_ABSENT_REASON);
     }
