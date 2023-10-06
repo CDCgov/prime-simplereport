@@ -62,7 +62,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.5.2' // todo: remove this
     implementation 'org.liquibase:liquibase-core'
-    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.postgresql:postgresql'
 
     // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.13.19'
