@@ -1,5 +1,4 @@
 import {
-  act,
   render,
   screen,
   waitFor,
@@ -32,8 +31,9 @@ jest.mock("../AccountCreationApiService", () => ({
 }));
 
 describe("Verify SMS MFA", () => {
-  beforeEach(() => {
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MemoryRouter
         basename="/uac"
         initialEntries={[
@@ -48,24 +48,23 @@ describe("Verify SMS MFA", () => {
           <Route path="success" element={<MfaComplete />} />
         </Routes>
       </MemoryRouter>
-    );
+    ),
   });
 
   it("can submit a valid security code", async () => {
+    const { user } = renderWithUser();
     expect(
       screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("One-time security code", { exact: false }),
-          "123456"
-        )
+
+    await user.type(
+      screen.getByLabelText("One-time security code", { exact: false }),
+      "123456"
     );
 
     expect(screen.getByText("Submit")).toBeEnabled();
 
-    await act(async () => await userEvent.click(screen.getByText("Submit")));
+    await user.click(screen.getByText("Submit"));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Verifying security code …", { exact: false })
     );
@@ -81,17 +80,16 @@ describe("Verify SMS MFA", () => {
   });
 
   it("shows an error for an invalid security code", async () => {
+    const { user } = renderWithUser();
     expect(
       screen.getByText("530-867-5309", { exact: false })
     ).toBeInTheDocument();
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("One-time security code", { exact: false }),
-          "999999"
-        )
+
+    await user.type(
+      screen.getByLabelText("One-time security code", { exact: false }),
+      "999999"
     );
-    await act(async () => await userEvent.click(screen.getByText("Submit")));
+    await user.click(screen.getByText("Submit"));
     expect(await screen.findByText(/Verifying security code/i));
     await waitFor(() =>
       expect(
@@ -108,7 +106,8 @@ describe("Verify SMS MFA", () => {
   });
 
   it("requires a security code to be entered", async () => {
-    await act(async () => await userEvent.click(screen.getByText("Submit")));
+    const { user } = renderWithUser();
+    await user.click(screen.getByText("Submit"));
     expect(screen.getByText("Enter your security code")).toBeInTheDocument();
     expect(
       screen.queryByText(

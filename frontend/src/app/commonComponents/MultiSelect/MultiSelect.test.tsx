@@ -1,4 +1,4 @@
-import { act, render, screen, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import MultiSelect from "./MultiSelect";
@@ -19,16 +19,17 @@ const fruitOptions: MultiSelectDropdownOption[] = [
 
 const onChange = jest.fn();
 
-const renderWithoutInitialOptions = () => {
-  render(
+const renderWithoutInitialOptions = () => ({
+  user: userEvent.setup(),
+  ...render(
     <MultiSelect
       name="fruits"
       label="Favorite Fruit"
       onChange={onChange}
       options={fruitOptions}
     />
-  );
-};
+  ),
+});
 
 const renderWithInitialOptions = () => {
   render(
@@ -84,27 +85,31 @@ describe("Multi Select", () => {
   });
 
   describe("selecting and unselecting", () => {
-    beforeEach(() => {
-      renderWithoutInitialOptions();
-    });
-    describe("when selecting an item", () => {
-      beforeEach(async () => {
-        await act(
-          async () =>
-            await userEvent.click(screen.getByTestId("multi-select-input"))
-        );
-        const optionList = screen.getByTestId("multi-select-option-list");
-        await act(
-          async () =>
-            await userEvent.click(within(optionList).getByText("Apples"))
-        );
-        await act(
-          async () =>
-            await userEvent.click(within(optionList).getByText("Oranges"))
-        );
-      });
+    const renderAndSelect = async () => {
+      const { user, ...renderControls } = renderWithoutInitialOptions();
 
-      it("should show the pill with the selected item's label", () => {
+      await user.click(screen.getByTestId("multi-select-input"));
+      const optionList = screen.getByTestId("multi-select-option-list");
+
+      await user.click(within(optionList).getByText("Apples"));
+
+      await user.click(within(optionList).getByText("Oranges"));
+      return { user, ...renderControls };
+    };
+
+    const renderAndClickPill = async () => {
+      const { user, ...renderControls } = await renderAndSelect();
+      const pillContainer = screen.getByTestId("pill-container");
+      expect(pillContainer).toBeInTheDocument();
+      await user.click(within(pillContainer).getAllByRole("button")[0]);
+      await user.click(screen.getByTestId("multi-select-input"));
+
+      return { user, ...renderControls };
+    };
+
+    describe("when selecting an item", () => {
+      it("should show the pill with the selected item's label", async () => {
+        await renderAndSelect();
         const pillContainer = screen.getByTestId("pill-container");
         expect(pillContainer).toBeInTheDocument();
 
@@ -113,7 +118,8 @@ describe("Multi Select", () => {
         within(pillContainer).getByText("Apples");
         within(pillContainer).getByText("Oranges");
       });
-      it("should show the remove the selected options from the options list", () => {
+      it("should show the remove the selected options from the options list", async () => {
+        await renderAndSelect();
         const optionList = screen.getByTestId("multi-select-option-list");
         expect(optionList).toBeInTheDocument();
         expect(optionList.children.length).toEqual(4);
@@ -126,22 +132,8 @@ describe("Multi Select", () => {
       });
 
       describe("when deleting a selected item", () => {
-        beforeEach(async () => {
-          const pillContainer = screen.getByTestId("pill-container");
-          expect(pillContainer).toBeInTheDocument();
-          await act(
-            async () =>
-              await userEvent.click(
-                within(pillContainer).getAllByRole("button")[0]
-              )
-          );
-          await act(
-            async () =>
-              await userEvent.click(screen.getByTestId("multi-select-input"))
-          );
-        });
-
-        it("should remove the pill ", () => {
+        it("should remove the pill ", async () => {
+          await renderAndClickPill();
           const pillContainer = screen.getByTestId("pill-container");
           expect(pillContainer).toBeInTheDocument();
 
@@ -149,7 +141,8 @@ describe("Multi Select", () => {
           expect(pillContainer.children.length).toEqual(2);
           within(pillContainer).getByText("Oranges");
         });
-        it("should make the option available to select", () => {
+        it("should make the option available to select", async () => {
+          await renderAndClickPill();
           const optionList = screen.getByTestId("multi-select-option-list");
           expect(optionList).toBeInTheDocument();
           expect(optionList.children.length).toEqual(5);

@@ -1107,10 +1107,10 @@ anymatch@^3.0.3:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-applicationinsights@^2.7.3:
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-2.7.3.tgz#8781454d29c0b14c9773f2e892b4cf5e7468ffa5"
-  integrity sha512-JY8+kTEkjbA+kAVNWDtpfW2lqsrDALfDXuxOs74KLPu2y13fy/9WB52V4LfYVTVcW1/jYOXjTxNS2gPZIDh1iw==
+applicationinsights@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-2.8.0.tgz#7a294c9c173e04bf4813e263055afe5763623f33"
+  integrity sha512-pxVOdCPwXTal1A904yGmzOOUJrIeQ89xQir0ifr7fLl+e0BlGrZ1P4StcIDuEXk93gV9CGxGm5Mol8ksPk2mcg==
   dependencies:
     "@azure/core-auth" "^1.5.0"
     "@azure/core-rest-pipeline" "1.10.1"
@@ -1163,10 +1163,10 @@ asynckit@^0.4.0:
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q==
 
-azure-functions-core-tools@^4.0.5274:
-  version "4.0.5274"
-  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-4.0.5274.tgz#dadb0527a7de5f0adbed2b92908863936e09cfb3"
-  integrity sha512-chonhkn8ADVkFMs/5cDS01xHtInxMnBM0eMlnHJBepHDvzwwQ1iFVhtbbDPjjEuUed9DoOOCinUorDXbb5c7GA==
+azure-functions-core-tools@^4.0.5390:
+  version "4.0.5390"
+  resolved "https://registry.yarnpkg.com/azure-functions-core-tools/-/azure-functions-core-tools-4.0.5390.tgz#fcf53612bc809c1a3a808373f080d1e7eda32824"
+  integrity sha512-qunPPVm5lU0oJjXSytfKTFeJDTDlxdfGVMQECIWT/o0YLQO8r6kEsJjfpTp7smVUOTyFujofOVhOJ5l0AJCpOg==
   dependencies:
     chalk "3.0.0"
     extract-zip "^2.0.1"

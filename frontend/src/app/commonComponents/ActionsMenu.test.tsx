@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { ActionsMenu } from "./ActionsMenu";
@@ -13,6 +13,7 @@ describe("action menu", () => {
     );
   });
   it("should have the id on the menu and menu items", async () => {
+    const user = userEvent.setup();
     render(
       <ActionsMenu
         id={"1234"}
@@ -24,9 +25,7 @@ describe("action menu", () => {
       "action_1234"
     );
 
-    await act(
-      async () => await userEvent.click(screen.getByText("More actions"))
-    );
+    await user.click(screen.getByText("More actions"));
     expect(screen.getByText("Print action")).toHaveAttribute(
       "id",
       "print_1234"

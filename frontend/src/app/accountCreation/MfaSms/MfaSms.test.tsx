@@ -1,5 +1,4 @@
 import {
-  act,
   render,
   screen,
   waitForElementToBeRemoved,
@@ -22,8 +21,9 @@ jest.mock("../AccountCreationApiService", () => ({
 }));
 
 describe("SMS MFA", () => {
-  beforeEach(() => {
-    render(
+  const renderWithUser = () => ({
+    user: userEvent.setup(),
+    ...render(
       <MemoryRouter
         initialEntries={[
           {
@@ -36,18 +36,17 @@ describe("SMS MFA", () => {
           <Route path="/mfa-sms/verify" element={<MfaSmsVerify />} />
         </Routes>
       </MemoryRouter>
-    );
+    ),
   });
 
   it("can enter a valid phone number", async () => {
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Phone number", { exact: false }),
-          "(910) 867-5309"
-        )
+    const { user } = renderWithUser();
+
+    await user.type(
+      screen.getByLabelText("Phone number", { exact: false }),
+      "(910) 867-5309"
     );
-    await act(async () => await userEvent.click(screen.getByText("Send code")));
+    await user.click(screen.getByText("Send code"));
     await waitForElementToBeRemoved(() =>
       screen.queryByText("Validating phone number …")
     );
@@ -58,19 +57,18 @@ describe("SMS MFA", () => {
   });
 
   it("requires a phone number", async () => {
-    await act(async () => await userEvent.click(screen.getByText("Send code")));
+    const { user } = renderWithUser();
+    await user.click(screen.getByText("Send code"));
     expect(screen.getByText("Enter your phone number")).toBeInTheDocument();
   });
 
   it("requires a valid phone number", async () => {
-    await act(
-      async () =>
-        await userEvent.type(
-          screen.getByLabelText("Phone number", { exact: false }),
-          "(555) 555-5555"
-        )
+    const { user } = renderWithUser();
+    await user.type(
+      screen.getByLabelText("Phone number", { exact: false }),
+      "(555) 555-5555"
     );
-    await act(async () => await userEvent.click(screen.getByText("Send code")));
+    await user.click(screen.getByText("Send code"));
     expect(screen.getByText("Enter a valid phone number")).toBeInTheDocument();
   });
 });

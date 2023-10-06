@@ -1,5 +1,5 @@
-import { act, screen, waitFor, within } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { screen, waitFor, within } from "@testing-library/react";
+import { UserEvent } from "@testing-library/user-event";
 
 import {
   UnarchivePatientFacility,
@@ -7,17 +7,18 @@ import {
   UnarchivePatientPatient,
 } from "./UnarchivePatient";
 
-export const clickSearch = async () => {
-  await act(async () => await userEvent.click(screen.getByText("Search")));
+export const clickSearch = async (user: UserEvent) => {
+  await user.click(screen.getByText("Search"));
 };
 
 export const selectComboBoxOption = async (
+  user: UserEvent,
   containerTestId: string,
   value: string
 ) => {
   const containerDiv = screen.getByTestId(containerTestId);
   const listbox = within(containerDiv).getByTestId("combo-box-option-list");
-  await act(async () => await userEvent.selectOptions(listbox, value));
+  await user.selectOptions(listbox, value);
   await waitFor(async () =>
     expect(within(containerDiv).getByRole("combobox")).toHaveValue(value)
   );
@@ -77,9 +78,10 @@ export const mockOrg2: UnarchivePatientOrganization = {
   facilities: [],
 };
 
-export const selectDropdown = async (label: string, value: string) => {
-  await act(
-    async () =>
-      await userEvent.selectOptions(screen.getByLabelText(label), value)
-  );
+export const selectDropdown = async (
+  user: UserEvent,
+  label: string,
+  value: string
+) => {
+  await user.selectOptions(screen.getByLabelText(label), value);
 };

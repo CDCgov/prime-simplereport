@@ -52,7 +52,6 @@ import TestResultDetailsModal from "./TestResultDetailsModal";
 import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 import ResultsTable, {
   generateTableHeaders,
-  getEnrichedMultiplexResultsFromTestEvent,
 } from "./resultsTable/ResultsTable";
 
 export const ALL_FACILITIES_ID = "all";
@@ -91,7 +90,7 @@ const getResultCountText = (
   const from = totalEntries === 0 ? 0 : (pageNumber - 1) * entriesPerPage + 1;
   const to = Math.min(entriesPerPage * pageNumber, totalEntries);
 
-  return `Showing ${from}-${to} of ${totalEntries}`;
+  return `Showing results for ${from}-${to} of ${totalEntries} tests`;
 };
 
 const getFilteredPatientName = (
@@ -690,10 +689,7 @@ const TestResultsList = () => {
   if (results.error) {
     throw results.error;
   }
-  const totalEntries =
-    getEnrichedMultiplexResultsFromTestEvent(
-      results.data?.testResultsPage?.content as TestResult[]
-    ).length || 0;
+  const totalEntries = results.data?.testResultsPage?.totalElements || 0;
 
   return (
     <DetachedTestResultsList
