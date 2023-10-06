@@ -55,7 +55,10 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
-      order.on(cb.equal(root.get(TestEvent_.internalId), order.get(TestOrder_.testEvent)));
+      order.on(
+          cb.equal(
+              root.get(TestEvent_.internalId),
+              order.get(TestOrder_.testEvent).get(TestEvent_.internalId)));
       query.orderBy(cb.desc(root.get(TestEvent_.createdAt)));
 
       Predicate p = cb.conjunction();

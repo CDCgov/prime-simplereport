@@ -111,7 +111,10 @@ public class TestOrderService {
     return (root, query, cb) -> {
       Join<TestEvent, Result> resultJoin = root.join(TestEvent_.results);
       Join<TestEvent, TestOrder> order = root.join(TestEvent_.order);
-      order.on(cb.equal(root.get(IdentifiedEntity_.internalId), order.get(TestOrder_.testEvent)));
+      order.on(
+          cb.equal(
+              root.get(IdentifiedEntity_.internalId),
+              order.get(TestOrder_.testEvent).get(IdentifiedEntity_.internalId)));
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
       query.distinct(true);
 
