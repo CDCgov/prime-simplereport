@@ -22,6 +22,7 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,132 +45,135 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
   private Person personA;
   private Person personB;
 
-  @BeforeEach
-  void setupData() {
-    initSampleData();
-    org = organizationService.getCurrentOrganization();
-    facilityA = testDataFactory.createValidFacility(org, "Facility A");
-    facilityB = testDataFactory.createValidFacility(org, "Facility B");
-    personA =
-        testDataFactory.createMinimalPerson(
-            org, facilityA, new PersonName("John", "Jacob", "Reynolds", ""), PersonRole.STAFF);
-    personB =
-        testDataFactory.createMinimalPerson(
-            org,
-            facilityA,
-            new PersonName("Optimus", "Freakin'", "Prime", ""),
-            PersonRole.RESIDENT);
+  @Nested
+  class GetResultsTests {
+    @BeforeEach
+    void setupData() {
+      initSampleData();
+      org = organizationService.getCurrentOrganization();
+      facilityA = testDataFactory.createValidFacility(org, "Facility A");
+      facilityB = testDataFactory.createValidFacility(org, "Facility B");
+      personA =
+          testDataFactory.createMinimalPerson(
+              org, facilityA, new PersonName("John", "Jacob", "Reynolds", ""), PersonRole.STAFF);
+      personB =
+          testDataFactory.createMinimalPerson(
+              org,
+              facilityA,
+              new PersonName("Optimus", "Freakin'", "Prime", ""),
+              PersonRole.RESIDENT);
 
-    var orderCovidOnly = testDataFactory.createTestEvent(personA, facilityA, TestResult.POSITIVE);
-    var orderMultiplex =
-        testDataFactory.createMultiplexTestEvent(
-            personB,
-            facilityA,
-            TestResult.POSITIVE,
-            TestResult.NEGATIVE,
-            TestResult.POSITIVE,
-            false);
-    var orderMultiplexOtherFacility =
-        testDataFactory.createMultiplexTestEvent(
-            personA,
-            facilityB,
-            TestResult.POSITIVE,
-            TestResult.NEGATIVE,
-            TestResult.POSITIVE,
-            false);
-  }
+      testDataFactory.createTestEvent(personA, facilityA, TestResult.POSITIVE);
+      testDataFactory.createMultiplexTestEvent(
+          personB, facilityA, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.POSITIVE, false);
+      testDataFactory.createMultiplexTestEvent(
+          personA, facilityB, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.POSITIVE, false);
+    }
 
-  private void truncateDb() {
-    truncator.truncateAll();
-  }
+    private void truncateDb() {
+      truncator.truncateAll();
+    }
 
-  @AfterEach
-  public void cleanup() {
-    truncateDb();
-  }
+    @AfterEach
+    public void cleanup() {
+      truncateDb();
+    }
 
-  @Test
-  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-  void getOrganizationResults_noFilter() {
-    var res = _service.getOrganizationResults(null, null, null, null, null, null, 0, 10).toList();
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getOrganizationResults_noFilter() {
+      var res = _service.getOrganizationResults(null, null, null, null, null, null, 0, 10).toList();
 
-    assertEquals(7, res.size());
-  }
+      assertEquals(7, res.size());
+    }
 
-  @Test
-  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-  void getFacilityResults_noFilter() {
-    var res =
-        _service
-            .getFacilityResults(
-                facilityA.getInternalId(), null, null, null, null, null, null, 0, 10)
-            .toList();
-    assertEquals(4, res.size());
-  }
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getFacilityResults_noFilter() {
+      var res =
+          _service
+              .getFacilityResults(
+                  facilityA.getInternalId(), null, null, null, null, null, null, 0, 10)
+              .toList();
+      assertEquals(4, res.size());
+    }
 
-  @Test
-  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-  void getFacilityResults_filter_condition() {
-    var covid = testDataFactory.getCovidDisease();
-    var res =
-        _service
-            .getFacilityResults(
-                facilityA.getInternalId(), null, null, null, covid, null, null, 0, 10)
-            .toList();
-    assertEquals(2, res.size());
-    assertTrue(res.stream().allMatch(r -> covid.getName().equals(r.getDisease().getName())));
-  }
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getFacilityResults_filter_condition() {
+      var covid = testDataFactory.getCovidDisease();
+      var res =
+          _service
+              .getFacilityResults(
+                  facilityA.getInternalId(), null, null, null, covid, null, null, 0, 10)
+              .toList();
+      assertEquals(2, res.size());
+      assertTrue(res.stream().allMatch(r -> covid.getName().equals(r.getDisease().getName())));
+    }
 
-  @Test
-  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-  void getFacilityResults_filter_result() {
-    var res =
-        _service
-            .getFacilityResults(
-                facilityA.getInternalId(), null, TestResult.POSITIVE, null, null, null, null, 0, 10)
-            .toList();
-    assertEquals(3, res.size());
-    assertTrue(res.stream().allMatch(r -> TestResult.POSITIVE.equals(r.getTestResult())));
-  }
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getFacilityResults_filter_result() {
+      var res =
+          _service
+              .getFacilityResults(
+                  facilityA.getInternalId(),
+                  null,
+                  TestResult.POSITIVE,
+                  null,
+                  null,
+                  null,
+                  null,
+                  0,
+                  10)
+              .toList();
+      assertEquals(3, res.size());
+      assertTrue(res.stream().allMatch(r -> TestResult.POSITIVE.equals(r.getTestResult())));
+    }
 
-  @Test
-  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-  void getFacilityResults_filter_patient() {
-    var res =
-        _service
-            .getFacilityResults(
-                facilityA.getInternalId(),
-                personB.getInternalId(),
-                null,
-                null,
-                null,
-                null,
-                null,
-                0,
-                10)
-            .toList();
-    assertEquals(3, res.size());
-    assertTrue(
-        res.stream()
-            .allMatch(
-                r ->
-                    personB.getInternalId().equals(r.getTestEvent().getPatient().getInternalId())));
-  }
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getFacilityResults_filter_patient() {
+      var res =
+          _service
+              .getFacilityResults(
+                  facilityA.getInternalId(),
+                  personB.getInternalId(),
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  0,
+                  10)
+              .toList();
+      assertEquals(3, res.size());
+      assertTrue(
+          res.stream()
+              .allMatch(
+                  r ->
+                      personB
+                          .getInternalId()
+                          .equals(r.getTestEvent().getPatient().getInternalId())));
+    }
 
-  @Test
-  @SliceTestConfiguration.WithSimpleReportOrgAdminUser
-  void getFacilityResults_filter_role() {
-    var res =
-        _service
-            .getFacilityResults(
-                facilityB.getInternalId(), null, null, PersonRole.STAFF, null, null, null, 0, 10)
-            .toList();
-    assertEquals(3, res.size());
-    assertTrue(
-        res.stream()
-            .allMatch(
-                r ->
-                    personA.getInternalId().equals(r.getTestEvent().getPatient().getInternalId())));
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getFacilityResults_filter_role() {
+      var res =
+          _service
+              .getFacilityResults(
+                  facilityB.getInternalId(), null, null, PersonRole.STAFF, null, null, null, 0, 10)
+              .toList();
+      assertEquals(3, res.size());
+      assertTrue(
+          res.stream()
+              .allMatch(
+                  r ->
+                      personA
+                          .getInternalId()
+                          .equals(r.getTestEvent().getPatient().getInternalId())));
+    }
   }
 
   @Test
