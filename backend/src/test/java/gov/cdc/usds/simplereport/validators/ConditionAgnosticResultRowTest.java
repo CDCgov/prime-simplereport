@@ -172,6 +172,32 @@ class ConditionAgnosticResultRowTest {
   }
 
   @Test
+  void validateRowWithPresentFirstNameAndAbsentLastNameAndNameAbsentReason() {
+    var rowToCheck = validRowMap;
+    rowToCheck.remove(PATIENT_FIRST_NAME);
+    rowToCheck.remove(PATIENT_NAME_ABSENT_REASON);
+
+    var conditionAgnosticRow =
+        new ConditionAgnosticResultRow(rowToCheck, mock(FeatureFlagsConfig.class));
+
+    var shouldHaveNoErrors = conditionAgnosticRow.validateRequiredFields();
+    assertThat(shouldHaveNoErrors).isEmpty();
+  }
+
+  @Test
+  void validateRowWithPresentLastNameAndAbsentFirstNameAndNameAbsentReason() {
+    var rowToCheck = validRowMap;
+    rowToCheck.remove(PATIENT_LAST_NAME);
+    rowToCheck.remove(PATIENT_NAME_ABSENT_REASON);
+
+    var conditionAgnosticRow =
+        new ConditionAgnosticResultRow(rowToCheck, mock(FeatureFlagsConfig.class));
+
+    var shouldHaveNoErrors = conditionAgnosticRow.validateRequiredFields();
+    assertThat(shouldHaveNoErrors).isEmpty();
+  }
+
+  @Test
   void validateRowWithPresentNameAbsentReasonAndAbsentName() {
     var rowToCheck = validRowMap;
     rowToCheck.remove(PATIENT_LAST_NAME);
