@@ -177,7 +177,7 @@
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-codegen/typescript-react-apollo": "^4.0.0",
     "@storybook/addon-a11y": "^7.4.2",
-    "@storybook/addon-actions": "^7.4.2",
+    "@storybook/addon-actions": "^7.4.6",
     "@storybook/addon-essentials": "^7.4.2",
     "@storybook/addon-interactions": "^7.4.2",
     "@storybook/addon-links": "^7.4.2",
