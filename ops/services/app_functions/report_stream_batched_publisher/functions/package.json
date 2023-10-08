@@ -19,7 +19,7 @@
     "test": "jest --watch"
   },
   "dependencies": {
-    "@azure/functions": "^3.5.1",
+    "@azure/functions": "^4.0.1",
     "@azure/storage-queue": "^12.6.0",
     "applicationinsights": "^2.8.0",
     "csv-stringify": "^6.4.2",
