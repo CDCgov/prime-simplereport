@@ -86,6 +86,8 @@ describe("MultiplexResultInputGroup", () => {
   it("calls onChange when result selected", async () => {
     const { user } = await renderMultiplexResultInputGroup();
 
+    // selecting a negative covid result
+    onChangeMock.mockReset();
     await user.click(
       within(
         screen.getByTestId(`covid-test-result-${queueItemId}`)
@@ -97,6 +99,8 @@ describe("MultiplexResultInputGroup", () => {
       { diseaseName: "Flu B", testResult: "POSITIVE" },
     ]);
 
+    // selecting a negative flu a result
+    onChangeMock.mockReset();
     await user.click(
       within(
         screen.getByTestId(`flu-a-test-result-${queueItemId}`)
@@ -108,6 +112,8 @@ describe("MultiplexResultInputGroup", () => {
       { diseaseName: "Flu B", testResult: "POSITIVE" },
     ]);
 
+    // selecting a negative flu b result
+    onChangeMock.mockReset();
     await user.click(
       within(
         screen.getByTestId(`flu-b-test-result-${queueItemId}`)
@@ -117,6 +123,16 @@ describe("MultiplexResultInputGroup", () => {
       { diseaseName: "COVID-19", testResult: "NEGATIVE" },
       { diseaseName: "Flu A", testResult: "NEGATIVE" },
       { diseaseName: "Flu B", testResult: "NEGATIVE" },
+    ]);
+
+    // selecting an inconclusive result
+    onChangeMock.mockReset();
+    await user.click(screen.getByLabelText("Mark test as inconclusive"));
+
+    expect(onChangeMock).toHaveBeenCalledWith([
+      { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
+      { diseaseName: "Flu A", testResult: "UNDETERMINED" },
+      { diseaseName: "Flu B", testResult: "UNDETERMINED" },
     ]);
   });
 
