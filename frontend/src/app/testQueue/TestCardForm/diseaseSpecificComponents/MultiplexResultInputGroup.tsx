@@ -324,10 +324,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
             />
           </div>
         )}
-        <div
-          className="grid-col-auto"
-          data-testid={`flu-a-test-result-${queueItemId}`}
-        >
+        <div className="grid-col-auto">
           <RadioGroup
             legend="Flu A result"
             onChange={(value) => {
@@ -349,10 +346,7 @@ const MultiplexResultInputGroup: React.FC<Props> = ({
             required={areAllResultsRequired}
           />
         </div>
-        <div
-          className="grid-col-auto"
-          data-testid={`flu-b-test-result-${queueItemId}`}
-        >
+        <div className="grid-col-auto">
           <RadioGroup
             legend="Flu B result"
             onChange={(value) => {
