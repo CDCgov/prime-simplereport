@@ -1378,7 +1378,7 @@ public class FhirConverter {
     observationCoding.setSystem(LOINC_CODE_SYSTEM).setCode(props.getTestPerformedCode());
     observation.setCode(observationCodeableConcept);
 
-    addSNOMEDValue(props.getResultValue(), observation, "");
+    addSNOMEDValue(props.getResultValue(), observation, null);
 
     String observationId = uuidGenerator.randomUUID().toString();
     observation.setId(observationId);
@@ -1425,9 +1425,9 @@ public class FhirConverter {
     UUID messageHeaderId = uuidGenerator.randomUUID();
     var messageHeader =
         createMessageHeader(
-            "",
+            null,
             diagnosticReportFullUrl,
-            "",
+            null,
             props.getGitProperties(),
             props.getProcessingId(),
             messageHeaderId);
