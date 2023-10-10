@@ -434,7 +434,6 @@ const TestCardForm = ({
                 step="60"
                 value={moment(state.dateTested).format("HH:mm")}
                 onChange={(e) => {
-                  console.log("time I WAS HERE -----------", e.target.value);
                   if (e.target.value) {
                     dispatch({
                       type: TestFormActionCase.UPDATE_TIME_TESTED,
