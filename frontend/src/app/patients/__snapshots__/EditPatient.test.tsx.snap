@@ -2185,7 +2185,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                       class="display-flex "
                     >
                       <div
-                        class="usa-form-group flex-fill emailFormElement, margin-top-0"
+                        class="usa-form-group flex-fill emailFormElement margin-top-0"
                         id="email-0"
                       >
                         <label
