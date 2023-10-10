@@ -11,10 +11,8 @@ import static gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResul
 import static gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow.TEST_RESULT_VALUE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.from;
-import static org.mockito.Mockito.mock;
 
 import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
-import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.test_util.TestErrorMessageUtil;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
@@ -124,8 +122,7 @@ class ConditionAgnosticResultRowTest {
     invalidIndividualFields.put(TEST_PERFORMED_CODE, "not a valid one");
     invalidIndividualFields.put(TEST_RESULT_VALUE, "not a valid one");
 
-    var conditionAgnosticRow =
-        new ConditionAgnosticResultRow(invalidIndividualFields, mock(FeatureFlagsConfig.class));
+    var conditionAgnosticRow = new ConditionAgnosticResultRow(invalidIndividualFields);
 
     var actual = conditionAgnosticRow.validateIndividualValues();
 
@@ -144,8 +141,7 @@ class ConditionAgnosticResultRowTest {
     var rowToCheck = validRowMap;
     rowToCheck.remove(PATIENT_NAME_ABSENT_REASON);
 
-    var conditionAgnosticRow =
-        new ConditionAgnosticResultRow(rowToCheck, mock(FeatureFlagsConfig.class));
+    var conditionAgnosticRow = new ConditionAgnosticResultRow(rowToCheck);
 
     var shouldHaveNoErrors = conditionAgnosticRow.validateRequiredFields();
     assertThat(shouldHaveNoErrors).isEmpty();
@@ -157,8 +153,7 @@ class ConditionAgnosticResultRowTest {
     rowToCheck.remove(PATIENT_FIRST_NAME);
     rowToCheck.remove(PATIENT_NAME_ABSENT_REASON);
 
-    var conditionAgnosticRow =
-        new ConditionAgnosticResultRow(rowToCheck, mock(FeatureFlagsConfig.class));
+    var conditionAgnosticRow = new ConditionAgnosticResultRow(rowToCheck);
 
     var shouldHaveNoErrors = conditionAgnosticRow.validateRequiredFields();
     assertThat(shouldHaveNoErrors).isEmpty();
@@ -170,8 +165,7 @@ class ConditionAgnosticResultRowTest {
     rowToCheck.remove(PATIENT_LAST_NAME);
     rowToCheck.remove(PATIENT_NAME_ABSENT_REASON);
 
-    var conditionAgnosticRow =
-        new ConditionAgnosticResultRow(rowToCheck, mock(FeatureFlagsConfig.class));
+    var conditionAgnosticRow = new ConditionAgnosticResultRow(rowToCheck);
 
     var shouldHaveNoErrors = conditionAgnosticRow.validateRequiredFields();
     assertThat(shouldHaveNoErrors).isEmpty();
@@ -184,8 +178,7 @@ class ConditionAgnosticResultRowTest {
     rowToCheck.remove(PATIENT_FIRST_NAME);
     rowToCheck.put(PATIENT_NAME_ABSENT_REASON, "Unknown");
 
-    var conditionAgnosticRow =
-        new ConditionAgnosticResultRow(rowToCheck, mock(FeatureFlagsConfig.class));
+    var conditionAgnosticRow = new ConditionAgnosticResultRow(rowToCheck);
 
     var shouldHaveNoRequiredErrors = conditionAgnosticRow.validateRequiredFields();
     var shouldHaveNoValueErrors = conditionAgnosticRow.validateIndividualValues();
@@ -201,8 +194,7 @@ class ConditionAgnosticResultRowTest {
     rowToCheck.remove(PATIENT_FIRST_NAME);
     rowToCheck.remove(PATIENT_LAST_NAME);
 
-    var conditionAgnosticRow =
-        new ConditionAgnosticResultRow(rowToCheck, mock(FeatureFlagsConfig.class));
+    var conditionAgnosticRow = new ConditionAgnosticResultRow(rowToCheck);
 
     var actual = conditionAgnosticRow.validateRequiredFields();
 

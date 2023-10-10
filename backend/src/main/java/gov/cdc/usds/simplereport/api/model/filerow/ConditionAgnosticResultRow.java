@@ -8,7 +8,6 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTes
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResult;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateTestResultStatus;
 
-import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils.ValueOrError;
 import java.util.ArrayList;
@@ -50,13 +49,6 @@ public class ConditionAgnosticResultRow implements FileRow {
 
   private List<String> requiredFields;
 
-  public ConditionAgnosticResultRow(
-      Map<String, String> rawRow, FeatureFlagsConfig featureFlagsConfig) {
-    this(rawRow);
-    this.requiredFields = generateRequiredFields(rawRow);
-    this.featureFlagsConfig = featureFlagsConfig;
-  }
-
   public ConditionAgnosticResultRow(Map<String, String> rawRow) {
     this.requiredFields = generateRequiredFields(rawRow);
     testResultStatus = getValue(rawRow, TEST_RESULT_STATUS, isRequired(TEST_RESULT_STATUS));
@@ -78,8 +70,8 @@ public class ConditionAgnosticResultRow implements FileRow {
     String firstNameVal = getValue(rawRow, PATIENT_FIRST_NAME, false).getValue();
     String lastNameVal = getValue(rawRow, PATIENT_LAST_NAME, false).getValue();
 
-    boolean firstNameAbsent = firstNameVal == null || StringUtils.isBlank(firstNameVal);
-    boolean lastNameAbsent = lastNameVal == null || StringUtils.isBlank(lastNameVal);
+    boolean firstNameAbsent = StringUtils.isBlank(firstNameVal);
+    boolean lastNameAbsent = StringUtils.isBlank(lastNameVal);
 
     List<String> requiredFields = new ArrayList<>(initialRequiredFields);
 
@@ -88,6 +80,9 @@ public class ConditionAgnosticResultRow implements FileRow {
       else requiredFields.add(PATIENT_FIRST_NAME);
     } else if (firstNameAbsent && lastNameAbsent) {
       requiredFields.add(PATIENT_NAME_ABSENT_REASON);
+    } else {
+      requiredFields.add(PATIENT_LAST_NAME);
+      requiredFields.add(PATIENT_FIRST_NAME);
     }
 
     return requiredFields;
@@ -107,8 +102,6 @@ public class ConditionAgnosticResultRow implements FileRow {
   public List<String> getRequiredFields() {
     return requiredFields;
   }
-
-  private FeatureFlagsConfig featureFlagsConfig;
 
   @Override
   public List<FeedbackMessage> validateIndividualValues() {
