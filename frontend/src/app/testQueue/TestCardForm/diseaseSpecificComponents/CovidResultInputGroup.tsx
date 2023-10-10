@@ -51,14 +51,12 @@ export const validateCovidResultInput = (
 interface Props {
   queueItemId: string;
   testResults: MultiplexResultInput[];
-  isSubmitDisabled?: boolean;
   onChange: (value: CovidResult[]) => void;
 }
 
 const CovidResultInputGroup: React.FC<Props> = ({
   queueItemId,
   testResults,
-  isSubmitDisabled,
   onChange,
 }) => {
   const resultCovidFormat = convertFromMultiplexResultInputs(testResults);
@@ -91,7 +89,6 @@ const CovidResultInputGroup: React.FC<Props> = ({
       name={`covid-test-result-${queueItemId}`}
       selectedRadio={resultCovidFormat}
       wrapperClassName="prime-radio__group"
-      disabled={isSubmitDisabled}
       required
     />
   );

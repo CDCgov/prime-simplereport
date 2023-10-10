@@ -83,7 +83,7 @@ describe("MultiplexResultInputGroup", () => {
     expect(await renderMultiplexResultInputGroup()).toMatchSnapshot();
   });
 
-  it("calls onChange when result", async () => {
+  it("calls onChange when result selected", async () => {
     const { user } = await renderMultiplexResultInputGroup();
 
     await user.click(
