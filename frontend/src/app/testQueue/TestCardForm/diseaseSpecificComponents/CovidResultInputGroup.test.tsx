@@ -29,6 +29,8 @@ describe("CovidResultInputGroup", () => {
   it("calls onChange when result selected", async () => {
     const { user } = await renderCovidResultInputGroup();
 
+    // selecting a negative covid result
+    onChangeMock.mockReset();
     await user.click(
       within(
         screen.getByTestId(`covid-test-result-${queueItemId}`)
@@ -38,6 +40,8 @@ describe("CovidResultInputGroup", () => {
       { diseaseName: "COVID-19", testResult: "NEGATIVE" },
     ]);
 
+    // selecting an inconclusive covid result
+    onChangeMock.mockReset();
     await user.click(
       within(
         screen.getByTestId(`covid-test-result-${queueItemId}`)
@@ -47,6 +51,8 @@ describe("CovidResultInputGroup", () => {
       { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
     ]);
 
+    // selecting a positive covid result
+    onChangeMock.mockReset();
     await user.click(
       within(
         screen.getByTestId(`covid-test-result-${queueItemId}`)
