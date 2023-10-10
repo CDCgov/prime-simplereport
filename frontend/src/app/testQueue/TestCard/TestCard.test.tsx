@@ -356,10 +356,10 @@ describe("TestCard", () => {
   });
 
   it("navigates to edit the user when clicking their name", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItem();
     const patientName = screen.getByText("Dixon, Althea Hedda Mclaughlin");
     expect(patientName).toBeInTheDocument();
-    await userEvent.click(patientName);
+    await user.click(patientName);
     expect(mockNavigate).toHaveBeenCalledWith({
       pathname: `/patient/${testOrderInfo.patient.internalId}`,
       search: `?facility=${facilityInfo.id}&fromQueue=true`,
@@ -367,14 +367,14 @@ describe("TestCard", () => {
   });
 
   it("updates the timer when a device is changed", async () => {
-    await renderQueueItem();
-    await userEvent.type(screen.getByTestId("device-type-dropdown"), "lumira");
+    const { user } = await renderQueueItem();
+    await user.type(screen.getByTestId("device-type-dropdown"), "lumira");
 
     expect(await screen.findByTestId("timer")).toHaveTextContent("Start timer");
   });
 
   it("renders dropdown of device types", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItem();
 
     const deviceDropdown = (await screen.findByTestId(
       "device-type-dropdown"
@@ -387,7 +387,7 @@ describe("TestCard", () => {
     expect(deviceDropdown.options[3].label).toEqual("Multiplex");
     expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
-    await userEvent.selectOptions(deviceDropdown, "Abbott BinaxNow");
+    await user.selectOptions(deviceDropdown, "Abbott BinaxNow");
 
     expect(
       ((await screen.findByText("Abbott BinaxNow")) as HTMLOptionElement)
@@ -399,7 +399,7 @@ describe("TestCard", () => {
   });
 
   it("renders dropdown of swab types configured with selected device", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItem();
     const swabDropdown = (await screen.findByTestId(
       "specimen-type-dropdown"
     )) as HTMLSelectElement;
@@ -417,7 +417,7 @@ describe("TestCard", () => {
       ).selected
     ).toBeTruthy();
 
-    await userEvent.selectOptions(swabDropdown, "Nasopharyngeal swab");
+    await user.selectOptions(swabDropdown, "Nasopharyngeal swab");
 
     expect(
       ((await screen.findByText("Nasopharyngeal swab")) as HTMLOptionElement)
@@ -504,7 +504,7 @@ describe("TestCard", () => {
         },
       };
 
-      await renderQueueItem({ props, mocks });
+      const { user } = await renderQueueItem({ props, mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
       expect(deviceDropdown.options.length).toEqual(6);
@@ -527,12 +527,12 @@ describe("TestCard", () => {
       const submitButton = screen.getByText(
         "Submit results"
       ) as HTMLInputElement;
-      await userEvent.click(submitButton);
+      await user.click(submitButton);
 
       // attempting to submit should show error toast
       expect(screen.getByText("Invalid test device")).toBeInTheDocument();
 
-      await userEvent.selectOptions(deviceDropdown, device1Id);
+      await user.selectOptions(deviceDropdown, device1Id);
 
       // error goes away after selecting a valid device
       const deviceTypeDropdownContainer = screen.getByTestId(
@@ -544,7 +544,7 @@ describe("TestCard", () => {
         )
       ).not.toBeInTheDocument();
 
-      await userEvent.click(submitButton);
+      await user.click(submitButton);
 
       // able to submit after selecting valid device
       // submit modal appears when able to submit but AOE responses are incomplete
@@ -640,7 +640,7 @@ describe("TestCard", () => {
         },
       };
 
-      await renderQueueItem({ props, mocks });
+      const { user } = await renderQueueItem({ props, mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
       expect(deviceDropdown.options.length).toEqual(5);
@@ -674,7 +674,7 @@ describe("TestCard", () => {
         screen.getByText("Please select a specimen type.")
       ).toBeInTheDocument();
 
-      await userEvent.selectOptions(swabDropdown, specimen1Id);
+      await user.selectOptions(swabDropdown, specimen1Id);
 
       // error goes away after selecting a valid device
       expect(
@@ -753,19 +753,19 @@ describe("TestCard", () => {
         },
       };
 
-      await renderQueueItem({ props, mocks });
+      const { user } = await renderQueueItem({ props, mocks });
 
       // Select result
-      await userEvent.click(
+      await user.click(
         screen.getByLabelText("Inconclusive", {
           exact: false,
         })
       );
 
       // Submit
-      await userEvent.click(screen.getByText("Submit results"));
+      await user.click(screen.getByText("Submit results"));
 
-      await userEvent.click(
+      await user.click(
         screen.getByText("Submit anyway", {
           exact: false,
         })
@@ -807,15 +807,15 @@ describe("TestCard", () => {
   });
 
   it("updates custom test date/time", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItem();
     const toggle = await screen.findByLabelText("Current date and time");
-    await userEvent.click(toggle);
+    await user.click(toggle);
     const dateInput = screen.getByTestId("test-date");
     expect(dateInput).toBeInTheDocument();
     const timeInput = screen.getByTestId("test-time");
     expect(timeInput).toBeInTheDocument();
-    userEvent.type(dateInput, `${updatedDateString}T00:00`);
-    userEvent.type(timeInput, updatedTimeString);
+    user.type(dateInput, `${updatedDateString}T00:00`);
+    user.type(timeInput, updatedTimeString);
   });
 
   it("shows error for future test date", async () => {
@@ -834,10 +834,10 @@ describe("TestCard", () => {
   });
 
   it("formats card with warning state if selected date input is more than six months ago", async () => {
-    await renderQueueItem();
+    const { user } = await renderQueueItem();
 
     const toggle = await screen.findByLabelText("Current date and time");
-    await userEvent.click(toggle);
+    await user.click(toggle);
 
     const dateInput = screen.getByTestId("test-date");
     const oldDate = moment({ year: 2022, month: 1, day: 1 });
@@ -958,7 +958,7 @@ describe("TestCard", () => {
         },
       ];
 
-      await renderQueueItem({ mocks });
+      const { user } = await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
       expect(deviceDropdown.options.length).toEqual(5);
@@ -969,17 +969,17 @@ describe("TestCard", () => {
       expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
       // Change device type to multiplex
-      await userEvent.selectOptions(deviceDropdown, device4Name);
+      await user.selectOptions(deviceDropdown, device4Name);
 
       // select results
-      await userEvent.click(
+      await user.click(
         within(
           screen.getByTestId(`covid-test-result-${testOrderInfo.internalId}`)
         ).getByLabelText("Positive", { exact: false })
       );
 
       // Change device type to multiplex that supports covid only
-      await userEvent.selectOptions(deviceDropdown, device5Name);
+      await user.selectOptions(deviceDropdown, device5Name);
       expect(deviceDropdown.value).toEqual(device5Id);
 
       // Notice submit is enabled
@@ -989,14 +989,14 @@ describe("TestCard", () => {
 
   describe("test submission and telemetry", () => {
     it("delegates removal of patient from queue to removePatientFromQueue hook", async () => {
-      await renderQueueItem();
+      const { user } = await renderQueueItem();
 
       const button = screen.getByLabelText(
         `Close test for Dixon, Althea Hedda Mclaughlin`
       );
-      await userEvent.click(button);
+      await user.click(button);
       const iAmSure = screen.getByText("Yes, I'm sure");
-      await userEvent.click(iAmSure);
+      await user.click(iAmSure);
 
       expect(removePatientFromQueueMock).toHaveBeenCalledWith(
         testOrderInfo.patient.internalId
@@ -1062,18 +1062,18 @@ describe("TestCard", () => {
         },
       ];
 
-      await renderQueueItem({ mocks });
+      const { user } = await renderQueueItem({ mocks });
 
       // Select result
-      await userEvent.click(
+      await user.click(
         screen.getByLabelText("Inconclusive", {
           exact: false,
         })
       );
 
       // Submit
-      await userEvent.click(screen.getByText("Submit results"));
-      await userEvent.click(screen.getByText("Submit anyway."));
+      await user.click(screen.getByText("Submit results"));
+      await user.click(screen.getByText("Submit anyway."));
 
       expect(trackEventMock).toHaveBeenCalledWith({
         name: "Submit Test Result",
@@ -1276,7 +1276,7 @@ describe("TestCard", () => {
         },
       ];
 
-      await renderQueueItem({ mocks });
+      const { user } = await renderQueueItem({ mocks });
 
       const deviceDropdown = await getDeviceTypeDropdown();
       expect(deviceDropdown.options.length).toEqual(5);
@@ -1287,12 +1287,10 @@ describe("TestCard", () => {
       expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
       // select results
-      await userEvent.click(
-        screen.getByLabelText("Positive", { exact: false })
-      );
+      await user.click(screen.getByLabelText("Positive", { exact: false }));
 
       // Change device type
-      await userEvent.selectOptions(deviceDropdown, device3Name);
+      await user.selectOptions(deviceDropdown, device3Name);
 
       // Change specimen type
       const swabDropdown = await getSpecimenTypeDropdown();
@@ -1300,7 +1298,7 @@ describe("TestCard", () => {
       expect(swabDropdown.options[0].label).toEqual("Nasopharyngeal swab");
       expect(swabDropdown.options[1].label).toEqual("Swab of internal nose");
 
-      await userEvent.selectOptions(swabDropdown, specimen2Name);
+      await user.selectOptions(swabDropdown, specimen2Name);
 
       expect(deviceDropdown.value).toEqual(device3Id);
       expect(swabDropdown.value).toEqual(specimen2Id);
@@ -1339,7 +1337,7 @@ describe("TestCard", () => {
         },
       ];
 
-      await renderQueueItem({ mocks });
+      const { user } = await renderQueueItem({ mocks });
 
       expect(screen.queryByText("Flu A result")).not.toBeInTheDocument();
       expect(screen.queryByText("Flu B result")).not.toBeInTheDocument();
@@ -1353,7 +1351,7 @@ describe("TestCard", () => {
       expect(deviceDropdown.options[4].label).toEqual("MultiplexAndCovidOnly");
 
       // Change device type to a multiplex device
-      await userEvent.selectOptions(deviceDropdown, device4Name);
+      await user.selectOptions(deviceDropdown, device4Name);
 
       expect(screen.getByText("Flu A result")).toBeInTheDocument();
       expect(screen.getByText("Flu B result")).toBeInTheDocument();
