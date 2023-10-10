@@ -19,8 +19,7 @@ public class FileValidatorConfiguration {
   }
 
   @Bean
-  public FileValidator<ConditionAgnosticResultRow> conditionAgnosticResultRowFileValidator(
-      FeatureFlagsConfig featureFlagsConfig) {
+  public FileValidator<ConditionAgnosticResultRow> conditionAgnosticResultRowFileValidator() {
     return new FileValidator<>(row -> new ConditionAgnosticResultRow(row));
   }
 
