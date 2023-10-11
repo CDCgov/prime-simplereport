@@ -73,7 +73,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultPage: testResultsForCsv,
+        testResultsPage: testResultsForCsv,
       },
     },
   },
