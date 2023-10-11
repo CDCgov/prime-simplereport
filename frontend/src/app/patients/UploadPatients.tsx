@@ -3,7 +3,7 @@ import { FormGroup } from "@trussworks/react-uswds";
 import { useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { IAutoExceptionTelemetry } from "@microsoft/applicationinsights-common/src/Interfaces/IExceptionTelemetry";
 
@@ -42,6 +42,7 @@ type ValidationError = {
 
 const UploadPatients = () => {
   useDocumentTitle("Import patients from spreadsheet");
+  const navigate = useNavigate();
   const [facilityAmount, setFacilityAmount] = useState<string>();
   const [buttonIsDisabled, setButtonIsDisabled] = useState(true);
   const [selectedFacility, setSelectedFacility] = useState<Facility>();
@@ -363,24 +364,26 @@ const UploadPatients = () => {
                   </p>
                 </div>
                 <a
-                  href="/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
                   className={"usa-button margin-right-105"}
-                  onClick={() =>
+                  onClick={() => {
                     appInsights?.trackEvent({
                       name: "viewPatientBulkUploadGuide",
-                    })
-                  }
+                    });
+                    navigate(
+                      "/using-simplereport/manage-people-you-test/bulk-upload-patients/#preparing-your-spreadsheet-data"
+                    );
+                  }}
                 >
                   View patient bulk upload guide
                 </a>
                 <a
-                  href="/assets/resources/patient_upload_example.csv"
                   className={"usa-button usa-button--outline"}
-                  onClick={() =>
+                  onClick={() => {
                     appInsights?.trackEvent({
                       name: "downloadPatientBulkUploadSample",
-                    })
-                  }
+                    });
+                    navigate("/assets/resources/patient_upload_example.csv");
+                  }}
                 >
                   Download spreadsheet template
                 </a>

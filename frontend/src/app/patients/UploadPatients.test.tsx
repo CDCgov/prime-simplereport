@@ -383,11 +383,23 @@ describe("Upload Patient", () => {
   });
   it("should show loading message when file is being processed", async () => {
     const { user } = renderUploadPatients();
+    const errorResponseBody = {
+      status: "FAILURE",
+      errors: [
+        {
+          indices: [],
+          message: "File is missing headers and other required data",
+        },
+      ],
+    };
+    let mockResponse = new Response(JSON.stringify(errorResponseBody), {
+      status: 200,
+    });
     jest
       .spyOn(FileUploadService, "uploadPatients")
       .mockImplementation(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        return Promise.resolve(new Response());
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        return Promise.resolve(mockResponse);
       });
 
     await userEventUpload(user, file("abc"), "All facilities");
@@ -395,8 +407,11 @@ describe("Upload Patient", () => {
     expect(
       await screen.findByText("Uploading patient information...")
     ).toBeInTheDocument();
-  });
 
+    expect(
+      await screen.findByText("Error: File not accepted")
+    ).toBeInTheDocument();
+  });
   it("should show error if empty file is provided", async () => {
     const { user } = renderUploadPatients();
 

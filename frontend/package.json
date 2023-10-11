@@ -245,7 +245,8 @@
   },
   "jest": {
     "moduleNameMapper": {
-      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
+      "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
+      "resetModules": true
     },
     "coveragePathIgnorePatterns": [
       "<rootDir>/src/index.tsx",
