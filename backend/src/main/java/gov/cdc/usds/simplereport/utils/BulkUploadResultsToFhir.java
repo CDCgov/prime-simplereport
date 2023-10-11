@@ -508,7 +508,6 @@ public class BulkUploadResultsToFhir {
             testResultDate,
             dateResultReleased);
 
-    Date curDate = dateGenerator.newDate();
     return fhirConverter.createFhirBundle(
         CreateFhirBundleProps.builder()
             .patient(patient)
@@ -521,7 +520,7 @@ public class BulkUploadResultsToFhir {
             .aoeObservations(aoeObservations)
             .serviceRequest(serviceRequest)
             .diagnosticReport(diagnosticReport)
-            .currentDate(curDate)
+            .currentDate(dateGenerator.newDate())
             .gitProperties(gitProperties)
             .processingId(processingModeCode)
             .build());
@@ -566,13 +565,6 @@ public class BulkUploadResultsToFhir {
                 .gitProperties(gitProperties)
                 .processingId(processingModeCode)
                 .build());
-
-    // Indent the output
-    parser.setPrettyPrint(true);
-
-    // Serialize it
-    String serialized = parser.encodeResourceToString(bundle);
-    log.warn("RESULT FROM FHIR CONVERTER: " + serialized);
 
     return bundle;
   }
