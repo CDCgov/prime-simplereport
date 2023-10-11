@@ -12,25 +12,35 @@ describe("MultiplexResultInputGroup", () => {
   const onChangeMock = jest.fn();
   const queueItemId = "QUEUE-ITEM-ID";
 
-  const device1Name = "LumiraDX";
-  const device2Name = "Abbott BinaxNow";
   const specimen1Name = "Swab of internal nose";
   const specimen1Id = "SPECIMEN-1-ID";
   const specimen2Name = "Nasopharyngeal swab";
   const specimen2Id = "SPECIMEN-2-ID";
-  const device1Id = "DEVICE-1-ID";
-  const device2Id = "DEVICE-2-ID";
+  const multiplexDeviceId = "DEVICE-1-ID";
+  const fluOnlyDeviceId = "DEVICE-2-ID";
 
-  const testRestults = [
+  const positiveTestResults = [
     { diseaseName: "COVID-19", testResult: "POSITIVE" },
     { diseaseName: "Flu A", testResult: "POSITIVE" },
     { diseaseName: "Flu B", testResult: "POSITIVE" },
   ];
 
+  const negativeTestResults = [
+    { diseaseName: "COVID-19", testResult: "NEGATIVE" },
+    { diseaseName: "Flu A", testResult: "NEGATIVE" },
+    { diseaseName: "Flu B", testResult: "NEGATIVE" },
+  ];
+
+  const inconclusiveTestResults = [
+    { diseaseName: "COVID-19", testResult: "UNDETERMINED" },
+    { diseaseName: "Flu A", testResult: "UNDETERMINED" },
+    { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+  ];
+
   const deviceTypes = [
     {
-      internalId: device1Id,
-      name: device1Name,
+      internalId: multiplexDeviceId,
+      name: "LumiraDX",
       testLength: 15,
       supportedDiseaseTestPerformed: mockSupportedDiseaseCovid,
       swabTypes: [
@@ -47,8 +57,8 @@ describe("MultiplexResultInputGroup", () => {
       ],
     },
     {
-      internalId: device2Id,
-      name: device2Name,
+      internalId: fluOnlyDeviceId,
+      name: "Abbott BinaxNow",
       testLength: 15,
       supportedDiseaseTestPerformed: mockSupportedDiseaseFlu,
       swabTypes: [
@@ -64,14 +74,17 @@ describe("MultiplexResultInputGroup", () => {
   const devicesMap = new Map();
   deviceTypes.map((d) => devicesMap.set(d.internalId, d));
 
-  async function renderMultiplexResultInputGroup(deviceId?: string) {
+  async function renderMultiplexResultInputGroup(
+    deviceId?: string,
+    testResults?: any
+  ) {
     jest.spyOn(global.Math, "random").mockReturnValue(1);
 
     const { container } = render(
       <MultiplexResultInputGroup
         queueItemId={queueItemId}
-        testResults={testRestults}
-        deviceId={deviceId || device1Id}
+        testResults={testResults || positiveTestResults}
+        deviceId={deviceId || multiplexDeviceId}
         devicesMap={devicesMap}
         onChange={onChangeMock}
       ></MultiplexResultInputGroup>
@@ -79,12 +92,49 @@ describe("MultiplexResultInputGroup", () => {
     return { container, user: userEvent.setup() };
   }
 
-  it("matches snapshot", async () => {
-    expect(await renderMultiplexResultInputGroup()).toMatchSnapshot();
+  describe("initial state snapshots", () => {
+    it("matches positive results snapshot", async () => {
+      expect(
+        await renderMultiplexResultInputGroup(
+          multiplexDeviceId,
+          positiveTestResults
+        )
+      ).toMatchSnapshot();
+    });
+
+    it("matches negative result snapshot", async () => {
+      expect(
+        await renderMultiplexResultInputGroup(
+          multiplexDeviceId,
+          negativeTestResults
+        )
+      ).toMatchSnapshot();
+    });
+
+    it("matches inconclusive result snapshot", async () => {
+      expect(
+        await renderMultiplexResultInputGroup(
+          multiplexDeviceId,
+          inconclusiveTestResults
+        )
+      ).toMatchSnapshot();
+    });
+
+    it("matches flu only snapshot", async () => {
+      expect(
+        await renderMultiplexResultInputGroup(fluOnlyDeviceId, [
+          { diseaseName: "Flu A", testResult: "UNDETERMINED" },
+          { diseaseName: "Flu B", testResult: "UNDETERMINED" },
+        ])
+      ).toMatchSnapshot();
+    });
   });
 
   it("calls onChange when result selected", async () => {
-    const { user } = await renderMultiplexResultInputGroup();
+    const { user } = await renderMultiplexResultInputGroup(
+      multiplexDeviceId,
+      positiveTestResults
+    );
 
     // selecting a negative covid result
     onChangeMock.mockReset();
@@ -137,7 +187,7 @@ describe("MultiplexResultInputGroup", () => {
   });
 
   it("doesnt show covid result input with flu only device", async () => {
-    await renderMultiplexResultInputGroup(device2Id);
+    await renderMultiplexResultInputGroup(fluOnlyDeviceId);
 
     expect(
       screen.queryByTestId(`covid-test-result-${queueItemId}`)

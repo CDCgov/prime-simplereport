@@ -1,6 +1,909 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`MultiplexResultInputGroup matches snapshot 1`] = `
+exports[`MultiplexResultInputGroup initial state snapshots matches flu only snapshot 1`] = `
+Object {
+  "container": <div>
+    <div
+      class="grid-row grid-gap"
+    >
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-radio__group"
+        >
+          <fieldset
+            class="usa-fieldset prime-radios"
+            data-testid="flu-a-test-result-QUEUE-ITEM-ID"
+            id="flu-a-test-result-QUEUE-ITEM-ID"
+          >
+            <legend
+              class="usa-legend"
+            >
+              Flu A result
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </legend>
+            <div
+              class=""
+            >
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="13-val-POSITIVE"
+                  name="flu-a-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="POSITIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-POSITIVE"
+                  for="13-val-POSITIVE"
+                >
+                  Positive (+)
+                </label>
+              </div>
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="13-val-NEGATIVE"
+                  name="flu-a-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="NEGATIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-NEGATIVE"
+                  for="13-val-NEGATIVE"
+                >
+                  Negative (-)
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-radio__group"
+        >
+          <fieldset
+            class="usa-fieldset prime-radios"
+            data-testid="flu-b-test-result-QUEUE-ITEM-ID"
+            id="flu-b-test-result-QUEUE-ITEM-ID"
+          >
+            <legend
+              class="usa-legend"
+            >
+              Flu B result
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </legend>
+            <div
+              class=""
+            >
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="14-val-POSITIVE"
+                  name="flu-b-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="POSITIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-POSITIVE"
+                  for="14-val-POSITIVE"
+                >
+                  Positive (+)
+                </label>
+              </div>
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="14-val-NEGATIVE"
+                  name="flu-b-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="NEGATIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-NEGATIVE"
+                  for="14-val-NEGATIVE"
+                >
+                  Negative (-)
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+    <div
+      class="prime-test-result-submit grid-row"
+    >
+      <div
+        class="grid-col-fill"
+      >
+        <div
+          class="usa-form-group"
+        >
+          <fieldset
+            class="usa-fieldset prime-checkboxes"
+          >
+            <legend
+              class="usa-legend usa-sr-only"
+            >
+              Inconclusive tests
+            </legend>
+            <div
+              class="checkboxes"
+            >
+              <div
+                class="usa-checkbox"
+              >
+                <input
+                  checked=""
+                  class="usa-checkbox__input"
+                  id="15-val-0"
+                  name="inconclusive-tests"
+                  type="checkbox"
+                  value="inconclusive"
+                />
+                <label
+                  class="usa-checkbox__label"
+                  for="15-val-0"
+                >
+                  Mark test as inconclusive
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+      >
+        <span
+          class="usa-tooltip usa-text-with-tooltip"
+          data-testid="tooltipWrapper"
+        >
+          <button
+            aria-describedby="tooltip-1000000"
+            aria-label="Results info tooltip"
+            class="usa-button usa-button--unstyled usa-tooltip__trigger"
+            data-testid="triggerElement"
+            position="top"
+            tabindex="0"
+            title=""
+            wrapperclasses="usa-text-with-tooltip"
+          >
+            <svg
+              alt-text="info"
+              aria-hidden="true"
+              class="svg-inline--fa fa-circle-info info-circle-icon"
+              data-icon="circle-info"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+          <span
+            aria-hidden="true"
+            class="usa-tooltip__body"
+            data-testid="tooltipBody"
+            id="tooltip-1000000"
+            role="tooltip"
+            title="Flu results are only reported to California at this time."
+          >
+            Flu results are only reported to California at this time.
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>,
+  "user": Object {
+    "clear": [Function],
+    "click": [Function],
+    "copy": [Function],
+    "cut": [Function],
+    "dblClick": [Function],
+    "deselectOptions": [Function],
+    "hover": [Function],
+    "keyboard": [Function],
+    "paste": [Function],
+    "pointer": [Function],
+    "selectOptions": [Function],
+    "setup": [Function],
+    "tab": [Function],
+    "tripleClick": [Function],
+    "type": [Function],
+    "unhover": [Function],
+    "upload": [Function],
+  },
+}
+`;
+
+exports[`MultiplexResultInputGroup initial state snapshots matches inconclusive result snapshot 1`] = `
+Object {
+  "container": <div>
+    <div
+      class="grid-row grid-gap"
+    >
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-radio__group"
+        >
+          <fieldset
+            class="usa-fieldset prime-radios"
+            data-testid="covid-test-result-QUEUE-ITEM-ID"
+            id="covid-test-result-QUEUE-ITEM-ID"
+          >
+            <legend
+              class="usa-legend"
+            >
+              COVID-19 result
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </legend>
+            <div
+              class=""
+            >
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="9-val-POSITIVE"
+                  name="covid-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="POSITIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-POSITIVE"
+                  for="9-val-POSITIVE"
+                >
+                  Positive (+)
+                </label>
+              </div>
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="9-val-NEGATIVE"
+                  name="covid-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="NEGATIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-NEGATIVE"
+                  for="9-val-NEGATIVE"
+                >
+                  Negative (-)
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-radio__group"
+        >
+          <fieldset
+            class="usa-fieldset prime-radios"
+            data-testid="flu-a-test-result-QUEUE-ITEM-ID"
+            id="flu-a-test-result-QUEUE-ITEM-ID"
+          >
+            <legend
+              class="usa-legend"
+            >
+              Flu A result
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </legend>
+            <div
+              class=""
+            >
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="10-val-POSITIVE"
+                  name="flu-a-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="POSITIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-POSITIVE"
+                  for="10-val-POSITIVE"
+                >
+                  Positive (+)
+                </label>
+              </div>
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="10-val-NEGATIVE"
+                  name="flu-a-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="NEGATIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-NEGATIVE"
+                  for="10-val-NEGATIVE"
+                >
+                  Negative (-)
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-radio__group"
+        >
+          <fieldset
+            class="usa-fieldset prime-radios"
+            data-testid="flu-b-test-result-QUEUE-ITEM-ID"
+            id="flu-b-test-result-QUEUE-ITEM-ID"
+          >
+            <legend
+              class="usa-legend"
+            >
+              Flu B result
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </legend>
+            <div
+              class=""
+            >
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="11-val-POSITIVE"
+                  name="flu-b-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="POSITIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-POSITIVE"
+                  for="11-val-POSITIVE"
+                >
+                  Positive (+)
+                </label>
+              </div>
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="11-val-NEGATIVE"
+                  name="flu-b-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="NEGATIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-NEGATIVE"
+                  for="11-val-NEGATIVE"
+                >
+                  Negative (-)
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+    <div
+      class="prime-test-result-submit grid-row"
+    >
+      <div
+        class="grid-col-fill"
+      >
+        <div
+          class="usa-form-group"
+        >
+          <fieldset
+            class="usa-fieldset prime-checkboxes"
+          >
+            <legend
+              class="usa-legend usa-sr-only"
+            >
+              Inconclusive tests
+            </legend>
+            <div
+              class="checkboxes"
+            >
+              <div
+                class="usa-checkbox"
+              >
+                <input
+                  checked=""
+                  class="usa-checkbox__input"
+                  id="12-val-0"
+                  name="inconclusive-tests"
+                  type="checkbox"
+                  value="inconclusive"
+                />
+                <label
+                  class="usa-checkbox__label"
+                  for="12-val-0"
+                >
+                  Mark test as inconclusive
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+      >
+        <span
+          class="usa-tooltip usa-text-with-tooltip"
+          data-testid="tooltipWrapper"
+        >
+          <button
+            aria-describedby="tooltip-1000000"
+            aria-label="Results info tooltip"
+            class="usa-button usa-button--unstyled usa-tooltip__trigger"
+            data-testid="triggerElement"
+            position="top"
+            tabindex="0"
+            title=""
+            wrapperclasses="usa-text-with-tooltip"
+          >
+            <svg
+              alt-text="info"
+              aria-hidden="true"
+              class="svg-inline--fa fa-circle-info info-circle-icon"
+              data-icon="circle-info"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+          <span
+            aria-hidden="true"
+            class="usa-tooltip__body"
+            data-testid="tooltipBody"
+            id="tooltip-1000000"
+            role="tooltip"
+            title="COVID-19 results are reported to your public health department. Flu results are only reported to California at this time."
+          >
+            COVID-19 results are reported to your public health department. Flu results are only reported to California at this time.
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>,
+  "user": Object {
+    "clear": [Function],
+    "click": [Function],
+    "copy": [Function],
+    "cut": [Function],
+    "dblClick": [Function],
+    "deselectOptions": [Function],
+    "hover": [Function],
+    "keyboard": [Function],
+    "paste": [Function],
+    "pointer": [Function],
+    "selectOptions": [Function],
+    "setup": [Function],
+    "tab": [Function],
+    "tripleClick": [Function],
+    "type": [Function],
+    "unhover": [Function],
+    "upload": [Function],
+  },
+}
+`;
+
+exports[`MultiplexResultInputGroup initial state snapshots matches negative result snapshot 1`] = `
+Object {
+  "container": <div>
+    <div
+      class="grid-row grid-gap"
+    >
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-radio__group"
+        >
+          <fieldset
+            class="usa-fieldset prime-radios"
+            data-testid="covid-test-result-QUEUE-ITEM-ID"
+            id="covid-test-result-QUEUE-ITEM-ID"
+          >
+            <legend
+              class="usa-legend"
+            >
+              COVID-19 result
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </legend>
+            <div
+              class=""
+            >
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="5-val-POSITIVE"
+                  name="covid-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="POSITIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-POSITIVE"
+                  for="5-val-POSITIVE"
+                >
+                  Positive (+)
+                </label>
+              </div>
+              <div
+                class="usa-radio"
+              >
+                <input
+                  checked=""
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="5-val-NEGATIVE"
+                  name="covid-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="NEGATIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-NEGATIVE"
+                  for="5-val-NEGATIVE"
+                >
+                  Negative (-)
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-radio__group"
+        >
+          <fieldset
+            class="usa-fieldset prime-radios"
+            data-testid="flu-a-test-result-QUEUE-ITEM-ID"
+            id="flu-a-test-result-QUEUE-ITEM-ID"
+          >
+            <legend
+              class="usa-legend"
+            >
+              Flu A result
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </legend>
+            <div
+              class=""
+            >
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="6-val-POSITIVE"
+                  name="flu-a-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="POSITIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-POSITIVE"
+                  for="6-val-POSITIVE"
+                >
+                  Positive (+)
+                </label>
+              </div>
+              <div
+                class="usa-radio"
+              >
+                <input
+                  checked=""
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="6-val-NEGATIVE"
+                  name="flu-a-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="NEGATIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-NEGATIVE"
+                  for="6-val-NEGATIVE"
+                >
+                  Negative (-)
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+      >
+        <div
+          class="usa-form-group prime-radio__group"
+        >
+          <fieldset
+            class="usa-fieldset prime-radios"
+            data-testid="flu-b-test-result-QUEUE-ITEM-ID"
+            id="flu-b-test-result-QUEUE-ITEM-ID"
+          >
+            <legend
+              class="usa-legend"
+            >
+              Flu B result
+              <abbr
+                class="usa-hint usa-hint--required"
+                title="required"
+              >
+                 
+                *
+              </abbr>
+            </legend>
+            <div
+              class=""
+            >
+              <div
+                class="usa-radio"
+              >
+                <input
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="7-val-POSITIVE"
+                  name="flu-b-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="POSITIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-POSITIVE"
+                  for="7-val-POSITIVE"
+                >
+                  Positive (+)
+                </label>
+              </div>
+              <div
+                class="usa-radio"
+              >
+                <input
+                  checked=""
+                  class="usa-radio__input"
+                  data-required="true"
+                  id="7-val-NEGATIVE"
+                  name="flu-b-test-result-QUEUE-ITEM-ID"
+                  type="radio"
+                  value="NEGATIVE"
+                />
+                <label
+                  class="usa-radio__label"
+                  data-cy="radio-group-option-NEGATIVE"
+                  for="7-val-NEGATIVE"
+                >
+                  Negative (-)
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+    <div
+      class="prime-test-result-submit grid-row"
+    >
+      <div
+        class="grid-col-fill"
+      >
+        <div
+          class="usa-form-group"
+        >
+          <fieldset
+            class="usa-fieldset prime-checkboxes"
+          >
+            <legend
+              class="usa-legend usa-sr-only"
+            >
+              Inconclusive tests
+            </legend>
+            <div
+              class="checkboxes"
+            >
+              <div
+                class="usa-checkbox"
+              >
+                <input
+                  class="usa-checkbox__input"
+                  id="8-val-0"
+                  name="inconclusive-tests"
+                  type="checkbox"
+                  value="inconclusive"
+                />
+                <label
+                  class="usa-checkbox__label"
+                  for="8-val-0"
+                >
+                  Mark test as inconclusive
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+      <div
+        class="grid-col-auto"
+      >
+        <span
+          class="usa-tooltip usa-text-with-tooltip"
+          data-testid="tooltipWrapper"
+        >
+          <button
+            aria-describedby="tooltip-1000000"
+            aria-label="Results info tooltip"
+            class="usa-button usa-button--unstyled usa-tooltip__trigger"
+            data-testid="triggerElement"
+            position="top"
+            tabindex="0"
+            title=""
+            wrapperclasses="usa-text-with-tooltip"
+          >
+            <svg
+              alt-text="info"
+              aria-hidden="true"
+              class="svg-inline--fa fa-circle-info info-circle-icon"
+              data-icon="circle-info"
+              data-prefix="fas"
+              focusable="false"
+              role="img"
+              viewBox="0 0 512 512"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336h24V272H216c-13.3 0-24-10.7-24-24s10.7-24 24-24h48c13.3 0 24 10.7 24 24v88h8c13.3 0 24 10.7 24 24s-10.7 24-24 24H216c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+                fill="currentColor"
+              />
+            </svg>
+          </button>
+          <span
+            aria-hidden="true"
+            class="usa-tooltip__body"
+            data-testid="tooltipBody"
+            id="tooltip-1000000"
+            role="tooltip"
+            title="COVID-19 results are reported to your public health department. Flu results are only reported to California at this time."
+          >
+            COVID-19 results are reported to your public health department. Flu results are only reported to California at this time.
+          </span>
+        </span>
+      </div>
+    </div>
+  </div>,
+  "user": Object {
+    "clear": [Function],
+    "click": [Function],
+    "copy": [Function],
+    "cut": [Function],
+    "dblClick": [Function],
+    "deselectOptions": [Function],
+    "hover": [Function],
+    "keyboard": [Function],
+    "paste": [Function],
+    "pointer": [Function],
+    "selectOptions": [Function],
+    "setup": [Function],
+    "tab": [Function],
+    "tripleClick": [Function],
+    "type": [Function],
+    "unhover": [Function],
+    "upload": [Function],
+  },
+}
+`;
+
+exports[`MultiplexResultInputGroup initial state snapshots matches positive results snapshot 1`] = `
 Object {
   "container": <div>
     <div
