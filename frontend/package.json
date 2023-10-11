@@ -251,7 +251,8 @@
       "<rootDir>/src/index.tsx",
       "<rootDir>/src/serviceWorker.ts",
       ".stories.tsx",
-      "constants.ts"
+      "<rootDir>/src/app/testQueue/constants.ts",
+      "<rootDir>/src/patientApp/timeOfTest/constants.ts"
     ]
   }
 }
