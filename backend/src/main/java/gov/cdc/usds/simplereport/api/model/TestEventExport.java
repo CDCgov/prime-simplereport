@@ -46,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
 public class TestEventExport {
   public static final int FALLBACK_DEFAULT_TEST_MINUTES = 15;
   public static final String USA = "USA";
+  public static final String UNKNOWN_ADDRESS_INDICATOR = "** Unknown / Not Given **";
   private String processingModeCode = "P";
   private final TestEvent testEvent;
   private final Optional<Person> patient;
@@ -293,21 +294,37 @@ public class TestEventExport {
 
   @JsonProperty("Patient_city")
   public String getPatientCity() {
+    var street = patient.map(Person::getStreet).orElse(null);
+    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(street)) {
+      return getOrderingFacilityCity();
+    }
     return patient.map(Person::getCity).orElse(null);
   }
 
   @JsonProperty("Patient_county")
   public String getPatientCounty() {
+    var street = patient.map(Person::getStreet).orElse(null);
+    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(street)) {
+      return getOrderingFacilityCounty();
+    }
     return patient.map(Person::getCounty).orElse(null);
   }
 
   @JsonProperty("Patient_state")
   public String getPatientState() {
+    var street = patient.map(Person::getStreet).orElse(null);
+    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(street)) {
+      return getOrderingFacilityState();
+    }
     return patient.map(Person::getState).orElse(null);
   }
 
   @JsonProperty("Patient_zip_code")
   public String getPatientZipCode() {
+    var street = patient.map(Person::getStreet).orElse(null);
+    if (UNKNOWN_ADDRESS_INDICATOR.equalsIgnoreCase(street)) {
+      return getOrderingFacilityZipCode();
+    }
     return patient.map(Person::getZipCode).orElse(null);
   }
 
@@ -318,7 +335,11 @@ public class TestEventExport {
 
   @JsonProperty("Patient_phone_number")
   public String getPatientPhoneNumber() {
-    return patient.map(Person::getTelephone).orElse(null);
+    var phone = patient.map(Person::getTelephone).orElse(null);
+    if (phone == null || phone.isBlank()) {
+      return getOrderingFacilityPhoneNumber();
+    }
+    return phone;
   }
 
   @JsonProperty("Patient_email")

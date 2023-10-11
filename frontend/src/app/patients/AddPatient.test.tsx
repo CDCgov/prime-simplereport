@@ -96,6 +96,22 @@ describe("AddPatient", () => {
         expect(screen.queryByText("State")).not.toBeInTheDocument();
         expect(screen.queryByText("ZIP code")).not.toBeInTheDocument();
       });
+
+      it("should hide address fields for unknown address checked", async () => {
+        const { user } = renderWithUserWithFacility();
+        await user.click(
+          screen.getByText("Address unknown or patient unhoused", {
+            exact: false,
+          })
+        );
+        expect(screen.queryByText("Country")).not.toBeInTheDocument();
+        expect(screen.queryByText("Street address 1")).not.toBeInTheDocument();
+        expect(screen.queryByText("Street address 2")).not.toBeInTheDocument();
+        expect(screen.queryByText("City")).not.toBeInTheDocument();
+        expect(screen.queryByText("County")).not.toBeInTheDocument();
+        expect(screen.queryByText("State")).not.toBeInTheDocument();
+        expect(screen.queryByText("ZIP code")).not.toBeInTheDocument();
+      });
     });
 
     describe("facility select input", () => {
@@ -130,6 +146,24 @@ describe("AddPatient", () => {
         const { user } = renderWithUserWithFacility();
         await user.selectOptions(screen.getByLabelText("Role"), "STUDENT");
         expect(await screen.findByText("Student ID")).toBeInTheDocument();
+      });
+    });
+
+    describe("With unknown phone number", () => {
+      it("should hide phone number fields when unknown phone number checked.", async () => {
+        const { user } = renderWithUserWithFacility();
+
+        expect(screen.getByText("Primary phone number")).toBeInTheDocument();
+        expect(screen.getByText("Phone type")).toBeInTheDocument();
+
+        await user.click(
+          screen.getByText("Phone number unknown", { exact: false })
+        );
+
+        expect(
+          screen.queryByText("Primary phone number")
+        ).not.toBeInTheDocument();
+        expect(screen.queryByText("Phone type")).not.toBeInTheDocument();
       });
     });
   });

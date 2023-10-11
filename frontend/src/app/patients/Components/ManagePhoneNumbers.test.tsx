@@ -9,6 +9,7 @@ import ManagePhoneNumbers from "./ManagePhoneNumbers";
 
 function ManagePhoneNumbersContainer() {
   const [phoneNumbers, updatePhoneNumbers] = useState<PhoneNumber[]>([]);
+  const [unknownPhoneNumber, setUnknownPhoneNumber] = useState(false);
 
   return (
     <ManagePhoneNumbers
@@ -17,6 +18,8 @@ function ManagePhoneNumbersContainer() {
       updatePhoneNumbers={updatePhoneNumbers}
       updateTestResultDelivery={jest.fn()}
       phoneNumberValidator={useRef(null)}
+      unknownPhoneNumber={unknownPhoneNumber}
+      setUnknownPhoneNumber={setUnknownPhoneNumber}
     />
   );
 }
@@ -116,5 +119,28 @@ describe("ManagePhoneNumbers", () => {
     await waitFor(() => {
       expect(second).not.toBeInTheDocument();
     });
+  });
+  it("unknown number checkbox hides and displays phone number inputs", async () => {
+    const { user } = renderWithUser();
+    const phoneNumberInput = await screen.findByLabelText(
+      "Primary phone number",
+      { exact: false }
+    );
+    const phoneType = await screen.findByTestId("phoneType-0");
+    expect(phoneNumberInput).toBeInTheDocument();
+    expect(phoneType).toBeInTheDocument();
+
+    const checkbox = await screen.findByLabelText("Phone number unknown", {
+      exact: false,
+    });
+    await user.click(checkbox);
+    expect(phoneNumberInput).not.toBeInTheDocument();
+    expect(phoneType).not.toBeInTheDocument();
+
+    await user.click(checkbox);
+    expect(await screen.findByTestId("phoneType-0")).toBeInTheDocument();
+    expect(
+      await screen.findByLabelText("Primary phone number", { exact: false })
+    ).toBeInTheDocument();
   });
 });
