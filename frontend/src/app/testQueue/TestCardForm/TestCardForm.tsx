@@ -36,9 +36,9 @@ import { PregnancyCode } from "../../../patientApp/timeOfTest/constants";
 import { QueueItemSubmitLoader } from "../QueueItemSubmitLoader";
 
 import {
+  testCardFormReducer,
   TestFormActionCase,
   TestFormState,
-  testCardFormReducer,
 } from "./TestCardFormReducer";
 import CovidResultInputGroup, {
   validateCovidResultInput,
@@ -49,11 +49,12 @@ import MultiplexResultInputGroup, {
 } from "./diseaseSpecificComponents/MultiplexResultInputGroup";
 import CovidAoEForm from "./diseaseSpecificComponents/CovidAoEForm";
 import {
-  AOEFormOptions,
+  AOEFormOption,
   areAOEAnswersComplete,
   convertFromMultiplexResponse,
   doesDeviceSupportMultiplex,
   showTestResultDeliveryStatusAlert,
+  useAOEFormOption,
   useAppInsightTestCardEvents,
   useDeviceTypeOptions,
   useSpecimenTypeOptions,
@@ -123,9 +124,7 @@ const TestCardForm = ({
     devicesMap
   );
 
-  // when other diseases are added, update this to use the correct AOE for that disease
-  // probably a good use to encapsulate this in a custom hook like useAOEFormOption
-  const whichAOEFormOption = AOEFormOptions.COVID;
+  const whichAOEFormOption = useAOEFormOption(state.deviceId, devicesMap);
 
   /**
    * When backend sends an updated test order, update the form state
@@ -194,7 +193,7 @@ const TestCardForm = ({
   }, [state.covidAOEResponses]);
 
   const updateAOE = async () => {
-    if (whichAOEFormOption === AOEFormOptions.COVID) {
+    if (whichAOEFormOption === AOEFormOption.COVID) {
       trackUpdateAoEResponse();
       await updateAoeMutation({
         variables: {
@@ -558,8 +557,8 @@ const TestCardForm = ({
             )}
           </FormGroup>
         </div>
-        <div className="grid-row grid-gap">
-          {whichAOEFormOption === AOEFormOptions.COVID && (
+        {whichAOEFormOption === AOEFormOption.COVID && (
+          <div className="grid-row grid-gap">
             <CovidAoEForm
               testOrder={testOrder}
               responses={state.covidAOEResponses}
@@ -570,8 +569,8 @@ const TestCardForm = ({
                 });
               }}
             />
-          )}
-        </div>
+          </div>
+        )}
         <div className="grid-row margin-top-4">
           <div className="grid-col-auto">
             <Button onClick={() => submitForm()} type={"button"}>
