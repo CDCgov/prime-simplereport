@@ -1,3 +1,5 @@
+export const correctionTestEventId = "8196628a-b0e2-4ee3-8fe7-4f85ab231a92";
+
 const testOne = {
   id: "0969da96-b211-41cd-ba61-002181f0918d",
   dateAdded: "2021-03-17T19:27:23.806Z",
@@ -157,6 +159,7 @@ const data = [
   },
   {
     ...testThree,
+    id: correctionTestEventId,
     disease: "COVID-19",
     testResult: "POSITIVE",
     correctionStatus: "CORRECTED",
