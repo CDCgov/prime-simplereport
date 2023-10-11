@@ -281,6 +281,12 @@ Object {
                           BD Veritor
                         </option>
                         <option
+                          aria-selected="false"
+                          value="DEVICE-6-ID"
+                        >
+                          FluOnly
+                        </option>
+                        <option
                           aria-selected="true"
                           value="DEVICE-1-ID"
                         >
