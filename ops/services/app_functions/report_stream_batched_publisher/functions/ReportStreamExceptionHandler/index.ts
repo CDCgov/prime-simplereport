@@ -1,13 +1,13 @@
-import { AzureFunction, Context } from "@azure/functions";
+import { app, InvocationContext } from "@azure/functions";
 import fetch, { Headers } from "node-fetch";
 import { ENV } from "../config";
 import { ReportStreamCallbackRequest } from "../common/types";
 
 const { SIMPLE_REPORT_CB_TOKEN, SIMPLE_REPORT_CB_URL } = ENV;
 
-const queueTrigger: AzureFunction = async function (
-  context: Context,
+export async function queueTrigger(
   message: ReportStreamCallbackRequest,
+  context: InvocationContext,
 ): Promise<void> {
   const headers = new Headers({
     Accept: "application/json",
@@ -25,6 +25,11 @@ const queueTrigger: AzureFunction = async function (
   context.log(
     `Successfully processed exception for record ${message.testEventInternalId} from queue ${message.queueName}`,
   );
-};
+}
 
-export default queueTrigger;
+//export default queueTrigger;
+app.storageQueue("body", {
+  queueName: "test-event-publishing-exceptions",
+  connection: "AZ_STORAGE_QUEUE_CXN_STRING",
+  handler: queueTrigger,
+});

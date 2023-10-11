@@ -1,5 +1,5 @@
 import * as appInsights from "applicationinsights";
-import { AzureFunction, Context } from "@azure/functions";
+import { app, InvocationContext, Timer } from "@azure/functions";
 import { ENV } from "../config";
 import { convertToCsv, uploadResult } from "./lib";
 import {
@@ -22,10 +22,11 @@ const {
 appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
-const QueueBatchedTestEventPublisher: AzureFunction = async function (
-  context: Context,
+export async function QueueBatchedTestEventPublisher(
+  myTimer: Timer,
+  context: InvocationContext,
 ): Promise<void> {
-  const tagOverrides = { "ai.operation.id": context.traceContext.traceparent };
+  const tagOverrides = { "ai.operation.id": context.traceContext.traceParent };
   const publishingQueue = getQueueClient(TEST_EVENT_QUEUE_NAME);
   const exceptionQueue = getQueueClient(REPORTING_EXCEPTION_QUEUE_NAME);
   const publishingErrorQueue = getQueueClient(PUBLISHING_ERROR_QUEUE_NAME);
@@ -111,7 +112,7 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
   } else {
     const responseBody = await postResult.text();
     const errorText = `Queue: ${TEST_EVENT_QUEUE_NAME}. Failed to upload to ReportStream with response code ${postResult.status}`;
-    context.log.error(
+    context.error(
       `${errorText}. Response body (${responseBody.length} bytes): `,
       responseBody,
     );
@@ -138,6 +139,11 @@ const QueueBatchedTestEventPublisher: AzureFunction = async function (
 
     throw new Error(errorText);
   }
-};
+}
 
-export default QueueBatchedTestEventPublisher;
+app.timer("QueueBatchedReportStreamUploadTimer", {
+  schedule: "0 */2 * * * *",
+  handler: QueueBatchedTestEventPublisher,
+});
+
+//export default QueueBatchedTestEventPublisher;

@@ -1111,10 +1111,10 @@ anymatch@^3.0.3:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
 
-applicationinsights@^2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-2.8.0.tgz#7a294c9c173e04bf4813e263055afe5763623f33"
-  integrity sha512-pxVOdCPwXTal1A904yGmzOOUJrIeQ89xQir0ifr7fLl+e0BlGrZ1P4StcIDuEXk93gV9CGxGm5Mol8ksPk2mcg==
+applicationinsights@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/applicationinsights/-/applicationinsights-2.9.0.tgz#62d6fb0d7cdcdbd2dd0a38a085943f9c262ff317"
+  integrity sha512-W90WNjtvZ10GUInpkyNM0xBGe2qRYChHhdb44SE5KU7hXtCZLxs3IZjWw1gJINQem0qGAgtZlxrVvKPj5SlTbQ==
   dependencies:
     "@azure/core-auth" "^1.5.0"
     "@azure/core-rest-pipeline" "1.10.1"
