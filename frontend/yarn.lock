@@ -17098,10 +17098,10 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-smartystreets-javascript-sdk@^2.1.2:
-  version "2.1.2"
-  resolved "https://registry.yarnpkg.com/smartystreets-javascript-sdk/-/smartystreets-javascript-sdk-2.1.2.tgz#60d433b920cc6b8763e0067b6bc2ec5f485a3cba"
-  integrity sha512-F4mmyTfkDHYmsW8O2mGGztkMRyg+utQcXEYLxrKYWoWcyEfY65El876E7YoltL+CwoYSxcNUEQkJifUi1tEaLQ==
+smartystreets-javascript-sdk@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/smartystreets-javascript-sdk/-/smartystreets-javascript-sdk-3.2.0.tgz#1f6f0e9353298a5f87755cb3fe1dd523fd033257"
+  integrity sha512-+67s2ISG9vivWMwduOl9d4Vba72ooqxw3TPf5KMXY4GUU4YbLF2/XMSBSM62Aou0GMrwjEHGAjC21k1F54lkQg==
   dependencies:
     axios "^0.26.1"
     axios-retry "3.2.0"
