@@ -132,3 +132,5 @@ simple-report-initialization:
 datahub:
   url: "http://invalidhost:8080"
   api-key: "placeholder"
+features:
+  testCardRefactorEnabled: false
