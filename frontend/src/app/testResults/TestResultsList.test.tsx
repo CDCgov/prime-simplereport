@@ -581,6 +581,7 @@ describe("TestResultsList", () => {
           name: "Download results",
         }
       );
+
       await user.click(downloadButton2);
 
       await waitFor(() =>
