@@ -15,8 +15,9 @@ import { showError, showSuccess } from "../../utils/srToast";
 import { TestFormState } from "./TestCardFormReducer";
 
 /** Add more options as other disease AOEs are needed */
-export enum AOEFormOptions {
+export enum AOEFormOption {
   COVID = "COVID",
+  NONE = "NONE",
 }
 
 export function useTestOrderPatient(testOrder: QueriedTestOrder) {
@@ -122,6 +123,26 @@ export const doesDeviceSupportMultiplex = (
   return false;
 };
 
+export const isDeviceFluOnly = (deviceId: string, devicesMap: DevicesMap) => {
+  if (devicesMap.has(deviceId)) {
+    return devicesMap
+      .get(deviceId)!
+      .supportedDiseaseTestPerformed.every(
+        (disease) =>
+          disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_A ||
+          disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_B
+      );
+  }
+  return false;
+};
+
+// when other diseases are added, update this to use the correct AOE for that disease
+export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
+  return isDeviceFluOnly(deviceId, devicesMap)
+    ? AOEFormOption.NONE
+    : AOEFormOption.COVID;
+};
+
 export const convertFromMultiplexResponse = (
   responseResult: QueriedTestOrder["results"]
 ): MultiplexResultInput[] => {
@@ -133,9 +154,9 @@ export const convertFromMultiplexResponse = (
 
 export const areAOEAnswersComplete = (
   formState: TestFormState,
-  whichAOE: AOEFormOptions
+  whichAOE: AOEFormOption
 ) => {
-  if (whichAOE === AOEFormOptions.COVID) {
+  if (whichAOE === AOEFormOption.COVID) {
     const isPregnancyAnswered = !!formState.covidAOEResponses.pregnancy;
     const isHasAnySymptomsAnswered = !!formState.covidAOEResponses.noSymptoms;
     if (formState.covidAOEResponses.noSymptoms === false) {
@@ -151,6 +172,7 @@ export const areAOEAnswersComplete = (
     }
     return isPregnancyAnswered && isHasAnySymptomsAnswered;
   }
+  return true;
 };
 
 export const showTestResultDeliveryStatusAlert = (

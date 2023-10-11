@@ -10,6 +10,7 @@ import {
   MULTIPLEX_DISEASES,
   TEST_RESULTS,
 } from "../../../testResults/constants";
+import { isDeviceFluOnly } from "../TestCardForm.utils";
 
 const MULTIPLEX_DISEASE_TYPE = {
   COVID: MULTIPLEX_DISEASES.COVID_19 as MultiplexDisease,
@@ -72,19 +73,6 @@ const convertFromMultiplexResult = (
   return diseaseResults.filter(
     (result) => result.testResult !== TEST_RESULTS.UNKNOWN
   );
-};
-
-const isDeviceFluOnly = (deviceId: string, devicesMap: DevicesMap) => {
-  if (devicesMap.has(deviceId)) {
-    return devicesMap
-      .get(deviceId)!
-      .supportedDiseaseTestPerformed.every(
-        (disease) =>
-          disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_A ||
-          disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_B
-      );
-  }
-  return false;
 };
 
 const doesDeviceSupportMultiplexAndCovidOnlyResult = (
