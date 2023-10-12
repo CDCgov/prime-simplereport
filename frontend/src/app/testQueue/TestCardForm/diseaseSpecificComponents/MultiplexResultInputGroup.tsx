@@ -178,12 +178,12 @@ export const validateMultiplexResultState = (
     return "This device only supports inconclusive results if all are inconclusive.";
   }
 
-  if (allResultsAreRequired && !allResultsAreFilled) {
-    return "Please enter results for all conditions tested with this device.";
+  if (!covidIsFilled && deviceSupportsCovidOnlyResult) {
+    return "Please enter a COVID-19 test result.";
   }
 
-  if (!covidIsFilled && !isFluOnly) {
-    return "Please enter a COVID-19 test result.";
+  if (allResultsAreRequired && !allResultsAreFilled) {
+    return "Please enter results for all conditions tested with this device.";
   }
 
   return "";
