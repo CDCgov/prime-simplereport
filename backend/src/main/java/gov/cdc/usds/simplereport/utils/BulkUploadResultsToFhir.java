@@ -556,17 +556,14 @@ public class BulkUploadResultsToFhir {
                 .testPerformedCode(row.getTestPerformedCode().getValue())
                 .build());
 
-    var bundle =
-        fhirConverter.createFhirBundle(
-            ConditionAgnosticCreateFhirBundleProps.builder()
-                .patient(patient)
-                .resultObservations(List.of(observation))
-                .diagnosticReport(diagnosticReport)
-                .gitProperties(gitProperties)
-                .processingId(processingModeCode)
-                .build());
-
-    return bundle;
+    return fhirConverter.createFhirBundle(
+        ConditionAgnosticCreateFhirBundleProps.builder()
+            .patient(patient)
+            .resultObservations(List.of(observation))
+            .diagnosticReport(diagnosticReport)
+            .gitProperties(gitProperties)
+            .processingId(processingModeCode)
+            .build());
   }
 
   private String getPregnancyStatusSnomed(String input) {
