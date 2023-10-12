@@ -898,7 +898,7 @@ public class FhirConverter {
     Coding coding = concept.addCoding();
     coding.setSystem(SNOMED_CODE_SYSTEM);
     coding.setCode(resultCode);
-    if (!StringUtils.isBlank(resultDisplay)) {
+    if (StringUtils.isNotBlank(resultDisplay)) {
       coding.setDisplay(resultDisplay);
     }
     return concept;
