@@ -18,6 +18,7 @@
     "start": "func start",
     "test": "jest --watch"
   },
+  "main": "dist/**/index.js",
   "dependencies": {
     "@azure/functions": "^4.0.1",
     "@azure/storage-queue": "^12.6.0",
