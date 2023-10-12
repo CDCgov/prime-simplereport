@@ -63,7 +63,7 @@ import {
 
 const DEBOUNCE_TIME = 300;
 
-interface TestCardFormProps {
+export interface TestCardFormProps {
   testOrder: QueriedTestOrder;
   devicesMap: DevicesMap;
   facility: QueriedFacility;
