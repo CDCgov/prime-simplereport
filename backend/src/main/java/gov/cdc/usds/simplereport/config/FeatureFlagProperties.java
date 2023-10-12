@@ -12,5 +12,6 @@ public class FeatureFlagProperties {
   private boolean rsvEnabled;
   private boolean singleEntryRsvEnabled;
   private boolean agnosticEnabled;
+  private boolean agnosticBulkUploadEnabled;
   private boolean testCardRefactorEnabled;
 }
