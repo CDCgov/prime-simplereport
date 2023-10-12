@@ -191,4 +191,3 @@ app.timer("FHIRTestEventReporter", {
   schedule: "0 */2 * * * *",
   handler: FHIRTestEventReporter,
 });
-//export default FHIRTestEventReporter;
