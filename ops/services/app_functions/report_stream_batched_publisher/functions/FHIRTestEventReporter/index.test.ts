@@ -9,6 +9,12 @@ import { FHIRTestEventReporter } from "./index";
 import { FHIRTestEventsBatch } from "./dataHandlers";
 import { ReportStreamResponse } from "../common/types";
 
+jest.mock("@azure/functions", () => ({
+  ...jest.requireActual("@azure/functions"),
+  app: {
+    timer: jest.fn(),
+  },
+}));
 jest.mock("../config", () => ({
   ENV: {
     AZ_STORAGE_QUEUE_SVC_URL: "hello",

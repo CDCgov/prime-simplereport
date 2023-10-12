@@ -6,6 +6,13 @@ import { InvocationContext, Timer } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import { Response } from "node-fetch";
 
+jest.mock("@azure/functions", () => ({
+  ...jest.requireActual("@azure/functions"),
+  app: {
+    timer: jest.fn(),
+  },
+}));
+
 jest.mock(
   "applicationinsights",
   jest.fn().mockImplementation(() => ({

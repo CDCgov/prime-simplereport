@@ -5,6 +5,13 @@ import fetch from "node-fetch";
 import fetchMock from "jest-fetch-mock";
 import { ReportStreamCallbackRequest } from "../common/types";
 
+jest.mock("@azure/functions", () => ({
+  ...jest.requireActual("@azure/functions"),
+  app: {
+    storageQueue: jest.fn(),
+  },
+}));
+
 jest.mock(
   "node-fetch",
   jest.fn(() => require("jest-fetch-mock")),
