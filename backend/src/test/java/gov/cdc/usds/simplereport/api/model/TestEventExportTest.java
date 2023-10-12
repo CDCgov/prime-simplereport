@@ -322,4 +322,27 @@ class TestEventExportTest extends BaseRepositoryTest {
     assertEquals("covidTestkitNameId", exportedEvent2.getTestKitNameId());
     assertEquals("94500-6", exportedEvent2.getOrderedTestCode());
   }
+
+  @Test
+  void sendPatientInfoWithUnknownFields() {
+    // GIVEN
+    // unknown address & phone number
+    Organization org = dataFactory.saveValidOrganization();
+    Facility facility = dataFactory.createValidFacility(org);
+    Person person = dataFactory.createFullPersonWithUnknownAddressAndPhone(org);
+    TestEvent testEvent = dataFactory.createTestEvent(person, facility, TestResult.NEGATIVE, false);
+
+    // WHEN
+    TestEventExport exportedEvent = new TestEventExport(testEvent);
+
+    // THEN
+    // City, State, Zip, County & Phone number information should default to the facility.
+    assertEquals("USA", exportedEvent.getPatientCountry());
+    assertEquals(person.getStreet(), exportedEvent.getPatientStreet());
+    assertEquals(facility.getAddress().getCity(), exportedEvent.getPatientCity());
+    assertEquals(facility.getAddress().getState(), exportedEvent.getPatientState());
+    assertEquals(facility.getAddress().getPostalCode(), exportedEvent.getPatientZipCode());
+    assertEquals(facility.getAddress().getCounty(), exportedEvent.getPatientCounty());
+    assertEquals(facility.getTelephone(), exportedEvent.getPatientPhoneNumber());
+  }
 }

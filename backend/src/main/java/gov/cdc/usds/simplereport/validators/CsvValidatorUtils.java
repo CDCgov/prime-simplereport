@@ -93,6 +93,7 @@ public class CsvValidatorUtils {
   private static final String DATE_TIME_REGEX =
       "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$";
 
+  private static final String LOINC_CODE_REGEX = "([0-9]{5})-[0-9]";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
@@ -198,6 +199,25 @@ public class CsvValidatorUtils {
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
   public static final String ITEM_SCOPE = "item";
 
+  //  http://hl7.org/fhir/R4/codesystem-data-absent-reason.html#data-absent-reason-unknown
+  private static final Set<String> DATA_ABSENT_REASONS =
+      Set.of(
+          UNKNOWN_LITERAL,
+          "asked-unknown",
+          "temp-unknown",
+          "not-asked",
+          "asked-declined",
+          "masked",
+          "not-applicable",
+          "unsupported",
+          "as-text",
+          "error",
+          "not-a-number",
+          "negative-infinity",
+          "positive-infinity",
+          "not-performed",
+          "not-permitted");
+
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
   }
@@ -212,6 +232,10 @@ public class CsvValidatorUtils {
 
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
+  }
+
+  public static List<FeedbackMessage> validateTestPerformedCode(ValueOrError input) {
+    return validateRegex(input, LOINC_CODE_REGEX);
   }
 
   public static List<FeedbackMessage> validateSpecimenType(
@@ -375,6 +399,10 @@ public class CsvValidatorUtils {
       throw new CsvProcessingException(
           e.getMessage(), location.getLineNr(), location.getColumnNr());
     }
+  }
+
+  public static List<FeedbackMessage> validateDataAbsentReason(ValueOrError input) {
+    return validateInSet(input, DATA_ABSENT_REASONS);
   }
 
   public static ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {

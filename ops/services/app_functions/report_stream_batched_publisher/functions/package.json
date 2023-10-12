@@ -23,7 +23,7 @@
     "@azure/storage-queue": "^12.6.0",
     "applicationinsights": "^2.9.0",
     "csv-stringify": "^6.4.2",
-    "jsonwebtoken": "^9.0.1",
+    "jsonwebtoken": "^9.0.2",
     "node-fetch": "^2.7.0"
   },
   "resolutions": {

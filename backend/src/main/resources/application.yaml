@@ -154,6 +154,7 @@ features:
   singleEntryRsvEnabled: true
   agnosticEnabled: true
   testCardRefactorEnabled: true
+  agnosticBulkUploadEnabled: true
 slack:
   hook:
     token: ${SLACK_HOOK_TOKEN:foo}

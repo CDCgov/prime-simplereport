@@ -360,6 +360,18 @@ const EditPatient = (props: Props) => {
     </div>
   );
 
+  const phoneNumberComparator = (x: PhoneNumber, y: PhoneNumber) => {
+    // A patient's primary phone number is returned in the
+    // query as `telephone` and should be the first element
+    // of the array of phone numbers
+    if (x.number === data.patient.telephone) {
+      return -1;
+    } else if (y.number === data.patient.telephone) {
+      return 1;
+    }
+    return 0;
+  };
+
   return (
     <div className="prime-home bg-base-lightest">
       <div className="grid-container">
@@ -370,24 +382,17 @@ const EditPatient = (props: Props) => {
                 ...data.patient,
                 tribalAffiliation:
                   data.patient.tribalAffiliation?.[0] || undefined,
-                phoneNumbers: data.patient.phoneNumbers.sort(function (
-                  x: PhoneNumber,
-                  y: PhoneNumber
-                ) {
-                  // A patient's primary phone number is returned in the
-                  // query as `telephone` and should be the first element
-                  // of the array of phone numbers
-                  return x.number === data.patient.telephone
-                    ? -1
-                    : y.number === data.patient.telephone
-                    ? 1
-                    : 0;
-                }),
+                phoneNumbers: data.patient.phoneNumbers.sort(
+                  phoneNumberComparator
+                ),
                 facilityId:
                   data.patient.facility === null
                     ? null
                     : data.patient.facility?.id,
                 city: data.patient.city === null ? "" : data.patient.city,
+                unknownPhoneNumber: data.patient.phoneNumbers.length === 0,
+                unknownAddress:
+                  data.patient.street === "** Unknown / Not Given **",
               }}
               patientId={props.patientId}
               savePerson={savePerson}

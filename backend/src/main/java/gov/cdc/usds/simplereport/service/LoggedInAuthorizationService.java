@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
+import gov.cdc.usds.simplereport.service.errors.NobodyAuthenticatedException;
 import java.util.List;
 import java.util.Set;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +34,7 @@ public class LoggedInAuthorizationService implements AuthorizationService {
   private Authentication getCurrentAuth() {
     Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
     if (currentAuth == null) {
-      throw new RuntimeException("Nobody is currently authenticated");
+      throw new NobodyAuthenticatedException();
     }
     return currentAuth;
   }

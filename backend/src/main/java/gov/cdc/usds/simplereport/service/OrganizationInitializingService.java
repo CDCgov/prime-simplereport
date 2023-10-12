@@ -26,6 +26,7 @@ import gov.cdc.usds.simplereport.db.repository.PatientRegistrationLinkRepository
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.service.errors.UserFacilityNotInitializedException;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -323,11 +324,8 @@ public class OrganizationInitializingService {
                     f -> {
                       Facility facility = facilitiesByName.get(f);
                       if (facility == null) {
-                        throw new RuntimeException(
-                            "User's facility="
-                                + f
-                                + " was not initialized. Valid facilities="
-                                + facilitiesByName.keySet().toString());
+                        throw new UserFacilityNotInitializedException(
+                            f, facilitiesByName.keySet().toString());
                       }
                       return facility;
                     })
