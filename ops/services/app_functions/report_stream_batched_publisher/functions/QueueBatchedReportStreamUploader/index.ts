@@ -141,7 +141,7 @@ export async function QueueBatchedTestEventPublisher(
   }
 }
 
-app.timer("QueueBatchedReportStreamUploadTimer", {
+app.timer("QueueBatchedReportStreamUploader", {
   schedule: "0 */2 * * * *",
   handler: QueueBatchedTestEventPublisher,
 });
