@@ -26,3 +26,4 @@ features:
   singleEntryRsvEnabled: false
   agnosticEnabled: false
   testCardRefactorEnabled: false
+  agnosticBulkUploadEnabled: false

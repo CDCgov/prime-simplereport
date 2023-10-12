@@ -75,12 +75,7 @@ public class DateTimeUtils {
 
     // If user provided timezone code in datetime field
     if (hasTimezoneSubstring(dateString)) {
-      var timezoneCode = dateString.substring(dateString.lastIndexOf(" ")).trim();
-      try {
-        zoneId = parseZoneId(timezoneCode);
-      } catch (DateTimeException e) {
-        zoneId = FALLBACK_TIMEZONE_ID;
-      }
+      zoneId = parseDateStringZoneId(dateString);
     } else { // Otherwise try to get timezone by address
       zoneId = resultsUploaderCachingService.getZoneIdByAddress(addressForTimezone);
       // If that fails, use fallback
@@ -91,6 +86,24 @@ public class DateTimeUtils {
 
     localDateTime = parseLocalDateTime(dateString, DATE_TIME_FORMATTER);
     return ZonedDateTime.of(localDateTime, zoneId);
+  }
+
+  public static ZonedDateTime convertToZonedDateTime(String dateString) {
+    ZoneId zoneId = parseDateStringZoneId(dateString);
+    LocalDateTime localDateTime = parseLocalDateTime(dateString, DATE_TIME_FORMATTER);
+    return ZonedDateTime.of(localDateTime, zoneId);
+  }
+
+  private static ZoneId parseDateStringZoneId(String dateString) {
+    ZoneId zoneId;
+
+    var timezoneCode = dateString.substring(dateString.lastIndexOf(" ")).trim();
+    try {
+      zoneId = parseZoneId(timezoneCode);
+    } catch (DateTimeException e) {
+      zoneId = FALLBACK_TIMEZONE_ID;
+    }
+    return zoneId;
   }
 
   public static boolean hasTimezoneSubstring(String value) {

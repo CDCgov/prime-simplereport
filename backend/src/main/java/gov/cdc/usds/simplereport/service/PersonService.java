@@ -460,6 +460,8 @@ public class PersonService {
 
     if (!deduplicatedPhoneNumbers.isEmpty()) {
       person.setPrimaryPhone(deduplicatedPhoneNumbers.get(0));
+    } else {
+      person.setPrimaryPhone(null);
     }
   }
 
