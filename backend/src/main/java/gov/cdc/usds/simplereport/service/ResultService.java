@@ -51,7 +51,6 @@ public class ResultService {
       Join<TestEvent, Person> personJoin = testEventJoin.join(TestEvent_.patient);
       Predicate p = cb.conjunction();
 
-      // TODO: order alphabetically by disease name for a given id
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
       query.distinct(true);
 
