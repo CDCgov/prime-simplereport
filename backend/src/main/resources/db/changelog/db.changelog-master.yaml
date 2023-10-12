@@ -5103,5 +5103,4 @@ databaseChangeLog:
             columns:
               - column:
                   name: equipment_uid_type
-        - sql:
-            remarks: Drop equipment UID type from LIVD sync to be used in the universal pipeline
+                  remarks: Drop equipment UID type from LIVD sync to be used in the universal pipeline
