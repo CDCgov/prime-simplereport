@@ -27,7 +27,6 @@ export async function queueTrigger(
   );
 }
 
-//export default queueTrigger;
 app.storageQueue("ReportStreamExceptionHandler", {
   queueName: "test-event-publishing-exceptions",
   connection: "AZ_STORAGE_QUEUE_CXN_STRING",

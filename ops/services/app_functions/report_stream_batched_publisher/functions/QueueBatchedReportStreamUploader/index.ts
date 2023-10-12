@@ -145,5 +145,3 @@ app.timer("QueueBatchedReportStreamUploader", {
   schedule: "0 */2 * * * *",
   handler: QueueBatchedTestEventPublisher,
 });
-
-//export default QueueBatchedTestEventPublisher;
