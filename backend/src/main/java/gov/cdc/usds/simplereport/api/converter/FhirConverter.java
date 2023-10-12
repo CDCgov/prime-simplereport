@@ -898,19 +898,14 @@ public class FhirConverter {
     Coding coding = concept.addCoding();
     coding.setSystem(SNOMED_CODE_SYSTEM);
     coding.setCode(resultCode);
-    coding.setDisplay(resultDisplay);
+    if (!StringUtils.isBlank(resultDisplay)) {
+      coding.setDisplay(resultDisplay);
+    }
     return concept;
   }
 
   private void addSNOMEDValue(String resultCode, Observation observation, String resultDisplay) {
-    var valueCodeableConcept = new CodeableConcept();
-    var valueCoding = valueCodeableConcept.addCoding();
-    valueCoding.setSystem(SNOMED_CODE_SYSTEM);
-    valueCoding.setCode(resultCode);
-
-    if (!StringUtils.isBlank(resultDisplay)) {
-      valueCoding.setDisplay(resultDisplay);
-    }
+    var valueCodeableConcept = createSNOMEDConcept(resultCode, resultDisplay);
     observation.setValue(valueCodeableConcept);
   }
 
