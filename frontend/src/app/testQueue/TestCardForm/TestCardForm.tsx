@@ -2,15 +2,10 @@ import moment from "moment";
 import {
   Alert,
   Button,
-  ButtonGroup,
   Checkbox,
   FormGroup,
   Label,
-  Modal,
-  ModalFooter,
-  ModalHeading,
   ModalRef,
-  ModalToggleButton,
 } from "@trussworks/react-uswds";
 import React, { useEffect, useReducer, useRef, useState } from "react";
 
@@ -60,6 +55,7 @@ import {
   useSpecimenTypeOptions,
   useTestOrderPatient,
 } from "./TestCardForm.utils";
+import IncompleteAOEWarningModal from "./IncompleteAOEWarningModal";
 
 const DEBOUNCE_TIME = 300;
 
@@ -345,31 +341,11 @@ const TestCardForm = ({
   return (
     <>
       <QueueItemSubmitLoader show={submitLoading} name={patientFullName} />
-      <Modal
-        ref={submitModalRef}
-        aria-labelledby={"submit-modal-heading"}
-        id="submit-modal"
-      >
-        <ModalHeading id="submit-modal-heading">
-          The test questionnaire for {patientFullName} has not been completed.
-        </ModalHeading>
-        <p>Do you want to submit results anyway?</p>
-        <ModalFooter id={"submit-modal-footer"}>
-          <ButtonGroup>
-            <ModalToggleButton
-              modalRef={submitModalRef}
-              closer
-              className={"margin-right-1"}
-              onClick={() => submitForm(true)}
-            >
-              Submit anyway.
-            </ModalToggleButton>
-            <ModalToggleButton modalRef={submitModalRef} unstyled closer>
-              No, go back.
-            </ModalToggleButton>
-          </ButtonGroup>
-        </ModalFooter>
-      </Modal>
+      <IncompleteAOEWarningModal
+        submitModalRef={submitModalRef}
+        name={patientFullName}
+        submitForm={submitForm}
+      />
       <div className="grid-container">
         {/* error and warning alerts */}
         {isCorrection && (

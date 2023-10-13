@@ -1,15 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import {
-  ButtonGroup,
   Card,
   CardBody,
   CardHeader,
   Icon,
-  Modal,
-  ModalFooter,
-  ModalHeading,
   ModalRef,
-  ModalToggleButton,
 } from "@trussworks/react-uswds";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -21,6 +16,8 @@ import { RootState } from "../../store";
 import "./TestCard.scss";
 import TestCardForm from "../TestCardForm/TestCardForm";
 import { useTestOrderPatient } from "../TestCardForm/TestCardForm.utils";
+
+import CloseTestCardModal from "./CloseTestCardModal";
 
 export interface TestCardProps {
   testOrder: QueriedTestOrder;
@@ -85,34 +82,11 @@ export const TestCard = ({
       data-testid={`test-card-${testOrder.patient.internalId}`}
       ref={testCardElement}
     >
-      <Modal
-        ref={closeModalRef}
-        aria-labelledby={"close-modal-heading"}
-        id="close-modal"
-      >
-        <ModalHeading id="close-modal-heading">
-          Are you sure you want to stop {patientFullName}'s test?
-        </ModalHeading>
-        <p>
-          Doing so will remove this person from the list. You can use the search
-          bar to start their test again later.
-        </p>
-        <ModalFooter id={"close-modal-footer"}>
-          <ButtonGroup>
-            <ModalToggleButton
-              modalRef={closeModalRef}
-              closer
-              className={"margin-right-1"}
-              onClick={removeTestFromQueue}
-            >
-              Yes, I'm sure
-            </ModalToggleButton>
-            <ModalToggleButton modalRef={closeModalRef} unstyled closer>
-              No, go back
-            </ModalToggleButton>
-          </ButtonGroup>
-        </ModalFooter>
-      </Modal>
+      <CloseTestCardModal
+        closeModalRef={closeModalRef}
+        name={patientFullName}
+        removeTestFromQueue={removeTestFromQueue}
+      />
       <Card className={"list-style-none margin-bottom-1em test-card-container"}>
         <CardHeader
           className={`padding-2 ${
