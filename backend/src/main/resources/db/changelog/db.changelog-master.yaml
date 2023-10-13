@@ -5097,10 +5097,3 @@ databaseChangeLog:
                   name: equipment_uid_type
                   type: text
                   remarks: Equipment UID from LIVD sync to be used in the universal pipeline
-      rollback:
-        - dropColumn:
-            tableName: device_type_disease
-            columns:
-              - column:
-                  name: equipment_uid_type
-                  remarks: Drop equipment UID type from LIVD sync to be used in the universal pipeline
