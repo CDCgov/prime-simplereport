@@ -6,10 +6,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
@@ -33,11 +31,6 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String GRAPH_QL = "/graphql";
 
   @Autowired private RestLoggingInterceptor _loggingInterceptor;
-
-  @Override
-  public void addViewControllers(ViewControllerRegistry registry) {
-    registry.addStatusController(HEALTH_CHECK, HttpStatus.OK);
-  }
 
   @Override
   public void addInterceptors(InterceptorRegistry registry) {
