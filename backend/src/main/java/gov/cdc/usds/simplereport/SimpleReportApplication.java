@@ -25,8 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.context.SecurityContextHolderStrategy;
 
 @Slf4j
 @SpringBootApplication
@@ -51,11 +49,11 @@ public class SimpleReportApplication {
     SpringApplication.run(SimpleReportApplication.class, args);
   }
 
-  @Bean
-  static SecurityContextHolderStrategy securityContextHolderStrategy() {
-    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    return SecurityContextHolder.getContextHolderStrategy();
-  }
+  //  @Bean
+  //  static SecurityContextHolderStrategy securityContextHolderStrategy() {
+  //    SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+  //    return SecurityContextHolder.getContextHolderStrategy();
+  //  }
 
   @Bean
   public CommandLineRunner initDiseasesOnStartup(DiseaseService initService) {
