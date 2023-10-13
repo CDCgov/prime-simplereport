@@ -679,19 +679,6 @@ describe("TestCard", () => {
       expect(swabDropdown.options[0].label).toEqual("");
       expect(swabDropdown.options[1].label).toEqual("Swab of internal nose");
 
-      // disables submitting results and changing date
-      // const currentDateTimeButton = screen.getByLabelText("Current date and time", {
-      //   exact: false,
-      // }) as HTMLInputElement;
-      // const positiveResult = screen.getByLabelText("Positive", {
-      //   exact: false,
-      // }) as HTMLInputElement;
-      // const submitButton = screen.getByText("Submit results") as HTMLInputElement;
-
-      // expect(currentDateTimeButton).toBeDisabled();
-      // expect(positiveResult).toBeDisabled();
-      // expect(submitButton).toBeDisabled();
-
       // notice the error message
       expect(
         screen.getByText("Please select a specimen type.")
