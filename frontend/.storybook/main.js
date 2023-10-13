@@ -1,4 +1,3 @@
-const { resolve } = require("path");
 module.exports = {
   stories: ["../src/**/*.stories.mdx", "../src/**/*.stories.@(js|jsx|ts|tsx)"],
   addons: [
@@ -18,8 +17,5 @@ module.exports = {
   framework: {
     name: "@storybook/react-webpack5",
     options: { fastRefresh: true },
-  },
-  typescript: {
-    reactDocgen: "react-docgen",
   },
 };
