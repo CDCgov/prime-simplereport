@@ -1393,9 +1393,7 @@ public class FhirConverter {
   private Patient assignPotentiallyAbsentName(
       String first, String last, String absentReason, Patient patient) {
     if (StringUtils.isNotBlank(first) || StringUtils.isNotBlank(last)) {
-      var humanName = new HumanName();
-      humanName.addGiven(first);
-      humanName.setFamily(last);
+      var humanName = convertToHumanName(first, null, last, null);
       patient.addName(humanName);
 
     } else {
