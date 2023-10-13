@@ -11,8 +11,6 @@ import { DevicesMap } from "../QueueItem";
 
 import { TestCard, TestCardProps } from "./TestCard";
 
-type Props = {};
-
 export default {
   title: "App/Test Queue/Test Card",
   component: TestCard,

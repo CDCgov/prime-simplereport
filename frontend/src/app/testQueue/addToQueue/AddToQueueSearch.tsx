@@ -98,7 +98,6 @@ const AddToQueueSearchBox = ({
 
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
-    //variables: { internalId: patientIdParam },
     variables: { internalId: startTestPatientId },
     onCompleted: async (response) => {
       setSelectedPatient(response.patient);
