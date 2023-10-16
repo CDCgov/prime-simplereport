@@ -125,19 +125,40 @@ export const doesDeviceSupportMultiplex = (
 
 export const isDeviceFluOnly = (deviceId: string, devicesMap: DevicesMap) => {
   if (devicesMap.has(deviceId)) {
-    return devicesMap
-      .get(deviceId)!
-      .supportedDiseaseTestPerformed.every(
+    const supportedDiseaseTests =
+      devicesMap.get(deviceId)?.supportedDiseaseTestPerformed ?? [];
+
+    return (
+      supportedDiseaseTests.length > 0 &&
+      supportedDiseaseTests.every(
         (disease) =>
           disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_A ||
           disease.supportedDisease.name === MULTIPLEX_DISEASES.FLU_B
-      );
+      )
+    );
+  }
+  return false;
+};
+
+export const hasAnySupportedDiseaseTests = (
+  deviceId: string,
+  devicesMap: DevicesMap
+) => {
+  if (devicesMap.has(deviceId)) {
+    const supportedDiseaseTests =
+      devicesMap.get(deviceId)?.supportedDiseaseTestPerformed ?? [];
+    return supportedDiseaseTests.length > 0;
   }
   return false;
 };
 
 // when other diseases are added, update this to use the correct AOE for that disease
 export const useAOEFormOption = (deviceId: string, devicesMap: DevicesMap) => {
+  // some devices don't have any supported disease tests saved because historically they only supported COVID
+  // this is often seen in some of the dev environments
+  if (!hasAnySupportedDiseaseTests(deviceId, devicesMap)) {
+    return AOEFormOption.COVID;
+  }
   return isDeviceFluOnly(deviceId, devicesMap)
     ? AOEFormOption.NONE
     : AOEFormOption.COVID;
