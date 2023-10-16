@@ -29,7 +29,9 @@ const FacilitySelect: React.FC<FacilitySelectProps> = ({
   /**
    * Facility selection
    */
-  const [facilitySelected, selectFacility] = useState<string | undefined>();
+  const [facilitySelected, setFacilitySelected] = useState<
+    string | undefined
+  >();
   function handleContinue() {
     const facility = facilities.find((f) => f.id === facilitySelected);
     if (facility) {
@@ -50,7 +52,7 @@ const FacilitySelect: React.FC<FacilitySelectProps> = ({
         name={comboBoxId}
         id={comboBoxId}
         onChange={(facilityId) => {
-          selectFacility(facilityId);
+          setFacilitySelected(facilityId);
         }}
       />
       <Button
