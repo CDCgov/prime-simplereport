@@ -2,10 +2,9 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import { formatFullName } from "../utils/user";
+import siteLogo from "../../img/simplereport-logo-color.svg";
 
 import "./FacilitySelect.scss";
-
-import siteLogo from "../../img/simplereport-logo-color.svg";
 
 type FacilityPopupProps = {
   children: React.ReactNode;
