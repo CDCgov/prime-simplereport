@@ -1,6 +1,6 @@
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MockedProvider } from "@apollo/client/testing";
 import { MemoryRouter as Router } from "react-router-dom";
@@ -130,14 +130,20 @@ describe("WithFacility", () => {
     it("should show the facility selection screen", () => {
       renderWithUser();
       expect(
-        screen.getByText("Please select the testing facility", { exact: false })
+        screen.getByText("Select your facility", { exact: false })
       ).toBeInTheDocument();
     });
 
     it("should show the app after selecting facility", async () => {
       const { user } = renderWithUser();
-      const options = await screen.findAllByRole("button");
-      await user.click(options[0]);
+      const continueBtn = screen.getByRole("button", { name: "Continue" });
+      await user.type(
+        screen.getByLabelText("Select your facility"),
+        "Facility 1{enter}"
+      );
+      await waitFor(() => expect(continueBtn).toBeEnabled());
+      await user.click(continueBtn);
+
       const renderedApp = await screen.findByText("App");
       expect(renderedApp).toBeInTheDocument();
     });
