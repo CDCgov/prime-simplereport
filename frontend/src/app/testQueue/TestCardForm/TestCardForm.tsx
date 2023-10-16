@@ -42,7 +42,9 @@ import MultiplexResultInputGroup, {
   convertFromMultiplexResultInputs,
   validateMultiplexResultState,
 } from "./diseaseSpecificComponents/MultiplexResultInputGroup";
-import CovidAoEForm from "./diseaseSpecificComponents/CovidAoEForm";
+import CovidAoEForm, {
+  parseSymptoms,
+} from "./diseaseSpecificComponents/CovidAoEForm";
 import {
   AOEFormOption,
   areAOEAnswersComplete,
@@ -87,7 +89,7 @@ const TestCardForm = ({
       pregnancy: testOrder.pregnancy as PregnancyCode,
       noSymptoms: testOrder.noSymptoms,
       symptomOnset: testOrder.symptomOnset,
-      symptoms: testOrder.symptoms,
+      symptoms: JSON.stringify(parseSymptoms(testOrder.symptoms)),
     },
   };
   const [state, dispatch] = useReducer(testCardFormReducer, initialFormState);
@@ -195,7 +197,10 @@ const TestCardForm = ({
         variables: {
           patientId: testOrder.patient.internalId,
           noSymptoms: state.covidAOEResponses.noSymptoms,
-          symptoms: state.covidAOEResponses.symptoms,
+          // automatically converts boolean strings like "false" to false
+          symptoms: JSON.stringify(
+            parseSymptoms(state.covidAOEResponses.symptoms)
+          ),
           symptomOnset: state.covidAOEResponses.symptomOnset,
           pregnancy: state.covidAOEResponses.pregnancy,
         },
