@@ -22,7 +22,9 @@ export interface CovidAoEFormProps {
 
 const pregnancyResponses = getPregnancyResponses();
 
-const parseSymptoms = (symptomsJsonString: string | null | undefined) => {
+export const parseSymptoms = (
+  symptomsJsonString: string | null | undefined
+) => {
   const symptoms: Record<string, boolean> = {};
   if (symptomsJsonString) {
     const parsedSymptoms: { [key: string]: string | boolean } =
