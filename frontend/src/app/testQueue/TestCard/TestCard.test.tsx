@@ -820,12 +820,12 @@ describe("TestCard", () => {
     const { user } = await renderQueueItem();
     const toggle = await screen.findByLabelText("Current date and time");
     await user.click(toggle);
-    const dateInput = screen.getByTestId("test-date");
+    const dateInput = await screen.findByTestId("test-date");
     expect(dateInput).toBeInTheDocument();
-    const timeInput = screen.getByTestId("test-time");
+    const timeInput = await screen.findByTestId("test-time");
     expect(timeInput).toBeInTheDocument();
-    user.type(dateInput, `${updatedDateString}T00:00`);
-    user.type(timeInput, updatedTimeString);
+    await user.type(dateInput, `${updatedDateString}T00:00`);
+    await user.type(timeInput, updatedTimeString);
   });
 
   it("shows error for future test date", async () => {
