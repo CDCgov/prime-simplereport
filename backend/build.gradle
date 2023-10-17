@@ -49,10 +49,9 @@ dependencies {
      * Please do NOT scatter packages elsewhere around the file. Scattered packages make it easy for pins to become
      * stale.
      *
-     * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 4 August 2023.
+     * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 17 October 2023.
      */
-    implementation 'org.yaml:snakeyaml:1.33' //Verified 4 Aug 2023. Removal restores snakeyaml to 1.30, which is vulnerable to DoS.
-    implementation 'org.springframework.security:spring-security-config:5.7.10' //Verified 4 Aug 2023. Surrounding versions are vulnerable to myriad issues.
+    implementation 'org.yaml:snakeyaml:1.33' //Verified 17 Oct 2023. Removal restores snakeyaml to 1.30, which is vulnerable to DoS.
     implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE' //Verified 4 Aug 2023. Resolves critical vulnerability caused by org.springframework.boot plugin @ 2.7.13.
 
     // data layer dependencies
