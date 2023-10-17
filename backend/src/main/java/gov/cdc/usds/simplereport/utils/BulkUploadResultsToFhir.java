@@ -420,7 +420,6 @@ public class BulkUploadResultsToFhir {
                         Translators.convertConceptCodeToConceptName(
                             getTestResultSnomed(row.getTestResult().getValue())))
                     .testkitNameId(testKitNameId)
-                    .equipmentUid(equipmentUid)
                     .deviceModel(row.getEquipmentModelName().getValue())
                     .issued(Date.from(testResultDate.toInstant()))
                     .build()));

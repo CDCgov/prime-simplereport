@@ -8,7 +8,6 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DATA_ABSENT_REASON_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DIAGNOSTIC_CODE_SYSTEM;
-import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EQUIPMENT_UID_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
@@ -617,9 +616,6 @@ public class FhirConverter {
                       .findFirst()
                       .map(DeviceTypeDisease::getTestPerformedLoincCode)
                       .orElse(null);
-              String equipmentUid =
-                  getCommonDiseaseValue(
-                      deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
               String testkitNameId =
                   getCommonDiseaseValue(
                       deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
@@ -629,7 +625,6 @@ public class FhirConverter {
                   correctionStatus,
                   correctionReason,
                   testkitNameId,
-                  equipmentUid,
                   deviceType.getModel(),
                   resultDate);
             })
@@ -649,7 +644,6 @@ public class FhirConverter {
       TestCorrectionStatus correctionStatus,
       String correctionReason,
       String testkitNameId,
-      String equipmentUid,
       String deviceModel,
       Date resultDate) {
     if (result != null && result.getDisease() != null) {
@@ -665,7 +659,6 @@ public class FhirConverter {
               .resultDescription(
                   Translators.convertConceptCodeToConceptName(result.getResultSNOMED()))
               .testkitNameId(testkitNameId)
-              .equipmentUid(equipmentUid)
               .deviceModel(deviceModel)
               .issued(resultDate)
               .build());
@@ -685,11 +678,7 @@ public class FhirConverter {
         .addExtension(
             new Extension()
                 .setUrl(TESTKIT_NAME_ID_EXTENSION_URL)
-                .setValue(new CodeableConcept().addCoding().setCode(props.getTestkitNameId())))
-        .addExtension(
-            new Extension()
-                .setUrl(EQUIPMENT_UID_EXTENSION_URL)
-                .setValue(new CodeableConcept().addCoding().setCode(props.getEquipmentUid())));
+                .setValue(new CodeableConcept().addCoding().setCode(props.getTestkitNameId())));
 
     addCorrectionNote(
         props.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL,

@@ -526,12 +526,6 @@
               "valueCoding": {
                 "code": "LumiraDx SARS-CoV-2 Ag Test_LumiraDx UK Ltd."
               }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "LumiraDx Platform_LumiraDx"
-              }
             }
           ],
           "coding": [
