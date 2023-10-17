@@ -179,14 +179,10 @@ const TestCardForm = ({
 
   /** When user makes changes to AOE responses, send update to backend */
   useEffect(() => {
-    let debounceTimer: ReturnType<typeof setTimeout>;
     if (state.dirty) {
       dispatch({ type: TestFormActionCase.UPDATE_DIRTY_STATE, payload: false });
-      updateAOE().catch(console.error);
+      updateAOE();
     }
-    return () => {
-      clearTimeout(debounceTimer);
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.covidAOEResponses]);
 
