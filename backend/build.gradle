@@ -52,7 +52,7 @@ dependencies {
      * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 17 October 2023.
      */
     implementation 'org.yaml:snakeyaml:1.33' //Verified 17 Oct 2023. Removal restores snakeyaml to 1.30, which is vulnerable to DoS.
-    implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE' //Verified 4 Aug 2023. Resolves critical vulnerability caused by org.springframework.boot plugin @ 2.7.13.
+    implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE' //Verified 17 Oct 2023. Resolves critical vulnerability caused by org.springframework.boot plugin @ 2.7.13.
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
