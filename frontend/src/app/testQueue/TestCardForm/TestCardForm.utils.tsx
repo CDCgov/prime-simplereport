@@ -13,6 +13,7 @@ import {
 import { showError, showSuccess } from "../../utils/srToast";
 
 import { TestFormState } from "./TestCardFormReducer";
+import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
 
 /** Add more options as other disease AOEs are needed */
 export enum AOEFormOption {
@@ -179,19 +180,22 @@ export const areAOEAnswersComplete = (
 ) => {
   if (whichAOE === AOEFormOption.COVID) {
     const isPregnancyAnswered = !!formState.covidAOEResponses.pregnancy;
-    const isHasAnySymptomsAnswered = !!formState.covidAOEResponses.noSymptoms;
+    const hasNoSymptoms = formState.covidAOEResponses.noSymptoms;
     if (formState.covidAOEResponses.noSymptoms === false) {
-      const areSymptomsFilledIn = !!formState.covidAOEResponses.symptoms;
+      const symptoms = parseSymptoms(formState.covidAOEResponses.symptoms);
+      const areSymptomsFilledIn = Object.values(symptoms).some((x) =>
+        x.valueOf()
+      );
       const isSymptomOnsetDateAnswered =
         !!formState.covidAOEResponses.symptomOnset;
       return (
         isPregnancyAnswered &&
-        isHasAnySymptomsAnswered &&
+        !hasNoSymptoms &&
         areSymptomsFilledIn &&
         isSymptomOnsetDateAnswered
       );
     }
-    return isPregnancyAnswered && isHasAnySymptomsAnswered;
+    return isPregnancyAnswered && hasNoSymptoms;
   }
   return true;
 };
