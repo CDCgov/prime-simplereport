@@ -564,7 +564,6 @@ public class FhirConverter {
 
       var codeableConcept =
           new CodeableConcept()
-              .setText(extensionDisplaySet.get(genderIdentityKey))
               .addCoding()
               .setSystem(GENDER_IDENTITY_EXTENSION_CODE_SYSTEM)
               .setCode(extensionValueSet.get(genderIdentityKey))

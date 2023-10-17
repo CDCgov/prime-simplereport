@@ -166,6 +166,14 @@
               ],
               "text": "Not Hispanic or Latino"
             }
+          },
+          {
+            "url": "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity",
+            "valueCoding": {
+              "system": "http://hl7.org/fhir/ValueSet/gender-identity",
+              "code": "male",
+              "display": "male"
+            }
           }
         ],
         "identifier": [
@@ -379,6 +387,32 @@
           {
             "reference": "Observation/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
           }
+        ],
+        "note": [
+          {
+            "extension": [
+              {
+                "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/note-type",
+                "valueCodeableConcept": {
+                  "coding": [
+                    {
+                      "extension": [
+                        {
+                          "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/code-index-name",
+                          "valueString": "identifier"
+                        }
+                      ],
+                      "system": "HL70364",
+                      "version": "2.5.1",
+                      "code": "RE",
+                      "display": "Remark"
+                    }
+                  ]
+                }
+              }
+            ],
+            "text": "Outlandish mobile communicator"
+          }
         ]
       }
     },
@@ -387,6 +421,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "identifier": [
+          {
+            "value": "LumiraDx Platform_LumiraDx"
+          }
+        ],
         "manufacturer": "LumiraDx UK Ltd.",
         "deviceName": [
           {
