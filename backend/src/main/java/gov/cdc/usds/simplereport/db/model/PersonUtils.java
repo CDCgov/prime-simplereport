@@ -702,4 +702,103 @@ public class PersonUtils {
           "not hispanic or latino", not_hispanic,
           "2186-5", not_hispanic,
           "refused", List.of("U", "unknown"));
+
+  public static final String HOSPITAL_LITERAL = "hospital";
+  public static final String HOSPITAL_SNOMED = "22232009";
+  public static final String HOSPITAL_SHIP_LITERAL = "hospital ship";
+  public static final String HOSPITAL_SHIP_SNOMED = "2081004";
+  public static final String LONG_TERM_HOSPITAL_LITERAL = "long term care hospital";
+  public static final String LONG_TERM_HOSPITAL_SNOMED = "32074000";
+  public static final String SECURE_HOSPITAL_LITERAL = "secure hospital";
+  public static final String SECURE_HOSPITAL_SNOMED = "224929004";
+  public static final String NURSING_HOME_LITERAL = "nursing home";
+  public static final String NURSING_HOME_SNOMED = "42665001";
+  public static final String RETIREMENT_HOME_LITERAL = "retirement home";
+  public static final String RETIREMENT_HOME_SNOMED = "30629002";
+  public static final String ORPHANAGE_LITERAL = "orphanage";
+  public static final String ORPHANAGE_SNOMED = "74056004";
+  public static final String PRISON_BASED_CARE_LITERAL = "prison-based care site";
+  public static final String PRISON_BASED_CARE_SNOMED = "722173008";
+  public static final String SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL =
+      "substance abuse treatment center";
+  public static final String SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED = "20078004";
+  public static final String BOARDING_HOUSE_LITERAL = "boarding house";
+  public static final String BOARDING_HOUSE_SNOMED = "257573002";
+  public static final String MILITARY_ACCOMMODATION_LITERAL = "military accommodation";
+  public static final String MILITARY_ACCOMMODATION_SNOMED = "224683003";
+  public static final String HOSPICE_LITERAL = "hospice";
+  public static final String HOSPICE_SNOMED = "284546000";
+  public static final String HOSTEL_LITERAL = "hostel";
+  public static final String HOSTEL_SNOMED = "257628001";
+  public static final String SHELTERED_HOUSING_LITERAL = "sheltered housing";
+  public static final String SHELTERED_HOUSING_SNOMED = "310207003";
+  public static final String PENAL_INSTITUTION_LITERAL = "penal institution";
+  public static final String PENAL_INSTITUTION_SNOMED = "57656006";
+  public static final String RELIGIOUS_RESIDENCE_LITERAL = "religious institutional residence";
+  public static final String RELIGIOUS_RESIDENCE_SNOMED = "285113009";
+  public static final String WORK_ENVIRONMENT_LITERAL = "work (environment)";
+  public static final String WORK_ENVIRONMENT_SNOMED = "285141008";
+  public static final String HOMELESS_LITERAL = "homeless";
+  public static final String HOMELESS_SNOMED = "32911000";
+
+  public static final Map<String, String> getResidenceTypeMap() {
+    Map<String, String> residenceTypeMap = new HashMap<>();
+    residenceTypeMap.put(HOSPITAL_SNOMED, HOSPITAL_LITERAL);
+    residenceTypeMap.put(HOSPITAL_LITERAL, HOSPITAL_SNOMED);
+    residenceTypeMap.put(HOSPITAL_SHIP_SNOMED, HOSPITAL_SHIP_LITERAL);
+    residenceTypeMap.put(HOSPITAL_SHIP_LITERAL, HOSPITAL_SHIP_SNOMED);
+    residenceTypeMap.put(LONG_TERM_HOSPITAL_SNOMED, LONG_TERM_HOSPITAL_LITERAL);
+    residenceTypeMap.put(LONG_TERM_HOSPITAL_LITERAL, LONG_TERM_HOSPITAL_SNOMED);
+    residenceTypeMap.put(SECURE_HOSPITAL_SNOMED, SECURE_HOSPITAL_LITERAL);
+    residenceTypeMap.put(SECURE_HOSPITAL_LITERAL, SECURE_HOSPITAL_SNOMED);
+    residenceTypeMap.put(NURSING_HOME_SNOMED, NURSING_HOME_LITERAL);
+    residenceTypeMap.put(NURSING_HOME_LITERAL, NURSING_HOME_SNOMED);
+    residenceTypeMap.put(RETIREMENT_HOME_SNOMED, RETIREMENT_HOME_LITERAL);
+    residenceTypeMap.put(RETIREMENT_HOME_LITERAL, RETIREMENT_HOME_SNOMED);
+    residenceTypeMap.put(ORPHANAGE_SNOMED, ORPHANAGE_LITERAL);
+    residenceTypeMap.put(ORPHANAGE_LITERAL, ORPHANAGE_SNOMED);
+    residenceTypeMap.put(PRISON_BASED_CARE_SNOMED, PRISON_BASED_CARE_LITERAL);
+    residenceTypeMap.put(PRISON_BASED_CARE_LITERAL, PRISON_BASED_CARE_SNOMED);
+    residenceTypeMap.put(
+        SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED, SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL);
+    residenceTypeMap.put(
+        SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL, SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED);
+    residenceTypeMap.put(BOARDING_HOUSE_SNOMED, BOARDING_HOUSE_LITERAL);
+    residenceTypeMap.put(BOARDING_HOUSE_LITERAL, BOARDING_HOUSE_SNOMED);
+    residenceTypeMap.put(MILITARY_ACCOMMODATION_SNOMED, MILITARY_ACCOMMODATION_LITERAL);
+    residenceTypeMap.put(MILITARY_ACCOMMODATION_LITERAL, MILITARY_ACCOMMODATION_SNOMED);
+    residenceTypeMap.put(HOSPICE_SNOMED, HOSPICE_LITERAL);
+    residenceTypeMap.put(HOSPICE_LITERAL, HOSPICE_SNOMED);
+    residenceTypeMap.put(HOSTEL_SNOMED, HOSTEL_LITERAL);
+    residenceTypeMap.put(HOSTEL_LITERAL, HOSTEL_SNOMED);
+    residenceTypeMap.put(SHELTERED_HOUSING_SNOMED, SHELTERED_HOUSING_LITERAL);
+    residenceTypeMap.put(SHELTERED_HOUSING_LITERAL, SHELTERED_HOUSING_SNOMED);
+    residenceTypeMap.put(PENAL_INSTITUTION_SNOMED, PENAL_INSTITUTION_LITERAL);
+    residenceTypeMap.put(PENAL_INSTITUTION_LITERAL, PENAL_INSTITUTION_SNOMED);
+    residenceTypeMap.put(RELIGIOUS_RESIDENCE_SNOMED, RELIGIOUS_RESIDENCE_LITERAL);
+    residenceTypeMap.put(RELIGIOUS_RESIDENCE_LITERAL, RELIGIOUS_RESIDENCE_SNOMED);
+    residenceTypeMap.put(WORK_ENVIRONMENT_SNOMED, WORK_ENVIRONMENT_LITERAL);
+    residenceTypeMap.put(WORK_ENVIRONMENT_LITERAL, WORK_ENVIRONMENT_SNOMED);
+    residenceTypeMap.put(HOMELESS_SNOMED, HOMELESS_LITERAL);
+    residenceTypeMap.put(HOMELESS_LITERAL, HOMELESS_SNOMED);
+    return residenceTypeMap;
+  }
+
+  private static final String PREGNANT_SNOMED = "77386006";
+  private static final String NOT_PREGNANT_SNOMED = "60001007";
+  private static final String PREGNANT_UNKNOWN_SNOMED = "102874004";
+  public static final Map<String, String> pregnancyStatusSnomedMap =
+      Map.of(
+          "YES".toLowerCase(), PREGNANT_SNOMED,
+          "Y".toLowerCase(), PREGNANT_SNOMED,
+          "NO".toLowerCase(), NOT_PREGNANT_SNOMED,
+          "N".toLowerCase(), NOT_PREGNANT_SNOMED,
+          "UNK".toLowerCase(), PREGNANT_UNKNOWN_SNOMED,
+          "U".toLowerCase(), PREGNANT_UNKNOWN_SNOMED);
+
+  public static final Map<String, String> pregnancyStatusDisplayMap =
+      Map.of(
+          PREGNANT_SNOMED, "Pregnant",
+          NOT_PREGNANT_SNOMED, "Not pregnant",
+          PREGNANT_UNKNOWN_SNOMED, "Unknown");
 }

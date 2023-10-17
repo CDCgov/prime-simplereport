@@ -1,8 +1,14 @@
 package gov.cdc.usds.simplereport.utils;
 
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.DEFAULT_COUNTRY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_HOSPITALIZED;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_ICU;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.getResidenceTypeMap;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.DATE_TIME_FORMATTER;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.convertToZonedDateTime;
+import static gov.cdc.usds.simplereport.utils.ResultUtils.mapTestResultStatusToSRValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getIteratorForCsv;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getNextRow;
 import static java.util.Collections.emptyList;
@@ -11,12 +17,17 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import com.fasterxml.jackson.databind.MappingIterator;
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.api.converter.ConditionAgnosticConvertToDiagnosticReportProps;
+import gov.cdc.usds.simplereport.api.converter.ConditionAgnosticConvertToObservationProps;
+import gov.cdc.usds.simplereport.api.converter.ConditionAgnosticConvertToPatientProps;
+import gov.cdc.usds.simplereport.api.converter.ConditionAgnosticCreateFhirBundleProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToObservationProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToPatientProps;
 import gov.cdc.usds.simplereport.api.converter.ConvertToSpecimenProps;
 import gov.cdc.usds.simplereport.api.converter.CreateFhirBundleProps;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.filerow.ConditionAgnosticResultRow;
 import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.PersonUtils;
@@ -25,7 +36,6 @@ import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -33,6 +43,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +55,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.r4.model.Bundle;
 import org.hl7.fhir.r4.model.DiagnosticReport;
+import org.hl7.fhir.r4.model.Observation;
 import org.hl7.fhir.r4.model.Organization;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.r4.model.ServiceRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.GitProperties;
@@ -122,12 +135,48 @@ public class BulkUploadResultsToFhir {
                     throw new CsvProcessingException("Unable to process file.");
                   }
                 })
+            .map(line -> line.replace(System.getProperty("line.separator"), " "))
             .toList();
 
     // Clear cache to free memory
     resultsUploaderCachingService.clearAddressTimezoneLookupCache();
-
     return bundles;
+  }
+
+  public List<String> convertToConditionAgnosticFhirBundles(InputStream csvStream) {
+    var futureTestEvents = new ArrayList<CompletableFuture<String>>();
+    final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
+
+    while (valueIterator.hasNext()) {
+      final Map<String, String> row;
+      try {
+        row = getNextRow(valueIterator);
+      } catch (CsvProcessingException ex) {
+        // anything that would land here should have been caught and handled by the file validator
+        log.error("Unable to parse csv.", ex);
+        continue;
+      }
+      var fileRow = new ConditionAgnosticResultRow(row);
+
+      var future =
+          CompletableFuture.supplyAsync(() -> convertConditionAgnosticRowToFhirBundle(fileRow))
+              .thenApply(parser::encodeResourceToString);
+      futureTestEvents.add(future);
+    }
+
+    return futureTestEvents.stream()
+        .map(
+            future -> {
+              try {
+                return future.get();
+              } catch (InterruptedException | ExecutionException e) {
+                log.error("Bulk upload failure to convert to fhir.", e);
+                Thread.currentThread().interrupt();
+                throw new CsvProcessingException("Unable to process file.");
+              }
+            })
+        .map(line -> line.replace(System.getProperty("line.separator"), " "))
+        .toList();
   }
 
   private Bundle convertRowToFhirBundle(TestResultRow row, UUID orgId) {
@@ -356,7 +405,7 @@ public class BulkUploadResultsToFhir {
                 .receivedTime(testingLabSpecimenReceivedDate)
                 .build());
 
-    var observation =
+    var resultObservation =
         List.of(
             fhirConverter.convertToObservation(
                 ConvertToObservationProps.builder()
@@ -376,9 +425,10 @@ public class BulkUploadResultsToFhir {
                     .issued(Date.from(testResultDate.toInstant()))
                     .build()));
 
+    var aoeObservations = new LinkedHashSet<Observation>();
+
     LocalDate symptomOnsetDate = null;
-    if (row.getIllnessOnsetDate().getValue() != null
-        && !row.getIllnessOnsetDate().getValue().trim().isBlank()) {
+    if (StringUtils.isNotBlank(row.getIllnessOnsetDate().getValue())) {
       try {
         symptomOnsetDate =
             LocalDate.parse(row.getIllnessOnsetDate().getValue(), DATE_TIME_FORMATTER);
@@ -389,12 +439,58 @@ public class BulkUploadResultsToFhir {
     }
 
     Boolean symptomatic = null;
-    if (row.getSymptomaticForDisease().getValue() != null) {
+    if (StringUtils.isNotBlank(row.getSymptomaticForDisease().getValue())) {
       symptomatic = yesNoToBooleanMap.get(row.getSymptomaticForDisease().getValue().toLowerCase());
     }
 
-    var aoeObservations =
-        fhirConverter.convertToAOEObservation(testEventId, symptomatic, symptomOnsetDate);
+    aoeObservations.addAll(
+        fhirConverter.convertToAOESymptomObservation(testEventId, symptomatic, symptomOnsetDate));
+
+    String pregnancyValue = row.getPregnant().getValue();
+    if (StringUtils.isNotBlank(pregnancyValue)) {
+      String pregnancySnomed = getPregnancyStatusSnomed(pregnancyValue);
+      aoeObservations.add(fhirConverter.convertToAOEPregnancyObservation(pregnancySnomed));
+    }
+
+    String employedInHealthcareValue = row.getEmployedInHealthcare().getValue();
+    if (StringUtils.isNotBlank(employedInHealthcareValue)) {
+      Boolean employedInHealthcare = yesNoToBooleanMap.get(employedInHealthcareValue.toLowerCase());
+      aoeObservations.add(
+          fhirConverter.convertToAOEYesNoUnkObservation(
+              employedInHealthcare,
+              LOINC_AOE_EMPLOYED_IN_HEALTHCARE,
+              AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY));
+    }
+
+    String hospitalizedValue = row.getHospitalized().getValue();
+    if (StringUtils.isNotBlank(hospitalizedValue)) {
+      Boolean hospitalized = yesNoToBooleanMap.get(hospitalizedValue.toLowerCase());
+      aoeObservations.add(
+          fhirConverter.convertToAOEYesNoUnkObservation(
+              hospitalized, LOINC_AOE_HOSPITALIZED, "Hospitalized for condition"));
+    }
+
+    String icuValue = row.getIcu().getValue();
+    if (StringUtils.isNotBlank(icuValue)) {
+      Boolean hospitalized = yesNoToBooleanMap.get(icuValue.toLowerCase());
+      aoeObservations.add(
+          fhirConverter.convertToAOEYesNoUnkObservation(
+              hospitalized, LOINC_AOE_ICU, "Admitted to ICU for condition"));
+    }
+
+    String residentCongregateSettingValue = row.getResidentCongregateSetting().getValue();
+    if (StringUtils.isNotBlank(residentCongregateSettingValue)) {
+      Boolean residesInCongregateSetting =
+          yesNoToBooleanMap.get(residentCongregateSettingValue.toLowerCase());
+      String residenceTypeValue = row.getResidenceType().getValue();
+      String residenceTypeSnomed = null;
+      if (StringUtils.isNotBlank(residenceTypeValue)) {
+        residenceTypeSnomed = getResidenceTypeSnomed(residenceTypeValue);
+      }
+      aoeObservations.addAll(
+          fhirConverter.convertToAOEResidenceObservation(
+              residesInCongregateSetting, residenceTypeSnomed));
+    }
 
     var serviceRequest =
         fhirConverter.convertToServiceRequest(
@@ -420,7 +516,7 @@ public class BulkUploadResultsToFhir {
             .practitioner(practitioner)
             .device(device)
             .specimen(specimen)
-            .resultObservations(observation)
+            .resultObservations(resultObservation)
             .aoeObservations(aoeObservations)
             .serviceRequest(serviceRequest)
             .diagnosticReport(diagnosticReport)
@@ -428,6 +524,60 @@ public class BulkUploadResultsToFhir {
             .gitProperties(gitProperties)
             .processingId(processingModeCode)
             .build());
+  }
+
+  private Bundle convertConditionAgnosticRowToFhirBundle(ConditionAgnosticResultRow row) {
+    Patient patient =
+        fhirConverter.convertToPatient(
+            ConditionAgnosticConvertToPatientProps.builder()
+                .id(row.getPatientId().getValue())
+                .firstName(row.getPatientFirstName().getValue())
+                .lastName(row.getPatientLastName().getValue())
+                .nameAbsentReason(row.getPatientNameAbsentReason().getValue())
+                .gender(row.getPatientAdminGender().getValue())
+                .build());
+
+    Observation observation =
+        fhirConverter.convertToObservation(
+            ConditionAgnosticConvertToObservationProps.builder()
+                .correctionStatus(
+                    mapTestResultStatusToSRValue(row.getTestResultStatus().getValue()))
+                .resultValue(row.getTestResultValue().getValue())
+                .patient(patient)
+                .testPerformedCode(row.getTestPerformedCode().getValue())
+                .build());
+
+    DiagnosticReport diagnosticReport =
+        fhirConverter.convertToDiagnosticReport(
+            ConditionAgnosticConvertToDiagnosticReportProps.builder()
+                .observation(observation)
+                .patient(patient)
+                .testEffectiveDate(row.getTestResultEffectiveDate().getValue())
+                .testPerformedCode(row.getTestPerformedCode().getValue())
+                .build());
+
+    return fhirConverter.createFhirBundle(
+        ConditionAgnosticCreateFhirBundleProps.builder()
+            .patient(patient)
+            .resultObservations(List.of(observation))
+            .diagnosticReport(diagnosticReport)
+            .gitProperties(gitProperties)
+            .processingId(processingModeCode)
+            .build());
+  }
+
+  private String getPregnancyStatusSnomed(String input) {
+    if (input.matches(ALPHABET_REGEX)) {
+      return PersonUtils.pregnancyStatusSnomedMap.get(input.toLowerCase());
+    }
+    return null;
+  }
+
+  private String getResidenceTypeSnomed(String input) {
+    if (input.matches(ALPHABET_REGEX)) {
+      return getResidenceTypeMap().get(input.toLowerCase());
+    }
+    return input;
   }
 
   private String getEthnicityLiteral(String input) {
@@ -477,16 +627,6 @@ public class BulkUploadResultsToFhir {
       case "F":
       default:
         return DiagnosticReport.DiagnosticReportStatus.FINAL;
-    }
-  }
-
-  private TestCorrectionStatus mapTestResultStatusToSRValue(String input) {
-    switch (input) {
-      case "C":
-        return TestCorrectionStatus.CORRECTED;
-      case "F":
-      default:
-        return TestCorrectionStatus.ORIGINAL;
     }
   }
 }

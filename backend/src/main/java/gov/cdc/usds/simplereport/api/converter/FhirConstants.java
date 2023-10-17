@@ -45,6 +45,15 @@ public class FhirConstants {
   public static final String LOINC_AOE_IDENTIFIER = "81959-9";
   public static final String LOINC_AOE_SYMPTOMATIC = "95419-8";
   public static final String LOINC_AOE_SYMPTOM_ONSET = "11368-8";
+  public static final String LOINC_AOE_PREGNANCY_STATUS = "82810-3";
+  public static final String LOINC_AOE_EMPLOYED_IN_HEALTHCARE = "95418-0";
+  public static final String AOE_EMPLOYED_IN_HEALTHCARE_DISPLAY =
+      "Employed in a healthcare setting";
+
+  public static final String LOINC_AOE_HOSPITALIZED = "77974-4";
+  public static final String LOINC_AOE_ICU = "95420-6";
+  public static final String LOINC_AOE_RESIDENT_CONGREGATE_SETTING = "95421-4";
+  public static final String LOINC_AOE_RESIDENCE_TYPE = "75617-1";
 
   public static final String PROCESSING_ID_SYSTEM = "http://terminology.hl7.org/CodeSystem/v2-0103";
   public static final Map<String, String> PROCESSING_ID_DISPLAY =
@@ -79,4 +88,16 @@ public class FhirConstants {
 
   public static final String ORDER_EFFECTIVE_DATE_EXTENSION_URL =
       "https://reportstream.cdc.gov/fhir/StructureDefinition/order-effective-date";
+
+  public static final String OBSERVATION_CATEGORY_CODE_SYSTEM =
+      "https://terminology.hl7.org/5.2.0/CodeSystem-observation-category.html";
+  public static final String DATA_ABSENT_REASON_EXTENSION_URL =
+      "http://hl7.org/fhir/StructureDefinition/data-absent-reason";
+
+  public static final String DIAGNOSTIC_CODE_SYSTEM =
+      "https://terminology.hl7.org/5.2.0/CodeSystem-v2-0074.html";
+
+  //  Hardcoded category values for our initial condition agnostic spec
+  public static final String LAB_STRING_LITERAL = "LAB";
+  public static final String LABORATORY_STRING_LITERAL = "laboratory";
 }

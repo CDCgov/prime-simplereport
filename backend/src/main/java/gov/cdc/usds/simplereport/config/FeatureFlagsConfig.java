@@ -28,6 +28,7 @@ public class FeatureFlagsConfig {
   private boolean rsvEnabled;
   private boolean singleEntryRsvEnabled;
   private boolean agnosticEnabled;
+  private boolean agnosticBulkUploadEnabled;
   private boolean testCardRefactorEnabled;
 
   @Scheduled(fixedRateString = "60000") // 1 min
@@ -42,6 +43,7 @@ public class FeatureFlagsConfig {
       case "rsvEnabled" -> setRsvEnabled(flagValue);
       case "singleEntryRsvEnabled" -> setSingleEntryRsvEnabled(flagValue);
       case "agnosticEnabled" -> setAgnosticEnabled(flagValue);
+      case "agnosticBulkUploadEnabled" -> setAgnosticBulkUploadEnabled(flagValue);
       case "testCardRefactorEnabled" -> setTestCardRefactorEnabled(flagValue);
       default -> log.info("no mapping for " + flagName);
     }

@@ -69,8 +69,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ env.DEPLOY_ENV }}
-      url: https://${{ env.DEPLOY_ENV }}.simplereport.gov
+      name: stg
+      url: https://stg.simplereport.gov
     needs: [prerelease_backend]
     steps:
       - uses: actions/checkout@v4

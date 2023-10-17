@@ -4,6 +4,42 @@ import static gov.cdc.usds.simplereport.api.Translators.CANADIAN_STATE_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.COUNTRY_CODES;
 import static gov.cdc.usds.simplereport.api.Translators.PAST_DATE_FLEXIBLE_FORMATTER;
 import static gov.cdc.usds.simplereport.api.Translators.STATE_CODES;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.BOARDING_HOUSE_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOMELESS_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOMELESS_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPICE_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPICE_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPITAL_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPITAL_SHIP_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPITAL_SHIP_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSPITAL_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSTEL_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.HOSTEL_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.LONG_TERM_HOSPITAL_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.LONG_TERM_HOSPITAL_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.MILITARY_ACCOMMODATION_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.MILITARY_ACCOMMODATION_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.NURSING_HOME_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.NURSING_HOME_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.ORPHANAGE_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.ORPHANAGE_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.PENAL_INSTITUTION_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.PENAL_INSTITUTION_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.PRISON_BASED_CARE_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.PRISON_BASED_CARE_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.RELIGIOUS_RESIDENCE_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.RELIGIOUS_RESIDENCE_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.RETIREMENT_HOME_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.RETIREMENT_HOME_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.SECURE_HOSPITAL_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.SECURE_HOSPITAL_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.SHELTERED_HOUSING_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.SHELTERED_HOUSING_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_LITERAL;
+import static gov.cdc.usds.simplereport.db.model.PersonUtils.WORK_ENVIRONMENT_SNOMED;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.TIMEZONE_SUFFIX_REGEX;
 import static gov.cdc.usds.simplereport.utils.DateTimeUtils.validTimeZoneIdMap;
 
@@ -57,6 +93,7 @@ public class CsvValidatorUtils {
   private static final String DATE_TIME_REGEX =
       "^(0{0,1}[1-9]|1[0-2])\\/(0{0,1}[1-9]|1\\d|2\\d|3[01])\\/\\d{4}( ([0-1]?[0-9]|2[0-3]):[0-5][0-9]( \\S+)?)?$";
 
+  private static final String LOINC_CODE_REGEX = "([0-9]{5})-[0-9]";
   private static final String EMAIL_REGEX = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$";
   private static final String SNOMED_REGEX = "(^[0-9]{9}$)|(^[0-9]{15}$)";
   private static final String CLIA_REGEX = "^[A-Za-z0-9]{2}[Dd][A-Za-z0-9]{7}$";
@@ -138,29 +175,48 @@ public class CsvValidatorUtils {
 
   private static final Set<String> RESIDENCE_VALUES =
       Set.of(
-          "22232009", "hospital",
-          "2081004", "hospital ship",
-          "32074000", "long term care hospital",
-          "224929004", "secure hospital",
-          "42665001", "nursing home",
-          "30629002", "retirement home",
-          "74056004", "orphanage",
-          "722173008", "prison-based care site",
-          "20078004", "substance abuse treatment center",
-          "257573002", "boarding house",
-          "224683003", "military accommodation",
-          "284546000", "hospice",
-          "257628001", "hostel",
-          "310207003", "sheltered housing",
-          "57656006", "penal institution",
-          "285113009", "religious institutional residence",
-          "285141008", "work (environment)",
-          "32911000", "homeless");
+          HOSPITAL_SNOMED, HOSPITAL_LITERAL,
+          HOSPITAL_SHIP_SNOMED, HOSPITAL_SHIP_LITERAL,
+          LONG_TERM_HOSPITAL_SNOMED, LONG_TERM_HOSPITAL_LITERAL,
+          SECURE_HOSPITAL_SNOMED, SECURE_HOSPITAL_LITERAL,
+          NURSING_HOME_SNOMED, NURSING_HOME_LITERAL,
+          RETIREMENT_HOME_SNOMED, RETIREMENT_HOME_LITERAL,
+          ORPHANAGE_SNOMED, ORPHANAGE_LITERAL,
+          PRISON_BASED_CARE_SNOMED, PRISON_BASED_CARE_LITERAL,
+          SUBSTANCE_ABUSE_TREATMENT_CENTER_SNOMED, SUBSTANCE_ABUSE_TREATMENT_CENTER_LITERAL,
+          BOARDING_HOUSE_SNOMED, BOARDING_HOUSE_LITERAL,
+          MILITARY_ACCOMMODATION_SNOMED, MILITARY_ACCOMMODATION_LITERAL,
+          HOSPICE_SNOMED, HOSPICE_LITERAL,
+          HOSTEL_SNOMED, HOSTEL_LITERAL,
+          SHELTERED_HOUSING_SNOMED, SHELTERED_HOUSING_LITERAL,
+          PENAL_INSTITUTION_SNOMED, PENAL_INSTITUTION_LITERAL,
+          RELIGIOUS_RESIDENCE_SNOMED, RELIGIOUS_RESIDENCE_LITERAL,
+          WORK_ENVIRONMENT_SNOMED, WORK_ENVIRONMENT_LITERAL,
+          HOMELESS_SNOMED, HOMELESS_LITERAL);
   private static final Set<String> PATIENT_ROLE_VALUES =
       Set.of("staff", "resident", "student", "visitor", UNKNOWN_LITERAL);
   private static final Set<String> PHONE_NUMBER_TYPE_VALUES = Set.of("mobile", "landline");
   private static final Set<String> TEST_RESULT_STATUS_VALUES = Set.of("f", "c");
   public static final String ITEM_SCOPE = "item";
+
+  //  http://hl7.org/fhir/R4/codesystem-data-absent-reason.html#data-absent-reason-unknown
+  private static final Set<String> DATA_ABSENT_REASONS =
+      Set.of(
+          UNKNOWN_LITERAL,
+          "asked-unknown",
+          "temp-unknown",
+          "not-asked",
+          "asked-declined",
+          "masked",
+          "not-applicable",
+          "unsupported",
+          "as-text",
+          "error",
+          "not-a-number",
+          "negative-infinity",
+          "positive-infinity",
+          "not-performed",
+          "not-permitted");
 
   private CsvValidatorUtils() {
     throw new IllegalStateException("CsvValidatorUtils is a utility class");
@@ -176,6 +232,10 @@ public class CsvValidatorUtils {
 
   public static List<FeedbackMessage> validateTestResult(ValueOrError input) {
     return validateSpecificValueOrSNOMED(input, TEST_RESULT_VALUES);
+  }
+
+  public static List<FeedbackMessage> validateTestPerformedCode(ValueOrError input) {
+    return validateRegex(input, LOINC_CODE_REGEX);
   }
 
   public static List<FeedbackMessage> validateSpecimenType(
@@ -339,6 +399,10 @@ public class CsvValidatorUtils {
       throw new CsvProcessingException(
           e.getMessage(), location.getLineNr(), location.getColumnNr());
     }
+  }
+
+  public static List<FeedbackMessage> validateDataAbsentReason(ValueOrError input) {
+    return validateInSet(input, DATA_ABSENT_REASONS);
   }
 
   public static ValueOrError getValue(Map<String, String> row, String name, boolean isRequired) {
