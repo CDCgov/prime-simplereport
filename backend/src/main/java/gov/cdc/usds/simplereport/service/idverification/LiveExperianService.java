@@ -184,18 +184,7 @@ public class LiveExperianService
       }
 
       boolean passed;
-      try {
-        // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
-        String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
-        // if experian responds with ACCEPT, we will consider the id verification successful
-        passed = SUCCESS_DECISION.equals(decision);
-      } catch (ExperianNullNodeException e) {
-        // Experian does not always return the overall decision. If this happens, check for the
-        // value of "final decision".
-        String finalDecision =
-            findNodeInResponse(responseEntity, PID_FINAL_DECISION_PATH).textValue();
-        passed = SUCCESS_DECISION_SHORT.equals(finalDecision);
-      }
+      passed = hasPassed(responseEntity);
 
       // Generate a searchable log message so we can monitor decisions from Experian
       String requestData = _objectMapper.writeValueAsString(answersRequest);
@@ -205,6 +194,23 @@ public class LiveExperianService
     } catch (RestClientException | JsonProcessingException e) {
       throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
     }
+  }
+
+  private boolean hasPassed(ObjectNode responseEntity) {
+    boolean passed;
+    try {
+      // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
+      String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
+      // if experian responds with ACCEPT, we will consider the id verification successful
+      passed = SUCCESS_DECISION.equals(decision);
+    } catch (ExperianNullNodeException e) {
+      // Experian does not always return the overall decision. If this happens, check for the
+      // value of "final decision".
+      String finalDecision =
+          findNodeInResponse(responseEntity, PID_FINAL_DECISION_PATH).textValue();
+      passed = SUCCESS_DECISION_SHORT.equals(finalDecision);
+    }
+    return passed;
   }
 
   private ObjectNode submitExperianRequest(ObjectNode requestBody) {
