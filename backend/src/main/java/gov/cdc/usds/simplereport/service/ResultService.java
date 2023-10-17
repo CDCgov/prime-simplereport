@@ -142,13 +142,10 @@ public class ResultService {
     PageRequest pageRequest =
         PageRequest.of(pageOffset, pageSize, Sort.by("createdAt").descending());
 
-    var ok =
-        resultRepository.findAll(
-            buildResultSearchFilter(
-                null, patientId, result, role, supportedDisease, startDate, endDate),
-            pageRequest);
-
-    return ok;
+    return resultRepository.findAll(
+        buildResultSearchFilter(
+            null, patientId, result, role, supportedDisease, startDate, endDate),
+        pageRequest);
   }
 
   @Transactional(readOnly = true)

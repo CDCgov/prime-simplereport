@@ -19,6 +19,10 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,6 +49,14 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
   private Person personA;
   private Person personB;
 
+  private final Date FIRST_TEST_DATE = Date.from(Instant.parse("2023-01-01T14:31:33.197021300Z"));
+  private final Date SECOND_TEST_DATE = Date.from(Instant.parse("2023-06-01T14:31:33.197021300Z"));
+  private final Date THIRD_TEST_DATE = Date.from(Instant.parse("2023-12-01T14:31:33.197021300Z"));
+
+  private static Date convertDate(LocalDateTime dateTime) {
+    return Date.from(dateTime.atZone(ZoneId.systemDefault()).toInstant());
+  }
+
   @Nested
   class GetResultsTests {
     @BeforeEach
@@ -63,11 +75,27 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
               new PersonName("Optimus", "Freakin'", "Prime", ""),
               PersonRole.RESIDENT);
 
-      testDataFactory.createTestEvent(personA, facilityA, TestResult.POSITIVE);
-      testDataFactory.createMultiplexTestEvent(
-          personB, facilityA, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.POSITIVE, false);
-      testDataFactory.createMultiplexTestEvent(
-          personA, facilityB, TestResult.POSITIVE, TestResult.NEGATIVE, TestResult.POSITIVE, false);
+      var a =
+          testDataFactory.createTestEventWithDate(
+              personA, facilityA, TestResult.POSITIVE, FIRST_TEST_DATE);
+      var b =
+          testDataFactory.createMultiplexTestEventWithDate(
+              personB,
+              facilityA,
+              TestResult.POSITIVE,
+              TestResult.NEGATIVE,
+              TestResult.POSITIVE,
+              false,
+              SECOND_TEST_DATE);
+      var c =
+          testDataFactory.createMultiplexTestEventWithDate(
+              personA,
+              facilityB,
+              TestResult.POSITIVE,
+              TestResult.NEGATIVE,
+              TestResult.POSITIVE,
+              false,
+              THIRD_TEST_DATE);
     }
 
     private void truncateDb() {
@@ -173,6 +201,28 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                       personA
                           .getInternalId()
                           .equals(r.getTestEvent().getPatient().getInternalId())));
+    }
+
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getFacilityResults_filter_date() {
+      var res =
+          _service
+              .getFacilityResults(
+                  null,
+                  null,
+                  null,
+                  null,
+                  null,
+                  convertDate(LocalDateTime.of(2023, 4, 2, 0, 0, 0)),
+                  convertDate(LocalDateTime.of(2023, 11, 30, 23, 59, 59)),
+                  0,
+                  10)
+              .toList();
+      assertEquals(3, res.size());
+      assertEquals(SECOND_TEST_DATE, res.get(0).getTestEvent().getDateTested());
+      assertEquals(SECOND_TEST_DATE, res.get(1).getTestEvent().getDateTested());
+      assertEquals(SECOND_TEST_DATE, res.get(2).getTestEvent().getDateTested());
     }
   }
 

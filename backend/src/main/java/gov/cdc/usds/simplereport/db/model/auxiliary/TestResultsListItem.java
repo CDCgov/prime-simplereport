@@ -12,22 +12,22 @@ import lombok.Getter;
 
 @Getter
 public class TestResultsListItem {
-  public UUID id;
-  public Facility facility;
-  public Person patient;
-  public Date dateAdded;
-  public Date dateUpdated;
-  public String pregnancy;
-  public boolean noSymptoms;
-  public String symptoms;
-  public LocalDate symptomOnset;
-  public DeviceType deviceType;
-  public String disease;
-  public TestResult testResult;
-  public Date dateTested;
-  public TestCorrectionStatus correctionStatus;
-  public String reasonForCorrection;
-  public ApiUser createdBy;
+  private final UUID id;
+  private final Facility facility;
+  private final Person patient;
+  private final Date dateAdded;
+  private final Date dateUpdated;
+  private final String pregnancy;
+  private final boolean noSymptoms;
+  private final String symptoms;
+  private final LocalDate symptomOnset;
+  private final DeviceType deviceType;
+  private final String disease;
+  private final TestResult testResult;
+  private final Date dateTested;
+  private final TestCorrectionStatus correctionStatus;
+  private final String reasonForCorrection;
+  private final ApiUser createdBy;
 
   public TestResultsListItem(Result result) {
     this.id = result.getTestEvent().getInternalId();
