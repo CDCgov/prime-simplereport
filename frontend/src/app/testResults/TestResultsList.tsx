@@ -355,7 +355,7 @@ export const DetachedTestResultsList = ({
     );
   }
 
-  const testResults = data?.resultsPage?.content || [];
+  const testResults = data?.resultsPage?.content ?? [];
   const displayFacilityColumn =
     filterParams.filterFacilityId === ALL_FACILITIES_ID ||
     activeFacilityId === ALL_FACILITIES_ID;
@@ -528,7 +528,7 @@ export const DetachedTestResultsList = ({
               <Select
                 label="Condition"
                 name="disease"
-                value={filterParams.disease || ""}
+                value={filterParams.disease ?? ""}
                 options={[
                   {
                     value: MULTIPLEX_DISEASES.COVID_19,

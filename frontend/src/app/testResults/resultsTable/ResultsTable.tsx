@@ -206,13 +206,13 @@ const generateResultRows = (
         ) : (
           <td className="test-facility-cell">
             {facilityDisplayName(
-              r.facility?.name as string,
+              r.facility?.name,
               r.facility?.isDeleted as boolean
             )}
           </td>
         )}
         <td className="actions-cell">
-          <ActionsMenu items={actionItems} id={r.id as string} />
+          <ActionsMenu items={actionItems} id={r.id} />
         </td>
       </tr>
     );
