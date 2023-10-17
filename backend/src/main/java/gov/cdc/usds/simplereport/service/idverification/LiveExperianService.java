@@ -103,7 +103,7 @@ public class LiveExperianService
                 _experianProperties.getTokenEndpoint(), entity, ObjectNode.class);
 
         if (responseBody == null) {
-          log.error("EXPERIAN TOKEN FETCH RETURNED NULL", requestBody);
+          log.error("EXPERIAN TOKEN FETCH RETURNED NULL");
           throw new ExperianAuthException("The Experian token request returned a null response.");
         }
 
@@ -165,8 +165,9 @@ public class LiveExperianService
 
   public IdentityVerificationAnswersResponse submitAnswers(
       IdentityVerificationAnswersRequest answersRequest) {
+    ObjectNode finalRequestBody;
     try {
-      ObjectNode finalRequestBody =
+      finalRequestBody =
           createSubmitAnswersRequestBody(
               _experianProperties.getCrosscoreSubscriberSubcode(),
               _experianProperties.getPreciseidUsername(),
@@ -174,37 +175,39 @@ public class LiveExperianService
               _experianProperties.getPreciseidTenantId(),
               _experianProperties.getPreciseidClientReferenceId(),
               answersRequest);
-      log.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED");
-      ObjectNode responseEntity = submitExperianRequest(finalRequestBody);
-
-      // look for errors in KIQ response ("CrossCore - PreciseId (Option 24).pdf" page 79)
-      int kbaResultCode = findNodeInResponse(responseEntity, KBA_RESULT_CODE_PATH).asInt();
-      if (kbaResultCode != KBA_SUCCESS_RESULT_CODE) {
-        handleKbaResultCodeFailure(kbaResultCode, responseEntity);
-      }
-
-      boolean passed;
-      try {
-        // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
-        String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
-        // if experian responds with ACCEPT, we will consider the id verification successful
-        passed = SUCCESS_DECISION.equals(decision);
-      } catch (ExperianNullNodeException e) {
-        // Experian does not always return the overall decision. If this happens, check for the
-        // value of "final decision".
-        String finalDecision =
-            findNodeInResponse(responseEntity, PID_FINAL_DECISION_PATH).textValue();
-        passed = SUCCESS_DECISION_SHORT.equals(finalDecision);
-      }
-
-      // Generate a searchable log message so we can monitor decisions from Experian
-      String requestData = _objectMapper.writeValueAsString(answersRequest);
-      log.info("EXPERIAN_DECISION ({}): {}", passed, requestData);
-
-      return new IdentityVerificationAnswersResponse(passed);
-    } catch (RestClientException | JsonProcessingException e) {
+    } catch (JsonProcessingException e) {
       throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
     }
+    log.info("EXPERIAN_ANSWER_REQUEST_SUBMITTED");
+    ObjectNode responseEntity = submitExperianRequest(finalRequestBody);
+
+    // look for errors in KIQ response ("CrossCore - PreciseId (Option 24).pdf" page 79)
+    int kbaResultCode = findNodeInResponse(responseEntity, KBA_RESULT_CODE_PATH).asInt();
+    if (kbaResultCode != KBA_SUCCESS_RESULT_CODE) {
+      handleKbaResultCodeFailure(kbaResultCode, responseEntity);
+    }
+
+    boolean passed;
+    try {
+      // find overall decision ("CrossCore 2.x Technical Developer Guide.pdf" page 28-29)
+      String decision = findNodeInResponse(responseEntity, PID_OVERALL_DECISION_PATH).textValue();
+      // if experian responds with ACCEPT, we will consider the id verification successful
+      passed = SUCCESS_DECISION.equals(decision);
+    } catch (ExperianNullNodeException e) {
+      // Experian does not always return the overall decision. If this happens, check for the
+      // value of "final decision".
+      String finalDecision =
+          findNodeInResponse(responseEntity, PID_FINAL_DECISION_PATH).textValue();
+      passed = SUCCESS_DECISION_SHORT.equals(finalDecision);
+    }
+    try {
+      // Generate a searchable log message, so we can monitor decisions from Experian
+      String requestData = _objectMapper.writeValueAsString(answersRequest);
+      log.info("EXPERIAN_DECISION ({}): {}", passed, requestData);
+    } catch (JsonProcessingException e) {
+      throw new ExperianSubmitAnswersException("Answers could not be validated by Experian", e);
+    }
+    return new IdentityVerificationAnswersResponse(passed);
   }
 
   private ObjectNode submitExperianRequest(ObjectNode requestBody) {
