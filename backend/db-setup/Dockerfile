@@ -1,7 +1,7 @@
-FROM postgres:14.8-bookworm
+FROM postgres:14-alpine3.16
 
-RUN apt-get update
-RUN apt-get install python3-pip postgresql-contrib gcc musl-dev postgresql-common make pgxnclient -y
+RUN apk add py3-pip postgresql-libs gcc musl-dev postgresql-dev make
+RUN pip3 install pgxnclient
 RUN pgxn install postgresql_anonymizer
 COPY ./requirements.txt /usr/local/lib/requirements.txt
 COPY ./generate_db_data.py /usr/local/lib/generate_db_data.py
