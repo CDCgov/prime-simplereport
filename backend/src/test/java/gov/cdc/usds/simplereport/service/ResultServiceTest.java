@@ -75,27 +75,24 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
               new PersonName("Optimus", "Freakin'", "Prime", ""),
               PersonRole.RESIDENT);
 
-      var a =
-          testDataFactory.createTestEventWithDate(
-              personA, facilityA, TestResult.POSITIVE, FIRST_TEST_DATE);
-      var b =
-          testDataFactory.createMultiplexTestEventWithDate(
-              personB,
-              facilityA,
-              TestResult.POSITIVE,
-              TestResult.NEGATIVE,
-              TestResult.POSITIVE,
-              false,
-              SECOND_TEST_DATE);
-      var c =
-          testDataFactory.createMultiplexTestEventWithDate(
-              personA,
-              facilityB,
-              TestResult.POSITIVE,
-              TestResult.NEGATIVE,
-              TestResult.POSITIVE,
-              false,
-              THIRD_TEST_DATE);
+      testDataFactory.createTestEventWithDate(
+          personA, facilityA, TestResult.POSITIVE, FIRST_TEST_DATE);
+      testDataFactory.createMultiplexTestEventWithDate(
+          personB,
+          facilityA,
+          TestResult.POSITIVE,
+          TestResult.NEGATIVE,
+          TestResult.POSITIVE,
+          false,
+          SECOND_TEST_DATE);
+      testDataFactory.createMultiplexTestEventWithDate(
+          personA,
+          facilityB,
+          TestResult.POSITIVE,
+          TestResult.NEGATIVE,
+          TestResult.POSITIVE,
+          false,
+          THIRD_TEST_DATE);
     }
 
     private void truncateDb() {
