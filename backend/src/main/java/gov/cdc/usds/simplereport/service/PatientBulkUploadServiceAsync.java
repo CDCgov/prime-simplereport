@@ -116,30 +116,34 @@ public class PatientBulkUploadServiceAsync {
 
         // create new person with current organization, then add to new patients list
         Person newPatient =
-            new Person(
-                currentOrganization,
-                assignedFacility.orElse(null),
-                null, // lookupid
-                extractedData.getFirstName().getValue(),
-                extractedData.getMiddleName().getValue(),
-                extractedData.getLastName().getValue(),
-                extractedData.getSuffix().getValue(),
-                parseUserShortDate(extractedData.getDateOfBirth().getValue()),
-                address,
-                country,
-                parsePersonRole(extractedData.getRole().getValue(), false),
-                extractedData.getEmail().getValue() == null
-                    ? Collections.emptyList()
-                    : List.of(extractedData.getEmail().getValue()),
-                convertRaceToDatabaseValue(extractedData.getRace().getValue()),
-                convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()),
-                null, // tribalAffiliation
-                convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()),
-                parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()),
-                parseYesNoUnk(extractedData.getEmployedInHealthcare().getValue()),
-                null, // preferredLanguage
-                null // testResultDeliveryPreference
-                );
+            Person.builder()
+                .organization(currentOrganization)
+                .facility(assignedFacility.orElse(null))
+                .birthDate(parseUserShortDate(extractedData.getDateOfBirth().getValue()))
+                .address(address)
+                .country(country)
+                .role(parsePersonRole(extractedData.getRole().getValue(), false))
+                .emails(
+                    extractedData.getEmail().getValue() == null
+                        ? Collections.emptyList()
+                        : List.of(extractedData.getEmail().getValue()))
+                .race(convertRaceToDatabaseValue(extractedData.getRace().getValue()))
+                .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
+                .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
+                .genderIdentity(extractedData.getGenderIdentity().getValue())
+                .residentCongregateSetting(
+                    parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()))
+                .employedInHealthcare(
+                    parseYesNoUnk(extractedData.getEmployedInHealthcare().getValue()))
+                .firstName(extractedData.getFirstName().getValue())
+                .middleName(extractedData.getMiddleName().getValue())
+                .lastName(extractedData.getLastName().getValue())
+                .suffix(extractedData.getSuffix().getValue())
+                .lookupId(null)
+                .tribalAffiliation(null)
+                .preferredLanguage(null)
+                .testResultDeliveryPreference(null)
+                .build();
 
         if (!allPatients.contains(newPatient)) {
           // collect phone numbers and associate them with the patient

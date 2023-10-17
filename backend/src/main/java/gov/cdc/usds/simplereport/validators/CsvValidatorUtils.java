@@ -142,6 +142,9 @@ public class CsvValidatorUtils {
           "u", UNKNOWN_LITERAL,
           "a", "ambiguous",
           "n", "not applicable");
+
+  private static final Set<String> GENDER_IDENTITY_VALUES =
+      Set.of("female", "male", "transwoman", "transman", "nonbinary", "other", "refused");
   private static final Set<String> ETHNICITY_VALUES =
       Set.of(
           HISPANIC_CODE, HISPANIC_LITERAL,
@@ -298,6 +301,10 @@ public class CsvValidatorUtils {
 
   public static List<FeedbackMessage> validateBiologicalSex(ValueOrError input) {
     return validateInSet(input, GENDER_VALUES);
+  }
+
+  public static List<FeedbackMessage> validateGenderIdentity(ValueOrError input) {
+    return validateInSet(input, GENDER_IDENTITY_VALUES);
   }
 
   public static List<FeedbackMessage> validateState(ValueOrError input) {
