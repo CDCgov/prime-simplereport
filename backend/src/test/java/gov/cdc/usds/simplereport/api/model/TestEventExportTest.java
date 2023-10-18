@@ -273,6 +273,7 @@ class TestEventExportTest extends BaseRepositoryTest {
                 dataFactory.getCovidDisease(),
                 "94500-6",
                 "covidEquipmentUID",
+                "covidEquipmentUIDType",
                 "covidTestkitNameId1",
                 "94500-0"),
             new DeviceTypeDisease(
@@ -280,6 +281,7 @@ class TestEventExportTest extends BaseRepositoryTest {
                 dataFactory.getCovidDisease(),
                 "94500-6",
                 "covidEquipmentUID",
+                "covidEquipmentUIDType",
                 "covidTestkitNameId2",
                 "94500-0")));
     dataFactory.addDiseasesToDevice(
@@ -290,6 +292,7 @@ class TestEventExportTest extends BaseRepositoryTest {
                 dataFactory.getCovidDisease(),
                 "94500-6",
                 "covidEquipmentUID1",
+                "covidEquipmentUIDType",
                 "covidTestkitNameId",
                 "94500-0"),
             new DeviceTypeDisease(
@@ -297,6 +300,7 @@ class TestEventExportTest extends BaseRepositoryTest {
                 dataFactory.getCovidDisease(),
                 "94500-6",
                 "covidEquipmentUID2",
+                "covidEquipmentUIDType",
                 "covidTestkitNameId",
                 "94500-0")));
 

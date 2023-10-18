@@ -44,6 +44,7 @@ class DeviceTypeDataLoaderHelperTest {
     UUID supportedDisease2Id = UUID.randomUUID();
     String testPerformedLoinc = "test123PerformedLoinc";
     String equipmentUid = "testEquipmentUid";
+    String equipmentUidType = "testEquipmentUidType";
     String testkitNameId = "testkitNameId";
     String testOrderedLoinc = "test123OrderedLoinc";
 
@@ -67,6 +68,7 @@ class DeviceTypeDataLoaderHelperTest {
                     supportedDisease1,
                     testPerformedLoinc,
                     equipmentUid,
+                    equipmentUidType,
                     testkitNameId,
                     testOrderedLoinc),
                 new DeviceTypeDisease(
@@ -74,6 +76,7 @@ class DeviceTypeDataLoaderHelperTest {
                     supportedDisease1,
                     testPerformedLoinc,
                     equipmentUid,
+                    equipmentUidType,
                     testkitNameId,
                     testOrderedLoinc),
                 new DeviceTypeDisease(
@@ -81,6 +84,7 @@ class DeviceTypeDataLoaderHelperTest {
                     supportedDisease2,
                     testPerformedLoinc,
                     equipmentUid,
+                    equipmentUidType,
                     testkitNameId,
                     testOrderedLoinc)));
 
