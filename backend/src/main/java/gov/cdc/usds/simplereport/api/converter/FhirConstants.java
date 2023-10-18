@@ -24,9 +24,6 @@ public class FhirConstants {
 
   public static final String TESTKIT_NAME_ID_EXTENSION_URL =
       "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id";
-  public static final String EQUIPMENT_UID_EXTENSION_URL =
-      "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid";
-
   public static final String TRIBAL_AFFILIATION_EXTENSION_URL =
       "http://hl7.org/fhir/us/core/StructureDefinition/us-core-tribal-affiliation";
   public static final String TRIBAL_AFFILIATION_STRING = "tribalAffiliation";
