@@ -15,3 +15,8 @@ simple-report:
       - https://dev5.simplereport.gov
 twilio:
   enabled: true
+logbook:
+  format:
+    style: json
+  strategy: body-only-if-status-at-least
+  minimum-status: 0
