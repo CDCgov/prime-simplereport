@@ -25,7 +25,9 @@ export const getPatientLinkByTestEventId = (testEventId) => {
     variables: { id: testEventId },
     query: `query TestResult($id: ID!) {
            testResult(id: $id){
-            patientLink
+            patientLink {
+              internalId
+            }
           }
         }`,
   });

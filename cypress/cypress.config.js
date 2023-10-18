@@ -50,13 +50,6 @@ module.exports = {
         getTestEventId() {
           return global.testEventId;
         },
-        setPatientLink(link) {
-          global.patientLink = link;
-          return null;
-        },
-        getPatientLink() {
-          return global.patientLink;
-        },
         setPatientPhone(phone) {
           global.patientPhone = phone;
           return null;
