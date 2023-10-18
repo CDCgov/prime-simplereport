@@ -1,14 +1,11 @@
 import React from "react";
 
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
-import { getAppInsights } from "../../TelemetryService";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 import UploadForm from "./UploadForm";
 
 const DiseaseSpecificUploadContainer = () => {
-  const appInsights = getAppInsights();
-
   const alert = (
     <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
       <div className="usa-alert__body">
