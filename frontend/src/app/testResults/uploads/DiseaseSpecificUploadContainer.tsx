@@ -1,11 +1,13 @@
 import React from "react";
 
 import { FileUploadService } from "../../../fileUploadService/FileUploadService";
-import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import { getAppInsights } from "../../TelemetryService";
 
 import UploadForm from "./UploadForm";
 
 const DiseaseSpecificUploadContainer = () => {
+  const appInsights = getAppInsights();
+
   const alert = (
     <div className="usa-alert usa-alert--info margin-left-105em margin-right-105em maxw-tablet-lg">
       <div className="usa-alert__body">
@@ -18,11 +20,16 @@ const DiseaseSpecificUploadContainer = () => {
             Health (CDPH) can now use the bulk results upload feature to report
             positive flu and RSV tests. Report COVID-19, flu A and B, and RSV
             results all from a single spreadsheet.{" "}
-            <LinkWithQuery to="/results/upload/submit/guide">
-              <strong>
-                See more information and guidance about flu and RSV reporting
-              </strong>
-            </LinkWithQuery>
+            <a
+              href="https://www.simplereport.gov/assets/resources/bulk_results_upload_guide-flu_pilot.pdf"
+              onClick={() => {
+                appInsights?.trackEvent({
+                  name: "Access bulk uploader flu guide",
+                });
+              }}
+            >
+              See more information and guidance about flu and RSV reporting
+            </a>
             .
           </p>
           <p>
