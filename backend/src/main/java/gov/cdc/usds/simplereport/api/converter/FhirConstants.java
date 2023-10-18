@@ -23,10 +23,10 @@ public class FhirConstants {
       "http://terminology.hl7.org/CodeSystem/v2-0189";
 
   public static final String GENDER_IDENTITY_EXTENSION_URL =
-      "http://hl7.org/fhir/StructureDefinition/patient-genderIdentity";
+      "https://hl7.org/fhir/R4/extension-patient-genderidentity.html";
 
   public static final String GENDER_IDENTITY_EXTENSION_CODE_SYSTEM =
-      "http://hl7.org/fhir/ValueSet/gender-identity";
+      "https://hl7.org/fhir/R4/valueset-gender-identity.html";
 
   public static final String TESTKIT_NAME_ID_EXTENSION_URL =
       "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id";
