@@ -1,6 +1,7 @@
 import React from "react";
 
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import { FileUploadService } from "../../../fileUploadService/FileUploadService";
 
 import UploadForm from "./UploadForm";
 
@@ -38,9 +39,7 @@ const AgnosticUploadContainer = () => {
       uploadType={"Agnostic"}
       spreadsheetTemplateLocation={""}
       uploadGuideLocation={"/results/agnostic/upload/submit/guide"}
-      uploadResults={(_file) => {
-        return Promise.resolve(new Response());
-      }}
+      uploadResults={FileUploadService.uploadConditionAgnostic}
     />
   );
 };

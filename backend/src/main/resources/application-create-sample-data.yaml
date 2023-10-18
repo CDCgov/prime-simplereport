@@ -71,6 +71,8 @@ simple-report-initialization:
       type-code: "258500001"
       collection-location-name: Nasopharyngeal structure
       collection-location-code: "71836000"
+    - name: Venous blood specimen
+      type-code: "122555007"
   device-types:
     - name: Abbott Alinity M
       manufacturer: Abbott
@@ -159,6 +161,15 @@ simple-report-initialization:
           equipment-uid: "No Equipment"
           testkit-name-id: "CareStart COVID-19 Antigen test_Access Bio, Inc."
           test-ordered-loinc-code: "94558-4"
+    - name: INSTI HIV-1/HIV-2 Antibody Test
+      manufacturer: bioLytical Laboratories
+      model: INSTI HIV-1/HIV-2 Antibody Test
+      specimen-types:
+        - "122555007"
+      test-performed-loincs:
+        - test-performed-loinc-code: "80387-4"
+          supported-disease: "HIV"
+          testkit-name-id: "bioLytical Laboratories_INSTI HIV-1/HIV-2 Antibody Test"
   patient-registration-links:
     - link: dis-org
       organization-external-id: DIS_ORG

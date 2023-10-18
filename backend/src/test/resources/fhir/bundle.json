@@ -485,12 +485,6 @@
               "valueCoding": {
                 "code": "testkitNameId2"
               }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "equipmentUID2"
-              }
             }
           ],
           "coding": [
@@ -558,12 +552,6 @@
               "valueCoding": {
                 "code": "testkitNameId1"
               }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "equipmentUID1"
-              }
             }
           ],
           "coding": [
@@ -630,12 +618,6 @@
               "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
               "valueCoding": {
                 "code": "testkitNameId3"
-              }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "equipmentUID3"
               }
             }
           ],
