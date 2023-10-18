@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @NoArgsConstructor
@@ -27,6 +28,7 @@ public class DeviceTypeDisease extends IdentifiedEntity {
 
   @Column private String testPerformedLoincCode;
   @Column private String equipmentUid;
+  @Column private String equipmentUidType;
   @Column private String testkitNameId;
   @Column private String testOrderedLoincCode;
 
@@ -45,6 +47,7 @@ public class DeviceTypeDisease extends IdentifiedEntity {
         && Objects.equals(testPerformedLoincCode, that.testPerformedLoincCode)
         && Objects.equals(testOrderedLoincCode, that.testOrderedLoincCode)
         && Objects.equals(equipmentUid, that.equipmentUid)
+        && Objects.equals(equipmentUidType, that.equipmentUidType)
         && Objects.equals(testkitNameId, that.testkitNameId);
   }
 
@@ -56,6 +59,7 @@ public class DeviceTypeDisease extends IdentifiedEntity {
         testPerformedLoincCode,
         testOrderedLoincCode,
         equipmentUid,
+        equipmentUidType,
         testkitNameId);
   }
 }

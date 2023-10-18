@@ -12,6 +12,7 @@ public class SupportedDiseaseTestPerformedInput {
   UUID supportedDisease;
   String testPerformedLoincCode;
   String equipmentUid;
+  String equipmentUidType;
   String testkitNameId;
   String testOrderedLoincCode;
 }
