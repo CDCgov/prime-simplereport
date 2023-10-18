@@ -139,6 +139,9 @@ dependencies {
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.6.2'
 
     implementation 'commons-validator:commons-validator:1.7'
+
+    // Needed for Liquibase Gradle Plugin 2.2.0
+    liquibaseRuntime 'info.picocli:picocli:4.6.1'
 }
 
 dependencyManagement {
