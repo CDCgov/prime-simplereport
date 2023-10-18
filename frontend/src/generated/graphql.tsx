@@ -881,7 +881,6 @@ export type SupportedDisease = {
 export type SupportedDiseaseTestPerformed = {
   __typename?: "SupportedDiseaseTestPerformed";
   equipmentUid?: Maybe<Scalars["String"]["output"]>;
-  equipmentUidType?: Maybe<Scalars["String"]["output"]>;
   supportedDisease: SupportedDisease;
   testOrderedLoincCode?: Maybe<Scalars["String"]["output"]>;
   testPerformedLoincCode: Scalars["String"]["output"];
@@ -890,7 +889,6 @@ export type SupportedDiseaseTestPerformed = {
 
 export type SupportedDiseaseTestPerformedInput = {
   equipmentUid?: InputMaybe<Scalars["String"]["input"]>;
-  equipmentUidType?: InputMaybe<Scalars["String"]["input"]>;
   supportedDisease: Scalars["ID"]["input"];
   testOrderedLoincCode?: InputMaybe<Scalars["String"]["input"]>;
   testPerformedLoincCode: Scalars["String"]["input"];
