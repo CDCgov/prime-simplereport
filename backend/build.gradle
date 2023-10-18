@@ -183,7 +183,7 @@ liquibase {
     activities {
         main {
             driver "org.postgresql.Driver"
-            changeLogFile "/db/changelog/db.changelog-master.yaml"
+            changelogFile "/db/changelog/db.changelog-master.yaml"
             url dbConnectionString
             username "simple_report_migrations"
             password "migrations456"
