@@ -35,6 +35,7 @@ describe("TestQueue", () => {
   let store: MockStoreEnhanced<unknown, {}>;
   const mockStore = configureStore([]);
 
+  const today = new Date("2023-10-17").getTime();
   const renderWithUser = (mocks: any[]) => ({
     user: userEvent.setup(),
     ...render(
@@ -50,6 +51,7 @@ describe("TestQueue", () => {
 
   beforeEach(() => {
     jest.spyOn(global.Math, "random").mockReturnValue(0.123456789);
+    jest.spyOn(Date, "now").mockImplementation(() => today);
 
     store = mockStore({
       organization: {
@@ -69,6 +71,7 @@ describe("TestQueue", () => {
 
   afterEach(() => {
     jest.spyOn(global.Math, "random").mockRestore();
+    jest.spyOn(Date, "now").mockRestore();
   });
 
   it("should render the test queue", async () => {
