@@ -23,7 +23,7 @@ appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
 export async function QueueBatchedTestEventPublisher(
-  myTimer: Timer,
+  _: Timer,
   context: InvocationContext,
 ): Promise<void> {
   const tagOverrides = { "ai.operation.id": context.traceContext.traceParent };
