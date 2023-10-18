@@ -5,9 +5,9 @@ import { appPermissions } from "../permissions";
 import FacilityFormContainer from "../Settings/Facility/FacilityFormContainer";
 import { RootState } from "../store";
 
-import FacilityPopup from "./FacilityPopup";
 import FacilitySelect from "./FacilitySelect";
 import { useSelectedFacility } from "./useSelectedFacility";
+import NoFacilityPopup from "./NoFacilityPopup";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
 
@@ -44,15 +44,15 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     }
   }, [facilities, selectedFacility, dataLoaded, setSelectedFacility]);
 
+  /**
+   * HTML
+   */
+
   if (!dataLoaded) {
     return <Loading />;
-  }
-
-  if (selectedFacility || (isAdmin && facilities.length === 0)) {
+  } else if (selectedFacility || (isAdmin && facilities.length === 0)) {
     return <>{children}</>;
-  }
-
-  if (canViewSettings && facilities.length === 0) {
+  } else if (canViewSettings && facilities.length === 0) {
     // new org needs to create a facility
     return (
       <main className="prime-home">
@@ -61,25 +61,16 @@ const WithFacility: React.FC<Props> = ({ children }) => {
         </div>
       </main>
     );
-  }
-
-  if (facilities.length === 0) {
+  } else if (facilities.length === 0) {
+    return <NoFacilityPopup />;
+  } else {
     return (
-      <FacilityPopup>
-        <p className="margin-bottom-3">
-          You do not have access to any facilities at this time. Ask an admin to
-          give you access, then try logging in again.
-        </p>
-      </FacilityPopup>
+      <FacilitySelect
+        facilities={facilities}
+        setActiveFacility={setSelectedFacility}
+      />
     );
   }
-
-  return (
-    <FacilitySelect
-      facilities={facilities}
-      setActiveFacility={setSelectedFacility}
-    />
-  );
 };
 
 export default WithFacility;

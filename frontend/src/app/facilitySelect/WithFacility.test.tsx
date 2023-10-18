@@ -65,7 +65,10 @@ describe("WithFacility", () => {
 
     it("should notify user to contact an admin", () => {
       expect(
-        screen.getByText("Ask an administrator", { exact: false })
+        screen.getByText(
+          "You do not have access to any facilities at this time. Ask an admin to give you access, then try logging in again.",
+          { exact: false }
+        )
       ).toBeInTheDocument();
     });
   });
