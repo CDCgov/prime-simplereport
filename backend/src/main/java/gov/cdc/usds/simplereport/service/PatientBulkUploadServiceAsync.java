@@ -21,6 +21,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.email.EmailProviderTemplate;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import gov.cdc.usds.simplereport.validators.CsvValidatorUtils;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,190 +48,192 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class PatientBulkUploadServiceAsync {
 
-  private final ApiUserService userService;
-  private final PersonService personService;
-  private final AddressValidationService addressValidationService;
-  private final OrganizationService organizationService;
-  private final EmailService emailService;
+    private final ApiUserService userService;
+    private final PersonService personService;
+    private final AddressValidationService addressValidationService;
+    private final OrganizationService organizationService;
+    private final EmailService emailService;
 
-  @Value("${simple-report.batch-size:1000}")
-  private int batchSize;
+    @Value("${simple-report.batch-size:1000}")
+    private int batchSize;
 
-  @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
-  private String patientLinkUrl;
+    @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
+    private String patientLinkUrl;
 
-  @Autowired private AzureTelemetryConfiguration appInsights;
+    @Autowired
+    private AzureTelemetryConfiguration appInsights;
 
-  @Async
-  @Transactional
-  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
-  public CompletableFuture<Set<Person>> savePatients(byte[] content, UUID facilityId) {
-    // Create string components for notification emails
-    String uploaderEmail = userService.getCurrentApiUserInContainedTransaction().getLoginEmail();
-    String simplereportUrl = patientLinkUrl.substring(0, patientLinkUrl.indexOf("pxp"));
-    String patientsUrl = simplereportUrl + "patients?facility=" + facilityId;
+    @Async
+    @Transactional
+    @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
+    public CompletableFuture<Set<Person>> savePatients(byte[] content, UUID facilityId) {
+        // Create string components for notification emails
+        String uploaderEmail = userService.getCurrentApiUserInContainedTransaction().getLoginEmail();
+        String simplereportUrl = patientLinkUrl.substring(0, patientLinkUrl.indexOf("pxp"));
+        String patientsUrl = simplereportUrl + "patients?facility=" + facilityId;
 
-    Organization currentOrganization = organizationService.getCurrentOrganization();
+        Organization currentOrganization = organizationService.getCurrentOrganization();
 
-    // Patients do not need to be assigned to a facility, but if an id is given it must be valid
-    Optional<Facility> assignedFacility =
-        Optional.ofNullable(facilityId).map(organizationService::getFacilityInCurrentOrg);
+        // Patients do not need to be assigned to a facility, but if an id is given it must be valid
+        Optional<Facility> assignedFacility =
+                Optional.ofNullable(facilityId).map(organizationService::getFacilityInCurrentOrg);
 
-    Set<Person> patientsList = new HashSet<>();
-    List<PhoneNumber> phoneNumbersList = new ArrayList<>();
+        Set<Person> patientsList = new HashSet<>();
+        List<PhoneNumber> phoneNumbersList = new ArrayList<>();
 
-    Set<Person> allPatients = new HashSet<>();
-    int totalPatientCount = 0;
+        Set<Person> allPatients = new HashSet<>();
+        int totalPatientCount = 0;
 
-    final MappingIterator<Map<String, String>> valueIterator =
-        CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
+        final MappingIterator<Map<String, String>> valueIterator =
+                CsvValidatorUtils.getIteratorForCsv(new ByteArrayInputStream(content));
 
-    while (valueIterator.hasNext()) {
-      final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
+        while (valueIterator.hasNext()) {
+            final Map<String, String> row = CsvValidatorUtils.getNextRow(valueIterator);
 
-      try {
+            try {
 
-        PatientUploadRow extractedData = new PatientUploadRow(row);
+                PatientUploadRow extractedData = new PatientUploadRow(row);
 
-        // Fetch address information
-        StreetAddress address =
-            addressValidationService.getValidatedAddress(
-                extractedData.getStreet().getValue(),
-                extractedData.getStreet2().getValue(),
-                extractedData.getCity().getValue(),
-                extractedData.getState().getValue(),
-                extractedData.getZipCode().getValue());
+                // Fetch address information
+                StreetAddress address =
+                        addressValidationService.getValidatedAddress(
+                                extractedData.getStreet().getValue(),
+                                extractedData.getStreet2().getValue(),
+                                extractedData.getCity().getValue(),
+                                extractedData.getState().getValue(),
+                                extractedData.getZipCode().getValue());
 
-        String country =
-            extractedData.getCountry().getValue() == null
-                ? "USA"
-                : extractedData.getCountry().getValue();
+                String country =
+                        extractedData.getCountry().getValue() == null
+                                ? "USA"
+                                : extractedData.getCountry().getValue();
 
-        if (personService.isDuplicatePatient(
-            extractedData.getFirstName().getValue(),
-            extractedData.getLastName().getValue(),
-            parseUserShortDate(extractedData.getDateOfBirth().getValue()),
-            currentOrganization,
-            assignedFacility)) {
-          continue;
+                if (personService.isDuplicatePatient(
+                        extractedData.getFirstName().getValue(),
+                        extractedData.getLastName().getValue(),
+                        parseUserShortDate(extractedData.getDateOfBirth().getValue()),
+                        currentOrganization,
+                        assignedFacility)) {
+                    continue;
+                }
+
+                // create new person with current organization, then add to new patients list
+                Person newPatient =
+                        Person.builder()
+                                .organization(currentOrganization)
+                                .facility(assignedFacility.orElse(null))
+                                .birthDate(parseUserShortDate(extractedData.getDateOfBirth().getValue()))
+                                .address(address)
+                                .country(country)
+                                .role(parsePersonRole(extractedData.getRole().getValue(), false))
+                                .emails(
+                                        extractedData.getEmail().getValue() == null
+                                                ? Collections.emptyList()
+                                                : List.of(extractedData.getEmail().getValue()))
+                                .race(convertRaceToDatabaseValue(extractedData.getRace().getValue()))
+                                .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
+                                .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
+                                .genderIdentity(extractedData.getGenderIdentity().getValue())
+                                .residentCongregateSetting(
+                                        parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()))
+                                .employedInHealthcare(
+                                        parseYesNoUnk(extractedData.getEmployedInHealthcare().getValue()))
+                                .firstName(extractedData.getFirstName().getValue())
+                                .middleName(extractedData.getMiddleName().getValue())
+                                .lastName(extractedData.getLastName().getValue())
+                                .suffix(extractedData.getSuffix().getValue())
+                                .notes(extractedData.getNotes().getValue())
+                                .lookupId(null)
+                                .tribalAffiliation(null)
+                                .preferredLanguage(null)
+                                .testResultDeliveryPreference(null)
+                                .build();
+
+                if (!allPatients.contains(newPatient)) {
+                    // collect phone numbers and associate them with the patient
+                    // then add to phone numbers list and set primary phone, if exists
+                    List<PhoneNumber> newPhoneNumbers =
+                            personService.assignPhoneNumbersToPatient(
+                                    newPatient,
+                                    List.of(
+                                            new PhoneNumber(
+                                                    parsePhoneType(extractedData.getPhoneNumberType().getValue()),
+                                                    extractedData.getPhoneNumber().getValue())));
+                    phoneNumbersList.addAll(newPhoneNumbers);
+                    newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
+
+                    patientsList.add(newPatient);
+                    allPatients.add(newPatient);
+                    totalPatientCount += 1;
+                }
+
+                if (patientsList.size() >= batchSize) {
+                    personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+                    // clear lists after save, so we don't try to save duplicate records
+                    patientsList.clear();
+                    phoneNumbersList.clear();
+                }
+            } catch (IllegalArgumentException | NullPointerException e) {
+                sendEmail(
+                        uploaderEmail,
+                        currentOrganization,
+                        EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+                        Map.of("simplereport_url", simplereportUrl));
+
+                String errorMessage = "Error uploading patient roster";
+                logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
+                throw new IllegalArgumentException(errorMessage);
+            }
         }
 
-        // create new person with current organization, then add to new patients list
-        Person newPatient =
-            Person.builder()
-                .organization(currentOrganization)
-                .facility(assignedFacility.orElse(null))
-                .birthDate(parseUserShortDate(extractedData.getDateOfBirth().getValue()))
-                .address(address)
-                .country(country)
-                .role(parsePersonRole(extractedData.getRole().getValue(), false))
-                .emails(
-                    extractedData.getEmail().getValue() == null
-                        ? Collections.emptyList()
-                        : List.of(extractedData.getEmail().getValue()))
-                .race(convertRaceToDatabaseValue(extractedData.getRace().getValue()))
-                .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
-                .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
-                .genderIdentity(extractedData.getGenderIdentity().getValue())
-                .residentCongregateSetting(
-                    parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()))
-                .employedInHealthcare(
-                    parseYesNoUnk(extractedData.getEmployedInHealthcare().getValue()))
-                .firstName(extractedData.getFirstName().getValue())
-                .middleName(extractedData.getMiddleName().getValue())
-                .lastName(extractedData.getLastName().getValue())
-                .suffix(extractedData.getSuffix().getValue())
-                .lookupId(null)
-                .tribalAffiliation(null)
-                .preferredLanguage(null)
-                .testResultDeliveryPreference(null)
-                .build();
+        try {
+            personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
+        } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
+            sendEmail(
+                    uploaderEmail,
+                    currentOrganization,
+                    EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
+                    Map.of("simplereport_url", simplereportUrl));
 
-        if (!allPatients.contains(newPatient)) {
-          // collect phone numbers and associate them with the patient
-          // then add to phone numbers list and set primary phone, if exists
-          List<PhoneNumber> newPhoneNumbers =
-              personService.assignPhoneNumbersToPatient(
-                  newPatient,
-                  List.of(
-                      new PhoneNumber(
-                          parsePhoneType(extractedData.getPhoneNumberType().getValue()),
-                          extractedData.getPhoneNumber().getValue())));
-          phoneNumbersList.addAll(newPhoneNumbers);
-          newPhoneNumbers.stream().findFirst().ifPresent(newPatient::setPrimaryPhone);
+            String errorMessage = "Error saving patient roster";
+            logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
 
-          patientsList.add(newPatient);
-          allPatients.add(newPatient);
-          totalPatientCount += 1;
+            throw new IllegalArgumentException(errorMessage);
         }
 
-        if (patientsList.size() >= batchSize) {
-          personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
-          // clear lists after save, so we don't try to save duplicate records
-          patientsList.clear();
-          phoneNumbersList.clear();
-        }
-      } catch (IllegalArgumentException | NullPointerException e) {
+        log.info(
+                "CSV patient upload completed for {}. {} total patients uploaded",
+                currentOrganization.getOrganizationName(),
+                totalPatientCount);
+
         sendEmail(
-            uploaderEmail,
-            currentOrganization,
-            EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
-            Map.of("simplereport_url", simplereportUrl));
+                uploaderEmail,
+                currentOrganization,
+                EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
+                Map.of("patients_url", patientsUrl));
 
-        String errorMessage = "Error uploading patient roster";
-        logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
-        throw new IllegalArgumentException(errorMessage);
-      }
+        return CompletableFuture.completedFuture(patientsList);
     }
 
-    try {
-      personService.addPatientsAndPhoneNumbers(patientsList, phoneNumbersList);
-    } catch (IllegalArgumentException | OptimisticLockingFailureException e) {
-      sendEmail(
-          uploaderEmail,
-          currentOrganization,
-          EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD_ERROR,
-          Map.of("simplereport_url", simplereportUrl));
-
-      String errorMessage = "Error saving patient roster";
-      logProcessingFailure(errorMessage, currentOrganization.getExternalId(), facilityId);
-
-      throw new IllegalArgumentException(errorMessage);
+    private void sendEmail(
+            String uploaderEmail,
+            Organization currentOrganization,
+            EmailProviderTemplate template,
+            Map<String, Object> templateVariables) {
+        try {
+            emailService.sendWithDynamicTemplate(List.of(uploaderEmail), template, templateVariables);
+        } catch (IOException exception) {
+            log.info(
+                    "CSV patient upload email failed to send for {}",
+                    currentOrganization.getOrganizationName());
+        }
     }
 
-    log.info(
-        "CSV patient upload completed for {}. {} total patients uploaded",
-        currentOrganization.getOrganizationName(),
-        totalPatientCount);
-
-    sendEmail(
-        uploaderEmail,
-        currentOrganization,
-        EmailProviderTemplate.SIMPLE_REPORT_PATIENT_UPLOAD,
-        Map.of("patients_url", patientsUrl));
-
-    return CompletableFuture.completedFuture(patientsList);
-  }
-
-  private void sendEmail(
-      String uploaderEmail,
-      Organization currentOrganization,
-      EmailProviderTemplate template,
-      Map<String, Object> templateVariables) {
-    try {
-      emailService.sendWithDynamicTemplate(List.of(uploaderEmail), template, templateVariables);
-    } catch (IOException exception) {
-      log.info(
-          "CSV patient upload email failed to send for {}",
-          currentOrganization.getOrganizationName());
+    private void logProcessingFailure(String errorMessage, String externalId, UUID facilityId) {
+        Map<String, String> customProperties =
+                Map.of("orgId", externalId, "facilityId", facilityId.toString());
+        this.appInsights
+                .getTelemetryClient()
+                .trackTrace(errorMessage, SeverityLevel.Error, customProperties);
     }
-  }
-
-  private void logProcessingFailure(String errorMessage, String externalId, UUID facilityId) {
-    Map<String, String> customProperties =
-        Map.of("orgId", externalId, "facilityId", facilityId.toString());
-    this.appInsights
-        .getTelemetryClient()
-        .trackTrace(errorMessage, SeverityLevel.Error, customProperties);
-  }
 }
