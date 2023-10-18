@@ -104,6 +104,14 @@ public class BulkUploadResultsToFhir {
   }
 
   public List<String> convertToFhirBundles(InputStream csvStream, UUID orgId) {
+
+    if (orgId == null) {
+      System.out.println("I WAS NOT COVERED IN TEST");
+      for (int i = 0; i < 10; i++) {
+        System.out.println("counting " + i);
+      }
+    }
+
     var futureTestEvents = new ArrayList<CompletableFuture<String>>();
     final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
     while (valueIterator.hasNext()) {
