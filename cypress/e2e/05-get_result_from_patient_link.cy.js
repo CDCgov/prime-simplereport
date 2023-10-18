@@ -1,6 +1,8 @@
 const dayjs = require("dayjs");
 const { getPatientLinkByTestEventId } = require("../utils/testing-data-utils");
+const { loginHooks } = require("../support/e2e");
 
+loginHooks();
 describe("Getting a test result from a patient link", () => {
   let patientLink, patientDOB, patientObfuscatedName;
   before("retrieve the patient link and dob", () => {
