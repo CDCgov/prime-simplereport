@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
 import gov.cdc.usds.simplereport.api.Translators;
+import gov.cdc.usds.simplereport.db.model.Result;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultsListItem;
 import gov.cdc.usds.simplereport.service.DiseaseService;
 import gov.cdc.usds.simplereport.service.ResultService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -22,7 +22,8 @@ public class ResultResolver {
   private final DiseaseService diseaseService;
 
   @QueryMapping
-  public Page<TestResultsListItem> resultsPage(
+  //  public Page<TestResultsListItem> resultsPage(
+  public Page<Result> resultsPage(
       @Argument UUID facilityId,
       @Argument UUID patientId,
       @Argument String result,
@@ -45,30 +46,28 @@ public class ResultResolver {
         disease != null ? diseaseService.getDiseaseByName(disease) : null;
 
     if (facilityId == null) {
-      return service
-          .getOrganizationResults(
-              patientId,
-              Translators.parseTestResult(result),
-              Translators.parsePersonRole(role, true),
-              supportedDisease,
-              startDate,
-              endDate,
-              pageNumber,
-              pageSize)
-          .map(TestResultsListItem::new);
+      return service.getOrganizationResults(
+          patientId,
+          Translators.parseTestResult(result),
+          Translators.parsePersonRole(role, true),
+          supportedDisease,
+          startDate,
+          endDate,
+          pageNumber,
+          pageSize);
+      //          .map(TestResultsListItem::new);
     }
 
-    return service
-        .getFacilityResults(
-            facilityId,
-            patientId,
-            Translators.parseTestResult(result),
-            Translators.parsePersonRole(role, true),
-            supportedDisease,
-            startDate,
-            endDate,
-            pageNumber,
-            pageSize)
-        .map(TestResultsListItem::new);
+    return service.getFacilityResults(
+        facilityId,
+        patientId,
+        Translators.parseTestResult(result),
+        Translators.parsePersonRole(role, true),
+        supportedDisease,
+        startDate,
+        endDate,
+        pageNumber,
+        pageSize);
+    //        .map(TestResultsListItem::new);
   }
 }
