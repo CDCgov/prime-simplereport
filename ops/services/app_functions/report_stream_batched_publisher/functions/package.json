@@ -28,7 +28,8 @@
     "node-fetch": "^2.7.0"
   },
   "resolutions": {
-    "semver": "7.5.2"
+    "semver": "7.5.2",
+    "undici": "5.26.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.5",
