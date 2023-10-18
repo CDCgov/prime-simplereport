@@ -66,9 +66,9 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   if (facilities.length === 0) {
     return (
       <FacilityPopup>
-        <p>You do not have access to any facilities at this time.</p>
-        <p>
-          Ask an administrator to assign you access, then try logging in again.
+        <p className="margin-bottom-3">
+          You do not have access to any facilities at this time. Ask an admin to
+          give you access, then try logging in again.
         </p>
       </FacilityPopup>
     );
