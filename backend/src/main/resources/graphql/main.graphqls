@@ -80,6 +80,7 @@ input SupportedDiseaseTestPerformedInput {
   supportedDisease: ID!
   testPerformedLoincCode: String!
   equipmentUid: String
+  equipmentUidType: String
   testkitNameId: String
   testOrderedLoincCode: String
 }
@@ -98,6 +99,7 @@ type SupportedDiseaseTestPerformed {
   supportedDisease: SupportedDisease!
   testPerformedLoincCode: String!
   equipmentUid: String
+  equipmentUidType: String
   testkitNameId: String
   testOrderedLoincCode: String
 }
