@@ -445,9 +445,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-        "identifier": [{
-          "value": "00811877010616"
-        }],
+        "identifier": [
+          {
+            "value": "00811877010616"
+          }
+        ],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -528,12 +530,6 @@
               "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
               "valueCoding": {
                 "code": "10811877011269"
-              }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "00811877010616"
               }
             }
           ],
@@ -1228,9 +1224,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-        "identifier": [{
-          "value": "00811877010616"
-        }],
+        "identifier": [
+          {
+            "value": "00811877010616"
+          }
+        ],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -1311,12 +1309,6 @@
               "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
               "valueCoding": {
                 "code": "10811877011269"
-              }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "00811877010616"
               }
             }
           ],
@@ -1782,9 +1774,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-        "identifier": [{
-          "value": "00811877010616"
-        }],
+        "identifier": [
+          {
+            "value": "00811877010616"
+          }
+        ],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -1870,12 +1864,6 @@
               "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
               "valueCoding": {
                 "code": "10811877011269"
-              }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "00811877010616"
               }
             }
           ],
@@ -2374,9 +2362,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-        "identifier": [{
-          "value": "00811877010616"
-        }],
+        "identifier": [
+          {
+            "value": "00811877010616"
+          }
+        ],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -2457,12 +2447,6 @@
               "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
               "valueCoding": {
                 "code": "10811877011269"
-              }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "00811877010616"
               }
             }
           ],
@@ -2925,9 +2909,11 @@
       "resource": {
         "resourceType": "Device",
         "id": "${json-unit.regex}[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}",
-        "identifier": [{
-          "value": "00811877010616"
-        }],
+        "identifier": [
+          {
+            "value": "00811877010616"
+          }
+        ],
         "manufacturer": "Abbott",
         "deviceName": [
           {
@@ -3008,12 +2994,6 @@
               "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
               "valueCoding": {
                 "code": "10811877011269"
-              }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "00811877010616"
               }
             }
           ],

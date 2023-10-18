@@ -54,4 +54,11 @@ export class FileUploadService {
   static uploadHIVResults(csvFile: File) {
     return fetch(api.getURL("/upload/hiv-results"), getInitOptions(csvFile));
   }
+
+  static uploadConditionAgnostic(csvFile: File) {
+    return fetch(
+      api.getURL("/upload/condition-agnostic"),
+      getInitOptions(csvFile)
+    );
+  }
 }

@@ -531,12 +531,6 @@
               "valueCoding": {
                 "code": "BOOMX2"
               }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "543212134"
-              }
             }
           ],
           "coding": [
@@ -1325,12 +1319,6 @@
               "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/testkit-name-id",
               "valueCoding": {
                 "code": "BOOMX2"
-              }
-            },
-            {
-              "url": "https://reportstream.cdc.gov/fhir/StructureDefinition/equipment-uid",
-              "valueCoding": {
-                "code": "543212134"
               }
             }
           ],
