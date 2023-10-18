@@ -19,6 +19,18 @@ export const getOrganizationById = (organizationId) => {
   });
 };
 
+export const getPatientLinkByTestEventId = (testEventId) => {
+  return cy.makePOSTRequest({
+    operationName: "TestResult",
+    variables: { id: testEventId },
+    query: `query TestResult($id: ID!) {
+           testResult(id: $id){
+            patientLink
+          }
+        }`,
+  });
+};
+
 export const addMockFacility = (facilityName) => {
   return cy.makePOSTRequest({
     operationName: "AddFacility",

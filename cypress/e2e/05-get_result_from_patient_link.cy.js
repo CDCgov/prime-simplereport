@@ -1,11 +1,15 @@
 const dayjs = require("dayjs");
+const { getPatientLinkByTestEventId } = require("../utils/testing-data-utils");
 
 describe("Getting a test result from a patient link", () => {
   let patientLink, patientDOB, patientObfuscatedName;
   before("retrieve the patient link and dob", () => {
-    cy.task("getPatientLink").then((link) => {
-      patientLink = link;
+    cy.task("getTestEventId").then((testEventId) => {
+      getPatientLinkByTestEventId(testEventId).then((res) => {
+        patientLink = res.body.data.testResult.patientLink;
+      });
     });
+
     cy.task("getPatientDOB").then((dob) => {
       patientDOB = dob;
     });
