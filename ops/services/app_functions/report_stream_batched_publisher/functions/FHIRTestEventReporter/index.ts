@@ -29,7 +29,7 @@ appInsights.setup();
 const telemetry = appInsights.defaultClient;
 
 export async function FHIRTestEventReporter(
-  _: Timer,
+  _myTimer: Timer,
   context: InvocationContext,
 ): Promise<void> {
   const tagOverrides = { "ai.operation.id": context.traceContext.traceParent };
