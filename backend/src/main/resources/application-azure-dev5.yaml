@@ -18,5 +18,7 @@ twilio:
 logbook:
   format:
     style: json
-  strategy: body-only-if-status-at-least
   minimum-status: 0
+logging:
+  level:
+    org.zalando.logbook: TRACE
