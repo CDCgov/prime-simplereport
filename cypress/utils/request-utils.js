@@ -3,5 +3,5 @@ export const graphqlURL = `${
 }/graphql`;
 
 export const frontendURL = `${
-  Cypress.env("REACT_APP_BASE_URL") || "https://localhost.simplereport.gov"
+  Cypress.env("REACT_APP_BASE_URL") || "https://localhost.simplereport.gov/app"
 }/`;
