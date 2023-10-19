@@ -71,6 +71,13 @@ module.exports = {
         getMultiplexDeviceName() {
           return global.multiplexDeviceName;
         },
+        setSpecName(name) {
+          global.specName = name;
+          return name;
+        },
+        getSpecName() {
+          return global.specName || null;
+        },
       });
       on("before:browser:launch", (browser = {}, launchOptions = {}) => {
         launchOptions.args = launchOptions.args.filter(

@@ -1,67 +1,66 @@
-import { generatePatient, loginHooks } from "../support/e2e";
-
-const patient = generatePatient();
-
+import { generatePatient, loginHooks, testNumber } from "../support/e2e";
+import { cleanUpPreviousOrg, setupOrgAndFacility } from "../utils/setup-utils";
+let patient= generatePatient();
 describe("Adding a single patient", () => {
   loginHooks();
   before("store patient info", () => {
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);
     cy.task("setPatientPhone", patient.phone);
+    cy.task("getSpecName")
+      .then((specName) => {
+        if (specName) {
+          cleanUpPreviousOrg(specName);
+        }
+        specName = `${testNumber()}-cypress-spec-2`
+        cy.task("setSpecName", specName)
+        setupOrgAndFacility(specName);
+      })
   });
-  it("navigates to the add patient form", () => {
-    cy.visit("/");
-    cy.get(".usa-nav-container");
-    cy.get("#desktop-patient-nav-link").click();
-    cy.get(".prime-container");
-    cy.get("#add-patient").click();
-    cy.get("#individual_add-patient").click();
-    cy.get(".prime-edit-patient").contains("Add new patient");
+  it("navigates to and fills out add patient form", () => {
+    cy.visit('/');
+    cy.get('[data-cy="desktop-patient-nav-link"]').click();
+    cy.get('[data-cy="add-patients-button"]').click();
+    cy.get('[data-cy="individual"]').click();
+    cy.get('[data-cy="add-patient-header"]').contains("Add new patient");
     cy.injectSRAxe();
-    cy.checkAccessibility(); // Patient form
-  });
-  it("fills out some of the form fields", () => {
-    cy.get('input[name="firstName"]').type(patient.firstName);
-    cy.get('input[name="birthDate"]').type(patient.dobForInput);
-    cy.get('input[name="number"]').type(patient.phone);
-    cy.get('input[value="MOBILE"]+label').click();
-    cy.get('input[name="gender"][value="female"]+label').click();
-    cy.get('input[name="genderIdentity"][value="female"]+label').click();
-    cy.get('input[name="street"]').type(patient.address);
-    cy.get('select[name="state"]').select(patient.state);
-    cy.get('input[name="zipCode"]').type(patient.zip);
-    cy.get('select[name="role"]').select("STUDENT");
-    cy.get(".prime-edit-patient").contains("Student ID");
-    cy.get('input[name="lookupId"]').type(patient.studentId);
-    cy.get('input[name="race"][value="other"]+label').click();
-    cy.get('input[name="ethnicity"][value="refused"]+label').click();
-    cy.get('input[name="residentCongregateSetting"][value="NO"]+label').click();
-    cy.get('input[name="employedInHealthcare"][value="NO"]+label').click();
-  });
-  it("shows what fields are missing on submit", () => {
-    cy.get(".prime-save-patient-changes").first().click();
-
-    cy.get(".prime-edit-patient").contains("Last name is missing");
-    cy.get(".prime-edit-patient").contains("Testing facility is missing");
-    cy.get(".prime-edit-patient").contains("City is missing");
-  });
-  it("fills out the remaining fields, submits and checks for the patient", () => {
-    cy.get('input[name="lastName"]').type(patient.lastName);
-    cy.get('input[name="city"]').type(patient.city);
-    cy.get('select[name="facilityId"]').select("All facilities");
-    cy.get(".prime-save-patient-changes").first().click();
-    cy.get(
-      '.modal__container input[name="addressSelect-person"][value="userAddress"]+label',
-    ).click();
-
-    cy.checkAccessibility();
-
-    cy.get(".modal__container #save-confirmed-address").click();
-    cy.get(".usa-card__header").contains("Patients");
-    cy.get(".usa-card__header").contains("Showing");
-    cy.get("#search-field-small").type(patient.lastName);
-    cy.get(".prime-container").contains(patient.fullName);
-
-    cy.checkAccessibility();
+    cy.checkAccessibility(); // empty patient form
+    // fill out form
+    cy.get('[data-cy="personForm-firstName-input"]').type(patient.firstName);
+    cy.get('[data-cy="personForm-dob-input"]').type(patient.dobForInput);
+    cy.get('[data-cy="phone-input-0"]').type(patient.phone);
+    cy.get('[data-cy="radio-group-option-phoneType-0-MOBILE"]').click();
+    cy.get('[data-cy="radio-group-option-genderIdentity-female"]').click();
+    cy.get('[data-cy="radio-group-option-gender-female"]').click();
+    cy.get('[data-cy="street-input"]').type(patient.address);
+    cy.get('[data-cy="state-input"]').select(patient.state);
+    cy.get('[data-cy="zip-input"]').type(patient.zip);
+    cy.get('[data-cy="personForm-role-input"]').select("STUDENT");
+    cy.get('[data-cy="add-patient-page"]').contains("Student ID");
+    cy.get('[data-cy="personForm-lookupId-input"]').type(patient.studentId);
+    cy.get('[data-cy="radio-group-option-race-other"]').click();
+    cy.get('[data-cy="radio-group-option-ethnicity-refused"]').click();
+    cy.get('[data-cy="radio-group-option-residentCongregateSetting-NO"]').click();
+    cy.get('[data-cy="radio-group-option-employedInHealthcare-NO"]').click();
+    cy.get('[data-cy="add-patient-save-button"]').eq(0).click();
+    // check for errors
+    cy.get('[data-cy="add-patient-page"]').contains("Last name is missing");
+    cy.get('[data-cy="add-patient-page"]').contains("Testing facility is missing");
+    cy.get('[data-cy="add-patient-page"]').contains("City is missing");
+    cy.checkAccessibility(); // patient form with errors
+    // fill out remaining form
+    cy.get('[data-cy="personForm-lastName-input"]').type(patient.lastName);
+    cy.get('[data-cy="city-input"]').type(patient.city);
+    cy.get('[data-cy="personForm-facility-input"]').select("All facilities");
+    cy.get('[data-cy="add-patient-save-button"]').eq(0).click();
+    cy.get('[data-cy="radio-group-option-addressSelect-person-userAddress"]').click();
+    cy.checkAccessibility(); // address validation modal
+    cy.get('[data-cy="save-address-confirmation-button"]').click();
+    // check for newly created patient on Manage Patients page
+    cy.get('[data-cy="manage-patients-header"]').contains("Patients");
+    cy.get('[data-cy="manage-patients-header"]').contains("Showing");
+    cy.get('[data-cy="manage-patients-search-input"]').type(patient.lastName);
+    cy.get('[data-cy="manage-patients-page"]').contains(patient.fullName);
+    cy.checkAccessibility(); // manage patients page
   });
 });

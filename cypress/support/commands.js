@@ -26,7 +26,7 @@
 
 import "cypress-localstorage-commands";
 import { authenticator } from "otplib";
-import { graphqlURL } from "../utils/request-utils";
+import {addOrgToQueueURL, graphqlURL} from "../utils/request-utils";
 
 // read environment variables
 
@@ -91,20 +91,6 @@ Cypress.Commands.add("login", () => {
           });
         });
       });
-    }
-  });
-});
-
-Cypress.Commands.add("selectFacility", () => {
-  cy.get("body").then(($body) => {
-    if (
-      $body
-        .text()
-        .includes(
-          "Please select the testing facility where you are working today.",
-        )
-    ) {
-      cy.get(".usa-card__body").last().click();
     }
   });
 });
@@ -176,6 +162,17 @@ Cypress.Commands.add("makePOSTRequest", (requestBody) => {
       body: requestBody,
     }),
   );
+});
+
+Cypress.Commands.add("makeAccountRequest", (requestBody) => {
+   cy.request({
+     method: "POST",
+     url: addOrgToQueueURL,
+     headers: {
+       "Content-Type": "application/json",
+     },
+     body: requestBody,
+   });
 });
 
 Cypress.Commands.add("injectSRAxe", () => {

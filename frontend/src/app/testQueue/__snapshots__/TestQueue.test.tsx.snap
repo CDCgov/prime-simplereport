@@ -412,7 +412,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-covid-test-result-abc-POSITIVE"
                           for="3-val-POSITIVE"
                         >
                           Positive (+)
@@ -431,7 +431,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-covid-test-result-abc-NEGATIVE"
                           for="3-val-NEGATIVE"
                         >
                           Negative (-)
@@ -450,7 +450,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-UNDETERMINED"
+                          data-cy="radio-group-option-covid-test-result-abc-UNDETERMINED"
                           for="3-val-UNDETERMINED"
                         >
                           Inconclusive
@@ -831,7 +831,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-POSITIVE"
+                          data-cy="radio-group-option-covid-test-result-def-POSITIVE"
                           for="6-val-POSITIVE"
                         >
                           Positive (+)
@@ -850,7 +850,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-NEGATIVE"
+                          data-cy="radio-group-option-covid-test-result-def-NEGATIVE"
                           for="6-val-NEGATIVE"
                         >
                           Negative (-)
@@ -869,7 +869,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         />
                         <label
                           class="usa-radio__label"
-                          data-cy="radio-group-option-UNDETERMINED"
+                          data-cy="radio-group-option-covid-test-result-def-UNDETERMINED"
                           for="6-val-UNDETERMINED"
                         >
                           Inconclusive
