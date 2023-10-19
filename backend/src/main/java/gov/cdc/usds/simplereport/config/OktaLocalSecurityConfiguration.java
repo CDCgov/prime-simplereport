@@ -42,8 +42,6 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
     http.cors()
         .and()
         .authorizeRequests()
-        .antMatchers("/")
-        .permitAll()
         .antMatchers(HttpMethod.OPTIONS, "/**")
         .permitAll()
         .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
