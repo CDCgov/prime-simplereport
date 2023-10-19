@@ -102,9 +102,6 @@ describe("Conducting a COVID test", () => {
     cy.get(".prime-home .grid-container").should("not.have.text", patientName);
   });
   it("shows the result on the results table", () => {
-    // TODO: hopefully can remove
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
     cy.get("#desktop-results-nav-link").click();
     cy.get(".usa-table").contains(patientName);
 
