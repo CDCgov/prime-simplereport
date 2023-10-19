@@ -64,7 +64,6 @@ resource "azurerm_application_gateway" "load_balancer" {
   backend_http_settings {
     name                                = local.static_backend_http_setting
     cookie_based_affinity               = "Disabled"
-    path                                = "/health"
     port                                = 80
     protocol                            = "Http"
     request_timeout                     = 20
@@ -75,7 +74,6 @@ resource "azurerm_application_gateway" "load_balancer" {
   backend_http_settings {
     name                                = local.static_backend_https_setting
     cookie_based_affinity               = "Disabled"
-    path                                = "/health"
     port                                = 443
     protocol                            = "Https"
     request_timeout                     = 20
@@ -122,6 +120,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   backend_http_settings {
     name                                = local.api_backend_http_setting
     cookie_based_affinity               = "Disabled"
+    path                                = "/health"
     port                                = 80
     protocol                            = "Http"
     request_timeout                     = 60
@@ -131,6 +130,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   backend_http_settings {
     name                                = local.api_backend_https_setting
     cookie_based_affinity               = "Disabled"
+    path                                = "/health"
     port                                = 443
     protocol                            = "Https"
     request_timeout                     = 60
@@ -172,6 +172,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   backend_http_settings {
     name                                = local.staging_http_setting
     cookie_based_affinity               = "Disabled"
+    path                                = "/health"
     port                                = 80
     protocol                            = "Http"
     request_timeout                     = 20
@@ -181,6 +182,7 @@ resource "azurerm_application_gateway" "load_balancer" {
   backend_http_settings {
     name                                = local.staging_https_setting
     cookie_based_affinity               = "Disabled"
+    path                                = "/health"
     port                                = 443
     protocol                            = "Https"
     request_timeout                     = 20
