@@ -33,7 +33,7 @@ resource "azurerm_linux_web_app" "metabase" {
 
   site_config {
     always_on                         = true
-    health_check_path                 = "/api/health"
+    health_check_path                 = "/api/actuator/health"
     health_check_eviction_time_in_min = 5
     ftps_state                        = "Disabled"
     scm_minimum_tls_version           = "1.2"

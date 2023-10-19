@@ -22,7 +22,7 @@ EOF
 SPEC_PATH="cypress/e2e/**"
 TEST_ENV="https://localhost.simplereport.gov"
 CHECK_COMMIT="$(git rev-parse HEAD)"
-BACKEND_URL_PATH="/api/health"
+BACKEND_URL_PATH="/api/actuator/health"
 PUBLIC_URL="/app"
 FRONTEND_URL_PATH="/health/commit"
 RUN_OPEN=false

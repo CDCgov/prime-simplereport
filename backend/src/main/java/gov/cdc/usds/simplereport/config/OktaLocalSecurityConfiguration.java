@@ -44,8 +44,6 @@ public class OktaLocalSecurityConfiguration extends WebSecurityConfigurerAdapter
         .authorizeRequests()
         .antMatchers(HttpMethod.OPTIONS, "/**")
         .permitAll()
-        .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
-        .permitAll()
         .antMatchers("/echo/**", "/authTest/**")
         .permitAll()
         .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
