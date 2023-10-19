@@ -3,5 +3,5 @@ export const graphqlURL = `${
 }/graphql`;
 
 export const frontendURL = `${
-  Cypress.env("FRONTEND_URL") || "http://localhost:3000"
+  Cypress.env("REACT_APP_BASE_URL") || "http://localhost:3000"
 }/`;
