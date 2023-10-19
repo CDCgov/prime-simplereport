@@ -5126,4 +5126,4 @@ databaseChangeLog:
                     referencedColumnNames: internal_id
       rollback:
         sql: |
-          DROP TYPE ${database.defaultSchemaName}.PIPELINE;
+          DROP TYPE ${database.defaultSchemaName}.PIPELINE CASCADE;
