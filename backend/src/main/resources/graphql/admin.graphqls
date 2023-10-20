@@ -3,6 +3,7 @@
 # which is enforced in the API not in the schema validator.
 extend type Query {
   organizations(identityVerified: Boolean): [Organization!]!
+  organizationsByName(name: String!): [Organization]
   pendingOrganizations: [PendingOrganization!]!
   organization(id: ID!): Organization
   facilityStats(facilityId: ID!): FacilityStats

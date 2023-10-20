@@ -1,13 +1,24 @@
-import { generatePatient, loginHooks } from "../support/e2e";
+import { generatePatient, loginHooks, testNumber } from "../support/e2e";
+import { cleanUpPreviousOrg, setupOrgAndFacility } from "../utils/setup-utils";
 
 const patient = generatePatient();
 
 describe("Adding a single patient", () => {
   loginHooks();
   before("store patient info", () => {
+    // TODO: clean up after no tests rely on this patient
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);
     cy.task("setPatientPhone", patient.phone);
+    cy.task("getSpecName")
+      .then((prevSpecName) => {
+        if (prevSpecName) {
+          cleanUpPreviousOrg(prevSpecName);
+        }
+        let currentSpecName = `${testNumber()}-cypress-spec-2`
+        cy.task("setSpecName", currentSpecName)
+        setupOrgAndFacility(currentSpecName);
+      })
   });
   it("navigates to the add patient form", () => {
     cy.visit("/");
