@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,7 +9,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 @Entity
@@ -26,7 +26,7 @@ public class OrganizationQueueItem extends EternalAuditedEntity {
   private String externalId;
 
   @Column(nullable = false)
-  @Type(JsonBinaryType.class)
+  @JdbcTypeCode(SqlTypes.JSON)
   private OrganizationAccountRequest requestData;
 
   @OneToOne(optional = true, fetch = FetchType.LAZY)
