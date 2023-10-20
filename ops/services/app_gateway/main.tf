@@ -147,7 +147,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     unhealthy_threshold                       = 3
 
     match {
-      body = "UP"
+      body        = "UP"
       status_code = [200]
     }
   }
@@ -162,7 +162,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     unhealthy_threshold                       = 3
 
     match {
-      body = "UP"
+      body        = "UP"
       status_code = [200]
     }
   }
