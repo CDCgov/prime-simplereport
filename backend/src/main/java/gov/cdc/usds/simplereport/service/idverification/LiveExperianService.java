@@ -183,8 +183,7 @@ public class LiveExperianService
         handleKbaResultCodeFailure(kbaResultCode, responseEntity);
       }
 
-      boolean passed;
-      passed = hasPassed(responseEntity);
+      boolean passed = hasPassed(responseEntity);
 
       // Generate a searchable log message so we can monitor decisions from Experian
       String requestData = _objectMapper.writeValueAsString(answersRequest);
