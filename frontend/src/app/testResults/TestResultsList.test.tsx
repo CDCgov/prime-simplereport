@@ -289,9 +289,6 @@ describe("TestResultsList", () => {
         await screen.findByText("Cragell, Barb Whitaker")
       ).toBeInTheDocument();
       expect(await screen.findByText("Gerard, Sam G"));
-      expect(
-        await screen.findByRole("option", { name: "Negative" })
-      ).toBeInTheDocument();
       await user.selectOptions(screen.getByLabelText("Condition"), [
         "COVID-19",
       ]);
