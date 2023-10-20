@@ -120,49 +120,21 @@ resource "azurerm_application_gateway" "load_balancer" {
   backend_http_settings {
     name                                = local.api_backend_http_setting
     cookie_based_affinity               = "Disabled"
+    path                                = "/health"
     port                                = 80
     protocol                            = "Http"
     request_timeout                     = 60
     pick_host_name_from_backend_address = true
-    probe_name                          = "be-http"
   }
 
   backend_http_settings {
     name                                = local.api_backend_https_setting
     cookie_based_affinity               = "Disabled"
+    path                                = "/health"
     port                                = 443
     protocol                            = "Https"
     request_timeout                     = 60
     pick_host_name_from_backend_address = true
-    probe_name                          = "be-https"
-  }
-
-  probe {
-    name                                      = "be-http"
-    interval                                  = 10
-    path                                      = "/health"
-    pick_host_name_from_backend_http_settings = true
-    protocol                                  = "Http"
-    timeout                                   = 10
-    unhealthy_threshold                       = 3
-
-    match {
-      status_code = ["200-399"]
-    }
-  }
-
-  probe {
-    name                                      = "be-https"
-    interval                                  = 10
-    path                                      = "/health"
-    pick_host_name_from_backend_http_settings = true
-    protocol                                  = "Https"
-    timeout                                   = 10
-    unhealthy_threshold                       = 3
-
-    match {
-      status_code = ["200-399"]
-    }
   }
 
   # ------- Backend Metabase App -------------------------
@@ -200,21 +172,21 @@ resource "azurerm_application_gateway" "load_balancer" {
   backend_http_settings {
     name                                = local.staging_http_setting
     cookie_based_affinity               = "Disabled"
+    path                                = "/health"
     port                                = 80
     protocol                            = "Http"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
-    probe_name                          = "be-http"
   }
 
   backend_http_settings {
     name                                = local.staging_https_setting
     cookie_based_affinity               = "Disabled"
+    path                                = "/health"
     port                                = 443
     protocol                            = "Https"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
-    probe_name                          = "be-https"
   }
 
   # ------- Listeners -------------------------
