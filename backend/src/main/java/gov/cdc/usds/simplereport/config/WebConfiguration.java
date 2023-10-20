@@ -14,7 +14,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConditionalOnWebApplication
 public class WebConfiguration implements WebMvcConfigurer {
 
-  public static final String HEALTH_CHECK = "/health";
   public static final String PATIENT_EXPERIENCE = "/pxp/**";
   public static final String TWILIO_CALLBACK = "/pxp/callback";
   public static final String RS_QUEUE_CALLBACK = "/reportstream/callback";

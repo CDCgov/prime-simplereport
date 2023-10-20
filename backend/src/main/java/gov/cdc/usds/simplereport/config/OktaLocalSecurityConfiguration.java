@@ -43,8 +43,6 @@ public class OktaLocalSecurityConfiguration {
     http.authorizeHttpRequests(
             authorizeRequest ->
                 authorizeRequest
-                    .requestMatchers("/")
-                    .permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
