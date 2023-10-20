@@ -177,6 +177,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
       showPatientAddedToQueueAlert(patient);
       await refetch();
     } catch (err: any) {
+      setStartTestPatientId(null);
       throw err;
     }
   };
