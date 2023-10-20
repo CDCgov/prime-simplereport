@@ -32,8 +32,6 @@ const testOne = {
   facility: {
     name: "Facility 1",
   },
-  noSymptoms: true,
-  symptoms: "{}",
   __typename: "Result",
 };
 
@@ -74,8 +72,6 @@ const testTwo = {
   facility: {
     name: "Facility 1",
   },
-  noSymptoms: false,
-  symptoms: "{}",
   __typename: "Result",
 };
 
@@ -111,8 +107,6 @@ const testThree = {
   facility: {
     name: "Facility 1",
   },
-  noSymptoms: false,
-  symptoms: '{"someSymptom":"true"}',
   __typename: "Result",
 };
 
