@@ -873,12 +873,8 @@ export type Result = {
   disease: Scalars["String"]["output"];
   facility: Facility;
   id: Scalars["ID"]["output"];
-  noSymptoms: Scalars["Boolean"]["output"];
   patient: Patient;
-  pregnancy?: Maybe<Scalars["String"]["output"]>;
   reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
-  symptomOnset?: Maybe<Scalars["LocalDate"]["output"]>;
-  symptoms: Scalars["String"]["output"];
   testResult: Scalars["String"]["output"];
 };
 
@@ -943,7 +939,6 @@ export enum TestCorrectionStatus {
 export type TestOrder = {
   __typename?: "TestOrder";
   correctionStatus?: Maybe<Scalars["String"]["output"]>;
-  createdBy?: Maybe<ApiUser>;
   dateAdded: Scalars["String"]["output"];
   dateTested?: Maybe<Scalars["DateTime"]["output"]>;
   dateUpdated?: Maybe<Scalars["DateTime"]["output"]>;
@@ -954,7 +949,6 @@ export type TestOrder = {
   internalId: Scalars["ID"]["output"];
   noSymptoms?: Maybe<Scalars["Boolean"]["output"]>;
   patient: Patient;
-  patientLink?: Maybe<PatientLink>;
   pregnancy?: Maybe<Scalars["String"]["output"]>;
   reasonForCorrection?: Maybe<Scalars["String"]["output"]>;
   results: Array<MultiplexResult>;
@@ -2547,9 +2541,6 @@ export type GetResultsMultiplexWithCountQuery = {
       testResult: string;
       correctionStatus?: string | null;
       reasonForCorrection?: string | null;
-      symptoms: string;
-      noSymptoms: boolean;
-      symptomOnset?: any | null;
       facility: {
         __typename?: "Facility";
         name: string;
@@ -7681,9 +7672,6 @@ export const GetResultsMultiplexWithCountDocument = gql`
             lastName
           }
         }
-        symptoms
-        noSymptoms
-        symptomOnset
       }
       totalElements
     }

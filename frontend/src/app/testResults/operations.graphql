@@ -153,9 +153,6 @@ query GetResultsMultiplexWithCount(
           lastName
         }
       }
-      symptoms
-      noSymptoms
-      symptomOnset
     }
     totalElements
   }
