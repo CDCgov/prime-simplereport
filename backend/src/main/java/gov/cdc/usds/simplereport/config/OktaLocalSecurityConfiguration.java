@@ -45,8 +45,6 @@ public class OktaLocalSecurityConfiguration {
                 authorizeRequest
                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
-                    .permitAll()
                     .requestMatchers("/echo/**", "/authTest/**")
                     .permitAll()
                     .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
