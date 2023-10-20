@@ -26,11 +26,6 @@ public class AuthTestController {
     _extractor = new OrganizationExtractor(p);
   }
 
-  @GetMapping("/health")
-  public void health() {
-    log.info("health check ok");
-  }
-
   @GetMapping("/authTest")
   public Object showMe(Authentication auth) {
     log.warn("Authentication is of class {}", auth.getClass().getCanonicalName());
