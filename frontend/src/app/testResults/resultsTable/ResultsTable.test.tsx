@@ -135,35 +135,6 @@ describe("Component ResultsTable", () => {
     expect(screen.getByTestId("filtered-results").children.length).toBe(9);
   });
 
-  /*
-  it("renders multiplex results in correct order", () => {
-    render(
-      <ResultsTable
-        results={TEST_RESULTS_MULTIPLEX_CONTENT}
-        setPrintModalId={setPrintModalIdFn}
-        setMarkCorrectionId={setMarkCorrectionIdFn}
-        setDetailsModalId={setDetailsModalIdFn}
-        setTextModalId={setTextModalIdFn}
-        setEmailModalTestResultId={setEmailModalTestResultIdFn}
-        hasMultiplexResults={true}
-        hasFacility={false}
-      />
-    );
-
-    const multiplexResultsForTest =
-      screen.getByTestId("filtered-results").children;
-
-    // Get all results for most recent multiplex test
-    const covidResult = multiplexResultsForTest.item(6);
-    const fluAResult = multiplexResultsForTest.item(7);
-    const fluBResult = multiplexResultsForTest.item(8);
-
-    expect(covidResult).toHaveTextContent("COVID-19");
-    expect(fluAResult).toHaveTextContent("Flu A");
-    expect(fluBResult).toHaveTextContent("Flu B");
-  });
-   */
-
   it("renders multiple results for the same patient with different aria labels", () => {
     render(
       <ResultsTable

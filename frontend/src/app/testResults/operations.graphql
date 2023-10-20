@@ -135,12 +135,6 @@ query GetResultsMultiplexWithCount(
       deviceType {
         internalId
         name
-#        manufacturer
-#        model
-#        swabTypes {
-#          internalId
-#          name
-#        }
       }
       patient {
         internalId

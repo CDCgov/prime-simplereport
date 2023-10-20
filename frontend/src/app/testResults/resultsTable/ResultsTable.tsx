@@ -165,13 +165,6 @@ const generateResultRows = (
         )}
         data-testid={`test-result-${r.id}-${diseaseIdName}`}
         data-patient-link={null}
-        /*
-        data-patient-link={
-          r.testOrder.patientLink
-            ? `${getUrl()}pxp?plid=${r.testOrder.patientLink.internalId}`
-            : null
-        }
-         */
       >
         <td className="patient-name-cell">
           <Button

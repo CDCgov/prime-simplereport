@@ -264,8 +264,6 @@ type TestOrder {
   dateTested: DateTime
   correctionStatus: String
   reasonForCorrection: String
-  createdBy: ApiUser
-  patientLink: PatientLink
 }
 
 type TestResult {
@@ -298,10 +296,6 @@ type Result {
   patient: Patient!
   dateAdded: String!
   dateUpdated: DateTime
-  pregnancy: String
-  noSymptoms: Boolean!
-  symptoms: String!
-  symptomOnset: LocalDate
   deviceType: DeviceType!
   disease: String!
   testResult: String!
