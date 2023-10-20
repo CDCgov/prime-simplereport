@@ -698,7 +698,6 @@ class FhirConverterTest {
                 .id("id-123")
                 .resultDescription(TestResult.POSITIVE.toString())
                 .testkitNameId("testKitName")
-                .equipmentUid("equipmentUid")
                 .deviceModel("modelName")
                 .issued(Date.from(Instant.parse("2023-06-10T23:15:00.00Z")))
                 .build());
@@ -709,7 +708,7 @@ class FhirConverterTest {
     assertThat(actual.getCode().getCoding()).hasSize(1);
     assertThat(actual.getCode().getCodingFirstRep().getSystem()).isEqualTo("http://loinc.org");
     assertThat(actual.getCode().getCodingFirstRep().getCode()).isEqualTo("diseaseCode");
-    assertThat(actual.getMethod().getExtension()).hasSize(2);
+    assertThat(actual.getMethod().getExtension()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCoding()).hasSize(1);
     assertThat(actual.getValueCodeableConcept().getCodingFirstRep().getSystem())
         .isEqualTo("http://snomed.info/sct");
@@ -734,7 +733,6 @@ class FhirConverterTest {
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
-            "equipmentUid",
             "modelName",
             Date.from(Instant.parse("2023-06-10T23:15:00.00Z")));
 
@@ -768,7 +766,6 @@ class FhirConverterTest {
             TestCorrectionStatus.CORRECTED,
             "Oopsy Daisy",
             "testkitName",
-            "equipmentUid",
             "modelName",
             new Date());
 
@@ -792,7 +789,6 @@ class FhirConverterTest {
             TestCorrectionStatus.REMOVED,
             null,
             "testkitName",
-            "equipmentUid",
             "modelName",
             new Date());
 
@@ -807,14 +803,7 @@ class FhirConverterTest {
   void convertToObservation_Result_null() {
     var actual =
         fhirConverter.convertToObservation(
-            null,
-            "",
-            TestCorrectionStatus.ORIGINAL,
-            null,
-            "testkitName",
-            "equipmentUid",
-            "modelName",
-            new Date());
+            null, "", TestCorrectionStatus.ORIGINAL, null, "testkitName", "modelName", new Date());
 
     assertThat(actual).isNull();
   }
@@ -830,7 +819,6 @@ class FhirConverterTest {
             TestCorrectionStatus.ORIGINAL,
             null,
             "testkitName",
-            "equipmentUid",
             "modelName",
             new Date());
 
@@ -852,10 +840,22 @@ class FhirConverterTest {
     var device = DeviceType.builder().build();
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
+            null,
+            covidDisease,
+            "94500-6",
+            "covidEquipmentUID",
+            "covidEquipmentUIDType",
+            "covidTestkitNameId",
+            "94500-0");
     var fluDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null, fluDisease, "85477-8", "fluEquipmentUID", "fluTestkitNameId", "85477-0");
+            null,
+            fluDisease,
+            "85477-8",
+            "fluEquipmentUID",
+            "fluEquipmentUidType",
+            "fluTestkitNameId",
+            "85477-0");
     ReflectionTestUtils.setField(
         device,
         "supportedDiseaseTestPerformed",
@@ -910,7 +910,13 @@ class FhirConverterTest {
     var device = DeviceType.builder().build();
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
+            null,
+            covidDisease,
+            "94500-6",
+            "covidEquipmentUID",
+            "covidEquipmentUIDType",
+            "covidTestkitNameId",
+            "94500-0");
 
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
     ReflectionTestUtils.setField(
@@ -1653,14 +1659,27 @@ class FhirConverterTest {
     var testPerformedCodesList =
         List.of(
             new DeviceTypeDisease(
-                deviceTypeId, covidDisease, "333-123", "equipmentUID1", "testkitNameId1", null),
+                deviceTypeId,
+                covidDisease,
+                "333-123",
+                "equipmentUID1",
+                "equipmentUIDType1",
+                "testkitNameId1",
+                null),
             new DeviceTypeDisease(
-                deviceTypeId, fluADisease, "444-123", "equipmentUID2", "testkitNameId2", "95422-2"),
+                deviceTypeId,
+                fluADisease,
+                "444-123",
+                "equipmentUID2",
+                "equipmentUIDType2",
+                "testkitNameId2",
+                "95422-2"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluBDisease,
                 "444-456",
                 "equipmentUID3",
+                "equipmentUIDType3",
                 "testkitNameId3",
                 "95422-2"));
 

@@ -5086,3 +5086,15 @@ databaseChangeLog:
       rollback:
         - sql:
             sql: DELETE FROM ${database.defaultSchemaName}.supported_disease WHERE name = 'HIV';
+  - changeSet:
+      id: add-equipment-uid-type-to-device-type-disease
+      author: bob@skylight.digital
+      comment: Add column to Device Type Disease for equipment UID type to be populated by the LIVD sync
+      changes:
+        - addColumn:
+            tableName: device_type_disease
+            columns:
+              - column:
+                  name: equipment_uid_type
+                  type: text
+                  remarks: Equipment UID from LIVD sync to be used in the universal pipeline

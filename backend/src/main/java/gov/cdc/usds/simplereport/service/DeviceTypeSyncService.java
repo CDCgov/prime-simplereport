@@ -232,6 +232,7 @@ public class DeviceTypeSyncService {
                       .testPerformedLoincCode(device.getTestPerformedLoincCode())
                       .testOrderedLoincCode(device.getTestOrderedLoincCode())
                       .equipmentUid(device.getEquipmentUid())
+                      .equipmentUidType(device.getEquipmentUidType())
                       .testkitNameId(device.getTestKitNameId())
                       .build());
         });
@@ -309,6 +310,7 @@ public class DeviceTypeSyncService {
                         .testOrderedLoincCode(device.getTestOrderedLoincCode())
                         .testkitNameId(device.getTestKitNameId())
                         .equipmentUid(device.getEquipmentUid())
+                        .equipmentUidType(device.getEquipmentUidType())
                         .build()))
             .build();
     log.info("Device created {}", createdDeviceType);

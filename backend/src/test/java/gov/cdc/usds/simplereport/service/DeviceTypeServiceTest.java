@@ -51,7 +51,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
             _deviceTypeRepoMock,
             mock(DeviceSpecimenTypeNewRepository.class),
             mock(SpecimenTypeRepository.class),
-            mock(SupportedDiseaseRepository.class));
+            mock(SupportedDiseaseRepository.class),
+            mock(DeviceTypeDiseaseRepository.class));
   }
 
   @Test
@@ -124,6 +125,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                         .supportedDisease(disease.getInternalId())
                         .testPerformedLoincCode("loinc1")
                         .equipmentUid("equipmentUid1")
+                        .equipmentUidType("equipmentUidType1")
                         .testkitNameId("testkitNameId1")
                         .testOrderedLoincCode("loinc3")
                         .build()))
@@ -166,6 +168,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .supportedDisease(disease1.getInternalId())
                             .testPerformedLoincCode("loinc1")
                             .equipmentUid("equipmentUid1")
+                            .equipmentUidType("equipmentUidType1")
                             .testkitNameId("testkitNameId1")
                             .testOrderedLoincCode("loinc3")
                             .build()))
@@ -184,6 +187,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .supportedDisease(disease2.getInternalId())
                             .testPerformedLoincCode("loinc2")
                             .equipmentUid("equipmentUid2")
+                            .equipmentUidType("equipmentUidType2")
                             .testkitNameId("testkitNameId2")
                             .testOrderedLoincCode("loinc3")
                             .build()))
@@ -250,6 +254,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .supportedDisease(disease1.getInternalId())
                             .testPerformedLoincCode("loinc1")
                             .equipmentUid("equipmentUid1")
+                            .equipmentUidType("equipmentUidType1")
                             .testkitNameId("testkitNameId1")
                             .testOrderedLoincCode("loinc3")
                             .build()))
@@ -306,6 +311,56 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
   @Test
   @WithSimpleReportSiteAdminUser
+  void updateDeviceEquipmentUidType_adminUser_success() {
+    // GIVEN
+    SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
+    SupportedDisease disease1 = _diseaseService.covid();
+
+    DeviceType device =
+        _service.createDeviceType(
+            CreateDeviceType.builder()
+                .name("A")
+                .model("B")
+                .manufacturer("C")
+                .swabTypes(List.of(swab1.getInternalId()))
+                .supportedDiseaseTestPerformed(
+                    List.of(
+                        SupportedDiseaseTestPerformedInput.builder()
+                            .supportedDisease(disease1.getInternalId())
+                            .testPerformedLoincCode("loinc1")
+                            .equipmentUid("equipmentUid1")
+                            .equipmentUidType("equipmentUidType1")
+                            .testkitNameId("testkitNameId1")
+                            .testOrderedLoincCode("loinc3")
+                            .build()))
+                .testLength(10)
+                .build());
+
+    UpdateDeviceType deviceUpdate =
+        UpdateDeviceType.builder()
+            .internalId(device.getInternalId())
+            .supportedDiseaseTestPerformed(
+                List.of(
+                    SupportedDiseaseTestPerformedInput.builder()
+                        .supportedDisease(disease1.getInternalId())
+                        .testPerformedLoincCode("loinc1")
+                        .equipmentUid("equipmentUid1")
+                        .testkitNameId("testkitNameId1")
+                        .testOrderedLoincCode("loinc3")
+                        .equipmentUidType("equipmentUidType2")
+                        .build()))
+            .build();
+    DeviceType updatedDevice = _service.updateDeviceType(deviceUpdate);
+
+    // THEN
+    assertEquals(
+        "equipmentUidType2",
+        updatedDevice.getSupportedDiseaseTestPerformed().get(0).getEquipmentUidType());
+    assertThat(updatedDevice.getSupportedDiseaseTestPerformed()).hasSize(1);
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
   void updateDeviceTypeSupportedDiseaseTestPerformed_adminUser_success() {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
@@ -325,6 +380,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                             .supportedDisease(disease1.getInternalId())
                             .testPerformedLoincCode("loinc1")
                             .equipmentUid("equipmentUid1")
+                            .equipmentUidType("equipmentUidType1")
                             .testkitNameId("testkitNameId1")
                             .testOrderedLoincCode("loinc3")
                             .build()))
@@ -397,6 +453,16 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     // GIVEN
     SpecimenType swab1 = specimenTypeRepository.save(new SpecimenType("Nose", "111222333"));
     SupportedDisease disease1 = _diseaseService.covid();
+    List<SupportedDiseaseTestPerformedInput> supportedDiseaseInput =
+        List.of(
+            SupportedDiseaseTestPerformedInput.builder()
+                .supportedDisease(disease1.getInternalId())
+                .testPerformedLoincCode("loinc2")
+                .equipmentUid("equipmentUid2")
+                .equipmentUidType("equipmentUidType1")
+                .testkitNameId("testkitNameId2")
+                .testOrderedLoincCode("loinc3")
+                .build());
 
     DeviceType device =
         _service.createDeviceType(
@@ -405,22 +471,17 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
                 .model("B")
                 .manufacturer("C")
                 .swabTypes(List.of(swab1.getInternalId()))
-                .supportedDiseaseTestPerformed(
-                    List.of(
-                        SupportedDiseaseTestPerformedInput.builder()
-                            .supportedDisease(disease1.getInternalId())
-                            .testPerformedLoincCode("loinc2")
-                            .equipmentUid("equipmentUid2")
-                            .testkitNameId("testkitNameId2")
-                            .testOrderedLoincCode("loinc3")
-                            .build()))
+                .supportedDiseaseTestPerformed(supportedDiseaseInput)
                 .testLength(15)
                 .build());
 
     // WHEN
     DeviceType updatedDevice =
         _service.updateDeviceType(
-            UpdateDeviceType.builder().internalId(device.getInternalId()).build());
+            UpdateDeviceType.builder()
+                .internalId(device.getInternalId())
+                .supportedDiseaseTestPerformed(supportedDiseaseInput)
+                .build());
 
     // THEN
     assertEquals(updatedDevice.getInternalId(), device.getInternalId());

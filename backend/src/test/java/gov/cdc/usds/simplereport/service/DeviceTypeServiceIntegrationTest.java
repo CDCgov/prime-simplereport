@@ -14,14 +14,17 @@ import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.errors.DryRunException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.model.reportstream.LIVDResponse;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +43,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
   @Autowired private DeviceTypeRepository deviceTypeRepo;
   @Autowired private SpecimenTypeRepository specimenTypeRepository;
   @Autowired private DeviceSpecimenTypeNewRepository deviceSpecimenTypeRepository;
+  @Autowired private DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
+
   @MockBean private DataHubClient dataHubClient;
 
   private SpecimenType swab1;
@@ -76,6 +81,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
                             .testPerformedLoincCode("000000000")
                             .testOrderedLoincCode("000000000")
                             .equipmentUid("Equipment Uid")
+                            .equipmentUidType("Equipment Uid Type")
                             .testkitNameId("TestKit Uid")
                             .build()))
                 .testLength(1)
@@ -95,6 +101,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
                             .supportedDisease(disease.getInternalId())
                             .testPerformedLoincCode("258500001")
                             .equipmentUid("Equipment Uid")
+                            .equipmentUidType("Equipment Uid Type")
                             .testkitNameId("TestKit Uid")
                             .build()))
                 .testLength(2)
@@ -113,7 +120,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "7777777",
             "8888888",
             "Updated TestKit",
-            "Updated Equip");
+            "Updated Equip",
+            "Updated Equip Type");
 
     List<LIVDResponse> devices = List.of(newDevice);
 
@@ -132,6 +140,7 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
     var code = codes.get(0);
     assertThat(code.getTestkitNameId()).isEqualTo("Updated TestKit");
     assertThat(code.getEquipmentUid()).isEqualTo("Updated Equip");
+    assertThat(code.getEquipmentUidType()).isEqualTo("Updated Equip Type");
   }
 
   @ParameterizedTest
@@ -147,7 +156,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "8888888",
             "0123456",
             "New TestKit",
-            "New Equip");
+            "New Equip",
+            "New Equip Uid Type");
     List<LIVDResponse> devices = List.of(newDevice);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
@@ -187,7 +197,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "0123456",
             "8888888",
             "TestKit A",
-            "Equip A");
+            "Equip A",
+            "Equip A Type");
     LIVDResponse deviceTwo =
         new LIVDResponse(
             devB.getManufacturer(),
@@ -197,7 +208,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "0123456",
             "8888888",
             "TestKit A",
-            "Equip A");
+            "Equip A",
+            "Equip A Type");
     List<LIVDResponse> devices = List.of(deviceOne, deviceTwo);
 
     when(dataHubClient.getLIVDTable()).thenReturn(devices);
@@ -235,6 +247,38 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
 
   @Test
   @SliceTestConfiguration.WithSimpleReportSiteAdminUser
+  void syncDevices_updatesAssociatedDeviceTypeDiseaseFields() {
+    LIVDResponse newDevice =
+        new LIVDResponse(
+            "Manufacturer A",
+            "Model A",
+            List.of(SPECIMEN_DESCRIPTION_ONE),
+            "influenza A RNA Result",
+            "7777777",
+            "8888888",
+            "Updated TestKit",
+            "Updated Equip",
+            "Updated Equip Type");
+
+    List<LIVDResponse> devices = List.of(newDevice);
+
+    when(dataHubClient.getLIVDTable()).thenReturn(devices);
+    _service.syncDevices(false);
+    var updatedDevice =
+        deviceTypeRepo.findDeviceTypeByManufacturerAndModelAndIsDeletedFalse(
+            newDevice.getManufacturer(), newDevice.getModel());
+    assertTrue(updatedDevice.isPresent());
+
+    List<DeviceTypeDisease> deviceTypeDiseases =
+        deviceTypeDiseaseRepository.findAllByDeviceTypeIdIn(
+            Collections.singleton(updatedDevice.get().getInternalId()));
+    assertThat(deviceTypeDiseases.get(0).getEquipmentUidType()).isEqualTo("Updated Equip Type");
+    assertThat(deviceTypeDiseases.get(0).getEquipmentUid()).isEqualTo("Updated Equip");
+    assertThat(deviceTypeDiseases.get(0).getTestkitNameId()).isEqualTo("Updated TestKit");
+  }
+
+  @Test
+  @SliceTestConfiguration.WithSimpleReportSiteAdminUser
   void syncDevices_skipsNullUpdates() {
     var existingDevice = deviceTypeRepo.findDeviceTypeByName(devA.getName());
     var updatedAt = existingDevice.getUpdatedAt();
@@ -248,7 +292,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "000000000",
             "000000000",
             "TestKit Uid",
-            "Equipment Uid");
+            "Equipment Uid",
+            "Equipment Uid Type");
 
     List<LIVDResponse> devices = List.of(device);
 
@@ -272,7 +317,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "000000000",
             "000000000",
             "TestKit Uid",
-            "Equipment Uid");
+            "Equipment Uid",
+            "Equipment Uid Type");
 
     List<LIVDResponse> devices = List.of(device);
 
@@ -296,7 +342,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "000000000",
             "000000000",
             "TestKit Uid",
-            "Equipment Uid");
+            "Equipment Uid",
+            "Equip Uid Type");
 
     List<LIVDResponse> devices = List.of(device);
 
@@ -319,7 +366,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "000000000",
             "000000000",
             "TestKit Uid",
-            "Equipment Uid");
+            "Equipment Uid",
+            "Equipment Uid Type");
 
     List<LIVDResponse> devices = List.of(device);
 
@@ -342,7 +390,8 @@ class DeviceTypeServiceIntegrationTest extends BaseServiceTest<DeviceTypeSyncSer
             "8888888",
             "0123456",
             "Dry Run TestKit",
-            "Dry Run Equip");
+            "Dry Run Equip",
+            "Dry Run Equip Type");
 
     List<LIVDResponse> devices = List.of(newDevice);
 

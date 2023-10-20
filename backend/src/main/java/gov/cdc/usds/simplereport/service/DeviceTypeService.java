@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -41,6 +42,7 @@ public class DeviceTypeService {
   private final DeviceSpecimenTypeNewRepository deviceSpecimenTypeNewRepository;
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
+  private final DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
 
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -119,7 +121,7 @@ public class DeviceTypeService {
     }
 
     if (updateDevice.getSupportedDiseaseTestPerformed() != null) {
-      var deviceTypeDiseaseList =
+      List<DeviceTypeDisease> deviceTypeDiseaseList =
           createDeviceTypeDiseaseList(updateDevice.getSupportedDiseaseTestPerformed(), device);
       device.getSupportedDiseaseTestPerformed().clear();
       device.getSupportedDiseaseTestPerformed().addAll(deviceTypeDiseaseList);
@@ -190,6 +192,7 @@ public class DeviceTypeService {
                           .testPerformedLoincCode(input.getTestPerformedLoincCode())
                           .testOrderedLoincCode(input.getTestOrderedLoincCode())
                           .equipmentUid(input.getEquipmentUid())
+                          .equipmentUidType(input.getEquipmentUidType())
                           .testkitNameId(input.getTestkitNameId())
                           .testOrderedLoincCode(input.getTestOrderedLoincCode())
                           .build()));
