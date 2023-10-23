@@ -14,20 +14,6 @@ locals {
     # environments should use the "local.env_level" convention where possible.
     resource_group = data.azurerm_resource_group.dev2.name
   }
-  cdc_tags = {
-    business_steward    = "vuj4@cdc.gov"
-    center              = "DDPHSS"
-    environment         = local.env
-    escid               = "3205"
-    funding_source      = "TBD"
-    pii_data            = "false"
-    security_compliance = "moderate"
-    security_steward    = "ghv3@cdc.gov,vfd9@cdc.gov,xda7@cdc.gov,xii9@cdc.gov"
-    support_group       = "OMHS"
-    system              = "prim"
-    technical_steward   = "mxc1@cdc.gov,qom6@cdc.gov,qwl5@cdc.gov,tgi8@cdc.gov"
-    zone                = "EXTRANET"
-  }
 }
 
 module "monitoring" {
@@ -79,7 +65,6 @@ module "db_alerting" {
   action_group_ids = [
     data.terraform_remote_state.global.outputs.pagerduty_non_prod_action_id
   ]
-  cdc_tags = local.cdc_tags
 }
 
 module "vnet" {

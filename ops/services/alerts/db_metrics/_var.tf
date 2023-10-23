@@ -22,8 +22,3 @@ variable "wiki_docs_json" {
   type        = map(string)
   default     = { "Alert Response Docs" : "https://github.com/CDCgov/prime-simplereport/wiki/Alert-Response" }
 }
-
-variable "cdc_tags" {
-  description = "tags for resources created"
-  type        = map(string)
-}

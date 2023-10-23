@@ -66,9 +66,3 @@ variable "report_stream_batch_maximum" {
 }
 
 variable "lb_subnet_id" {}
-
-variable "cdc_tags" {
-  type        = map(string)
-  description = "Tags for CDC"
-  default     = {}
-}

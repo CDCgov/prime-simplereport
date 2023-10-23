@@ -25,6 +25,19 @@ permissions:
   packages: write
 
 jobs:
+  key_rotation:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - deploy_env: dev
+          - deploy_env: dev0
+    with:
+      deploy_env: ${{ matrix.deploy_env }}
+      replace_keys: "true"
+    uses: ./.github/workflows/deployDev.yml
+    secrets: inherit
+
 # Check for changes in the backend, cypress, database, frontend, and nginx directories
   workflow_changes:
     with:

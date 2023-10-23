@@ -69,9 +69,3 @@ variable "zones" {
   type    = list(string)
   default = ["1", "2", "3"]
 }
-
-variable "cdc_tags" {
-  description = "cdc tags for resources"
-  type        = map(string)
-  default     = {}
-}

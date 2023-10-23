@@ -25,7 +25,16 @@ on:
         options:
           - "false"
           - "true"
-
+  workflow_call:
+    inputs:
+      deploy_env:
+        description: 'The environment to deploy to'
+        required: true
+        type: string
+      replace_keys:
+        description: 'Replace keys'
+        default: "false"
+        type: string
 env:
   NODE_VERSION: 20
 
