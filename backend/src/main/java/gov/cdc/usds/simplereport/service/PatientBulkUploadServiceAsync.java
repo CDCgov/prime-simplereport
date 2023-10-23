@@ -140,10 +140,6 @@ public class PatientBulkUploadServiceAsync {
                 .lastName(extractedData.getLastName().getValue())
                 .suffix(extractedData.getSuffix().getValue())
                 .notes(extractedData.getNotes().getValue())
-                .lookupId(null)
-                .tribalAffiliation(null)
-                .preferredLanguage(null)
-                .testResultDeliveryPreference(null)
                 .build();
 
         if (!allPatients.contains(newPatient)) {
