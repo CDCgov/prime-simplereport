@@ -63,6 +63,11 @@ resource "azurerm_linux_web_app" "service" {
       action                    = "Allow"
     }
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 # Creates a staging slot for the Linux Web App
@@ -109,6 +114,11 @@ resource "azurerm_linux_web_app_slot" "staging" {
       virtual_network_subnet_id = var.lb_subnet_id
       action                    = "Allow"
     }
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }
 
