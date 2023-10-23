@@ -12,10 +12,13 @@ describe("Adding a single patient", () => {
     cy.task("setPatientPhone", patient.phone);
     cy.task("getSpecName")
       .then((prevSpecName) => {
+        let currentSpecName = `${testNumber()}-cypress-spec-2`;
         if (prevSpecName) {
-          cleanUpPreviousOrg(prevSpecName);
+          let shouldCleanUpPreviousOrg = prevSpecName != currentSpecName;
+          if (shouldCleanUpPreviousOrg) {
+            cleanUpPreviousOrg(prevSpecName);
+          }
         }
-        let currentSpecName = `${testNumber()}-cypress-spec-2`
         cy.task("setSpecName", currentSpecName)
         setupOrgAndFacility(currentSpecName);
       })
