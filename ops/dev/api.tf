@@ -64,7 +64,6 @@ module "simple_report_api" {
     # this shadows (and overrides) an identical declaration in application.yaml
     # SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
   }
-  cdc_tags = local.cdc_tags
 }
 
 module "report_stream_reporting_functions" {
@@ -76,5 +75,4 @@ module "report_stream_reporting_functions" {
   depends_on = [
     azurerm_storage_account.app
   ]
-  cdc_tags = local.cdc_tags
 }

@@ -8,20 +8,6 @@ locals {
     environment    = local.env
     resource_group = data.azurerm_resource_group.rg.name
   }
-  cdc_tags = {
-    business_steward    = "vuj4@cdc.gov"
-    center              = "DDPHSS"
-    environment         = local.env
-    escid               = "3205"
-    funding_source      = "TBD"
-    pii_data            = "false"
-    security_compliance = "moderate"
-    security_steward    = "ghv3@cdc.gov,vfd9@cdc.gov,xda7@cdc.gov,xii9@cdc.gov"
-    support_group       = "OMHS"
-    system              = "prim"
-    technical_steward   = "mxc1@cdc.gov,qom6@cdc.gov,qwl5@cdc.gov,tgi8@cdc.gov"
-    zone                = "EXTRANET"
-  }
 }
 
 # Frontend React App
@@ -113,7 +99,6 @@ module "app_gateway" {
 
   firewall_policy_id = module.web_application_firewall.web_application_firewall_id
   tags               = local.management_tags
-  cdc_tags           = local.cdc_tags
 }
 
 module "nat_gateway" {
