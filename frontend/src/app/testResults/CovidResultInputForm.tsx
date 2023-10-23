@@ -74,8 +74,8 @@ const CovidResultInputForm: React.FC<Props> = ({
       <RadioGroup
         legend="Test result"
         legendSrOnly
-        onChange={(value) => {
-          convertAndSendResults(value as TestResult);
+        onChange={(value: TestResult) => {
+          convertAndSendResults(value);
         }}
         buttons={[
           {

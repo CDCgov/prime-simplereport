@@ -103,6 +103,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <label
                     class="usa-label"
                     for="103"
+                    id="label-for-103"
                   >
                     First name
                     <abbr
@@ -129,6 +130,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <label
                     class="usa-label"
                     for="104"
+                    id="label-for-104"
                   >
                     Middle name
                   </label>
@@ -148,6 +150,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <label
                     class="usa-label"
                     for="105"
+                    id="label-for-105"
                   >
                     Last name
                     <abbr
@@ -1922,6 +1925,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                   <label
                     class="usa-label"
                     for="108"
+                    id="label-for-108"
                   >
                     Date of birth (mm/dd/yyyy)
                     <abbr
@@ -2000,6 +2004,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         <label
                           class="usa-label"
                           for="109"
+                          id="label-for-109"
                         >
                           Primary phone number
                           <abbr
@@ -2191,6 +2196,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                         <label
                           class="usa-label"
                           for="112"
+                          id="label-for-112"
                         >
                           Email address
                         </label>
@@ -3920,6 +3926,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <label
                       class="usa-label"
                       for="115"
+                      id="label-for-115"
                     >
                       Street address 1
                       <abbr
@@ -3949,6 +3956,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <label
                       class="usa-label"
                       for="116"
+                      id="label-for-116"
                     >
                       Street address 2
                     </label>
@@ -3971,6 +3979,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <label
                       class="usa-label"
                       for="117"
+                      id="label-for-117"
                     >
                       City
                       <abbr
@@ -3996,6 +4005,7 @@ exports[`EditPatient facility select input matches screenshot 1`] = `
                     <label
                       class="usa-label"
                       for="118"
+                      id="label-for-118"
                     >
                       County
                     </label>

@@ -1,12 +1,9 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import YesNoRadioGroup, {
-  boolToYesNoUnknown,
-  yesNoUnknownToBool,
-} from "./YesNoRadioGroup";
+import YesNoRadioGroup, { boolToYesNo, yesNoToBool } from "./YesNoRadioGroup";
 
-describe("Yes/No/Unknown RadioGroup", () => {
+describe("Yes/No RadioGroup", () => {
   const onChangeFn = jest.fn(() => {});
   const onBlurFn = jest.fn(() => {});
 
@@ -41,8 +38,6 @@ describe("Yes/No/Unknown RadioGroup", () => {
     expect(onChangeFn).toHaveBeenCalledWith("YES");
     await userEvent.click(screen.getByLabelText("No"));
     expect(onChangeFn).toHaveBeenCalledWith("NO");
-    await userEvent.click(screen.getByLabelText("Unknown"));
-    expect(onChangeFn).toHaveBeenCalledWith("UNKNOWN");
   });
 
   it("calls function on blur", async () => {
@@ -53,19 +48,18 @@ describe("Yes/No/Unknown RadioGroup", () => {
     expect(onBlurFn).toHaveBeenCalled();
   });
 
-  describe("Yes/No/Unknown utility methods", () => {
+  describe("Yes/No utility methods", () => {
     it("converts value to bool", () => {
-      expect(yesNoUnknownToBool("YES")).toBeTruthy();
-      expect(yesNoUnknownToBool("NO")).toBeFalsy();
-      expect(yesNoUnknownToBool("UNKNOWN")).toBeNull();
+      expect(yesNoToBool("YES")).toBeTruthy();
+      expect(yesNoToBool("NO")).toBeFalsy();
       // @ts-ignore
-      expect(yesNoUnknownToBool(undefined)).toBeUndefined();
+      expect(yesNoToBool(undefined)).toBeUndefined();
     });
     it("converts bool to value", () => {
-      expect(boolToYesNoUnknown(true)).toBe("YES");
-      expect(boolToYesNoUnknown(false)).toBe("NO");
-      expect(boolToYesNoUnknown(null)).toBe("UNKNOWN");
-      expect(boolToYesNoUnknown(undefined)).toBeUndefined();
+      expect(boolToYesNo(true)).toBe("YES");
+      expect(boolToYesNo(false)).toBe("NO");
+      expect(boolToYesNo(null)).toBeUndefined();
+      expect(boolToYesNo(undefined)).toBeUndefined();
     });
   });
 });

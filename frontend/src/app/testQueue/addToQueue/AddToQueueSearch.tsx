@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useMutation, useLazyQuery, useQuery } from "@apollo/client";
+import { useFeature } from "flagged";
 
 import {
   QUEUE_NOTIFICATION_TYPES,
@@ -48,6 +49,7 @@ interface Props {
   startTestPatientId: string | null;
   setStartTestPatientId: any;
   canAddPatient: boolean;
+  addPatientToQueue?: (patient: Patient) => Promise<void>;
 }
 
 const AddToQueueSearchBox = ({
@@ -57,6 +59,7 @@ const AddToQueueSearchBox = ({
   startTestPatientId,
   setStartTestPatientId,
   canAddPatient,
+  addPatientToQueue,
 }: Props) => {
   const appInsights = getAppInsights();
 
@@ -76,7 +79,7 @@ const AddToQueueSearchBox = ({
   const [mutationError, updateMutationError] = useState(null);
   const [selectedPatient, setSelectedPatient] = useState<Patient>();
 
-  const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
+  const [addPatientToQueueMutation] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
   const {
     ref: dropDownRef,
@@ -89,12 +92,19 @@ const AddToQueueSearchBox = ({
     [allowQuery, showSuggestion]
   );
 
+  const testCardRefactorEnabled = useFeature(
+    "testCardRefactorEnabled"
+  ) as boolean;
+
   useQuery<{ patient: Patient }>(QUERY_SINGLE_PATIENT, {
     fetchPolicy: "no-cache",
-    //variables: { internalId: patientIdParam },
     variables: { internalId: startTestPatientId },
-    onCompleted: (response) => {
+    onCompleted: async (response) => {
       setSelectedPatient(response.patient);
+      if (testCardRefactorEnabled && addPatientToQueue) {
+        await addPatientToQueue(response.patient);
+        setSelectedPatient(undefined);
+      }
     },
     skip: !startTestPatientId || patientsInQueue.includes(startTestPatientId),
   });
@@ -143,7 +153,7 @@ const AddToQueueSearchBox = ({
       testResultDelivery,
     };
     if (createOrUpdate === "create") {
-      callback = addPatientToQueue;
+      callback = addPatientToQueueMutation;
       variables.facilityId = facilityId;
     } else {
       callback = updateAoe;
@@ -159,7 +169,7 @@ const AddToQueueSearchBox = ({
         refetchQueue();
         setStartTestPatientId(null);
         if (createOrUpdate === "create") {
-          return res.data.addPatientToQueue;
+          return res.data.addPatientToQueueMutation;
         }
       })
       .catch((err) => {
@@ -181,6 +191,7 @@ const AddToQueueSearchBox = ({
         patients={data?.patients || []}
         selectedPatient={selectedPatient}
         onAddToQueue={onAddToQueue}
+        addPatientToQueue={addPatientToQueue}
         patientsInQueue={patientsInQueue}
         shouldShowSuggestions={showDropdown}
         loading={debounced !== queryString || loading}

@@ -106,12 +106,6 @@ exports[`QueueItem matches snapshot 1`] = `
                 class="timer-button timer-reset"
                 data-testid="timer"
               >
-                <span
-                  role="timer"
-                >
-                  15:00
-                </span>
-                 
                 <svg
                   alt-text="stopwatch"
                   aria-hidden="true"
@@ -128,6 +122,13 @@ exports[`QueueItem matches snapshot 1`] = `
                     fill="currentColor"
                   />
                 </svg>
+                <span
+                  class="margin-left-1"
+                  role="timer"
+                >
+                  Start timer
+                </span>
+                 
               </button>
             </div>
             <div
