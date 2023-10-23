@@ -17,4 +17,5 @@ public class LIVDResponse {
   private String testOrderedLoincCode;
   private String testKitNameId;
   private String equipmentUid;
+  private String equipmentUidType;
 }
