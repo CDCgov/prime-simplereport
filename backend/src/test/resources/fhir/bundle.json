@@ -166,6 +166,14 @@
               ],
               "text": "unknown"
             }
+          },
+          {
+            "url": "https://hl7.org/fhir/R4/extension-patient-genderidentity.html",
+            "valueCoding": {
+              "system": "https://hl7.org/fhir/R4/valueset-gender-identity.html",
+              "code": "male",
+              "display": "male"
+            }
           }
         ],
         "identifier": [
