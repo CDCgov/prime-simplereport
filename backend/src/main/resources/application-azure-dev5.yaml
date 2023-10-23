@@ -15,10 +15,3 @@ simple-report:
       - https://dev5.simplereport.gov
 twilio:
   enabled: true
-logbook:
-  format:
-    style: json
-  minimum-status: 0
-logging:
-  level:
-    org.zalando.logbook: TRACE
