@@ -24,6 +24,7 @@ Object {
                 class="grid-col-auto margin-top-05"
               >
                 <button
+                  aria-label="Collapse test for Dixon, Althea Hedda Mclaughlin"
                   class="usa-button usa-button--unstyled"
                   type="button"
                 >
@@ -31,7 +32,7 @@ Object {
                     class="usa-icon usa-icon--size-3"
                     focusable="true"
                     height="1em"
-                    role="img"
+                    role="presentation"
                     viewBox="0 0 24 24"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -49,13 +50,13 @@ Object {
                   class="usa-button usa-button--unstyled card-name"
                   type="button"
                 >
-                  <span
-                    class="font-sans-lg"
+                  <h2
+                    class="font-sans-lg margin-y-0"
                   >
                     <strong>
                       Dixon, Althea Hedda Mclaughlin
                     </strong>
-                  </span>
+                  </h2>
                 </button>
               </div>
               <div
@@ -116,7 +117,7 @@ Object {
                     class="usa-icon usa-icon--size-3"
                     focusable="true"
                     height="1em"
-                    role="img"
+                    role="presentation"
                     viewBox="0 0 24 24"
                     width="1em"
                     xmlns="http://www.w3.org/2000/svg"
@@ -262,6 +263,7 @@ Object {
                         </abbr>
                       </label>
                       <select
+                        aria-label="Test device"
                         aria-required="true"
                         class="usa-select"
                         data-testid="device-type-dropdown"
@@ -328,6 +330,7 @@ Object {
                         </abbr>
                       </label>
                       <select
+                        aria-label="Specimen type"
                         aria-required="true"
                         class="usa-select"
                         data-testid="specimen-type-dropdown"

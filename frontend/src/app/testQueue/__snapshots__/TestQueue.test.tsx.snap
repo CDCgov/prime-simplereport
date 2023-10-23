@@ -78,6 +78,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                   class="grid-col-auto margin-top-05"
                 >
                   <button
+                    aria-label="Collapse test for Doe, John A"
                     class="usa-button usa-button--unstyled"
                     type="button"
                   >
@@ -85,7 +86,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                       class="usa-icon usa-icon--size-3"
                       focusable="true"
                       height="1em"
-                      role="img"
+                      role="presentation"
                       viewBox="0 0 24 24"
                       width="1em"
                       xmlns="http://www.w3.org/2000/svg"
@@ -103,13 +104,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                     class="usa-button usa-button--unstyled card-name"
                     type="button"
                   >
-                    <span
-                      class="font-sans-lg"
+                    <h2
+                      class="font-sans-lg margin-y-0"
                     >
                       <strong>
                         Doe, John A
                       </strong>
-                    </span>
+                    </h2>
                   </button>
                 </div>
                 <div
@@ -170,7 +171,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                       class="usa-icon usa-icon--size-3"
                       focusable="true"
                       height="1em"
-                      role="img"
+                      role="presentation"
                       viewBox="0 0 24 24"
                       width="1em"
                       xmlns="http://www.w3.org/2000/svg"
@@ -316,6 +317,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           </abbr>
                         </label>
                         <select
+                          aria-label="Test device"
                           aria-required="true"
                           class="usa-select"
                           data-testid="device-type-dropdown"
@@ -370,6 +372,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           </abbr>
                         </label>
                         <select
+                          aria-label="Specimen type"
                           aria-required="true"
                           class="usa-select"
                           data-testid="specimen-type-dropdown"
@@ -1022,6 +1025,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                   class="grid-col-auto margin-top-05"
                 >
                   <button
+                    aria-label="Collapse test for Smith, Jane"
                     class="usa-button usa-button--unstyled"
                     type="button"
                   >
@@ -1029,7 +1033,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                       class="usa-icon usa-icon--size-3"
                       focusable="true"
                       height="1em"
-                      role="img"
+                      role="presentation"
                       viewBox="0 0 24 24"
                       width="1em"
                       xmlns="http://www.w3.org/2000/svg"
@@ -1047,13 +1051,13 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                     class="usa-button usa-button--unstyled card-name"
                     type="button"
                   >
-                    <span
-                      class="font-sans-lg"
+                    <h2
+                      class="font-sans-lg margin-y-0"
                     >
                       <strong>
                         Smith, Jane
                       </strong>
-                    </span>
+                    </h2>
                   </button>
                 </div>
                 <div
@@ -1114,7 +1118,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                       class="usa-icon usa-icon--size-3"
                       focusable="true"
                       height="1em"
-                      role="img"
+                      role="presentation"
                       viewBox="0 0 24 24"
                       width="1em"
                       xmlns="http://www.w3.org/2000/svg"
@@ -1260,6 +1264,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           </abbr>
                         </label>
                         <select
+                          aria-label="Test device"
                           aria-required="true"
                           class="usa-select"
                           data-testid="device-type-dropdown"
@@ -1314,6 +1319,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           </abbr>
                         </label>
                         <select
+                          aria-label="Specimen type"
                           aria-required="true"
                           class="usa-select"
                           data-testid="specimen-type-dropdown"
