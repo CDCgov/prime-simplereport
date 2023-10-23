@@ -104,7 +104,7 @@ public class PatientUploadRow implements FileRow {
         getValue(rawRow, RESIDENT_CONGREGATE_SETTING, isRequired(RESIDENT_CONGREGATE_SETTING));
     role = getValue(rawRow, "role", isRequired("role"));
     email = getValue(rawRow, "email", isRequired("email"));
-    genderIdentity = getValue(rawRow, GENDER_IDENTITY, isRequired("genderIdentity"));
+    genderIdentity = getValue(rawRow, GENDER_IDENTITY, isRequired("genderIdentity"), true);
     notes = getValue(rawRow, ADDRESS_NOTES, isRequired("notes"));
   }
 
