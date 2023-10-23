@@ -466,6 +466,7 @@ const TestCardForm = ({
                 />
               }
               name="testDevice"
+              ariaLabel="Test device"
               selectedValue={state.deviceId}
               onChange={(e) =>
                 dispatch({
@@ -489,6 +490,7 @@ const TestCardForm = ({
               options={specimenTypeOptions}
               label="Specimen type"
               name="specimenType"
+              ariaLabel="Specimen type"
               selectedValue={state.specimenId}
               onChange={(e) =>
                 dispatch({

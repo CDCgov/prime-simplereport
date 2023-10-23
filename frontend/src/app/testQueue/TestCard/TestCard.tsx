@@ -48,7 +48,7 @@ export const TestCard = ({
   );
   const closeModalRef = useRef<ModalRef>(null);
 
-  const [isOpen, setIsOpen] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const testCardElement = useRef() as React.MutableRefObject<HTMLDivElement>;
 
@@ -70,7 +70,7 @@ export const TestCard = ({
   const { patientFullName, patientDateOfBirth } =
     useTestOrderPatient(testOrder);
 
-  const toggleOpen = () => setIsOpen((prevState) => !prevState);
+  const toggleExpanded = () => setIsExpanded((prevState) => !prevState);
 
   const removeTestFromQueue = async () => {
     await removePatientFromQueue(testOrder.patient.internalId);
@@ -90,16 +90,32 @@ export const TestCard = ({
       <Card className={"list-style-none margin-bottom-1em test-card-container"}>
         <CardHeader
           className={`padding-2 ${
-            isOpen ? "test-card-header-bottom-border" : ""
+            isExpanded ? "test-card-header-bottom-border" : ""
           }`}
         >
           <div className="grid-row grid-gap flex-align-center">
             <div className="grid-col-auto margin-top-05">
-              <Button variant="unstyled" onClick={toggleOpen}>
-                {isOpen ? (
-                  <Icon.ExpandLess size={3} focusable={true} />
+              <Button
+                variant="unstyled"
+                onClick={toggleExpanded}
+                ariaLabel={
+                  isExpanded
+                    ? `Collapse test for ${patientFullName}`
+                    : `Expand test for ${patientFullName}`
+                }
+              >
+                {isExpanded ? (
+                  <Icon.ExpandLess
+                    size={3}
+                    focusable={true}
+                    role={"presentation"}
+                  />
                 ) : (
-                  <Icon.ExpandMore size={3} focusable={true} />
+                  <Icon.ExpandMore
+                    size={3}
+                    focusable={true}
+                    role={"presentation"}
+                  />
                 )}
               </Button>
             </div>
@@ -114,9 +130,9 @@ export const TestCard = ({
                   });
                 }}
               >
-                <span className={"font-sans-lg"}>
+                <h2 className={"font-sans-lg margin-y-0"}>
                   <strong>{patientFullName}</strong>
-                </span>
+                </h2>
               </Button>
             </div>
             <div className="grid-col-auto">
@@ -135,13 +151,13 @@ export const TestCard = ({
                 onClick={closeModalRef.current?.toggleModal}
                 ariaLabel={`Close test for ${patientFullName}`}
               >
-                <Icon.Close size={3} focusable={true} />
+                <Icon.Close size={3} focusable={true} role={"presentation"} />
               </Button>
             </div>
           </div>
         </CardHeader>
         <div className="position-relative">
-          <CardBody className={isOpen ? "padding-top-0" : "display-none"}>
+          <CardBody className={isExpanded ? "padding-top-0" : "display-none"}>
             <TestCardForm
               testOrder={testOrder}
               devicesMap={devicesMap}
