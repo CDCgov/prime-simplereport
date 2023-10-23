@@ -435,9 +435,9 @@ public class CsvValidatorUtils {
       String name,
       boolean isRequired,
       boolean coercePossibleValueToLowerCase) {
-    if (coercePossibleValueToLowerCase) {
-      String value = row.get(name).toLowerCase();
-      row.put(name, value);
+    String val = row.get(name);
+    if (val != null && coercePossibleValueToLowerCase) {
+      row.put(name, val.toLowerCase());
     }
     return getValue(row, name, isRequired);
   }
