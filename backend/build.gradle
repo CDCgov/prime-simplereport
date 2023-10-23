@@ -60,7 +60,7 @@ dependencies {
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-60:3.5.2' // todo: remove this
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.5.2' // this provides additional types for JsonB and for ListArray types in Postgres
     implementation 'org.liquibase:liquibase-core'
     implementation 'org.postgresql:postgresql'
 
