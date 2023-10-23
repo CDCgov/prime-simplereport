@@ -1,4 +1,5 @@
 import moment from "moment/moment";
+import { useFeature } from "flagged";
 
 import { DevicesMap, QueriedFacility, QueriedTestOrder } from "../QueueItem";
 import { displayFullName } from "../../utils";
@@ -11,6 +12,7 @@ import {
   SomeoneWithName,
 } from "../constants";
 import { showError, showSuccess } from "../../utils/srToast";
+import { filterRsvFromAllDevices } from "../../utils/rsvHelper";
 
 import { TestFormState } from "./TestCardFormReducer";
 import { parseSymptoms } from "./diseaseSpecificComponents/CovidAoEForm";
@@ -37,12 +39,17 @@ export function useDeviceTypeOptions(
   facility: QueriedFacility,
   state: TestFormState
 ) {
-  let deviceTypeOptions = [...facility!.deviceTypes]
-    .sort(alphabetizeByName)
-    .map((d) => ({
-      label: d.name,
-      value: d.internalId,
-    }));
+  const singleEntryRsvEnabled = useFeature("singleEntryRsvEnabled");
+
+  let deviceTypes = [...facility!.deviceTypes];
+  if (!singleEntryRsvEnabled) {
+    deviceTypes = filterRsvFromAllDevices(deviceTypes);
+  }
+
+  let deviceTypeOptions = [...deviceTypes].sort(alphabetizeByName).map((d) => ({
+    label: d.name,
+    value: d.internalId,
+  }));
 
   const deviceTypeIsInvalid = !state.devicesMap.has(state.deviceId);
 
