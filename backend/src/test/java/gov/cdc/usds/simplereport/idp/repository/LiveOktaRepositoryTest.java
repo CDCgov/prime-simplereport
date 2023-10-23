@@ -587,7 +587,7 @@ class LiveOktaRepositoryTest {
     var mockGroupList = List.of(mockGroup);
     var mockUser = mock(User.class);
     var mockUserProfile = mock(UserProfile.class);
-    PagedList<User> mockedUserList = new PagedList<>(List.of(mockUser), "", "", "");
+    PagedList<User> mockedUserList = new PagedList<>(List.of(mockUser), "", "", null);
     when(groupApi.listGroups(
             eq(groupProfilePrefix),
             isNull(),
@@ -634,7 +634,7 @@ class LiveOktaRepositoryTest {
     var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
     var mockUser = mock(User.class);
-    PagedList<User> mockUserList = new PagedList<>(List.of(mockUser), "", "", "");
+    PagedList<User> mockUserList = new PagedList<>(List.of(mockUser), "", "", null);
     var mockUserProfile = mock(UserProfile.class);
     when(groupApi.listGroups(
             eq(groupProfilePrefix),
