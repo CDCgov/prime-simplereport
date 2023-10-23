@@ -66,9 +66,8 @@ public abstract class BaseServiceTest<T> {
 
   @AfterEach
   protected void afterEach() {
-    // see output saved to backend/build/test-results/test
     LoggerFactory.getLogger(BaseServiceTest.class)
-        .info("Hibernate Total queries: {}", QueryCountHolder.getGrandTotal());
+        .info("Hibernate Total queries: {}", QueryCountHolder.getGrandTotal().getTotal());
   }
 
   public void clearDb() {
