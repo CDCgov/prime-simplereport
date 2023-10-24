@@ -5120,7 +5120,7 @@ databaseChangeLog:
                   remarks: The disease that was reported.
                   type: uuid
                   constraints:
-                    nullable: false
+                    nullable: true
                     foreignKeyName: fk__upload__supported_disease_id
                     referencedTableName: supported_disease
                     referencedColumnNames: internal_id
