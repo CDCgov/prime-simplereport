@@ -14,7 +14,6 @@ class FeatureFlagsControllerTest {
 
   @BeforeEach
   void setup() {
-    _mockFeatureFlagConfig.setRsvEnabled(true);
     this.featureFlagsController = new FeatureFlagsController();
     ReflectionTestUtils.setField(
         this.featureFlagsController, "featureFlags", _mockFeatureFlagConfig);
