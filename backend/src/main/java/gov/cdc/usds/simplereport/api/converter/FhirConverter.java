@@ -683,11 +683,6 @@ public class FhirConverter {
                   getCommonDiseaseValue(
                       deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
 
-              String equipmentUidType =
-                  deviceTypeDiseaseEntries.stream()
-                      .findFirst()
-                      .map(DeviceTypeDisease::getEquipmentUidType)
-                      .orElse(null);
               return convertToObservation(
                   result,
                   testPerformedLoincCode,
