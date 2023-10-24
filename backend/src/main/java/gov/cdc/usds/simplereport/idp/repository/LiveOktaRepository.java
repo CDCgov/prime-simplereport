@@ -73,6 +73,7 @@ public class LiveOktaRepository implements OktaRepository {
   private final String adminGroupName;
 
   private static final String OKTA_ORG_PROFILE_MATCHER = "profile.name sw \"";
+  private static final int OKTA_PAGE_SIZE = 500;
 
   public LiveOktaRepository(
       AuthorizationProperties authorizationProperties,
@@ -228,12 +229,11 @@ public class LiveOktaRepository implements OktaRepository {
     PagedList<User> pagedUserList = new PagedList<>();
     List<User> allUsers = new ArrayList<>();
     Group orgDefaultOktaGroup = getDefaultOktaGroup(org);
-    int pageSize = 500;
     do {
       pagedUserList =
           (PagedList<User>)
               groupApi.listGroupUsers(
-                  orgDefaultOktaGroup.getId(), pagedUserList.getAfter(), pageSize);
+                  orgDefaultOktaGroup.getId(), pagedUserList.getAfter(), OKTA_PAGE_SIZE);
       allUsers.addAll(pagedUserList);
     } while (pagedUserList.hasMoreItems());
     return allUsers;
