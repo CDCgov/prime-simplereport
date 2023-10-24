@@ -175,8 +175,8 @@ public class Translators {
     return emails.stream().map(Translators::parseEmail).collect(Collectors.toList());
   }
 
-  private static final String REFUSED = "refused";
-  private static final String OTHER = "other";
+  public static final String REFUSED = "refused";
+  public static final String OTHER = "other";
   private static final Map<String, String> RACES =
       Map.of(
           "american indian or alaskan native",
@@ -259,7 +259,9 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(ta, TRIBAL_AFFILIATIONS);
   }
 
-  private static final Set<String> GENDERS = Set.of("male", "female", OTHER, REFUSED);
+  public static final String MALE = "male";
+  public static final String FEMALE = "female";
+  private static final Set<String> GENDERS = Set.of(MALE, FEMALE, OTHER, REFUSED);
 
   public static String parseGender(String g) {
     String gender = parseString(g);
@@ -274,8 +276,11 @@ public class Translators {
         "\"" + g + "\" must be one of [" + String.join(", ", GENDERS) + "].");
   }
 
+  public static final String NON_BINARY = "nonbinary";
+  public static final String TRANS_MAN = "transman";
+  public static final String TRANS_WOMAN = "transwoman";
   private static final Set<String> GENDER_IDENTITIES =
-      Set.of("female", "male", "transwoman", "transman", "nonbinary", OTHER, REFUSED);
+      Set.of(FEMALE, MALE, TRANS_WOMAN, TRANS_MAN, NON_BINARY, OTHER, REFUSED);
 
   public static String parseGenderIdentity(String genderIdentityInput) {
     String genderIdentity = parseString(genderIdentityInput);

@@ -840,10 +840,22 @@ class FhirConverterTest {
     var device = DeviceType.builder().build();
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
+            null,
+            covidDisease,
+            "94500-6",
+            "covidEquipmentUID",
+            "covidEquipmentUIDType",
+            "covidTestkitNameId",
+            "94500-0");
     var fluDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null, fluDisease, "85477-8", "fluEquipmentUID", "fluTestkitNameId", "85477-0");
+            null,
+            fluDisease,
+            "85477-8",
+            "fluEquipmentUID",
+            "fluEquipmentUidType",
+            "fluTestkitNameId",
+            "85477-0");
     ReflectionTestUtils.setField(
         device,
         "supportedDiseaseTestPerformed",
@@ -898,7 +910,13 @@ class FhirConverterTest {
     var device = DeviceType.builder().build();
     var covidDiseaseTestPerformedCode =
         new DeviceTypeDisease(
-            null, covidDisease, "94500-6", "covidEquipmentUID", "covidTestkitNameId", "94500-0");
+            null,
+            covidDisease,
+            "94500-6",
+            "covidEquipmentUID",
+            "covidEquipmentUIDType",
+            "covidTestkitNameId",
+            "94500-0");
 
     ReflectionTestUtils.setField(result, "internalId", UUID.fromString(id));
     ReflectionTestUtils.setField(
@@ -1641,14 +1659,27 @@ class FhirConverterTest {
     var testPerformedCodesList =
         List.of(
             new DeviceTypeDisease(
-                deviceTypeId, covidDisease, "333-123", "equipmentUID1", "testkitNameId1", null),
+                deviceTypeId,
+                covidDisease,
+                "333-123",
+                "equipmentUID1",
+                "equipmentUIDType1",
+                "testkitNameId1",
+                null),
             new DeviceTypeDisease(
-                deviceTypeId, fluADisease, "444-123", "equipmentUID2", "testkitNameId2", "95422-2"),
+                deviceTypeId,
+                fluADisease,
+                "444-123",
+                "equipmentUID2",
+                "equipmentUIDType2",
+                "testkitNameId2",
+                "95422-2"),
             new DeviceTypeDisease(
                 deviceTypeId,
                 fluBDisease,
                 "444-456",
                 "equipmentUID3",
+                "equipmentUIDType3",
                 "testkitNameId3",
                 "95422-2"));
 

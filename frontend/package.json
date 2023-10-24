@@ -250,7 +250,9 @@
     "coveragePathIgnorePatterns": [
       "<rootDir>/src/index.tsx",
       "<rootDir>/src/serviceWorker.ts",
-      ".stories.tsx"
+      ".stories.tsx",
+      "<rootDir>/src/app/testQueue/constants.ts",
+      "<rootDir>/src/patientApp/timeOfTest/constants.ts"
     ]
   }
 }

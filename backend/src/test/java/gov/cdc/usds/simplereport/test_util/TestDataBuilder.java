@@ -122,6 +122,7 @@ public class TestDataBuilder {
         supportedDisease,
         supportedDisease.getLoinc(),
         "543212134",
+        "MNI",
         "BOOMX2",
         "95422-2");
   }
@@ -133,6 +134,7 @@ public class TestDataBuilder {
         supportedDisease,
         supportedDisease.getLoinc(),
         "543212134",
+        "MNI",
         "BOOMX2",
         "94534-5");
   }
@@ -144,6 +146,7 @@ public class TestDataBuilder {
         supportedDisease,
         supportedDisease.getLoinc(),
         "543212134",
+        "MNI",
         "BOOMX2",
         "98670-3");
   }
