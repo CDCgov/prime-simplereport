@@ -124,6 +124,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Http"
     request_timeout                     = 60
     pick_host_name_from_backend_address = true
+    probe_name                          = "be-http"
   }
 
   backend_http_settings {
@@ -133,6 +134,37 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Https"
     request_timeout                     = 60
     pick_host_name_from_backend_address = true
+    probe_name                          = "be-https"
+  }
+
+  probe {
+    name                                      = "be-http"
+    interval                                  = 10
+    path                                      = "/actuator/health"
+    pick_host_name_from_backend_http_settings = true
+    protocol                                  = "Http"
+    timeout                                   = 10
+    unhealthy_threshold                       = 3
+
+    match {
+      body        = "UP"
+      status_code = [200]
+    }
+  }
+
+  probe {
+    name                                      = "be-https"
+    interval                                  = 10
+    path                                      = "/actuator/health"
+    pick_host_name_from_backend_http_settings = true
+    protocol                                  = "Https"
+    timeout                                   = 10
+    unhealthy_threshold                       = 3
+
+    match {
+      body        = "UP"
+      status_code = [200]
+    }
   }
 
   # ------- Backend Metabase App -------------------------
@@ -174,6 +206,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Http"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
+    probe_name                          = "be-http"
   }
 
   backend_http_settings {
@@ -183,6 +216,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Https"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
+    probe_name                          = "be-https"
   }
 
   # ------- Listeners -------------------------

@@ -1,6 +1,6 @@
 plugins {
-    id 'org.springframework.boot' version '2.7.13'
-    id 'org.liquibase.gradle' version '2.0.4'
+    id 'org.springframework.boot' version '2.7.16'
+    id 'org.liquibase.gradle' version '2.2.0'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
     id 'checkstyle'
@@ -49,11 +49,10 @@ dependencies {
      * Please do NOT scatter packages elsewhere around the file. Scattered packages make it easy for pins to become
      * stale.
      *
-     * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 4 August 2023.
+     * DevSecOps verifies these packages at least once per month. LAST VERIFIED: 17 October 2023.
      */
-    implementation 'org.yaml:snakeyaml:1.33' //Verified 4 Aug 2023. Removal restores snakeyaml to 1.30, which is vulnerable to DoS.
-    implementation 'org.springframework.security:spring-security-config:5.7.10' //Verified 4 Aug 2023. Surrounding versions are vulnerable to myriad issues.
-    implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE' //Verified 4 Aug 2023. Resolves critical vulnerability caused by org.springframework.boot plugin @ 2.7.13.
+    implementation 'org.yaml:snakeyaml:1.33' //Verified 17 Oct 2023. Removal restores snakeyaml to 1.30, which is vulnerable to DoS.
+    implementation 'org.thymeleaf:thymeleaf:3.1.2.RELEASE' //Verified 17 Oct 2023. Resolves critical vulnerability caused by org.springframework.boot plugin @ 2.7.13.
 
     // data layer dependencies
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -104,7 +103,7 @@ dependencies {
     // graphql-java-extended-scalars
     implementation 'com.graphql-java:graphql-java-extended-scalars:18.1'
 
-    implementation 'com.azure:azure-storage-queue:12.17.1'
+    implementation 'com.azure:azure-storage-queue:12.19.0'
 
     // RandomStringUtils to generate PatientSelfRegistrationLink
     implementation 'org.apache.commons:commons-lang3:3.12.0'
@@ -140,6 +139,9 @@ dependencies {
     implementation 'ca.uhn.hapi.fhir:hapi-fhir-structures-r4:6.6.2'
 
     implementation 'commons-validator:commons-validator:1.7'
+
+    // Needed for Liquibase Gradle Plugin 2.2.0
+    liquibaseRuntime 'info.picocli:picocli:4.6.1'
 }
 
 dependencyManagement {
@@ -168,7 +170,7 @@ checkstyleTest {
 
 jacocoTestReport {
     reports {
-        xml.enabled = true
+        xml.required = true
     }
     dependsOn test // tests are required to run before generating the report
 }
@@ -184,7 +186,7 @@ liquibase {
     activities {
         main {
             driver "org.postgresql.Driver"
-            changeLogFile "/db/changelog/db.changelog-master.yaml"
+            changelogFile "/db/changelog/db.changelog-master.yaml"
             url dbConnectionString
             username "simple_report_migrations"
             password "migrations456"

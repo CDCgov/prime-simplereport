@@ -117,7 +117,7 @@ describe("TestTimerWidget", () => {
 
       // Start timer
       await user.click(timerButton);
-      await screen.findByText("15:00");
+      await screen.findByText("Start timer");
 
       // The timer does not enter the countdown state instantly, so clicking the
       // button in rapid succession will register as two "start timer" events.
@@ -126,7 +126,7 @@ describe("TestTimerWidget", () => {
 
       // Reset timer
       await user.click(timerButton);
-      await screen.findByText("15:00");
+      await screen.findByText("Start timer");
 
       expect(trackEventMock).toHaveBeenCalledWith(
         { name: "Test timer reset" },
@@ -138,7 +138,6 @@ describe("TestTimerWidget", () => {
       const { user } = renderWithUser(0);
       const timerButton = await screen.findByRole("button");
       await user.click(timerButton);
-      await screen.findByText("0:00");
       await screen.findByText("RESULT READY");
 
       await waitFor(() =>

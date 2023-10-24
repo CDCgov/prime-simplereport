@@ -21,7 +21,7 @@
   "main": "dist/**/index.js",
   "dependencies": {
     "@azure/functions": "^4.0.1",
-    "@azure/storage-queue": "^12.6.0",
+    "@azure/storage-queue": "^12.15.0",
     "applicationinsights": "^2.9.0",
     "csv-stringify": "^6.4.2",
     "jsonwebtoken": "^9.0.2",

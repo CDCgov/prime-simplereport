@@ -293,6 +293,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                   <label
                     class="usa-label"
                     for="41"
+                    id="label-for-41"
                   >
                     Device Name
                     <abbr
@@ -328,6 +329,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                   <label
                     class="usa-label"
                     for="42"
+                    id="label-for-42"
                   >
                     Model
                     <abbr
@@ -363,6 +365,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                   <label
                     class="usa-label"
                     for="43"
+                    id="label-for-43"
                   >
                     Manufacturer
                     <abbr
@@ -398,6 +401,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                   <label
                     class="usa-label"
                     for="44"
+                    id="label-for-44"
                   >
                     Test length (minutes)
                     <abbr
@@ -617,6 +621,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                         <label
                           class="usa-label"
                           for="47"
+                          id="label-for-47"
                         >
                           Test performed code
                           <abbr
@@ -648,6 +653,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                         <label
                           class="usa-label"
                           for="48"
+                          id="label-for-48"
                         >
                           Test ordered code
                           <abbr
@@ -679,6 +685,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                         <label
                           class="usa-label"
                           for="49"
+                          id="label-for-49"
                         >
                           Testkit Name Id
                         </label>
@@ -703,6 +710,7 @@ exports[`update existing devices renders the Device Form 1`] = `
                         <label
                           class="usa-label"
                           for="50"
+                          id="label-for-50"
                         >
                           Equipment Uid
                         </label>
