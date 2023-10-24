@@ -303,6 +303,16 @@ class FileValidatorTest {
   }
 
   @Test
+  void testResults_validFile_rsvOnly() {
+    // GIVEN
+    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-rsv-only.csv");
+    // WHEN
+    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
+    // THEN
+    assertThat(errors).isEmpty();
+  }
+
+  @Test
   void testResultsFile_invalidHeaders() {
     // GIVEN
     InputStream input = new ByteArrayInputStream("invalid\nyes".getBytes());
