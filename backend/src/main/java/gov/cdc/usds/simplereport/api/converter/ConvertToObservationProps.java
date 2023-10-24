@@ -18,4 +18,5 @@ public class ConvertToObservationProps {
   private String testkitNameId;
   private String deviceModel;
   private Date issued;
+  private String equipmentUidType;
 }

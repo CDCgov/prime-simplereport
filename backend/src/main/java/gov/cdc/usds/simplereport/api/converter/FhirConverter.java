@@ -573,22 +573,35 @@ public class FhirConverter {
     return null;
   }
 
-  public Device convertToDevice(@NotNull DeviceType deviceType, String equipmentUid) {
+  public Device convertToDevice(
+      @NotNull DeviceType deviceType, String equipmentUid, String equipmentUidType) {
     return convertToDevice(
         deviceType.getManufacturer(),
         deviceType.getModel(),
         deviceType.getInternalId().toString(),
-        equipmentUid);
+        equipmentUid,
+        equipmentUidType);
   }
 
   public Device convertToDevice(
-      String manufacturer, @NotNull String model, String id, String equipmentUid) {
+      String manufacturer,
+      @NotNull String model,
+      String id,
+      String equipmentUid,
+      String equipmentUidType) {
     var device =
         new Device()
             .addDeviceName(
                 new DeviceDeviceNameComponent().setName(model).setType(DeviceNameType.MODELNAME));
     if (StringUtils.isNotBlank(equipmentUid)) {
       device.addIdentifier().setValue(equipmentUid);
+    }
+    if (StringUtils.isNotBlank(equipmentUidType)) {
+      CodeableConcept equipmentUidTypeCodeableConcept = new CodeableConcept();
+      Coding equipmentUidTypeCoding = equipmentUidTypeCodeableConcept.addCoding();
+      equipmentUidTypeCoding.setCode(equipmentUidType);
+
+      device.addIdentifier().setType(equipmentUidTypeCodeableConcept);
     }
     if (StringUtils.isNotBlank(manufacturer)) {
       device.setManufacturer(manufacturer);
@@ -669,6 +682,12 @@ public class FhirConverter {
               String testkitNameId =
                   getCommonDiseaseValue(
                       deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
+
+              String equipmentUidType =
+                  deviceTypeDiseaseEntries.stream()
+                      .findFirst()
+                      .map(DeviceTypeDisease::getEquipmentUidType)
+                      .orElse(null);
               return convertToObservation(
                   result,
                   testPerformedLoincCode,
@@ -723,6 +742,7 @@ public class FhirConverter {
     observation.setCode(createLoincConcept(props.getDiseaseCode(), "", props.getDiseaseName()));
     addSNOMEDValue(props.getResultCode(), observation, props.getResultDescription());
     observation.getMethod().getCodingFirstRep().setDisplay(props.getDeviceModel());
+
     observation
         .getMethod()
         .addExtension(
@@ -1145,14 +1165,15 @@ public class FhirConverter {
             .toList();
     String equipmentUid =
         getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
-
+    String equipmentUidType =
+        getCommonDiseaseValue(deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUidType);
     return createFhirBundle(
         CreateFhirBundleProps.builder()
             .patient(convertToPatient(testEvent.getPatient(), testEvent.getFacility()))
             .testingLab(convertToOrganization(testEvent.getFacility()))
             .orderingFacility(null)
             .practitioner(convertToPractitioner(testEvent.getProviderData()))
-            .device(convertToDevice(testEvent.getDeviceType(), equipmentUid))
+            .device(convertToDevice(testEvent.getDeviceType(), equipmentUid, equipmentUidType))
             .specimen(
                 convertToSpecimen(
                     testEvent.getSpecimenType(),
