@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.model.filerow;
 
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.getValue;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.isAddressUnknown;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateBiologicalSex;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCountry;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
@@ -138,10 +139,12 @@ public class PatientUploadRow implements FileRow {
     errors.addAll(validateYesNoAnswer(employedInHealthcare));
     errors.addAll(validateRole(role));
 
-    // address
-    errors.addAll(validateState(state));
-    errors.addAll(validateZipCode(zipCode));
-    errors.addAll(validateCountry(country));
+    if (!isAddressUnknown(state.getValue(), zipCode.getValue(), street.getValue())) {
+      // address
+      errors.addAll(validateState(state));
+      errors.addAll(validateZipCode(zipCode));
+      errors.addAll(validateCountry(country));
+    }
 
     // contact info
     errors.addAll(validatePhoneNumber(phoneNumber));
