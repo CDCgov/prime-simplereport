@@ -1,14 +1,20 @@
-import { Context } from "@azure/functions";
+import { InvocationContext, Timer } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import * as appInsights from "applicationinsights";
 
 import * as dataHandlers from "./dataHandlers";
 import * as queueHandlers from "../common/queueHandlers";
 import * as reportingHandlers from "../common/reportingHandlers";
-import FHIRTestEventReporter from "./index";
+import { FHIRTestEventReporter } from "./index";
 import { FHIRTestEventsBatch } from "./dataHandlers";
 import { ReportStreamResponse } from "../common/types";
 
+jest.mock("@azure/functions", () => ({
+  ...jest.requireActual("@azure/functions"),
+  app: {
+    timer: jest.fn(),
+  },
+}));
 jest.mock("../config", () => ({
   ENV: {
     AZ_STORAGE_QUEUE_SVC_URL: "hello",
@@ -34,10 +40,12 @@ jest.mock(
 
 describe("FHIRTestEventReporter", () => {
   const context = {
+    error: jest.fn(),
     log: jest.fn(),
-    traceContext: { traceparent: "asdf" },
-  } as jest.MockedObject<Context>;
-  context.log.error = jest.fn();
+    traceContext: { traceParent: "asdf" },
+  } as jest.MockedObject<InvocationContext>;
+
+  const timer = {} as jest.MockedObject<Timer>;
 
   const responseMock = {
     ok: true,
@@ -104,7 +112,7 @@ describe("FHIRTestEventReporter", () => {
   it("checks queue when there are no messages", async () => {
     minimumMessagesAvailableSpy.mockResolvedValueOnce(false);
 
-    await FHIRTestEventReporter(context);
+    await FHIRTestEventReporter(timer, context);
 
     expect(minimumMessagesAvailableSpy).toHaveBeenCalled();
     expect(dequeueMessagesSpy).not.toHaveBeenCalled();
@@ -117,7 +125,7 @@ describe("FHIRTestEventReporter", () => {
   it("checks queue but dequeues 0 messages", async () => {
     dequeueMessagesSpy.mockResolvedValueOnce([]);
 
-    await FHIRTestEventReporter(context);
+    await FHIRTestEventReporter(timer, context);
 
     expect(getReportStreamAuthTokenSpy).not.toHaveBeenCalled();
     expect(reportToUniversalPipelineSpy).not.toHaveBeenCalled();
@@ -146,7 +154,7 @@ describe("FHIRTestEventReporter", () => {
     processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
-    await FHIRTestEventReporter(context);
+    await FHIRTestEventReporter(timer, context);
 
     expect(getQueueClientSpy).toHaveBeenCalledTimes(3);
     expect(minimumMessagesAvailableSpy).toHaveBeenCalled();
@@ -182,7 +190,7 @@ describe("FHIRTestEventReporter", () => {
     processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockResolvedValueOnce(responseMock);
 
-    await FHIRTestEventReporter(context);
+    await FHIRTestEventReporter(timer, context);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledTimes(2);
     expect(appInsights.defaultClient.trackEvent).toHaveBeenCalledWith(
       expect.objectContaining({ name: "Queue:ciao. Test Event Parse Failure" }),
@@ -226,7 +234,7 @@ describe("FHIRTestEventReporter", () => {
     processTestEventsSpy.mockReturnValueOnce(fhirTestEventsBatches);
     reportToUniversalPipelineSpy.mockRejectedValueOnce(errorResponseMock);
 
-    await expect(() => FHIRTestEventReporter(context)).rejects.toThrow(
+    await expect(() => FHIRTestEventReporter(timer, context)).rejects.toThrow(
       JSON.stringify([{ ok: false, status: 400 }]),
     );
   });
