@@ -112,13 +112,6 @@ class PatientUploadRowTest {
   }
 
   @Test
-  void wrongCaseGenderIdentityGetsSavedAsAllLowerCase() {
-    validRowMap.put("gender_identity", "fEMale");
-    var patientUploadRow = new PatientUploadRow(validRowMap);
-    assertThat(patientUploadRow.getGenderIdentity().getValue()).isEqualTo("female");
-  }
-
-  @Test
   void validateRequiredFieldsReturnsErrorsForAllEmptyRequiredFields() {
     var patientUploadRow = new PatientUploadRow(new HashMap<>());
 

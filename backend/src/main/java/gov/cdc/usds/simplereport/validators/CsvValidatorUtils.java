@@ -430,18 +430,6 @@ public class CsvValidatorUtils {
     return new ValueOrError(value, name, isRequired);
   }
 
-  public static ValueOrError getValue(
-      Map<String, String> row,
-      String name,
-      boolean isRequired,
-      boolean coercePossibleValueToLowerCase) {
-    String val = row.get(name);
-    if (val != null && coercePossibleValueToLowerCase) {
-      row.put(name, val.toLowerCase());
-    }
-    return getValue(row, name, isRequired);
-  }
-
   public static List<FeedbackMessage> hasMissingRequiredHeaders(
       Map<String, String> row, FileRow fileRow) {
     List<FeedbackMessage> errors = new ArrayList<>();
@@ -481,6 +469,11 @@ public class CsvValidatorUtils {
     } catch (IOException e) {
       throw new IllegalArgumentException(e.getMessage());
     }
+  }
+
+  /* Values need to be lower case to play nice with frontend */
+  public static String convertGenderIdentityToDatabaseValue(String genderIdentity) {
+    return genderIdentity.toLowerCase();
   }
 
   /* The acceptable values for race and ethnicity don't map to the values expected in our database. */

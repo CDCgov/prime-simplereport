@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePhoneType;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNoUnk;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertEthnicityToDatabaseValue;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertGenderIdentityToDatabaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertRaceToDatabaseValue;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.convertSexToDatabaseValue;
 
@@ -130,7 +131,9 @@ public class PatientBulkUploadServiceAsync {
                 .race(convertRaceToDatabaseValue(extractedData.getRace().getValue()))
                 .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
                 .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
-                .genderIdentity(extractedData.getGenderIdentity().getValue())
+                .genderIdentity(
+                    convertGenderIdentityToDatabaseValue(
+                        extractedData.getGenderIdentity().getValue()))
                 .residentCongregateSetting(
                     parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()))
                 .employedInHealthcare(
