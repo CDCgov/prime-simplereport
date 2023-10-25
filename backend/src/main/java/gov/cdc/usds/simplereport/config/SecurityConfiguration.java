@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import com.okta.spring.boot.oauth.Okta;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -97,7 +99,8 @@ public class SecurityConfiguration {
         .csrf(
             csrf ->
                 csrf.requireCsrfProtectionMatcher(
-                    new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST)));
+                    new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST)))
+        .cors(withDefaults());
     Okta.configureResourceServer401ResponseBody(http);
     return http.build();
   }

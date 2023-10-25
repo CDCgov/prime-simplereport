@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.config;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
@@ -24,7 +26,8 @@ public class DevSecurityConfiguration {
     log.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
     http.authorizeHttpRequests(
             authorizeRequest -> authorizeRequest.requestMatchers("/**").permitAll())
-        .csrf(AbstractHttpConfigurer::disable);
+        .csrf(AbstractHttpConfigurer::disable)
+        .cors(withDefaults());
     return http.build();
   }
 
