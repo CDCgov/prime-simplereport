@@ -12,7 +12,7 @@ while [[ $http_response != *"UP"* && $polls -lt 180 ]]; do
   echo "Waiting for backend to start at https://localhost.simplereport.gov/api/actuator/health"
   http_response=$(curl -skL -w "%{http_code}" "https://localhost.simplereport.gov/api/actuator/health")
 done
-if [[ $http_response -ne *"UP"* ]]; then
+if [[ $http_response != *"UP"* ]]; then
   echo 'Backend never started. Exiting...'
   exit 1
 fi
