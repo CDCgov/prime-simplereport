@@ -1,6 +1,13 @@
 package gov.cdc.usds.simplereport.api.converter;
 
 import static gov.cdc.usds.simplereport.api.Translators.DETECTED_SNOMED_CONCEPT;
+import static gov.cdc.usds.simplereport.api.Translators.FEMALE;
+import static gov.cdc.usds.simplereport.api.Translators.MALE;
+import static gov.cdc.usds.simplereport.api.Translators.NON_BINARY;
+import static gov.cdc.usds.simplereport.api.Translators.OTHER;
+import static gov.cdc.usds.simplereport.api.Translators.REFUSED;
+import static gov.cdc.usds.simplereport.api.Translators.TRANS_MAN;
+import static gov.cdc.usds.simplereport.api.Translators.TRANS_WOMAN;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAGS_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_ABNORMAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ABNORMAL_FLAG_NORMAL;
@@ -13,6 +20,8 @@ import static gov.cdc.usds.simplereport.api.converter.FhirConstants.ETHNICITY_EX
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_CODE_SYSTEM;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.EVENT_TYPE_DISPLAY;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.GENDER_IDENTITY_EXTENSION_CODE_SYSTEM;
+import static gov.cdc.usds.simplereport.api.converter.FhirConstants.GENDER_IDENTITY_EXTENSION_URL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LABORATORY_STRING_LITERAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LAB_STRING_LITERAL;
 import static gov.cdc.usds.simplereport.api.converter.FhirConstants.LOINC_AOE_EMPLOYED_IN_HEALTHCARE;
@@ -93,6 +102,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -487,6 +497,7 @@ public class FhirConverter {
             .phoneNumbers(getPatientPhoneNumbers(person, facility))
             .emails(person.getEmails())
             .gender(person.getGender())
+            .genderIdentity(person.getGenderIdentity())
             .dob(person.getBirthDate())
             .address(getPatientAddress(person, facility))
             .country(person.getCountry())
@@ -509,6 +520,8 @@ public class FhirConverter {
     patient.addExtension(
         convertToTribalAffiliationExtension(props.getTribalAffiliations()).orElse(null));
 
+    patient.addExtension(convertToGenderIdentityExtension(props.getGenderIdentity()));
+
     patient.setId(props.getId());
     patient.addIdentifier().setValue(props.getId());
 
@@ -521,6 +534,43 @@ public class FhirConverter {
           .forEach(patient::addTelecom);
     }
     return patient;
+  }
+
+  private Extension convertToGenderIdentityExtension(String genderIdentity) {
+    if (StringUtils.isNotBlank(genderIdentity)) {
+
+      Map<String, String> extensionValueSet =
+          Map.of(
+              FEMALE, "female",
+              MALE, "male",
+              NON_BINARY, "non-binary",
+              TRANS_MAN, "transgender male",
+              TRANS_WOMAN, "transgender female",
+              OTHER, "other",
+              REFUSED, "non-disclose");
+
+      Map<String, String> extensionDisplaySet =
+          Map.of(
+              FEMALE, "female",
+              MALE, "male",
+              NON_BINARY, "non-binary",
+              TRANS_MAN, "transgender male",
+              TRANS_WOMAN, "transgender female",
+              OTHER, "other",
+              REFUSED, "does not wish to disclose");
+
+      String genderIdentityKey = genderIdentity.toLowerCase();
+
+      var codeableConcept =
+          new CodeableConcept()
+              .addCoding()
+              .setSystem(GENDER_IDENTITY_EXTENSION_CODE_SYSTEM)
+              .setCode(extensionValueSet.get(genderIdentityKey))
+              .setDisplay(extensionDisplaySet.get(genderIdentityKey));
+
+      return new Extension().setUrl(GENDER_IDENTITY_EXTENSION_URL).setValue(codeableConcept);
+    }
+    return null;
   }
 
   public Device convertToDevice(@NotNull DeviceType deviceType, String equipmentUid) {
