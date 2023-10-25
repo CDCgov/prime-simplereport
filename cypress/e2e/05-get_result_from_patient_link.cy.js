@@ -1,11 +1,20 @@
 const dayjs = require("dayjs");
+const { getPatientLinkByTestEventId } = require("../utils/testing-data-utils");
+const { loginHooks } = require("../support/e2e");
+const { frontendURL } = require("../utils/request-utils");
 
+loginHooks();
 describe("Getting a test result from a patient link", () => {
   let patientLink, patientDOB, patientObfuscatedName;
   before("retrieve the patient link and dob", () => {
-    cy.task("getPatientLink").then((link) => {
-      patientLink = link;
+    cy.task("getTestEventId").then((testEventId) => {
+      getPatientLinkByTestEventId(testEventId).then((res) => {
+        const patientLinkId = res.body.data.testResult.patientLink.internalId;
+
+        patientLink = `${frontendURL}pxp?plid=${patientLinkId}`;
+      });
     });
+
     cy.task("getPatientDOB").then((dob) => {
       patientDOB = dob;
     });

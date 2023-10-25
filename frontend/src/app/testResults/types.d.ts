@@ -27,6 +27,7 @@ type FilterParams = {
   patientId?: string | null;
   startDate?: string | null;
   endDate?: string | null;
+  disease?: string | null;
   role?: string | null;
   result?: string | null;
   filterFacilityId?: string | null;

@@ -35,11 +35,11 @@ import { useSelectedFacility } from "../facilitySelect/useSelectedFacility";
 import { appPermissions, hasPermission } from "../permissions";
 import {
   ArchivedStatus,
-  GetFacilityResultsMultiplexWithCountQuery,
+  GetResultsMultiplexWithCountQuery,
   Maybe,
-  TestResult,
+  Result,
   useGetAllFacilitiesQuery,
-  useGetFacilityResultsMultiplexWithCountQuery,
+  useGetResultsMultiplexWithCountQuery,
 } from "../../generated/graphql";
 import { waitForElement } from "../utils/elements";
 import useComponentVisible from "../commonComponents/ComponentVisible";
@@ -53,6 +53,7 @@ import DownloadResultsCSVButton from "./DownloadResultsCsvButton";
 import ResultsTable, {
   generateTableHeaders,
 } from "./resultsTable/ResultsTable";
+import { MULTIPLEX_DISEASES } from "./constants";
 
 export const ALL_FACILITIES_ID = "all";
 
@@ -70,7 +71,7 @@ export const byDateTested = (a: any, b: any) => {
  */
 
 interface DetachedTestResultsListProps {
-  data: GetFacilityResultsMultiplexWithCountQuery | undefined;
+  data: GetResultsMultiplexWithCountQuery | undefined;
   loading: boolean;
   pageNumber: number;
   entriesPerPage: number;
@@ -95,10 +96,10 @@ const getResultCountText = (
 
 const getFilteredPatientName = (
   params: FilterParams,
-  data: GetFacilityResultsMultiplexWithCountQuery
+  data: GetResultsMultiplexWithCountQuery
 ) => {
   const firstLoadedContentEntry =
-    data?.testResultsPage?.content && data?.testResultsPage?.content[0];
+    data?.resultsPage?.content && data?.resultsPage?.content[0];
   const person = firstLoadedContentEntry && firstLoadedContentEntry.patient;
   if (params.patientId && person) {
     return displayFullName(
@@ -300,6 +301,7 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+
   if (textModalId) {
     return (
       <TestResultTextModal
@@ -311,6 +313,7 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+
   if (emailModalTestResultId) {
     return (
       <EmailTestResultModal
@@ -322,13 +325,14 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+
   if (markCorrectionId) {
     return (
       <TestResultCorrectionModal
         testResultId={markCorrectionId}
         isFacilityDeleted={
-          data?.testResultsPage?.content?.find(
-            (content) => content?.internalId === markCorrectionId
+          data?.resultsPage?.content?.find(
+            (content) => content?.id === markCorrectionId
           )?.facility?.isDeleted ?? false
         }
         closeModal={() => {
@@ -338,6 +342,7 @@ export const DetachedTestResultsList = ({
       />
     );
   }
+
   if (detailsModalId) {
     return (
       <TestResultDetailsModal
@@ -350,7 +355,7 @@ export const DetachedTestResultsList = ({
     );
   }
 
-  const testResults = data?.testResultsPage?.content || [];
+  const testResults = data?.resultsPage?.content ?? [];
   const displayFacilityColumn =
     filterParams.filterFacilityId === ALL_FACILITIES_ID ||
     activeFacilityId === ALL_FACILITIES_ID;
@@ -521,6 +526,27 @@ export const DetachedTestResultsList = ({
                 />
               </div>
               <Select
+                label="Condition"
+                name="disease"
+                value={filterParams.disease ?? ""}
+                options={[
+                  {
+                    value: MULTIPLEX_DISEASES.COVID_19,
+                    label: MULTIPLEX_DISEASES.COVID_19,
+                  },
+                  {
+                    value: MULTIPLEX_DISEASES.FLU_A,
+                    label: MULTIPLEX_DISEASES.FLU_A,
+                  },
+                  {
+                    value: MULTIPLEX_DISEASES.FLU_B,
+                    label: MULTIPLEX_DISEASES.FLU_B,
+                  },
+                ]}
+                defaultSelect
+                onChange={setFilterParams("disease")}
+              />
+              <Select
                 label="Test result"
                 name="result"
                 value={filterParams.result || ""}
@@ -570,7 +596,7 @@ export const DetachedTestResultsList = ({
         </div>
         <div title="filtered-result">
           <ResultsTable
-            results={testResults as TestResult[]}
+            results={testResults as Result[]}
             setPrintModalId={setPrintModalId}
             setMarkCorrectionId={setMarkCorrectionId}
             setDetailsModalId={setDetailsModalId}
@@ -602,6 +628,7 @@ export interface ResultsQueryVariables {
   facilityId: string | null;
   result?: string | null;
   role?: string | null;
+  disease?: string | null;
   startDate?: string | null;
   endDate?: string | null;
   pageNumber: number;
@@ -622,6 +649,7 @@ const TestResultsList = () => {
   const startDate = getParameterFromUrl("startDate", location);
   const endDate = getParameterFromUrl("endDate", location);
   const role = getParameterFromUrl("role", location);
+  const disease = getParameterFromUrl("disease", location);
   const result = getParameterFromUrl("result", location);
   const filterFacilityId = getParameterFromUrl("filterFacilityId", location);
 
@@ -629,6 +657,7 @@ const TestResultsList = () => {
     ...(patientId && { patientId: patientId }),
     ...(startDate && { startDate: startDate }),
     ...(endDate && { endDate: endDate }),
+    ...(disease && { disease: disease }),
     ...(result && { result: result }),
     ...(role && { role: role }),
   };
@@ -677,7 +706,7 @@ const TestResultsList = () => {
     ...queryParams,
   };
 
-  const results = useGetFacilityResultsMultiplexWithCountQuery({
+  const results = useGetResultsMultiplexWithCountQuery({
     fetchPolicy: "no-cache",
     variables: resultsQueryVariables,
   });
@@ -689,7 +718,8 @@ const TestResultsList = () => {
   if (results.error) {
     throw results.error;
   }
-  const totalEntries = results.data?.testResultsPage?.totalElements || 0;
+
+  const totalEntries = results.data?.resultsPage?.totalElements || 0;
 
   return (
     <DetachedTestResultsList
