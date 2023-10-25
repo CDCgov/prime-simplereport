@@ -168,7 +168,6 @@ datahub:
   fhir-enabled: true
 features:
   hivEnabled: true
-  rsvEnabled: true
   singleEntryRsvEnabled: true
   agnosticEnabled: true
   testCardRefactorEnabled: true

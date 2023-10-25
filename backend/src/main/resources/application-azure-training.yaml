@@ -10,3 +10,5 @@ simple-report:
       - https://training.simplereport.gov
 twilio:
   enabled: false
+features:
+  testCardRefactorEnabled: false

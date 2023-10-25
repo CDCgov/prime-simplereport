@@ -4,7 +4,7 @@ import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
 import { IconProp } from "@fortawesome/fontawesome-svg-core";
 
 import "./TestTimer.scss";
-import { getAppInsights } from "../../app/TelemetryService";
+import { getAppInsights } from "../TelemetryService";
 
 const alarmModule = require("./test-timer.mp3");
 
@@ -15,12 +15,14 @@ type DateTimeStamp = ReturnType<typeof Date.now>;
 function toMillis(minutes: number) {
   return minutes * 60 * 1000;
 }
+
 export interface TimerTrackEventMetadata {
   facilityName: string | undefined;
   organizationName: string;
   patientId: string;
   testOrderId: string;
 }
+
 export class Timer {
   id: string;
   startedAt: DateTimeStamp;
@@ -240,8 +242,10 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         data-testid="timer"
         aria-label="Start timer"
       >
-        <span role="timer">{mmss(countdown)}</span>{" "}
         <FontAwesomeIcon alt-text="stopwatch" icon={faStopwatch as IconProp} />
+        <span className={"margin-left-1"} role="timer">
+          Start timer
+        </span>{" "}
       </button>
     );
   }
@@ -253,8 +257,8 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         data-testid="timer"
         aria-label="Reset timer"
       >
-        <span role="timer">{mmss(countdown)}</span>{" "}
         <FontAwesomeIcon alt-text="reset" icon={faRedo as IconProp} />
+        <span role="timer">{mmss(countdown)}</span>{" "}
       </button>
     );
   }
@@ -273,8 +277,10 @@ export const TestTimerWidget = ({ timer, context }: Props) => {
         data-testid="timer"
         aria-label="Reset timer"
       >
-        <span className="result-ready">RESULT READY</span>{" "}
-        <span className="timer-overtime" role="timer">
+        <span className="result-ready">
+          <strong>RESULT READY</strong>
+        </span>{" "}
+        <span className="timer-overtime margin-x-1" role="timer">
           {mmss(elapsed)} elapsed{" "}
         </span>{" "}
         <FontAwesomeIcon icon={faRedo as IconProp} />

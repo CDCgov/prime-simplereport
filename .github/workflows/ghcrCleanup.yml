@@ -1,26 +1,48 @@
 name: Delete old container images
 
-
 on:
   schedule:
     - cron: "0 0 * * *"
 
-permissions:
-  packages: write
-
 jobs:
   clean_ghcr:
-    name: Delete old unused container images
+    name: Delete untagged container images
     runs-on: ubuntu-latest
     steps:
-      - name: Delete all containers older than a month
-        uses: snok/container-retention-policy@v2
-        with:
-          image-names: backend, cypress, database, frontend, frontend-lighthouse, nginx
-          cut-off: One month ago UTC
-          account-type: org
-          org-name: CDCgov
-          keep-at-least: 1
-          skip-tags: main
-          token: ${{ secrets.GITHUB_TOKEN }}
-          dry-run: true
+      # backend, cypress, database, frontend, frontend-lighthouse, nginx
+      - uses: actions/delete-package-versions@v4
+        with: 
+          package-name: 'backend'
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: 'true'
+      - uses: actions/delete-package-versions@v4
+        with: 
+          package-name: 'cypress'
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: 'true'
+      - uses: actions/delete-package-versions@v4
+        with: 
+          package-name: 'database'
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: 'true'
+      - uses: actions/delete-package-versions@v4
+        with: 
+          package-name: 'frontend'
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: 'true'
+      - uses: actions/delete-package-versions@v4
+        with: 
+          package-name: 'frontend-lighthouse'
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: 'true'
+      - uses: actions/delete-package-versions@v4
+        with: 
+          package-name: 'nginx'
+          package-type: 'container'
+          min-versions-to-keep: 10
+          delete-only-untagged-versions: 'true'

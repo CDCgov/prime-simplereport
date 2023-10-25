@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Setter
 public class FeatureFlagsConfig {
   private boolean hivEnabled;
-  private boolean rsvEnabled;
   private boolean singleEntryRsvEnabled;
   private boolean agnosticEnabled;
   private boolean agnosticBulkUploadEnabled;
