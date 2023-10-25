@@ -50,7 +50,7 @@ public class FileUploadController {
   }
 
   @PostMapping(HIV_RESULT_UPLOAD)
-  @PreAuthorize("@featureFlagsConfig.getFeatureFlagProperties().isHivEnabled()")
+  @PreAuthorize("@featureFlagsConfig.isHivEnabled()")
   public TestResultUpload handleHIVResultsUpload(@RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);
     try (InputStream resultsUpload = file.getInputStream()) {
@@ -62,7 +62,7 @@ public class FileUploadController {
   }
 
   @PostMapping(CONDITION_AGNOSTIC_RESULT_UPLOAD)
-  @PreAuthorize("@featureFlagsConfig.getFeatureFlagProperties().isAgnosticBulkUploadEnabled()")
+  @PreAuthorize("@featureFlagsConfig.isAgnosticBulkUploadEnabled()")
   public TestResultUpload handleConditionAgnosticResultsUpload(
       @RequestParam("file") MultipartFile file) {
     assertCsvFileType(file);

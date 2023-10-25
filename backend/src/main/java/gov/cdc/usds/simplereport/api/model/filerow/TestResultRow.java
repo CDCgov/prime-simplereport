@@ -462,9 +462,7 @@ public class TestResultRow implements FileRow {
       return false;
     }
     String disease = diseaseSpecificLoincMap.get(testPerformedCode);
-    return disease != null
-        && (!RSV_NAME.equals(disease)
-            || featureFlagsConfig.getFeatureFlagProperties().isRsvEnabled());
+    return disease != null && (!RSV_NAME.equals(disease) || featureFlagsConfig.isRsvEnabled());
   }
 
   private boolean validModelTestPerformedCombination(

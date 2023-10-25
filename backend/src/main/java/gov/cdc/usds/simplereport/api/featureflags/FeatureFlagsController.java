@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.featureflags;
 
-import gov.cdc.usds.simplereport.config.FeatureFlagProperties;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +14,7 @@ public class FeatureFlagsController {
   @Autowired private FeatureFlagsConfig featureFlags;
 
   @GetMapping(WebConfiguration.FEATURE_FLAGS)
-  public FeatureFlagProperties getFeatureFlags() {
-    return featureFlags.getFeatureFlagProperties();
+  public FeatureFlagsConfig getFeatureFlags() {
+    return featureFlags;
   }
 }
