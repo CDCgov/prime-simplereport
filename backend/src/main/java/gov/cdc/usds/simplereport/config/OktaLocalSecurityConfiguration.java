@@ -20,6 +20,9 @@ import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Live (with Okta integration) request-level security configuration, but skips audit logging for
@@ -88,8 +91,7 @@ public class OktaLocalSecurityConfiguration {
         .csrf(
             csrf ->
                 csrf.requireCsrfProtectionMatcher(
-                    new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST)))
-        .cors();
+                    new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST)));
     Okta.configureResourceServer401ResponseBody(http);
     return http.build();
   }
@@ -132,5 +134,15 @@ public class OktaLocalSecurityConfiguration {
       throw new RuntimeException(
           "Unexpected authentication principal of type " + principal.getClass());
     };
+  }
+
+  @Bean
+  CorsConfigurationSource corsConfigurationSource(CorsProperties corsProperties) {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(corsProperties.getAllowedOrigins());
+    configuration.setAllowedMethods(corsProperties.getAllowedMethods());
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
   }
 }
