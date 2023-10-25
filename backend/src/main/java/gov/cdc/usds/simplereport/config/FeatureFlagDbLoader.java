@@ -25,7 +25,6 @@ public class FeatureFlagDbLoader {
   private void flagMapping(String flagName, Boolean flagValue) {
     switch (flagName) {
       case "hivEnabled" -> config.setHivEnabled(flagValue);
-      case "rsvEnabled" -> config.setRsvEnabled(flagValue);
       case "singleEntryRsvEnabled" -> config.setSingleEntryRsvEnabled(flagValue);
       case "agnosticEnabled" -> config.setAgnosticEnabled(flagValue);
       case "agnosticBulkUploadEnabled" -> config.setAgnosticBulkUploadEnabled(flagValue);
