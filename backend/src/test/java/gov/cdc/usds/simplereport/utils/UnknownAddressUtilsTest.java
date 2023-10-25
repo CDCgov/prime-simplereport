@@ -1,27 +1,26 @@
 package gov.cdc.usds.simplereport.utils;
 
-import static gov.cdc.usds.simplereport.utils.AddressUtils.isAddressUnknown;
+import static gov.cdc.usds.simplereport.utils.UnknownAddressUtils.isAddressUnknown;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
-class AddressUtilsTest extends BaseRepositoryTest {
-
-  @Test
-  void validKnownAddress_returnsFalse() {
-    String state = "NJ";
-    String zip = "55116";
-    String street = "123 Blue Street";
-    assertFalse(isAddressUnknown(state, zip, street));
-  }
-
-  @Test
-  void partialKnownAddress_returnsFalse() {
-    String state = "CA";
-    String zip = "00000";
-    String street = "";
+class UnknownAddressUtilsTest extends BaseRepositoryTest {
+  @ParameterizedTest
+  @CsvSource({
+    ",,,",
+    "MN, 55407, 123 Blue Street",
+    "NA, 55407, 123 Blue Street",
+    "NA, 00000, 123 Blue Street",
+    "MN, 00000, 123 Blue Street",
+    "MN, 00000, ** Unknown / not given",
+    "NA, 55407, ** Unknown / not given",
+  })
+  void nonUnknownAddress_returnsFalse(String state, String zip, String street) {
     assertFalse(isAddressUnknown(state, zip, street));
   }
 

@@ -1,9 +1,11 @@
 package gov.cdc.usds.simplereport.utils;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import java.util.Arrays;
 import org.apache.commons.lang3.StringUtils;
 
-public class AddressUtils {
-  private AddressUtils() {}
+public class UnknownAddressUtils {
+  private UnknownAddressUtils() {}
 
   public static final String ADDRESS_STATE_UNKNOWN = "NA";
   public static final String ADDRESS_ZIP_UNKNOWN = "00000";
@@ -22,5 +24,14 @@ public class AddressUtils {
     return isAddressSectionUnk(state, ADDRESS_STATE_UNKNOWN)
         && isAddressSectionUnk(zip, ADDRESS_ZIP_UNKNOWN)
         && isAddressSectionUnk(street, ADDRESS_STREET_UNKNOWN);
+  }
+
+  public static StreetAddress getUnknownStreetAddress() {
+    return new StreetAddress(
+        Arrays.asList(ADDRESS_STREET_UNKNOWN),
+        null,
+        ADDRESS_STATE_UNKNOWN,
+        ADDRESS_ZIP_UNKNOWN,
+        null);
   }
 }
