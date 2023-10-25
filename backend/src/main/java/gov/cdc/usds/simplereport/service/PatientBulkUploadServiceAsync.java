@@ -132,8 +132,10 @@ public class PatientBulkUploadServiceAsync {
                 .ethnicity(convertEthnicityToDatabaseValue(extractedData.getEthnicity().getValue()))
                 .gender(convertSexToDatabaseValue(extractedData.getBiologicalSex().getValue()))
                 .genderIdentity(
-                    convertGenderIdentityToDatabaseValue(
-                        extractedData.getGenderIdentity().getValue()))
+                    extractedData.getGenderIdentity().getValue() == null
+                        ? null
+                        : convertGenderIdentityToDatabaseValue(
+                            extractedData.getGenderIdentity().getValue()))
                 .residentCongregateSetting(
                     parseYesNoUnk(extractedData.getResidentCongregateSetting().getValue()))
                 .employedInHealthcare(

@@ -473,7 +473,10 @@ public class CsvValidatorUtils {
 
   /* Values need to be lower case to play nice with frontend */
   public static String convertGenderIdentityToDatabaseValue(String genderIdentity) {
-    return genderIdentity.toLowerCase();
+    if (genderIdentity != null) {
+      return genderIdentity.toLowerCase();
+    }
+    return "";
   }
 
   /* The acceptable values for race and ethnicity don't map to the values expected in our database. */
