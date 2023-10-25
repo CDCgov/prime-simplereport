@@ -5098,3 +5098,36 @@ databaseChangeLog:
                   name: equipment_uid_type
                   type: text
                   remarks: Equipment UID from LIVD sync to be used in the universal pipeline
+  - changeSet:
+      id: add-disease_and_destination-columns-to-upload
+      author: tsv7@cdc.gov
+      comment: Add disease and destination(COVID|UNIVERSAL) columns to upload table
+      changes:
+        - tagDatabase:
+            tag: add-disease_and_destination-columns-to-upload
+        - sql:
+            remarks: Create the enumerations needed for pipeline types.
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.PIPELINE as ENUM('COVID', 'UNIVERSAL');
+        - addColumn:
+            tableName: upload
+            columns:
+              - column:
+                  name: destination
+                  type: ${database.defaultSchemaName}.PIPELINE
+                  remarks: the pipeline where the results were sent to
+              - column:
+                  name: supported_disease_id
+                  remarks: The disease that was reported.
+                  type: uuid
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__upload__supported_disease_id
+                    referencedTableName: supported_disease
+                    referencedColumnNames: internal_id
+      rollback:
+        dropColumn:
+          tableName: upload
+          columnName: supported_disease_id
+        sql: |
+          DROP TYPE ${database.defaultSchemaName}.PIPELINE CASCADE;

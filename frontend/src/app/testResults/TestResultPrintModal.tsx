@@ -14,7 +14,7 @@ import { GetTestResultForPrintDocument } from "../../generated/graphql";
 import { displayFullName } from "../utils";
 import { formatDateWithTimeOption } from "../utils/date";
 import {
-  haCovidResults,
+  hasCovidResults,
   hasMultiplexResults,
   hasPositiveFluResults,
 } from "../utils/testResults";
@@ -183,7 +183,7 @@ export const StaticTestResultModal = ({
             <TestResultsList results={results} isPatientApp={isPatientApp} />
           </ul>
         </section>
-        {(haCovidResults(results) || hasPositiveFluResults(results)) && (
+        {(hasCovidResults(results) || hasPositiveFluResults(results)) && (
           <section className="sr-result-section sr-result-next-steps">
             <h2>{t("testResult.moreInformation")}</h2>
             <MultiplexResultsGuidance

@@ -43,12 +43,12 @@ module.exports = {
         getPatientDOB() {
           return global.patientDOB;
         },
-        setPatientLink(link) {
-          global.patientLink = link;
+        setTestEventId(link) {
+          global.testEventId = link;
           return null;
         },
-        getPatientLink() {
-          return global.patientLink;
+        getTestEventId() {
+          return global.testEventId;
         },
         setPatientPhone(phone) {
           global.patientPhone = phone;
@@ -74,7 +74,7 @@ module.exports = {
       });
       on("before:browser:launch", (browser = {}, launchOptions = {}) => {
         launchOptions.args = launchOptions.args.filter(
-          (item) => item !== "--disable-dev-shm-usage",
+          (item) => item !== "--disable-dev-shm-usage"
         );
         if (browser.name === "chrome" && browser.isHeadless) {
           launchOptions.args.push("--window-size=1200,800");

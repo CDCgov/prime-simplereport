@@ -43,7 +43,7 @@ describe("Conducting a COVID test", () => {
     });
 
     cy.get(".ReactModal__Content").contains(
-      "Are you experiencing any of the following symptoms?",
+      "Are you experiencing any of the following symptoms?"
     );
 
     // Test a11y on the AoE modal
@@ -110,8 +110,10 @@ describe("Conducting a COVID test", () => {
   });
   it("stores the patient link", () => {
     cy.get(".sr-test-result-row").then(($row) => {
-      const patientLink = $row.attr("data-patient-link");
-      cy.task("setPatientLink", patientLink);
+      const dataTestId = $row.attr("data-testid");
+      const testEventId = dataTestId.split("-").slice(2, 7).join("-");
+
+      cy.task("setTestEventId", testEventId);
       cy.task("setPatientName", patientName);
     });
   });

@@ -5,7 +5,7 @@ import CovidResultGuidance from "../commonComponents/CovidResultGuidance";
 import {
   hasPositiveFluResults,
   getResultByDiseaseName,
-  haCovidResults,
+  hasCovidResults,
 } from "../utils/testResults";
 
 type PositiveFluResultInfoProps = {
@@ -65,7 +65,7 @@ const MultiplexResultsGuidance: React.FC<MultiplexResultsGuidanceProps> = ({
   isPatientApp,
 }) => {
   const { t } = useTranslation();
-  const needsCovidHeading = haCovidResults(results);
+  const needsCovidHeading = hasCovidResults(results);
   const needsFluGuidance = hasPositiveFluResults(results);
   const covidResult = getResultByDiseaseName(results, "COVID-19") as TestResult;
 
