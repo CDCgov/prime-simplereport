@@ -5125,5 +5125,8 @@ databaseChangeLog:
                     referencedTableName: supported_disease
                     referencedColumnNames: internal_id
       rollback:
+        dropColumn:
+          tableName: upload
+          columnName: supported_disease_id
         sql: |
           DROP TYPE ${database.defaultSchemaName}.PIPELINE CASCADE;
