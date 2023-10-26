@@ -44,7 +44,8 @@ class PatientUploadRowTest {
           "country",
           "phone_number",
           "phone_number_type",
-          "email");
+          "email",
+          "gender_identity");
 
   @BeforeEach
   public void init() {
@@ -69,6 +70,8 @@ class PatientUploadRowTest {
     validRowMap.put("resident_congregate_setting", "No");
     validRowMap.put("role", "Staff");
     validRowMap.put("email", "jane@testingorg.com");
+    validRowMap.put("gender_identity", "female");
+    validRowMap.put("address_notes", "test address notes");
   }
 
   @Test
@@ -103,6 +106,9 @@ class PatientUploadRowTest {
         .isEqualTo(validRowMap.get("resident_congregate_setting"));
     assertThat(patientUploadRow.getRole().getValue()).isEqualTo(validRowMap.get("role"));
     assertThat(patientUploadRow.getEmail().getValue()).isEqualTo(validRowMap.get("email"));
+    assertThat(patientUploadRow.getGenderIdentity().getValue())
+        .isEqualTo(validRowMap.get("gender_identity"));
+    assertThat(patientUploadRow.getNotes().getValue()).isEqualTo(validRowMap.get("address_notes"));
   }
 
   @Test
@@ -134,6 +140,7 @@ class PatientUploadRowTest {
     invalidIndividualValues.put("phone_number", "1");
     invalidIndividualValues.put("phone_number_type", "cell");
     invalidIndividualValues.put("email", "email");
+    invalidIndividualValues.put("gender_identity", "not a gender identity");
 
     var patientUploadRow = new PatientUploadRow(invalidIndividualValues);
 

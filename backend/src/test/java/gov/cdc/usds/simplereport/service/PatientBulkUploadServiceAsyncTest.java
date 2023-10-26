@@ -105,6 +105,9 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getEthnicity()).isEqualTo("not_hispanic");
     assertThat(patient.getBirthDate()).isEqualTo(LocalDate.of(1980, 11, 3));
     assertThat(patient.getGender()).isEqualTo("female");
+    assertThat(patient.getGenderIdentity()).isEqualTo("female");
+    assertThat(patient.getNotes()).isEqualTo("some address note");
+
     assertThat(patient.getRole()).isEqualTo(PersonRole.STAFF);
 
     assertThat(patient.getCountry()).isEqualTo("USA");
@@ -199,6 +202,8 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getCountry()).isEqualTo("USA");
     assertThat(patient.getEmployedInHealthcare()).isFalse();
     assertThat(patient.getResidentCongregateSetting()).isFalse();
+    assertThat(patient.getGenderIdentity()).isNull();
+    assertThat(patient.getNotes()).isNull();
 
     List<PhoneNumber> phoneNumbers =
         phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());
@@ -242,6 +247,8 @@ class PatientBulkUploadServiceAsyncTest extends BaseAuthenticatedFullStackTest {
     assertThat(patient.getCountry()).isEqualTo("USA");
     assertThat(patient.getEmployedInHealthcare()).isNull();
     assertThat(patient.getResidentCongregateSetting()).isNull();
+    assertThat(patient.getGenderIdentity()).isEmpty();
+    assertThat(patient.getNotes()).isEmpty();
 
     List<PhoneNumber> phoneNumbers =
         phoneNumberRepository.findAllByPersonInternalId(patient.getInternalId());
