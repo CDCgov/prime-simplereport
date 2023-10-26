@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateCou
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEmail;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateEthnicity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateFlexibleDate;
+import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateGenderIdentity;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumber;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validatePhoneNumberType;
 import static gov.cdc.usds.simplereport.validators.CsvValidatorUtils.validateRace;
@@ -44,6 +45,8 @@ public class PatientUploadRow implements FileRow {
   final ValueOrError residentCongregateSetting;
   final ValueOrError role;
   final ValueOrError email;
+  final ValueOrError genderIdentity;
+  final ValueOrError notes;
 
   static final String FIRST_NAME = "first_name";
   static final String LAST_NAME = "last_name";
@@ -58,6 +61,8 @@ public class PatientUploadRow implements FileRow {
   static final String PHONE_NUMBER_TYPE = "phone_number_type";
   static final String EMPLOYED_IN_HEALTHCARE = "employed_in_healthcare";
   static final String RESIDENT_CONGREGATE_SETTING = "resident_congregate_setting";
+  static final String GENDER_IDENTITY = "gender_identity";
+  static final String ADDRESS_NOTES = "address_notes";
 
   private static final List<String> requiredFields =
       List.of(
@@ -99,6 +104,8 @@ public class PatientUploadRow implements FileRow {
         getValue(rawRow, RESIDENT_CONGREGATE_SETTING, isRequired(RESIDENT_CONGREGATE_SETTING));
     role = getValue(rawRow, "role", isRequired("role"));
     email = getValue(rawRow, "email", isRequired("email"));
+    genderIdentity = getValue(rawRow, GENDER_IDENTITY, isRequired("genderIdentity"));
+    notes = getValue(rawRow, ADDRESS_NOTES, isRequired("notes"));
   }
 
   @Override
@@ -124,6 +131,7 @@ public class PatientUploadRow implements FileRow {
     errors.addAll(validateRace(race));
     errors.addAll(validateBiologicalSex(biologicalSex));
     errors.addAll(validateEthnicity(ethnicity));
+    errors.addAll(validateGenderIdentity(genderIdentity));
 
     // housing, work, and role
     errors.addAll(validateYesNoAnswer(residentCongregateSetting));

@@ -24,6 +24,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.Type;
 
@@ -161,6 +162,56 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.preferredLanguage = preferredLanguage;
     this.testResultDeliveryPreference = testResultDeliveryPreference;
     this.notes = notes;
+  }
+
+  @Builder
+  public Person(
+      Organization organization,
+      Facility facility,
+      String lookupId,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      LocalDate birthDate,
+      StreetAddress address,
+      String country,
+      PersonRole role,
+      List<String> emails,
+      String race,
+      String ethnicity,
+      List<String> tribalAffiliation,
+      String gender,
+      String genderIdentity,
+      Boolean residentCongregateSetting,
+      Boolean employedInHealthcare,
+      String preferredLanguage,
+      TestResultDeliveryPreference testResultDeliveryPreference,
+      String notes) {
+
+    this(
+        organization,
+        lookupId,
+        firstName,
+        middleName,
+        lastName,
+        suffix,
+        birthDate,
+        address,
+        country,
+        role,
+        emails,
+        race,
+        ethnicity,
+        tribalAffiliation,
+        gender,
+        genderIdentity,
+        residentCongregateSetting,
+        employedInHealthcare,
+        preferredLanguage,
+        testResultDeliveryPreference,
+        notes);
+    this.facility = facility;
   }
 
   public Person(
