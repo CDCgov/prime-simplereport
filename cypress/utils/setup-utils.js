@@ -8,12 +8,12 @@ import {
 } from "./testing-data-utils";
 import { generateUser } from "../support/e2e";
 
-const createOrgName = (specName) => {
-  return `${specName}-org`;
+const createOrgName = (specRunVersionName) => {
+  return `${specRunVersionName}-org`;
 }
 
-const createFacilityName = (specName) => {
-  return `${specName}-facility`;
+const createFacilityName = (specRunVersionName) => {
+  return `${specRunVersionName}-facility`;
 }
 
 const createAndVerifyOrganization = (orgName) => {
@@ -32,8 +32,8 @@ const archivePatientsForFacility = (facilityId) => {
     })
 }
 
-export const cleanUpPreviousOrg = (specName) => {
-  let orgName = createOrgName(specName);
+export const cleanUpPreviousRunSetupData = (specRunVersionName) => {
+  let orgName = createOrgName(specRunVersionName);
   getOrganizationsByName(orgName)
     .then((res) => {
       let orgs = res.body.data.organizationsByName;
@@ -48,9 +48,9 @@ export const cleanUpPreviousOrg = (specName) => {
     })
 }
 
-export const setupOrgAndFacility = (specName) => {
-  let orgName = createOrgName(specName);
-  let facilityName = createFacilityName(specName);
+export const setupRunData = (specRunVersionName) => {
+  let orgName = createOrgName(specRunVersionName);
+  let facilityName = createFacilityName(specRunVersionName);
   createAndVerifyOrganization(orgName)
     .then(() => getOrganizationsByName(orgName))
     .then((res) => accessOrganization(res.body.data.organizationsByName[0].externalId))

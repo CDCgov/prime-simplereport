@@ -1,8 +1,8 @@
 import { generatePatient, loginHooks, testNumber } from "../support/e2e";
-import { cleanUpPreviousOrg, setupOrgAndFacility } from "../utils/setup-utils";
+import { cleanUpPreviousRunSetupData, setupRunData } from "../utils/setup-utils";
 
 const patient = generatePatient();
-
+const specRunName = "spec02";
 describe("Adding a single patient", () => {
   loginHooks();
   before("store patient info", () => {
@@ -10,17 +10,20 @@ describe("Adding a single patient", () => {
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);
     cy.task("setPatientPhone", patient.phone);
-    cy.task("getSpecName")
-      .then((prevSpecName) => {
-        let currentSpecName = `${testNumber()}-cypress-spec-2`;
-        if (prevSpecName) {
-          let shouldCleanUpPreviousOrg = prevSpecName != currentSpecName;
-          if (shouldCleanUpPreviousOrg) {
-            cleanUpPreviousOrg(prevSpecName);
-          }
+
+    cy.task("getSpecRunVersionName", specRunName)
+      .then((prevSpecRunVersionName) => {
+        let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
+
+        if (prevSpecRunVersionName) {
+          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
         }
-        cy.task("setSpecName", currentSpecName)
-        setupOrgAndFacility(currentSpecName);
+        let data = {
+          specRunName: specRunName,
+          versionName: currentSpecRunVersionName
+        };
+        cy.task("setSpecRunVersionName", data)
+        setupRunData(currentSpecRunVersionName);
       })
   });
   it("navigates to the add patient form", () => {

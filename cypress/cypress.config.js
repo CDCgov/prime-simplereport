@@ -1,3 +1,5 @@
+global.specRunVersions = new Map();
+
 module.exports = {
   viewportWidth: 1200,
   viewportHeight: 800,
@@ -71,12 +73,12 @@ module.exports = {
         getMultiplexDeviceName() {
           return global.multiplexDeviceName;
         },
-        setSpecName(name) {
-          global.specName = name;
-          return name;
+        setSpecRunVersionName(data) {
+          global.specRunVersions.set(data.specRunName, data.versionName);
+          return null;
         },
-        getSpecName() {
-          return global.specName || null;
+        getSpecRunVersionName(specRunName) {
+          return global.specRunVersions.get(specRunName) || null;
         },
       });
       on("before:browser:launch", (browser = {}, launchOptions = {}) => {
