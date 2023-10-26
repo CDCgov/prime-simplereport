@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.Authentication;
@@ -89,7 +90,7 @@ public class OktaLocalSecurityConfiguration {
             csrf ->
                 csrf.requireCsrfProtectionMatcher(
                     new AntPathRequestMatcher(WebConfiguration.USER_ACCOUNT_REQUEST)))
-        .cors();
+        .cors(Customizer.withDefaults());
     Okta.configureResourceServer401ResponseBody(http);
     return http.build();
   }
