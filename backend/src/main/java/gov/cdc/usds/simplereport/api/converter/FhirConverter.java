@@ -682,7 +682,6 @@ public class FhirConverter {
               String testkitNameId =
                   getCommonDiseaseValue(
                       deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
-
               return convertToObservation(
                   result,
                   testPerformedLoincCode,
@@ -737,7 +736,6 @@ public class FhirConverter {
     observation.setCode(createLoincConcept(props.getDiseaseCode(), "", props.getDiseaseName()));
     addSNOMEDValue(props.getResultCode(), observation, props.getResultDescription());
     observation.getMethod().getCodingFirstRep().setDisplay(props.getDeviceModel());
-
     observation
         .getMethod()
         .addExtension(
