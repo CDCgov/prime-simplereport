@@ -56,7 +56,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
             mock(DeviceSpecimenTypeNewRepository.class),
             mock(SpecimenTypeRepository.class),
             mock(SupportedDiseaseRepository.class),
-            mock(DeviceTypeDiseaseRepository.class));
+            mock(DeviceTypeDiseaseRepository.class),
+            mock(ResultsUploaderCachingService.class));
   }
 
   @Test

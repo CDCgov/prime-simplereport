@@ -23,7 +23,10 @@ import gov.cdc.usds.simplereport.api.model.filerow.TestResultRow;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.ResultUploadError;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
+import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
@@ -74,7 +77,7 @@ public class TestResultUploadService {
   private final TokenAuthentication _tokenAuth;
   private final FileValidator<TestResultRow> testResultFileValidator;
   private final FileValidator<ConditionAgnosticResultRow> conditionAgnosticResultFileValidator;
-
+  private final DiseaseService diseaseService;
   private final BulkUploadResultsToFhir fhirConverter;
 
   @Value("${data-hub.url}")
@@ -119,68 +122,67 @@ public class TestResultUploadService {
       new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
   @AuthorizationConfiguration.RequirePermissionCSVUpload
-  public TestResultUpload processResultCSV(InputStream csvStream) {
-    TestResultUpload validationErrorResult = new TestResultUpload(UploadStatus.FAILURE);
-
+  public List<TestResultUpload> processResultCSV(InputStream csvStream) {
+    List<TestResultUpload> uploadSummary = new ArrayList();
+    var submissionId = UUID.randomUUID();
     Organization org = _orgService.getCurrentOrganization();
 
-    var submissionId = UUID.randomUUID();
-
-    byte[] content;
     try {
-      content = csvStream.readAllBytes();
+      byte[] content = csvStream.readAllBytes();
+
+      if (content.length > 0) {
+        Optional<TestResultUpload> dataValidationErrors =
+            performDataValidations(content, org, submissionId);
+
+        if (dataValidationErrors.isPresent()) {
+          uploadSummary.add(dataValidationErrors.get());
+          return uploadSummary;
+        }
+
+        CompletableFuture<List<TestResultUpload>> covidSubmission =
+            submitResultsAsCsv(content, org, submissionId);
+        CompletableFuture<List<TestResultUpload>> universalSubmission =
+            submitResultsAsFhir(new ByteArrayInputStream(content), org, submissionId);
+
+        CompletableFuture.allOf(covidSubmission, universalSubmission)
+            .thenAccept(
+                __ -> {
+                  try {
+                    uploadSummary.addAll(covidSubmission.get());
+                  } catch (ExecutionException | InterruptedException e) {
+                    log.error("Error processing csv in bulk result upload", e);
+                  }
+                  try {
+                    uploadSummary.addAll(universalSubmission.get());
+                  } catch (ExecutionException | InterruptedException e) {
+                    log.error("Error processing FHIR in bulk result upload", e);
+                  }
+                })
+            .join();
+      }
     } catch (IOException e) {
       log.error("Error reading test result upload CSV", e);
       throw new CsvProcessingException("Unable to read csv");
     }
 
+    return uploadSummary;
+  }
+
+  private Optional<TestResultUpload> performDataValidations(
+      byte[] content, Organization org, UUID submissionId) {
+
     List<FeedbackMessage> errors =
         testResultFileValidator.validate(new ByteArrayInputStream(content));
-    if (!errors.isEmpty()) {
-      validationErrorResult.setErrors(errors.toArray(FeedbackMessage[]::new));
 
+    if (!errors.isEmpty()) {
+      TestResultUpload validationErrorResult = new TestResultUpload(UploadStatus.FAILURE);
+      validationErrorResult.setErrors(errors.toArray(FeedbackMessage[]::new));
       errorRepository.saveAll(
           errors.stream().map(error -> new ResultUploadError(org, error, submissionId)).toList());
-
-      return validationErrorResult;
+      return Optional.of(validationErrorResult);
     }
 
-    TestResultUpload csvResult = null;
-    TestResultUpload fhirResult = null;
-    Future<FutureResult<UploadResponse, Exception>> csvResponse;
-    Future<UploadResponse> fhirResponse = null;
-
-    if (content.length > 0) {
-
-      csvResponse = submitResultsAsCsv(content);
-      if (fhirEnabled) {
-        fhirResponse = submitResultsAsFhir(new ByteArrayInputStream(content), org);
-      }
-
-      try {
-        if (csvResponse.get().getError() instanceof DependencyFailureException) {
-          throw (DependencyFailureException) csvResponse.get().getError();
-        }
-
-        if (csvResponse.get().getValue() != null) {
-          csvResult = saveSubmissionToDb(csvResponse.get().getValue(), org, submissionId);
-        }
-
-      } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
-        log.error("Error processing csv in bulk result upload", e);
-        Thread.currentThread().interrupt();
-      }
-
-      try {
-        if (fhirResponse != null && fhirResponse.get() != null) {
-          fhirResult = saveSubmissionToDb(fhirResponse.get(), org, submissionId);
-        }
-      } catch (CsvProcessingException | ExecutionException | InterruptedException e) {
-        log.error("Error processing FHIR in bulk result upload", e);
-        Thread.currentThread().interrupt();
-      }
-    }
-    return Optional.ofNullable(csvResult).orElse(fhirResult);
+    return Optional.empty();
   }
 
   private byte[] transformCsvContent(byte[] content) {
@@ -362,61 +364,115 @@ public class TestResultUploadService {
     return _client.fetchAccessToken(requestBody);
   }
 
-  private Future<UploadResponse> submitResultsAsFhir(
-      ByteArrayInputStream content, Organization org) {
+  private CompletableFuture<List<TestResultUpload>> submitResultsAsFhir(
+      ByteArrayInputStream content, Organization org, UUID submissionId) {
     // send to report stream
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
-              long start = System.currentTimeMillis();
-              // convert csv to fhir and serialize to json
-              var serializedFhirBundles =
-                  fhirConverter.convertToFhirBundles(content, org.getInternalId());
-              UploadResponse response = uploadBundleAsFhir(serializedFhirBundles);
-              log.info(
-                  "FHIR submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+              List<TestResultUpload> uploadLogs = new ArrayList();
+              if (fhirEnabled) {
+                try {
+                  long start = System.currentTimeMillis();
+                  // convert csv to fhir and serialize to json
+                  FHIRBundleRecord fhirBundleWithMeta =
+                      fhirConverter.convertToFhirBundles(content, org.getInternalId());
+                  UploadResponse response =
+                      uploadBundleAsFhir(fhirBundleWithMeta.serializedBundle());
+                  log.info(
+                      "FHIR submitted in "
+                          + (System.currentTimeMillis() - start)
+                          + " milliseconds");
 
-              return response;
+                  if (response != null) {
+                    fhirBundleWithMeta
+                        .metadata()
+                        .forEach(
+                            (reportedDiseaseName, count) -> {
+                              SupportedDisease reportedDisease =
+                                  diseaseService.getDiseaseByName(reportedDiseaseName);
+                              uploadLogs.add(
+                                  saveSubmissionToDb(
+                                      response,
+                                      org,
+                                      submissionId,
+                                      Pipeline.UNIVERSAL,
+                                      reportedDisease,
+                                      count));
+                            });
+                  }
+                } catch (CsvProcessingException e) {
+                  Thread.currentThread().interrupt();
+                }
+              }
+              return uploadLogs;
             }));
   }
 
-  private Future<FutureResult<UploadResponse, Exception>> submitResultsAsCsv(byte[] content) {
+  private CompletableFuture<List<TestResultUpload>> submitResultsAsCsv(
+      byte[] content, Organization org, UUID submissionId) {
     return CompletableFuture.supplyAsync(
-        withMDC(
-            () -> {
-              long start = System.currentTimeMillis();
-              FutureResult<UploadResponse, Exception> result;
-              var csvContent = transformCsvContent(content);
-              if (csvContent.length == 0) {
-                return FutureResult.<UploadResponse, Exception>builder()
-                    .error(new EmptyCsvException())
-                    .build();
-              }
-              try {
-                result =
-                    FutureResult.<UploadResponse, Exception>builder()
-                        .value(_client.uploadCSV(csvContent))
+            withMDC(
+                () -> {
+                  long start = System.currentTimeMillis();
+                  FutureResult<UploadResponse, Exception> result;
+                  var csvContent = transformCsvContent(content);
+                  if (csvContent.length == 0) {
+                    return FutureResult.<UploadResponse, Exception>builder()
+                        .error(new EmptyCsvException())
                         .build();
-              } catch (FeignException e) {
-                log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
-                try {
-                  UploadResponse value = mapper.readValue(e.contentUTF8(), UploadResponse.class);
-                  result = FutureResult.<UploadResponse, Exception>builder().value(value).build();
+                  }
+                  try {
+                    result =
+                        FutureResult.<UploadResponse, Exception>builder()
+                            .value(_client.uploadCSV(csvContent))
+                            .build();
+                  } catch (FeignException e) {
+                    log.info("RS CSV API Error " + e.status() + " Response: " + e.contentUTF8());
+                    try {
+                      UploadResponse value =
+                          mapper.readValue(e.contentUTF8(), UploadResponse.class);
+                      result =
+                          FutureResult.<UploadResponse, Exception>builder().value(value).build();
 
-                } catch (JsonProcessingException ex) {
-                  log.error("Unable to parse Report Stream response.", ex);
-                  result =
-                      FutureResult.<UploadResponse, Exception>builder()
-                          .error(
-                              new DependencyFailureException(
-                                  "Unable to parse Report Stream response."))
-                          .build();
+                    } catch (JsonProcessingException ex) {
+                      log.error("Unable to parse Report Stream response.", ex);
+                      result =
+                          FutureResult.<UploadResponse, Exception>builder()
+                              .error(
+                                  new DependencyFailureException(
+                                      "Unable to parse Report Stream response."))
+                              .build();
+                    }
+                  }
+                  log.info(
+                      "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
+
+                  return result;
+                }))
+        .thenApply(
+            response -> {
+              try {
+                if (response.getError() instanceof DependencyFailureException) {
+                  throw (DependencyFailureException) response.getError();
                 }
+
+                if (response.getValue() != null) {
+                  SupportedDisease covidDisease = diseaseService.getDiseaseByName("COVID-19");
+                  return List.of(
+                      saveSubmissionToDb(
+                          response.getValue(),
+                          org,
+                          submissionId,
+                          Pipeline.COVID,
+                          covidDisease,
+                          response.getValue().getReportItemCount()));
+                }
+              } catch (CsvProcessingException e) {
+                Thread.currentThread().interrupt();
               }
-              log.info(
-                  "CSV submitted in " + (System.currentTimeMillis() - start) + " milliseconds");
-              return result;
-            }));
+              return List.of();
+            });
   }
 
   private UploadResponse parseFeignException(FeignException e) {
@@ -429,7 +485,12 @@ public class TestResultUploadService {
   }
 
   private TestResultUpload saveSubmissionToDb(
-      UploadResponse response, Organization org, UUID submissionId) {
+      UploadResponse response,
+      Organization org,
+      UUID submissionId,
+      Pipeline pipeline,
+      SupportedDisease disease,
+      Integer count) {
     TestResultUpload result = null;
     if (response != null) {
       var status = UploadResponse.parseStatus(response.getOverallStatus());
@@ -439,10 +500,12 @@ public class TestResultUploadService {
               response.getId(),
               submissionId,
               status,
-              response.getReportItemCount(),
+              count,
               org,
               response.getWarnings(),
-              response.getErrors());
+              response.getErrors(),
+              pipeline,
+              disease);
 
       result = _repo.save(result);
 
@@ -465,9 +528,18 @@ public class TestResultUploadService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public TestResultUpload processHIVResultCSV(InputStream csvStream) {
+    SupportedDisease hivDisease = diseaseService.getDiseaseByName("HIV");
     FeedbackMessage[] empty = {};
     return new TestResultUpload(
-        UUID.randomUUID(), UUID.randomUUID(), UploadStatus.PENDING, 0, null, empty, empty);
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        UploadStatus.PENDING,
+        0,
+        null,
+        empty,
+        empty,
+        Pipeline.UNIVERSAL,
+        hivDisease);
   }
 
   @Getter
@@ -563,7 +635,9 @@ public class TestResultUploadService {
               response.getReportItemCount(),
               org,
               response.getWarnings(),
-              response.getErrors());
+              response.getErrors(),
+              Pipeline.UNIVERSAL,
+              null);
 
       if (response.getErrors() != null && response.getErrors().length > 0) {
         for (var error : response.getErrors()) {

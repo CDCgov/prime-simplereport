@@ -9,7 +9,9 @@ import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.config.FeatureFlagsConfig;
+import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -37,7 +39,15 @@ class FileUploadControllerTest {
     FeedbackMessage[] empty = {};
     var expected =
         new TestResultUpload(
-            UUID.randomUUID(), UUID.randomUUID(), UploadStatus.SUCCESS, 0, null, empty, empty);
+            UUID.randomUUID(),
+            UUID.randomUUID(),
+            UploadStatus.SUCCESS,
+            0,
+            null,
+            empty,
+            empty,
+            Pipeline.UNIVERSAL,
+            new SupportedDisease("HIV", ""));
     when(featureFlagsConfig.isHivEnabled()).thenReturn(true);
     when(file.getContentType()).thenReturn("text/csv");
     when(file.getInputStream()).thenReturn(stream);

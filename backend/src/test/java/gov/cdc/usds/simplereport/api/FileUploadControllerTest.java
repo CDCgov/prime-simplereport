@@ -18,11 +18,13 @@ import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.uploads.PatientBulkUploadResponse;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.service.PatientBulkUploadService;
 import gov.cdc.usds.simplereport.service.TestResultUploadService;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.UUID;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -159,9 +161,17 @@ class FileUploadControllerTest extends BaseFullStackTest {
     Organization organization = new Organization("best org", "lab", "best-org-123", true);
     TestResultUpload testResultUpload =
         new TestResultUpload(
-            reportId, UUID.randomUUID(), UploadStatus.SUCCESS, 5, organization, null, null);
+            reportId,
+            UUID.randomUUID(),
+            UploadStatus.SUCCESS,
+            5,
+            organization,
+            null,
+            null,
+            Pipeline.UNIVERSAL,
+            null);
     when(testResultUploadService.processResultCSV(any(InputStream.class)))
-        .thenReturn(testResultUpload);
+        .thenReturn(List.of(testResultUpload));
 
     MockMultipartFile file =
         new MockMultipartFile(
@@ -170,9 +180,9 @@ class FileUploadControllerTest extends BaseFullStackTest {
     mockMvc
         .perform(multipart(RESULT_UPLOAD).file(file))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.reportId", Matchers.is(reportId.toString())))
-        .andExpect(jsonPath("$.status", Matchers.is("SUCCESS")))
-        .andExpect(jsonPath("$.recordsCount", Matchers.is(5)))
+        .andExpect(jsonPath("$.[0].reportId", Matchers.is(reportId.toString())))
+        .andExpect(jsonPath("$.[0].status", Matchers.is("SUCCESS")))
+        .andExpect(jsonPath("$.[0].recordsCount", Matchers.is(5)))
         .andReturn();
   }
 
