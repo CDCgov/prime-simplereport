@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.api.organization;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.api.model.ApiPendingOrganization;
 import gov.cdc.usds.simplereport.api.model.accountrequest.OrganizationAccountRequest;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -74,5 +76,30 @@ class OrganizationResolverTest {
     assertThat(actual).isNull();
     verify(organizationService).getOrganizationById(id);
     verify(organizationService, times(0)).getFacilities(org);
+  }
+
+  @Test
+  void organizationsByName_success() {
+    String orgName = "org name";
+    Organization org = new Organization(orgName, "type", "123", true);
+    when(organizationService.getOrganizationsByName(orgName)).thenReturn(List.of(org));
+
+    organizationMutationResolver.organizationsByName(orgName);
+
+    verify(organizationService).getOrganizationsByName(orgName);
+    verify(organizationService).getFacilities(org);
+  }
+
+  @Test
+  void organizationsByName_null() {
+    String orgName = "org name";
+    Organization org = new Organization(orgName, "type", "123", true);
+    when(organizationService.getOrganizationsByName(orgName)).thenReturn(List.of());
+
+    List<ApiOrganization> actual = organizationMutationResolver.organizationsByName(orgName);
+
+    assertThat(actual).isEmpty();
+    verify(organizationService).getOrganizationsByName(orgName);
+    verify(organizationService, never()).getFacilities(org);
   }
 }
