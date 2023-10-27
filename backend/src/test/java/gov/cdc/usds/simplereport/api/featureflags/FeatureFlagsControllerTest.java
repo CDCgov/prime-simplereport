@@ -9,7 +9,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 class FeatureFlagsControllerTest {
   private FeatureFlagsController featureFlagsController;
-  private final FeatureFlagsConfig _mockFeatureFlagConfig = new FeatureFlagsConfig();
+  private final FeatureFlagsConfig _mockFeatureFlagConfig = new FeatureFlagsConfig(null);
 
   @BeforeEach
   void setup() {
