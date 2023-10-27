@@ -512,22 +512,34 @@ public class BulkUploadResultsToFhir {
             testResultDate,
             dateResultReleased);
 
-    return fhirConverter.createFhirBundle(
-        CreateFhirBundleProps.builder()
-            .patient(patient)
-            .testingLab(testingLabOrg)
-            .orderingFacility(orderingFacility)
-            .practitioner(practitioner)
-            .device(device)
-            .specimen(specimen)
-            .resultObservations(resultObservation)
-            .aoeObservations(aoeObservations)
-            .serviceRequest(serviceRequest)
-            .diagnosticReport(diagnosticReport)
-            .currentDate(dateGenerator.newDate())
-            .gitProperties(gitProperties)
-            .processingId(processingModeCode)
-            .build());
+    var bundle =
+        fhirConverter.createFhirBundle(
+            CreateFhirBundleProps.builder()
+                .patient(patient)
+                .testingLab(testingLabOrg)
+                .orderingFacility(orderingFacility)
+                .practitioner(practitioner)
+                .device(device)
+                .specimen(specimen)
+                .resultObservations(resultObservation)
+                .aoeObservations(aoeObservations)
+                .serviceRequest(serviceRequest)
+                .diagnosticReport(diagnosticReport)
+                .currentDate(dateGenerator.newDate())
+                .gitProperties(gitProperties)
+                .processingId(processingModeCode)
+                .build());
+
+    IParser parser = ctx.newJsonParser();
+
+    // Indent the output
+    parser.setPrettyPrint(true);
+
+    // Serialize it
+    String serialized = parser.encodeResourceToString(bundle);
+    log.warn("CONVERTED BUNDLE: " + serialized);
+
+    return bundle;
   }
 
   private Bundle convertConditionAgnosticRowToFhirBundle(ConditionAgnosticResultRow row) {
