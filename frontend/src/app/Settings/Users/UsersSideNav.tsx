@@ -29,7 +29,10 @@ const UsersSideNav: React.FC<Props> = ({
   return (
     <div className="display-block users-sidenav">
       <h2 className="users-sidenav-header">Users</h2>
-      <nav className="prime-secondary-nav" aria-label="Tertiary navigation">
+      <nav
+        className="prime-secondary-nav users-secondary-nav"
+        aria-label="Tertiary navigation"
+      >
         <div
           role="tablist"
           aria-owns={getIdsAsString(users)}
