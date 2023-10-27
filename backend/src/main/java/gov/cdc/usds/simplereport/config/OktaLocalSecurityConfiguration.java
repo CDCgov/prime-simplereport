@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
@@ -82,7 +81,8 @@ public class OktaLocalSecurityConfiguration {
                     // Anything else goes through Okta
                     .anyRequest()
                     .authenticated())
-        .oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+        .oauth2ResourceServer(
+            oauth2ResourceServer -> oauth2ResourceServer.jwt(Customizer.withDefaults()))
         // Most of the app doesn't use sessions, so can't have CSRF. Spring's automatic CSRF
         // breaks the REST controller, so we disable it for most paths.
         // USER_ACCOUNT_REQUEST does use sessions, so CSRF is enabled there.
