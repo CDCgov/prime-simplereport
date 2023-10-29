@@ -25,6 +25,7 @@ interface Props {
   ariaHidden?: boolean;
   ariaLabel?: string;
   ref?: React.RefObject<HTMLButtonElement> | null;
+  dataCy?: string;
 }
 
 const Button = ({
@@ -40,6 +41,7 @@ const Button = ({
   id,
   ariaHidden,
   ariaLabel,
+  dataCy,
 }: Props) => (
   <button
     type={type}
@@ -56,6 +58,7 @@ const Button = ({
     onClick={onClick}
     aria-describedby={ariaDescribedBy || undefined}
     aria-label={ariaLabel}
+    data-cy={dataCy}
   >
     {icon && <FontAwesomeIcon icon={icon} className="margin-right-1" />}
     {label || children}

@@ -28,13 +28,12 @@ describe("Save and start covid test", () => {
   context("edit patient and save and start test", () => {
     it("searches for the patient", () => {
       cy.visit("/");
-      cy.get(".usa-nav-container");
-      cy.get("#desktop-patient-nav-link").click();
-      cy.get(".sr-patient-list").should("exist");
-      cy.get(".sr-patient-list").contains("Loading...").should("not.exist");
-      cy.get("#search-field-small").type(lastName);
+      cy.get('[data-cy="desktop-patient-nav-link"]').click();
+      cy.get('[data-cy="manage-patients-header"]').contains("Patients");
+      cy.get('[data-cy="manage-patients-header"]').contains("Showing");
+      cy.get('[data-cy="manage-patients-search-input"]').type(lastName);
       cy.wait("@GetPatientsByFacility");
-      cy.get(".sr-patient-list").contains(patientName).should("exist");
+      cy.get('[data-cy="manage-patients-page"]').contains(patientName);
     });
 
     it("edits the found patient and clicks save and start test ", () => {

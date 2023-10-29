@@ -158,6 +158,7 @@ const Header: React.FC<{}> = () => {
                 onClick={() => setMenuVisible(false)}
                 className={item.className}
                 id={`${deviceType}-${item.key}`}
+                data-cy={`${deviceType}-${item.key}`}
               >
                 {item.displayText}
               </LinkWithQuery>

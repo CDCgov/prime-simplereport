@@ -13,6 +13,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
       >
         <div
           class="display-flex flex-justify"
+          data-cy="add-patient-header"
         >
           <div>
             <div
@@ -164,7 +165,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-oneFacility"
+                        data-cy="radio-group-option-facilitySector-oneFacility"
                         for="1-val-oneFacility"
                       >
                         One facility
@@ -183,7 +184,7 @@ exports[`Upload Patient displays the upload patients page correctly 1`] = `
                       />
                       <label
                         class="usa-radio__label"
-                        data-cy="radio-group-option-allFacility"
+                        data-cy="radio-group-option-facilitySector-allFacility"
                         for="1-val-allFacility"
                       >
                         All facilities
