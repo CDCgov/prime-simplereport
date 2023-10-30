@@ -522,7 +522,8 @@ class FhirConverterTest {
             "PHASE Scientific International, Ltd.\n",
             "INDICAID COVID-19 Rapid Antigen Test*",
             "id-123",
-            "equipmentId");
+            "equipmentId",
+            "equipmentUidType");
 
     assertThat(actual.getId()).isEqualTo("id-123");
     assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo("equipmentId");
@@ -538,9 +539,11 @@ class FhirConverterTest {
     var internalId = UUID.randomUUID();
     var deviceType = new DeviceType("name", "manufacturer", "model", 15);
     var equipmentId = "equipmentId";
+    var equipmentUidType = "equipmentUidType";
+
     ReflectionTestUtils.setField(deviceType, "internalId", internalId);
 
-    var actual = fhirConverter.convertToDevice(deviceType, equipmentId);
+    var actual = fhirConverter.convertToDevice(deviceType, equipmentId, equipmentUidType);
 
     assertThat(actual.getId()).isEqualTo(internalId.toString());
     assertThat(actual.getIdentifier().get(0).getValue()).isEqualTo(equipmentId);
@@ -557,9 +560,11 @@ class FhirConverterTest {
         new DeviceType(
             "name", "BioFire Diagnostics", "BioFire Respiratory Panel 2.1 (RP2.1)*@", 15);
     var equipmentId = "equipmentId";
+    var equipmentUidType = "equipmentUidType";
+
     ReflectionTestUtils.setField(deviceType, "internalId", UUID.fromString(internalId));
 
-    var actual = fhirConverter.convertToDevice(deviceType, equipmentId);
+    var actual = fhirConverter.convertToDevice(deviceType, equipmentId, equipmentUidType);
 
     String actualSerialized = parser.encodeResourceToString(actual);
     var expectedSerialized =

@@ -329,6 +329,7 @@ public class BulkUploadResultsToFhir {
             row.getOrderingProviderId().getValue());
 
     String equipmentUid = null;
+    String equipmentUidType = null;
     String testKitNameId = null;
     String manufacturer = null;
     String diseaseName = null;
@@ -352,6 +353,9 @@ public class BulkUploadResultsToFhir {
       equipmentUid =
           fhirConverter.getCommonDiseaseValue(
               deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUid);
+      equipmentUidType =
+          fhirConverter.getCommonDiseaseValue(
+              deviceTypeDiseaseEntries, DeviceTypeDisease::getEquipmentUidType);
       testKitNameId =
           fhirConverter.getCommonDiseaseValue(
               deviceTypeDiseaseEntries, DeviceTypeDisease::getTestkitNameId);
@@ -388,7 +392,8 @@ public class BulkUploadResultsToFhir {
     testOrderedCode = StringUtils.isEmpty(testOrderedCode) ? testPerformedCode : testOrderedCode;
 
     var device =
-        fhirConverter.convertToDevice(manufacturer, modelName, deviceId.toString(), equipmentUid);
+        fhirConverter.convertToDevice(
+            manufacturer, modelName, deviceId.toString(), equipmentUid, equipmentUidType);
 
     String specimenCode = getSpecimenTypeSnomed(row.getSpecimenType().getValue());
     String specimenName = getSpecimenTypeName(specimenCode);

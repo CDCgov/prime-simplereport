@@ -135,7 +135,7 @@ public class DeviceTypeSyncService {
 
   public String extractSpecimenTypeCode(String specimenDescription) {
     Pattern specimenCode = Pattern.compile("^(.*?)\\^");
-    return extractSpecimenDetails(specimenDescription, specimenCode);
+    return extractSpecimenDetails(specimenDescription, specimenCode).strip();
   }
 
   public String extractSpecimenTypeName(String specimenDescription) {
@@ -351,7 +351,6 @@ public class DeviceTypeSyncService {
     if (Objects.equals(specimenCode, "")) {
       return Optional.empty();
     }
-
     var specimenType = specimenTypeRepository.findByTypeCode(specimenCode);
 
     return Optional.of(
