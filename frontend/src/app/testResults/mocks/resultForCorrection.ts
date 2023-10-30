@@ -1,15 +1,8 @@
 const resultForCorrection = {
+  id: "0969da96-b211-41cd-ba61-002181f0123a",
   dateTested: "2022-09-28T19:18:06.026Z",
-  results: [
-    {
-      disease: {
-        name: "COVID-19",
-        __typename: "SupportedDisease",
-      },
-      testResult: "POSITIVE",
-      __typename: "MultiplexResult",
-    },
-  ],
+  disease: "COVID-19",
+  testResult: "POSITIVE",
   correctionStatus: "ORIGINAL",
   deviceType: {
     name: "LumiraDX",

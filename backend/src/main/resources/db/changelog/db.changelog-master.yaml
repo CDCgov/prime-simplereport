@@ -5125,11 +5125,16 @@ databaseChangeLog:
                     referencedTableName: supported_disease
                     referencedColumnNames: internal_id
       rollback:
-        - dropColumn:
-            tableName: upload
-            columnName: supported_disease_id
-        - sql: |
-            DROP TYPE ${database.defaultSchemaName}.PIPELINE CASCADE;
+        dropColumn:
+          tableName: upload
+          columnName: supported_disease_id
+        sql: |
+          DROP TYPE ${database.defaultSchemaName}.PIPELINE CASCADE;
+          - dropColumn:
+          tableName: upload
+          columnName: supported_disease_id
+          - sql: |
+              DROP TYPE ${database.defaultSchemaName}.PIPELINE CASCADE;
   - changeSet:
       id: create-upload_disease_details-table
       author: tsv7@cdc.gov

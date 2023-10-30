@@ -1,4 +1,4 @@
-import { Context } from "@azure/functions";
+import { InvocationContext } from "@azure/functions";
 import { DequeuedMessageItem, QueueClient } from "@azure/storage-queue";
 import fetch, { Headers, Response } from "node-fetch";
 import jwt from "jsonwebtoken";
@@ -75,7 +75,7 @@ export async function handleReportStreamResponse(
   } else {
     const responseBody = await reportingResponse.text();
     const errorText = `Queue: ${testEventQueue.name}. Failed to upload to ReportStream with response code ${reportingResponse.status}`;
-    logging.context.log.error(
+    logging.context.error(
       `${errorText}. Response body (${responseBody.length} bytes): `,
       responseBody,
     );
@@ -136,7 +136,7 @@ export function generateJWT(
 }
 
 export async function getReportStreamAuthToken(
-  context: Context,
+  context: InvocationContext,
 ): Promise<string> {
   const tokenURL = `${REPORT_STREAM_BASE_URL}/api/token`;
   const jwt = generateJWT(
@@ -178,10 +178,7 @@ export async function getReportStreamAuthToken(
 
     return tokenResponse.access_token;
   } catch (e) {
-    context.log.error(
-      "Error while trying to get the ReportStream auth token.",
-      e,
-    );
+    context.error("Error while trying to get the ReportStream auth token.", e);
 
     throw e;
   }

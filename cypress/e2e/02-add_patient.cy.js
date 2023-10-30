@@ -1,13 +1,30 @@
-import { generatePatient, loginHooks } from "../support/e2e";
+import { generatePatient, loginHooks, testNumber } from "../support/e2e";
+import { cleanUpPreviousRunSetupData, setupRunData } from "../utils/setup-utils";
 
 const patient = generatePatient();
-
+const specRunName = "spec02";
 describe("Adding a single patient", () => {
   loginHooks();
   before("store patient info", () => {
+    // TODO: clean up after no tests rely on this patient
     cy.task("setPatientName", patient.fullName);
     cy.task("setPatientDOB", patient.dobForPatientLink);
     cy.task("setPatientPhone", patient.phone);
+
+    cy.task("getSpecRunVersionName", specRunName)
+      .then((prevSpecRunVersionName) => {
+        let currentSpecRunVersionName = `${testNumber()}-cypress-${specRunName}`;
+
+        if (prevSpecRunVersionName) {
+          cleanUpPreviousRunSetupData(prevSpecRunVersionName);
+        }
+        let data = {
+          specRunName: specRunName,
+          versionName: currentSpecRunVersionName
+        };
+        cy.task("setSpecRunVersionName", data)
+        setupRunData(currentSpecRunVersionName);
+      })
   });
   it("navigates to the add patient form", () => {
     cy.visit("/");

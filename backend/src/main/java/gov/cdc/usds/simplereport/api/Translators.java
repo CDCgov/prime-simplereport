@@ -279,7 +279,7 @@ public class Translators {
   public static final String NON_BINARY = "nonbinary";
   public static final String TRANS_MAN = "transman";
   public static final String TRANS_WOMAN = "transwoman";
-  private static final Set<String> GENDER_IDENTITIES =
+  public static final Set<String> GENDER_IDENTITIES =
       Set.of(FEMALE, MALE, TRANS_WOMAN, TRANS_MAN, NON_BINARY, OTHER, REFUSED);
 
   public static String parseGenderIdentity(String genderIdentityInput) {

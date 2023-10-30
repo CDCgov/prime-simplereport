@@ -305,25 +305,11 @@ class FileValidatorTest {
   @Test
   void testResults_validFile_rsvOnly() {
     // GIVEN
-    when(featureFlagsConfig.isRsvEnabled()).thenReturn(true);
     InputStream input = loadCsv("testResultUpload/test-results-upload-valid-rsv-only.csv");
     // WHEN
     List<FeedbackMessage> errors = testResultFileValidator.validate(input);
     // THEN
     assertThat(errors).isEmpty();
-  }
-
-  @Test
-  void testResults_validFile_rsvDisabled() {
-    // GIVEN
-    when(featureFlagsConfig.isRsvEnabled()).thenReturn(false);
-    InputStream input = loadCsv("testResultUpload/test-results-upload-valid-rsv-only.csv");
-    // WHEN
-    List<FeedbackMessage> errors = testResultFileValidator.validate(input);
-    // THEN
-    assertThat(errors).hasSize(1);
-    assertThat(errors.get(0).getMessage())
-        .isEqualTo("Invalid equipment_model_name and test_performed_code combination");
   }
 
   @Test
