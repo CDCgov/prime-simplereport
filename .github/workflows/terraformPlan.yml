@@ -1,42 +1,77 @@
 name: Ad-hoc Terraform Plan
+run-name: Terraform plan ${{ inputs.env }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
     inputs:
       env:
-        description: "Environment target"
+        description: 'What to plan against'
         required: true
-        default: "prod" 
+        type: choice
+        options:
+          - dev
+          - dev2
+          - dev3
+          - dev4
+          - dev5
+          - dev6
+          - dev7
+          - pentest
+          - test
+          - demo
+          - training
+          - stg
+          - prod
+          - all_environments
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+  OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
 
 jobs:
-  terraform-plan:
+  matrix_prep:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set_matrix.outputs.matrix }}
+    steps:
+    - uses: actions/checkout@v4
+    - id: set_matrix
+      run: |
+        if [[ "${{ inputs.env }}" == "all_environments" ]]; then
+          matrix=[{\"env\":\"dev\"},{\"env\":\"dev2\"},{\"env\":\"dev3\"},{\"env\":\"dev4\"},{\"env\":\"dev5\"},{\"env\":\"dev6\"},{\"env\":\"dev7\"},{\"env\":\"pentest\"},{\"env\":\"test\"},{\"env\":\"demo\"},{\"env\":\"training\"},{\"env\":\"stg\"},{\"env\":\"prod\"}]
+        else
+          matrix=[{\"env\":\"${{ inputs.env }}\"}]
+        fi               
+        echo "matrix={\"include\":$(echo $matrix)}" >> $GITHUB_OUTPUT
+  terraform_plan:
+    needs: matrix_prep
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{fromJson(needs.matrix_prep.outputs.matrix)}}
     defaults:
       run:
         working-directory: ./ops
-    env: # all Azure interaction is through Terraform
-      ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-      OKTA_API_TOKEN: ${{ secrets.OKTA_API_TOKEN_NONPROD }}
     steps:
       - uses: actions/checkout@v4
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Use prod Okta token if required
-        if: ${{ github.event.inputs.env == 'prod' || github.event.inputs.env == 'stg' }}
+        if: ${{ matrix.env == 'prod' || matrix.env == 'stg' || matrix.env == 'training' }}
         run: |
           echo "OKTA_API_TOKEN=${{ secrets.OKTA_API_TOKEN }}" >> "$GITHUB_ENV"
       - uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_version: 1.3.3
       - name: Terraform Init
-        run: make init-${{ github.event.inputs.env }}
+        run: make init-${{ matrix.env }}
       - name: Build ReportStream function app
         uses: ./.github/actions/build-reportstream-functions
         with:
-          deploy-env: ${{env.DEPLOY_ENV}}
+          deploy-env: ${{ matrix.env }}
       - name: Terraform plan
-        run: make plan-${{ github.event.inputs.env }}
+        run: make plan-${{ matrix.env }}

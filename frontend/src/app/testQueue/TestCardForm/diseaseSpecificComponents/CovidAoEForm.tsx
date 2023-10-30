@@ -67,10 +67,11 @@ const CovidAoEForm = ({
   const onSymptomOnsetDateChange = (symptomOnsetDate: string) => {
     onResponseChange({
       ...responses,
-      symptomOnset: moment(symptomOnsetDate).format("YYYY-MM-DD"),
+      symptomOnset: symptomOnsetDate
+        ? moment(symptomOnsetDate).format("YYYY-MM-DD")
+        : undefined,
     });
   };
-
   const onSymptomsChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     currentSymptoms: Record<string, boolean>
@@ -121,7 +122,6 @@ const CovidAoEForm = ({
         <>
           <div className="grid-row grid-gap">
             <TextInput
-              id={"hello"}
               data-testid="symptom-date"
               name="symptom-date"
               type="date"
@@ -129,9 +129,13 @@ const CovidAoEForm = ({
               aria-label="Symptom onset date"
               min={formatDate(new Date("Jan 1, 2020"))}
               max={formatDate(moment().toDate())}
-              value={formatDate(
-                moment(responses.symptomOnset).format("YYYY-MM-DD")
-              )}
+              value={
+                responses.symptomOnset
+                  ? formatDate(
+                      moment(responses.symptomOnset).format("YYYY-MM-DD")
+                    )
+                  : ""
+              }
               onChange={(e) => onSymptomOnsetDateChange(e.target.value)}
             ></TextInput>
           </div>

@@ -16,6 +16,11 @@
       margin-block-start: 1em;
       margin-block-end: 1em;
     }
+
+    .users-secondary-nav {
+      max-height: 44rem;
+      overflow-y: scroll;
+    }
   }
 
   .users-sidenav-item:hover {

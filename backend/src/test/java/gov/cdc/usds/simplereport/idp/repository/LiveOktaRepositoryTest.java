@@ -20,6 +20,7 @@ import com.okta.sdk.resource.api.ApplicationGroupsApi;
 import com.okta.sdk.resource.api.GroupApi;
 import com.okta.sdk.resource.api.UserApi;
 import com.okta.sdk.resource.client.ApiException;
+import com.okta.sdk.resource.common.PagedList;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.model.Application;
 import com.okta.sdk.resource.model.Group;
@@ -586,7 +587,7 @@ class LiveOktaRepositoryTest {
     var mockGroupList = List.of(mockGroup);
     var mockUser = mock(User.class);
     var mockUserProfile = mock(UserProfile.class);
-    var mockUserList = List.of(mockUser);
+    PagedList<User> mockedUserList = new PagedList<>(List.of(mockUser), "", "", null);
     when(groupApi.listGroups(
             eq(groupProfilePrefix),
             isNull(),
@@ -599,7 +600,7 @@ class LiveOktaRepositoryTest {
         .thenReturn(mockGroupList);
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
-    when(groupApi.listGroupUsers(any(), isNull(), isNull())).thenReturn(mockUserList);
+    when(groupApi.listGroupUsers(any(), any(), any())).thenReturn(mockedUserList);
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("email@example.com");
 
@@ -633,7 +634,7 @@ class LiveOktaRepositoryTest {
     var mockGroupList = List.of(mockGroup);
     var mockGroupProfile = mock(GroupProfile.class);
     var mockUser = mock(User.class);
-    var mockUserList = List.of(mockUser);
+    PagedList<User> mockUserList = new PagedList<>(List.of(mockUser), "", "", null);
     var mockUserProfile = mock(UserProfile.class);
     when(groupApi.listGroups(
             eq(groupProfilePrefix),
@@ -648,7 +649,7 @@ class LiveOktaRepositoryTest {
     when(mockGroup.getProfile()).thenReturn(mockGroupProfile);
     when(mockGroupProfile.getName()).thenReturn(groupProfilePrefix);
     when(mockGroup.getId()).thenReturn("1234");
-    when(groupApi.listGroupUsers(eq("1234"), isNull(), isNull())).thenReturn(mockUserList);
+    when(groupApi.listGroupUsers(eq("1234"), any(), any())).thenReturn(mockUserList);
     when(mockUser.getProfile()).thenReturn(mockUserProfile);
     when(mockUserProfile.getLogin()).thenReturn("email@example.com");
     when(mockUser.getStatus()).thenReturn(UserStatus.ACTIVE);

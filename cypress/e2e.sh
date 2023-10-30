@@ -79,13 +79,13 @@ echo
 
 http_response=0
 polls=0
-while [[ $http_response != "200" && $polls -lt 72 ]]; do
+while [[ $http_response != *"UP"* && $polls -lt 72 ]]; do
   ((polls++))
   sleep 5
   echo "Waiting for backend to start at ${TEST_ENV}${BACKEND_URL_PATH}"
   http_response=$(curl -skL -w "%{http_code}" "${TEST_ENV}${BACKEND_URL_PATH}")
 done
-if [[ $http_response -ne 200 ]]; then
+if [[ $http_response != *"UP"* ]]; then
   echo 'Backend never started. Exiting...'
   exit 1
 fi

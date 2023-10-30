@@ -1,12 +1,12 @@
 import {
   GetAllFacilitiesDocument,
-  GetFacilityResultsMultiplexWithCountDocument,
   GetTestResultDetailsDocument,
   GetTestResultForCorrectionDocument,
   GetTestResultForPrintDocument,
   GetTestResultForResendingEmailsDocument,
   GetTestResultForTextDocument,
   GetFacilityResultsForCsvWithCountDocument,
+  GetResultsMultiplexWithCountDocument,
   ArchivedStatus,
 } from "../../../generated/graphql";
 import { testResultDetailsQuery } from "../TestResultDetailsModal";
@@ -19,6 +19,7 @@ import testResultsByFacility from "./resultsByFacility.mock";
 import testResultsByAllFacility from "./resultsByAllFacilities.mock";
 import testResultsByStartDate from "./resultsByStartDate.mock";
 import testResultsByResultValue from "./resultsByResultValue.mock";
+import testResultsByCondition from "./resultsByCondition.mock";
 import testResultsByPatient from "./resultsByPatient.mock";
 import testResultsByStartDateAndEndDate from "./resultsByStartAndEndDate.mock";
 import testResultsMultiplex from "./resultsMultiplex.mock";
@@ -33,7 +34,7 @@ import resultForCorrection from "./resultForCorrection";
 export const mocks = [
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "",
         pageNumber: 0,
@@ -42,13 +43,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResults,
+        resultsPage: testResults,
       },
     },
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -57,7 +58,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResults,
+        resultsPage: testResults,
       },
     },
   },
@@ -80,14 +81,15 @@ export const mocks = [
     request: {
       query: testResultDetailsQuery,
       variables: {
-        id: testResults.content[0].internalId,
+        id: testResults.content[0].id,
       },
     },
     result: {
       data: {
         testResult: {
           dateTested: "2021-03-17T19:27:23.806Z",
-          results: [{ disease: { name: "COVID-19" }, testResult: "NEGATIVE" }],
+          // TODO: test error here
+          results: [{ disease: { name: "COVID-19", testResult: "NEGATIVE" } }],
           correctionStatus: "ORIGINAL",
           deviceType: {
             name: "Abbott IDNow",
@@ -117,7 +119,7 @@ export const mocks = [
 
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
@@ -127,13 +129,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByPatient,
+        resultsPage: testResultsByPatient,
       },
     },
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         result: "NEGATIVE",
@@ -143,13 +145,29 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByResultValue,
+        resultsPage: testResultsByResultValue,
       },
     },
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
+      variables: {
+        facilityId: "1",
+        disease: "COVID-19",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        resultsPage: testResultsByCondition,
+      },
+    },
+  },
+  {
+    request: {
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         role: "RESIDENT",
@@ -159,13 +177,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByRole,
+        resultsPage: testResultsByRole,
       },
     },
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -175,13 +193,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByStartDate,
+        resultsPage: testResultsByStartDate,
       },
     },
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         startDate: "2021-03-18T00:00:00.000Z",
@@ -192,14 +210,14 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByStartDateAndEndDate,
+        resultsPage: testResultsByStartDateAndEndDate,
       },
     },
   },
 
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "2",
         pageNumber: 0,
@@ -208,13 +226,13 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByFacility,
+        resultsPage: testResultsByFacility,
       },
     },
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: null,
         pageNumber: 0,
@@ -223,7 +241,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsByAllFacility,
+        resultsPage: testResultsByAllFacility,
       },
     },
   },
@@ -245,7 +263,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -254,7 +272,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResults,
+        resultsPage: testResults,
       },
     },
   },
@@ -273,7 +291,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "3",
         pageNumber: 0,
@@ -282,7 +300,7 @@ export const mocks = [
     },
     result: {
       data: {
-        testResultsPage: testResultsMultiplex,
+        resultsPage: testResultsMultiplex,
       },
     },
   },
@@ -301,7 +319,7 @@ export const mocks = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -309,13 +327,14 @@ export const mocks = [
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
         startDate: "2021-03-18T00:00:00.000Z",
         endDate: "2021-03-19T23:59:59.999Z",
+        disease: "COVID-19",
         role: "STAFF",
         result: "NEGATIVE",
       },
     },
     result: {
       data: {
-        testResultsPage: testResultsByStartDateAndEndDate,
+        resultsPage: testResultsByStartDateAndEndDate,
       },
     },
   },
@@ -389,7 +408,7 @@ export const mocks = [
 export const mocksWithMultiplex = [
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: null,
         pageNumber: 0,
@@ -398,7 +417,7 @@ export const mocksWithMultiplex = [
     },
     result: {
       data: {
-        testResultsPage: testResultsMultiplex,
+        resultsPage: testResultsMultiplex,
       },
     },
   },
@@ -417,7 +436,7 @@ export const mocksWithMultiplex = [
   },
   {
     request: {
-      query: GetFacilityResultsMultiplexWithCountDocument,
+      query: GetResultsMultiplexWithCountDocument,
       variables: {
         facilityId: "1",
         pageNumber: 0,
@@ -426,7 +445,7 @@ export const mocksWithMultiplex = [
     },
     result: {
       data: {
-        testResultsPage: testResultsMultiplex,
+        resultsPage: testResultsMultiplex,
       },
     },
   },

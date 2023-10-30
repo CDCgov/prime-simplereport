@@ -1,3 +1,5 @@
+global.specRunVersions = new Map();
+
 module.exports = {
   viewportWidth: 1200,
   viewportHeight: 800,
@@ -43,12 +45,12 @@ module.exports = {
         getPatientDOB() {
           return global.patientDOB;
         },
-        setPatientLink(link) {
-          global.patientLink = link;
+        setTestEventId(link) {
+          global.testEventId = link;
           return null;
         },
-        getPatientLink() {
-          return global.patientLink;
+        getTestEventId() {
+          return global.testEventId;
         },
         setPatientPhone(phone) {
           global.patientPhone = phone;
@@ -71,10 +73,17 @@ module.exports = {
         getMultiplexDeviceName() {
           return global.multiplexDeviceName;
         },
+        setSpecRunVersionName(data) {
+          global.specRunVersions.set(data.specRunName, data.versionName);
+          return null;
+        },
+        getSpecRunVersionName(specRunName) {
+          return global.specRunVersions.get(specRunName) || null;
+        },
       });
       on("before:browser:launch", (browser = {}, launchOptions = {}) => {
         launchOptions.args = launchOptions.args.filter(
-          (item) => item !== "--disable-dev-shm-usage",
+          (item) => item !== "--disable-dev-shm-usage"
         );
         if (browser.name === "chrome" && browser.isHeadless) {
           launchOptions.args.push("--window-size=1200,800");
