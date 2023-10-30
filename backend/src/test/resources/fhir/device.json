@@ -4,6 +4,15 @@
   "identifier": [
     {
       "value": "equipmentId"
+    },
+    {
+      "type": {
+        "coding": [
+          {
+            "code": "equipmentUidType"
+          }
+        ]
+      }
     }
   ],
   "manufacturer": "BioFire Diagnostics",
