@@ -47,8 +47,8 @@ public class ResultService {
       Date startDate,
       Date endDate) {
     return (root, query, cb) -> {
-      Join<Result, TestEvent> testEventJoin = root.join(Result_.testEvent);
-      Join<TestEvent, Person> personJoin = testEventJoin.join(TestEvent_.patient);
+      Join<Result, TestOrder> testOrderJoin = root.join(Result_.testOrder);
+      Join<TestOrder, Person> personJoin = testOrderJoin.join(TestEvent_.patient);
       Predicate p = cb.conjunction();
 
       query.orderBy(cb.desc(root.get(AuditedEntity_.createdAt)));
@@ -59,7 +59,7 @@ public class ResultService {
             cb.and(
                 p,
                 cb.equal(
-                    testEventJoin.get(BaseTestInfo_.facility).get(IdentifiedEntity_.internalId),
+                    testOrderJoin.get(BaseTestInfo_.facility).get(IdentifiedEntity_.internalId),
                     facilityId));
       } else {
         final UUID finalOrgId = organizationService.getCurrentOrganization().getInternalId();
@@ -68,7 +68,7 @@ public class ResultService {
             cb.and(
                 p,
                 cb.equal(
-                    testEventJoin.get(BaseTestInfo_.organization).get(IdentifiedEntity_.internalId),
+                    testOrderJoin.get(BaseTestInfo_.organization).get(IdentifiedEntity_.internalId),
                     finalOrgId));
       }
 
@@ -77,7 +77,7 @@ public class ResultService {
             cb.and(
                 p,
                 cb.equal(
-                    testEventJoin.get(BaseTestInfo_.patient).get(IdentifiedEntity_.internalId),
+                    testOrderJoin.get(BaseTestInfo_.patient).get(IdentifiedEntity_.internalId),
                     patientId));
       }
 
@@ -99,13 +99,13 @@ public class ResultService {
                 p,
                 cb.or(
                     cb.and(
-                        cb.isNotNull(testEventJoin.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.isNotNull(testOrderJoin.get(BaseTestInfo_.dateTestedBackdate)),
                         cb.greaterThanOrEqualTo(
-                            testEventJoin.get(BaseTestInfo_.dateTestedBackdate), startDate)),
+                            testOrderJoin.get(BaseTestInfo_.dateTestedBackdate), startDate)),
                     cb.and(
-                        cb.isNull(testEventJoin.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.isNull(testOrderJoin.get(BaseTestInfo_.dateTestedBackdate)),
                         cb.greaterThanOrEqualTo(
-                            testEventJoin.get(AuditedEntity_.createdAt), startDate))));
+                            testOrderJoin.get(AuditedEntity_.createdAt), startDate))));
       }
 
       if (endDate != null) {
@@ -114,13 +114,13 @@ public class ResultService {
                 p,
                 cb.or(
                     cb.and(
-                        cb.isNotNull(testEventJoin.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.isNotNull(testOrderJoin.get(BaseTestInfo_.dateTestedBackdate)),
                         cb.lessThanOrEqualTo(
-                            testEventJoin.get(BaseTestInfo_.dateTestedBackdate), endDate)),
+                            testOrderJoin.get(BaseTestInfo_.dateTestedBackdate), endDate)),
                     cb.and(
-                        cb.isNull(testEventJoin.get(BaseTestInfo_.dateTestedBackdate)),
+                        cb.isNull(testOrderJoin.get(BaseTestInfo_.dateTestedBackdate)),
                         cb.lessThanOrEqualTo(
-                            testEventJoin.get(AuditedEntity_.createdAt), endDate))));
+                            testOrderJoin.get(AuditedEntity_.createdAt), endDate))));
       }
 
       return p;

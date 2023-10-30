@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.ResultRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -114,6 +115,26 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
 
     @Test
     @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getOrganizationResults_doesNotShowCorrectEvents() {
+      var testEvent = testDataFactory.createTestEvent(personA, facilityA);
+      testDataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.CORRECTED);
+      var res = _service.getOrganizationResults(null, null, null, null, null, null, 0, 10).toList();
+
+      assertEquals(8, res.size());
+    }
+
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
+    void getOrganizationResults_showsRemovedEvents() {
+      var testEvent = testDataFactory.createTestEvent(personA, facilityA);
+      testDataFactory.createTestEventCorrection(testEvent, TestCorrectionStatus.REMOVED);
+      var res = _service.getOrganizationResults(null, null, null, null, null, null, 0, 10).toList();
+
+      assertEquals(8, res.size());
+    }
+
+    @Test
+    @SliceTestConfiguration.WithSimpleReportOrgAdminUser
     void getFacilityResults_noFilter() {
       var res =
           _service
@@ -179,7 +200,7 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                   r ->
                       personB
                           .getInternalId()
-                          .equals(r.getTestEvent().getPatient().getInternalId())));
+                          .equals(r.getTestOrder().getPatient().getInternalId())));
     }
 
     @Test
@@ -197,7 +218,7 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                   r ->
                       personA
                           .getInternalId()
-                          .equals(r.getTestEvent().getPatient().getInternalId())));
+                          .equals(r.getTestOrder().getPatient().getInternalId())));
     }
 
     @Test
@@ -217,9 +238,9 @@ class ResultServiceTest extends BaseServiceTest<ResultService> {
                   10)
               .toList();
       assertEquals(3, res.size());
-      assertEquals(SECOND_TEST_DATE, res.get(0).getTestEvent().getDateTested());
-      assertEquals(SECOND_TEST_DATE, res.get(1).getTestEvent().getDateTested());
-      assertEquals(SECOND_TEST_DATE, res.get(2).getTestEvent().getDateTested());
+      assertEquals(SECOND_TEST_DATE, res.get(0).getTestOrder().getDateTested());
+      assertEquals(SECOND_TEST_DATE, res.get(1).getTestOrder().getDateTested());
+      assertEquals(SECOND_TEST_DATE, res.get(2).getTestOrder().getDateTested());
     }
   }
 
