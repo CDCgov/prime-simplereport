@@ -25,17 +25,17 @@ public class TestResultsListItem {
   private final ApiUser createdBy;
 
   public TestResultsListItem(Result result) {
-    this.id = result.getTestEvent().getInternalId();
-    this.facility = result.getTestEvent().getFacility();
-    this.patient = result.getTestEvent().getPatient();
-    this.dateAdded = result.getTestEvent().getDateTested();
+    this.id = result.getTestOrder().getInternalId();
+    this.facility = result.getTestOrder().getFacility();
+    this.patient = result.getTestOrder().getPatient();
+    this.dateAdded = result.getTestOrder().getDateTested();
     this.dateUpdated = result.getUpdatedAt();
-    this.deviceType = result.getTestEvent().getDeviceType();
+    this.deviceType = result.getTestOrder().getDeviceType();
     this.disease = result.getDisease().getName();
     this.testResult = result.getTestResult();
-    this.dateTested = result.getTestEvent().getDateTested();
-    this.correctionStatus = result.getTestEvent().getCorrectionStatus();
-    this.reasonForCorrection = result.getTestEvent().getReasonForCorrection();
-    this.createdBy = result.getTestEvent().getCreatedBy();
+    this.dateTested = result.getTestOrder().getDateTested();
+    this.correctionStatus = result.getTestOrder().getCorrectionStatus();
+    this.reasonForCorrection = result.getTestOrder().getReasonForCorrection();
+    this.createdBy = result.getTestOrder().getCreatedBy();
   }
 }
