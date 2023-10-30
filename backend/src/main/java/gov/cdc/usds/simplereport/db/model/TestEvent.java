@@ -9,7 +9,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -128,14 +127,6 @@ public class TestEvent extends BaseTestInfo {
 
   public AskOnEntrySurvey getSurveyData() {
     return surveyData;
-  }
-
-  public Date getDateTested() {
-    if (getDateTestedBackdate() != null) {
-      return getDateTestedBackdate();
-    } else {
-      return getCreatedAt();
-    }
   }
 
   public Provider getProviderData() {

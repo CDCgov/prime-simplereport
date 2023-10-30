@@ -123,4 +123,12 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   protected void setReasonForCorrection(String reasonForCorrection) {
     this.reasonForCorrection = reasonForCorrection;
   }
+
+  public Date getDateTested() {
+    if (getDateTestedBackdate() != null) {
+      return getDateTestedBackdate();
+    } else {
+      return getCreatedAt();
+    }
+  }
 }
