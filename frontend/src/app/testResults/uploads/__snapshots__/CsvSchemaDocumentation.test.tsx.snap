@@ -2125,6 +2125,208 @@ exports[`CsvSchemaDocumentation tests CsvSchemaDocumentation matches snapshot 1`
             <h5
               class="margin-bottom-2"
               data-testid="header"
+              id="test_kit_name_id"
+            >
+              Test kit name ID
+              <span
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom"
+              >
+                Optional
+              </span>
+            </h5>
+            <div
+              class="margin-bottom-3"
+              data-testid="subheader"
+            />
+            <div
+              class="grid-row margin-bottom-05"
+              data-testid="column-header"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Column header
+              </div>
+              <div
+                class="grid-col-auto"
+              >
+                <code>
+                  test_kit_name_id
+                </code>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="description"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Description
+              </div>
+              <div
+                class="grid-col-8"
+              >
+                <div
+                  class="margin-bottom-1"
+                >
+                  If you want to include this value, you can find it in the CDC’s 
+                  <a
+                    class="usa-link"
+                    href="https://www.cdc.gov/csels/dls/livd-codes.html#anchor_88680"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    SARS-CoV-2 LIVD Test Codes spreadsheet
+                  </a>
+                  , under Testkit Name ID (column M).
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="examples"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Example
+                s
+              </div>
+              <ul
+                class="grid-col-8 prime-ul margin-top-0"
+              >
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    CareStart COVID-19 IgM/IgG_Access Bio, Inc.
+                  </em>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    BD Veritor System for Rapid Detection of SARS-CoV-2 & Flu A+B_Becton, Dickinson and Company (BD)
+                  </em>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    00884999049222
+                  </em>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="rs-documentation__values margin-top-6"
+          >
+            <h5
+              class="margin-bottom-2"
+              data-testid="header"
+              id="equipment_model_id"
+            >
+              Equipment model ID
+              <span
+                class="text-normal bg-white border-1px border-base font-body-3xs padding-x-1 padding-y-05 text-base margin-left-2 text-bottom"
+              >
+                Optional
+              </span>
+            </h5>
+            <div
+              class="margin-bottom-3"
+              data-testid="subheader"
+            />
+            <div
+              class="grid-row margin-bottom-05"
+              data-testid="column-header"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Column header
+              </div>
+              <div
+                class="grid-col-auto"
+              >
+                <code>
+                  equipment_model_id
+                </code>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="description"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Description
+              </div>
+              <div
+                class="grid-col-8"
+              >
+                <div
+                  class="margin-bottom-1"
+                >
+                  If you want to include this value, you can find it in the CDC’s 
+                  <a
+                    class="usa-link"
+                    href="https://www.cdc.gov/csels/dls/livd-codes.html#anchor_88680"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    SARS-CoV-2 LIVD Test Codes spreadsheet
+                  </a>
+                  , under Equipment UID (column O).
+                </div>
+              </div>
+            </div>
+            <div
+              class="grid-row margin-bottom-05 border-base-lighter border-top-1px padding-top-1"
+              data-testid="examples"
+            >
+              <div
+                class="grid-col-4 text-base"
+              >
+                Example
+                s
+              </div>
+              <ul
+                class="grid-col-8 prime-ul margin-top-0"
+              >
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    No Equipment
+                  </em>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    BD Veritor Plus System_Becton Dickinson
+                  </em>
+                </li>
+                <li
+                  class="bullet-list"
+                >
+                  <em>
+                    00884999048034
+                  </em>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="rs-documentation__values margin-top-6"
+          >
+            <h5
+              class="margin-bottom-2"
+              data-testid="header"
               id="test_performed_code"
             >
               Test performed LOINC code
