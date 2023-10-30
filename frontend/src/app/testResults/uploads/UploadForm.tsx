@@ -340,7 +340,7 @@ const UploadForm: React.FC<UploadFormProps> = ({
           appInsights?.trackEvent({
             name: "Spreadsheet upload validation failure",
             properties: {
-              errors: response.errors,
+              errors: response[0].errors,
               org: orgName,
               user: user?.email,
               uploadType: uploadType,

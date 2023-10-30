@@ -38,7 +38,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -79,7 +78,6 @@ public class BulkUploadResultsToFhir {
   private final UUIDGenerator uuidGenerator;
   private final DateGenerator dateGenerator;
   private final FhirConverter fhirConverter;
-  private final DeviceTypeService deviceTypeService;
 
   @Value("${simple-report.processing-mode-code:P}")
   private String processingModeCode = "P";
@@ -125,7 +123,7 @@ public class BulkUploadResultsToFhir {
       TestResultRow fileRow = new TestResultRow(row);
 
       Optional<String> disease =
-          deviceTypeService.getDiseaseFromDeviceSpecs(
+          getDiseaseFromDeviceSpecs(
               fileRow.getEquipmentModelName().getValue(),
               fileRow.getTestPerformedCode().getValue());
       if (disease.isPresent()) {
@@ -396,7 +394,7 @@ public class BulkUploadResultsToFhir {
     }
 
     if (diseaseName == null) {
-      diseaseName = diseaseSpecificLoincMap.get(testPerformedCode);
+      diseaseName = TestResultRow.diseaseSpecificLoincMap.get(testPerformedCode);
     }
 
     // code was not passed via api or inferred above: defaulting to the test performed code.
@@ -642,5 +640,31 @@ public class BulkUploadResultsToFhir {
       default:
         return DiagnosticReport.DiagnosticReportStatus.FINAL;
     }
+  }
+
+  public Optional<String> getDiseaseFromDeviceSpecs(
+      String equipmentModelName, String testPerformedCode) {
+
+    var matchingDevice =
+        resultsUploaderCachingService
+            .getModelAndTestPerformedCodeToDeviceMap()
+            .get(ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
+
+    if (matchingDevice != null) {
+      List<DeviceTypeDisease> deviceTypeDiseaseEntries =
+          matchingDevice.getSupportedDiseaseTestPerformed().stream()
+              .filter(
+                  disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
+              .toList();
+
+      if (!deviceTypeDiseaseEntries.isEmpty()) {
+        return deviceTypeDiseaseEntries.stream()
+            .findFirst()
+            .map(DeviceTypeDisease::getSupportedDisease)
+            .map(SupportedDisease::getName);
+      }
+    }
+
+    return Optional.ofNullable(diseaseSpecificLoincMap.get(testPerformedCode));
   }
 }

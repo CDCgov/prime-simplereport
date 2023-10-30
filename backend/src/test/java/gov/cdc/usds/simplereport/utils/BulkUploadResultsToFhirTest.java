@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smartystreets.api.exceptions.SmartyException;
 import gov.cdc.usds.simplereport.api.converter.FhirConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
-import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.ResultsUploaderCachingService;
 import gov.cdc.usds.simplereport.test_util.TestDataBuilder;
 import java.io.ByteArrayInputStream;
@@ -40,7 +39,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
@@ -50,8 +48,6 @@ import org.springframework.boot.info.GitProperties;
 public class BulkUploadResultsToFhirTest {
   private static GitProperties gitProperties;
   private static ResultsUploaderCachingService resultsUploaderCachingService;
-
-  @Mock private static DeviceTypeService deviceTypeService;
   private static final Instant commitTime = (new Date(1675891986000L)).toInstant();
   final FhirContext ctx = FhirContext.forR4();
   final IParser parser = ctx.newJsonParser();
@@ -97,8 +93,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             uuidGenerator,
             dateGenerator,
-            fhirConverter,
-            deviceTypeService);
+            fhirConverter);
   }
 
   @Test
@@ -299,8 +294,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator),
-            deviceTypeService);
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid.csv");
 
@@ -340,8 +334,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator),
-            deviceTypeService);
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
 
     InputStream csvStream =
         loadCsv("testResultUpload/test-results-upload-valid-with-specimenType-loinc.csv");
@@ -379,8 +372,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator),
-            deviceTypeService);
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid-with-comments.csv");
 
@@ -415,8 +407,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator),
-            deviceTypeService);
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
 
     InputStream csvStream = loadCsv("testResultUpload/test-results-upload-valid-flu-only.csv");
 
@@ -451,8 +442,7 @@ public class BulkUploadResultsToFhirTest {
             gitProperties,
             mockedUUIDGenerator,
             mockedDateGenerator,
-            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator),
-            deviceTypeService);
+            new FhirConverter(mockedUUIDGenerator, mockedDateGenerator));
 
     InputStream csvStream =
         loadCsv("testResultUpload/test-results-upload-valid-different-results.csv");

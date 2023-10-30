@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.api.model.filerow.TestResultRow.diseaseSpecificLoincMap;
-
 import gov.cdc.usds.simplereport.api.model.CreateDeviceType;
 import gov.cdc.usds.simplereport.api.model.SupportedDiseaseTestPerformedInput;
 import gov.cdc.usds.simplereport.api.model.UpdateDeviceType;
@@ -11,7 +9,6 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeDisease;
 import gov.cdc.usds.simplereport.db.model.DeviceTypeSpecimenTypeMapping;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeNewRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeDiseaseRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -19,7 +16,6 @@ import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +43,6 @@ public class DeviceTypeService {
   private final SpecimenTypeRepository specimenTypeRepository;
   private final SupportedDiseaseRepository supportedDiseaseRepository;
   private final DeviceTypeDiseaseRepository deviceTypeDiseaseRepository;
-  private final ResultsUploaderCachingService resultsUploaderCachingService;
 
   @Transactional
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -203,31 +198,5 @@ public class DeviceTypeService {
                           .build()));
         });
     return deviceTypeDiseaseList;
-  }
-
-  public Optional<String> getDiseaseFromDeviceSpecs(
-      String equipmentModelName, String testPerformedCode) {
-
-    var matchingDevice =
-        resultsUploaderCachingService
-            .getModelAndTestPerformedCodeToDeviceMap()
-            .get(ResultsUploaderCachingService.getKey(equipmentModelName, testPerformedCode));
-
-    if (matchingDevice != null) {
-      List<DeviceTypeDisease> deviceTypeDiseaseEntries =
-          matchingDevice.getSupportedDiseaseTestPerformed().stream()
-              .filter(
-                  disease -> Objects.equals(disease.getTestPerformedLoincCode(), testPerformedCode))
-              .toList();
-
-      if (!deviceTypeDiseaseEntries.isEmpty()) {
-        return deviceTypeDiseaseEntries.stream()
-            .findFirst()
-            .map(DeviceTypeDisease::getSupportedDisease)
-            .map(SupportedDisease::getName);
-      }
-    }
-
-    return Optional.ofNullable(diseaseSpecificLoincMap.get(testPerformedCode));
   }
 }

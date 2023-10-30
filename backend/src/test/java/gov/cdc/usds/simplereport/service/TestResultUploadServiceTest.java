@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -88,8 +89,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @Mock private TokenAuthentication tokenAuthMock;
   @Mock private FileValidator<TestResultRow> csvFileValidatorMock;
   @Mock private BulkUploadResultsToFhir bulkUploadFhirConverterMock;
+  @Mock private DiseaseService diseaseService;
   @InjectMocks private TestResultUploadService sut;
-  @Mock private TestResultUploadRepository repo;
 
   @BeforeEach()
   public void init() {
@@ -150,6 +151,8 @@ class TestResultUploadServiceTest extends BaseServiceTest<TestResultUploadServic
   @DirtiesContext
   @SliceTestConfiguration.WithSimpleReportStandardUser
   void feignBadRequest_returnsErrorMessage() throws IOException {
+    doReturn(null).when(repoMock).save(any(TestResultUpload.class));
+
     try (var x = loadCsv("responses/datahub-error-response.json")) {
       stubFor(
           WireMock.post(WireMock.urlEqualTo("/api/reports?processing=async"))
