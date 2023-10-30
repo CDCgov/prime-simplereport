@@ -30,7 +30,7 @@ const UsersSideNav: React.FC<Props> = ({
     <div className="display-block users-sidenav">
       <h2 className="users-sidenav-header">Users</h2>
       <nav
-        className="prime-secondary-nav users-secondary-nav"
+        className="prime-secondary-nav maxh-tablet-lg overflow-y-scroll"
         aria-label="Tertiary navigation"
       >
         <div
