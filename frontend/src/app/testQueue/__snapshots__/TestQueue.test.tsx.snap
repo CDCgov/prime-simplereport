@@ -653,7 +653,6 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           <label
                             class="usa-label"
                             for="12"
-                            id="label-for-12"
                           >
                             When did the patient's symptoms start?
                           </label>
@@ -667,7 +666,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                             min="2020-01-01"
                             name="symptom-date"
                             type="date"
-                            value="Invalid date"
+                            value=""
                           />
                         </div>
                       </div>
@@ -1600,7 +1599,6 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                           <label
                             class="usa-label"
                             for="19"
-                            id="label-for-19"
                           >
                             When did the patient's symptoms start?
                           </label>
@@ -1614,7 +1612,7 @@ exports[`TestQueue should render the new test card when feature enabled 1`] = `
                             min="2020-01-01"
                             name="symptom-date"
                             type="date"
-                            value="Invalid date"
+                            value=""
                           />
                         </div>
                       </div>

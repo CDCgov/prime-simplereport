@@ -197,7 +197,9 @@ const TestCardForm = ({
           symptoms: JSON.stringify(
             parseSymptoms(state.covidAOEResponses.symptoms)
           ),
-          symptomOnset: state.covidAOEResponses.symptomOnset,
+          symptomOnset: state.covidAOEResponses.symptomOnset
+            ? state.covidAOEResponses.symptomOnset
+            : null,
           pregnancy: state.covidAOEResponses.pregnancy,
         },
       });
