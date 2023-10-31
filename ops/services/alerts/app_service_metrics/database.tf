@@ -25,6 +25,11 @@ ${local.skip_on_weekends}
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "db_connection_exhaustion" {
@@ -53,5 +58,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "db_connection_exhaustion
   trigger {
     operator  = "GreaterThan"
     threshold = 5
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }

@@ -65,8 +65,10 @@ resource "azurerm_linux_web_app" "metabase" {
       }
     }
   }
-
   lifecycle {
+    ignore_changes = [
+      tags
+    ]
     replace_triggered_by = [
       null_resource.service_plan_id
     ]

@@ -48,6 +48,11 @@ AppServiceConsoleLogs
     operator  = "GreaterThan"
     threshold = 2
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "first_error_in_a_week" {
@@ -98,6 +103,11 @@ requests
     operator  = "GreaterThan"
     threshold = 0
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "account_request_failures" {
@@ -133,6 +143,11 @@ ${local.skip_on_weekends}
   trigger {
     operator  = "GreaterThan"
     threshold = 4
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }
 
@@ -170,6 +185,11 @@ ${local.skip_on_weekends}
     operator  = "GreaterThan"
     threshold = 0
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "all_experian_auth_failures" {
@@ -206,6 +226,11 @@ ${local.skip_on_weekends}
     operator  = "GreaterThan"
     threshold = 2
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary" {
@@ -234,5 +259,10 @@ resource "azurerm_monitor_scheduled_query_rules_alert" "frontend_error_boundary"
   trigger {
     operator  = "GreaterThan"
     threshold = 0
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }

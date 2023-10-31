@@ -23,4 +23,9 @@ resource "azurerm_monitor_metric_alert" "db_storage" {
       webhook_properties = var.wiki_docs_json
     }
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }

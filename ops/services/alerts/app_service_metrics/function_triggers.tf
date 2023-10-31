@@ -59,6 +59,11 @@ requests
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
   }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
+  }
 }
 
 resource "azurerm_monitor_scheduled_query_rules_alert" "fhir_batched_uploader_function_not_triggering" {
@@ -89,6 +94,11 @@ requests
   action {
     action_group           = var.action_group_ids
     custom_webhook_payload = var.wiki_docs_text
+  }
+  lifecycle {
+    ignore_changes = [
+      tags
+    ]
   }
 }
 
