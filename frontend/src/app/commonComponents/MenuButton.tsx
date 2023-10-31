@@ -35,6 +35,7 @@ export const MenuButton = (props: Props) => (
             ? `${item.name.split(" ")[0].toLowerCase()}_${props.id}`
             : undefined
         }
+        data-cy={item.name}
       >
         {item.content ?? item.name}
       </MenuItem>

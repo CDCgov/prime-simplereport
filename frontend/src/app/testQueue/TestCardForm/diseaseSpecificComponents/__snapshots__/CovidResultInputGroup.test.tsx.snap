@@ -39,7 +39,7 @@ Object {
             />
             <label
               class="usa-radio__label"
-              data-cy="radio-group-option-POSITIVE"
+              data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-POSITIVE"
               for="1-val-POSITIVE"
             >
               Positive (+)
@@ -58,7 +58,7 @@ Object {
             />
             <label
               class="usa-radio__label"
-              data-cy="radio-group-option-NEGATIVE"
+              data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-NEGATIVE"
               for="1-val-NEGATIVE"
             >
               Negative (-)
@@ -77,7 +77,7 @@ Object {
             />
             <label
               class="usa-radio__label"
-              data-cy="radio-group-option-UNDETERMINED"
+              data-cy="radio-group-option-covid-test-result-QUEUE-ITEM-ID-UNDETERMINED"
               for="1-val-UNDETERMINED"
             >
               Inconclusive
