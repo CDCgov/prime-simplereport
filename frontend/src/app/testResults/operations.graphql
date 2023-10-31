@@ -145,6 +145,10 @@ query GetResultsMultiplexWithCount(
         gender
         role
         email
+        phoneNumbers {
+          type
+          number
+        }
       }
       createdBy {
         nameInfo {
