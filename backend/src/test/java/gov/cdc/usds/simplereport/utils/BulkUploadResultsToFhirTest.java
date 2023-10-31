@@ -109,7 +109,7 @@ public class BulkUploadResultsToFhirTest {
             .map(Bundle.BundleEntryComponent::getFullUrl)
             .collect(Collectors.toList());
 
-    verify(resultsUploaderCachingService, times(1)).getModelAndTestPerformedCodeToDeviceMap();
+    verify(resultsUploaderCachingService, times(2)).getModelAndTestPerformedCodeToDeviceMap();
     assertThat(serializedBundles).hasSize(1);
     assertThat(deserializedBundle.getEntry()).hasSize(19);
     assertThat(resourceUrls).hasSize(19);

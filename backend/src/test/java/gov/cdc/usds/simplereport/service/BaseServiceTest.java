@@ -4,11 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
-import gov.cdc.usds.simplereport.api.CurrentAccountRequestContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.CurrentTenantDataAccessContextHolder;
-import gov.cdc.usds.simplereport.api.WebhookContextHolder;
-import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.DataSourceConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.TenantDataAuthenticationProvider;
 import gov.cdc.usds.simplereport.db.repository.SupportedDiseaseRepository;
@@ -52,9 +49,6 @@ public abstract class BaseServiceTest<T> {
   @Autowired protected SupportedDiseaseRepository _supportedDiseaseRepo;
   @MockBean private CurrentTenantDataAccessContextHolder _currentTenantDataAccessContextHolder;
   @MockBean private TenantDataAuthenticationProvider _tenantDataAuthProvider;
-  @MockBean private CurrentPatientContextHolder _currentPatientContextHolder;
-  @MockBean private CurrentAccountRequestContextHolder _accountRequestContextHolder;
-  @MockBean private WebhookContextHolder _webhookContextHolder;
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired protected T _service;

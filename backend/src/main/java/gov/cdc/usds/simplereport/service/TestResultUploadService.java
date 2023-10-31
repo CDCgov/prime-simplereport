@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.ResultUploadError;
 import gov.cdc.usds.simplereport.db.model.SupportedDisease;
 import gov.cdc.usds.simplereport.db.model.TestResultUpload;
+import gov.cdc.usds.simplereport.db.model.UploadDiseaseDetails;
 import gov.cdc.usds.simplereport.db.model.auxiliary.FHIRBundleRecord;
 import gov.cdc.usds.simplereport.db.model.auxiliary.Pipeline;
 import gov.cdc.usds.simplereport.db.model.auxiliary.ResultUploadErrorSource;
@@ -32,6 +33,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.UploadStatus;
 import gov.cdc.usds.simplereport.db.repository.ResultUploadErrorRepository;
 import gov.cdc.usds.simplereport.db.repository.TestResultUploadRepository;
+import gov.cdc.usds.simplereport.db.repository.UploadDiseaseDetailsRepository;
 import gov.cdc.usds.simplereport.service.errors.InvalidBulkTestResultUploadException;
 import gov.cdc.usds.simplereport.service.errors.InvalidRSAPrivateKeyException;
 import gov.cdc.usds.simplereport.service.model.reportstream.FeedbackMessage;
@@ -47,6 +49,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -71,6 +74,7 @@ import org.springframework.stereotype.Service;
 public class TestResultUploadService {
   private final TestResultUploadRepository _repo;
   private final ResultUploadErrorRepository errorRepository;
+  private final UploadDiseaseDetailsRepository diseaseDetailsRepository;
   private final DataHubClient _client;
   private final OrganizationService _orgService;
   private final ResultsUploaderCachingService resultsUploaderCachingService;
@@ -139,21 +143,21 @@ public class TestResultUploadService {
           return uploadSummary;
         }
 
-        CompletableFuture<List<TestResultUpload>> covidSubmission =
+        CompletableFuture<TestResultUpload> covidSubmission =
             submitResultsAsCsv(content, org, submissionId);
-        CompletableFuture<List<TestResultUpload>> universalSubmission =
+        CompletableFuture<TestResultUpload> universalSubmission =
             submitResultsAsFhir(new ByteArrayInputStream(content), org, submissionId);
 
         CompletableFuture.allOf(covidSubmission, universalSubmission)
             .thenAccept(
                 __ -> {
                   try {
-                    uploadSummary.addAll(covidSubmission.get());
+                    uploadSummary.add(covidSubmission.get());
                   } catch (ExecutionException | InterruptedException e) {
                     log.error("Error processing csv in bulk result upload", e);
                   }
                   try {
-                    uploadSummary.addAll(universalSubmission.get());
+                    uploadSummary.add(universalSubmission.get());
                   } catch (ExecutionException | InterruptedException e) {
                     log.error("Error processing FHIR in bulk result upload", e);
                   }
@@ -364,13 +368,12 @@ public class TestResultUploadService {
     return _client.fetchAccessToken(requestBody);
   }
 
-  private CompletableFuture<List<TestResultUpload>> submitResultsAsFhir(
+  private CompletableFuture<TestResultUpload> submitResultsAsFhir(
       ByteArrayInputStream content, Organization org, UUID submissionId) {
     // send to report stream
     return CompletableFuture.supplyAsync(
         withMDC(
             () -> {
-              List<TestResultUpload> uploadLogs = new ArrayList();
               if (fhirEnabled) {
                 try {
                   long start = System.currentTimeMillis();
@@ -385,31 +388,22 @@ public class TestResultUploadService {
                           + " milliseconds");
 
                   if (response != null) {
-                    fhirBundleWithMeta
-                        .metadata()
-                        .forEach(
-                            (reportedDiseaseName, count) -> {
-                              SupportedDisease reportedDisease =
-                                  diseaseService.getDiseaseByName(reportedDiseaseName);
-                              uploadLogs.add(
-                                  saveSubmissionToDb(
-                                      response,
-                                      org,
-                                      submissionId,
-                                      Pipeline.UNIVERSAL,
-                                      reportedDisease,
-                                      count));
-                            });
+                    return saveSubmissionToDb(
+                        response,
+                        org,
+                        submissionId,
+                        Pipeline.UNIVERSAL,
+                        fhirBundleWithMeta.metadata());
                   }
                 } catch (CsvProcessingException e) {
                   Thread.currentThread().interrupt();
                 }
               }
-              return uploadLogs;
+              return null;
             }));
   }
 
-  private CompletableFuture<List<TestResultUpload>> submitResultsAsCsv(
+  private CompletableFuture<TestResultUpload> submitResultsAsCsv(
       byte[] content, Organization org, UUID submissionId) {
     return CompletableFuture.supplyAsync(
             withMDC(
@@ -458,20 +452,16 @@ public class TestResultUploadService {
                 }
 
                 if (response.getValue() != null) {
-                  SupportedDisease covidDisease = diseaseService.getDiseaseByName("COVID-19");
-                  return List.of(
-                      saveSubmissionToDb(
-                          response.getValue(),
-                          org,
-                          submissionId,
-                          Pipeline.COVID,
-                          covidDisease,
-                          response.getValue().getReportItemCount()));
+                  HashMap<String, Integer> diseaseReported = new HashMap<>();
+                  diseaseReported.put("COVID-19", response.getValue().getReportItemCount());
+
+                  return saveSubmissionToDb(
+                      response.getValue(), org, submissionId, Pipeline.COVID, diseaseReported);
                 }
               } catch (CsvProcessingException e) {
                 Thread.currentThread().interrupt();
               }
-              return List.of();
+              return null;
             });
   }
 
@@ -489,32 +479,39 @@ public class TestResultUploadService {
       Organization org,
       UUID submissionId,
       Pipeline pipeline,
-      SupportedDisease disease,
-      Integer count) {
-    TestResultUpload result = null;
+      HashMap<String, Integer> diseasesReported) {
     if (response != null) {
+
       var status = UploadResponse.parseStatus(response.getOverallStatus());
 
-      result =
-          new TestResultUpload(
-              response.getId(),
-              submissionId,
-              status,
-              count,
-              org,
-              response.getWarnings(),
-              response.getErrors(),
-              pipeline,
-              disease);
+      TestResultUpload uploadRecord =
+          _repo.save(
+              TestResultUpload.builder()
+                  .reportId(response.getId())
+                  .submissionId(submissionId)
+                  .status(status)
+                  .recordsCount(response.getRecordsCount())
+                  .organization(org)
+                  .destination(pipeline)
+                  .errors(response.getErrors())
+                  .warnings(response.getErrors())
+                  .build());
 
-      result = _repo.save(result);
+      List<UploadDiseaseDetails> diseaseDetails = new ArrayList<>();
+
+      diseasesReported.forEach(
+          (reportedDiseaseName, count) -> {
+            SupportedDisease reportedDisease = diseaseService.getDiseaseByName(reportedDiseaseName);
+            diseaseDetails.add(new UploadDiseaseDetails(reportedDisease, uploadRecord, count));
+          });
+      diseaseDetailsRepository.saveAll(diseaseDetails);
 
       if (response.getErrors() != null && response.getErrors().length > 0) {
         for (var error : response.getErrors()) {
           error.setSource(ResultUploadErrorSource.REPORT_STREAM);
         }
 
-        TestResultUpload finalResult = result;
+        TestResultUpload finalResult = uploadRecord;
         errorRepository.saveAll(
             Arrays.stream(response.getErrors())
                 .map(
@@ -523,23 +520,23 @@ public class TestResultUploadService {
                 .toList());
       }
     }
-    return result;
+    return null;
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public TestResultUpload processHIVResultCSV(InputStream csvStream) {
     SupportedDisease hivDisease = diseaseService.getDiseaseByName("HIV");
     FeedbackMessage[] empty = {};
-    return new TestResultUpload(
-        UUID.randomUUID(),
-        UUID.randomUUID(),
-        UploadStatus.PENDING,
-        0,
-        null,
-        empty,
-        empty,
-        Pipeline.UNIVERSAL,
-        hivDisease);
+    return TestResultUpload.builder()
+        .submissionId(UUID.randomUUID())
+        .reportId(null)
+        .status(UploadStatus.PENDING)
+        .recordsCount(0)
+        .warnings(empty)
+        .errors(empty)
+        .organization(null)
+        .destination(Pipeline.UNIVERSAL)
+        .build();
   }
 
   @Getter
